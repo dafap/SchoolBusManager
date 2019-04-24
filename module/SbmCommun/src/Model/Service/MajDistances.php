@@ -78,12 +78,13 @@ class MajDistances implements FactoryInterface
 
     /**
      * Met à jour les distances pour tous les enfants du responsable indiqué.
-     * L'enregistrement est fait dans la table scolarites, pour le millesime en cours.
-     * (Un seul appel à l'API de google)
+     * L'enregistrement est fait dans la table scolarites, pour le millesime en cours. (Un
+     * seul appel à l'API de google)
      *
      * @param int $responsableId
      *
-     * @return string|null renvoie null en cas de succès ou le message d'erreur en cas d'échec
+     * @return string|null renvoie null en cas de succès ou le message d'erreur en cas
+     *         d'échec
      */
     public function pour($responsableId)
     {

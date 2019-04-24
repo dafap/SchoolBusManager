@@ -9,7 +9,7 @@
  * @filesource table.responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
+ * @date 15 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -55,17 +55,16 @@ return [
             'etiquette' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'demenagement' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'dateDemenagement' => 'date NOT NULL DEFAULT "1900-01-01"',
-            'facture' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
-            'grilleTarif' => 'int(4) NOT NULL DEFAULT "1"',
-            'ribTit' => 'varchar(32) NOT NULL DEFAULT ""',
-            'ribDom' => 'varchar(24) NOT NULL DEFAULT ""',
-            'iban' => 'varchar(34) NOT NULL DEFAULT ""',
-            'bic' => 'varchar(11) NOT NULL DEFAULT ""',
+            'facture' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // inutilisé
+            'grilleTarif' => 'int(4) NOT NULL DEFAULT "1"', // inutilisé
+            'ribTit' => 'varchar(32) NOT NULL DEFAULT ""', // inutilisé
+            'ribDom' => 'varchar(24) NOT NULL DEFAULT ""', // inutilisé
+            'iban' => 'varchar(34) NOT NULL DEFAULT ""', // inutilisé
+            'bic' => 'varchar(11) NOT NULL DEFAULT ""', // inutilisé
             'x' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'y' => 'decimal(18,10) NOT NULL DEFAULT "0"',
-            'geopt' => 'GEOMETRY',
             'userId' => 'int(11) DEFAULT "3"',
-            'id_ccda' => 'int(11) DEFAULT NULL',
+            'id_mgc' => 'int(11) DEFAULT NULL', // inutilisé
             'note' => 'text NULL'
         ],
         'primary_key' => [

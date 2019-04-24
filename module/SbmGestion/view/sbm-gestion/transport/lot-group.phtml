@@ -1,0 +1,183 @@
+<?php
+/**
+ * Page de consultation des élèves transportés par un lot de marché
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource lot-group.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 mars 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/transport/lot-group.css'));
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-group',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
+    'action' => 'responsable-mail'
+]);
+$url_mark_selection = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-group-selection',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$hiddens = [
+    'lotId' => $this->lotId
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'lot-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ],
+    'rapports' => $menuImpression['content'],
+    'marquer' => [
+        'class' => 'fam-basket-add',
+        'formaction' => $url_mark_selection,
+        'title' => 'Sélectionner toutes les fiches de cette liste'
+    ]
+];
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+?>
+<h1>Groupe des élèves pris en charge pour un lot de marché</h1>
+<div id="liste-wrapper">
+	<div id="liste-title" class="clearfix">
+		<ul class="float-left">
+			<li><?= $this->escapeHtml($this->lot->marche); ?></li>
+			<li><?= $this->escapeHtml($this->lot->lot); ?></li>
+			<li><?= $this->escapeHtml($this->lot->libelle); ?>
+			<?php if (!empty($this->lot->complement)) : ?>
+			<br><?= $this->escapeHtml($this->lot->complement); ?>
+			<?php endif;?>
+			</li>
+			<li><?= $this->escapeHtml($this->lot->titulaire); ?></li>
+		</ul>
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-header">
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?= $this->paginator->getTotalItemCount(); ?> prises en charge.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th></th>
+					<th>Service</th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Adresse</th>
+					<th>Code postal</th>
+					<th>Commune</th>
+					<th>Etablissement</th>
+					<th>Classe</th>
+					<th>Transporteur</th>
+				</tr>
+			<?php foreach ($data as $row):?>
+			<?php
+    $hiddens = [
+        'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
+        'email' => $row['email'],
+        'responsable' => $row['responsable'],
+        'group' => $url_group
+    ];
+    $buttons = [
+        'modifier' => [
+            'class' => 'fam-pencil',
+            'formaction' => $url_edit,
+            'title' => 'Modifier'
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
+    if (! empty($row['email'])) {
+        $buttons['ecrire'] = [
+            'class' => 'fam-email',
+            'formaction' => $url_mail,
+            'title' => 'Envoyer un email'
+        ];
+    }
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto']);
+    ?>
+			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $row['serviceId'];?></td>
+					<td><?= $this->escapeHtml($row['transporteur']);?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
+					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+				</tr>
+			<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
+</div>

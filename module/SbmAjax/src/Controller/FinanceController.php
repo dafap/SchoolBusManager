@@ -3,19 +3,18 @@
  * Actions destinées aux réponses à des demandes ajax pour les paiements et les tarifs
  *
  * Le layout est désactivé dans ce module
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
-use Zend\Db\Sql\Where;
 use Zend\Json\Json;
 
 class FinanceController extends AbstractActionController
@@ -214,7 +213,8 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * ajax - cocher la case sélection dans la liste des notifications de paiement en ligne
+     * ajax - cocher la case sélection dans la liste des notifications de paiement en
+     * ligne
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -237,7 +237,8 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * ajax - décocher la case sélection dans la liste des notifications de paiement en ligne
+     * ajax - décocher la case sélection dans la liste des notifications de paiement en
+     * ligne
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -269,41 +270,55 @@ class FinanceController extends AbstractActionController
     {
         $responsableId = $this->params('responsableId', - 1);
         $tEleves = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
-        $result = $tEleves->getElevesPreinscritsWithMontant($responsableId);
+        $result = $tEleves->getElevesPreinscritsWithGrille($responsableId);
         $data = [];
         foreach ($result as $row) {
             $data[] = [
                 'eleveId' => $row['eleveId'],
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
-                'montant' => $row['montant'],
-                'nomTarif' => $row['nomTarif']
+                'grilleTarif' => $row['grilleTarif'],
+                'duplicata' => $row['duplicata']
             ];
         }
-        $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
-        if ($nbDuplicatas) {
-            $montantUnitaire = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
-                'duplicata');
-            $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
-            // duplicatas déjà encaissés
-            $where = new Where();
-            $millesime = Session::get('millesime');
-            $as = sprintf('%d-%d', $millesime, $millesime + 1);
-            $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', $responsableId);
-            $totalEncaisse = $this->db_manager->get('Sbm\Db\Table\Paiements')->total(
-                $where);
-            $totalInscriptions = $tEleves->getMontantElevesInscrits($responsableId);
-            $duplicatasPayes = $totalEncaisse - $totalInscriptions;
-            // reste à payer
-            $montantDuplicatas -= $duplicatasPayes;
-        } else {
-            $montantDuplicatas = 0.00;
+        return $this->getResponse()->setContent(
+            Json::encode([
+                'data' => $data,
+                'success' => 1
+            ]));
+    }
+
+    /**
+     * Cette méthode reçoit en post :
+     *
+     * @formatter off
+     * - responsableId
+     * - eleveIds : tableau encodé JSON des eleveId à prendre en compte
+     * @formatter on
+     * et renvoie le montant à payer en tenant compte des duplicatas
+     */
+    public function calculmontantAction()
+    {
+        $responsableId = $this->params('responsableId', - 1);
+        $aEleveId = json_decode($this->params('eleveIds', '[]'));
+        if ($responsableId == - 1) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'total' => 0,
+                    'paye' => 0,
+                    'solde' => 0,
+                    'success' => 0
+                ]));
         }
+        $resultat = $this->db_manager->get(
+            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $responsableId, $aEleveId);
         return $this->getResponse()->setContent(
             Json::encode(
                 [
-                    'duplicatas' => $montantDuplicatas,
-                    'data' => $data,
+                    'total' => $resultat->getMontantTotal('liste'),
+                    'paye' => $resultat->getPaiements(),
+                    'solde' => $resultat->getSolde('liste'),
                     'success' => 1
                 ]));
     }

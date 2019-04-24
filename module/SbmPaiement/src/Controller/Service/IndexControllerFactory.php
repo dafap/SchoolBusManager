@@ -34,12 +34,13 @@ class IndexControllerFactory implements FactoryInterface
             'plugin_plateforme' => $sm->get('SbmPaiement\Plugin\Plateforme'),
             'responsable' => $sm->get(Responsable::class),
             'user' => $sm->get('SbmAuthentification\Authentication')
-            ->by()
-            ->getIdentity(),
-            'paginator_count_per_page' => StdLib::getParamR([
-                'paginator',
-                'count_per_page'
-            ], $config_application),
+                ->by()
+                ->getIdentity(),
+            'paginator_count_per_page' => StdLib::getParamR(
+                [
+                    'paginator',
+                    'count_per_page'
+                ], $config_application),
             'mail_config' => StdLib::getParamR([
                 'sbm',
                 'mail'

@@ -1,7 +1,7 @@
 <?php
 /**
  * Controleur principal de l'application
- * 
+ *
  * Compatible ZF3
  *
  * @project sbm
@@ -67,6 +67,8 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        return new ViewModel([]);
+        $qScolarite = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
+        $result = $qScolarite->getElevesPayantsWithGrille(1);
+        return new ViewModel(['array' => $result]);
     }
 }

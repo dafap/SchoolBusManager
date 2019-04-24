@@ -7,12 +7,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
 use SbmCommun\Model\Db\ObjectData;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Horaires;
 use SbmCommun\Model\Db\Service\Libelles;
 use SbmCommun\Model\Db\Service\Query;
 use SbmCommun\Model\Db\Service\Select;
@@ -48,6 +49,7 @@ return [
             'Sbm\Db\ObjectData\ElevePhoto' => ObjectData\ElevePhoto::class,
             'Sbm\Db\ObjectData\Etablissement' => ObjectData\Etablissement::class,
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
+            'Sbm\Db\ObjectData\Lot' => ObjectData\Lot::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
             'Sbm\Db\ObjectData\Paiement' => ObjectData\Paiement::class,
             'Sbm\Db\ObjectData\Rpi' => ObjectData\Rpi::class,
@@ -85,6 +87,7 @@ return [
             'Sbm\Db\Table\ElevesPhotos' => Table\ElevesPhotos::class,
             'Sbm\Db\Table\Etablissements' => Table\Etablissements::class,
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
+            'Sbm\Db\Table\Lots' => Table\Lots::class,
             'Sbm\Db\Table\Organismes' => Table\Organismes::class,
             'Sbm\Db\Table\Paiements' => Table\Paiements::class,
             'Sbm\Db\Table\Responsables' => Table\Responsables::class,
@@ -120,6 +123,7 @@ return [
             'Sbm\Db\TableGateway\ElevesPhotos' => TableGateway\TableGatewayElevesPhotos::class,
             'Sbm\Db\TableGateway\Etablissements' => TableGateway\TableGatewayEtablissements::class,
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
+            'Sbm\Db\TableGateway\Lots' => TableGateway\TableGatewayLots::class,
             'Sbm\Db\TableGateway\Organismes' => TableGateway\TableGatewayOrganismes::class,
             'Sbm\Db\TableGateway\Paiements' => TableGateway\TableGatewayPaiements::class,
             'Sbm\Db\TableGateway\Responsables' => TableGateway\TableGatewayResponsables::class,
@@ -150,6 +154,7 @@ return [
             'Sbm\Db\Vue\Classes' => Table\Vue\Classes::class,
             'Sbm\Db\Vue\Etablissements' => Table\Vue\Etablissements::class,
             'Sbm\Db\Vue\EtablissementsServices' => Table\Vue\EtablissementsServices::class,
+            'Sbm\Db\Vue\Lots' => Table\Vue\Lots::class,
             'Sbm\Db\Vue\Organismes' => Table\Vue\Organismes::class,
             'Sbm\Db\Vue\Paiements' => Table\Vue\Paiements::class,
             'Sbm\Db\Vue\Responsables' => Table\Vue\Responsables::class,
@@ -161,6 +166,7 @@ return [
             'Sbm\Db\VueGateway\Classes' => TableGateway\Vue\TableGatewayClasses::class,
             'Sbm\Db\VueGateway\Etablissements' => TableGateway\Vue\TableGatewayEtablissements::class,
             'Sbm\Db\VueGateway\EtablissementsServices' => TableGateway\Vue\TableGatewayEtablissementsServices::class,
+            'Sbm\Db\VueGateway\Lots' => TableGateway\Vue\TableGatewayLots::class,
             'Sbm\Db\VueGateway\Organismes' => TableGateway\Vue\TableGatewayOrganismes::class,
             'Sbm\Db\VueGateway\Paiements' => TableGateway\Vue\TableGatewayPaiements::class,
             'Sbm\Db\VueGateway\Responsables' => TableGateway\Vue\TableGatewayResponsables::class,
@@ -172,7 +178,9 @@ return [
             'Sbm\Db\Select\Classes' => Select\ClassesForSelect::class,
             'Sbm\Db\Select\Communes' => Select\CommunesForSelect::class,
             'Sbm\Db\Select\DatesCartes' => Select\DatesCartes::class,
+            'Sbm\Db\Select\Eleves' => Select\ElevesForSelect::class,
             'Sbm\Db\Select\Etablissements' => Select\EtablissementsForSelect::class,
+            'Sbm\Db\Select\Lots' => Select\Lots::class,
             'Sbm\Db\Select\Organismes' => Select\Organismes::class,
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,
             'Sbm\Db\Select\Services' => Select\Services::class,
@@ -181,6 +189,7 @@ return [
             'Sbm\Db\Select\Transporteurs' => Select\Transporteurs::class,
             'Sbm\Db\Select\Libelles' => Select\LibellesForSelect::class,
             'Sbm\Libelles' => Libelles::class,
+            'Sbm\Horaires' => Horaires::class,
 
             'Sbm\Db\Query\Circuits' => Query\Circuit\Circuits::class,
             'Sbm\Db\Query\Eleves' => Query\Eleve\Eleves::class,
@@ -194,6 +203,8 @@ return [
             'Sbm\Db\Query\Services' => Query\Service\Services::class,
             'Sbm\Db\Query\SimulationEtablissements' => Query\Etablissement\SimulationEtablissements::class,
             'Sbm\Db\Query\Stations' => Query\Station\Stations::class,
+            Query\Paiement\Calculs::class => Query\Paiement\Calculs::class,
+            Query\Station\VersEtablissement::class => Query\Station\VersEtablissement::class,
             'Sbm\Db\Query\Transporteurs' => Query\Transporteur\Transporteurs::class,
             'Sbm\Db\Query\History' => Query\History\History::class,
             'Sbm\Statistiques\Eleve' => Query\Eleve\Statistiques::class,
@@ -208,6 +219,7 @@ return [
             Form\Classe::class => Form\Classe::class,
             Form\Commune::class => Form\Commune::class,
             Form\Etablissement::class => Form\Etablissement::class,
+            Form\Lot::class => Form\Lot::class,
             Form\Organisme::class => Form\Organisme::class,
             Form\Rpi::class => Form\Rpi::class,
             Form\SecteurScolaire::class => Form\SecteurScolaire::class,

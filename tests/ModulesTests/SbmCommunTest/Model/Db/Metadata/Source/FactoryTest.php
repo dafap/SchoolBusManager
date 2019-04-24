@@ -24,10 +24,11 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     *
      * @dataProvider validAdapterProvider
      *
-     * @param Adapter $adapter            
-     * @param string $expectedReturnClass            
+     * @param Adapter $adapter
+     * @param string $expectedReturnClass
      */
     public function testCreateSourceFromAdapter(Adapter $adapter, $expectedReturnClass)
     {

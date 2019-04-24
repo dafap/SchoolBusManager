@@ -18,8 +18,7 @@ use SbmBase\Module\AbstractModule;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
-class Module extends AbstractModule implements 
-    ConfigProviderInterface
+class Module extends AbstractModule implements ConfigProviderInterface
 {
 
     public function getDir()
@@ -38,7 +37,8 @@ class Module extends AbstractModule implements
         $eventManager = $e->getTarget()->getEventManager();
         // appel du formulaire de paiement d'une plateforme
         $eventManager->attach(new Listener\AppelPlateforme());
-        // mise à jour des tables paiements et scolarites à la suite d'un paiement par CB sur une
+        // mise à jour des tables paiements et scolarites à la suite d'un paiement par CB
+        // sur une
         // plateforme
         $eventManager->attach($sm->get(Listener\PaiementOK::class));
         $eventManager->attach($sm->get(Listener\ScolariteOK::class));

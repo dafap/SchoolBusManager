@@ -34,7 +34,7 @@ class ConfigServiceFactoryTest extends PHPUnit_Framework_TestCase
             ->method('get')
             ->with('Config')
             ->will($this->returnValue($ma_config));
-        $this->assertSame($ma_config['sbm']['mail'], 
+        $this->assertSame($ma_config['sbm']['mail'],
             $factory->createService($serviceLocator));
     }
 }

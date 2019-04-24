@@ -8,7 +8,7 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2019
+ * @date 18 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -34,5 +34,20 @@ class Responsable extends AbstractObjectData
             $ok |= ! empty($this->telephoneT) && $this->smsT == 1;
         }
         return $ok;
+    }
+
+    public function telephonesPourSms()
+    {
+        $telephones = [];
+        foreach ([
+            'F',
+            'P',
+            'T'
+        ] as $value) {
+            if (! empty($this->{"telephone$value"}) && $this->{"sms$value"} == 1) {
+                $telephones[] = $this->{"telephone$value"};
+            }
+        }
+        return $telephones;
     }
 }

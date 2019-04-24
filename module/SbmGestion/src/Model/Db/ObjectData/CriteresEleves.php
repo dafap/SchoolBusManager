@@ -15,7 +15,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -28,31 +28,21 @@ class CriteresEleves extends SbmCommunCriteres
 {
 
     /**
-     * On filtre sur le millesime en cours.
-     * La propriété `data` est un tableau de la forme :
-     * array (size=10)
-     * 'numero' => string '' (length=0)
-     * 'nomSA' => string '' (length=0)
-     * 'responsableSA' => string '' (length=0)
-     * 'etablissementId' => string '' (length=0)
-     * 'classeId' => string '' (length=0)
-     * 'etat' => string '' (length=0)
-     * 'demande' => string '' (length=0)
-     * 'decision' => string '' (length=0)
-     * 'derogation' => string '0' (length=1)
-     * 'selection' => string '0' (length=1)
-     *
-     * (non-PHPdoc)
-     *
-     * $strict et $alias sont inutiles et ne sont gardés que pour la compatibilité stricte des
-     * appels
+     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * : array (size=10) 'numero' => string '' (length=0) 'nomSA' => string '' (length=0)
+     * 'responsableSA' => string '' (length=0) 'etablissementId' => string '' (length=0)
+     * 'classeId' => string '' (length=0) 'etat' => string '' (length=0) 'demande' =>
+     * string '' (length=0) 'decision' => string '' (length=0) 'derogation' => string '0'
+     * (length=1) 'selection' => string '0' (length=1) (non-PHPdoc) $strict et $alias sont
+     * inutiles et ne sont gardés que pour la compatibilité stricte des appels
      *
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
     public function getWhere($strict = [], $alias = [])
     {
         $where = new Where();
-        $where->equalTo('sco.millesime', Session::get('millesime'));
+        $where->equalTo('sco.millesime', Session::get('millesime'))->literal(
+            'sco.selection = 0');
         if (! empty($this->data['numero'])) {
             $where = $this->clauseNumero($where);
         }
@@ -111,7 +101,8 @@ class CriteresEleves extends SbmCommunCriteres
                     $where = $this->clauseDemandesPartiellementTraitees($where);
                     break;
                 case 3:
-                    // traitée : on a répondu à la demandeR1 et la demandeR2 n'est pas en attente
+                    // traitée : on a répondu à la demandeR1 et la demandeR2 n'est pas en
+                    // attente
                     $where = $this->clauseDemandesTraitees($where);
                     break;
             }
@@ -262,7 +253,8 @@ class CriteresEleves extends SbmCommunCriteres
                     $pageheader_string[] = 'élèves dont les demandes sont partiellement traitées';
                     break;
                 case 3:
-                    // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en attente
+                    // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en
+                    // attente
                     $where = $this->clauseDemandesTraitees($where, true);
                     $pageheader_string[] = 'élèves dont les demandes sont traitées';
                     break;
@@ -273,8 +265,10 @@ class CriteresEleves extends SbmCommunCriteres
             switch ($this->data['decision']) {
                 case 1:
                     // accord total
-                    // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR (demandeR1 =
-                    // 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND accordR1 = 1 AND
+                    // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR
+                    // (demandeR1 =
+                    // 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND
+                    // accordR1 = 1 AND
                     // demandeR2 = 2 AND accordR2 = 1)
                     $where = $this->clauseAccordTotal($where, true);
                     $pageheader_string[] = 'accord total';
@@ -350,12 +344,9 @@ class CriteresEleves extends SbmCommunCriteres
 
     /**
      * Transforme l'objet en tableau de critéres en modifiant certaines propriétés
-     *
      * Nécessaire pour les étiquettes et les cartes à sélectionner à partir de la liste
-     * des élèves
-     *
-     * $strict et $alias sont inutiles et ne sont gardés que pour la compatibilité stricte des
-     * appels
+     * des élèves $strict et $alias sont inutiles et ne sont gardés que pour la
+     * compatibilité stricte des appels
      *
      * @param array $criteres
      */
@@ -450,7 +441,8 @@ class CriteresEleves extends SbmCommunCriteres
                     $pageheader_string[] = 'élèves dont les demandes sont partiellement traitées';
                     break;
                 case 3:
-                    // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en attente
+                    // traiée : on a répondu à la demandeR1 et la demandeR2 n'est pas en
+                    // attente
                     $where = $this->clauseDemandesTraitees($where, true);
                     $pageheader_string[] = 'élèves dont les demandes sont traitées';
                     break;
@@ -460,8 +452,10 @@ class CriteresEleves extends SbmCommunCriteres
             switch ($this->data['decision']) {
                 case 1:
                     // accord total
-                    // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR (demandeR1 =
-                    // 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND accordR1 = 1 AND
+                    // 3 cas : ((demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR
+                    // (demandeR1 =
+                    // 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND
+                    // accordR1 = 1 AND
                     // demandeR2 = 2 AND accordR2 = 1)
                     $where = $this->clauseAccordTotal($where, true);
                     $pageheader_string[] = 'accord total';
@@ -870,10 +864,9 @@ class CriteresEleves extends SbmCommunCriteres
     }
 
     /**
-     * Accord total - 3 cas :
-     * (demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1)
-     * OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 0)
-     * OR (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 2 AND accordR2 = 1)
+     * Accord total - 3 cas : (demandeR1 = 0 AND demandeR2 = 2 AND accordR2 = 1) OR
+     * (demandeR1 = 2 AND accordR1 = 1 AND demandeR2 = 0) OR (demandeR1 = 2 AND accordR1 =
+     * 1 AND demandeR2 = 2 AND accordR2 = 1)
      *
      * @param Where|array $where
      * @param bool $pdf

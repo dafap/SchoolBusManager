@@ -1,15 +1,15 @@
 <?php
 /**
- * Lambert 93 
+ * Lambert 93
  *
  * Projection Lambert Connique Conforme Sécante
- * 
+ *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Projection
  * @filesource Lambert93.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
@@ -36,29 +36,29 @@ class Lambert93 extends AbstractProjection implements ProjectionInterface
     }
 
     /**
-     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et renvoie
-     * un point en coordonnées Lambert-93
+     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et
+     * renvoie un point en coordonnées Lambert-93
      *
      * @param Point $p
      *            longitude et latitude exprimées en degré
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function gRGF93versXYZ(Point $p)
     {
-        return $this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian'));
+        return $p->transforme(
+            $this->alg0003($p->getLongitude('radian'), $p->getLatitude('radian')));
     }
 
     /**
-     * Reçoit un point en coordonnées Lambert-93 et renvoie un point en coordonnées géographiques
-     * (RGF93 ou WPS84) exprimées en degré
+     * Reçoit un point en coordonnées Lambert-93 et renvoie un point en coordonnées
+     * géographiques (RGF93 ou WPS84) exprimées en degré
      *
      * @param Point $p
      * @return \SbmCartographie\Model\Point (les coordonnées du point en Lambert-93)
      */
     public function xyzVersgRGF93(Point $p)
     {
-        return $this->alg0004($p->getX(), $p->getY())
-            ->to('degré');
+        return $p->transforme($this->alg0004($p->getX(), $p->getY())
+            ->to('degré'));
     }
 }

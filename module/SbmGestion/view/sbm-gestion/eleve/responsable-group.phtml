@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\Session;
@@ -114,9 +114,9 @@ if (! empty($email)) {
 		<h1>Elèves sous la responsabilité d'une personne</h1>
 		<ul>
 			<li>
-				<?= $this->escapehtml($this->responsable->nom); ?> 
+				<?= $this->escapehtml($this->responsable->nom); ?>
 				<?= $this->escapehtml($this->responsable->prenom); ?>
-				habitant <?= $this->escapehtml($this->responsable->adresseL1); ?> 
+				habitant <?= $this->escapehtml($this->responsable->adresseL1); ?>
 				à <?= $this->escapehtml($this->responsable->commune); ?></li>
 		</ul>
 	</div>
@@ -144,7 +144,7 @@ if (! empty($email)) {
             case 'fact':
                 ?>
                       <h3>Liste des élèves ayant cette personne comme
-			responsable financier</h3>                        
+			responsable financier</h3>
 			    <?php
                 break;
         endswitch
@@ -157,9 +157,10 @@ if (! empty($email)) {
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
-					<th>Inscrit en</th>
+					<th class="centre">Inscrit<br>en</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
+					<th>Tarif</th>
 					<th>Services</th>
 					<th>Garde alternée</th>
 					<th class="centre">Réinscription<br>prévue
@@ -280,8 +281,9 @@ if (! empty($email)) {
 					<td colspan="5">Non inscrit</td>
 				<?php else : ?>
 					<td><?= $row['millesime']?></td>
-					<td><?= $row['etablissement'] . ' - ' . $row['communeEtablissement'];?></td>
+					<td><?= $row['etablissement'];?> - <?= $row['communeEtablissement'];?></td>
 					<td class="centre"><?= $row['classe'];?></td>
+					<td><?= $row['grilleTarif'];?></td>
 					<td><?= implode(' / ', $services);?></td>
 					<td><?= $this->data['fnc_ga']($key == 'resp1' ? $row['responsable2Id'] : $row['responsable1Id']);?></td>
 				<?php endif;?>

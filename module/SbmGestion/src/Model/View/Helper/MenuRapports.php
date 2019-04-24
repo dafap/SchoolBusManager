@@ -31,14 +31,12 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau dans lequel on trouve le ou les liens à afficher dans le menu pour
-     * l'option 'rapports' et le tableau $hiddens du formulaire de la barre de menu.
-     *
-     * Le tableau renvoyé a 2 clés 'hiddens' et 'content'.<ul>
-     * <li> 'hiddens' => tableau des hiddens reçu en paramètre auquel vient s'ajouter
-     * 'documentId' => libelle lorsqu'il n'y a qu'une option dans le menu</li>
-     * <li> 'content' => tableau qui peut prendre 2 formes, selon qu'il y a une ou plusieurs
-     * options dans le menu.</li></ul>
+     * Renvoie un tableau dans lequel on trouve le ou les liens à afficher dans le menu
+     * pour l'option 'rapports' et le tableau $hiddens du formulaire de la barre de menu.
+     * Le tableau renvoyé a 2 clés 'hiddens' et 'content'.<ul> <li> 'hiddens' => tableau
+     * des hiddens reçu en paramètre auquel vient s'ajouter 'documentId' => libelle
+     * lorsqu'il n'y a qu'une option dans le menu</li> <li> 'content' => tableau qui peut
+     * prendre 2 formes, selon qu'il y a une ou plusieurs options dans le menu.</li></ul>
      *
      * @param string $route
      *            url de la page où l'on doit afficher le menu
@@ -47,12 +45,11 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
      * @param string $class
      *            classe css du bouton à afficher dans la barre de menu
      * @param string $value
-     *            libellé du bouton de la barre de menu (peut être vide si on utilise une classe
-     *            fam-fam)
+     *            libellé du bouton de la barre de menu (peut être vide si on utilise une
+     *            classe fam-fam)
      * @param array $hiddens
-     *            hiddens du formulaire qui sera complété par le libellé du menu s'il n'y a qu'un
-     *            document proposé
-     *            
+     *            hiddens du formulaire qui sera complété par le libellé du menu s'il n'y
+     *            a qu'un document proposé
      * @return array Tableau de la forme ['hiddens' => [...], 'content' => [...]]
      */
     public function __invoke($route, $formaction, $class, $value = '', $hiddens = [])

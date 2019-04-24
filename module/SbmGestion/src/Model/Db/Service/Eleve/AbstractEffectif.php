@@ -2,14 +2,14 @@
 /**
  * Enregistrement d'un service de calcul d'effectifs
  *
- * Cette classe dérive de AbstractQuery et est dérivée sur l'un des trois types proposés
+ * Cette classe dérive de AbstractQuery et est dérivée sur l'un des types proposés
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -17,6 +17,7 @@ namespace SbmGestion\Model\Db\Service\Eleve;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmGestion\Model\Db\Service\AbstractQuery;
 use Zend\Db\Sql\Sql;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -43,7 +44,8 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
     protected $sql;
 
     /**
-     * Nom des tables dans la base de données (donné par la méthode DbManager::getCanonicName())
+     * Nom des tables dans la base de données (donné par la méthode
+     * DbManager::getCanonicName())
      *
      * @var array
      */
@@ -81,5 +83,89 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 'table');
         }
         return $this;
+    }
+
+
+
+    protected function getFiltreDemandes(bool $sanspreinscrits)
+    {
+        if ($sanspreinscrits) {
+            return [
+                'inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ]
+            ];
+        } else {
+            return [
+                'inscrit' => 1
+            ];
+        }
+    }
+
+    protected function getFiltreTransportes(bool $sanspreinscrits)
+    {
+        if ($sanspreinscrits) {
+            return [
+                'inscrit' => 1,
+                [
+                    'paiement' => 1,
+                    'or',
+                    'fa' => 1,
+                    'or',
+                    '>' => [
+                        'gratuit',
+                        0
+                    ]
+                ],
+                'correspondance' => 1,
+                [
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
+                    ],
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
+                ]
+            ];
+        } else {
+            return [
+                'inscrit' => 1,
+                'correspondance' => 1,
+                [
+                    [
+                        '>' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 1
+                    ],
+                    'or',
+                    [
+                        '=' => [
+                            'demandeR1',
+                            0
+                        ],
+                        'trajet' => 2
+                    ]
+                ]
+            ];
+        }
     }
 }

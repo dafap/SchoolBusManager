@@ -104,12 +104,16 @@ return [
     ],
     'sbm' => [
         'paiement' => [
-            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs') //realpath(__DIR__ . '/../../../data/logs')
+            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs') // realpath(__DIR__
+                                                                           // .
+                                                                           // '/../../../data/logs')
         ]
     ],
     'csv' => [
         'path' => [
-            'tmpuploads' => StdLib::findParentPath(__DIR__, 'data/tmpuploads') //realpath(__DIR__ . '/../../../data/')
+            'tmpuploads' => StdLib::findParentPath(__DIR__, 'data/tmpuploads') // realpath(__DIR__
+                                                                               // .
+                                                                               // '/../../../data/')
         ],
         'parameters' => [
             'firstline' => true,
@@ -123,5 +127,4 @@ return [
             __DIR__ . '/../view'
         ]
     ]
-]
-;
+];

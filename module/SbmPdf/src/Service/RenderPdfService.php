@@ -42,8 +42,8 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     private $sm;
 
     /**
-     * Tableau structuré pour créer un pdf
-     * Les méthodes de construction sont publiques (voir ci-dessous)
+     * Tableau structuré pour créer un pdf Les méthodes de construction sont publiques
+     * (voir ci-dessous)
      *
      * @var array
      */
@@ -81,12 +81,13 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     }
 
     /**
-     * Lance un évènement renderPdf avec comme `target` le PdfManager et comme `argv` la propriété
-     * $content
+     * Lance un évènement renderPdf avec comme `target` le PdfManager et comme `argv` la
+     * propriété $content
      */
     public function renderPdf()
     {
-        // on donne comme contexte de l'évènement le ServiceManager pour pouvoir l'utiliser plus
+        // on donne comme contexte de l'évènement le ServiceManager pour pouvoir
+        // l'utiliser plus
         // tard
         $this->getEventManager()->trigger('renderPdf', $this->getServiceLocator(),
             $this->content);
@@ -125,9 +126,8 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     }
 
     /**
-     * Méthode de construction de la propriété $content
-     * Définition de la clé 'data'
-     * Nom référencé de la source de données (table, vue, ...) dans le ServiceManager
+     * Méthode de construction de la propriété $content Définition de la clé 'data' Nom
+     * référencé de la source de données (table, vue, ...) dans le ServiceManager
      *
      * @param string $data
      *            C'est le nom référencé de la source de données (table, vue, ...)
@@ -145,13 +145,11 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     }
 
     /**
-     * Méthode de construction de la propriété $content
-     * Définition de la clé 'head'
-     * Noms des colonnes
+     * Méthode de construction de la propriété $content Définition de la clé 'head' Noms
+     * des colonnes
      *
      * @param array $head
      *            Liste des noms de colonnes
-     *            
      * @return \SbmPdf\Service\RenderPdfService
      */
     public function setHead(array $head = [])
@@ -161,13 +159,11 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     }
 
     /**
-     * Méthode de construction de la propriété $content
-     * Définition de la clé 'pdf_config'
+     * Méthode de construction de la propriété $content Définition de la clé 'pdf_config'
      * Valeurs propres à ce document
      *
      * @param array $config
      *            Tableau de configuration du pdf qui surcharge les valeurs par défaut
-     *            
      * @return \SbmPdf\Service\RenderPdfService
      */
     public function setPdfConfig($config = [])
@@ -177,9 +173,8 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     }
 
     /**
-     * Méthode de construction de la propriété $content
-     * Définition de la clé 'table_config'
-     * Description de la mise en forme des données dans le tableau
+     * Méthode de construction de la propriété $content Définition de la clé
+     * 'table_config' Description de la mise en forme des données dans le tableau
      *
      * @param array $config
      * @return \SbmPdf\Service\RenderPdfService

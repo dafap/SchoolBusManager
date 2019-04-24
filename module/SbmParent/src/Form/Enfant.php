@@ -12,7 +12,7 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 22 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
@@ -72,10 +72,6 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         ]);
         $this->add([
             'type' => 'hidden',
-            'name' => 'regimeId'
-        ]);
-        $this->add([
-            'type' => 'hidden',
             'name' => 'organismeId'
         ]);
         $this->add(
@@ -85,6 +81,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_nom',
                     'autofocus' => 'autofocus',
+                    'tabindex' => 1,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -103,6 +100,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'prenom',
                 'attributes' => [
                     'id' => 'enfant_prenom',
+                    'tabindex' => 11,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -117,10 +115,34 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'sexe',
+                'attributes' => [
+                    'id' => 'eleve-sexe',
+                    'tabindex' => 31
+                ],
+                'options' => [
+                    'label' => 'Sexe',
+                    'label_options' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel sexe ?',
+                    'value_options' => [
+                        1 => 'masculin',
+                        2 => 'féminin'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'type' => 'SbmCommun\Form\Element\NomPropre',
                 'name' => 'chez',
                 'attributes' => [
                     'id' => 'enfant_chez',
+                    'tabindex' => 41,
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
@@ -139,6 +161,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'SbmCommun\Form\Element\Adresse',
                 'attributes' => [
                     'id' => 'enfant_adresseEleveL1',
+                    'tabindex' => 42,
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
@@ -157,6 +180,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'SbmCommun\Form\Element\Adresse',
                 'attributes' => [
                     'id' => 'enfant_adresseEleveL2',
+
+                    'tabindex' => 43,
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
@@ -175,6 +200,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'SbmCommun\Form\Element\CodePostal',
                 'attributes' => [
                     'id' => 'enfant_codePostalEleve',
+                    'tabindex' => 44,
                     'class' => 'sbm-width-5c'
                 ],
                 'options' => [
@@ -193,6 +219,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
                     'id' => 'enfant_communeEleveId',
+                    'tabindex' => 45,
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
@@ -212,6 +239,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'dateN',
                 'attributes' => [
                     'id' => 'enfant_dateN',
+                    'tabindex' => 21,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -234,6 +262,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'etablissementId',
                 'attributes' => [
                     'id' => 'enfant_etablissementId',
+                    'tabindex' => 61,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -253,6 +282,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'classeId',
                 'attributes' => [
                     'id' => 'enfant_classeId',
+                    'tabindex' => 71,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -268,10 +298,50 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'regimeId',
+                'attributes' => [
+                    'tabindex' => 81
+                ],
+                'options' => [
+                    'label' => 'Régime',
+                    'label_attributes' => [
+                        'class' => 'sbm-radio regime'
+                    ],
+                    'value_options' => [
+                        [
+                            'value' => '0',
+                            'attributes' => [
+                                'id' => 'regimeidradio0dp'
+                            ],
+                            'label' => 'DP',
+                            'label_attributes' => [
+                                'class' => 'sbm-radio-label dp'
+                            ]
+                        ],
+                        [
+                            'value' => '1',
+                            'attributes' => [
+                                'id' => 'regimeidradio1in'
+                            ],
+                            'label' => 'interne',
+                            'label_attributes' => [
+                                'class' => 'sbm-radio-label interne'
+                            ]
+                        ]
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'type' => 'Zend\Form\Element\MultiCheckbox',
                 'name' => 'joursTransport',
                 'attributes' => [
                     'id' => 'enfant_joursTransport',
+                    'tabindex' => 51,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
@@ -290,6 +360,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'ap',
                 'attributes' => [
                     'id' => 'btnradioap',
+                    'tabindex' => 54,
                     'class' => 'sbmparent-enfant',
                     'value' => '0'
                 ],
@@ -323,6 +394,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'btnradioga',
                     'class' => 'sbmparent-enfant',
+                    'tabindex' => 84,
                     'value' => '0'
                 ],
                 'options' => [
@@ -355,6 +427,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'btnradiofa',
                     'class' => 'sbmparent-enfant',
+                    'tabindex' => 58,
                     'value' => '0'
                 ],
                 'options' => [
@@ -408,7 +481,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Textarea',
                 'name' => 'commentaire',
                 'attributes' => [
-                    'id' => 'enfant_commentaire'
+                    'id' => 'enfant_commentaire',
+                    'tabindex' => 300
                 ],
                 'options' => [
                     'label' => 'Commentaires à transmettre au service transport',
@@ -428,6 +502,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'value' => 'Enregistrer',
                     'id' => 'enfant_submit',
+                    'tabindex' => 310,
                     'class' => 'button default submit'
                 ]
             ]);
@@ -438,6 +513,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'value' => 'Abandonner',
                     'id' => 'enfant_cancel',
+                    'tabindex' => 320,
                     'class' => 'button default cancel'
                 ]
             ]);
@@ -559,16 +635,15 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
     }
 
     /**
-     * Traitement de l'élément 'joursTransport' dans les données reçues avant de charger le
-     * formulaire
-     *
-     * (non-PHPdoc)
+     * Traitement de l'élément 'joursTransport' dans les données reçues avant de charger
+     * le formulaire (non-PHPdoc)
      *
      * @see \Zend\Form\Form::setData()
      */
     public function setData($data)
     {
-        if (is_array($data) && array_key_exists('joursTransport', $data) &&
+        if ((is_array($data) || $data instanceof \ArrayObject) &&
+            array_key_exists('joursTransport', $data) &&
             ! is_array($data['joursTransport'])) {
             $strategie = new Semaine();
             $data['joursTransport'] = $strategie->hydrate($data['joursTransport']);

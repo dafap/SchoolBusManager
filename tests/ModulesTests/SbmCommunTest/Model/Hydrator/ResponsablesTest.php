@@ -44,14 +44,13 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
                 'nom2SA',
                 'prenom2SA'
             ]);
-        $object->setCalculateFields(
-            [
-                'nomSA',
-                'prenomSA',
-                'nom2SA',
-                'prenom2SA'
-            ]);
-        
+        $object->setCalculateFields([
+            'nomSA',
+            'prenomSA',
+            'nom2SA',
+            'prenom2SA'
+        ]);
+
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
         $this->assertArrayHasKey('nomSA', $data);
@@ -75,17 +74,15 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
     public function testDataCreation()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'nom' => 'Tartempion',
-                'prenom' => 'Marius'
-            ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateCreation'
-            ]);
+        $object->exchangeArray([
+            'nom' => 'Tartempion',
+            'prenom' => 'Marius'
+        ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateCreation'
+        ]);
         $object->addCalculateField('dateCreation');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -99,17 +96,15 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
     public function testDateModification()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'nom' => 'Tartempion',
-                'prenom' => 'Marius'
-            ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateModification'
-            ]);
+        $object->exchangeArray([
+            'nom' => 'Tartempion',
+            'prenom' => 'Marius'
+        ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -130,12 +125,11 @@ class ResponsablesTest extends PHPUnit_Framework_TestCase
                 'prenom' => 'Marius',
                 'dateModification' => $ancienne_date
             ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateModification'
-            ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);

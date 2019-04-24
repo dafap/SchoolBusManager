@@ -28,9 +28,9 @@ class StdLibTest extends TestCase
             $name = end($parts);
         } while ($name != 'tests');
         $base_path = dirname($dir);
-        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'module', 
+        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'module',
             StdLib::findParentPath(__DIR__, 'module'));
-        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'config/autoload', 
+        $this->assertEquals($base_path . DIRECTORY_SEPARATOR . 'config/autoload',
             StdLib::findParentPath(__DIR__, 'config/autoload'));
     }
 
@@ -41,17 +41,17 @@ class StdLibTest extends TestCase
         $entityType = 'table';
         $expected = 'azerty_t_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une table avec préfixe.');
         $entityType = 'system';
         $expected = 'azerty_s_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une table système avec préfixe.');
         $entityType = 'vue';
         $expected = 'azerty_v_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une vue avec préfixe.');
         // sans préfixe
         $prefix = '';
@@ -59,17 +59,17 @@ class StdLibTest extends TestCase
         $entityType = 'table';
         $expected = 't_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une table sans préfixe.');
         $entityType = 'system';
         $expected = 's_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une table système sans préfixe.');
         $entityType = 'vue';
         $expected = 'v_baz';
         $actual = StdLib::entityName($entityName, $entityType, $prefix);
-        $this->assertEquals($expected, $actual, 
+        $this->assertEquals($expected, $actual,
             'Le calcul du nom est faux pour une vue sans préfixe.');
     }
 
@@ -82,17 +82,15 @@ class StdLibTest extends TestCase
                 'baz' => null
             ]
         ];
-        $this->assertTrue(
-            StdLib::array_keys_exists([
-                'foo',
-                'baz'
-            ], $search));
+        $this->assertTrue(StdLib::array_keys_exists([
+            'foo',
+            'baz'
+        ], $search));
         // arguments corrects, réponse false
-        $this->assertFalse(
-            StdLib::array_keys_exists([
-                'foo',
-                'goz'
-            ], $search));
+        $this->assertFalse(StdLib::array_keys_exists([
+            'foo',
+            'goz'
+        ], $search));
         // argument key incorrect
         try {
             $result = StdLib::array_keys_exists('foo', $search);
@@ -101,11 +99,10 @@ class StdLibTest extends TestCase
             $this->assertInstanceOf(Exception::class, $e, 'Exception d\'un mauvais type.');
         }
         // argument search incorrect
-        $this->assertFalse(
-            StdLib::array_keys_exists([
-                'foo',
-                'goz'
-            ], null));
+        $this->assertFalse(StdLib::array_keys_exists([
+            'foo',
+            'goz'
+        ], null));
     }
 
     /**
@@ -184,7 +181,7 @@ class StdLibTest extends TestCase
             $result = StdLib::getParam('foo', $array, 'baz');
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // Param n'est pas une chaine ou un nombre
@@ -196,17 +193,16 @@ class StdLibTest extends TestCase
             $result = StdLib::getParam(null, $array, 'baz');
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
     }
 
     /**
-     * Si le premier paramètre ($index) n'est pas un tableau, on appelle getParam déjà testé.
-     * Il reste les cas suivants :
-     * - le premier paramètre est un tableau de clés
-     * - l'un des éléments du tableau d'index n'est pas une clé du tableau
-     * - le second paramètre ($array) n'est pas un tableau
+     * Si le premier paramètre ($index) n'est pas un tableau, on appelle getParam déjà
+     * testé. Il reste les cas suivants : - le premier paramètre est un tableau de clés -
+     * l'un des éléments du tableau d'index n'est pas une clé du tableau - le second
+     * paramètre ($array) n'est pas un tableau
      */
     public function testGetParamR()
     {
@@ -220,12 +216,11 @@ class StdLibTest extends TestCase
             ]
         ];
         try {
-            $result = StdLib::getParamR(
-                [
-                    'foo',
-                    'baz',
-                    'bar'
-                ], $array);
+            $result = StdLib::getParamR([
+                'foo',
+                'baz',
+                'bar'
+            ], $array);
             $this->assertEquals('value', $result);
         } catch (\Exception $e) {
             $this->assertFalse('true', 'Ne devrait pas provoquer une exception.');
@@ -240,12 +235,11 @@ class StdLibTest extends TestCase
             ]
         ];
         try {
-            $result = StdLib::getParamR(
-                [
-                    'foo',
-                    'juz',
-                    'bar'
-                ], $array, 'default');
+            $result = StdLib::getParamR([
+                'foo',
+                'juz',
+                'bar'
+            ], $array, 'default');
             $this->assertEquals('default', $result);
         } catch (\Exception $e) {
             $this->assertFalse('true', 'Ne devrait pas provoquer une exception.');
@@ -253,14 +247,13 @@ class StdLibTest extends TestCase
         // cas n°3 : lance une exception
         $array = null;
         try {
-            $result = StdLib::getParam(
-                [
-                    'foo',
-                    'guz'
-                ], $array, 'baz');
+            $result = StdLib::getParam([
+                'foo',
+                'guz'
+            ], $array, 'baz');
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // cas n°4 : appelle getParam
@@ -277,7 +270,7 @@ class StdLibTest extends TestCase
             $result = StdLib::getParamR('foo', $array);
             $this->assertSame($sub, $result);
         } catch (\Exception $e) {
-            $this->assertFalse('true', 
+            $this->assertFalse('true',
                 'Ne devrait pas provoquer une exception à ce niveau.');
         }
     }
@@ -289,14 +282,14 @@ class StdLibTest extends TestCase
             $result = StdLib::concatPath(null, 'aerty');
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         try {
             $result = StdLib::concatPath('aerty', 0);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // cas n° 3 : $file commence par //
@@ -305,10 +298,11 @@ class StdLibTest extends TestCase
             $result = StdLib::concatPath('aerty', $file);
             $this->assertEquals($file, $result);
         } catch (\Exception $e) {
-            $this->assertFalse('true', 
+            $this->assertFalse('true',
                 'Ne devrait pas provoquer une exception à ce niveau.');
         }
-        // cas n° 4 : concaténation en remplaçant les \ par des / et en évitant les doubles //
+        // cas n° 4 : concaténation en remplaçant les \ par des / et en évitant les
+        // doubles //
         try {
             $path = '\\azerty' . DIRECTORY_SEPARATOR;
             $file = '/qs//dfg.sdf';
@@ -381,7 +375,7 @@ class StdLibTest extends TestCase
             true => 'valeur2'
         ];
         $this->assertSame($expected, StdLib::getArrayFromString($str));
-        
+
         // une chaine contenant au moins une virgule
         $str = "Une chaine assez simple, mais j'ai une virgule";
         $expected = [
@@ -407,7 +401,7 @@ class StdLibTest extends TestCase
             $result = StdLib::getArrayFromString($str);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // tableau
@@ -419,7 +413,7 @@ class StdLibTest extends TestCase
             $result = StdLib::getArrayFromString($str);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
     }
@@ -457,7 +451,7 @@ class StdLibTest extends TestCase
             $result = StdLib::translateData($data, $array);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // objet
@@ -466,7 +460,7 @@ class StdLibTest extends TestCase
             $result = StdLib::translateData($data, $array);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
     }
@@ -504,7 +498,7 @@ class StdLibTest extends TestCase
             $result = StdLib::formatData($data, - 1, 20);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         $data = new \StdClass();
@@ -512,7 +506,7 @@ class StdLibTest extends TestCase
             $result = StdLib::formatData($data, - 1, 20);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
     }
@@ -525,7 +519,7 @@ class StdLibTest extends TestCase
             $result = StdLib::isIndexedArray($data);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         $data = 12;
@@ -533,7 +527,7 @@ class StdLibTest extends TestCase
             $result = StdLib::isIndexedArray($data);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         $data = 'azerty';
@@ -541,7 +535,7 @@ class StdLibTest extends TestCase
             $result = StdLib::isIndexedArray($data);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         $data = new \StdClass();
@@ -549,7 +543,7 @@ class StdLibTest extends TestCase
             $result = StdLib::isIndexedArray($data);
             $this->assertFalse('true', 'Aurait du provoquer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(Exception::class, $e, 
+            $this->assertInstanceOf(Exception::class, $e,
                 'On a reçu une exception d\'un mauvais type.');
         }
         // un tableau indexé

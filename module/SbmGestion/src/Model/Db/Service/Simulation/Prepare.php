@@ -48,8 +48,8 @@ class Prepare implements FactoryInterface
     private $classeIds = [];
 
     /**
-     * Liste des eleveId à reprendre pour les affectations.
-     * Cette liste est remplie par la méthode duplicateScolarites()
+     * Liste des eleveId à reprendre pour les affectations. Cette liste est remplie par la
+     * méthode duplicateScolarites()
      *
      * @var int[]
      */
@@ -94,8 +94,7 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Initialise la propriété classeIds.
-     * Appelée par la méthode duplicateScolarites()
+     * Initialise la propriété classeIds. Appelée par la méthode duplicateScolarites()
      */
     private function setClasseIds()
     {
@@ -110,15 +109,14 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Cette méthode duplique les circuits du millesime source dans le millésime cible
-     * à condition que le millésime cible soit vide.
+     * Cette méthode duplique les circuits du millesime source dans le millésime cible à
+     * condition que le millésime cible soit vide.
      *
      *
      * @param int $source
      *            millésime source
      * @param int $cible
      *            millésime cible
-     *            
      * @return \SbmGestion\Model\Db\Service\Simulation\Prepare
      */
     public function duplicateCircuits($source, $cible)
@@ -138,12 +136,11 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Cette méthode est appelée par la méthode duplicateEleves().
-     * Elle duplique la scolarité des élèves à reprendre à condition que les scolarites
-     * du millésime cible soit vide.
-     * Cette méthode construit le tableau enregistré dans la propriété eleveIds des
-     * eleveId à prendre en compte dans la reprise des affectations (lorsqu'il n'y a pas
-     * de changement d'établissement).
+     * Cette méthode est appelée par la méthode duplicateEleves(). Elle duplique la
+     * scolarité des élèves à reprendre à condition que les scolarites du millésime cible
+     * soit vide. Cette méthode construit le tableau enregistré dans la propriété eleveIds
+     * des eleveId à prendre en compte dans la reprise des affectations (lorsqu'il n'y a
+     * pas de changement d'établissement).
      *
      * @param int $source
      *            millésime source
@@ -170,18 +167,21 @@ class Prepare implements FactoryInterface
                 $scolarite->classeId = $this->classeIds[$classeOrigineId];
                 try {
                     // cas particulier : pas de changement de niveau ou établissement
-                    // en RPI ou correspondance précisée dans la table simulation-etablissements
+                    // en RPI ou correspondance précisée dans la table
+                    // simulation-etablissements
                     $scolarite->etablissementId = $this->nouvelEtablissementId(
                         $etablissementOrigineId, $classeOrigineId, $scolarite->classeId);
                 } catch (DbException\ExceptionInterface $e) {
                     // cas général
                     if ($this->niveauClasse == Niveau::CODE_NIVEAU_PREMIER_CYCLE) {
-                        // secteur scolaire collège (table des secteurs scolaire de clg pu)
+                        // secteur scolaire collège (table des secteurs scolaire de clg
+                        // pu)
                         $secteur = new SectorisationCollege($this->db_manager,
                             $scolarite->eleveId);
                         $scolarite->etablissementId = $secteur->getEtablissementId();
                     } elseif ($this->niveauClasse == Niveau::CODE_NIVEAU_SECOND_CYCLE) {
-                        // secteur scolaire lycée (ici, un seul lycée marqué secteur scolaire)
+                        // secteur scolaire lycée (ici, un seul lycée marqué secteur
+                        // scolaire)
                         $secteur = new SectorisationLycee($this->db_manager);
                         $scolarite->etablissementId = $secteur->getEtablissementId();
                     }
@@ -207,21 +207,17 @@ class Prepare implements FactoryInterface
 
     /**
      * Renvoie le bon etablissementId en fonction de la nouvelle classe.
-     *
-     * Les règles sont :
-     * - etablissement d'origine en RPI
-     * - pas de changement de niveau
-     * - règle inscrite dans la table 'simulation-etablissements'
-     * Ne traite pas le cas des secteurs scolaires de collège et de lycée qui dépendent
-     * de la commune de résidence. Dans ce cas une DbTableException est lancée et on retrouvera
-     * le niveau de la classe suivante dans la propriété niveauClasse.
+     * Les règles sont : - etablissement d'origine en RPI - pas de changement de niveau -
+     * règle inscrite dans la table 'simulation-etablissements' Ne traite pas le cas des
+     * secteurs scolaires de collège et de lycée qui dépendent de la commune de résidence.
+     * Dans ce cas une DbTableException est lancée et on retrouvera le niveau de la classe
+     * suivante dans la propriété niveauClasse.
      *
      * @param string $etablissementOrigineId
      * @param int $classeOrigineId
      * @param int $classeSuivanteId
      *
      * @return string : le bon etablissementId
-     *        
      * @throws \SbmGestion\Model\Db\Service\Simulation\Exception
      * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException (par
      *         getEtablissementSuivantByTable)
@@ -262,14 +258,14 @@ class Prepare implements FactoryInterface
 
     /**
      * Renvoie l'identifiant de l'établissement suivant lorsque la règle de correspondance
-     * est inscrite dans la table simulation-etablissements.
-     * Sinon, lance une DbException.
+     * est inscrite dans la table simulation-etablissements. Sinon, lance une DbException.
      *
      * @param string $etablissementOrigineId
      *
      * @return string
      *
-     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException (par getRecord())
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException (par
+     *         getRecord())
      */
     private function getEtablissementSuivantByTable($etablissementOrigineId)
     {
@@ -281,8 +277,8 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Indique si le niveau de classe a changé et affecte la propriété niveauClasse
-     * du niveau de la classe suivante.
+     * Indique si le niveau de classe a changé et affecte la propriété niveauClasse du
+     * niveau de la classe suivante.
      *
      * @param int $classeOrigineId
      * @param int $classeSuivanteId
@@ -301,20 +297,18 @@ class Prepare implements FactoryInterface
 
     /**
      * Renvoie le bon etablissementId en fonction de la nouvelle classe lorsque
-     * l'établissement d'origine est en RPI.
-     * Si l'établissement n'est pas en RPI, une DbException est lancée.
+     * l'établissement d'origine est en RPI. Si l'établissement n'est pas en RPI, une
+     * DbException est lancée.
      *
      * @param string $etablissementId
      *            ancien etablissementId
      * @param int $classeId
      *            nouvelle classeId
-     *            
      * @return string : le bon etablissementId (ou l'ancien si non concerné par un RPI)
-     *        
-     * @throws \SbmGestion\Model\Db\Service\Simulation\Exception pour une mauvaise configuration du
-     *         RPI
-     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException pour un établissement
-     *         qui n'est pas en RPI
+     * @throws \SbmGestion\Model\Db\Service\Simulation\Exception pour une mauvaise
+     *         configuration du RPI
+     * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException pour un
+     *         établissement qui n'est pas en RPI
      */
     private function etablissementEnRpi($etablissementId, $classeId)
     {
@@ -354,14 +348,12 @@ class Prepare implements FactoryInterface
 
     /**
      * Cette méthode cette méthode duplique les informations dans les tables scolarites et
-     * affectations
-     * à condition que les affectations du millésime cible soit vide.
+     * affectations à condition que les affectations du millésime cible soit vide.
      *
      * @param int $source
      *            millésime source
      * @param int $cible
      *            millésime cible
-     *            
      * @return \SbmGestion\Model\Db\Service\Simulation\Prepare
      */
     public function duplicateEleves($source, $cible)

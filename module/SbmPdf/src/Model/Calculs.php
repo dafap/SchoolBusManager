@@ -71,8 +71,8 @@ class Calculs
      * @param array $data
      *            Le tableau data est constitué de lignes et de colonnes
      * @param int $arg_default
-     *            Colonne sur laquelle porteront les calculs si elle n'est pas précisée dans la
-     *            chaine
+     *            Colonne sur laquelle porteront les calculs si elle n'est pas précisée
+     *            dans la chaine
      */
     public function __construct($data, $arg_default = 1)
     {
@@ -91,14 +91,13 @@ class Calculs
     }
 
     /**
-     * Initialise la première et la dernière ligne à prendre en compte dans le tableau des data
-     * pour les calculs et vide le buffer des résultats.
-     * Sans paramètre, tout le tableau des data sera pris en compte de la première à la dernière
-     * ligne.
-     * Si le second paramètre est null ou s'il est supérieur à la taille du tableau des data il
+     * Initialise la première et la dernière ligne à prendre en compte dans le tableau des
+     * data pour les calculs et vide le buffer des résultats. Sans paramètre, tout le
+     * tableau des data sera pris en compte de la première à la dernière ligne. Si le
+     * second paramètre est null ou s'il est supérieur à la taille du tableau des data il
      * sera initialisé à la dernière ligne du tableau des data
-     *
-     * Si les paramètres debut et fin sont inchangés, il n'y a pas de reset du buffer des résultats
+     * Si les paramètres debut et fin sont inchangés, il n'y a pas de reset du buffer des
+     * résultats
      *
      * @param number $debut
      * @param number|null $fin
@@ -141,9 +140,9 @@ class Calculs
     }
 
     /**
-     * Contrôle si le nombre de parenthèses de l'expression est cohérent et renvoie l'expression
-     * après avoir remplacé les
-     * parenthèses de premier niveau par des accolades.
+     * Contrôle si le nombre de parenthèses de l'expression est cohérent et renvoie
+     * l'expression après avoir remplacé les parenthèses de premier niveau par des
+     * accolades.
      *
      * @param string $expression
      * @throws \Exception si l'expression est mal parenthésée
@@ -180,7 +179,6 @@ class Calculs
      *
      * @param string $s
      *            Chaine modèle contenant les mots clés
-     *            
      * @return string
      */
     public function getResultat($s)
@@ -292,11 +290,11 @@ class Calculs
     }
 
     /**
-     * Renvoie la somme de la colonne précisée dans l'intervalle fixé par la méthode range.
+     * Renvoie la somme de la colonne précisée dans l'intervalle fixé par la méthode
+     * range.
      *
      * @param int $column
      *            Numéro de la colonne en partant de 1
-     *            
      * @return number Somme
      */
     public function somme($column)
@@ -320,11 +318,11 @@ class Calculs
     }
 
     /**
-     * Renvoie la moyenne de la colonne précisée dans l'intervalle fixé par la méthode range.
+     * Renvoie la moyenne de la colonne précisée dans l'intervalle fixé par la méthode
+     * range.
      *
      * @param int $column
      *            Numéro de la colonne en partant de 1
-     *            
      * @return number Moyenne
      */
     public function moyenne($column)
@@ -333,12 +331,11 @@ class Calculs
     }
 
     /**
-     * Renvoie la plus grande valeur de la colonne précisée dans l'intervalle fixé par la méthode
-     * range.
+     * Renvoie la plus grande valeur de la colonne précisée dans l'intervalle fixé par la
+     * méthode range.
      *
      * @param int $column
      *            Numéro de la colonne en partant de 1
-     *            
      * @return number Max
      */
     public function max($column)
@@ -358,12 +355,11 @@ class Calculs
     }
 
     /**
-     * Renvoie la plus petite valeur de la colonne précisée dans l'intervalle fixé par la méthode
-     * range.
+     * Renvoie la plus petite valeur de la colonne précisée dans l'intervalle fixé par la
+     * méthode range.
      *
      * @param int $column
      *            Numéro de la colonne en partant de 1
-     *            
      * @return number Min
      */
     public function min($column)

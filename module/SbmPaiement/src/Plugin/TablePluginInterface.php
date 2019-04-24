@@ -27,17 +27,17 @@ interface TablePluginInterface
     public function getIdName();
 
     /**
-     * Renvoie un tableau de définition des éléments du formulaire de critères pour la page
-     * paiement/liste
+     * Renvoie un tableau de définition des éléments du formulaire de critères pour la
+     * page paiement/liste
      *
      * @return array
      */
     public function criteres();
 
     /**
-     * Modifie le Where créé par la méthode initListe() afin de tenir compte des formats imposés
-     * par la plateforme de paiement.
-     * Cette méthode peut être vide si rien n'est nécessaire.
+     * Modifie le Where créé par la méthode initListe() afin de tenir compte des formats
+     * imposés par la plateforme de paiement. Cette méthode peut être vide si rien n'est
+     * nécessaire.
      *
      * @param Where $where
      */

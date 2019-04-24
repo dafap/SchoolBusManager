@@ -3,13 +3,13 @@
  * Lambert zone 1 à 4
  *
  * Projection Lambert Connique Conforme Tangente
- * 
+ *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Projection
  * @filesource LambertNTF4zones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2018
+ * @date 8 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
@@ -74,12 +74,11 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
     }
 
     /**
-     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degrés et renvoie
-     * un point en coordonnées de la zone
+     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degrés
+     * et renvoie un point en coordonnées de la zone
      *
      * @param Point $p
      *            longitude et latitude exprimées en degrés
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function gRGF93versXYZ(Point $point)
@@ -87,8 +86,7 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         // change de projection
         $proj = new Lambert93();
         // passe en coordonnées cartésiennes
-        $pt = $proj->alg0009($point->getLongitude('radian'),
-            $point->getLatitude('radian'));
+        $pt = $proj->alg0009($point->getLongitude('radian'), $point->getLatitude('radian'));
         // applique la transformation 7 paramètres inverse (dont 4 nuls)
         $pt = $this->alg0013($pt, - $this->paramsToWgs84[0], - $this->paramsToWgs84[1],
             - $this->paramsToWgs84[2]);
@@ -96,15 +94,17 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         $pt = $this->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
             ->to('grade');
         // passe en coordonnées XYZ
-        return $this->alg0003($pt->getLongitude('radian'), $pt->getLatitude('radian'));
+        return $point->transforme(
+            $this->alg0003($pt->getLongitude('radian'), $pt->getLatitude('radian')));
     }
 
     /**
-     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées géographiques
-     * (RGF93 ou WPS84) exprimées en degrés
+     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées
+     * géographiques (RGF93 ou WPS84) exprimées en degrés
      *
      * @param Point $p
-     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en degrés)
+     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en
+     *         degrés)
      */
     public function xyzVersgRGF93(Point $point)
     {
@@ -118,36 +118,38 @@ class LambertNTF4zones extends AbstractProjection implements ProjectionInterface
         // change de projection
         $proj = new Lambert93();
         // passe en coordonnée géographiques RGF93
-        return $proj->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
-            ->to('degré');
+        return $point->transforme(
+            $proj->alg0012($pt->getX(), $pt->getY(), $pt->getZ())
+                ->to('degré'));
     }
 
     /**
-     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées géographiques
-     * (NTF) exprimées en grades
+     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées
+     * géographiques (NTF) exprimées en grades
      *
      * @param Point $p
-     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en grades)
+     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en
+     *         grades)
      */
     public function xyzVersgNTF(Point $point)
     {
-        return $this->alg0004($point->getX(), $point->getY())
-            ->to('grade');
+        return $point->transforme(
+            $this->alg0004($point->getX(), $point->getY())
+                ->to('grade'));
     }
 
     /**
-     * Reçoit un point en coordonnées géographiques (NTF) exprimées en grades et renvoie un point
-     * en coordonnées de la zone
+     * Reçoit un point en coordonnées géographiques (NTF) exprimées en grades et renvoie
+     * un point en coordonnées de la zone
      *
      * @param Point $p
      *            longitude et latitude exprimées en grades
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function gNTFversXYZ(Point $point)
     {
-        return $this->alg0003($point->getLongitude('radian'),
-            $point->getLatitude('radian'));
+        return $point->transforme(
+            $this->alg0003($point->getLongitude('radian'), $point->getLatitude('radian')));
         ;
     }
 }

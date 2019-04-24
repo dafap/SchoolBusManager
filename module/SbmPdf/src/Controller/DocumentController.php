@@ -3,13 +3,13 @@
  * Controller des documents particuliers
  *
  * Ces documents sont définis à partir de templates html : une action par document
- * 
+ *
  * @project sbm
  * @package SbmPdf/Controller
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 fév. 2019
+ * @date 23 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
@@ -31,14 +31,15 @@ class DocumentController extends AbstractActionController
     private $categorie;
 
     public function indexAction()
-    {}
+    {
+    }
 
     private function init($sessionNameSpace)
-    {}
+    {
+    }
 
     /**
      * Action pour générer les horaires au format pdf
-     *
      * Reçoit éventuellement en post un 'serviceId'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
@@ -105,7 +106,7 @@ class DocumentController extends AbstractActionController
                         ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->lotId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -126,7 +127,7 @@ class DocumentController extends AbstractActionController
                         ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->lotId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -144,7 +145,7 @@ class DocumentController extends AbstractActionController
                     $services = [];
                     $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll();
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->lotId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -172,7 +173,8 @@ class DocumentController extends AbstractActionController
         if (! empty($services)) {
             asort($services);
         }
-        // ici, $services contient les 'serviceId' dont on veut obtenir les horaires (tableau
+        // ici, $services contient les 'serviceId' dont on veut obtenir les horaires
+        // (tableau
         // indexé ordonné)
         $qCircuits = $this->db_manager->get('Sbm\Db\Query\Circuits');
         $qListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
@@ -209,7 +211,7 @@ class DocumentController extends AbstractActionController
     private function detailHoraireArret($arret, $qListe, $millesime)
     {
         // pour les parents, on ne montre que les inscrits
-        $liste = $qListe->query($millesime,
+        $liste = $qListe->queryGroup($millesime,
             FiltreEleve::byCircuit($arret['serviceId'], $arret['stationId'],
                 $this->categorie == 1), [
                 'nom',
@@ -267,7 +269,8 @@ class DocumentController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas
         // de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);

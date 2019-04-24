@@ -94,8 +94,10 @@ abstract class AbstractListener
      *
      * @return Logger
      *
-     * @throws \Zend\Log\Exception\InvalidArgumentException if message can't be cast to string
-     * @throws \Zend\Log\Exception\InvalidArgumentException if extra can't be iterated over
+     * @throws \Zend\Log\Exception\InvalidArgumentException if message can't be cast to
+     *         string
+     * @throws \Zend\Log\Exception\InvalidArgumentException if extra can't be iterated
+     *         over
      * @throws \Zend\Log\Exception\RuntimeException if no log writer specified
      */
     protected function log($priority, $message, $extra = [])

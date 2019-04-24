@@ -2,7 +2,7 @@
 /**
  * Page de création d'un lien entre un établissement et un service
  * (le service desservant l'établissement)
- * 
+ *
  * Voici les variables définies dans cette vue:
  * $origine         : prend l'une des valeurs 'etablissement-service' ou 'service-etablissement'
  * $etablissementId : null ou identifiant d'un établissement
@@ -18,7 +18,7 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -63,23 +63,23 @@ if ($this->origine == 'service-etablissement') {
 	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form);?>
     	<fieldset class="sbm-page1">
-		
+
         <?= $this->formHidden($this->form->get('origine'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
         <?php if ($this->origine == 'service-etablissement') :?>
             <?= $this->formHidden($this->form->get('serviceId'));?>
-            <div id="etablissement-service-ajout-etablissementId"
+            <div id="wrapper-etablissementId"
 				class="row-inner ajout">
             	<?= $this->formRow($this->form->get('etablissementId'));?>
             </div>
         <?php else :?>
             <?= $this->formHidden($this->form->get('etablissementId'));?>
-            <div id="etablissement-service-ajout-serviceId"
+            <div id="wrapper-serviceId"
 				class="row-inner ajout">' .
             	<?= $this->formRow($this->form->get('serviceId'));?>
             </div>
         <?php endif;?>
-    		<div id="etablissement-service-ajout-stationId"
+    		<div id="wrapper-stationId"
 				class="row-inner ajout">
         		<?= $this->formRow($this->form->get('stationId'));?>
         		<p class="sbm-description">Commencez par choisir <?= $description1;?><br>Si
@@ -87,7 +87,7 @@ if ($this->origine == 'service-etablissement') {
 					le circuit que vous avez choisi.
 				</p>
 			</div>
-			<div id="classe-ajout-buttons" class="row-inner ajout">
+			<div id="wrapper-buttons" class="row-inner ajout">
     			<?= $this->formSubmit($this->form->get('submit'));?>
     			<?= $this->formSubmit($this->form->get('cancel'));?>
     		</div>

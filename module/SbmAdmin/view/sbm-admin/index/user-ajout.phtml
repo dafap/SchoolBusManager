@@ -3,13 +3,13 @@
  * Page de création d'un user
  *
  * Destiné à l'administrateur
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource user-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -41,24 +41,28 @@ $actions = [
     	<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset id="user" class="page1">
 			<div class="clearfix">
-				<div class="float-left col1"><?= $this->formRow($this->form->get('titre'));?></div>
-				<div class="float-left colsuiv"><?= $this->formRow($this->form->get('nom'));?></div>
-				<div class="float-left colsuiv"><?= $this->formRow($this->form->get('prenom'));?></div>
+				<div id="wrapper-titre" class="float-left col1">
+					<?= $this->formRow($this->form->get('titre'));?></div>
+				<div id="wrapper-nom" class="float-left colsuiv">
+					<?= $this->formRow($this->form->get('nom'));?></div>
+				<div id="wrapper-prenom" class="float-left colsuiv">
+					<?= $this->formRow($this->form->get('prenom'));?></div>
 			</div>
-			<div class="col1">
+			<div id="wrapper-email" class="col1">
 				<?= $this->formRow($this->form->get('email'));?></div>
-			<div class="col1">
+			<div id="wrapper-categorieId" class="col1">
 				<?= $this->formRow($this->form->get('categorieId'));?></div>
-			<div class="col1">
+			<div id="wrapper-tokenalive" class="col1 top-12px">
 				<?= $this->formRow($this->form->get('tokenalive'));?></div>
-			<div class="col1">
+			<div id="wrapper-confirme" class="col1">
 				<?= $this->formRow($this->form->get('confirme'));?></div>
-			<div class="col1">
+			<div id="wrapper-active" class="col1">
 				<?= $this->formRow($this->form->get('active'));?></div>
 			<div class="col1">
 				<?= $this->formRow($this->form->get('selection'));?></div>
-			<div id="wrapper-commentaire"><?= $this->formRow($this->form->get('note'));?></div>
-			<div id="user-buttons">  
+			<div id="wrapper-commentaire">
+				<?= $this->formRow($this->form->get('note'));?></div>
+			<div id="wrapper-buttons">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

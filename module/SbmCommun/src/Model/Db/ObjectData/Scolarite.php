@@ -8,7 +8,7 @@
  * @filesource Scolarite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
+ * @date 23 avr.2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -26,9 +26,9 @@ class Scolarite extends AbstractObjectData
     }
 
     /**
-     * Renvoie vrai si l'élève a une adresse perso notée dans sa fiche scolarité.
-     * Pour cela, il doit avoir une addresseL1, un codePostal et une communeId.
-     * Il suffit donc que la référence à ces propriétés ne provoque pas une exception.
+     * Renvoie vrai si l'élève a une adresse perso notée dans sa fiche scolarité. Pour
+     * cela, il doit avoir une addresseL1, un codePostal et une communeId. Il suffit donc
+     * que la référence à ces propriétés ne provoque pas une exception.
      *
      * @return bool
      */
@@ -44,5 +44,18 @@ class Scolarite extends AbstractObjectData
             return false;
         }
     }
+
+    /**
+     * Être du district et avoir au moins un domicile à plus de 1 km de l'établissement.
+     * Si la distance est 99 c'est qu'elle n'a pas pu être calculée par GoogleMaps
+     *
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $this
+     * @return boolean
+     */
+    public function avoirDroits()
+    {
+        return $this->district == 1 &&
+            (($this->distanceR1 > 1 && $this->distanceR1 != 99) ||
+            ($this->distanceR2 > 1 && $this->distanceR2 != 99));
+    }
 }
- 

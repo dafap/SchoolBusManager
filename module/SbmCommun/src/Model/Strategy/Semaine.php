@@ -6,7 +6,7 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Strategy
  * @filesource Semaine.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 4 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Strategy;
@@ -45,14 +45,14 @@ class Semaine extends AbstractPower2
     const CODE_SEMAINE_DIMANCHE = 64;
 
     const CODE_TOUS = 127;
-    
+
     public function __construct()
     {
         $this->nombre_de_codes = self::NOMBRE_DE_CODES;
     }
 
     public function hydrate($value)
-    {        
+    {
         return parent::hydrate($value);
     }
 
@@ -61,12 +61,12 @@ class Semaine extends AbstractPower2
      *
      * @param int $value
      *            valeur à tester
-     *            
+     *
      * @return boolean
      */
     protected function valid($value)
     {
-        return array_key_exists($value, self::getJours());
+        return empty($value) || array_key_exists($value, self::getJours());
     }
 
     /**

@@ -64,8 +64,8 @@ table.eleves td.centre {
             $arrets = [];
             if ($eleve['responsable1']) {
                 $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES, 'utf-8',
-                    false);
+                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES,
+                    'utf-8', false);
                 $circuitR1 = $eleve['service1IdR1'];
                 if ($eleve['service2IdR1']) {
                     $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
@@ -79,8 +79,8 @@ table.eleves td.centre {
             }
             if ($eleve['responsable2']) {
                 $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 'utf-8',
-                    false);
+                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES,
+                    'utf-8', false);
                 $circuitR2 = $eleve['service1IdR2'];
                 if ($eleve['service2IdR2']) {
                     $circuitR2 .= '<br/>' . $eleve['service2IdR2'];

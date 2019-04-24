@@ -9,12 +9,11 @@
 
 /**
  * This autoloading setup is really more complicated than it needs to be for most
- * applications.
- * The added complexity is simply to reduce the time it takes for
- * new developers to be productive with a fresh skeleton. It allows autoloading
- * to be correctly configured, regardless of the installation method and keeps
- * the use of composer completely optional. This setup should work fine for
- * most users, however, feel free to configure autoloading however you'd like.
+ * applications. The added complexity is simply to reduce the time it takes for new
+ * developers to be productive with a fresh skeleton. It allows autoloading to be
+ * correctly configured, regardless of the installation method and keeps the use of
+ * composer completely optional. This setup should work fine for most users, however, feel
+ * free to configure autoloading however you'd like.
  */
 
 // Composer autoloading
@@ -26,7 +25,8 @@ $zf2Path = false;
 
 if (is_dir('vendor/ZF2/library')) {
     $zf2Path = 'vendor/ZF2/library';
-} elseif (getenv('ZF2_PATH')) { // Support for ZF2_PATH environment variable or git submodule
+} elseif (getenv('ZF2_PATH')) { // Support for ZF2_PATH environment variable or git
+                                // submodule
     $zf2Path = getenv('ZF2_PATH');
 } elseif (get_cfg_var('zf2_path')) { // Support for zf2_path directive value
     $zf2Path = get_cfg_var('zf2_path');

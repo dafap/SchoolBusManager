@@ -1,0 +1,59 @@
+<?php
+/**
+ * Affiche le résultat de la requête GET accounts/me
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-clever-sms/index
+ * @filesource account-info.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 avr. 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/mgc/cleversms/clever-sms.css'));
+$url_retour = $this->url('sbmservicesms', [
+    'action' => 'index',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$translate = [
+    'name' => 'Nom',
+    'lastname' => 'Prénom',
+    'email' => 'Email',
+    'telephone' => 'Téléphone',
+    'credit' => 'Crédits',
+    'date_expiration' => 'Date d\'expiration'
+];
+?>
+<h1>Informations sur le compte CleverSMS Light</h1>
+<div id='clever-sms-wrapper'>
+	<div id='clever-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+<?php if ($this->account_info->isValid()) :?>
+	<div id="clever-sms-inner">
+		<dl class='inline'>
+		<?php foreach ($this->account_info->getResponse()['account'] as $key => $value) :?>
+			<dt><?=$translate[$key];?></dt>
+			<?php if ($key == 'telephone'):?>
+			<dd><?=$this->telephone($value);?></dd>
+			<?php else:?>
+			<dd><?=$this->account_info->translate($key, $value);?></dd>
+			<?php endif;?>
+		<?php endforeach;?>
+		</dl>
+	</div>
+<?php else : ?>
+	<div id='clever-sms-footer'>
+	<?=$this->account_info->getMessage();?>
+	</div>
+<?php endif;?>
+</div>

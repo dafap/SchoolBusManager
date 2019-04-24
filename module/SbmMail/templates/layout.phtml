@@ -34,7 +34,6 @@ if (is_array($this->img_attributes)) {
 <html>
 <body>
 <?= $this->content;?>
-<img src="<?= $url_img;?>"
-		<?= implode(' ', $attributes);?>>
+<img src="<?= $url_img;?>" <?= implode(' ', $attributes);?>>
 </body>
 </html>

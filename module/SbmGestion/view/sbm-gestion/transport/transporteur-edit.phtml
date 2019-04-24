@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/transporteur-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,38 +40,38 @@ $actions = [
         <?= $this->formHidden($this->form->get('transporteurId'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="transporteur-edit-nom" class="row-inner edit">
+			<div id="wrapper-nom" class="row-inner edit">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="transporteur-edit-adresse1" class="row-inner edit">
+			<div id="wrapper-adresse1" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresse1')); ?></div>
-			<div id="transporteur-edit-adresse2" class="row-inner edit">
+			<div id="wrapper-adresse2" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresse2')); ?></div>
-			<div id="transporteur-edit-codePostal" class="row-inner edit">
+			<div id="wrapper-codePostal" class="row-inner edit">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
-			<div id="transporteur-edit-comuneId" class="row-inner edit">
+			<div id="wrapper-comuneId" class="row-inner edit">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
-			<div id="transporteur-edit-telephone" class="row-inner edit">
+			<div id="wrapper-telephone" class="row-inner edit">
 				<?= $this->formRow($this->form->get('telephone')); ?></div>
-			<div id="transporteur-edit-fax" class="row-inner edit">
+			<div id="wrapper-fax" class="row-inner edit">
 				<?= $this->formRow($this->form->get('fax')); ?></div>
-			<div id="transporteur-edit-email" class="row-inner edit">
+			<div id="wrapper-email" class="row-inner edit">
 				<?= $this->formRow($this->form->get('email')); ?></div>
-			<div id="transporteur-edit-siret" class="row-inner edit">
+			<div id="wrapper-siret" class="row-inner edit">
 				<?= $this->formRow($this->form->get('siret')); ?></div>
-			<div id="transporteur-edit-naf" class="row-inner edit">
+			<div id="wrapper-naf" class="row-inner edit">
 				<?= $this->formRow($this->form->get('naf')); ?></div>
-			<div id="transporteur-edit-tvaIntraCommunautaire"
+			<div id="wrapper-tvaIntraCommunautaire"
 				class="row-inner edit">
 				<?= $this->formRow($this->form->get('tvaIntraCommunautaire')); ?></div>
-			<div id="transporteur-edit-rib_titulaire" class="row-inner edit">
+			<div id="wrapper-rib_titulaire" class="row-inner edit">
 				<?= $this->formRow($this->form->get('rib_titulaire')); ?></div>
-			<div id="transporteur-edit-rib_domiciliation" class="row-inner edit">
+			<div id="wrapper-rib_domiciliation" class="row-inner edit">
 				<?= $this->formRow($this->form->get('rib_domiciliation')); ?></div>
-			<div id="transporteur-edit-rib_bic" class="row-inner edit">
+			<div id="wrapper-rib_bic" class="row-inner edit">
 				<?= $this->formRow($this->form->get('rib_bic')); ?></div>
-			<div id="transporteur-edit-rib_iban" class="row-inner edit">
+			<div id="wrapper-rib_iban" class="row-inner edit">
 				<?= $this->formRow($this->form->get('rib_iban')); ?></div>
-			<div id="transporteur-edit-buttons" class="row-inner edit">
+			<div id="wrapper-buttons" class="row-inner edit">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>

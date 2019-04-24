@@ -59,16 +59,16 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
     }
 
     /**
-     * Traitement de l'évènement 'scolariteOK'
-     * Le contexte de l'évènement n'est pas utilisé.
-     * Les paramètres sont les références à traiter.
+     * Traitement de l'évènement 'scolariteOK' Le contexte de l'évènement n'est pas
+     * utilisé. Les paramètres sont les références à traiter.
      *
      * @param Event $e
      */
     public function onScolariteOK(Event $e)
     {
         $params = $e->getParams();
-        // indicateur utiliser pour la mise à jour du champ `paiement` de la table `scolarites`
+        // indicateur utiliser pour la mise à jour du champ `paiement` de la table
+        // `scolarites`
         $indicateur = $params['type'] == 'CREDIT' ? 0 : 1;
 
         $table_scolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');

@@ -40,7 +40,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $controller_manager = $this->serviceManager->get('ControllerManager');
         $controller = $controller_manager->get(IndexController::class);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+        $this->assertInstanceOf(AuthenticationServiceFactory::class,
             $controller->authenticate);
         $this->assertInstanceOf(Acl::class, $controller->acl);
         $this->assertTrue(is_array($controller->client));

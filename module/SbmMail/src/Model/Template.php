@@ -71,9 +71,8 @@ class Template
      * Renvoie du code html
      *
      * @param array $data
-     *            tableau des variables à passer au 'template'
-     *            ou ['body' => contenu] si le 'template' est null
-     *            
+     *            tableau des variables à passer au 'template' ou ['body' => contenu] si
+     *            le 'template' est null
      * @return string
      */
     public function render(array $data)

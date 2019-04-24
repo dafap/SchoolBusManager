@@ -1,7 +1,7 @@
 <?php
 /**
  * Service donnant un descripteur de table
- * 
+ *
  * - partie commune à toutes les tables
  * - doit être dérivée pour chaque table selon l'interface TableInterface
  *
@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -55,10 +55,9 @@ abstract class AbstractSbmTable implements FactoryInterface
     protected $table_gateway;
 
     /**
-     * objet Hydrator utilisé pour chaque ligne de résultat des méthodes fetchAll(), paginator(),
-     * getRecord(), saveRecord()
-     * Cette propriété est définie dans AbstractSbmTableGateway.
-     * Sa méthode extract() est utilisée dans saveRecord().
+     * objet Hydrator utilisé pour chaque ligne de résultat des méthodes fetchAll(),
+     * paginator(), getRecord(), saveRecord() Cette propriété est définie dans
+     * AbstractSbmTableGateway. Sa méthode extract() est utilisée dans saveRecord().
      *
      * @var \Zend\Hydrator\HydratorInterface
      */
@@ -114,18 +113,16 @@ abstract class AbstractSbmTable implements FactoryInterface
     protected $column_defaults;
 
     /**
-     * Tableau indexé
-     * La clé est le nom de la colonne sur laquelle porte la stratégie
-     * La valeur est l'objet strategy
+     * Tableau indexé La clé est le nom de la colonne sur laquelle porte la stratégie La
+     * valeur est l'objet strategy
      *
      * @var array
      */
     protected $strategies = [];
 
     /**
-     * Constructeur
-     * Les attributs $table_name et $table_type doivent être déclarés dans la méthode init() des
-     * classes dérivées.
+     * Constructeur Les attributs $table_name et $table_type doivent être déclarés dans la
+     * méthode init() des classes dérivées.
      *
      * @param ServiceLocatorInterface $sm
      * @param ObjectDataInterface $objectData
@@ -148,8 +145,10 @@ abstract class AbstractSbmTable implements FactoryInterface
         $this->column_defaults = $db_manager->getColumnDefaults($this->table_name,
             $this->table_type);
         $this->table_gateway = $db_manager->get($this->table_gateway_alias);
-        $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour join() et
-                                                                            // pour paginator()
+        $this->obj_select = clone $this->table_gateway->getSql()->select(); // utile pour
+                                                                            // join() et
+                                                                            // pour
+                                                                            // paginator()
         $this->join();
         // à placer après join()
         $this->obj_data = clone $this->table_gateway->getResultSetPrototype()->getObjectPrototype();
@@ -176,8 +175,8 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Met en place les Zend\Stdlib\Hydrator\Strategy\StrategyInterface pour l'hydrator.
-     * Ces stratégies sont définies dans Sbm\Model\Strategy
-     * A surcharger dans les classes dérivées si nécessaire
+     * Ces stratégies sont définies dans Sbm\Model\Strategy A surcharger dans les classes
+     * dérivées si nécessaire
      */
     protected function setStrategies()
     {
@@ -201,11 +200,12 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Complète la requête pour le select() et le fetchPaginator().
-     * A surcharger dans les classes dérivées si nécessaire
+     * Complète la requête pour le select() et le fetchPaginator(). A surcharger dans les
+     * classes dérivées si nécessaire
      */
     protected function join()
-    {}
+    {
+    }
 
     /**
      * Renvoie l'objet d'échange de données
@@ -283,8 +283,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Renvoie la requête sous forme d'une chaine de caractères.
-     * La requête est $select ou obj_select si $select est null.
+     * Renvoie la requête sous forme d'une chaine de caractères. La requête est $select ou
+     * obj_select si $select est null.
      *
      *
      * @param \Zend\Db\Sql\Select $select
@@ -301,8 +301,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Retourne un Zend\Paginator\Paginator basé sur la requête.
-     * Les résultats sont hydratés et sont conformes au ResultSetPrototype du TableGateway
+     * Retourne un Zend\Paginator\Paginator basé sur la requête. Les résultats sont
+     * hydratés et sont conformes au ResultSetPrototype du TableGateway
      *
      * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where_obj
      * @param array|string|null $order
@@ -318,14 +318,13 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Retourne le contenu de la table.
-     * Les résultats sont hydratés et sont conformes au ResultSetPrototype du TableGateway
+     * Retourne le contenu de la table. Les résultats sont hydratés et sont conformes au
+     * ResultSetPrototype du TableGateway
      *
      * @param \Zend\Db\Sql\Where|null $where
      * @param array|string|null $order
      * @param string $combination
      *            One of the OP_* constants from Predicate\PredicateSet
-     *            
      * @throws Exception\RuntimeException
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
@@ -359,17 +358,17 @@ abstract class AbstractSbmTable implements FactoryInterface
                 $msg = "Impossible d'exécuter la requête.";
             }
             throw new Exception\RuntimeException($msg, $e->getCode(), $e->getPrevious());
-            // die("<!DOCTYPE Html><html><head></head><body><pre>$msg</pre></body></html>");
+            // die("<!DOCTYPE
+            // Html><html><head></head><body><pre>$msg</pre></body></html>");
         }
     }
 
     /**
-     * Retourne l'enregistrement d'identifiant donné.
-     * Le résultat est hydraté et est conforme au ResultSetPrototype du TableGateway
+     * Retourne l'enregistrement d'identifiant donné. Le résultat est hydraté et est
+     * conforme au ResultSetPrototype du TableGateway
      *
      * @param int|string|array $id
      *            Si c'est un tableau, ce doit être un tableau associatif
-     *            
      * @throws Exception\RuntimeException
      *
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface null
@@ -414,11 +413,11 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Supprime l'enregistrement d'identifiant donné ou les enregistrements de where donnés
+     * Supprime l'enregistrement d'identifiant donné ou les enregistrements de where
+     * donnés
      *
      * @param int|string|array|Where|ObjectDataInterface $item
      *            identifiant ou where
-     *            
      * @return int
      */
     public function deleteRecord($item)
@@ -437,12 +436,13 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Enregistre l'objet $obj_data dans sa table en distinguant un nouvel enregistrement d'une
-     * mise à jour.
-     * L'objet passé en paramètre doit définir la méthode getId().
+     * Enregistre l'objet $obj_data dans sa table en distinguant un nouvel enregistrement
+     * d'une mise à jour. L'objet passé en paramètre doit définir la méthode getId().
      *
      * @param ObjectDataInterface $obj_data
      * @throws Exception\RuntimeException
+     *
+     * @return int|false
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
@@ -452,7 +452,18 @@ abstract class AbstractSbmTable implements FactoryInterface
             $data = $obj_data->getArrayCopy();
         }
         if ($this->is_newRecord($obj_data->getId())) {
-            $this->table_gateway->insert($this->prepareDataForInsert($data));
+            try {
+                return $this->table_gateway->insert($this->prepareDataForInsert($data));
+            } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+                $previous = $e->getPrevious();
+                if ($previous instanceof \PDOException) {
+                    if (strpos($previous->getMessage(),
+                        'SQLSTATE[23000]: Integrity constraint violation: 1062') !== false) {
+                        return false;
+                    }
+                }
+                throw $e;
+            }
         } else {
             $id = $obj_data->getId();
             if ($this->getRecord($id)) {
@@ -470,7 +481,7 @@ abstract class AbstractSbmTable implements FactoryInterface
                     $condition_msg = $this->id_name . " = $id";
                 }
 
-                $this->table_gateway->update($this->prepareDataForUpdate($data),
+                return $this->table_gateway->update($this->prepareDataForUpdate($data),
                     $array_where);
             } else {
                 throw new Exception\RuntimeException(
@@ -483,11 +494,9 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Mise à jour d'un enregistrement dans une table.
-     * Si l'enregistrement est absent on lance une exception
-     * ATTENTION !!!
-     * Cette méthode ne convient pas lorsqu'on change la pk (ou une partie de la pk lorsqu'elle est
-     * basée sur plusieurs colonnes)
+     * Mise à jour d'un enregistrement dans une table. Si l'enregistrement est absent on
+     * lance une exception ATTENTION !!! Cette méthode ne convient pas lorsqu'on change la
+     * pk (ou une partie de la pk lorsqu'elle est basée sur plusieurs colonnes)
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
      *
@@ -529,7 +538,6 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      *
      * @todo écrire la préparation des données de type auto_increment, numeric ou datetime
-     *      
      * @param array $data
      *
      * @return array
@@ -542,8 +550,9 @@ abstract class AbstractSbmTable implements FactoryInterface
                     $this->table_type)) {
                     $value = null;
                 } elseif ($this->db_manager->isDateTimeColumn($key, $this->table_name,
-                    $this->table_type) || $this->db_manager->isNumericColumn($key,
-                    $this->table_name, $this->table_type)) {
+                    $this->table_type) ||
+                    $this->db_manager->isNumericColumn($key, $this->table_name,
+                        $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {
@@ -558,7 +567,6 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      *
      * @todo écrire la préparation des données de type auto_increment, numeric ou datetime
-     *      
      * @param array $data
      *
      * @return array
@@ -568,8 +576,9 @@ abstract class AbstractSbmTable implements FactoryInterface
         foreach ($data as $key => &$value) {
             if ($value === '') {
                 if ($this->db_manager->isDateTimeColumn($key, $this->table_name,
-                    $this->table_type) || $this->db_manager->isNumericColumn($key,
-                    $this->table_name, $this->table_type)) {
+                    $this->table_type) ||
+                    $this->db_manager->isNumericColumn($key, $this->table_name,
+                        $this->table_type)) {
                     if ($this->are_nullables[$key]) {
                         $value = null;
                     } elseif (array_key_exists($key, $this->column_defaults)) {
@@ -582,9 +591,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     }
 
     /**
-     * Remie à zéro de la sélection des fiches de la table.
-     * Plus aucune fiche ne sera sélectionnée.
-     * Encore faut-il que la table ait un champ `selection` !!!
+     * Remie à zéro de la sélection des fiches de la table. Plus aucune fiche ne sera
+     * sélectionnée. Encore faut-il que la table ait un champ `selection` !!!
      *
      * @return int
      */

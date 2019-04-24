@@ -1,0 +1,61 @@
+<?php
+/**
+ * Affiche le résultat de la requête GET pushs/{referencePush}/deliveries
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-clever-sms/index
+ * @filesource bilan.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 avr. 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/mgc/cleversms/clever-sms.css'));
+$url_retour = $this->url('sbmservicesms', [
+    'action' => 'mos',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Réponses reçues suite à une campagne de SMS</h1>
+<div id='clever-sms-wrapper'>
+	<div id='clever-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+<?php if ($this->mos->isValid()) :?>
+    <?php if ($this->mos->getCode() != 204):?>
+	<div id='clever-sms-inner' class='colonnes'>
+	<?php foreach ($this->mos->getResponse()['mos'] as $row) :?>
+	    <?php
+            $css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
+            ?>
+		<dl class='info <?=$css;?>'>
+			<dt>Message du <?=$this->telephone($row['Num']);?></dt>
+			<dd>Date de réception : <?=$this->mos->translate('DateHour-Entry', $row['DateHour-Entry']);?>
+			<dd>Message</dd>
+			<dd><pre><?=$row['Message'];?></pre></dd>
+		</dl>
+	<?php endforeach;?>
+	</div>
+	<?php else:?>
+	<div id='clever-sms-inner'>
+		<p>Il n'y a pas de réponse.</p>
+	</div>
+	<?php endif;?>
+<?php else : ?>
+	<div id='clever-sms-footer'>
+	<?=$this->mos->getMessage();?>
+	</div>
+<?php endif;?>
+</div>

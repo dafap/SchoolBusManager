@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/station-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,24 +40,26 @@ $actions = [
         <?= $this->formHidden($this->form->get('stationId'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="station-ajout-communeId" class="row-inner ajout">
+			<div id="wrapper-communeId" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
-			<div id="station-ajout-nom" class="row-inner ajout">
+			<div id="wrapper-nom" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="station-ajout-aliasCG" class="row-inner ajout">
+			<div id="wrapper-aliasCG" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="station-ajout-codeCG" class="row-inner ajout">
+			<div id="wrapper-codeCG" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('codeCG')); ?></div>
-			<div id="station-ajout-longitude" class="row-inner ajout">
+			<div id="wrapper-longitude" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('x')); ?></div>
-			<div id="station-ajout-latitude" class="row-inner ajout">
+			<div id="wrapper-latitude" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('y')); ?></div>
-			<div id="station-ajout-visible" class="row-inner ajout">
+			<div id="wrapper-visible" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('visible')); ?></div>
-			<div id="station-ajout-ouverte" class="row-inner ajout">
+			<div id="wrapper-ouverte" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('ouverte')); ?></div>
-			<div id="station-ajout-buttons" class="row-inner ajout">
-        		<?= $this->formSubmit($this->form->get('submit'));?> 
+			<div id="wrapper-equipement" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('equipement')); ?></div>
+			<div id="wrapper-buttons" class="row-inner ajout">
+        		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>
 		<?= $this->form()->closeTag(); ?>

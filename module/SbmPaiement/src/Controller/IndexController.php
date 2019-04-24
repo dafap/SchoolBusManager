@@ -2,13 +2,13 @@
 /**
  * Ensemble de pages de retour de la plateforme de paiement
  *
- * Modification le 26 août 2015 dans formulaireAction() pour tenir compte de la dérogation accordée 
+ * Modification le 26 août 2015 dans formulaireAction() pour tenir compte de la dérogation accordée
  * dans la liste des élèves préinscrits à prendre en compte dans la table `appels` et ajout d'un
  * contrôle du montant du (montant reçu en post = montant à payer pour les eleveIds enregistrés dans `appels`)
- * 
+ *
  * Modification le 10 mars 2017 dans formulaireAction() pour tenir compte de la tarification anneeComplete
  * ou 3eme trimestre. Changement de style des[].
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Controller
  * @filesource IndexController.php
@@ -49,6 +49,7 @@ class IndexController extends AbstractActionController
         $args = $prg ?: [];
 
         // préparation des données
+        // ATTENTION, dans les préinscrits il n'y a pas les EN ATTENTE
         $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
             $responsable->responsableId);
         $elevesIds = [];
@@ -60,9 +61,11 @@ class IndexController extends AbstractActionController
         /**
          * Fin de l'ajout VERSION 2.3.1
          */
-        // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont
+        // ceux qui sont sélectionnés (selectionScolarite : selection dans table
+        // scolarites) sont
         // mis en attente. Pas de paiement pour le moment.
-        // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district et sans
+        // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district
+        // et sans
         // dérogation
         foreach ($preinscrits as $row) {
             if (! $row['selectionScolarite'] &&
@@ -84,19 +87,12 @@ class IndexController extends AbstractActionController
         }
         // vérification du montant
         /*
-         * ANCIENNE VERSION
-         * $montantUnitaire = $this->db_manager
-         * ->get('Sbm\Db\Table\Tarifs')
-         * ->getMontant('inscription');
-         * if ($args['montant'] != $montantUnitaire * count($elevesIds)) {
-         * $this->flashMessenger()->addErrorMessage('Problème sur le montant à payer. Contactez
-         * l\'organisateur.');
-         * return $this->redirect()->toRoute('login', [
-         * 'action' => 'home-page'
-         * ));
-         * }
-         *
-         * NOUVELLE VERSION 2.3.1
+         * ANCIENNE VERSION $montantUnitaire = $this->db_manager
+         * ->get('Sbm\Db\Table\Tarifs') ->getMontant('inscription'); if ($args['montant']
+         * != $montantUnitaire * count($elevesIds)) {
+         * $this->flashMessenger()->addErrorMessage('Problème sur le montant à payer.
+         * Contactez l\'organisateur.'); return $this->redirect()->toRoute('login', [
+         * 'action' => 'home-page' )); } NOUVELLE VERSION 2.3.1
          */
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $tarif1 = $tTarifs->getMontant('tarif1');
@@ -125,8 +121,10 @@ class IndexController extends AbstractActionController
             'prenom' => $responsable->prenom,
             'eleveIds' => $elevesIds
         ];
-        // refactoring à partir de la version 2.4.5 pour renvoyer tout ce qui est spécifique à une
-        // plateforme dans son plugin. L'enregistrement de la demande d'appel dans la table
+        // refactoring à partir de la version 2.4.5 pour renvoyer tout ce qui est
+        // spécifique à une
+        // plateforme dans son plugin. L'enregistrement de la demande d'appel dans la
+        // table
         // `appels`, nécessitant un id spécifique au plugin, est réalisé dans le plugin.
         $objectPlateforme = $this->plugin_plateforme;
         return new ViewModel([
@@ -225,9 +223,9 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Charge un fichier csv de transactions remisées.
-     * Analyse le fichier (après contrôle) en le rapprochant des paiements enregistrés.
-     * Affiche le compte-rendu en indiquant la marche à suivre si des paiements sont absents.
+     * Charge un fichier csv de transactions remisées. Analyse le fichier (après contrôle)
+     * en le rapprochant des paiements enregistrés. Affiche le compte-rendu en indiquant
+     * la marche à suivre si des paiements sont absents.
      *
      * @return \Zend\Http\PhpEnvironment\Response
      */
@@ -241,7 +239,8 @@ class IndexController extends AbstractActionController
 
         $prg = $this->fileprg($form);
         if ($prg instanceof Response) {
-            // renvoie redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops
+            // renvoie redirection 303 avec le contenu de post en session 'prg_post1'
+            // (Expire_Hops
             // = 1)
             return $prg;
         } elseif (is_array($prg) && ! array_key_exists('origine', $prg)) {

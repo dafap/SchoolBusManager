@@ -8,7 +8,7 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2019
+ * @date 25 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -71,8 +71,8 @@ class CreateTables
     private $err_msg;
 
     /**
-     * Files ordonnées de traitement des create et des datas
-     * et liste des index nécessaires pour les 'foreign key' dans les tables référencées
+     * Files ordonnées de traitement des create et des datas et liste des index
+     * nécessaires pour les 'foreign key' dans les tables référencées
      *
      * @var array
      */
@@ -82,8 +82,8 @@ class CreateTables
      * Constructeur
      *
      * @param array $dbconfig
-     *            tableau de configuration de la base de données pour récupérer le 'prefix' et le
-     *            'definer'
+     *            tableau de configuration de la base de données pour récupérer le
+     *            'prefix' et le 'definer'
      * @param Adapter $dbadapter
      */
     public function __construct($dbconfig, Adapter $dbadapter)
@@ -96,7 +96,8 @@ class CreateTables
     }
 
     /**
-     * Renvoie le chemin absolu du dossier db_design ou du fichier $file contenu dans ce dossier
+     * Renvoie le chemin absolu du dossier db_design ou du fichier $file contenu dans ce
+     * dossier
      *
      * @param string $file
      *
@@ -111,12 +112,10 @@ class CreateTables
     }
 
     /**
-     * Crée la queue de traitement des tables.
-     * Cette queue définit
-     * - la liste des fichiers de définition dans db_design associés à leur type
-     * - l'ordre de traitement des tables 'system', 'table', 'vue'
-     * - les index nécessaires aux 'foreign key' dans les tables référencées
-     * - l'ordre de traitement des 'data'
+     * Crée la queue de traitement des tables. Cette queue définit - la liste des fichiers
+     * de définition dans db_design associés à leur type - l'ordre de traitement des
+     * tables 'system', 'table', 'vue' - les index nécessaires aux 'foreign key' dans les
+     * tables référencées - l'ordre de traitement des 'data'
      */
     private function createQueue()
     {
@@ -134,8 +133,8 @@ class CreateTables
     }
 
     /**
-     * Insère la clé $item à sa place dans la structure de la queue
-     * Tient compte des 'foreign key' pour trouver la place dans la queue.
+     * Insère la clé $item à sa place dans la structure de la queue Tient compte des
+     * 'foreign key' pour trouver la place dans la queue.
      *
      * @param string $item
      *            nom du fichier de définition de l'entité (sans son chemin)
@@ -165,15 +164,14 @@ class CreateTables
     }
 
     /**
-     * Ajoute la clé $item dans la structure de la queue.
-     * A la fin,
-     * - le tableau $this->queue['system'] donne l'ordre de création des tables system
-     * - le tableau $this->queue['table'] donne l'ordre de création des tables
-     * - le tableau $this->queue['vue'] donne l'ordre de création des vues
-     * - le tableau $this->queue['foreign key'] donne par type (system | table) pour chaque table
-     * référencée, la liste des clés à créer si elles n'existent pas
-     * - le tableau $this->queue['data'] donne pour chaque fichier de donnée à inclure (indexé par
-     * son nom complet), le nom de la table et son type
+     * Ajoute la clé $item dans la structure de la queue. A la fin, - le tableau
+     * $this->queue['system'] donne l'ordre de création des tables system - le tableau
+     * $this->queue['table'] donne l'ordre de création des tables - le tableau
+     * $this->queue['vue'] donne l'ordre de création des vues - le tableau
+     * $this->queue['foreign key'] donne par type (system | table) pour chaque table
+     * référencée, la liste des clés à créer si elles n'existent pas - le tableau
+     * $this->queue['data'] donne pour chaque fichier de donnée à inclure (indexé par son
+     * nom complet), le nom de la table et son type
      *
      * @param string $include_file
      *            nom du fichier de définition de l'entité (sans son chemin)
@@ -196,7 +194,8 @@ class CreateTables
             }
         }
         if (! empty($def['add_data']) && array_key_exists('data', $def)) {
-            // dans la structure de $def, remplacer la sous-structure 'data' par une chaine 'nom
+            // dans la structure de $def, remplacer la sous-structure 'data' par une
+            // chaine 'nom
             // complet du fichier à inclure'
             $this->queue['data'][$def['data']] = [
                 $def['name'],
@@ -212,7 +211,6 @@ class CreateTables
      *            fichier de définition des données
      * @param array $properties
      *            0 => nom_court de la table, 1 => type de la table
-     *
      * @return multitype:Ambigous <\Zend\Db\Adapter\Driver\StatementInterface,
      *         \Zend\Db\ResultSet\Zend\Db\ResultSet>
      */
@@ -261,9 +259,8 @@ class CreateTables
      * @param array $entityStructure
      *            structure décrivant la table (voir README.txt)
      * @param string $entityType
-     *            'table', 'system' ou 'vue' afin de pouvoir créer les tables temporaires de même
-     *            nom que les vues avant de créer les vues
-     *
+     *            'table', 'system' ou 'vue' afin de pouvoir créer les tables temporaires
+     *            de même nom que les vues avant de créer les vues
      * @return string
      */
     protected function createTable($entityName, $entityStructure, $entityType)
@@ -354,8 +351,8 @@ class CreateTables
     }
 
     /**
-     * Renvoie un tableau décrivant la structure de la vue.
-     * Pour le moment, les vues sont basées sur des tables et des vues (pas des system)
+     * Renvoie un tableau décrivant la structure de la vue. Pour le moment, les vues sont
+     * basées sur des tables et des vues (pas des system)
      *
      * @param string $viewName
      * @return multitype:multitype:string multitype:string unknown
@@ -582,9 +579,9 @@ EOT;
     }
 
     /**
-     * Fait un DROP TABLE IF EXISTS ou un DROP VIEW IF EXISTS sur l'entité nommée.
-     * (pour les vues, on fait un DROP TABLE avant un DROP VIEW au cas où il aurait fallu créé une
-     * table fictive pour les relations et les autres vues)
+     * Fait un DROP TABLE IF EXISTS ou un DROP VIEW IF EXISTS sur l'entité nommée. (pour
+     * les vues, on fait un DROP TABLE avant un DROP VIEW au cas où il aurait fallu créé
+     * une table fictive pour les relations et les autres vues)
      *
      * @param string $entityName
      * @param string $entityType
@@ -637,7 +634,6 @@ EOT;
      *
      * @param array $entity
      *            Contenu d'un fichier de configuration
-     *
      * @return boolean
      */
     protected function isEntity($entity)
@@ -782,8 +778,16 @@ EOT;
             $keys = array_keys($this->queue[$type]);
             while (! is_null($element = array_pop($keys))) {
                 if ($this->queue[$type][$element]['drop']) {
-                    $result[] = $this->dropEntity($this->queue[$type][$element]['name'],
-                        $type);
+                    try {
+                        $result[] = $this->dropEntity(
+                            $this->queue[$type][$element]['name'], $type);
+                    } catch (Exception $e) {
+                        $result[] = 'La table ' . $this->queue[$type][$element]['name'] .
+                            ' ne peut être supprimée que si les tables suivantes le sont :';
+                        return array_merge($result,
+                            $this->dependances($type,
+                                $this->queue[$type][$element]['name']));
+                    }
                 }
             }
             // création des tables
@@ -806,7 +810,8 @@ EOT;
                     $result[] = $this->dropEntity($entity['name'], $entity['type']);
                 }
                 if ($type_mysql == 'table') {
-                    // création de tables temporaires qui remplacent les vues pour éviter les
+                    // création de tables temporaires qui remplacent les vues pour éviter
+                    // les
                     // blocages lors de leur création.
                     $result[] = 'Vue : ' . $entity['name'];
                     $result[] = $this->createTmpTableForView($entity['name'],
@@ -821,6 +826,28 @@ EOT;
             $result[] = $this->addData($filename, $properties);
         }
         // @todo: exploiter la liste des messages d'erreur
+        return $result;
+    }
+
+    private function dependances($type, $entity_name)
+    {
+        $result = [];
+        foreach ($this->queue[$type] as $element) {
+            if ($element['name'] == $entity_name)
+                continue;
+            $structure = $element['structure'];
+            if (! StdLib::getParam('foreign key', $structure, false))
+                continue;
+            foreach ($structure['foreign key'] as $array) {
+                if ($entity_name ==
+                    StdLib::getParamR([
+                        'references',
+                        'table'
+                    ], $array, '')) {
+                    $result[] = $element['name'];
+                }
+            }
+        }
         return $result;
     }
 

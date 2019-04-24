@@ -7,7 +7,7 @@
  * @filesource vue.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 return [
@@ -182,12 +182,29 @@ return [
                 'relation' => 'rel.serviceId = ser.serviceId', // obligatoire
                 'fields' => [
                     [
-                        'field' => 'nom',
-                        'alias' => 'serv_nom'
+                        'field' => 'alias',
+                        'alias' => 'serv_alias'
+                    ],
+                    [
+                        'field' => 'aliasTr',
+                        'alias' => 'serv_aliasTr'
                     ],
                     [
                         'field' => 'aliasCG',
                         'alias' => 'serv_aliasCG'
+                    ],
+                    [
+                        'field' => 'nom',
+                        'alias' => 'serv_nom'
+                    ],
+                    [
+                        'field' => 'horaire1'
+                    ],
+                    [
+                        'field' => 'horaire2'
+                    ],
+                    [
+                        'field' => 'horaire3'
                     ],
                     [
                         'field' => 'transporteurId',
@@ -220,6 +237,58 @@ return [
                     [
                         'field' => 'selection',
                         'alias' => 'serv_selection'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'lots',
+                'type' => 'table',
+                'alias' => 'lot',
+                'relation' => 'ser.lotId=lot.lotId',
+                'fields' => [
+                    [
+                        'field' => 'marche',
+                        'alias' => 'lot_marche'
+                    ],
+                    [
+                        'field' => 'lot',
+                        'alias' => 'lot_lot'
+                    ],
+                    [
+                        'field' => 'libelle',
+                        'alias' => 'lot_libelle'
+                    ],
+                    [
+                        'field' => 'transporteurId',
+                        'alias' => 'lot_transporteurId'
+                    ],
+                    [
+                        'field' => 'dateDebut',
+                        'alias' => 'lot_dateDebut'
+                    ],
+                    [
+                        'field' => 'dateFin',
+                        'alias' => 'lot_dateFin'
+                    ],
+                    [
+                        'field' => 'actif',
+                        'alias' => 'lot_actif'
+                    ],
+                    [
+                        'field' => 'selection',
+                        'alias' => 'lot_selection'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'transporteurs',
+                'type' => 'table',
+                'alias' => 'tit',
+                'relation' => 'tit.transporteurId = lot.transporteurId',
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'lot_transporteur'
                     ]
                 ]
             ],
@@ -314,28 +383,67 @@ return [
                         'alias' => 'cir_semaine'
                     ],
                     [
-                        'field' => 'm1',
+                        'expression' => [
+                            'value' => 'max(m1)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_m1'
                     ],
                     [
-                        'field' => 's1',
+                        'expression' => [
+                            'value' => 'min(s1)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_s1'
                     ],
                     [
-                        'field' => 'm2',
+                        'expression' => [
+                            'value' => 'min(z1)',
+                            'type' => 'time'
+                        ],
+                        'alias' => 'cir_z1'
+                    ],
+                    [
+                        'expression' => [
+                            'value' => 'max(m2)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_m2'
                     ],
                     [
-                        'field' => 's2',
+                        'expression' => [
+                            'value' => 'min(s2)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_s2'
                     ],
                     [
-                        'field' => 'm3',
+                        'expression' => [
+                            'value' => 'min(z2)',
+                            'type' => 'time'
+                        ],
+                        'alias' => 'cir_z2'
+                    ],
+                    [
+                        'expression' => [
+                            'value' => 'max(m3)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_m3'
                     ],
                     [
-                        'field' => 's3',
+                        'expression' => [
+                            'value' => 'min(s3)',
+                            'type' => 'time'
+                        ],
                         'alias' => 'cir_s3'
+                    ],
+                    [
+                        'expression' => [
+                            'value' => 'min(z3)',
+                            'type' => 'time'
+                        ],
+                        'alias' => 'cir_z3'
                     ],
                     [
                         'field' => 'distance',
@@ -362,6 +470,16 @@ return [
                         'alias' => 'cir_commentaire2'
                     ]
                 ]
+            ]
+        ],
+        'group' => [
+            [
+                'table' => 'rel',
+                'field' => 'etablissementId'
+            ],
+            [
+                'table' => 'rel',
+                'field' => 'serviceId'
             ]
         ],
         'order' => [

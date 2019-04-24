@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 1 avril 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -38,7 +38,8 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est
+                                            // vide
         return new ViewModel();
     }
 
@@ -47,8 +48,7 @@ class TransportController extends AbstractActionController
      */
 
     /**
-     * Liste des circuits
-     * (avec pagination)
+     * Liste des circuits (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -96,8 +96,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de circuit
-     * (avec validation des données du formulaire)
+     * Modification d'une fiche de circuit (avec validation des données du formulaire)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -110,7 +109,12 @@ class TransportController extends AbstractActionController
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-            ->setValueOptions('semaine', Strategy\Semaine::getJours());
+            ->setValueOptions('semaine', [ // pour le validator
+            1 => '',
+            2 => '',
+            4 => ''
+        ])
+            ->setHoraires($this->db_manager->get('Sbm\Horaires'));
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -128,7 +132,6 @@ class TransportController extends AbstractActionController
                 $this->flashMessenger()->addWarningMessage(
                     'Impossible ! Cet arrêt est déjà sur ce circuit.');
                 $r = new EditResponse('warning', []);
-                ;
             } else {
                 throw new \Zend\Db\Adapter\Exception\InvalidQueryException(
                     $e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -148,11 +151,26 @@ class TransportController extends AbstractActionController
                         ]);
                     break;
                 default:
+                    $circuitId = $r->getResult();
+                    $horaires = $this->db_manager->get('Sbm\Horaires')->getTableHoraires(
+                        $circuitId);
+                    $value_options = [];
+                    $nature = [];
+                    for ($i = 1; $i <= 3; $i ++) {
+                        if (array_key_exists("horaire$i", $horaires)) {
+                            $ligne = $horaires["horaire$i"];
+                            $value_options[1 << ($i - 1)] = $nature[$i] = $ligne['nature'];
+                        } else {
+                            $nature[$i] = '';
+                        }
+                    }
+                    $form->setValueOptions('semaine', $value_options);
                     return new ViewModel(
                         [
                             'form' => $form->prepare(),
                             'page' => $currentPage,
-                            'circuitId' => $r->getResult()
+                            'circuitId' => $circuitId,
+                            'nature' => $nature
                         ]);
                     break;
             }
@@ -163,7 +181,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function circuitSupprAction()
@@ -224,21 +241,26 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de circuit
-     * (avec validation des données du formulaire)
+     * Ajout d'une nouvelle fiche de circuit (avec validation des données du formulaire)
      *
      * @return \Zend\View\Model\ViewModel
      */
     public function circuitAjoutAction()
     {
         $currentPage = $this->params('page', 1);
+        // $horaires = $this->db_manager->get('Sbm\Horaires');
         $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-            ->setValueOptions('semaine', Strategy\Semaine::getJours());
+                ->setValueOptions('semaine', [ // pour le validator
+                    1 => '',
+                    2 => '',
+                    4 => ''
+                ])
+                ->setHoraires($this->db_manager->get('Sbm\Horaires'));;
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -266,6 +288,8 @@ class TransportController extends AbstractActionController
             case 'error':
             case 'warning':
             case 'success':
+                $value_options = [];
+                $form->setValueOptions('semaine', $value_options);
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
                         'action' => 'circuit-liste',
@@ -277,7 +301,8 @@ class TransportController extends AbstractActionController
                     [
                         'form' => $form->prepare(),
                         'page' => $currentPage,
-                        'circuitId' => null
+                        'circuitId' => null,
+                        'horaires' => $this->db_manager->get('Sbm\Horaires')
                     ]);
                 break;
         }
@@ -381,8 +406,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Reçoit la paramètre circuitId en post
-     * Renvoie la liste des élèves inscrits pour un circuit donné
+     * Reçoit la paramètre circuitId en post Renvoie la liste des élèves inscrits pour un
+     * circuit donné
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -410,9 +435,9 @@ class TransportController extends AbstractActionController
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
+                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false),
+                    FiltreEleve::byCircuit($circuit->lotId, $circuit->stationId, false),
                     [
                         'nom',
                         'prenom'
@@ -425,9 +450,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce millesime
-     * est vide.
-     * Cette action reprend les circuits de la dernière année connue.
+     * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce
+     * millesime est vide. Cette action reprend les circuits de la dernière année connue.
      */
     public function circuitDupliquerAction()
     {
@@ -519,9 +543,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function circuitPdfAction()
     {
@@ -562,7 +586,7 @@ class TransportController extends AbstractActionController
                 $circuitId = StdLib::getParam('circuitId', $args, - 1);
                 $ocircuit = $db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
                     $circuitId);
-                $serviceId = $ocircuit->serviceId;
+                $serviceId = $ocircuit->lotId;
                 $stationId = $ocircuit->stationId;
                 $where = new Where();
                 $where->nest()
@@ -588,7 +612,7 @@ class TransportController extends AbstractActionController
 
     public function circuitGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byCircuit';
         $idFields = [
             'serviceId',
@@ -614,8 +638,7 @@ class TransportController extends AbstractActionController
      */
 
     /**
-     * Liste des classes
-     * (avec pagination)
+     * Liste des classes (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -641,8 +664,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de classe
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de classe (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -693,7 +715,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function classeSupprAction()
@@ -765,8 +786,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de classe
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche de classe (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -844,7 +864,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byClasse($classeId),
                     [
                         'nom',
@@ -860,9 +880,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function classePdfAction()
     {
@@ -908,7 +928,7 @@ class TransportController extends AbstractActionController
 
     public function classeGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byClasse';
         $idField = 'classeId';
         $retour = [
@@ -927,8 +947,7 @@ class TransportController extends AbstractActionController
      */
 
     /**
-     * Liste des communes
-     * (avec pagination)
+     * Liste des communes (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -953,8 +972,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de commune
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de commune (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1003,7 +1021,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function communeSupprAction()
@@ -1075,8 +1092,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de commune
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche de commune (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1151,7 +1167,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byCommune($communeId),
                     [
                         'nom',
@@ -1167,9 +1183,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function communePdfAction()
     {
@@ -1215,7 +1231,7 @@ class TransportController extends AbstractActionController
 
     public function communeGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byCommune';
         $idField = 'communeId';
         $retour = [
@@ -1233,14 +1249,12 @@ class TransportController extends AbstractActionController
      * ================================ ETABLISSEMENTS ========================
      */
     /**
-     * Critère de sélection commun aux établissements et aux stations.
-     * La localisation géographique est dans un rectangle défini dans la config (voir
-     * config/autoload/sbm.local.php)
-     * (paramètres dans cartes - etablissements - valide)
+     * Critère de sélection commun aux établissements et aux stations. La localisation
+     * géographique est dans un rectangle défini dans la config (voir
+     * config/autoload/sbm.local.php) (paramètres dans cartes - etablissements - valide)
      *
      * @param string $nature
      *            Prend les valeurs 'etablissement' ou 'station'
-     *
      * @return string
      */
     private function critereLocalisation($nature)
@@ -1254,8 +1268,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Liste des etablissements
-     * (avec pagination)
+     * Liste des etablissements (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1284,8 +1297,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche d'etablissement
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche d'etablissement (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1342,7 +1354,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function etablissementSupprAction()
@@ -1414,8 +1425,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche d'etablissement
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche d'etablissement (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1504,7 +1514,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'),
                     FiltreEleve::byEtablissement($etablissementId), [
                         'nom',
@@ -1520,9 +1530,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function etablissementPdfAction()
     {
@@ -1551,7 +1561,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * lance la création d'une liste d'élève avec comme filtre le etablissementId reçu en post
+     * lance la création d'une liste d'élève avec comme filtre le etablissementId reçu en
+     * post
      */
     public function etablissementGroupPdfAction()
     {
@@ -1726,7 +1737,7 @@ class TransportController extends AbstractActionController
 
     public function etablissementGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byEtablissement';
         $idField = 'etablissementId';
         $retour = [
@@ -1863,7 +1874,7 @@ class TransportController extends AbstractActionController
 
     public function etablissementServiceGroupSelectionAction()
     {
-        $query = 'byEtablissementService';
+        $query = 'queryGroupParAffectations';
         $filtre = 'byEtablissementService';
         $idFields = [
             'etablissementId',
@@ -1942,8 +1953,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'un lien etablissement - service
-     * (la validation porte sur un champ csrf)
+     * Ajout d'un lien etablissement - service (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1956,8 +1966,10 @@ class TransportController extends AbstractActionController
             $args = Session::get('post', [], $this->getSessionNamespace());
             if (StdLib::getParam('origine', $args, false) === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('sbmgestion/transport'); // on n'est pas capable
-                                                                           // de savoir d'où l'on
+                return $this->redirect()->toRoute('sbmgestion/transport'); // on n'est pas
+                                                                           // capable
+                                                                           // de savoir
+                                                                           // d'où l'on
                                                                            // vient
             }
         } else {
@@ -2034,11 +2046,11 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Suppression d'une relation établissement-service avec confirmation
-     * A l'appel, les variables suivantes sont récupérées : $etablissementId, $serviceId, $origine,
-     * $op, $supprimer
-     * Lors de l'annulation, on a : $etablissementId, $serviceId, $origine, $op, $supprnon
-     * Lors de la validation on a : $etablissementId, $serviceId, $origine, $op, $supproui
+     * Suppression d'une relation établissement-service avec confirmation A l'appel, les
+     * variables suivantes sont récupérées : $etablissementId, $serviceId, $origine, $op,
+     * $supprimer Lors de l'annulation, on a : $etablissementId, $serviceId, $origine,
+     * $op, $supprnon Lors de la validation on a : $etablissementId, $serviceId, $origine,
+     * $op, $supproui
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2119,7 +2131,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * renvoie la liste des élèves inscrits pour un etablissement donné et un service donné
+     * renvoie la liste des élèves inscrits pour un etablissement donné et un service
+     * donné
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2154,7 +2167,7 @@ class TransportController extends AbstractActionController
         $viewModel = new ViewModel(
             [
                 'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByEtablissementService(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'),
                     FiltreEleve::byEtablissementService($etablissementId, $serviceId),
                     [
@@ -2176,12 +2189,368 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * =============================== LOTS DE MARCHÉ =========================
+     */
+    public function lotListeAction()
+    {
+        $args = $this->initListe('lots');
+        if ($args instanceof Response)
+            return $args;
+        try {
+            $effectifLots = $this->db_manager->get('Sbm\Db\Eleve\EffectifLots');
+            $effectifLots->init();
+        } catch (\Exception $e) {
+            $effectifLots = null;
+        }
+        try {
+            $effectifLotsServices = $this->db_manager->get('Sbm\Db\Service\EffectifLots');
+            $effectifLotsServices->init();
+        } catch (\Exception $e) {
+            $effectifLotsServices = null;
+        }
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Lots')->paginator(
+                    $args['where'], [
+                        'marche',
+                        'lot'
+                    ]),
+                'effectifLotsServices' => $effectifLotsServices,
+                'effectifLots' => $effectifLots,
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_lots', 15),
+                'criteres_form' => $args['form']
+            ]);
+    }
+
+    public function lotAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Lot::class);
+        $form->setValueOptions('transporteurId',
+            $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
+        $params = [
+            'data' => [
+                'table' => 'lots',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Lots'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($this->db_manager, $params);
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => 'lot-liste',
+                        'page' => $currentPage
+                    ]);
+                break;
+            default:
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'communeId' => null
+                    ]);
+                break;
+        }
+    }
+
+    public function lotEditAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Lot::class);
+        $form->setValueOptions('transporteurId',
+            $this->db_manager->get('Sbm\Db\Select\Transporteurs'));
+        $params = [
+            'data' => [
+                'table' => 'lots',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Lots',
+                'id' => 'lotId'
+            ],
+            'form' => $form
+        ];
+
+        $r = $this->editData($this->db_manager, $params);
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'lot-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'lotId' => $r->getResult()
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function lotSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new Form\ButtonForm([
+            'id' => null,
+            'origine' => null
+        ],
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\Lots',
+                'id' => 'lotId'
+            ],
+            'form' => $form
+        ];
+        $vueLots = $this->db_manager->get('Sbm\Db\Vue\Lots');
+        try {
+            $r = $this->supprData($this->db_manager, $params,
+                function ($id, $tableLots) use ($vueLots) {
+                    return [
+                        'id' => $id,
+                        'data' => $vueLots->getRecord($id)
+                    ];
+                });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer ce lot de marché car il existe un service lié.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'lot-liste',
+                    'page' => $currentPage
+                ]);
+        }
+
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'lot-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'lotId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function lotPdfAction()
+    {
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'lots'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifLots'
+            ]);
+    }
+
+    public function lotGroupAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $lotId = StdLib::getParam('lotId', $args, - 1);
+        if ($lotId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'lot-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
+                    Session::get('millesime'), FiltreEleve::byLot($lotId),
+                    [
+                        'serviceId',
+                        'nom',
+                        'prenom'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'lot' => $this->db_manager->get('Sbm\Db\Vue\Lots')->getRecord($lotId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'lotId' => $lotId
+            ]);
+        ;
+    }
+
+    public function lotGroupPdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) {
+                $lotId = StdLib::getParam('lotId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('lotId', $lotId);
+                return $where;
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-group'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function lotGroupSelectionAction()
+    {
+        $query = 'queryGroupParAffectations';
+        $filtre = 'byLot';
+        $idField = 'lotId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
+    }
+
+    public function lotServiceAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $lotId = StdLib::getParam('lotId', $args, - 1);
+        if ($lotId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'lot-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+        $where = new Where();
+        $where->equalTo('lotId', $lotId);
+        $effectifLotsServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifLotsServices');
+        $effectifLotsServices->setCaractereConditionnel($lotId)->init();
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
+                    $where, [
+                        'serviceId'
+                    ]),
+                'count_per_page' => 15,
+                'effectifLotsServices' => $effectifLotsServices,
+                'lot' => $this->db_manager->get('Sbm\Db\Table\Lots')->getRecord($lotId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'lotId' => $lotId
+            ]);
+    }
+
+    public function lotServicePdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            [],
+            function ($where, $args) {
+                $lotId = StdLib::getParam('lotId', $args);
+                $where = new Where();
+                return $where->equalTo('lotId', $lotId);
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-service'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'caractereConditionnel' => 'lotId',
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifLotsServices'
+            ]);
+    }
+
+    /**
      * =============================== SERVICES ===============================
      */
 
     /**
-     * Liste des services
-     * (avec pagination)
+     * Liste des services (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2213,8 +2582,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de service
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de service (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2223,9 +2591,13 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
         $form->modifFormForEdit()
+            ->setValueOptions('lotId', $this->db_manager->get('Sbm\Db\Select\Lots'))
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
+            ->setValueOptions('horaire1', Strategy\Semaine::getJours())
+            ->setValueOptions('horaire2', Strategy\Semaine::getJours())
+            ->setValueOptions('horaire3', Strategy\Semaine::getJours())
             ->setValueOptions('natureCarte',
             $this->db_manager->get('Sbm\Db\Table\Services')
                 ->getNatureCartes());
@@ -2269,7 +2641,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function serviceSupprAction()
@@ -2342,8 +2713,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de service
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche de service (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2351,9 +2721,13 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
-        $form->setValueOptions('transporteurId',
+        $form->setValueOptions('lotId', $this->db_manager->get('Sbm\Db\Select\Lots'))
+            ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
+            ->setValueOptions('horaire1', Strategy\Semaine::getJours())
+            ->setValueOptions('horaire2', Strategy\Semaine::getJours())
+            ->setValueOptions('horaire3', Strategy\Semaine::getJours())
             ->setValueOptions('natureCarte',
             $this->db_manager->get('Sbm\Db\Table\Services')
                 ->getNatureCartes());
@@ -2391,13 +2765,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * renvoie la liste des élèves inscrits pour un service donné
-     * Reçoit en get :
-     * - id : pageRetour
-     * - page : page du paginateur interne
-     * Reçoit en post :
-     * - serviceId
-     * - origine
+     * renvoie la liste des élèves inscrits pour un service donné Reçoit en get : - id :
+     * pageRetour - page : page du paginateur interne Reçoit en post : - serviceId -
+     * origine
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2432,7 +2802,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'h1' => 'Groupe des élèves inscrits sur un service',
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byService($serviceId),
                     [
                         'nom',
@@ -2449,9 +2819,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function servicePdfAction()
     {
@@ -2525,7 +2895,7 @@ class TransportController extends AbstractActionController
 
     public function serviceGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byService';
         $idField = 'serviceId';
         $retour = [
@@ -2544,8 +2914,7 @@ class TransportController extends AbstractActionController
      */
 
     /**
-     * Liste des stations
-     * (avec pagination)
+     * Liste des stations (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2578,8 +2947,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Liste des stations non desservies
-     * (sans pagination)
+     * Liste des stations non desservies (sans pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2624,8 +2992,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de station
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de station (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2772,12 +3139,10 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Montre la carte des stations.
-     * Un clic dans la carte permet de placer la nouvelle station.
-     * On enregistre la position.
-     * Le formulaire prérempli est présenté avec la commune, l'adresse (N° + rue)
-     * et les coordonnées X et Y
-     * On peut alors changer le nom de la station avant d'enregistrer la fiche.
+     * Montre la carte des stations. Un clic dans la carte permet de placer la nouvelle
+     * station. On enregistre la position. Le formulaire prérempli est présenté avec la
+     * commune, l'adresse (N° + rue) et les coordonnées X et Y On peut alors changer le
+     * nom de la station avant d'enregistrer la fiche.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -2955,7 +3320,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
+                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'), FiltreEleve::byStation($stationId),
                     [
                         'nom',
@@ -3060,8 +3425,8 @@ class TransportController extends AbstractActionController
             ]);
         $view = new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query($millesime,
-                    FiltreEleve::byCircuit($serviceId, $stationId, false),
+                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
+                    $millesime, FiltreEleve::byCircuit($serviceId, $stationId, false),
                     [
                         'nom',
                         'prenom'
@@ -3077,7 +3442,7 @@ class TransportController extends AbstractActionController
 
     public function stationServiceGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byCircuit';
         $idFields = [
             'serviceId',
@@ -3095,9 +3460,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function stationPdfAction()
     {
@@ -3184,7 +3549,7 @@ class TransportController extends AbstractActionController
 
     public function stationGroupSelectionAction()
     {
-        $query = 'query';
+        $query = 'queryGroup';
         $filtre = 'byStation';
         $idField = 'stationId';
         $retour = [
@@ -3199,10 +3564,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Localisation d'une station sur la carte et enregistrement de ses coordonnées
-     * Toutes les stations sont affichées.
-     *
-     * La station à localiser est repérée par un bulet rouge.
+     * Localisation d'une station sur la carte et enregistrement de ses coordonnées Toutes
+     * les stations sont affichées. La station à localiser est repérée par un bulet rouge.
      */
     public function stationLocalisationAction()
     {
@@ -3286,7 +3649,8 @@ class TransportController extends AbstractActionController
                 $tStations->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation de la station est enregistrée.');
-                // $this->flashMessenger()->addWarningMessage('Attention ! Les distances des
+                // $this->flashMessenger()->addWarningMessage('Attention ! Les distances
+                // des
                 // domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
@@ -3386,8 +3750,7 @@ class TransportController extends AbstractActionController
      */
 
     /**
-     * Liste des transporteurs
-     * (avec pagination)
+     * Liste des transporteurs (avec pagination)
      *
      * @return ViewModel
      */
@@ -3411,8 +3774,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de transporteur
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de transporteur (la validation porte sur un champ csrf)
      *
      * @return ViewModel
      */
@@ -3463,7 +3825,6 @@ class TransportController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas de service attribué avant de supprimer la fiche
-     *
      * @return ViewModel
      */
     public function transporteurSupprAction()
@@ -3535,8 +3896,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de transporteur
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche de transporteur (la validation porte sur un champ csrf)
      *
      * @return ViewModel
      */
@@ -3615,7 +3975,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorByTransporteur(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'),
                     FiltreEleve::byTransporteur($transporteurId),
                     [
@@ -3686,9 +4046,9 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function transporteurPdfAction()
     {
@@ -3760,7 +4120,7 @@ class TransportController extends AbstractActionController
 
     public function transporteurGroupSelectionAction()
     {
-        $query = 'byTransporteur';
+        $query = 'queryGroupParAffectations';
         $filtre = 'byTransporteur';
         $idField = 'transporteurId';
         $retour = [

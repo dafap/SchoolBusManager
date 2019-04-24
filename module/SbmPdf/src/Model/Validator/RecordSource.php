@@ -59,8 +59,8 @@ class RecordSource extends AbstractValidator
     }
 
     /**
-     * Valide si $value est une clé du tableau de TrecordSource ou si c'est le Sql d'une requête
-     *
+     * Valide si $value est une clé du tableau de TrecordSource ou si c'est le Sql d'une
+     * requête
      * (non-PHPdoc)
      *
      * @see \Zend\Validator\ValidatorInterface::isValid()
@@ -74,7 +74,8 @@ class RecordSource extends AbstractValidator
         }
         // vérifie qu'il s'agit d'une requête Sql
         try {
-            // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
+            // remplacement des variables éventuelles : %millesime%, %date%, %heure% et
+            // %userId%
             // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
             $value = $this->decodeSource($value, $this->auth_userId);
             $this->db_manager->getDbAdapter()->query($value,

@@ -8,7 +8,7 @@
  * @filesource service-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -18,7 +18,8 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 
 $url_ajouter = $this->url('sbmgestion/transport',
     [
-        'action' => 'etablissement-service-ajout', // voir si on peut faire une seule action
+        'action' => 'etablissement-service-ajout', // voir si on peut faire une seule
+                                                    // action
         'page' => $this->page,
         'id' => $this->pageRetour
     ]);
@@ -101,9 +102,9 @@ $actions = [
 					<th>Email</th>
 					<th>Inscrits</th>
 					<th>Station</th>
-					<th>Matin</th>
-					<th>Midi</th>
-					<th>Soir</th>
+					<th>H1</th>
+					<th>H2</th>
+					<th>H3</th>
 				</tr>
             <?php
 
@@ -138,11 +139,30 @@ $actions = [
                     ]
                 ];
                 $id = $etablissement->etablissementId . '|' . $this->service->serviceId;
+                $horaires = [
+                    'h1' => [
+                        $etablissement->cir_m1,
+                        $etablissement->cir_s1,
+                        $etablissement->cir_z1
+                    ],
+                    'h2' => [
+                        $etablissement->cir_m2,
+                        $etablissement->cir_s2,
+                        $etablissement->cir_z2
+                    ],
+                    'h3' => [
+                        $etablissement->cir_m3,
+                        $etablissement->cir_s3,
+                        $etablissement->cir_z3
+                    ]
+                ];
+                for ($i = 1; $i <= 3; $i ++) {
+                    $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
+                        return $v != '00:00:00';
+                    });
+                }
                 ?>
-                <tr class="petit <?php
-
-                $css;
-                ?>">
+                <tr class="petit <?php $css;?>">
 					<td class="etablissementid">
 						<?=$this->escapeHtml($etablissement->etablissementId);?></td>
 					<td class="nom">
@@ -160,19 +180,16 @@ $actions = [
 					<td class="station">
 						<?=$this->escapeHtml($etablissement->sta_nom);?></td>
 					<td class="matin">
-						<?=$etablissement->cir_m1;?></td>
+						<?=implode('<br>', $horaires['h1']);?></td>
 					<td class="midi">
-						<?=$etablissement->cir_s2;?></td>
+						<?=implode('<br>', $horaires['h2']);?></td>
 					<td class="soir">
-						<?=$etablissement->cir_s1;?></td>
+						<?=implode('<br>', $horaires['h3']);?></td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($id, $hiddens, $buttons);?>
 			        </td>
 				</tr>
-            <?php
-            endforeach
-            ;
-            ?>
+            <?php endforeach;?>
             </tbody>
 		</table>
 	</div>

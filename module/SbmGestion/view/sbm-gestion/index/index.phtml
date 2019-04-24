@@ -14,12 +14,12 @@
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // $url_gest_eleve = $this->url('sbmgestion/eleve');
-$url_gest_eleves = $this->url('sbmgestion/eleve', 
+$url_gest_eleves = $this->url('sbmgestion/eleve',
     [
         'action' => 'eleve-liste',
         'page' => $this->page
     ]);
-$url_gest_responsables = $this->url('sbmgestion/eleve', 
+$url_gest_responsables = $this->url('sbmgestion/eleve',
     [
         'action' => 'responsable-liste',
         'page' => $this->page
@@ -30,6 +30,7 @@ $url_gest_transport = $this->url('sbmgestion/transport');
 $url_gest_change_as = $this->url('sbmgestion/anneescolaire');
 $url_gest_statistiques = $this->url('sbmgestion/statistiques');
 $url_gest_mailchimp = $this->url('sbmmailchimp');
+$url_gest_servicesms = $this->url('sbmservicesms');
 $url_gest_parametre = $this->url('sbmgestion/config');
 
 $pAS = $this->paiements['totalASMode'];
@@ -160,20 +161,22 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 		</div>
 		<div id="menugeneral-inner">
 			<ul>
-				<li><a href="<?= $url_gest_eleves; ?>"><i
-						class="fam-bullet-go"></i>Gestion des élèves</a></li>
+				<li><a href="<?= $url_gest_eleves; ?>"><i class="fam-bullet-go"></i>Gestion
+						des élèves</a></li>
 				<li><a href="<?= $url_gest_responsables; ?>"><i
 						class="fam-bullet-go"></i>Gestion des responsables</a></li>
-				<li><a href="<?= $url_gest_finance; ?>"><i
-						class="fam-bullet-go"></i>Gestion financière</a></li>
-				<li><a href="<?= $url_gest_transport; ?>"><i
-						class="fam-bullet-go"></i>Gestion du réseau de transport</a></li>
-				<li><a href="<?= $url_gest_change_as; ?>"><i
-						class="fam-bullet-go"></i>Choix de l'année scolaire</a></li>
+				<li><a href="<?= $url_gest_finance; ?>"><i class="fam-bullet-go"></i>Gestion
+						financière</a></li>
+				<li><a href="<?= $url_gest_transport; ?>"><i class="fam-bullet-go"></i>Gestion
+						du réseau de transport</a></li>
+				<li><a href="<?= $url_gest_change_as; ?>"><i class="fam-bullet-go"></i>Choix
+						de l'année scolaire</a></li>
 				<li><a href="<?= $url_gest_statistiques; ?>"><i
 						class="fam-bullet-go"></i>Statistiques</a></li>
-				<li><a href="<?= $url_gest_mailchimp; ?>"><i
-						class="fam-bullet-go"></i>Gestion de la liste de diffusion</a></li>
+				<li><a href="<?= $url_gest_servicesms; ?>"><i class="fam-bullet-go"></i>Suivi
+						des envois de SMS</a></li>
+				<li><a href="<?= $url_gest_mailchimp; ?>"><i class="fam-bullet-go"></i>Gestion
+						de la liste de diffusion</a></li>
 				<!-- >li><a href="<?= $url_gest_parametre; ?>"><i
 					class="fam-bullet-go"></i>Configuration et paramètres</a></li-->
 				<li><a href="<?= $url_portail; ?>"><i class="fam-bullet-go"></i>Portail

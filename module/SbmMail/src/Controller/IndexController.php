@@ -27,9 +27,8 @@ class IndexController extends AbstractActionController
 {
 
     /**
-     * Par défaut, page d'envoi d'un message au service de transport.
-     * (à configurer dans config/autolaod/sbm.local.php)
-     *
+     * Par défaut, page d'envoi d'un message au service de transport. (à configurer dans
+     * config/autolaod/sbm.local.php)
      * (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
@@ -107,8 +106,8 @@ class IndexController extends AbstractActionController
     /**
      * Envoie des mails aux transporteurs lorsque des changements ont lieu dans les
      * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement
-     * d'affectation, suppression d'une affectation ou élève rayé)
-     * Cette tâche doit être planifiée dans un cron.
+     * d'affectation, suppression d'une affectation ou élève rayé) Cette tâche doit être
+     * planifiée dans un cron.
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -128,12 +127,12 @@ class IndexController extends AbstractActionController
                     if (count($log) >= 4) {
                         $oservice = $services->getRecord($log[3]);
                         // enregistrement sans doublon
-                        $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                        $destinataires[$oservice->transporteurId][$oservice->lotId] = $oservice->lotId;
                     }
                     if (count($log) == 6) {
                         $oservice = $services->getRecord($log[5]);
                         // enregistrement sans doublon
-                        $destinataires[$oservice->transporteurId][$oservice->serviceId] = $oservice->serviceId;
+                        $destinataires[$oservice->transporteurId][$oservice->lotId] = $oservice->lotId;
                     }
                 }
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';

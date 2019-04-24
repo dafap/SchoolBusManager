@@ -90,7 +90,7 @@ class AbstractActionControllerTest extends TestCase
             $tmp = $this->controller->fantome;
             $this->assertTrue(false, 'Aurait du lancer une exception.');
         } catch (\Exception $e) {
-            $this->assertInstanceOf(\SbmAjax\Controller\Exception::class, $e, 
+            $this->assertInstanceOf(\SbmAjax\Controller\Exception::class, $e,
                 $e->getMessage());
         }
     }

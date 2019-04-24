@@ -8,7 +8,7 @@
  * @filesource AbstractPower2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 4 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Strategy;
@@ -33,7 +33,7 @@ abstract class AbstractPower2 implements StrategyInterface
      *
      * @param array $param
      *            Valeur valide ou tableau d'entiers
-     *            
+     *
      * @throws \SbmCommun\Model\Strategy\Exception\OutOfBoundsException
      *
      * @return int Code numérique indiquant les niveaux d'enseignement
@@ -41,7 +41,7 @@ abstract class AbstractPower2 implements StrategyInterface
     public function extract($param)
     {
         if (is_string($param)) {
-            if (! self::valid($param)) {
+            if (! $this->valid($param)) {
                 ob_start();
                 var_dump($param);
                 $dump = html_entity_decode(strip_tags(ob_get_clean()));
@@ -89,7 +89,7 @@ abstract class AbstractPower2 implements StrategyInterface
      * @param int $value
      *            Valeur à décoder sous forme de tableau de puissances de 2 représentant les
      *            niveaux d'enseignement
-     *            
+     *
      * @return array Tableau d'entiers valides
      */
     public function hydrate($value)

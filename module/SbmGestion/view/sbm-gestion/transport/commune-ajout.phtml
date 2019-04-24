@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/commune-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -39,37 +39,37 @@ $actions = [
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="commune-ajout-communeId" class="row-inner ajout">
+			<div id="wrapper-communeId" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
-			<div id="commune-ajout-nom" class="row-inner ajout">
+			<div id="wrapper-nom" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="commune-ajout-nom-min" class="row-inner ajout">
+			<div id="wrapper-nom-min" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('nom_min')); ?></div>
-			<div id="commune-ajout-alias" class="row-inner ajout">
+			<div id="wrapper-alias" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('alias')); ?></div>
-			<div id="commune-ajout-alias-min" class="row-inner ajout">
+			<div id="wrapper-alias-min" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('alias_min')); ?></div>
-			<div id="commune-ajout-aliasCG" class="row-inner ajout">
+			<div id="wrapper-aliasCG" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="commune-ajout-codepostal" class="row-inner ajout">
+			<div id="wrapper-codepostal" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
-			<div id="commune-ajout-departement" class="row-inner ajout">
+			<div id="wrapper-departement" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('departement')); ?></div>
-			<div id="commune-ajout-canton" class="row-inner ajout">
+			<div id="wrapper-canton" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('canton')); ?></div>
-			<div id="commune-ajout-population" class="row-inner ajout">
+			<div id="wrapper-population" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('population')); ?></div>
-			<div id="commune-ajout-membre" class="row-inner ajout">
+			<div id="wrapper-membre" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('membre')); ?></div>
-			<div id="commune-ajout-desservie" class="row-inner ajout">
+			<div id="wrapper-desservie" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('desservie')); ?></div>
-			<div id="commune-ajout-visible" class="row-inner ajout">
+			<div id="wrapper-visible" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('visible')); ?></div>
-			<div id="commune-ajout-inscriptionenligne" class="row-inner ajout">
+			<div id="wrapper-inscriptionenligne" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('inscriptionenligne')); ?></div>
-			<div id="commune-ajout-paiementenligne" class="row-inner ajout">
+			<div id="wrapper-paiementenligne" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('paiementenligne')); ?></div>
-			<div id="commune-ajout-buttons" class="row-inner ajout">
+			<div id="wrapper-buttons" class="row-inner ajout">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

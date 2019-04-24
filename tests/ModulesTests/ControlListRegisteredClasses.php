@@ -24,7 +24,8 @@ class ControlListRegisteredClasses
     private $service_manager;
 
     /**
-     * Liste des classes à sauter dans le contrôle (Abtract, Interface, Trait, Exception etc)
+     * Liste des classes à sauter dans le contrôle (Abtract, Interface, Trait, Exception
+     * etc)
      *
      * @var string[]
      */

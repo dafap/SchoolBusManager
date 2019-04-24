@@ -27,8 +27,8 @@ class Field extends AbstractSbmForm implements InputFilterProviderInterface
     /**
      *
      * @param boolean $with_merge_id
-     *            si false, l'élément 'merge_id' (Identifiant) n'est pas dans le formulaire
-     *            
+     *            si false, l'élément 'merge_id' (Identifiant) n'est pas dans le
+     *            formulaire
      */
     public function __construct($with_merge_id = true)
     {
@@ -268,9 +268,8 @@ class Field extends AbstractSbmForm implements InputFilterProviderInterface
      *
      * @param int $flag
      *            constante définié dans FormInterface
-     *            
-     * @return array tableau associatif structuré comme l'indique le résultat d'un appel par l'API
-     *         v3
+     * @return array tableau associatif structuré comme l'indique le résultat d'un appel
+     *         par l'API v3
      */
     public function getDataForApi3($flag = FormInterface::VALUES_NORMALIZED)
     {
@@ -288,11 +287,11 @@ class Field extends AbstractSbmForm implements InputFilterProviderInterface
      * Fait un Form::setData($data) à partir d'un tableau structuré selon l'API v3
      *
      * @param array $data
-     *            tableau associatif structuré comme l'indique le résultat d'un appel par l'API v3
+     *            tableau associatif structuré comme l'indique le résultat d'un appel par
+     *            l'API v3
      * @param boolean $with_id
-     *            si vrai alors le merge_id du champ est mis dans les data, sinon il est laissé
-     *            vide
-     *            
+     *            si vrai alors le merge_id du champ est mis dans les data, sinon il est
+     *            laissé vide
      * @return \SbmMailChimp\Form\Field
      */
     public function setDataFromApi3($data, $with_id = true)

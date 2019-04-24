@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
+ * @date 4 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -53,14 +53,32 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'nom',
+                'name' => 'alias',
                 'type' => 'text',
                 'attributes' => [
-                    'id' => 'service-nom',
-                    'class' => 'sbm-width-45c'
+                    'id' => 'service-alias',
+                    'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Désignation du service',
+                    'label' => 'Rabattement sur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'aliasTr',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-aliasTr',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Identifiant sur le véhicule',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -78,9 +96,106 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Désignation au CG',
+                    'label' => 'Désignation au CR',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'lotId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'service-lotId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Lot du marché',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un lot de marché',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'service-nom',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Désignation du service',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'horaire1',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'attributes' => [
+                    'id' => 'circuit-semaine',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'use_hidden_element' => true,
+                    'label' => 'Jours de l\'horaire 1',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-semaine'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'horaire2',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'attributes' => [
+                    'id' => 'circuit-semaine',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'use_hidden_element' => true,
+                    'label' => 'Jours de l\'horaire 2',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-semaine'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'horaire3',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'attributes' => [
+                    'id' => 'circuit-semaine',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'use_hidden_element' => true,
+                    'label' => 'Jours de l\'horaire 3',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-semaine'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -191,7 +306,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Indiquer la nature des cartes à imprimer',
                     'label_attributes' => [
-                        'class' => 'sbm-label'
+                        'class' => 'sbm-label-nature-carte'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -207,7 +322,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
-                    'label' => 'Sur les états du CG',
+                    'label' => 'Sur les états du CR',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -289,9 +404,21 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ],
-            'nom' => [
-                'name' => 'nom',
-                'required' => true,
+            'alias' => [
+                'name' => 'alias',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
+                    ]
+                ]
+            ],
+            'aliasTr' => [
+                'name' => 'aliasTr',
+                'required' => false,
                 'filters' => [
                     [
                         'name' => 'StripTags'
@@ -312,6 +439,30 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                         'name' => 'StringTrim'
                     ]
                 ]
+            ],
+            'nom' => [
+                'name' => 'nom',
+                'required' => true,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
+                    ]
+                ]
+            ],
+            'horaire1' => [
+                'name' => 'horaire1',
+                'required' => true
+            ],
+            'horaire2' => [
+                'name' => 'horaire2',
+                'required' => false
+            ],
+            'horaire3' => [
+                'name' => 'horaire3',
+                'required' => false
             ],
             'transporteurId' => [
                 'name' => 'transporteurId',

@@ -8,7 +8,7 @@
  * @filesource Paiement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -279,9 +279,8 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
     }
 
     /**
-     * Attention, cette adaptation du formulaire doit être appelée dans le constructeur afin qu'on
-     * retrouve la valeur donnée
-     * par la méthode $this->getData()
+     * Attention, cette adaptation du formulaire doit être appelée dans le constructeur
+     * afin qu'on retrouve la valeur donnée par la méthode $this->getData()
      *
      * @param bool $hidden
      */
@@ -359,15 +358,6 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             'montant' => [
                 'name' => 'montant',
                 'required' => true,
-                'filters' => [
-                    [
-                        'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => [
-                            'separateur' => '.',
-                            'car2sep' => ','
-                        ]
-                    ]
-                ],
                 'validators' => [
                     [
                         'name' => 'SbmCommun\Model\Validator\Decimal'

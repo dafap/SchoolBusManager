@@ -14,13 +14,13 @@
  * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
- * 
+ *
  * @project sbm
  * @package SbmGestion/Form/Eleve
  * @filesource AddElevePhase1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 9 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -85,6 +85,28 @@ class AddElevePhase1 extends AbstractSbmForm implements InputFilterProviderInter
                     'label' => 'Prénom de l\'élève',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'sexe',
+                'attributes' => [
+                    'id' => 'eleve-sexe'
+                ],
+                'options' => [
+                    'label' => 'Sexe',
+                    'label_options' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel sexe ?',
+                    'value_options' => [
+                        1 => 'masculin',
+                        2 => 'féminin'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -188,7 +210,6 @@ class AddElevePhase1 extends AbstractSbmForm implements InputFilterProviderInter
 
     /**
      * Description des contraintes, filtres et validateurs
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\InputFilter\InputFilterProviderInterface::getInputFilterSpecification()

@@ -30,7 +30,7 @@
 
 /**
  * Example of alternative configuration file for TCPDF.
- * 
+ *
  * @author Nicola Asuni
  * @package com.tecnick.tcpdf
  * @version 4.9.005
@@ -43,32 +43,32 @@
 define('K_TCPDF_EXTERNAL_CONFIG', true);
 
 /**
- * Installation path (/var/www/tcpdf/).
- * By default it is automatically calculated but you can also set it as a fixed string to improve performances.
+ * Installation path (/var/www/tcpdf/). By default it is automatically calculated but you
+ * can also set it as a fixed string to improve performances.
  */
 // define ('K_PATH_MAIN', '');
 
 /**
- * URL path to tcpdf installation folder (http://localhost/tcpdf/).
- * By default it is automatically set but you can also set it as a fixed string to improve performances.
+ * URL path to tcpdf installation folder (http://localhost/tcpdf/). By default it is
+ * automatically set but you can also set it as a fixed string to improve performances.
  */
 // define ('K_PATH_URL', '');
 
 /**
- * Path for PDF fonts.
- * By default it is automatically set but you can also set it as a fixed string to improve performances.
+ * Path for PDF fonts. By default it is automatically set but you can also set it as a
+ * fixed string to improve performances.
  */
 // define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
 
 /**
- * Default images directory.
- * By default it is automatically set but you can also set it as a fixed string to improve performances.
+ * Default images directory. By default it is automatically set but you can also set it as
+ * a fixed string to improve performances.
  */
 define('K_PATH_IMAGES', dirname(__FILE__) . '/../../public/img/');
 
 /**
- * Deafult image logo used be the default Header() method.
- * Please set here your own logo or an empty string to disable it.
+ * Deafult image logo used be the default Header() method. Please set here your own logo
+ * or an empty string to disable it.
  */
 define('PDF_HEADER_LOGO', 'sbm_logo.gif');
 
@@ -203,24 +203,26 @@ define('K_TITLE_MAGNIFICATION', 1.3);
 define('K_SMALL_RATIO', 2 / 3);
 
 /**
- * Set to true to enable the special procedure used to avoid the overlappind of symbols on Thai language.
+ * Set to true to enable the special procedure used to avoid the overlappind of symbols on
+ * Thai language.
  */
 define('K_THAI_TOPCHARS', false);
 
 /**
- * If true allows to call TCPDF methods using HTML syntax
- * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
+ * If true allows to call TCPDF methods using HTML syntax IMPORTANT: For security reason,
+ * disable this feature if you are printing user HTML content.
  */
 define('K_TCPDF_CALLS_IN_HTML', true);
 
 /**
- * If true adn PHP version is greater than 5, then the Error() method throw new exception instead of terminating the execution.
+ * If true adn PHP version is greater than 5, then the Error() method throw new exception
+ * instead of terminating the execution.
  */
 define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
 
 /**
- * Indiquer la langue utilisée.
- * Elle doit correspondre à un fichier dans src/SbmPdf/Model/lang de nom PDF_LANG . '.php'
+ * Indiquer la langue utilisée. Elle doit correspondre à un fichier dans
+ * src/SbmPdf/Model/lang de nom PDF_LANG . '.php'
  */
 define('PDF_LANG', 'fra');
 

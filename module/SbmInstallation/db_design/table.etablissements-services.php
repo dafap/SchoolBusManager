@@ -2,7 +2,7 @@
 /**
  * Structure de la table des `etablissementsServices`
  *
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.etablissements-services.php

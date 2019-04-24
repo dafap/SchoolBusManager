@@ -19,8 +19,8 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
 {
 
     /**
-     * Correspond au n° de trajet.
-     * Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1 ou 2
+     * Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1
+     * ou 2
      *
      * @var int
      */
@@ -37,11 +37,11 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
      * Constructeur du formulaire
      *
      * @param int $trajet
-     *            Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1
-     *            ou 2
+     *            Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du
+     *            trajet 1 ou 2
      * @param int $phase
-     *            Correspond au n° de phase. Prend la valeur 1 ou 2 selon qu'il s'agit de la phase
-     *            1 ou 2 de l'affectation
+     *            Correspond au n° de phase. Prend la valeur 1 ou 2 selon qu'il s'agit de
+     *            la phase 1 ou 2 de l'affectation
      */
     public function __construct($trajet, $phase)
     {
@@ -329,11 +329,10 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
     }
 
     /**
-     * En phase 1, pour afficher un checkbox disabled avec la valeur de district, car l'élément
-     * district ne fait pas partie du formulaire
-     * Dans tous les cas, la sortie du formulaire doit se faire avec un demandeR1 ou un demandeR2
-     * (selon trajet) égal à 2 (demandé et traité)
-     *
+     * En phase 1, pour afficher un checkbox disabled avec la valeur de district, car
+     * l'élément district ne fait pas partie du formulaire Dans tous les cas, la sortie du
+     * formulaire doit se faire avec un demandeR1 ou un demandeR2 (selon trajet) égal à 2
+     * (demandé et traité)
      * (non-PHPdoc)
      *
      * @see \Zend\Form\Form::setData()

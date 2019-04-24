@@ -8,7 +8,7 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -101,9 +101,9 @@ $data = $this->paginator->getCurrentItems();
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th>Descente</th>
-					<th>Matin</th>
-					<th>Midi</th>
-					<th>Soir</th>
+					<th>H1</th>
+					<th>H2</th>
+					<th>H3</th>
 					<th></th>
 				</tr>
             <?php
@@ -120,8 +120,30 @@ $data = $this->paginator->getCurrentItems();
                 if ($entity->serv_nbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }
+                $horaires = [
+                    'h1' => [
+                        $entity->cir_m1,
+                        $entity->cir_s1,
+                        $entity->cir_z1
+                    ],
+                    'h2' => [
+                        $entity->cir_m2,
+                        $entity->cir_s2,
+                        $entity->cir_z2
+                    ],
+                    'h3' => [
+                        $entity->cir_m3,
+                        $entity->cir_s3,
+                        $entity->cir_z3
+                    ]
+                ];
+                for ($i = 1; $i <= 3; $i ++) {
+                    $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
+                        return $v != '00:00:00';
+                    });
+                }
                 ?>
-                <tr class="<?=$css;?>">
+                <tr class="petit <?=$css;?>">
 					<td class="serviceid">
 						<?=$this->escapeHtml($entity->serviceId);?></td>
 					<td class="nom">
@@ -139,11 +161,11 @@ $data = $this->paginator->getCurrentItems();
 					<td class="station">
 						<?=$this->escapeHtml($entity->sta_nom);?></td>
 					<td class="matin">
-						<?=$entity->cir_m1;?></td>
+						<?=implode('<br>', $horaires['h1']);?></td>
 					<td class="midi">
-						<?=$entity->cir_s2;?></td>
+						<?=implode('<br>', $horaires['h2']);?></td>
 					<td class="soir">
-						<?=$entity->cir_s1;?></td>
+						<?=implode('<br>', $horaires['h3']);?></td>
 					<td class="boutons">
             <?php
                 $hiddens = [

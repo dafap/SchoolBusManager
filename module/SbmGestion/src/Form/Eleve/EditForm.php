@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 sept. 2018
+ * @date 10 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -76,6 +76,28 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'sexe',
+                'attributes' => [
+                    'id' => 'eleve-sexe'
+                ],
+                'options' => [
+                    'label' => 'Sexe',
+                    'label_options' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel sexe ?',
+                    'value_options' => [
+                        1 => 'masculin',
+                        2 => 'féminin'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'type' => 'Zend\Form\Element\Date',
                 'name' => 'dateN',
                 'attributes' => [
@@ -133,6 +155,42 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'regimeId',
+                'options' => [
+                    'label' => 'Régime',
+                    'label_attributes' => [
+                        'class' => 'sbm-radio regime'
+                    ],
+                    'value_options' => [
+                        [
+                            'value' => '0',
+                            'attributes' => [
+                                'id' => 'regimeidradio0dp'
+                            ],
+                            'label' => 'DP',
+                            'label_attributes' => [
+                                'class' => 'label-radio dp'
+                            ]
+                        ],
+                        [
+                            'value' => '1',
+                            'attributes' => [
+                                'id' => 'regimeidradio1in'
+                            ],
+                            'label' => 'interne',
+                            'label_attributes' => [
+                                'class' => 'label-radio interne'
+                            ]
+                        ]
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'district',
                 'attributes' => [
@@ -176,9 +234,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 ],
                 'options' => [
                     /*
-                     * 'label' => 'Motif',
-                     * 'label_attributes' => [
-                     * 'class' => 'sbm-label'
+                     * 'label' => 'Motif', 'label_attributes' => [ 'class' => 'sbm-label'
                      * ],
                      */
                     'error_attributes' => [
@@ -191,7 +247,8 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\MultiCheckbox',
                 'name' => 'joursTransport',
                 'attributes' => [
-                    // pas de id car l'id n'est placé que sur la première option du multicheckbox
+                    // pas de id car l'id n'est placé que sur la première option du
+                    // multicheckbox
                     'class' => 'sbm-multicheckbox'
                 ],
                 'options' => [
@@ -222,22 +279,11 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 ]
             ]);
         /*
-         * $this->add([
-         * 'type' => 'Zend\Form\Element\Checkbox',
-         * 'name' => 'gratuit',
-         * 'attributes' => [
-         * 'id' => 'eleve-gratuit'
-         * ],
-         * 'options' => [
-         * 'label' => 'Gratuité',
-         * 'label_attributes' => [
-         * 'class' => 'sbm-label checkbox'
-         * ],
-         * 'use_hidden_element' => true,
-         * 'checked_value' => '1',
-         * 'unchecked_value' => '0'
-         * ]
-         * ]);
+         * $this->add([ 'type' => 'Zend\Form\Element\Checkbox', 'name' => 'gratuit',
+         * 'attributes' => [ 'id' => 'eleve-gratuit' ], 'options' => [ 'label' =>
+         * 'Gratuité', 'label_attributes' => [ 'class' => 'sbm-label checkbox' ],
+         * 'use_hidden_element' => true, 'checked_value' => '1', 'unchecked_value' => '0'
+         * ] ]);
          */
         $this->add(
             [
@@ -326,25 +372,6 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ],
                     'format' => 'Y-m-d'
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Select',
-                'name' => 'tarifId',
-                'attributes' => [
-                    'id' => 'eleve-tarifId',
-                    'class' => 'sbm-width-45c'
-                ],
-                'options' => [
-                    'label' => 'Tarif',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Choisissez un tarif',
-                    'error_attributes' => [
-                        'class' => 'sbm_error'
-                    ]
                 ]
             ]);
         $this->add(
@@ -578,13 +605,11 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'motifRefusR1',
                 'attributes' => [
                     'id' => 'eleve-motifRefusR1',
-                    'class' => 'sbm-width-35c'
+                    'class' => 'demande-motifRefus'
                 ],
                 'options' => [
                     /*
-                     * 'label' => 'Motif',
-                     * 'label_attributes' => [
-                     * 'class' => 'sbm-label'
+                     * 'label' => 'Motif', 'label_attributes' => [ 'class' => 'sbm-label'
                      * ],
                      */
                     'error_attributes' => [
@@ -598,13 +623,11 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'motifRefusR2',
                 'attributes' => [
                     'id' => 'eleve-motifRefusR2',
-                    'class' => 'sbm-width-35c'
+                    'class' => 'demande-motifRefus'
                 ],
                 'options' => [
                     /*
-                     * 'label' => 'Motif',
-                     * 'label_attributes' => [
-                     * 'class' => 'sbm-label'
+                     * 'label' => 'Motif', 'label_attributes' => [ 'class' => 'sbm-label'
                      * ],
                      */
                     'error_attributes' => [
@@ -672,7 +695,6 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
 
     /**
      * Description des contraintes, filtres et validateurs
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\InputFilter\InputFilterProviderInterface::getInputFilterSpecification()

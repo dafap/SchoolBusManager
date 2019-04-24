@@ -8,8 +8,8 @@
  * @filesource vue.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 mars 2019
+ * @version 2019-2.5.0
  */
 return [
     'name' => 'stations',
@@ -47,6 +47,9 @@ return [
             ],
             [
                 'field' => 'ouverte'
+            ],
+            [
+                'field' => 'equipement'
             ]
         ],
         'from' => [

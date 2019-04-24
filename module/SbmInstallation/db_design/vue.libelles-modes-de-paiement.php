@@ -30,8 +30,7 @@ return [
             'table' => 'libelles', // obligatoire mais peut être une vue
             'type' => 'system', // optionnel, 'table' par défaut
             'alias' => 'mode'
-        ] // optionnel
-,
+        ], // optionnel
         'where' => [
             [
                 'literal',

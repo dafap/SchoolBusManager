@@ -62,24 +62,10 @@ Mail : %s</br>
 </div>
 EOT;
 
-return sprintf($format,
-    $this->as,
-    $this->etat['dateDebut']->format('d/m/Y'),
-    $this->etat['dateFin']->format('d/m/Y'),
-    $this->etat['echeance']->format('d/m/Y'),
-    $nb_communes_membres,
-    $this->client['name'],
-    $communes_membres,
-    $liste_permanences,
-    $nb_communes_membres,
-    $this->telephone($this->client['telephone']),
-    $this->client['email'],
-    $this->client['name'],
-    $this->client['adresse'][0],
-    $this->client['adresse'][1],
-    $this->client['code_postal'],
-    $this->client['commune'],
-    $nb_communes_membres,
-    $this->url_ts_region,
-    $this->url_ts_region
-    );
+return sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'),
+    $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'),
+    $nb_communes_membres, $this->client['name'], $communes_membres, $liste_permanences,
+    $nb_communes_membres, $this->telephone($this->client['telephone']),
+    $this->client['email'], $this->client['name'], $this->client['adresse'][0],
+    $this->client['adresse'][1], $this->client['code_postal'], $this->client['commune'],
+    $nb_communes_membres, $this->url_ts_region, $this->url_ts_region);

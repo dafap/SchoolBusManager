@@ -133,7 +133,8 @@ abstract class AbstractEffectifType3 extends AbstractEffectif
     }
 
     /**
-     * On ne doit pas éliminer les correspondances quand on compte par circuit ou par station.
+     * On ne doit pas éliminer les correspondances quand on compte par circuit ou par
+     * station.
      *
      * @param bool $sanspreinscrits
      * @return array

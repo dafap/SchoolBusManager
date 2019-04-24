@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -112,8 +112,9 @@ echo $this->flashMessenger()->render('default');
 			<tbody>
 				<tr>
 					<th>Code</th>
-					<th>Nom</th>
 					<th>Alias</th>
+					<th>Nom</th>
+					<th>Titulaire</th>
 					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
@@ -167,13 +168,15 @@ echo $this->flashMessenger()->render('default');
                     ]
                 ];
                 ?>
-                <tr class="<?=$css;?>">
+                <tr class="petit <?=$css;?>">
 					<td class="serviceid">
 						<?=$this->escapeHtml($service->serviceId);?></td>
+					<td class="aliascg">
+						<?=$this->escapeHtml($service->alias);?></td>
 					<td class="nom">
 						<?=$this->escapeHtml($service->nom);?></td>
-					<td class="aliascg">
-						<?=$this->escapeHtml($service->aliasCG);?></td>
+					<td class="titulaire">
+						<?=$this->escapeHtml($service->titulaire);?></td>
 					<td class="transporteur">
 						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="operateur">

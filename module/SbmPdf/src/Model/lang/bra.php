@@ -1,24 +1,25 @@
 <?php
-//============================================================+
-// File name   : eng.php
-// Begin       : 2004-03-03
+// ============================================================+
+// File name : eng.php
+// Begin : 2004-03-03
 // Last Update : 2010-10-26
 //
 // Description : Language module for TCPDF
-//               (contains translated texts)
-//               Brazilian
+// (contains translated texts)
+// Brazilian
 //
 // Author: Nicola Asuni
 //
 // (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com LTD
-//               www.tecnick.com
-//               info@tecnick.com
-//============================================================+
+// Nicola Asuni
+// Tecnick.com LTD
+// www.tecnick.com
+// info@tecnick.com
+// ============================================================+
 
 /**
  * TCPDF language file (contains translated texts).
+ *
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Brazilian
  * @author Nicola Asuni
@@ -26,9 +27,8 @@
  */
 
 // Brazilian
-
 global $l;
-$l =[];
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

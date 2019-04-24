@@ -14,16 +14,18 @@
  * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 9 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/eleve/eleve-ajout.css'));
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
@@ -49,7 +51,7 @@ $telephonesR2 = array_filter(
     ]);
 $url_map = $this->url('sbmgestion/eleve',
     [
-        'action' => 'localisation',
+        'action' => 'eleve-localisation',
         'page' => $this->page
     ]);
 $url_ici = $this->url('sbmgestion/eleve',
@@ -78,7 +80,7 @@ $actions = [
         <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
-	<div id="fiche-inner">
+	<div id="fiche-inner" class="edit">
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('eleveId'));?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
@@ -91,39 +93,45 @@ $actions = [
 					<div>
 						<div class="label">Prénom de l'élève</div>
 							<?= $this->data['prenom']?></div>
-					<div>
-						<div class="label">Date de naissance</div>
+					<div id="ligne-dateN-sexe">
+						<div class="table-cell">
+							<div class="label">Date de naissance</div>
 							<?= $this->data['dateN']?></div>
-					<div id="wrapper-joursTransport" class="row-inner edit">
+						<div class="table-cell">
+							<div class="label2">Sexe</div>
+							<?= $this->data['sexe'] == 1 ? 'masculin' : 'féminin'?></div>
+					</div>
+					<div id="wrapper-joursTransport" class="row-inner">
 						<?= $this->formRow($this->form->get('joursTransport'));?></div>
-				</div>
-				<div id="commun-col2" class="float-left left-10px">
-					<div id="wrapper-etablissementId" class="row-inner edit">
-					<?= $this->formRow($this->form->get('etablissementId'));?>
-					<br> <span class='etablissement-precedent'>
-						<?= $this->scolarite_precedente['etablissement']; ?></span>
-					</div>
-					<div id="wrapper-classeId" class="row-inner edit">
-					<?= $this->formRow($this->form->get('classeId'));?>
-					<span class='classe-precedente'><?= $this->scolarite_precedente['classe']; ?></span>
-					</div>
-					<div id="commun-col2-periode" class="clearfix">
-						<div id="wrapper-anneeComplete" class="row-inner edit float-left">
-							<?= $this->formRow($this->form->get('anneeComplete'));?></div>
-						<div id="wrapper-dateDebut" class="row-inner edit float-left">
+					<div id="wrapper-anneeComplete" class="row-inner">
+						<?= $this->formRow($this->form->get('anneeComplete'));?></div>
+					<div id="ligne-dateDebut-dateFin" class="clearfix">
+						<div id="wrapper-dateDebut" class="row-inner float-left">
 							<?= $this->formRow($this->form->get('dateDebut'));?></div>
-						<div id="wrapper-dateFin" class="row-inner edit float-left">
+						<div id="wrapper-dateFin" class="row-inner float-left">
 							<?= $this->formRow($this->form->get('dateFin'));?></div>
 					</div>
-					<div id="commun-col2-derogation" class="clearfix">
-						<div id="wrapper-derogation" class="row-inner edit float-left">
-							<?= $this->formRow($this->form->get('derogation'));?></div>
-						<div id="wrapper-motifDerogation"
-							class="row-inner edit float-left">
-								<?= $this->formRow($this->form->get('motifDerogation'));?></div>
+				</div>
+				<div id="commun-col2" class="float-left left-10px">
+					<div id="wrapper-etablissementId" class="row-inner">
+					<?= $this->formRow($this->form->get('etablissementId'));?>
+					<br> <span class='annee-precedente etablissement-precedent'>
+						<?= $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
-					<div id="wrapper-tarifId" class="row-inner edit">
-					<?= $this->formRow($this->form->get('tarifId'));?>
+					<div id="ligne-classe-regime">
+						<div id="wrapper-classeId" class="row-inner table-cell">
+							<?= $this->formRow($this->form->get('classeId'));?>
+							<span class='annee-precedente classe-precedente'>
+							<?= $this->scolarite_precedente['classe']; ?></span>
+						</div>
+						<div id="wrapper-regime" class="row-inner table-cell">
+							<?=$this->formRow($this->form->get('regimeId'));?></div>
+					</div>
+					<div id="commun-col2-derogation" class="clearfix">
+						<div id="wrapper-derogation" class="row-inner float-left">
+							<?= $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-motifDerogation" class="row-inner float-left">
+								<?= $this->formRow($this->form->get('motifDerogation'));?></div>
 					</div>
 				</div>
 				<div id="commun-col3" class="float-left left-10px">
@@ -166,11 +174,11 @@ $actions = [
 					<div class="clearfix">
 						<div id="wrapper-distanceR1" class="float-left top-18px">
 							<?= $this->formRow($this->form->get('distanceR1'));?></div>
-						<div id="wrapper-demandeR1" class="row-inner edit float-left">
+						<div id="wrapper-demandeR1" class="row-inner float-left">
 							<?= $this->formRow($this->form->get('demandeR1'));?></div>
 					</div>
-				</div>  
-				<?php if (!empty($data['responsable2Id'])) : ?>				
+				</div>
+				<?php if (!empty($data['responsable2Id'])) : ?>
 				<div id="responsables-col2" class="float-left cols left-10px">
 				    <?= $this->formHidden($this->form->get('responsable2Id'));?>
 					<div class="gras">Responsable 2</div>
@@ -190,16 +198,16 @@ $actions = [
 					<div class="clearfix">
 						<div id="wrapper-distanceR2" class="float-left top-18px">
 							<?= $this->formRow($this->form->get('distanceR2'));?></div>
-						<div id="wrapper-demandeR2" class="row-inner edit float-left">
+						<div id="wrapper-demandeR2" class="row-inner float-left">
 							<?= $this->formRow($this->form->get('demandeR2'));?></div>
 					</div>
 				</div>
 				<?php endif;?>
 			</div>
-			<div id="wrapper-commentaire" class="row-inner edit top-6px">
+			<div id="wrapper-commentaire" class="row-inner top-6px">
 				<?= $this->formRow($this->form->get('commentaire'));?></div>
 		</fieldset>
-		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
+		<div id="wrapper-buttons" class="row-inner left-95px">
         	<?= $this->formSubmit($this->form->get('submit'));?>
         	<?= $this->formSubmit($this->form->get('cancel'));?>
     </div>

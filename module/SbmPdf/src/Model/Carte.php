@@ -44,7 +44,8 @@ class Carte extends Etiquette
             $this->positions[$i]['style'] = 'main';
             $y += $delta;
         }
-        $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le label du
+        $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le
+                                             // label du
                                              // docfield
         $y = $this->positions[2]['y'] = 15; // en mm
                                             // zone 2
@@ -67,8 +68,7 @@ class Carte extends Etiquette
     }
 
     /**
-     * version 2016 sur page A4 (revue en fév.
-     * 2019 pour paramétrer le nombre de lignes)
+     * version 2016 sur page A4 (revue en fév. 2019 pour paramétrer le nombre de lignes)
      *
      * @param number $delta
      * @param number $hauteur_utile

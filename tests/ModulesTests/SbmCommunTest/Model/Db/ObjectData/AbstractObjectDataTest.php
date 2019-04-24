@@ -27,12 +27,14 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         try {
             $object_data->setArrayMask(null);
             $this->assertTrue(false, 'Le setArrayMask aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // doit provoquer une exception
         try {
             $object_data->setArrayMask('property');
             $this->assertTrue(false, 'Le setArrayMask aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // ne doit pas provoquer une exception
         try {
             $object_data->setArrayMask([]);
@@ -40,7 +42,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
                 'property'
             ]);
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le setArrayMask n\'aurait pas du lancer une exception.');
         }
     }
@@ -134,13 +136,14 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         try {
             $object_data->testId = $new_value;
             $this->assertTrue(false, 'Le set aurait du provoquer une exception (1).');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         $object_data->setDataSource($init_data, 'array');
         $object_data->setArrayMask($array_mask);
         try {
             $object_data->testId = $new_value;
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Il ne devrait pas y avoir d\'exception car le paramètre est déjà affecté.');
         }
         $array_mask = [
@@ -161,7 +164,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             $result = $object_data->bar;
             $this->assertEquals($new_value, $result, 'Résultat incorrect.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Il ne devrait pas y avoir d\'exception car le paramètre est autorise dans array_mask.');
         }
         $result = false;
@@ -193,7 +196,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             $result = $object_data->testId;
             $this->assertEquals($new_value, $result, 'Résultat incorrect.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Il ne devrait pas y avoir d\'exception car le parametre est deja affecte.');
         }
         try {
@@ -201,7 +204,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             $result = $object_data->foo;
             $this->assertEquals($new_value, $result, 'Résultat incorrect.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Il ne devrait pas y avoir d\'exception car le parametre est autorise dans array_mask.');
         }
         $result = false;
@@ -263,12 +266,14 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         try {
             $object_data->setAreNullable(null);
             $this->assertTrue(false, 'Le setAreNullable aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // doit provoquer une exception
         try {
             $object_data->setAreNullable('property');
             $this->assertTrue(false, 'Le setAreNullable aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // ne doit pas provoquer une exception
         try {
             $object_data->setAreNullable([]);
@@ -276,7 +281,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
                 'property'
             ]);
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le setAreNullable n\'aurait pas du lancer une exception.');
         }
     }
@@ -290,10 +295,10 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $object_data = new TestAsset\ObjectSbmObjectData();
         try {
             $object_data->setArrayMask($mask);
-            $this->assertEquals($mask, $object_data->getArrayMask(), 
+            $this->assertEquals($mask, $object_data->getArrayMask(),
                 'getArrayMask ne rend pas le bon masque.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'getArrayMask ou setArrayMask n\'auraient pas du lancer une exception.');
         }
     }
@@ -308,21 +313,23 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         // doit provoquer une exception
         try {
             $object_data->setCalculateFields(null);
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le setCalculateFields aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // doit provoquer une exception
         try {
             $object_data->setCalculateFields('property');
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le setCalculateFields aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // ne doit pas provoquer une exception
         try {
             $object_data->setCalculateFields([]);
             $object_data->setCalculateFields($calculate_fields);
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le setCalculateFields n\'aurait pas du lancer une exception.');
         }
     }
@@ -337,33 +344,36 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         // doit provoquer une exception
         try {
             $object_data->addCalculateField(null);
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le addCalculateField aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // doit provoquer une exception
         try {
             $object_data->addCalculateField([]);
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le addCalculateField aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // doit provoquer une exception
         try {
             $object_data->addCalculateField([
                 'property'
             ]);
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'Le addCalculateField aurait du lancer une exception.');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         // ne doit pas provoquer une exception
         foreach ($calculate_fields as $field) {
             try {
                 $object_data->addCalculateField($field);
             } catch (Exception $e) {
-                $this->assertTrue(false, 
+                $this->assertTrue(false,
                     'Le addCalculateField n\'aurait pas du lancer une exception.');
             }
         }
-        $this->assertEquals($calculate_fields, $object_data->getCalculateFields(), 
+        $this->assertEquals($calculate_fields, $object_data->getCalculateFields(),
             'La liste des champs calcules est incorrecte.');
     }
 
@@ -379,7 +389,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             $object_data->addCalculateField('property3');
             $expected = $calculate_fields;
             $expected[] = 'property3';
-            $this->assertEquals($expected, $object_data->getCalculateFields(), 
+            $this->assertEquals($expected, $object_data->getCalculateFields(),
                 'La liste des champs calcules est incorrecte.');
         } catch (Exception $e) {
             $this->assertTrue(false, 'Il n\'aurait pas du avoir d\'exception.');
@@ -443,7 +453,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($array, 'array');
-        $this->assertEquals($array, $object_data->getArrayCopy(), 
+        $this->assertEquals($array, $object_data->getArrayCopy(),
             'GetArrayCopy ne renvoie pas le bon tableau.');
     }
 
@@ -457,7 +467,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $data = new \ArrayIterator($array);
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($data, '\ArrayIterator');
-        $this->assertEquals($array, $object_data->getArrayCopy(), 
+        $this->assertEquals($array, $object_data->getArrayCopy(),
             'GetArrayCopy ne renvoie pas le bon tableau.');
     }
 
@@ -471,10 +481,10 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource(new MyData($array), '\IteratorAggregate');
-        $this->assertEquals($array, $object_data->getArrayCopy(), 
+        $this->assertEquals($array, $object_data->getArrayCopy(),
             'GetArrayCopy ne renvoie pas le bon tableau.');
         $object_data->setDataSource(new MyData(), '\iteratorAggregate');
-        $this->assertEquals([], $object_data->getArrayCopy(), 
+        $this->assertEquals([], $object_data->getArrayCopy(),
             'GetArrayCopy ne renvoie pas un tableau vide.');
     }
 
@@ -487,7 +497,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($array, 'array');
-        $this->assertInstanceOf('\Iterator', $object_data->getIterator(), 
+        $this->assertInstanceOf('\Iterator', $object_data->getIterator(),
             'Ne renvoie pas un Iterator.');
     }
 
@@ -501,7 +511,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $data = new \ArrayIterator($array);
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($data, '\ArrayIterator');
-        $this->assertInstanceOf('\Iterator', $object_data->getIterator(), 
+        $this->assertInstanceOf('\Iterator', $object_data->getIterator(),
             'Ne renvoie pas un Iterator.');
     }
 
@@ -515,10 +525,10 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource(new MyData($array), '\IteratorAggregate');
-        $this->assertInstanceOf('\Iterator', $object_data->getIterator(), 
+        $this->assertInstanceOf('\Iterator', $object_data->getIterator(),
             'Ne renvoie pas un Iterator.');
         $object_data->setDataSource(new MyData(), '\IteratorAggregate');
-        $this->assertInstanceOf('\Iterator', $object_data->getIterator(), 
+        $this->assertInstanceOf('\Iterator', $object_data->getIterator(),
             'Ne renvoie pas un Iterator.');
     }
 
@@ -531,9 +541,9 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($array, 'array');
-        $this->assertTrue(isset($object_data->property2), 
+        $this->assertTrue(isset($object_data->property2),
             'Pourtant la propriété `property2` existe !');
-        $this->assertFalse(isset($object_data->property9), 
+        $this->assertFalse(isset($object_data->property9),
             'Pourtant la propriété `property9` n\'existe pas !');
     }
 
@@ -547,9 +557,9 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $data = new \ArrayIterator($array);
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($data, '\ArrayIterator');
-        $this->assertTrue(isset($object_data->property2), 
+        $this->assertTrue(isset($object_data->property2),
             'Pourtant la propriété `property2` existe !');
-        $this->assertFalse(isset($object_data->property9), 
+        $this->assertFalse(isset($object_data->property9),
             'Pourtant la propriété `property9` n\'existe pas !');
     }
 
@@ -563,9 +573,9 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource(new MyData($array), '\IteratorAggregate');
-        $this->assertTrue(isset($object_data->property2), 
+        $this->assertTrue(isset($object_data->property2),
             'Pourtant la propriété `property2` existe !');
-        $this->assertFalse(isset($object_data->property9), 
+        $this->assertFalse(isset($object_data->property9),
             'Pourtant la propriété `property9` n\'existe pas !');
     }
 
@@ -579,7 +589,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($array, 'array');
         unset($object_data->property2);
-        $this->assertFalse(isset($object_data->property2), 
+        $this->assertFalse(isset($object_data->property2),
             'Pourtant la propriété `property2` ne devrait plus exister !');
         unset($object_data->property9);
     }
@@ -595,7 +605,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($data, '\ArrayIterator');
         unset($object_data->property2);
-        $this->assertFalse(isset($object_data->property2), 
+        $this->assertFalse(isset($object_data->property2),
             'Pourtant la propriété `property2` ne devrait plus exister !');
         unset($object_data->property9);
     }
@@ -611,7 +621,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource(new MyData($array), '\IteratorAggregate');
         unset($object_data->property2);
-        $this->assertFalse(isset($object_data->property2), 
+        $this->assertFalse(isset($object_data->property2),
             'Pourtant la propriété `property2` ne devrait plus exister !');
         unset($object_data->property9);
     }
@@ -625,7 +635,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($array, 'array');
-        $this->assertEquals(3, $object_data->count(), 
+        $this->assertEquals(3, $object_data->count(),
             'La méthode `count()` renvoie une valeur incorrecte.');
     }
 
@@ -639,7 +649,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $data = new \ArrayIterator($array);
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource($data, '\ArrayIterator');
-        $this->assertEquals(3, $object_data->count(), 
+        $this->assertEquals(3, $object_data->count(),
             'La méthode `count()` renvoie une valeur incorrecte.');
     }
 
@@ -653,7 +663,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setDataSource(new MyData($array), '\IteratorAggregate');
-        $this->assertEquals(4, $object_data->count(), 
+        $this->assertEquals(4, $object_data->count(),
             'La méthode `count()` renvoie une valeur incorrecte.');
     }
 
@@ -673,7 +683,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $object_data2 = clone $object_data1;
         $object_data1->setDataSource($array1);
         $object_data2->setDataSource($array2);
-        $this->assertTrue($object_data2->isUnchanged($object_data1), 
+        $this->assertTrue($object_data2->isUnchanged($object_data1),
             'Aurait du dire que les objets sont inchanges car les proprietes communes ont les memes valeurs.');
     }
 
@@ -697,10 +707,10 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             'test1Id' => 123,
             'test2Id' => '0123344D'
         ];
-        $this->assertEquals($id1, $object_data->getValidId($id1), 
+        $this->assertEquals($id1, $object_data->getValidId($id1),
             'id est un tableau associatif');
         $id2 = '123|0123344D';
-        $this->assertEquals($id1, $object_data->getValidId($id2), 
+        $this->assertEquals($id1, $object_data->getValidId($id2),
             'id est une cle composee sous forme d\'une chaine de caracteres dont les parties sont separees par |.');
     }
 
@@ -713,17 +723,17 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->exchangeArray($array);
-        
+
         // scalaire
         $id_field_name = 'testId';
         $object_data->setIdFieldName($id_field_name);
-        $this->assertEquals(123, $object_data->getId(), 
+        $this->assertEquals(123, $object_data->getId(),
             'Ne renvoie pas le bon Id (entier)');
         $id_field_name = 'property2';
         $object_data->setIdFieldName($id_field_name);
-        $this->assertEquals('foo', $object_data->getId(), 
+        $this->assertEquals('foo', $object_data->getId(),
             'Ne renvoie pas le bon Id (chaine)');
-        
+
         // tableau
         $id_field_name = [
             'testId',
@@ -732,7 +742,7 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         $expected = $array;
         unset($expected['property3']);
         $object_data->setIdFieldName($id_field_name);
-        $this->assertEquals($expected, $object_data->getId(), 
+        $this->assertEquals($expected, $object_data->getId(),
             'Ne renvoie pas le bon Id (tableau)');
     }
 
@@ -750,28 +760,28 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
         ];
         $object_data = new TestAsset\ObjectSbmObjectData();
         $object_data->setArrayMask($mask);
-        
+
         // test avec un tableau
         try {
             $object_data->exchangeArray($data);
             unset($data['property2']);
-            $this->assertEquals($data, $object_data->getArrayCopy(), 
+            $this->assertEquals($data, $object_data->getArrayCopy(),
                 'L\'affectation est incorrecte.');
         } catch (Exception $e) {
             $this->assertTrue(false, 'array: Il n\'aurait pas du y avoir d\'exception.');
         }
-        
+
         // test avec un ArrayIterator
         try {
             $object_data->exchangeArray(new \ArrayIterator($data));
             unset($data['property2']);
-            $this->assertEquals($data, $object_data->getArrayCopy(), 
+            $this->assertEquals($data, $object_data->getArrayCopy(),
                 'L\'affectation est incorrecte.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'ArrayIterator: Il n\'aurait pas du y avoir d\'exception.');
         }
-        
+
         // test avec un IteratorAggregate
         try {
             $data = [
@@ -781,10 +791,10 @@ class AbstractObjectDataTest extends PHPUnit_Framework_TestCase
             ];
             $object_data->exchangeArray(new myData($data));
             unset($data['property2']);
-            $this->assertEquals($data, $object_data->getArrayCopy(), 
+            $this->assertEquals($data, $object_data->getArrayCopy(),
                 'L\'affectation est incorrecte.');
         } catch (Exception $e) {
-            $this->assertTrue(false, 
+            $this->assertTrue(false,
                 'IteratorInterface: Il n\'aurait pas du y avoir d\'exception.');
         }
     }

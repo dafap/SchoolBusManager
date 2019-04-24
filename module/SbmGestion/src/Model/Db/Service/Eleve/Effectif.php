@@ -15,6 +15,7 @@ namespace SbmGestion\Model\Db\Service\Eleve;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmGestion\Model\Db\Service\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -93,14 +94,12 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' => value,
-     *         'papier' => value, 'transportes' => value]</code>
-     *         <br>où<ul>
-     *         <li><b>nom</b> est le nom de la classe</li>
-     *         <li><b>alias</b> est l'aliasCG</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' =>
+     *         value, 'papier' => value, 'transportes' => value]</code> <br>où<ul>
+     *         <li><b>nom</b> est le nom de la classe</li> <li><b>alias</b> est
+     *         l'aliasCG</li> <li><b>inscrits</b> est le nombre d'inscrits</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
      *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
@@ -126,13 +125,13 @@ class Effectif extends AbstractQuery implements FactoryInterface
      *
      * @param int $millesime
      *            Millesime sur lequel porte les calculs
-     *
      * @return \Zend\Db\Sql\Select
      */
     private function selectStatistiquesParClasse($millesime)
     {
         // Tous les inscrits
-        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS `inscrits`
+        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS
+        // `inscrits`
         // FROM `sbm_t_scolarites`
         // WHERE inscrit = 1 AND `millesime` = '2015'
         // GROUP BY `sbm_t_scolarites`.`classeId`
@@ -149,7 +148,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
             ->where($whereInscrits);
 
         // Inscrits par internet
-        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS `internet`
+        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS
+        // `internet`
         // FROM `sbm_t_scolarites`
         // WHERE inscrit = 1 AND internet = 1 AND `millesime` = '2015'
         // GROUP BY `sbm_t_scolarites`.`classeId`
@@ -168,7 +168,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
             ->where($whereInternet);
 
         // Inscrits par fiche papier
-        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS `papier`
+        // SELECT `sbm_t_scolarites`.`classeId`, count(`sbm_t_scolarites`.`eleveId`) AS
+        // `papier`
         // FROM `sbm_t_scolarites`
         // WHERE inscrit = 1 AND internet = 0 AND `millesime` = '2015'
         // GROUP BY `sbm_t_scolarites`.`classeId`
@@ -191,7 +192,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
         // INNER JOIN `sbm_t_affectations` ON
         // `sbm_t_affectations`.`millesime`=`sbm_t_scolarites`.`millesime` AND
         // `sbm_t_affectations`.`eleveId`=`sbm_t_scolarites`.`eleveId`
-        // WHERE `sbm_t_scolarites`.`millesime` = '2015' AND `sbm_t_scolarites`.`inscrit` = 1
+        // WHERE `sbm_t_scolarites`.`millesime` = '2015' AND `sbm_t_scolarites`.`inscrit`
+        // = 1
         $whereTransportes = new Where();
         $whereTransportes->equalTo('sco.millesime', $millesime)->literal('inscrit = 1');
         $selectElevesTransportes = $this->sql->select(
@@ -261,14 +263,12 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' => value,
-     *         'papier' => value, 'transportes' => value]</code>
-     *         <br>où<ul>
-     *         <li><b>nom</b> est le nom de la classe</li>
-     *         <li><b>alias</b> est l'aliasCG</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' =>
+     *         value, 'papier' => value, 'transportes' => value]</code> <br>où<ul>
+     *         <li><b>nom</b> est le nom de la classe</li> <li><b>alias</b> est
+     *         l'aliasCG</li> <li><b>inscrits</b> est le nombre d'inscrits</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
      *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
@@ -291,7 +291,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     private function selectStatistiquesParCommune($millesime)
     {
-        // Requête donnant les eleveId sans doublons des élèves transportés pour un millesime donné
+        // Requête donnant les eleveId sans doublons des élèves transportés pour un
+        // millesime donné
         $select_affectations = $this->sql->select($this->tableName['affectations'])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns([
@@ -390,18 +391,16 @@ class Effectif extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Le champs de la requête rendue sont le nom de la commune et l'effectif sous le nom demandé.
+     * Le champs de la requête rendue sont le nom de la commune et l'effectif sous le nom
+     * demandé.
      *
      * @param string $compteur
      *            Nom du champ renvoyant l'effectif
      * @param Select $select_eleves
      * @param Select $select_responsables
      * @param array $where
-     *            Les conditions peuvent être :<ul>
-     *            <li>internet = 1</li>
-     *            <li>internet = 0</li>
-     *            <li>affectation Is Not Null</li></ul>
-     *
+     *            Les conditions peuvent être :<ul> <li>internet = 1</li> <li>internet =
+     *            0</li> <li>affectation Is Not Null</li></ul>
      * @return \Zend\Db\Sql\Select
      */
     private function selectPartielParCommune($compteur, Select $select_eleves,
@@ -456,15 +455,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente<br>
+     * Renvoie un tableau statistiques pour l'année en cours et pour l'année
+     * précédente<br>
      *
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => [])</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         [])</code><br> où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['nom' => nnn, 'inscrits' => value, 'internet' => value, 'papier' =>
-     *         value]</code>
-     *         <br>où<ul>
-     *         <li><b>nom</b> est le code du circuit</li>
+     *         value]</code> <br>où<ul> <li><b>nom</b> est le code du circuit</li>
      *         <li><b>inscrits</b> est le nombre d'élèves transportés</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li><ul>
@@ -488,48 +486,27 @@ class Effectif extends AbstractQuery implements FactoryInterface
     private function selectStatistiquesParCircuit($millesime)
     {
         /*
-         * SELECT ser.serviceId AS nom, inscrits, internet, papier
-         * FROM `sbm_t_services` ser
-         * LEFT JOIN (
-         * SELECT serviceId, count(sub1.eleveId) AS inscrits
-         * FROM (
-         * SELECT DISTINCT s.serviceId, aff.eleveId
-         * FROM `sbm_t_services` s
-         * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-         * aff.service2Id=s.serviceId
-         * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND
-         * aff.eleveId=sco.eleveId
-         * WHERE aff.millesime=2015 AND sco.inscrit=1
-         * ) sub1
-         * GROUP BY serviceId
-         * ) tmp1 ON tmp1.serviceId=ser.serviceId
-         * LEFT JOIN (
-         * SELECT serviceId, count(sub2.eleveId) AS internet
-         * FROM (
-         * SELECT DISTINCT s.serviceId, aff.eleveId
-         * FROM `sbm_t_services` s
-         * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-         * aff.service2Id=s.serviceId
-         * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND
-         * aff.eleveId=sco.eleveId
-         * WHERE aff.millesime=2015 AND sco.inscrit=1 AND sco.internet=1
-         * ) sub2
-         * GROUP BY serviceId
-         * ) tmp2 ON tmp2.serviceId=ser.serviceId
-         * LEFT JOIN (
-         * SELECT serviceId, count(sub3.eleveId) AS papier
-         * FROM (
-         * SELECT DISTINCT s.serviceId, aff.eleveId
-         * FROM `sbm_t_services` s
-         * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-         * aff.service2Id=s.serviceId
-         * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND
-         * aff.eleveId=sco.eleveId
-         * WHERE aff.millesime=2015 AND sco.inscrit=1 AND internet=0
-         * ) sub3
-         * GROUP BY serviceId
-         * ) tmp3 ON tmp3.serviceId=ser.serviceId
-         * GROUP BY ser.serviceId
+         * SELECT ser.serviceId AS nom, inscrits, internet, papier FROM `sbm_t_services`
+         * ser LEFT JOIN ( SELECT serviceId, count(sub1.eleveId) AS inscrits FROM ( SELECT
+         * DISTINCT s.serviceId, aff.eleveId FROM `sbm_t_services` s LEFT JOIN
+         * `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
+         * aff.service2Id=s.serviceId LEFT JOIN `sbm_t_scolarites`sco ON
+         * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE
+         * aff.millesime=2015 AND sco.inscrit=1 ) sub1 GROUP BY serviceId ) tmp1 ON
+         * tmp1.serviceId=ser.serviceId LEFT JOIN ( SELECT serviceId, count(sub2.eleveId)
+         * AS internet FROM ( SELECT DISTINCT s.serviceId, aff.eleveId FROM
+         * `sbm_t_services` s LEFT JOIN `sbm_t_affectations`aff ON
+         * aff.service1Id=s.serviceId OR aff.service2Id=s.serviceId LEFT JOIN
+         * `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND
+         * aff.eleveId=sco.eleveId WHERE aff.millesime=2015 AND sco.inscrit=1 AND
+         * sco.internet=1 ) sub2 GROUP BY serviceId ) tmp2 ON tmp2.serviceId=ser.serviceId
+         * LEFT JOIN ( SELECT serviceId, count(sub3.eleveId) AS papier FROM ( SELECT
+         * DISTINCT s.serviceId, aff.eleveId FROM `sbm_t_services` s LEFT JOIN
+         * `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
+         * aff.service2Id=s.serviceId LEFT JOIN `sbm_t_scolarites`sco ON
+         * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE
+         * aff.millesime=2015 AND sco.inscrit=1 AND internet=0 ) sub3 GROUP BY serviceId )
+         * tmp3 ON tmp3.serviceId=ser.serviceId GROUP BY ser.serviceId
          */
         $subSelectBase = $this->sql->select([
             's' => $this->tableName['services']
@@ -598,16 +575,13 @@ class Effectif extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Renvoie une sous requête de la forme
-     * SELECT serviceId, count($alias.eleveId) AS inscrits
-     * FROM $sub AS $alias
-     * GROUP BY serviceId
+     * Renvoie une sous requête de la forme SELECT serviceId, count($alias.eleveId) AS
+     * inscrits FROM $sub AS $alias GROUP BY serviceId
      *
      * @param string $alias
      *            nom de l'alias (les alias doivent être distincts)
      * @param Select $sub
      *            requête dérivée de $subSelectBase
-     *
      * @return \Zend\Db\Sql\Select
      */
     private function subSelectCircuitGroup($alias, $fieldNameCount, Select $sub)
@@ -628,14 +602,12 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' => value,
-     *         'papier' => value, 'transportes' => value]</code>
-     *         <br>où<ul>
-     *         <li><b>nom</b> est le nom de la classe</li>
-     *         <li><b>alias</b> est l'aliasCG</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['nom' => nnn, 'alias' => aaa, 'inscrits' => value, 'internet' =>
+     *         value, 'papier' => value, 'transportes' => value]</code> <br>où<ul>
+     *         <li><b>nom</b> est le nom de la classe</li> <li><b>alias</b> est
+     *         l'aliasCG</li> <li><b>inscrits</b> est le nombre d'inscrits</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
      *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
@@ -781,13 +753,12 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
      *         <code>['commune' => nnn, 'circuit' => aaa, 'transportes' => value)</code>
-     *         <br>où<ul>
-     *         <li><b>commune</b> est le nom de la commune</li>
-     *         <li><b>circuit</b> est le code du service</li>
-     *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
+     *         <br>où<ul> <li><b>commune</b> est le nom de la commune</li>
+     *         <li><b>circuit</b> est le code du service</li> <li><b>transportes</b> est
+     *         le nombre d'élève transportés</li></ul>
      */
     public function statistiquesParCommuneCircuit()
     {
@@ -807,55 +778,34 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     /**
      * Renvoie une requête de la forme
-     *
-     * SELECT com.nom AS commune, COALESCE(tmp1.serviceId, '') AS circuit, COALESCE(tmp1.inscrits,
-     * 0) AS inscrits, COALESCE(tmp2.internet, 0) AS internet, COALESCE(tmp3.papier,0) AS papier
-     * FROM `sbm_t_communes` com
-     *
-     * LEFT JOIN (
-     * SELECT serviceId, communeId, count(sub1.eleveId) AS inscrits
-     * FROM (
-     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId
-     * FROM `sbm_t_services` ser
+     * SELECT com.nom AS commune, COALESCE(tmp1.serviceId, '') AS circuit,
+     * COALESCE(tmp1.inscrits, 0) AS inscrits, COALESCE(tmp2.internet, 0) AS internet,
+     * COALESCE(tmp3.papier,0) AS papier FROM `sbm_t_communes` com
+     * LEFT JOIN ( SELECT serviceId, communeId, count(sub1.eleveId) AS inscrits FROM (
+     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId FROM `sbm_t_services` ser
      * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=ser.serviceId OR
-     * aff.service2Id=ser.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1
-     * ) sub1
-     * GROUP BY communeId, serviceId
-     * ) tmp1 ON tmp1.communeId=com.communeId
-     *
-     * LEFT JOIN (
-     * SELECT serviceId, communeId, count(sub2.eleveId) AS internet
-     * FROM (
-     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId
-     * FROM `sbm_t_services` ser
+     * aff.service2Id=ser.serviceId LEFT JOIN `sbm_t_responsables`res ON
+     * res.responsableId=aff.responsableId LEFT JOIN `sbm_t_scolarites`sco ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 ) sub1 GROUP BY communeId, serviceId ) tmp1 ON
+     * tmp1.communeId=com.communeId
+     * LEFT JOIN ( SELECT serviceId, communeId, count(sub2.eleveId) AS internet FROM (
+     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId FROM `sbm_t_services` ser
      * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=ser.serviceId OR
-     * aff.service2Id=ser.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1 AND sco.internet=1
-     * ) sub2
-     * GROUP BY communeId, serviceId
-     * ) tmp2 ON tmp2.communeId=com.communeId AND tmp2.serviceId=tmp1.serviceId
-     *
-     * LEFT JOIN (
-     * SELECT serviceId, communeId, count(sub3.eleveId) AS papier
-     * FROM (
-     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId
-     * FROM `sbm_t_services` ser
+     * aff.service2Id=ser.serviceId LEFT JOIN `sbm_t_responsables`res ON
+     * res.responsableId=aff.responsableId LEFT JOIN `sbm_t_scolarites`sco ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 AND sco.internet=1 ) sub2 GROUP BY communeId, serviceId ) tmp2 ON
+     * tmp2.communeId=com.communeId AND tmp2.serviceId=tmp1.serviceId
+     * LEFT JOIN ( SELECT serviceId, communeId, count(sub3.eleveId) AS papier FROM (
+     * SELECT DISTINCT res.communeId, ser.serviceId, aff.eleveId FROM `sbm_t_services` ser
      * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=ser.serviceId OR
-     * aff.service2Id=ser.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1 AND sco.internet=0
-     * ) sub3
-     * GROUP BY communeId, serviceId
-     * ) tmp3 ON tmp3.communeId=com.communeId AND tmp3.serviceId=tmp1.serviceId
-     *
-     * WHERE `desservie` = 1
-     * ORDER BY com.nom
+     * aff.service2Id=ser.serviceId LEFT JOIN `sbm_t_responsables`res ON
+     * res.responsableId=aff.responsableId LEFT JOIN `sbm_t_scolarites`sco ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 AND sco.internet=0 ) sub3 GROUP BY communeId, serviceId ) tmp3 ON
+     * tmp3.communeId=com.communeId AND tmp3.serviceId=tmp1.serviceId
+     * WHERE `desservie` = 1 ORDER BY com.nom
      *
      * @param int $millesime
      *
@@ -963,14 +913,12 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['commune' => nnn, 'circuit' => aaa, 'inscrits' => value, 'internet' => value,
-     *         'papier' => value, 'transportes' => value)</code>
-     *         <br>où<ul>
-     *         <li><b>commune</b> est le nom de la commune</li>
-     *         <li><b>circuit</b> est le code du service</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['commune' => nnn, 'circuit' => aaa, 'inscrits' => value, 'internet'
+     *         => value, 'papier' => value, 'transportes' => value)</code> <br>où<ul>
+     *         <li><b>commune</b> est le nom de la commune</li> <li><b>circuit</b> est le
+     *         code du service</li> <li><b>inscrits</b> est le nombre d'inscrits</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
      *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
@@ -993,56 +941,36 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     /**
      * Renvoie une requête SQL de la forme suivante :
-     *
-     * SELECT ser.serviceId AS circuit, COALESCE(tmp1.commune, '') AS commune, COALESCE(inscrits,
-     * 0) AS inscrits, COALESCE(internet, 0) AS internet, COALESCE(papier, 0) AS papier
-     * FROM `sbm_t_services` ser
-     * LEFT JOIN (
-     * SELECT serviceId, commune, count(sub1.eleveId) AS inscrits
-     * FROM (
-     * SELECT DISTINCT s.serviceId, com.nom AS commune, aff.eleveId
-     * FROM `sbm_t_services` s
-     * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-     * aff.service2Id=s.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_communes` com ON res.communeId=com.communeId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1
-     * ) sub1
-     * GROUP BY serviceId, commune
-     * ) tmp1 ON tmp1.serviceId=ser.serviceId
-     *
-     * LEFT JOIN (
-     * SELECT serviceId, commune, count(sub2.eleveId) AS internet
-     * FROM (
-     * SELECT DISTINCT s.serviceId, com.nom AS commune, aff.eleveId
-     * FROM `sbm_t_services` s
-     * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-     * aff.service2Id=s.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_communes` com ON res.communeId=com.communeId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1 AND sco.internet=1
-     * ) sub2
-     * GROUP BY serviceId, commune
-     * ) tmp2 ON tmp2.serviceId=tmp1.serviceId AND tmp2.commune=tmp1.commune
-     *
-     * LEFT JOIN (
-     * SELECT serviceId, commune, count(sub3.eleveId) AS papier
-     * FROM (
-     * SELECT DISTINCT s.serviceId, com.nom AS commune, aff.eleveId
-     * FROM `sbm_t_services` s
-     * LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
-     * aff.service2Id=s.serviceId
-     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId
-     * LEFT JOIN `sbm_t_communes` com ON res.communeId=com.communeId
-     * LEFT JOIN `sbm_t_scolarites`sco ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1 AND internet=0
-     * ) sub3
-     * GROUP BY serviceId, commune
-     * ) tmp3 ON tmp3.serviceId=tmp1.serviceId AND tmp3.commune=tmp1.commune
-     * ORDER BY ser.serviceId, tmp1.commune
-     *
+     * SELECT ser.serviceId AS circuit, COALESCE(tmp1.commune, '') AS commune,
+     * COALESCE(inscrits, 0) AS inscrits, COALESCE(internet, 0) AS internet,
+     * COALESCE(papier, 0) AS papier FROM `sbm_t_services` ser LEFT JOIN ( SELECT
+     * serviceId, commune, count(sub1.eleveId) AS inscrits FROM ( SELECT DISTINCT
+     * s.serviceId, com.nom AS commune, aff.eleveId FROM `sbm_t_services` s LEFT JOIN
+     * `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR aff.service2Id=s.serviceId
+     * LEFT JOIN `sbm_t_responsables`res ON res.responsableId=aff.responsableId LEFT JOIN
+     * `sbm_t_communes` com ON res.communeId=com.communeId LEFT JOIN `sbm_t_scolarites`sco
+     * ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 ) sub1 GROUP BY serviceId, commune ) tmp1 ON
+     * tmp1.serviceId=ser.serviceId
+     * LEFT JOIN ( SELECT serviceId, commune, count(sub2.eleveId) AS internet FROM (
+     * SELECT DISTINCT s.serviceId, com.nom AS commune, aff.eleveId FROM `sbm_t_services`
+     * s LEFT JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
+     * aff.service2Id=s.serviceId LEFT JOIN `sbm_t_responsables`res ON
+     * res.responsableId=aff.responsableId LEFT JOIN `sbm_t_communes` com ON
+     * res.communeId=com.communeId LEFT JOIN `sbm_t_scolarites`sco ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 AND sco.internet=1 ) sub2 GROUP BY serviceId, commune ) tmp2 ON
+     * tmp2.serviceId=tmp1.serviceId AND tmp2.commune=tmp1.commune
+     * LEFT JOIN ( SELECT serviceId, commune, count(sub3.eleveId) AS papier FROM ( SELECT
+     * DISTINCT s.serviceId, com.nom AS commune, aff.eleveId FROM `sbm_t_services` s LEFT
+     * JOIN `sbm_t_affectations`aff ON aff.service1Id=s.serviceId OR
+     * aff.service2Id=s.serviceId LEFT JOIN `sbm_t_responsables`res ON
+     * res.responsableId=aff.responsableId LEFT JOIN `sbm_t_communes` com ON
+     * res.communeId=com.communeId LEFT JOIN `sbm_t_scolarites`sco ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 AND internet=0 ) sub3 GROUP BY serviceId, commune ) tmp3 ON
+     * tmp3.serviceId=tmp1.serviceId AND tmp3.commune=tmp1.commune ORDER BY ser.serviceId,
+     * tmp1.commune
      * où 2015 est remplacé par le millesime donné.
      *
      * @param int $millesime
@@ -1150,21 +1078,18 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv, 'classe' =>
-     *         ccc, 'inscrits' => value, 'internet' => value, 'papier' => value, 'transportes' =>
-     *         value)</code>
-     *         <br>où<ul>
-     *         <li><b>etablissementId</b> est l'id de l'établissement</li>
-     *         <li><b>etablissement</b> est le nom de l'établissement</li>
-     *         <li><b>commune</b> est la commune de l'établissement</li>
-     *         <li><b>classe</b> est le nom de la classe</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
-     *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
-     *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
-     *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
-     *
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv,
+     *         'classe' => ccc, 'inscrits' => value, 'internet' => value, 'papier' =>
+     *         value, 'transportes' => value)</code> <br>où<ul> <li><b>etablissementId</b>
+     *         est l'id de l'établissement</li> <li><b>etablissement</b> est le nom de
+     *         l'établissement</li> <li><b>commune</b> est la commune de
+     *         l'établissement</li> <li><b>classe</b> est le nom de la classe</li>
+     *         <li><b>inscrits</b> est le nombre d'inscrits</li> <li><b>internet</b> est
+     *         le nombre d'inscrits par internet</li> <li><b>papier</b> est le nombre
+     *         d'inscrits par fiche papier</li> <li><b>transportes</b> est le nombre
+     *         d'élève transportés</li></ul>
      * @return array
      */
     public function statistiquesParEtablissementClasse()
@@ -1190,26 +1115,11 @@ class Effectif extends AbstractQuery implements FactoryInterface
                     $etablissementId = $annee_precedente[$ip]['etablissementId'];
                 }
                 /*
-                 * $total = [
-                 * 'annee_courante' => [
-                 * 'etablissement' => '',
-                 * 'commune' => 'TOTAL',
-                 * 'classe' => '',
-                 * 'inscrits' => 0,
-                 * 'internet' => 0,
-                 * 'papier' => 0,
-                 * 'transportes' => 0
-                 * ],
-                 * 'annee_precedente' => [
-                 * 'etablissement' => '',
-                 * 'commune' => 'TOTAL',
-                 * 'classe' => '',
-                 * 'inscrits' => 0,
-                 * 'internet' => 0,
-                 * 'papier' => 0,
-                 * 'transportes' => 0
-                 * ]
-                 * ];
+                 * $total = [ 'annee_courante' => [ 'etablissement' => '', 'commune' =>
+                 * 'TOTAL', 'classe' => '', 'inscrits' => 0, 'internet' => 0, 'papier' =>
+                 * 0, 'transportes' => 0 ], 'annee_precedente' => [ 'etablissement' => '',
+                 * 'commune' => 'TOTAL', 'classe' => '', 'inscrits' => 0, 'internet' => 0,
+                 * 'papier' => 0, 'transportes' => 0 ] ];
                  */
             }
             if (isset($annee_courante[$ic]['etablissementId']) &&
@@ -1219,7 +1129,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
                     // même établissement pour les 2 tableaux
                     if ($annee_courante[$ic]['classe'] == $annee_precedente[$ip]['classe']) {
                         // même classe pour les 2 tableaux
-                        // $total['annee_courante']['inscrits'] = $annee_courante[$ic]['inscrits'];
+                        // $total['annee_courante']['inscrits'] =
+                        // $annee_courante[$ic]['inscrits'];
                         $result['annee_courante'][] = $annee_courante[$ic ++];
                         // $total['annee_precedente']['inscrits'] =
                         // $annee_precedente[$ip]['inscrits'];
@@ -1279,47 +1190,30 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     /**
      * Renvoie une requête de la forme :
-     *
-     * SELECT eta.etablissementId, eta.nom AS etablissement, com.nom AS commune, COALESCE(cla.nom,
-     * '') AS classe, COALESCE(tmp1.inscrits, 0) AS inscrits, COALESCE(tmp2.internet, 0) AS
-     * internet, COALESCE(tmp3.papier,0) AS papier, COALESCE(tmp4.transportes, 0) AS transportes
-     * FROM `sbm_t_etablissements` eta
-     * JOIN `sbm_t_communes` com ON eta.communeId=com.communeId
-     *
-     * LEFT JOIN (
-     * SELECT sub1.etablissementId, sub1.classeId, count(sub1.eleveId) AS inscrits
-     * FROM `sbm_t_scolarites` sub1
-     * WHERE sub1.millesime=2015 AND sub1.inscrit=1
-     * GROUP BY etablissementId, classeId
-     * ) tmp1 ON tmp1.etablissementId=eta.etablissementId
-     *
-     * LEFT JOIN (
-     * SELECT sub2.etablissementId, sub2.classeId, count(sub2.eleveId) AS internet
-     * FROM `sbm_t_scolarites` sub2
-     * WHERE sub2.millesime=2015 AND sub2.inscrit=1 AND sub2.internet=1
-     * GROUP BY etablissementId, classeId
-     * ) tmp2 ON tmp2.etablissementId=eta.etablissementId AND tmp2.classeId=tmp1.classeId
-     *
-     * LEFT JOIN (
-     * SELECT sub3.etablissementId, sub3.classeId, count(sub3.eleveId) AS papier
-     * FROM `sbm_t_scolarites` sub3
-     * WHERE sub3.millesime=2015 AND sub3.inscrit=1 AND sub3.internet=0
-     * GROUP BY etablissementId, classeId
-     * ) tmp3 ON tmp3.etablissementId=eta.etablissementId AND tmp3.classeId=tmp1.classeId
-     *
-     * LEFT JOIN (
-     * SELECT sub4.etablissementId, sub4.classeId, count(sub4.eleveId) AS transportes
-     * FROM (
-     * SELECT DISTINCT sco.etablissementId, sco.classeId, sco.eleveId
-     * FROM `sbm_t_scolarites` sco
-     * JOIN `sbm_t_affectations`aff ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1
-     * ) sub4
-     * GROUP BY etablissementId, classeId
-     * ) tmp4 ON tmp4.etablissementId=eta.etablissementId AND tmp4.classeId=tmp1.classeId
-     *
-     * LEFT JOIN `sbm_t_classes` cla ON tmp1.classeId=cla.classeId
-     * WHERE eta.desservie = 1
+     * SELECT eta.etablissementId, eta.nom AS etablissement, com.nom AS commune,
+     * COALESCE(cla.nom, '') AS classe, COALESCE(tmp1.inscrits, 0) AS inscrits,
+     * COALESCE(tmp2.internet, 0) AS internet, COALESCE(tmp3.papier,0) AS papier,
+     * COALESCE(tmp4.transportes, 0) AS transportes FROM `sbm_t_etablissements` eta JOIN
+     * `sbm_t_communes` com ON eta.communeId=com.communeId
+     * LEFT JOIN ( SELECT sub1.etablissementId, sub1.classeId, count(sub1.eleveId) AS
+     * inscrits FROM `sbm_t_scolarites` sub1 WHERE sub1.millesime=2015 AND sub1.inscrit=1
+     * GROUP BY etablissementId, classeId ) tmp1 ON
+     * tmp1.etablissementId=eta.etablissementId
+     * LEFT JOIN ( SELECT sub2.etablissementId, sub2.classeId, count(sub2.eleveId) AS
+     * internet FROM `sbm_t_scolarites` sub2 WHERE sub2.millesime=2015 AND sub2.inscrit=1
+     * AND sub2.internet=1 GROUP BY etablissementId, classeId ) tmp2 ON
+     * tmp2.etablissementId=eta.etablissementId AND tmp2.classeId=tmp1.classeId
+     * LEFT JOIN ( SELECT sub3.etablissementId, sub3.classeId, count(sub3.eleveId) AS
+     * papier FROM `sbm_t_scolarites` sub3 WHERE sub3.millesime=2015 AND sub3.inscrit=1
+     * AND sub3.internet=0 GROUP BY etablissementId, classeId ) tmp3 ON
+     * tmp3.etablissementId=eta.etablissementId AND tmp3.classeId=tmp1.classeId
+     * LEFT JOIN ( SELECT sub4.etablissementId, sub4.classeId, count(sub4.eleveId) AS
+     * transportes FROM ( SELECT DISTINCT sco.etablissementId, sco.classeId, sco.eleveId
+     * FROM `sbm_t_scolarites` sco JOIN `sbm_t_affectations`aff ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 ) sub4 GROUP BY etablissementId, classeId ) tmp4 ON
+     * tmp4.etablissementId=eta.etablissementId AND tmp4.classeId=tmp1.classeId
+     * LEFT JOIN `sbm_t_classes` cla ON tmp1.classeId=cla.classeId WHERE eta.desservie = 1
      * ORDER BY com.nom, eta.niveau, eta.nom, cla.nom DESC
      *
      * @param int $millesime
@@ -1471,21 +1365,18 @@ class Effectif extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie un tableau statistiques pour l'année en cours et pour l'année précédente
      *
-     * @return array <br><code>['annee_courante' => [], 'annee_precedente' => []]</code><br>
-     *         où chaque tableau est composé de lignes de la forme :<br>
-     *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv, 'classe' =>
-     *         ccc, 'inscrits' => value, 'internet' => value, 'papier' => value, 'transportes' =>
-     *         value)</code>
-     *         <br>où<ul>
-     *         <li><b>classe</b> est le nom de la classe</li>
-     *         <li><b>etablissementId</b> est l'id de l'établissement</li>
-     *         <li><b>etablissement</b> est le nom de l'établissement</li>
-     *         <li><b>commune</b> est la commune de l'établissement</li>
-     *         <li><b>inscrits</b> est le nombre d'inscrits</li>
+     * @return array <br><code>['annee_courante' => [], 'annee_precedente' =>
+     *         []]</code><br> où chaque tableau est composé de lignes de la forme :<br>
+     *         <code>['etablissementId' => id, 'etablissement' =>nnn, 'commune' => vvv,
+     *         'classe' => ccc, 'inscrits' => value, 'internet' => value, 'papier' =>
+     *         value, 'transportes' => value)</code> <br>où<ul> <li><b>classe</b> est le
+     *         nom de la classe</li> <li><b>etablissementId</b> est l'id de
+     *         l'établissement</li> <li><b>etablissement</b> est le nom de
+     *         l'établissement</li> <li><b>commune</b> est la commune de
+     *         l'établissement</li> <li><b>inscrits</b> est le nombre d'inscrits</li>
      *         <li><b>internet</b> est le nombre d'inscrits par internet</li>
      *         <li><b>papier</b> est le nombre d'inscrits par fiche papier</li>
      *         <li><b>transportes</b> est le nombre d'élève transportés</li></ul>
-     *
      * @return array
      */
     public function statistiquesParClasseEtablissement()
@@ -1511,26 +1402,11 @@ class Effectif extends AbstractQuery implements FactoryInterface
                     $classe = $annee_precedente[$ip]['classe'];
                 }
                 /*
-                 * $total = [
-                 * 'annee_courante' => [
-                 * 'classe' => '',
-                 * 'etablissement' => '',
-                 * 'commune' => 'TOTAL',
-                 * 'inscrits' => 0,
-                 * 'internet' => 0,
-                 * 'papier' => 0,
-                 * 'transportes' => 0
-                 * ],
-                 * 'annee_precedente' => [
-                 * 'classe' => '',
-                 * 'etablissement' => '',
-                 * 'commune' => 'TOTAL',
-                 * 'inscrits' => 0,
-                 * 'internet' => 0,
-                 * 'papier' => 0,
-                 * 'transportes' => 0
-                 * ]
-                 * ];
+                 * $total = [ 'annee_courante' => [ 'classe' => '', 'etablissement' => '',
+                 * 'commune' => 'TOTAL', 'inscrits' => 0, 'internet' => 0, 'papier' => 0,
+                 * 'transportes' => 0 ], 'annee_precedente' => [ 'classe' => '',
+                 * 'etablissement' => '', 'commune' => 'TOTAL', 'inscrits' => 0,
+                 * 'internet' => 0, 'papier' => 0, 'transportes' => 0 ] ];
                  */
             }
             if (isset($annee_courante[$ic]['classe']) &&
@@ -1602,51 +1478,31 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     /**
      * Renvoie une requête de la forme :
-     *
      * SELECT cla.nom AS classe, COALESCE(eta.etablissementId, '') AS etablissementId,
      * COALESCE(eta.nom, '') AS etablissement, COALESCE(com.nom, '') AS commune,
      * COALESCE(tmp1.inscrits, 0) AS inscrits, COALESCE(tmp2.internet, 0) AS internet,
      * COALESCE(tmp3.papier,0) AS papier, COALESCE(tmp4.transportes, 0) AS transportes
      * FROM `sbm_t_classes` cla
-     *
-     * LEFT JOIN (
-     * SELECT sub1.classeId, sub1.etablissementId, count(sub1.eleveId) AS inscrits
-     * FROM `sbm_t_scolarites` sub1
-     * WHERE sub1.millesime=2015 AND sub1.inscrit=1
-     * GROUP BY classeId, etablissementId
-     * ) tmp1 ON tmp1.classeId=cla.classeId
-     *
-     * LEFT JOIN (
-     * SELECT sub2.classeId, sub2.etablissementId, count(sub2.eleveId) AS internet
-     * FROM `sbm_t_scolarites` sub2
-     * WHERE sub2.millesime=2015 AND sub2.inscrit=1 AND sub2.internet=1
-     * GROUP BY classeId, etablissementId
-     * ) tmp2 ON tmp2.classeId=cla.classeId AND tmp2.etablissementId=tmp1.etablissementId
-     *
-     * LEFT JOIN (
-     * SELECT sub3.classeId, sub3.etablissementId, count(sub3.eleveId) AS papier
-     * FROM `sbm_t_scolarites` sub3
-     * WHERE sub3.millesime=2015 AND sub3.inscrit=1 AND sub3.internet=0
-     * GROUP BY classeId, etablissementId
-     * ) tmp3 ON tmp3.classeId=cla.classeId AND tmp3.etablissementId=tmp1.etablissementId
-     *
-     * LEFT JOIN (
-     * SELECT sub4.etablissementId, sub4.classeId, count(sub4.eleveId) AS transportes
-     * FROM (
-     * SELECT DISTINCT sco.etablissementId, sco.classeId, sco.eleveId
-     * FROM `sbm_t_scolarites` sco
-     * JOIN `sbm_t_affectations`aff ON aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId
-     * WHERE aff.millesime=2015 AND sco.inscrit=1
-     * ) sub4
-     * GROUP BY classeId, etablissementId
-     * ) tmp4 ON tmp4.classeId=cla.classeId AND tmp4.etablissementId=tmp1.etablissementId
-     *
+     * LEFT JOIN ( SELECT sub1.classeId, sub1.etablissementId, count(sub1.eleveId) AS
+     * inscrits FROM `sbm_t_scolarites` sub1 WHERE sub1.millesime=2015 AND sub1.inscrit=1
+     * GROUP BY classeId, etablissementId ) tmp1 ON tmp1.classeId=cla.classeId
+     * LEFT JOIN ( SELECT sub2.classeId, sub2.etablissementId, count(sub2.eleveId) AS
+     * internet FROM `sbm_t_scolarites` sub2 WHERE sub2.millesime=2015 AND sub2.inscrit=1
+     * AND sub2.internet=1 GROUP BY classeId, etablissementId ) tmp2 ON
+     * tmp2.classeId=cla.classeId AND tmp2.etablissementId=tmp1.etablissementId
+     * LEFT JOIN ( SELECT sub3.classeId, sub3.etablissementId, count(sub3.eleveId) AS
+     * papier FROM `sbm_t_scolarites` sub3 WHERE sub3.millesime=2015 AND sub3.inscrit=1
+     * AND sub3.internet=0 GROUP BY classeId, etablissementId ) tmp3 ON
+     * tmp3.classeId=cla.classeId AND tmp3.etablissementId=tmp1.etablissementId
+     * LEFT JOIN ( SELECT sub4.etablissementId, sub4.classeId, count(sub4.eleveId) AS
+     * transportes FROM ( SELECT DISTINCT sco.etablissementId, sco.classeId, sco.eleveId
+     * FROM `sbm_t_scolarites` sco JOIN `sbm_t_affectations`aff ON
+     * aff.millesime=sco.millesime AND aff.eleveId=sco.eleveId WHERE aff.millesime=2015
+     * AND sco.inscrit=1 ) sub4 GROUP BY classeId, etablissementId ) tmp4 ON
+     * tmp4.classeId=cla.classeId AND tmp4.etablissementId=tmp1.etablissementId
      * LEFT JOIN `sbm_t_etablissements` eta ON tmp1.etablissementId=eta.etablissementId
-     *
      * LEFT JOIN `sbm_t_communes` com ON eta.communeId=com.communeId
-     *
-     * WHERE eta.desservie = 1
-     * ORDER BY cla.niveau, cla.nom DESC, com.nom, eta.nom
+     * WHERE eta.desservie = 1 ORDER BY cla.niveau, cla.nom DESC, com.nom, eta.nom
      *
      * @param int $millesime
      *

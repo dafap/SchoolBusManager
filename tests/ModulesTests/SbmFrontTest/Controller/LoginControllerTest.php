@@ -42,27 +42,22 @@ class LoginControllerTest extends AbstractHttpControllerTestCase
         $controller = $controller_manager->get(LoginController::class);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->form_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+        $this->assertInstanceOf(AuthenticationServiceFactory::class,
             $controller->authenticate);
         $this->assertInstanceOf(ResponsableManager::class, $controller->responsable);
-        $this->assertInstanceOf(DistanceEtablissements::class, 
+        $this->assertInstanceOf(DistanceEtablissements::class,
             $controller->distance_etablissements);
         $this->assertTrue(is_array($controller->config_cartes));
         $this->assertTrue(is_array($controller->mail_config));
         $this->assertTrue(is_array($controller->img));
         $this->assertTrue(is_array($controller->client));
     }
-    
+
     /*
-     * public function testCheckselectionuserActionCanBeAccessed()
-     * {
-     * $this->dispatch('/');
-     * $this->assertResponseStatusCode(200);
-     *
-     * $this->assertModuleName('SbmFront');
+     * public function testCheckselectionuserActionCanBeAccessed() { $this->dispatch('/');
+     * $this->assertResponseStatusCode(200); $this->assertModuleName('SbmFront');
      * $this->assertControllerName('SbmFront\Controller\IndexController');
      * $this->assertControllerClass('IndexController');
-     * $this->assertMatchedRouteName('home');
-     * }
+     * $this->assertMatchedRouteName('home'); }
      */
 }

@@ -8,39 +8,30 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 12 avr. 2019
  * @version 2019-2.5.0
- */
-
-/**
- * ***************************************************************************
- * structure de la table 'tarifs'
- * Table InnoDB encodée utf8
- * Description des champs
- * - tarifId est un auto-incrément
- * - montant est le montant du tarif en euros
- * - nom est le libellé de ce tarif
- * - attributs indique les attributs de ce tarif selon la règle suivante
- * 1 tarif annuel
- * 2 tarif semestriel
- * 4 tarif trimestriel
- * 8 tarif mensuel
- * 16 tarif de la grille 1
- * 32 tarif de la grille 2
- * 64 tarif de la grille 3
- * 128 tarif de la grille 4
- * 256 tarif utilisé pour le paiement par prélèvement
- * 512 tarif utilisé pour le paiement en ligne par CB
- * 1024 tarif utilisé pour le paiement direct par chèque, CB ou en espèces
- * 2048 tarif utilisé pour le paiement par virement
- * Les attributs de 1 à 8 sont exclusifs
- * Les attributs de 16 à 128 sont exclusifs
- * Les attributs de 256 à 2048 sont exclusifs
- * Ces 3 groupes d'attibuts se combinent par "Et binaire"
- * ***************************************************************************
  */
 use SbmBase\Model\StdLib;
 
+/**
+ * ***************************************************************************
+ *
+ * @formatter off
+ * structure de la table 'tarifs' Table InnoDB encodée utf8
+ * Description des champs
+ * - tarifId est un auto-incrément
+ * - selection est un drapeau (boolean)
+ * - montant est le montant du tarif en euros
+ * - nom est le libellé de ce tarif
+ * - rythme, inutilisé à Millau Grands Causses, indique le rythme de paiement selon la
+ *   règle suivante 1 annuel 2 semestriel 4 trimestriel 8 mensuel
+ * - grille est le numéro de la grille tarifaire. Une stratégie permet de décoder.
+ * - mode est le code du mode de calcul : 1 dégressif, 2 linéaire à l'unité
+ * - seuil est le seuil de déclanchement du tarif lorsqu'il est dégressif
+ * Un index est posé sur le champ 'grille'
+ * @formatter on
+ * ***************************************************************************
+ */
 return [
     'name' => 'tarifs',
     'drop' => false,
@@ -55,10 +46,19 @@ return [
             'nom' => 'varchar(48) NOT NULL',
             'rythme' => 'int(4) NOT NULL DEFAULT "1"',
             'grille' => 'int(4) NOT NULL DEFAULT "1"',
-            'mode' => 'int(4) NOT NULL DEFAULT "3"'
+            'mode' => 'int(4) NOT NULL DEFAULT "3"',
+            'seuil' => 'int(4) NOT NULL DEFAULT "1"'
         ],
         'primary_key' => [
             'tarifId'
+        ],
+        'keys' => [
+            'idx_grille' => [
+                'unique' => false,
+                'fields' => [
+                    'grille'
+                ]
+            ]
         ],
         'engine' => 'InnoDb',
         'charset' => 'utf8',

@@ -9,7 +9,7 @@
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 9 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -60,6 +60,7 @@ return [
             'dateFin' => 'date NOT NULL',
             'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
+            'grilleTarif' => 'int(4) NOT NULL DEFAULT "1"',
             'tarifId' => 'int(11) NOT NULL DEFAULT "0"',
             'organismeId' => 'int(11) NOT NULL DEFAULT "0"',
             'regimeId' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -71,6 +72,14 @@ return [
         'primary_key' => [
             'millesime',
             'eleveId'
+        ],
+        'keys' => [
+            'SCOLARITE_grilleTarif' => [
+                'unique' => false,
+                'fields' => [
+                    'grilleTarif'
+                ]
+            ]
         ],
         'foreign key' => [
             [
@@ -118,19 +127,6 @@ return [
                     'table' => 'communes',
                     'fields' => [
                         'communeId'
-                    ],
-                    'on' => [
-                        'update' => 'CASCADE',
-                        'delete' => 'RESTRICT'
-                    ]
-                ]
-            ],
-            [
-                'key' => 'tarifId',
-                'references' => [
-                    'table' => 'tarifs',
-                    'fields' => [
-                        'tarifId'
                     ],
                     'on' => [
                         'update' => 'CASCADE',

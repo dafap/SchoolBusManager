@@ -2,85 +2,27 @@
 /**
  * Requêtes donnant l'affectation ou la pré-affectation d'un élève
  *
- * 
+ *
  * @project sbm
  * @package package_name
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 12 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Zend\Paginator\Paginator;
-use Zend\Paginator\Adapter\DbSelect;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class AffectationsServicesStations implements FactoryInterface
+class AffectationsServicesStations extends AbstractQuery
 {
 
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var int
-     */
-    protected $millesime;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Select
-     */
-    protected $select;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from(
             [
@@ -101,17 +43,16 @@ class AffectationsServicesStations implements FactoryInterface
                 'station2Id' => 'station2Id',
                 'service2Id' => 'service2Id'
             ]);
-        return $this;
     }
 
     /**
-     * Renvoie le ou les codes des services affectés à l'élève pour le domicile de ce responsable
+     * Renvoie le ou les codes des services affectés à l'élève pour le domicile de ce
+     * responsable
      *
      * @param int $eleveId
      * @param int $responsableId
      * @param int $trajet
      *            1 ou 2 selon que c'est le responsable n°1 ou n°2
-     *            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getServices($eleveId, $responsableId, $trajet = null)
@@ -130,8 +71,7 @@ class AffectationsServicesStations implements FactoryInterface
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $this->renderResult($select->where($where));
     }
 
     /**
@@ -157,7 +97,23 @@ class AffectationsServicesStations implements FactoryInterface
             ], 'aff.service1Id = ser1.serviceId',
             [
                 'service1' => 'nom',
+                'service1_alias' => 'alias',
+                'service1_aliasTr' => 'aliasTr',
                 'operateur1' => 'operateur'
+            ])
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser1.lotId = lot1.lotId',
+            [
+                'service1_marche' => 'marche',
+                'service1_lot' => 'lot'
+            ])
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId',
+            [
+                'service1_titulaire' => 'nom'
             ])
             ->join(
             [
@@ -196,8 +152,7 @@ class AffectationsServicesStations implements FactoryInterface
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $this->renderResult($select->where($where));
     }
 
     /**
@@ -216,7 +171,23 @@ class AffectationsServicesStations implements FactoryInterface
             ], 'aff.service1Id = ser1.serviceId',
             [
                 'service1' => 'nom',
+                'service1_alias' => 'alias',
+                'service1_aliasTr' => 'aliasTr',
                 'operateur1' => 'operateur'
+            ])
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser1.lotId = lot1.lotId',
+            [
+                'service1_marche' => 'marche',
+                'service1_lot' => 'lot'
+            ])
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId',
+            [
+                'service1_titulaire' => 'nom'
             ])
             ->join(
             [
@@ -245,7 +216,23 @@ class AffectationsServicesStations implements FactoryInterface
         ], 'aff.service2Id = ser2.serviceId',
             [
                 'service2' => 'nom',
+                'service2_alias' => 'alias',
+                'service2_aliasTr' => 'aliasTr',
                 'operateur2' => 'operateur'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'lot2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser2.lotId = lot2.lotId',
+            [
+                'service2_marche' => 'marche',
+                'service2_lot' => 'lot'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot2.transporteurId = tit2.transporteurId',
+            [
+                'service2_titulaire' => 'nom'
             ], $select::JOIN_LEFT)
             ->join(
             [
@@ -274,8 +261,7 @@ class AffectationsServicesStations implements FactoryInterface
             $this->millesime)->and->equalTo('eleveId', $eleveId)
             ->nest()
             ->isNull('cir2.millesime')->or->equalTo('cir2.millesime', $this->millesime)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $this->renderResult($select->where($where));
     }
 
     /**
@@ -288,9 +274,7 @@ class AffectationsServicesStations implements FactoryInterface
      */
     public function getLocalisation(Where $where, $order = null)
     {
-        $select = $this->selectLocalisation($where, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
     /**
@@ -321,7 +305,8 @@ class AffectationsServicesStations implements FactoryInterface
                 'numero',
                 'nom_eleve' => 'nomSA',
                 'prenom_eleve' => 'prenomSA',
-                'dateN'
+                'dateN',
+                'sexe'
             ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
@@ -385,9 +370,26 @@ class AffectationsServicesStations implements FactoryInterface
         ])
             ->join([
             'ser1' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser1.serviceId=aff.service1Id', [
-            'service1' => 'serviceId'
-        ])
+        ], 'ser1.serviceId=aff.service1Id',
+            [
+                'service1' => 'serviceId',
+                'service1_alias' => 'alias',
+                'service1_aliasTr' => 'aliasTr'
+            ])
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser1.lotId = lot1.lotId',
+            [
+                'service1_marche' => 'marche',
+                'service1_lot' => 'lot'
+            ])
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId',
+            [
+                'service1_titulaire' => 'nom'
+            ])
             ->join(
             [
                 'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
@@ -406,9 +408,26 @@ class AffectationsServicesStations implements FactoryInterface
         ])
             ->join([
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser2.serviceId=aff.service2Id', [
-            'service2' => 'serviceId'
-        ], $select::JOIN_LEFT)
+        ], 'ser2.serviceId=aff.service2Id',
+            [
+                'service2' => 'serviceId',
+                'service2_alias' => 'alias',
+                'service2_aliasTr' => 'aliasTr'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'lot2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser2.lotId = lot2.lotId',
+            [
+                'service2_marche' => 'marche',
+                'service2_lot' => 'lot'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot2.transporteurId = tit2.transporteurId',
+            [
+                'service2_titulaire' => 'nom'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'tra2' => $this->db_manager->getCanonicName('transporteurs', 'table')
@@ -437,20 +456,17 @@ class AffectationsServicesStations implements FactoryInterface
      * @param string|array $order
      * @param int $millesime
      *            inutilisé mais gardé pour la compatibilité des appels
-     *            
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
-        $select = $this->selectScolaritesR($where, $order);
-        // die($select->getSqlString());
-        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectScolaritesR($where, $order));
     }
 
     /**
-     * Renvoie les scolarités et responsables, avec affectations s'il y en a, pour toutes les
-     * années scolaires.
-     * Pour travailler sur une année particulière, l'indiquer dans le paramètre $where
+     * Renvoie les scolarités et responsables, avec affectations s'il y en a, pour toutes
+     * les années scolaires. Pour travailler sur une année particulière, l'indiquer dans
+     * le paramètre $where
      *
      * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
      * @param string|array $order
@@ -469,7 +485,8 @@ class AffectationsServicesStations implements FactoryInterface
                 'nomSA',
                 'prenom',
                 'prenomSA',
-                'dateN'
+                'dateN',
+                'sexe'
             ])
             ->join(
             [
@@ -484,7 +501,8 @@ class AffectationsServicesStations implements FactoryInterface
             [
                 'inscrit',
                 'paiement',
-                'fa'
+                'fa',
+                'regimeId'
             ])
             ->join(
             [
@@ -511,9 +529,12 @@ class AffectationsServicesStations implements FactoryInterface
         ], $select::JOIN_LEFT)
             ->join([
             'ser1' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser1.serviceId=aff.service1Id', [
-            'service1' => 'nom'
-        ])
+        ], 'ser1.serviceId=aff.service1Id',
+            [
+                'service1' => 'nom',
+                'service1_alias' => 'alias',
+                'service1_aliasTr' => 'aliasTr'
+            ])
             ->join(
             [
                 'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
@@ -522,9 +543,26 @@ class AffectationsServicesStations implements FactoryInterface
             ])
             ->join([
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser2.serviceId=aff.service2Id', [
-            'service2' => 'nom'
-        ], $select::JOIN_LEFT)
+        ], 'ser2.serviceId=aff.service2Id',
+            [
+                'service2' => 'nom',
+                'service2_alias' => 'alias',
+                'service2_aliasTr' => 'aliasTr'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'lot2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser2.lotId = lot2.lotId',
+            [
+                'service2_marche' => 'marche',
+                'service2_lot' => 'lot'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot2.transporteurId = tit2.transporteurId',
+            [
+                'service2_titulaire' => 'nom'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'tra2' => $this->db_manager->getCanonicName('transporteurs', 'table')
@@ -546,9 +584,7 @@ class AffectationsServicesStations implements FactoryInterface
      */
     public function getTelephonesPortables(Where $where)
     {
-        $select = $this->selectTelephonesPortables($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult($this->selectTelephonesPortables($where));
     }
 
     /**
@@ -560,8 +596,7 @@ class AffectationsServicesStations implements FactoryInterface
      */
     public function paginatorTelephonesPortables(Where $where)
     {
-        $select = $this->selectTelephonesPortables($where);
-        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectTelephonesPortables($where));
     }
 
     private function selectTelephonesPortables(Where $where)
@@ -576,7 +611,9 @@ class AffectationsServicesStations implements FactoryInterface
         ], 'ser2.serviceId = aff.service2Id', [], Select::JOIN_LEFT)
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
+        ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [
+            'regimeId'
+        ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -666,8 +703,6 @@ class AffectationsServicesStations implements FactoryInterface
         ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->order('responsable');
-
-        // die(@$select->getSqlString());
         return $select;
     }
 }

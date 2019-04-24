@@ -34,8 +34,8 @@ class Plateforme extends AbstractPlateforme
     private $certificat;
 
     /**
-     * Initialise le certificat et complète la propriété config par la config locale du plugin
-     *
+     * Initialise le certificat et complète la propriété config par la config locale du
+     * plugin
      * (non-PHPdoc)
      *
      * @see \SbmPaiement\Plugin\AbstractPlateforme::init()
@@ -101,11 +101,8 @@ class Plateforme extends AbstractPlateforme
     }
 
     /**
-     * On vérifie que :
-     * - vads_result == 00
-     * - vads_trans_status == AUTHORISED
-     * - vads_payment_certificate est de longueur 40
-     *
+     * On vérifie que : - vads_result == 00 - vads_trans_status == AUTHORISED -
+     * vads_payment_certificate est de longueur 40
      * (non-PHPdoc)
      *
      * @see \SbmPaiement\Plugin\AbstractPlateforme::validPaiement()
@@ -163,10 +160,8 @@ class Plateforme extends AbstractPlateforme
 
     /**
      * Modifié le 18 mai 2015 en raison de l'absence des champs vads_nb_products et
-     * vads_product_refN dans la réponse.
-     * Utilisation de la table `appels` pour retrouver les élèves concernés.
-     * ATTENTION ! this->data est Zend\Stdlib\Parameters
-     *
+     * vads_product_refN dans la réponse. Utilisation de la table `appels` pour retrouver
+     * les élèves concernés. ATTENTION ! this->data est Zend\Stdlib\Parameters
      * (non-PHPdoc)
      *
      * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
@@ -195,23 +190,17 @@ class Plateforme extends AbstractPlateforme
             'eleveIds' => []
         ];
         /**
-         * Abandon de cette partie en raison de l'absence de ces champs dans la notification
-         *
-         * $nb_ref = $this->data['vads_nb_products'];
-         * for ($i = 0; $i < $nb_ref; $i ++) {
-         * $this->scolarite['eleveIds'][] = $this->data['vads_product_ref' . $i];
-         * }
+         * Abandon de cette partie en raison de l'absence de ces champs dans la
+         * notification
+         * $nb_ref = $this->data['vads_nb_products']; for ($i = 0; $i < $nb_ref; $i ++) {
+         * $this->scolarite['eleveIds'][] = $this->data['vads_product_ref' . $i]; }
          */
         // pour DEBUG
         /*
-         * if (is_array($this->data)) {
-         * $msg = 'this->data est un array';
-         * } elseif (is_object($this->data)) {
-         * $msg = 'this->data est ' . get_class($this->data);
-         * } else {
-         * $msg = gettype($this->data);
-         * }
-         * $this->logError(Logger::INFO, $msg, $this->data);
+         * if (is_array($this->data)) { $msg = 'this->data est un array'; } elseif
+         * (is_object($this->data)) { $msg = 'this->data est ' . get_class($this->data); }
+         * else { $msg = gettype($this->data); } $this->logError(Logger::INFO, $msg,
+         * $this->data);
          */
 
         $tAppels = $this->getDbManager()->get('Sbm\Db\Table\Appels');
@@ -225,8 +214,8 @@ class Plateforme extends AbstractPlateforme
     }
 
     /**
-     * Renvoie un nombre de 000001 à 899999
-     * En fait, la valeur maxi est limitée par config['vads_trans_id_max']
+     * Renvoie un nombre de 000001 à 899999 En fait, la valeur maxi est limitée par
+     * config['vads_trans_id_max']
      *
      * @return string
      */
@@ -276,8 +265,9 @@ class Plateforme extends AbstractPlateforme
     }
 
     /**
-     * Enregistre la demande d'appel à paiement dans la table `appels` permettant d'associer un
-     * paiement à un responsable et des enfants et renvoie un formulaire avec les valeurs affectées
+     * Enregistre la demande d'appel à paiement dans la table `appels` permettant
+     * d'associer un paiement à un responsable et des enfants et renvoie un formulaire
+     * avec les valeurs affectées
      *
      * @param array $params
      * @return \Zend\Form\Form
@@ -317,15 +307,14 @@ class Plateforme extends AbstractPlateforme
     }
 
     /**
-     * En fonction de la description technique du paquet à envoyer à la plate-forme de paiement
-     * (voir Guide d'implementation du formulaire de paiement Systempay 2.2 - doc version 3.0)
-     *
-     * A noter que contrairement à ce que dit la documentation, les champs vads_nb_products et
-     * vads_product_refN ne sont pas renvoyés dans le réponse. Aussi, une table des appels à
-     * la plateforme enregistrera les rérérences des élèves concernés, pour pouvoir être traités
-     * au retour de la notification. Une clé unique de paiement doit être constituée et renvoyée
-     * par la méthode getUniqueId()
-     *
+     * En fonction de la description technique du paquet à envoyer à la plate-forme de
+     * paiement (voir Guide d'implementation du formulaire de paiement Systempay 2.2 - doc
+     * version 3.0)
+     * A noter que contrairement à ce que dit la documentation, les champs
+     * vads_nb_products et vads_product_refN ne sont pas renvoyés dans le réponse. Aussi,
+     * une table des appels à la plateforme enregistrera les rérérences des élèves
+     * concernés, pour pouvoir être traités au retour de la notification. Une clé unique
+     * de paiement doit être constituée et renvoyée par la méthode getUniqueId()
      * (non-PHPdoc)
      *
      * @see \SbmPaiement\Plugin\PlateformeInterface::prepareAppel()
@@ -357,10 +346,14 @@ class Plateforme extends AbstractPlateforme
             'vads_url_cancel' => $this->getParam('vads_url_cancel'),
             'vads_url_error' => $this->getParam('vads_url_error'),
             'vads_url_check' => $this->getParam('vads_url_check'),
-            // 'vads_redirect_success_timeout' => $this->getParam('vads_redirect_success_timeout'),
-            // 'vads_redirect_success_message' => $this->getParam('vads_redirect_success_message'),
-            // 'vads_redirect_error_timeout' => $this->getParam('vads_redirect_error_timeout'),
-            // 'vads_redirect_error_message' => $this->getParam('vads_redirect_error_message'),
+            // 'vads_redirect_success_timeout' =>
+            // $this->getParam('vads_redirect_success_timeout'),
+            // 'vads_redirect_success_message' =>
+            // $this->getParam('vads_redirect_success_message'),
+            // 'vads_redirect_error_timeout' =>
+            // $this->getParam('vads_redirect_error_timeout'),
+            // 'vads_redirect_error_message' =>
+            // $this->getParam('vads_redirect_error_message'),
             'vads_nb_products' => sprintf('%d', count($params['eleveIds']))
         ];
         for ($i = 0; $i < count($params['eleveIds']); $i ++) {

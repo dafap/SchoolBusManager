@@ -14,13 +14,13 @@
  * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, fa, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
- * 
+ *
  * @project sbm
  * @package SbmGestion/Form/Eleve
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 sept. 2018
+ * @date 10 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -125,36 +125,17 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
-                'name' => 'tarifId',
-                'attributes' => [
-                    'id' => 'eleve-tarifId',
-                    'class' => 'sbm-width-45c'
-                ],
-                'options' => [
-                    'label' => 'Tarif',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Choisissez un tarif',
-                    'error_attributes' => [
-                        'class' => 'sbm_error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Select',
                 'name' => 'etablissementId',
                 'attributes' => [
                     'id' => 'eleve-etablissementId',
-                    'class' => 'sbm-width-40c'
+                    'class' => 'sbm-width-45c'
                 ],
                 'options' => [
                     'label' => 'Etablissement',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisissez un établissement scolaire',
+                    'empty_option' => 'Choisissez l\'établissement scolaire',
                     'error_attributes' => [
                         'class' => 'sbm_error'
                     ]
@@ -173,9 +154,42 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisissez une classe',
+                    'empty_option' => 'Choisissez la classe',
                     'error_attributes' => [
                         'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'regimeId',
+                'options' => [
+                    'label' => 'Régime',
+                    'value_options' => [
+                        [
+                            'value' => '0',
+                            'attributes' => [
+                                'id' => 'regimeidradio0dp'
+                            ],
+                            'label' => 'DP',
+                            'label_attributes' => [
+                                'class' => 'label-radio dp'
+                            ]
+                        ],
+                        [
+                            'value' => '1',
+                            'attributes' => [
+                                'id' => 'regimeidradio1in'
+                            ],
+                            'label' => 'interne',
+                            'label_attributes' => [
+                                'class' => 'label-radio interne'
+                            ]
+                        ]
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
                     ]
                 ]
             ]);
@@ -259,9 +273,7 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
                 ],
                 'options' => [
                     /*
-                     * 'label' => 'Motif',
-                     * 'label_attributes' => [
-                     * 'class' => 'sbm-label'
+                     * 'label' => 'Motif', 'label_attributes' => [ 'class' => 'sbm-label'
                      * ],
                      */
                     'error_attributes' => [
@@ -435,9 +447,7 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
     }
 
     /**
-     * Description des contraintes, filtres et validateurs
-     *
-     * (non-PHPdoc)
+     * Description des contraintes, filtres et validateurs (non-PHPdoc)
      *
      * @see \Zend\InputFilter\InputFilterProviderInterface::getInputFilterSpecification()
      */

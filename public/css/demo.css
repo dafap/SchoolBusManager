@@ -229,6 +229,10 @@ label.required:after {
 div.semaine {
 	width: 600px;
 }
+
+div.fit-content {
+	width: fit-content;
+}
 /*-------- Erreurs -------------*/
 div#error_wrapper {
 	width: 100%;
@@ -783,25 +787,7 @@ div#fiche-inner div.row-inner input.cancel {
 	margin-left: 120px;
 }
 /*-------------- Fiche circuits ---------------------*/
-#fiche-inner #circuit label {
-	display: inline-block;
-	padding-left: 5px;
-	width: 135px;
-}
-
-#fiche-inner #circuit label.sbm-label-semaine {
-	display: inline;
-	margin-right: 22px;
-}
-
-#fiche-inner #circuit input.submit {
-	margin-top: 6px;
-	margin-left: 120px;
-}
-
-#circuit-edit-m3, #circuit-edit-s3 {
-	display: none;
-}
+/* dans fichier demo/sbm-gestion/circuit-fiche.css   */
 /*-------------- Fiche classes ----------------------*/
 #fiche-inner #classe label {
 	display: inline-block;
@@ -826,197 +812,7 @@ div#fiche-inner div.row-inner input.cancel {
 }
 
 /*-------------- Fiche eleves -----------------------*/
-#fiche-inner #eleve {
-	line-height: 1.2em;
-}
-
-#fiche-inner #eleve #commun-col1 {
-	width: 423px;
-}
-
-#fiche-inner #eleve #commun div.label {
-	display: inline-block;
-	padding-left: 5px;
-	min-width: 80px;
-}
-
-#fiche-inner #eleve #commun label {
-	display: inline-block;
-	padding-left: 5px;
-}
-
-#fiche-inner #eleve #commun-col1 div.label, #fiche-inner #eleve #commun-col1 label
-	{
-	width: 140px;
-}
-
-#fiche-inner #eleve #commun-col2 label {
-	width: 107px;
-}
-
-#fiche-inner #eleve #commun-col2-periode label {
-	width: inherit;
-	margin-right: 3px;
-}
-
-#fiche-inner #eleve #commun-col2 span, #fiche-inner #eleve .annee-precedente
-	{
-	background: #eee;
-	color: gray;
-	font-size: 80%;
-}
-
-#fiche-inner #eleve span.annee-precedente {
-	color: "#eeeeee";
-	font-weight: bold;
-	margin-top: 3px;
-}
-
-#fiche-inner #eleve #commun-col2 span.etablissement-precedent {
-	margin-left: 112px;
-}
-
-#fiche-inner #eleve #commun-col2 span.classe-precedente {
-	margin-left: 20px;
-}
-
-#fiche-inner #eleve #commun-col2-periode label {
-	width: inherit;
-	margin-right: 3px;
-}
-
-#fiche-inner #eleve #commun-col3>div {
-	min-height: 19px;
-	margin-top: 2px;
-	margin-bottom: 3px;
-}
-
-#fiche-inner #eleve #commun-col3 div.label, #fiche-inner #eleve #commun-col3 label
-	{
-	display: inline-block;
-	padding-left: 5px;
-	/*min-width: 105px;*/
-}
-
-#fiche-inner #eleve #commun-col3 label.checkbox {
-	min-width: 130px;
-}
-
-#fiche-inner #eleve #commun div.input {
-	display: inline-block;
-}
-
-#fiche-inner #eleve #tabs {
-	font-size: 1em;
-}
-
-#fiche-inner #eleve #tabs div.sbm-tabs-container {
-	min-height: 15em;
-}
-
-#fiche-inner #eleve #tabs a {
-	font-size: 0.8725em;
-}
-
-#fiche-inner #eleve #tabs label {
-	display: inline-block;
-	margin-right: 5px;
-	color: #333333;
-}
-
-#fiche-inner #eleve .wrapper-responsable {
-	min-height: 6em;
-	margin-left: 10px;
-}
-
-#fiche-inner #eleve #wrapper-joursTransport label {
-	width: 5em;
-	padding-left: 0;
-}
-
-#fiche-inner #eleve #wrapper-commentaire textarea.commentaire,
-	#fiche-inner #responsable #wrapper-commentaire textarea {
-	width: 99.5%;
-	border-radius: 4px 4px 4px 4px;
-}
-
-#fiche-inner #eleve #wrapper-commentaire label.commentaire, #fiche-inner #responsable #wrapper-commentaire label
-	{
-	display: block;
-	float: left;
-	left: 20px;
-}
-
-#fiche-inner #eleve .block-affectations h3 {
-	margin-top: 0;
-	margin-bottom: 0.5em;
-}
-
-#fiche-inner #eleve #tabs-1 div.edit-tab-col1, #fiche-inner #eleve #tabs-2 div.edit-tab-col1
-	{
-	max-width: 415px;
-}
-
-#fiche-inner #eleve #tabs-1 div.edit-tab-col2, #fiche-inner #eleve #tabs-2 div.edit-tab-col2
-	{
-	max-width: 669px;
-}
-
-#fiche-inner #eleve .block-affectations h3 {
-	margin-top: 0;
-	margin-bottom: 0.5em;
-}
-
-#fiche-inner #tabs-3 div.eleve-tabs-3-col-1-label {
-	display: inline-block;
-	width: 150px;
-	padding-left: 5px;
-}
-
-#fiche-inner #tabs-3 div.eleve-tabs-3-col-2-label, #fiche-inner #tabs-3 div.eleve-tabs-3-col-3-label
-	{
-	display: inline-block;
-	width: 170px;
-	padding-left: 5px;
-}
-
-#fiche-inner #eleve #responsables div.cols {
-	min-width: 415px;
-}
-
-table.eleve-affectations {
-	border: 1px solid #f78042;
-	border-radius: 4px 4px 4px 4px;
-	max-width: 695px;
-}
-
-table.eleve-affectations.annee-precedente {
-	border-color: gray;
-}
-
-table.eleve-affectations td.next {
-	border-left: 1px solid #fdddcc;
-}
-
-table.eleve-affectations.annee-precedente td.next {
-	border-left: 1px solid #dddddd;
-}
-
-table.eleve-affectations td.first {
-	width: 106px;
-}
-
-table.eleve-affectations td.second {
-	width: 81px;
-}
-
-table.eleve-affectations td.third {
-	width: 55px;
-}
-
-table.eleve-affectations td.last {
-	width: 42px;
-}
+/* (voir fichiers eleve-ajout.css ou eleve-edit.css) */
 /*-------------- Fiche etablissements ---------------*/
 #fiche-inner #etablissement label {
 	display: inline-block;
@@ -1214,16 +1010,7 @@ div.depot #fiche-inner input.submit {
 	margin-left: 175px;
 }
 /*-------------- Fiche services ---------------------*/
-#fiche-inner #service label {
-	display: inline-block;
-	padding-left: 5px;
-	width: 170px;
-}
-
-#fiche-inner #service input.submit {
-	margin-top: 6px;
-	margin-left: 175px;
-}
+/* dans le fichier demo/sbm-gestion/transport/service-fiche.css
 /*-------------- Fiche stations ---------------------*/
 #fiche-inner #station label {
 	display: inline-block;
@@ -1503,73 +1290,8 @@ dl.statistiques dd {
 	margin-top: 0;
 }
 /*---------------- Espace parents ---------------------------*/
-div#parent-wrapper {
-	min-height: 400px;
-	position: relative;
-	z-index: 10;
-}
-
-.parent h3, .parent p {
-	margin: 0;
-	margin-top: 0.3em;
-	margin-bottom: 0.3em;
-}
-
-.parent.horaires td:nth-child(4) {
-	text-align: right;
-	padding-right: 6px;
-}
-
-#parent-wrapper div.bouton-inscrire {
-	margin-top: 3px;
-	margin-bottom: 10px;
-	position: relative;
-	width: 95%;
-}
-
-#parent-wrapper input[type="submit"] {
-	font-size: 10px;
-	color: black;
-	background-color: #a1cbe5;
-	border-top-width: 0;
-	border-bottom-width: 0;
-	border-left-width: 0;
-	border-right-width: 0;
-	border: 1px solid #31708f;
-	border-radius: 4px 4px 4px 4px;
-	box-shadow: 1px 1px 5px #31708f;
-	margin-right: 10px;
-}
-
-#parent-wrapper input.accueil {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	font-size: 1em;
-	border: 1px solid #3489bc;
-	border-radius: 4px 4px 4px 4px;
-	box-shadow: 1px 1px 5px #d9eaf4;
-}
-
-#fiche-inner form#enfant div.enfant-label, #fiche-inner form#enfant label
-	{
-	display: inline-block;
-	width: 225px;
-	padding-left: 5px;
-}
-
-#fiche-inner form#enfant label.sbm-multi-label, #fiche-inner form#enfant label.sbm-radio-label
-	{
-	display: inline;
-	margin-right: 30px;
-}
-
-#fiche-inner div.enfant-label {
-	display: inline-block;
-	width: 170px;
-	padding-left: 5px;
-}
-/*--------------------- Mail -------------------------------*/
+/* (voir les fichiers du dossier [projet]/sbm-parent)        */
+/*--------------------- Mail --------------------------------*/
 #mail textarea {
 	width: 99.5%;
 	height: 15rem;
@@ -1630,19 +1352,3 @@ table.statistiques th.border-bold, table.statistiques td.border-bold {
 	border-left: 1px solid #9ab3ba;
 }
 
-/*------------------ Clever Sms -----------------------*/
-#clever-sms-inner dl.inline {
-	margin-left: 10px;
-}
-#clever-sms-inner dl.inline dt {
-	display: inline-block;
-	min-width: 20em;
-}
-#clever-sms-inner dl.inline dd {
-	display: inline;
-	margin: 0;
-}
-#clever-sms-inner dl.inline dd:after {
-	display: block;
-	content: '';
-}

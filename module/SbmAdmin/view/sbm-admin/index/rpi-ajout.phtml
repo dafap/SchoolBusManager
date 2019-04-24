@@ -3,13 +3,13 @@
  * Page de création d'un nouveau rpi
  *
  * Réservé à l'administrateur
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource rpi-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -38,13 +38,13 @@ $actions = [
 	    <?= $this->form()->openTag($this->form);?>
 	    <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
-			<div class="row-inner">
+			<div id="wrapper-nom" class="row-inner">
 				<?= $this->formRow($this->form->get('nom'));?></div>
-			<div class="row-inner">
+			<div id="wrapper-libelle" class="row-inner">
 				<?= $this->formRow($this->form->get('libelle'));?></div>
-			<div id="classe-ajout-niveau" class="row-inner ajout">
+			<div id="wrapper-niveau" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('niveau')); ?></div>
-			<div id="secteur-scolaire-buttons" class="row-inner">  
+			<div id="wrapper-buttons" class="row-inner">
             	<?= $this->formSubmit($this->form->get('submit'))?>
             	<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

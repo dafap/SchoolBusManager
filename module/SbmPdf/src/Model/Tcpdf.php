@@ -53,11 +53,9 @@ class Tcpdf extends \TCPDF
     const DEFAULT_SBM_DOCFOOTER_MARGIN = 20;
 
     /**
-     * Tableau des paramètres passés par l'évènement
-     * Les clés du tableau sont <ul>
-     * <li>'documentId' de type integer</li>
-     * <li>'where' de type Zend\Db\Sql\Where qui reprend la sélection obtenue par le formulaire de
-     * critères</li></ul>
+     * Tableau des paramètres passés par l'évènement Les clés du tableau sont <ul>
+     * <li>'documentId' de type integer</li> <li>'where' de type Zend\Db\Sql\Where qui
+     * reprend la sélection obtenue par le formulaire de critères</li></ul>
      *
      * @var array
      */
@@ -71,9 +69,8 @@ class Tcpdf extends \TCPDF
     protected $pdf_manager;
 
     /**
-     * Nom de l'enregistrement du recordSource dans le db_manager lorsqu'il s'agit d'une table ou
-     * d'une vue.
-     * Requête Sql sinon.
+     * Nom de l'enregistrement du recordSource dans le db_manager lorsqu'il s'agit d'une
+     * table ou d'une vue. Requête Sql sinon.
      *
      * @var string
      */
@@ -106,12 +103,11 @@ class Tcpdf extends \TCPDF
     private $last_page_docheader;
 
     /**
-     * Tableau de configuration du document
-     * Les clés sont <ul>
-     * <li>'document' de type SbmCommun\Model\Db\ObjectDaya\Sys\Document</li>
-     * <li>'docfields' array de SbmCommun\Model\Db\ObjectData\Sys\DocField</li>
-     * <li>'doctable' de type SbmCommun\Model\Db\ObjectData\Sys\DocTable</li> (optionnel)
-     * <li>'doccells' array de SbmCommun\Model\Db\ObjectData\Sys\DocCells</li> (optionnel)
+     * Tableau de configuration du document Les clés sont <ul> <li>'document' de type
+     * SbmCommun\Model\Db\ObjectDaya\Sys\Document</li> <li>'docfields' array de
+     * SbmCommun\Model\Db\ObjectData\Sys\DocField</li> <li>'doctable' de type
+     * SbmCommun\Model\Db\ObjectData\Sys\DocTable</li> (optionnel) <li>'doccells' array de
+     * SbmCommun\Model\Db\ObjectData\Sys\DocCells</li> (optionnel)
      *
      * @var array
      */
@@ -120,8 +116,8 @@ class Tcpdf extends \TCPDF
     private $sbm_columns = [];
 
     /**
-     * Buffer contenant les données à placer dans le document, initialisé par la méthode getData()
-     * si nécessaire
+     * Buffer contenant les données à placer dans le document, initialisé par la méthode
+     * getData() si nécessaire
      *
      * @var array
      */
@@ -157,7 +153,6 @@ class Tcpdf extends \TCPDF
      *
      * @param array $params
      *            paramètres envoyés dans l'évènement 'renderPdf'
-     *
      * @return \SbmPdf\Model\Tcpdf
      */
     public function setParams($params = [])
@@ -256,7 +251,6 @@ class Tcpdf extends \TCPDF
      *            clé de la valeur recherchée
      * @param mixed $default
      *            valeur par défaut, renvoyée si la clé n'existe pas
-     *
      * @return mixed valeur renvoyée
      */
     protected function getParam($key, $default)
@@ -272,15 +266,14 @@ class Tcpdf extends \TCPDF
      * Renvoie $this->config[$section][$key] si les clés existent.
      *
      * @param string|array $sections
-     *            document, doctable, docfields, doccells ou [doctable, thead | tbody | tfoot)
+     *            document, doctable, docfields, doccells ou [doctable, thead | tbody |
+     *            tfoot)
      * @param string $key
      *            clé de la valeur recherchée
      * @param mixed $default
      *            valeur par défaut renvoyée si la clé n'existe pas
-     *
-     * @throws Exception si la section n'est pas présente dans le tableau config ou cette section
-     *         n'est pas un tableau
-     *
+     * @throws Exception si la section n'est pas présente dans le tableau config ou cette
+     *         section n'est pas un tableau
      * @return mixed valeur renvoyée
      */
     public function getConfig($sections, $key, $default = null, $exception = false)
@@ -356,8 +349,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le script après
-     * un envoi inline ($dest = I ou FI)
+     * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le
+     * script après un envoi inline ($dest = I ou FI)
      *
      * {@inheritdoc}
      * @see TCPDF::Output()
@@ -522,7 +515,8 @@ class Tcpdf extends \TCPDF
     private function prepareResponseInline(string $name): Response
     {
         $response = new Response();
-        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length' (HTTP/1.1)
+        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length'
+        // (HTTP/1.1)
         $response->getHeaders()
             ->addHeaderLine('Content-type', 'application/pdf')
             ->addHeaderLine('Content-Disposition', "inline; filename=\"$name\"")
@@ -539,7 +533,8 @@ class Tcpdf extends \TCPDF
     private function prepareResponseAttachment(string $name): Response
     {
         $response = new Response();
-        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length' (HTTP/1.1)
+        // utilisation du header 'Transfert-Encoding' à la place de 'Content-Length'
+        // (HTTP/1.1)
         $response->getHeaders()
             ->addHeaderLine('Content-Description', 'File Transfer')
             ->addHeaderLine('Cache-Control',
@@ -632,11 +627,11 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Si le pied de document n'est pas dans une page distincte, l'en-tête de page reste celui de
-     * la section docbody (car la page est déjà commencée)
-     * sinon, on configure l'en-tête de page de cette section
-     *
-     * Pour le pied de page, on configure toujours celui qui est prévu dans la section docfooter
+     * Si le pied de document n'est pas dans une page distincte, l'en-tête de page reste
+     * celui de la section docbody (car la page est déjà commencée) sinon, on configure
+     * l'en-tête de page de cette section
+     * Pour le pied de page, on configure toujours celui qui est prévu dans la section
+     * docfooter
      */
     protected function sectionDocumentFooter()
     {
@@ -723,10 +718,9 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie le documentId, que l'on ait passé le documentId, le name ou le libellé du menu dans
-     * l'appel de l'évènement.
-     * Le paramètre 'documentId' est un scalaire ou un tableau à un élément. On le transforme en
-     * scalaire.
+     * Renvoie le documentId, que l'on ait passé le documentId, le name ou le libellé du
+     * menu dans l'appel de l'évènement. Le paramètre 'documentId' est un scalaire ou un
+     * tableau à un élément. On le transforme en scalaire.
      *
      * @return int
      */
@@ -755,9 +749,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Va chercher le where dans les paramètres de l'évènement (Where vide si ce paramètre n'y est
-     * pas).
-     * Rajoute le filtre indiqué dans le document comme un Literal
+     * Va chercher le where dans les paramètres de l'évènement (Where vide si ce paramètre
+     * n'y est pas). Rajoute le filtre indiqué dans le document comme un Literal
      *
      * @return \Zend\Db\Sql\Where
      */
@@ -810,12 +803,13 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie un AbstractSbmTable sur la table indiquée dans la clé recordSource du document
-     * ou, si elle ne convient pas, dans la clé recordSource des paramètres reçus.
+     * Renvoie un AbstractSbmTable sur la table indiquée dans la clé recordSource du
+     * document ou, si elle ne convient pas, dans la clé recordSource des paramètres
+     * reçus.
      *
-     * @throws Exception si aucune des clés ne donne un recordSource valide pour le ServiceManager
-     *         (vérifier éventellement les enregistrements des clés dans module.config.php)
-     *
+     * @throws Exception si aucune des clés ne donne un recordSource valide pour le
+     *         ServiceManager (vérifier éventellement les enregistrements des clés dans
+     *         module.config.php)
      * @return \SbmCommun\Model\Db\Service\Table\AbstractSbmTable
      */
     protected function getRecordSourceTable()
@@ -844,7 +838,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Lecture de la table système documents pour charger la fiche descriptive du document demandé
+     * Lecture de la table système documents pour charger la fiche descriptive du document
+     * demandé
      */
     protected function initConfigDocument()
     {
@@ -868,12 +863,13 @@ class Tcpdf extends \TCPDF
      * @param string $nameStyle
      *            l'un des noms suivants : main, data, titre1, titre2, titre2, titre4
      * @param string $style
-     *            combinaison des lettres BIUDO (B:gras, I:italic, U:souligné, D:barré, O:surligné)
+     *            combinaison des lettres BIUDO (B:gras, I:italic, U:souligné, D:barré,
+     *            O:surligné)
      * @param string $taille
      *            en pt
      * @param array|string $color
-     *            en RGB, la chaine en hexa avec ou sans le #, ou la chaine composée de 3 vakeurs
-     *            séparées par virgule ou tableau de 3 cases
+     *            en RGB, la chaine en hexa avec ou sans le #, ou la chaine composée de 3
+     *            vakeurs séparées par virgule ou tableau de 3 cases
      */
     protected function setStyle($nameStyle, $style = null, $size = null, $color = null)
     {
@@ -901,9 +897,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Surcharge de la méthode pour la gestion des sections du document (docheader, docbody,
-     * docfooter)
-     *
+     * Surcharge de la méthode pour la gestion des sections du document (docheader,
+     * docbody, docfooter)
      * (non-PHPdoc)
      *
      * @see TCPDF::AddPage()
@@ -943,11 +938,9 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Surcharge de la méthode.
-     * Pour définir un nouveau modèle d'en-tête, il suffit d'écrire une méthode
-     * templateHeaderMethod2(), templateHeaderMethod3()...
-     * en prenant modèle sur templateHeaderMethod1().
-     *
+     * Surcharge de la méthode. Pour définir un nouveau modèle d'en-tête, il suffit
+     * d'écrire une méthode templateHeaderMethod2(), templateHeaderMethod3()... en prenant
+     * modèle sur templateHeaderMethod1().
      * (non-PHPdoc)
      *
      * @see TCPDF::Header()
@@ -1017,7 +1010,8 @@ class Tcpdf extends \TCPDF
             } elseif ($imgtype == 'svg') {
                 $this->ImageSVG($k_path_logo, '', '', $headerdata['logo_width']);
             } else {
-                // $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR . ltrim($k_path_logo,
+                // $file = rtrim(SBM_BASE_PATH, '/\\') . DIRECTORY_SEPARATOR .
+                // ltrim($k_path_logo,
                 // '/\\');
                 $file = StdLib::concatPath(SBM_BASE_PATH, $k_path_logo);
                 $this->Image($file, '', '', $headerdata['logo_width']);
@@ -1066,13 +1060,10 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Surcharge de la méthode
-     * Cette méthode n'est appelée par la méthode setFooter() que si la propriété print_footer ==
-     * true
-     * Pour définir un nouveau modèle de pied de page, il suffit d'écrire une méthode
-     * templateFooterMethod2(), templateFooterMethod3()...
-     * en prenant modèle sur templateFooterMethod1().
-     *
+     * Surcharge de la méthode Cette méthode n'est appelée par la méthode setFooter() que
+     * si la propriété print_footer == true Pour définir un nouveau modèle de pied de
+     * page, il suffit d'écrire une méthode templateFooterMethod2(),
+     * templateFooterMethod3()... en prenant modèle sur templateFooterMethod1().
      * (non-PHPdoc)
      *
      * @see TCPDF::Footer()
@@ -1090,32 +1081,23 @@ class Tcpdf extends \TCPDF
 
     /**
      * Modèle de pied de page par défaut
+     * Il y aura toujours à droite le "numéro de page / nombre de pages" (exitant dans le
+     * modèle par défaut de tcpdf) On peut rajouter une chaine à gauche et une chaine au
+     * centre du pied de page.
+     * Le modèle de pied de page est se trouve dans
+     * $this->config['document']['pagefooter_string'] et s'obtient par
+     * $this->getConfig('document', 'pagefooter_string','') Pour définir une chaine à
+     * gauche : @gauche{chaine} Pour définir une chaine au centre : @centre{chaine} Tout
+     * ce qui ne sera pas dans l'accolade de l'une de ces 2 structures sera ignoré.
+     * Les chaines peuvent contenir les variables suivantes : %date% : date courante de
+     * création du document %nombre% : nombre de lignes de données dans cette page
+     * %somme(colonne)% où colonne est le rang de la colonne surlaquelle porte la somme (à
+     * partir de 1) %max(colonne)% %min(colonne)% %moyenne(colonne)% Toute autre chaine
+     * restera inchangée. Attention, les valeurs non numériques de la colonne sont
+     * considérées comme 0 pour les fonctions somme, max, min et moyenne.
      *
-     * Il y aura toujours à droite le "numéro de page / nombre de pages" (exitant dans le modèle
-     * par défaut de tcpdf)
-     * On peut rajouter une chaine à gauche et une chaine au centre du pied de page.
-     *
-     * Le modèle de pied de page est se trouve dans $this->config['document']['pagefooter_string']
-     * et s'obtient par $this->getConfig('document', 'pagefooter_string','')
-     * Pour définir une chaine à gauche : @gauche{chaine}
-     * Pour définir une chaine au centre : @centre{chaine}
-     * Tout ce qui ne sera pas dans l'accolade de l'une de ces 2 structures sera ignoré.
-     *
-     * Les chaines peuvent contenir les variables suivantes :
-     * %date% : date courante de création du document
-     * %nombre% : nombre de lignes de données dans cette page
-     * %somme(colonne)% où colonne est le rang de la colonne surlaquelle porte la somme (à partir
-     * de 1)
-     * %max(colonne)%
-     * %min(colonne)%
-     * %moyenne(colonne)%
-     * Toute autre chaine restera inchangée.
-     * Attention, les valeurs non numériques de la colonne sont considérées comme 0 pour les
-     * fonctions somme, max, min et moyenne.
-     *
-     * @todo : Lorsqu'il y a plusieurs sources, les calculs se font sur chaque source et sont
-     *       rendus s'ils ne sont pas nul
-     *
+     * @todo : Lorsqu'il y a plusieurs sources, les calculs se font sur chaque source et
+     *       sont rendus s'ils ne sont pas nul
      * @param string $param
      * @return string
      */
@@ -1219,18 +1201,14 @@ class Tcpdf extends \TCPDF
      * Conversion du codage de couleur.
      *
      * @param
-     *            string|array
-     *            Reçoit une chaine représentant le codage de la couleur au format html (codage
-     *            hexa RGB)
-     *            ou une chaine représentant le codage de la couleur au format rgb (chaine composée
-     *            de 3 entiers de 0 à 255 séparés par des ,)
-     *            ou un tableau de 3 entiers de 0 à 255 représentant le codage de la couleur au
-     *            format rgb
-     *
-     * @return array string la couleur codée au format RGB sous la forme d'un tableau si l'entrée
-     *         est au format HTML
-     *         ou la couleur codée au format HTML sous la forme d'une chaine si l'entrée est au
-     *         format RGB
+     *            string|array Reçoit une chaine représentant le codage de la couleur au
+     *            format html (codage hexa RGB) ou une chaine représentant le codage de la
+     *            couleur au format rgb (chaine composée de 3 entiers de 0 à 255 séparés
+     *            par des ,) ou un tableau de 3 entiers de 0 à 255 représentant le codage
+     *            de la couleur au format rgb
+     * @return array string la couleur codée au format RGB sous la forme d'un tableau si
+     *         l'entrée est au format HTML ou la couleur codée au format HTML sous la
+     *         forme d'une chaine si l'entrée est au format RGB
      */
     private function convertColor($colorInput)
     {
@@ -1430,13 +1408,8 @@ class Tcpdf extends \TCPDF
                 }
             }
             /*
-             * $this->SetLineStyle([
-             * 'width' => 0.85 / $this->k,
-             * 'cap' => 'butt',
-             * 'join' => 'miter',
-             * 'dash' => 0,
-             * 'color' => $headerdata['line_color']
-             * ));
+             * $this->SetLineStyle([ 'width' => 0.85 / $this->k, 'cap' => 'butt', 'join'
+             * => 'miter', 'dash' => 0, 'color' => $headerdata['line_color'] ));
              */
             $this->SetY((2.835 / $this->k) + $this->GetY());
         }
@@ -1444,13 +1417,11 @@ class Tcpdf extends \TCPDF
 
     // ============= Les corps de document ======================
     /**
-     * Modèle de corps de document par défaut.
-     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le
-     * template est exécuté.
+     * Modèle de corps de document par défaut. Renvoie un identifiant du template si
+     * $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod1($param = null)
@@ -1465,7 +1436,8 @@ class Tcpdf extends \TCPDF
         /**
          * Initialisations et calculs
          */
-        // lecture de la table 'doctables' pour obtenir $this->config['doctable'] = ['thead' =>
+        // lecture de la table 'doctables' pour obtenir $this->config['doctable'] =
+        // ['thead' =>
         // ..., 'tbody' => ..., 'tfoot' => ..., 'columns' => ...)
         $this->initConfigDoctable();
 
@@ -1606,7 +1578,8 @@ class Tcpdf extends \TCPDF
                             'tbody'
                         ], 'cell_valign'));
                 }
-                $this->data['index'][1]['current'] ++; // il faut mettre cette ligne après l'appel
+                $this->data['index'][1]['current'] ++; // il faut mettre cette ligne après
+                                                       // l'appel
                                                        // de Cell()
                 $this->Ln();
                 $fill = ! $fill;
@@ -1737,19 +1710,19 @@ class Tcpdf extends \TCPDF
             $this->config['doctable']['columns'] = $table_columns->getConfig(
                 $this->getDocumentId(), $ordinal_table);
         } catch (\Exception $e) {
-            // pas d'en-tête, pas de pied, colonnes proportionnelles à la taille du contenu
+            // pas d'en-tête, pas de pied, colonnes proportionnelles à la taille du
+            // contenu
             $this->config['doctable']['thead']['visible'] = $this->config['doctable']['tfoot']['visible'] = false;
         }
     }
 
     /**
-     * Renvoie le tableau des données pour la table $ordinal_table.
-     * Initialise le tableau s'il est vide ou si $force.
+     * Renvoie le tableau des données pour la table $ordinal_table. Initialise le tableau
+     * s'il est vide ou si $force.
      *
      * @param int $ordinal_table
      * @param boolean $force
      *            force une initialisation du tableau
-     *
      * @throws Exception
      * @return array
      */
@@ -1763,13 +1736,13 @@ class Tcpdf extends \TCPDF
             if ($this->getRecordSourceType() == 'T') {
                 /**
                  * POUR LES SOURCES qui sont des TABLES ou des VUES
-                 *
-                 * La source doit être enregistrée dans le ServiceManager (table ou vue MySql)
-                 * sinon exception
+                 * La source doit être enregistrée dans le ServiceManager (table ou vue
+                 * MySql) sinon exception
                  */
                 $table = $this->getRecordSourceTable();
 
-                // si la description des colonnes est vide, on configure toutes les colonnes de la
+                // si la description des colonnes est vide, on configure toutes les
+                // colonnes de la
                 // source
                 if (empty($table_columns)) {
                     $ordinal_position = 1;
@@ -1835,7 +1808,7 @@ class Tcpdf extends \TCPDF
                             $ligne[] = $value = StdLib::translateData(
                                 $row->{$column['tbody']}, $column['filter']);
                         } catch (\Exception $e) {
-                            if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface) {
+                            if ($effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface) {
                                 $columntbody = trim($column['tbody'], '%');
                                 if (method_exists($effectifClass, $columntbody)) {
                                     $ligne[] = $effectifClass->{$columntbody}($row->{$id});
@@ -1864,19 +1837,21 @@ class Tcpdf extends \TCPDF
             } else {
                 /**
                  * POUR LES SOURCES qui sont des REQUETES SQL
-                 *
-                 * On essaiera de poser un effectif sur les colonnes %transportes% et %demandes% à
-                 * condition qu'on ait fourni un paramètre 'effectifClassName' correct (cad qu'il
-                 * existe une classe `effectifClass` implémentant `EffectifInterface` et possédant
-                 * les methodes `tranportes()` et éventuellement `demandes()`.
-                 * Pour obtenir des effectifs conditionnels, il faut qu'un paramètre
+                 * On essaiera de poser un effectif sur les colonnes %transportes% et
+                 * %demandes% à condition qu'on ait fourni un paramètre
+                 * 'effectifClassName' correct (cad qu'il existe une classe
+                 * `effectifClass` implémentant `EffectifInterface` et possédant les
+                 * methodes `tranportes()` et éventuellement `demandes()`. Pour obtenir
+                 * des effectifs conditionnels, il faut qu'un paramètre
                  * 'caractereConditionnel' soit passé et que la classe `effectifClass`
-                 * présente la méthode `setCaractereConditionnel`. Son appel se fera avant l'init.
+                 * présente la méthode `setCaractereConditionnel`. Son appel se fera avant
+                 * l'init.
                  */
                 $columns = [];
                 $effectifColumns = [];
                 foreach ($table_columns as &$column) {
-                    // on relève les colonnes d'effectifs et on met false à leur place dans
+                    // on relève les colonnes d'effectifs et on met false à leur place
+                    // dans
                     // $column['tbody'] pour ne pas rechercher la valeur dans la requête.
                     $matches = [];
                     if (preg_match('/^%(.*)%$/', $column['tbody'], $matches)) {
@@ -1893,7 +1868,7 @@ class Tcpdf extends \TCPDF
                         $this->pdf_manager->get('Sbm\DbManager')->has($effectifClassName)) {
                         $effectifClass = $this->pdf_manager->get('Sbm\DbManager')->get(
                             $effectifClassName);
-                        if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface) {
+                        if ($effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface) {
                             $id = $effectifClass->getIdColumn();
                             $sanspreinscrits = $this->getParam('sanspreinscrits', false);
                             if (method_exists($effectifClass, 'setCaractereConditionnel')) {
@@ -1936,7 +1911,8 @@ class Tcpdf extends \TCPDF
                     $rowset = $dbAdapter->query($sqlString,
                         \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
-                        // si la description des colonnes est vide, on configure toutes les
+                        // si la description des colonnes est vide, on configure toutes
+                        // les
                         // colonnes de la source
                         if (empty($table_columns)) {
                             $ordinal_position = 1;
@@ -1961,7 +1937,7 @@ class Tcpdf extends \TCPDF
                                     $effectifColumns)) {
                                     // c'est une colonne d'effectif
                                     $method = $effectifColumns[$idEffectifColumns ++];
-                                    if ($effectifClass instanceof \SbmGestion\Model\Db\Service\Eleve\EffectifInterface &&
+                                    if ($effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface &&
                                         method_exists($effectifClass, $method)) {
                                         // la configuration est correcte
                                         $value = $effectifClass->{$method}($row->{$id});
@@ -2013,10 +1989,9 @@ class Tcpdf extends \TCPDF
     // ============= Les pieds de document ======================
 
     /**
-     * Modèle de pied de document par défaut
-     * Les variables de chaine traitées sont :
-     * %nombre% : nombre de ligne de données
-     * %numero% : numéro de la source (uniquement s'il y a plusieurs sources)
+     * Modèle de pied de document par défaut Les variables de chaine traitées sont :
+     * %nombre% : nombre de ligne de données %numero% : numéro de la source (uniquement
+     * s'il y a plusieurs sources)
      */
     public function templateDocFooterMethod1($param = null)
     {
@@ -2056,7 +2031,8 @@ class Tcpdf extends \TCPDF
             $delta = $this->getConfig('document', 'docfooter_margin',
                 self::DEFAULT_SBM_DOCFOOTER_MARGIN);
             if ($this->getConfig('document', 'docfooter_insecable', true)) {
-                // on réserve la place pour la marge, le titre (si non vide) et 3 lignes (si
+                // on réserve la place pour la marge, le titre (si non vide) et 3 lignes
+                // (si
                 // docfooter_string non vide)
                 $tmp = $this->getConfig('document', 'docfooter_title', '');
                 if (! empty($tmp)) {
@@ -2143,13 +2119,11 @@ class Tcpdf extends \TCPDF
     // Modèle pour imprimer des étiquettes
     //
     /**
-     * Modèle pour imprimer des étiquettes.
-     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le
-     * template est exécuté.
+     * Modèle pour imprimer des étiquettes. Renvoie un identifiant du template si $param
+     * vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod2($param = null)
@@ -2217,49 +2191,30 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie un tableau indexé de données pour les étiquettes.
-     * Chaque enregistrement du tableau correspond au contenu d'une étiquette sous la
-     * forme d'un tableau associatif
-     * <code>
-     * [
-     * 'lignes' => [tableau indexé des lignes de l'étiquette (1)],
-     * 'photos' => false ou tableau indexé de tableaux associatifs de la photo et de ses
-     * paramètres (2). Autant de photos que le descripteur l'indique
-     * ]
-     * </code>
-     * <ol>
-     * <li> Chaque ligne de ce tableau est une chaine de caractères correctement formatée
-     * pour être directement "écrite" dans la page PDF.
-     * <li> Si le descripteur indique qu'il s'agit d'une photo :
-     * <code>
-     * 'photos' =>[
-     * [
-     * img => @imagedata où imagedata est le décodage de la colonne photo
-     * x => abscisse du coin supérieur gauche ('' par défaut)
-     * y => ordonnée du coin supérieur gauche ('' par défaut)
-     * w => largeur de l'image dans la page (0 par défaut)
-     * h => hauteur de l'image dans la page (0 par défaut)
-     * type => typephoto (JPEG ou PNG ou GIF - '' par défaut)
-     * align => T ou M ou B ou N ('' par défaut)
-     * resize => true (false par défaut)
-     * dpi => résolution de l'image (300 par défaut)
-     * ], ...
-     * ]
-     * </code>
-     * Sinon, 'photo' => []
-     * </li></ol>
-     * Le filtrage des données se fait :<ul>
-     * <li>pour les recordSources de type T par la méthode getWhere()</li>
-     * <li>pour les recordSources de type R par l'exploitation du paramètre `criteres`
-     * qui se présente sous la forme d'un tableau</li></ul>
+     * Renvoie un tableau indexé de données pour les étiquettes. Chaque enregistrement du
+     * tableau correspond au contenu d'une étiquette sous la forme d'un tableau associatif
+     * <code> [ 'lignes' => [tableau indexé des lignes de l'étiquette (1)], 'photos' =>
+     * false ou tableau indexé de tableaux associatifs de la photo et de ses paramètres
+     * (2). Autant de photos que le descripteur l'indique ] </code> <ol> <li> Chaque ligne
+     * de ce tableau est une chaine de caractères correctement formatée pour être
+     * directement "écrite" dans la page PDF. <li> Si le descripteur indique qu'il s'agit
+     * d'une photo : <code> 'photos' =>[ [ img => @imagedata où imagedata est le décodage
+     * de la colonne photo x => abscisse du coin supérieur gauche ('' par défaut) y =>
+     * ordonnée du coin supérieur gauche ('' par défaut) w => largeur de l'image dans la
+     * page (0 par défaut) h => hauteur de l'image dans la page (0 par défaut) type =>
+     * typephoto (JPEG ou PNG ou GIF - '' par défaut) align => T ou M ou B ou N ('' par
+     * défaut) resize => true (false par défaut) dpi => résolution de l'image (300 par
+     * défaut) ], ... ] </code> Sinon, 'photo' => [] </li></ol> Le filtrage des données se
+     * fait :<ul> <li>pour les recordSources de type T par la méthode getWhere()</li>
+     * <li>pour les recordSources de type R par l'exploitation du paramètre `criteres` qui
+     * se présente sous la forme d'un tableau</li></ul>
      *
      * @param array $descripteur
-     *            tableau de descripteurs des champs
-     *            chaque champ est décrit dans un tableau avec les clés
-     *            'fieldname', 'filter', 'format', 'label', 'nature', 'style', 'data'
+     *            tableau de descripteurs des champs chaque champ est décrit dans un
+     *            tableau avec les clés 'fieldname', 'filter', 'format', 'label',
+     *            'nature', 'style', 'data'
      * @param bool $force
      *            force l'initialisation des données par lecture de la base
-     *
      * @return array
      */
     protected function getDataForEtiquettes($descripteur, $force = false)
@@ -2280,7 +2235,8 @@ class Tcpdf extends \TCPDF
             }
             $this->data = [];
             if ($this->getRecordSourceType() == 'T') {
-                // La source doit être enregistrée dans le ServiceManager (table ou vue MySql)
+                // La source doit être enregistrée dans le ServiceManager (table ou vue
+                // MySql)
                 // sinon exception
                 $table = $this->getRecordSourceTable();
                 // lecture des données et application du filtre et du format
@@ -2321,7 +2277,6 @@ class Tcpdf extends \TCPDF
             } else {
                 /**
                  * c'est une requête Sql.
-                 *
                  * S'il n'y a pas de description des colonnes dans la table doccolumns
                  * alors on en crée une par défaut.
                  */
@@ -2442,12 +2397,11 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Récursivité qui s'arrête lorsque $array est une chaine de caractères.
-     * Si cette chaine répond à la grammaire d'un nom de colonne, elle est préfixée.
-     * Pour ne pas la préfixer il faut qu'elle soit quotée ('ALAIN' ou "ALAIN") ou
-     * qu'elle contienne un caractère autre qu'une lettre, un chiffre ou le souligné.
-     * Les colonnes déjà préfixées ne le sont pas à nouveau, même si le préfixe est
-     * différent.
+     * Récursivité qui s'arrête lorsque $array est une chaine de caractères. Si cette
+     * chaine répond à la grammaire d'un nom de colonne, elle est préfixée. Pour ne pas la
+     * préfixer il faut qu'elle soit quotée ('ALAIN' ou "ALAIN") ou qu'elle contienne un
+     * caractère autre qu'une lettre, un chiffre ou le souligné. Les colonnes déjà
+     * préfixées ne le sont pas à nouveau, même si le préfixe est différent.
      *
      * @param array|string|number $array
      * @param string $prefix
@@ -2512,13 +2466,11 @@ class Tcpdf extends \TCPDF
     // Modèle pour imprimer des cartes
     //
     /**
-     * Modèle pour imprimer les cartes de transport.
-     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le
-     * template est exécuté.
+     * Modèle pour imprimer les cartes de transport. Renvoie un identifiant du template si
+     * $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod3($param = null)
@@ -2634,14 +2586,13 @@ class Tcpdf extends \TCPDF
     // Modèle particulier pour les horaires avec élèves (2 tableaux)
     //
     /**
-     * Modèle pour imprimer les horaires de circuits avec liste des élèves par point d'arrêt.
-     * Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour le retour.
-     * Renvoie un identifiant du template si $param vaut '?'. Sinon, le paramètre est ignoré et le
-     * template est exécuté.
+     * Modèle pour imprimer les horaires de circuits avec liste des élèves par point
+     * d'arrêt. Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour
+     * le retour. Renvoie un identifiant du template si $param vaut '?'. Sinon, le
+     * paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
      *            s'il est renseigné il doit avoir la valeur '?' (sinon, il est ignoré)
-     *
      * @return void|string Renvoie l'identifiant du template si $param == '?' sinon rien
      */
     public function templateDocBodyMethod4($param = null)
@@ -2653,7 +2604,8 @@ class Tcpdf extends \TCPDF
             return 'Horaires circuit avec élèves';
         }
 
-        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
+        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec
+                                                          // son chemin)
         if (empty($fichier_phtml)) {
             throw new Exception("Le modèle de ce document n'a pas été défini.");
         }
@@ -2755,7 +2707,8 @@ class Tcpdf extends \TCPDF
         if (! empty($txt) && ! empty($this->data)) {
             // remplacer les variables de la chaine
             $oCalculs = new Calculs($this->data);
-            // $oCalculs->range($this->data['index']['previous'], $this->data['index']['current'] -
+            // $oCalculs->range($this->data['index']['previous'],
+            // $this->data['index']['current'] -
             // 1);
             $txt = $oCalculs->getResultat($txt);
 
@@ -2790,8 +2743,8 @@ class Tcpdf extends \TCPDF
     // Modèle particulier pour les copies d'écran
     //
     /**
-     * Doit recevoir un tableau de paramètres dont une clé est html.
-     * Cette clé donne le texte html à placer dans le pdf.
+     * Doit recevoir un tableau de paramètres dont une clé est html. Cette clé donne le
+     * texte html à placer dans le pdf.
      *
      * @param string $param
      * @return string
@@ -2813,9 +2766,9 @@ class Tcpdf extends \TCPDF
     // Modèle particulier pour la liste des élèves dans le portail des organisateurs
     //
     /**
-     * Liste associée à un layout et produisant un PDF à partir d'un modèle HTML
-     * Les données sont passées par la méthode setData, que ce soit directement dans
-     * cette classe ou par le service RenderPdfService.
+     * Liste associée à un layout et produisant un PDF à partir d'un modèle HTML Les
+     * données sont passées par la méthode setData, que ce soit directement dans cette
+     * classe ou par le service RenderPdfService.
      */
     public function templateDocBodyMethod6($param = null)
     {
@@ -2825,7 +2778,8 @@ class Tcpdf extends \TCPDF
         if (is_string($param) && $param == '?') {
             return 'Liste associée à un modèle HTML (layout)';
         }
-        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec son chemin)
+        $fichier_phtml = $this->getParam('layout', null); // nom du fichier phtml (avec
+                                                          // son chemin)
         if (empty($fichier_phtml)) {
             throw new Exception("Le modèle de ce document n'a pas été défini.");
         }

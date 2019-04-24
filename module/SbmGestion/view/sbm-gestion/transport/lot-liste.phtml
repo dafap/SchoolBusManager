@@ -1,0 +1,217 @@
+<?php
+
+/**
+ * Liste des lots de marché
+ *
+ * Cette vue reçoit un objet effectifLots qui présente la méthode transportes($lotId)
+ * donnant les effectifs des élèves transportés pour chaque identifiant $lotId.
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource lot-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 mars 2019
+ * @version 2019-2.5.0
+ */
+use SbmBase\Model\DateLib;
+
+function renderCheckbox($view, $name, $id, $value)
+{
+    $element = new \Zend\Form\Element\Checkbox($name);
+    $element->setUseHiddenElement(false)
+        ->setAttribute('id', $id)
+        ->setValue($value);
+    return $view->formCheckbox($element);
+}
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$jsCallback = '';
+$jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectionservice/serviceId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$lots = $this->paginator->getCurrentItems();
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport');
+
+$url_edit = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-group',
+        'id' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'lot-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouveau lot de marché'
+    ]
+];
+?>
+<h1>Liste des lots de marché</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Marché</th>
+					<th>Lot</th>
+					<th>Libellé</th>
+					<th>Titulaire</th>
+					<th>Début</th>
+					<th>Fin</th>
+					<th>Nb<br>services</th>
+					<th>Nb élèves<br>transportés</th>
+					<th>En cours</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
+            <?php foreach ($lots as $lot) :?>
+            <?php
+                if (! is_null($this->effectifLotsServices)) {
+                    $nbServices = $this->effectifLotsServices->nbservices($lot->lotId);
+                } else {
+                    $nbServices = 0;
+                }
+                if (! is_null($this->effectifLots)) {
+                    $nbInscrits = $this->effectifLots->transportes($lot->lotId);
+                } else {
+                    $nbInscrits = 0;
+                }
+                $libelle = implode('<br>',array_filter([$lot->libelle, $lot->complement]));
+                // construction des JS pour selection
+                $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $lot->lotId);
+                $jsCallback .= sprintf("$modele\n", $lot->lotId, $lot->lotId);
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                /*
+                 * if ($lot->nbPlaces < $nbInscrits) { $css .= ' exces'; }
+                 */
+                $hiddens = [
+                    'lotId' => $lot->lotId,
+                    'origine' => 'lot-liste'
+                ];
+                $buttons = [
+                    'modifier' => [
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ],
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ],
+                    'services' => [
+                        'class' => 'fam-table-relationship',
+                        'formaction' => $url_relation,
+                        'title' => 'services de ce lot de marché'
+                    ]
+                ];
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="marche">
+						<?=$this->escapeHtml($lot->marche);?></td>
+					<td class="lot">
+						<?=$this->escapeHtml($lot->lot);?></td>
+					<td class="libelle">
+						<?=$libelle;?></td>
+					<td class="titulaire">
+						<?=$this->escapeHtml($lot->titulaire);?></td>
+					<td class="dateDebut">
+						<?=DateLib::formatDateFromMysql($lot->dateDebut);?></td>
+					<td class="dateFin">
+						<?=DateLib::formatDateFromMysql($lot->dateFin);?></td>
+					<td class="nbservices align-right">
+						<?=$nbServices;?></td>
+					<td class="nbinscrits align-right">
+						<?=$nbInscrits;?></td>
+					<td class="centre actif">
+						<?=$lot->actif ? 'Oui' : 'Non';?>
+						</td>
+					<td class="centre selection">
+						<?=renderCheckbox($this, 'selection', 'chk' . $lot->lotId, $lot->selection)?>
+						</td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($lot->lotId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

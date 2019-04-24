@@ -41,7 +41,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $controller = $controller_manager->get(IndexController::class);
         $this->assertInstanceOf(RenderPdfService::class, $controller->RenderPdfService);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+        $this->assertInstanceOf(AuthenticationServiceFactory::class,
             $controller->authenticate);
     }
 }

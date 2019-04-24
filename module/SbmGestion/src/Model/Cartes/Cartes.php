@@ -27,10 +27,9 @@ class Cartes
     private $config;
 
     /**
-     * Les éléments du tableau sont les paramètres nécessaires.
-     * Ils sont initialisés dans CartesFactory.
-     * Chaque paramètre s'obtient comme une propriété de la classe Cartes par la
-     * méthode __get()
+     * Les éléments du tableau sont les paramètres nécessaires. Ils sont initialisés dans
+     * CartesFactory. Chaque paramètre s'obtient comme une propriété de la classe Cartes
+     * par la méthode __get()
      *
      * @param array $config
      */
@@ -63,8 +62,8 @@ class Cartes
     }
 
     /**
-     * Rechercher les eleveId à marquer
-     * Marquer les dateCarte dans scolarites pour les eleveId trouvés
+     * Rechercher les eleveId à marquer Marquer les dateCarte dans scolarites pour les
+     * eleveId trouvés
      *
      * @param int $millesime
      * @param string $dateDebut

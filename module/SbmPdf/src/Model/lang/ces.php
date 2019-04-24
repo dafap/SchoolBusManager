@@ -1,24 +1,25 @@
 <?php
-//============================================================+
-// File name   : ces.php
-// Begin       : 2010-10-26
+// ============================================================+
+// File name : ces.php
+// Begin : 2010-10-26
 // Last Update : 2010-11-22
 //
 // Description : Language module for TCPDF
-//               (contains translated texts)
-//               Czech
+// (contains translated texts)
+// Czech
 //
 // Author: Nicola Asuni
 //
 // (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com LTD
-//               www.tecnick.com
-//               info@tecnick.com
-//============================================================+
+// Nicola Asuni
+// Tecnick.com LTD
+// www.tecnick.com
+// info@tecnick.com
+// ============================================================+
 
 /**
  * TCPDF language file (contains translated texts).
+ *
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Czech
  * @author Nicola Asuni
@@ -26,9 +27,8 @@
  */
 
 // Czech
-
 global $l;
-$l =[];
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

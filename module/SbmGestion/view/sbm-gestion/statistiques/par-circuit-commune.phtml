@@ -20,7 +20,8 @@ try {
         [
             'action' => 'pdf-circuit-commune'
         ]);
-    // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet doit être
+    // l'exception est lancée par l'aide de vue url() donc la methode appendStylesheet
+    // doit être
     // placée après
     $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 } catch (\Zend\View\Exception\RuntimeException $e) {

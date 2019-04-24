@@ -32,7 +32,8 @@ return [
     // d\'inscription;SUCCESS_FOOTER_MSG_RETURN=Retour au site d\'inscription',
     'vads_version' => 'V2',
     'uniqid_path' => realpath(StdLib::findParentPath(__DIR__, 'data/share')),
-    // vads_trans_id_max doit être, d'après la documentation, compris entre 000000 et 899999,
+    // vads_trans_id_max doit être, d'après la documentation, compris entre 000000 et
+    // 899999,
     // doit être unique pour chaque transaction pour une boutique donnée sur la journée.
     // Lorsque la valeur maxi est atteinte, le vads_trans_id repart depuis 000001.
     // Fixer la valeur maxi en tenant compte d'un flux maxi

@@ -19,8 +19,8 @@ trait QuerySourceTrait
 {
 
     /**
-     * Remplacement des variables éventuelles %millesime%, %date%, %heure% et %userId% et des
-     * opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
+     * Remplacement des variables éventuelles %millesime%, %date%, %heure% et %userId% et
+     * des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
      *
      * @param string $sql
      * @param int $authentifiedUserId

@@ -32,6 +32,50 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
+                'name' => 'natures',
+                'type' => 'Zend\Form\Element\Multicheckbox',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'Ce paiement concerne :',
+                    'value_options' =>[
+                        [
+                            'value' => 'duplicata',
+                            'attributes' => [
+                                'id' => 'nature-duplicata'
+                            ],
+                            'label' => 'Des duplicatas',
+                            'label_attributes'=>[
+                                'class' => 'nature'
+                            ]
+                        ],
+                        [
+                            'value' => 'abonnement',
+                            'attributes' => [
+                                'id' => 'nature-abonnement'
+                            ],
+                            'label' => 'Des abonnements',
+                            'label_attributes'=>[
+                                'class' => 'nature'
+                            ]
+                        ]
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add([
+            'name'=>'eleveIds',
+            'type' => 'Zend\Form\Element\Multicheckbox',
+            'attributes' => [],
+            'options' => [
+                'label' => 'Cochez les abonnements à supprimer :',
+                'value_options' => []
+            ]
+        ]);
+        $this->add(
+            [
                 'type' => 'textarea',
                 'name' => 'note',
                 'attributes' => [
@@ -78,6 +122,14 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
             'paiementId' => [
                 'name' => 'paiementId',
                 'required' => true
+            ],
+            'natures' => [
+                'name' => 'natures',
+                'required' => true
+            ],
+            'eleveIds' => [
+                'name' => 'eleveIds',
+                'required' => false
             ],
             'note' => [
                 'name' => 'note',

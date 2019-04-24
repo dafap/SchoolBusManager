@@ -8,13 +8,13 @@
  * - visibles : pour les select destinés aux parents
  * - ouvertes : pour les select destinés au service
  * - surcircuit : pour un serviceId donné
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Select
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 20 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -128,6 +128,38 @@ class StationsForSelect implements FactoryInterface
         $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
+        }
+        return $array;
+    }
+
+    /**
+     * On renvoie la liste des stations proches du point donné, sur les circuits
+     * desservant l'établissement donné. La recherche se fait par pas indiqué jusqu'à une
+     * distance maxi indiquée et s'arrête dès que la liste des résultats n'est pas vide.
+     *
+     * @param \SbmCartographie\Model\Point $point
+     * @param string $etablissementId
+     * @param int $pas
+     *            exprimé en mètres
+     * @param int $distanceMaxi
+     *            exprimée en mètres
+     * @return array
+     */
+    public function prochesDuPoint($point, $etablissementId, $pas = 2000,
+        $distanceMaxi = 10000)
+    {
+        ; // en mètres
+        $limit = 0;
+        $array = [];
+        $versEtablissement = $this->db_manager->get(
+            \SbmCommun\Model\Db\Service\Query\Station\VersEtablissement::class);
+        while (empty($array) && $limit <= $distanceMaxi) {
+            $limit += $pas;
+            $resultset = $versEtablissement->stationsProches($point, $etablissementId,
+                $limit);
+            foreach ($resultset as $row) {
+                $array[$row['stationId']] = $row['commune'] . ' - ' . $row['nom'];
+            }
         }
         return $array;
     }

@@ -19,7 +19,7 @@ use ModulesTests\SbmCommunTest\Model\TestAsset;
 
 class AbstractHydratorTest extends PHPUnit_Framework_TestCase
 {
-    
+
     // l'objet n'a pas de méthode getArrayCopy()
     public function testWithNullObject()
     {
@@ -58,7 +58,7 @@ class AbstractHydratorTest extends PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Zend\Hydrator\Exception\BadMethodCallException', $e);
         }
     }
-    
+
     // l'objet présente la bonne méthode
     public function testCorrectWithObjectArraySerializable()
     {

@@ -37,9 +37,9 @@ class RegistredObjectDataControlTest extends PHPUnit_Framework_TestCase
     public function testDebug()
     {
         $ns = 'SbmCommun\Model\Db\ObjectData';
-        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 
+        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager',
             'invokables');
-        
+
         $this->assertEmpty($unregistred, implode("\n", $unregistred));
     }
 }

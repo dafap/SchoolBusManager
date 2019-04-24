@@ -1,24 +1,25 @@
 <?php
-//============================================================+
-// File name   : chi.php
-// Begin       : 2010-10-26
+// ============================================================+
+// File name : chi.php
+// Begin : 2010-10-26
 // Last Update : 2010-10-26
 //
 // Description : Language module for TCPDF
-//               (contains translated texts)
-//               Chinese (Simplified)
+// (contains translated texts)
+// Chinese (Simplified)
 //
 // Author: Nicola Asuni
 //
 // (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com LTD
-//               www.tecnick.com
-//               info@tecnick.com
-//============================================================+
+// Nicola Asuni
+// Tecnick.com LTD
+// www.tecnick.com
+// info@tecnick.com
+// ============================================================+
 
 /**
  * TCPDF language file (contains translated texts).
+ *
  * @package com.tecnick.tcpdf
  * @brief TCPDF language file: Chinese (Simplified)
  * @author Nicola Asuni
@@ -26,9 +27,8 @@
  */
 
 // Chinese (Simplified)
-
 global $l;
-$l =[];
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

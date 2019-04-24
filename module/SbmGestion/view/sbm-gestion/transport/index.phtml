@@ -8,7 +8,7 @@
  * @filesource view/transport/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 22 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -31,6 +31,11 @@ $url_transport_communes = $this->url('sbmgestion/transport',
 $url_transport_etablissements = $this->url('sbmgestion/transport',
     [
         'action' => 'etablissement-liste',
+        'page' => $this->page
+    ]);
+$url_transport_lots = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-liste',
         'page' => $this->page
     ]);
 $url_transport_services = $this->url('sbmgestion/transport',
@@ -61,30 +66,28 @@ $action = [
 <div id="menugeneral-wrapper">
 	<div id="menugeneral-header" class="clearfix">
 		<div class="menu float-left">
-		<?= $this->listeZoneActions([], $action);?>
+		<?=$this->listeZoneActions([], $action);?>
         </div>
 		<div class="flashMessenger float-right">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
         </div>
 	</div>
 	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?= $url_transport_circuits; ?>"><i
-					class="fam-bullet-go"></i>Circuits</a></li>
-			<li><a href="<?= $url_transport_classes; ?>"><i class="fam-bullet-go"></i>Classes</a></li>
-			<li><a href="<?= $url_transport_communes; ?>"><i
-					class="fam-bullet-go"></i>Communes</a></li>
-			<li><a href="<?= $url_transport_etablissements; ?>"><i
+			<li><a href="<?=$url_transport_circuits;?>"><i class="fam-bullet-go"></i>Circuits</a></li>
+			<li><a href="<?=$url_transport_classes;?>"><i class="fam-bullet-go"></i>Classes</a></li>
+			<li><a href="<?=$url_transport_communes;?>"><i class="fam-bullet-go"></i>Communes</a></li>
+			<li><a href="<?=$url_transport_etablissements;?>"><i
 					class="fam-bullet-go"></i>Etablissements</a></li>
-			<li><a href="<?= $url_transport_services; ?>"><i
-					class="fam-bullet-go"></i>Services</a></li>
-			<li><a href="<?= $url_transport_stations; ?>"><i
-					class="fam-bullet-go"></i>Stations</a></li>
-			<li><a href="<?= $url_transport_transporteurs; ?>"><i
+			<li><a href="<?=$url_transport_lots;?>"><i class="fam-bullet-go"></i>Lots
+					de marché</a></li>
+			<li><a href="<?=$url_transport_services;?>"><i class="fam-bullet-go"></i>Services</a></li>
+			<li><a href="<?=$url_transport_stations;?>"><i class="fam-bullet-go"></i>Stations</a></li>
+			<li><a href="<?=$url_transport_transporteurs;?>"><i
 					class="fam-bullet-go"></i>Transporteurs</a></li>
 		</ul>
 	</div>

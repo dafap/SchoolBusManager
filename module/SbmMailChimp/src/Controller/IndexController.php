@@ -31,9 +31,7 @@ class IndexController extends AbstractActionController
 
     /**
      * Affiche la liste des listes de diffusion présentent dans MailChimp
-     *
      * https://developer.mailchimp.com/documentation/mailchimp/reference/lists/
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
@@ -62,14 +60,13 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Renvoie à la liste (action index) avec un message dans flashMessenger.
-     * Par défaut, 'error' avec comme message 'action interdite
+     * Renvoie à la liste (action index) avec un message dans flashMessenger. Par défaut,
+     * 'error' avec comme message 'action interdite
      *
      * @param string $mode
      *            les modes sont 'error', 'warning', 'success' ou 'info'
      * @param string $msg
      *            le message à placer
-     *
      * @return \Zend\Http\Response
      */
     private function retourListe($mode = 'error', $msg = 'Action interdite.', $action = 'index')
@@ -98,7 +95,6 @@ class IndexController extends AbstractActionController
 
     /**
      * Gestion des listes
-     *
      * Cette action n'est autorisée par les acl que pour le sadmin
      *
      * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/
@@ -401,9 +397,8 @@ class IndexController extends AbstractActionController
         // lecture des champs
         $method = 'lists/' . $args['id_liste'] . '/merge-fields';
         /**
-         * ******************************
-         * attention, faire la différence entre l'opérateur 'merge-fields' et le
-         * container dans la résultat 'merge_fields' !!!!
+         * ****************************** attention, faire la différence entre l'opérateur
+         * 'merge-fields' et le container dans la résultat 'merge_fields' !!!!
          */
         $source = new Paginator(new MailChimpAdapter($mailchimp, $method, 'merge_fields'));
         if (! $source->count()) {
@@ -458,9 +453,9 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $params = $form->getDataForApi3();
                 /**
-                 * *******************************
-                 * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
-                 * paramètres ou le résultat 'merge_fields' et 'merge_id'
+                 * ******************************* Attention à la syntaxe : opérateur
+                 * 'merge-fields' et clés dans les paramètres ou le résultat
+                 * 'merge_fields' et 'merge_id'
                  */
                 $result = $mailchimp->patch(
                     'lists/' . $args['id_liste'] . '/merge-fields/' . $args['merge_id'],
@@ -524,9 +519,9 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $params = $form->getDataForApi3();
                 /**
-                 * *******************************
-                 * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
-                 * paramètres ou le résultat 'merge_fields' et 'merge_id'
+                 * ******************************* Attention à la syntaxe : opérateur
+                 * 'merge-fields' et clés dans les paramètres ou le résultat
+                 * 'merge_fields' et 'merge_id'
                  */
                 $result = $mailchimp->post('lists/' . $args['id_liste'] . '/merge-fields',
                     $params);
@@ -591,9 +586,9 @@ class IndexController extends AbstractActionController
             if ($form->isValid()) {
                 $params = $form->getDataForApi3();
                 /**
-                 * *******************************
-                 * Attention à la syntaxe : opérateur 'merge-fields' et clés dans les
-                 * paramètres ou le résultat 'merge_fields' et 'merge_id'
+                 * ******************************* Attention à la syntaxe : opérateur
+                 * 'merge-fields' et clés dans les paramètres ou le résultat
+                 * 'merge_fields' et 'merge_id'
                  */
                 $result = $mailchimp->post('lists/' . $id_liste . '/merge-fields', $params);
                 if (! array_key_exists('merge_id', $result)) {
@@ -609,8 +604,7 @@ class IndexController extends AbstractActionController
             }
         } else {
             /**
-             * *****
-             * Attention à la dénomination de ce champ dans l'API
+             * ***** Attention à la dénomination de ce champ dans l'API
              */
             $form->setDataFromApi3([
                 'list_id' => $id_liste
@@ -702,13 +696,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Gestion des segments
-     *
-     * L'entrée par post doit fournir les paramètres
-     * - id_liste
-     * - liste_name
-     * ou
-     * - retour (si on a reçu `retour` alors on récupère les 2 autres paramètres en session)
-     *
+     * L'entrée par post doit fournir les paramètres - id_liste - liste_name ou - retour
+     * (si on a reçu `retour` alors on récupère les 2 autres paramètres en session)
      * L'entrée par get récupère les paramètres en session.
      *
      * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/segments/
@@ -816,8 +805,7 @@ class IndexController extends AbstractActionController
             }
         } else {
             /**
-             * *****
-             * Attention à la dénomination de ce champ dans l'API
+             * ***** Attention à la dénomination de ce champ dans l'API
              */
             $form->setDataFromApi3([
                 'list_id' => $id_liste
@@ -912,7 +900,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Doit recevoir les paramètres `id_liste` et `segment_id` ou les retrouver en session.
+     * Doit recevoir les paramètres `id_liste` et `segment_id` ou les retrouver en
+     * session.
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1062,16 +1051,11 @@ class IndexController extends AbstractActionController
 
     /**
      * Affiche la liste des membres d'un segment
-     *
-     * Pour une entrée par post, reçoit les paramètres
-     * - id_liste (obligatoire)
-     * - liste_name
-     * - segment_id (obligatoire)
-     * - segment_name
-     * Si ces paramètres sont absents, ils doivent se trouver en session.
-     *
-     * Pour une entrée par get, ces paramètres doivent être en session.
-     * (entrée par get nécessaire à cause du paginator)
+     * Pour une entrée par post, reçoit les paramètres - id_liste (obligatoire) -
+     * liste_name - segment_id (obligatoire) - segment_name Si ces paramètres sont
+     * absents, ils doivent se trouver en session.
+     * Pour une entrée par get, ces paramètres doivent être en session. (entrée par get
+     * nécessaire à cause du paginator)
      *
      * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -1129,14 +1113,10 @@ class IndexController extends AbstractActionController
 
     /**
      * Affiche la liste des membres d'une liste
-     *
-     * Pour une entrée par post, reçoit les paramètres
-     * - id_liste (obligatoire)
-     * - liste_name
-     * Si ces paramètres sont absents, ils doivent se trouver en session.
-     *
-     * Pour une entrée par get, ces paramètres doivent être en session.
-     * (entrée par get nécessaire à cause du paginator)
+     * Pour une entrée par post, reçoit les paramètres - id_liste (obligatoire) -
+     * liste_name Si ces paramètres sont absents, ils doivent se trouver en session.
+     * Pour une entrée par get, ces paramètres doivent être en session. (entrée par get
+     * nécessaire à cause du paginator)
      *
      * @see https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members/
      */
@@ -1193,10 +1173,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Mise à jour des membres de la liste (par la méthode de put)
-     *
-     * Reçoit en post l'identifiant de la liste 'id_liste'.
-     * Eventuellement, reçoit en post les paramètres 'populate' ou 'selection'.
-     *
+     * Reçoit en post l'identifiant de la liste 'id_liste'. Eventuellement, reçoit en post
+     * les paramètres 'populate' ou 'selection'.
      * Les données sont extraites de la base de données par la méthode
      * SbmMailChimp\Model\Db\Service\Users::getMembersForMailChimpListe()
      */
@@ -1213,13 +1191,9 @@ class IndexController extends AbstractActionController
                 'Abandon. La liste n\'a pas été mise à jour.');
         } elseif (array_key_exists('id_liste', $prg) && array_key_exists('populate', $prg)) {
             /**
-             * ALGORITHME
-             * créer un batch
-             * lancer la requête sur la table users
-             * pour chaque résultat de la requête
-             * - placer le résultat en put dans le batch
-             * lancer l'exécution du batch
-             * retour à la liste des membres
+             * ALGORITHME créer un batch lancer la requête sur la table users pour chaque
+             * résultat de la requête - placer le résultat en put dans le batch lancer
+             * l'exécution du batch retour à la liste des membres
              */
             $id_list = $prg['id_liste'];
             $mailchimp = new MailChimp($this->mailchimp_key);
@@ -1288,7 +1262,6 @@ class IndexController extends AbstractActionController
 
     /**
      * Suppression des membres de la liste qui ne sont plus dans sbm.
-     *
      * Il faudra utiliser la date de mise à jour.
      */
     public function cleanAction()
@@ -1303,13 +1276,10 @@ class IndexController extends AbstractActionController
         if (array_key_exists('id_liste', $prg) && array_key_exists('clean', $prg)) {
 
             /**
-             * ALGORITHME
-             * lire les members et garder le tableau des email_address
-             * créer un batch
-             * pour chaque email de ce tableau
-             * - rechercher cet email dans la table users
-             * - si l'email n'y est pas, demander la suppression par batch
-             * lancer l'exécution du batch
+             * ALGORITHME lire les members et garder le tableau des email_address créer un
+             * batch pour chaque email de ce tableau - rechercher cet email dans la table
+             * users - si l'email n'y est pas, demander la suppression par batch lancer
+             * l'exécution du batch
              */
             // lire les members et garder le tableau des email_address
             $id_list = $prg['id_liste'];

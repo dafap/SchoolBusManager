@@ -36,15 +36,15 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $anneeScolaire = sprintf("%d-%d", $this->millesime, $this->millesime + 1);
 
 $nouveauBordereauCheques = (empty($this->dateBordereauCheques) &&
-    ! empty($this->datePaiementCheques)) || (! empty($this->dateBordereauCheques) &&
-    ! empty($this->datePaiementCheques) &&
+    ! empty($this->datePaiementCheques)) ||
+    (! empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques) &&
     $this->dateBordereauCheques < $this->datePaiementCheques);
 $nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) &&
-    ! empty($this->datePaiementEspeces)) || (! empty($this->dateBordereauEspeces) &&
-    ! empty($this->datePaiementEspeces) &&
+    ! empty($this->datePaiementEspeces)) ||
+    (! empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces) &&
     $this->dateBordereauEspeces < $this->datePaiementEspeces);
-$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) || (! empty(
-    $this->dateBordereauCB) && ! empty($this->datePaiementCB) &&
+$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) ||
+    (! empty($this->dateBordereauCB) && ! empty($this->datePaiementCB) &&
     $this->dateBordereauCB < $this->datePaiementCB);
 ?>
 <div id="tableau-de-bord" class="clearfix">

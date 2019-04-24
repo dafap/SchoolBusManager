@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 7 avr. 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -127,9 +127,9 @@ if (! $this->admin) {
 					<th>Type</th>
 					<th>Mont.</th>
 					<th>Desc.</th>
-					<th class="horaire">Matin</th>
-					<th class="horaire">Soir</th>
-					<th class="horaire">Mercredi</th>
+					<th class="horaire">H1</th>
+					<th class="horaire">H2</th>
+					<th class="horaire">H3</th>
 					<th class="nbinscrits">Effectif</th>
 					<th class="selection">Sélect.</th>
 					<th></th>
@@ -179,8 +179,34 @@ if (! $this->admin) {
                         $circuit->serviceId, $circuit->station)
                 ]
             ];
+            $css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
+            $horaires = [
+                'h1' => [
+                    $circuit->m1,
+                    $circuit->s1,
+                    $circuit->z1
+                ],
+                'h2' => [
+                    $circuit->m2,
+                    $circuit->s2,
+                    $circuit->z2
+                ],
+                'h3' => [
+                    $circuit->m3,
+                    $circuit->s3,
+                    $circuit->z3
+                ]
+            ];
+            for ($i = 1; $i <= 3; $i ++) {
+                $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
+                    return $v != '00:00:00';
+                });
+            }
             ?>
-            	<tr class="<?=$this->cycle(["even","odd"])->next();?>">
+            	<tr class="petit <?=$css;?>">
 					<td class="serviceid">
 						<?=$this->escapeHtml($circuit->serviceId);?></td>
 					<td class="service">
@@ -194,11 +220,11 @@ if (! $this->admin) {
 					<td class="centre descente">
 						<?=$circuit->descente ? 'X' : '';?></td>
 					<td class="horaire">
-						<?=$circuit->m1;?></td>
+						<?=implode('<br>', $horaires['h1']);?></td>
 					<td class="horaire">
-						<?=$circuit->s1;?></td>
+						<?=implode('<br>', $horaires['h2']);?></td>
 					<td class="horaire">
-						<?=$circuit->s2;?></td>
+						<?=implode('<br>', $horaires['h3']);?></td>
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
@@ -230,8 +256,8 @@ $actions_selection = [
 ?>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<div class="sbm-description float-left">Pour décaler des horaires, sélectionner
-				les arrêts concernés.</div>
+			<div class="sbm-description float-left">Pour décaler des horaires,
+				sélectionner les arrêts concernés.</div>
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">

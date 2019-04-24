@@ -1,169 +1,207 @@
 <?php
 /**
  * Méthodes calculant les montants payés et à payer par un responsable
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Responsable
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use SbmCommun\Model\Db\Sql\Predicate;
 use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class CalculMontant implements FactoryInterface
+class CalculMontant extends AbstractQuery
 {
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
+     * @var array
      */
-    private $dbAdapter;
+    private $abonnements;
 
     /**
      *
-     * @var \SbmCommun\Model\Db\Service\DbManager
+     * @var array
      */
-    private $db_manager;
+    private $duplicatas;
 
-    /**
-     *
-     * @var int
-     */
-    private $millesime;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    protected function init()
     {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
+        $this->abonnements = [];
+        $this->duplicatas = [];
+    }
+
+    /**
+     * Pour un responsableId on renvoie un tableau ayant les clés suivantes : <ul>
+     * <li>'montantAbonnements' est le montant total du par le responsable pour les
+     * abonnements</li><li>'detailAbonnements' est un tableau qui donne, pour chaque code
+     * de grille, le nom de la grille, la quantite (nombre d'enfants à prendre en compte)
+     * et le montant total à facturer au titre de cette grille</li>
+     *
+     * @param int $responsableId
+     * @param array|null $aEleveId
+     *            tableau d'identifiants d'élèves
+     * @return array
+     */
+    public function getAbonnementsResponsable(int $responsableId, array $aEleveId = null)
+    {
+        if (empty($this->abonnements)) {
+            $effectifsParGrilleTarif = $this->renderResult(
+                $this->selectEffectifsParGrilleTarif($responsableId, $aEleveId));
+            $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
+            $detailAbonnements = [];
+            $montantAbonnements = 0;
+            foreach ($effectifsParGrilleTarif as $row) {
+                $montantGrille = $tTarifs->getMontant($row['grilleCode'], $row['quantite']);
+                $detailAbonnements[$row['grilleCode']] = [
+                    'grille' => $row['grilleTarif'],
+                    'quantite' => $row['quantite'],
+                    'montant' => $montantGrille
+                ];
+                $montantAbonnements += $montantGrille;
+            }
+            $this->abonnements = [
+                'detailAbonnements' => $detailAbonnements,
+                'montantAbonnements' => $montantAbonnements
+            ];
         }
-        $this->db_manager = $serviceLocator;
-        $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
-        return $this;
+        return $this->abonnements;
     }
 
     /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
+     * Si on passe un tableau d'identifiants d'élèves, la requête sera construite à partir
+     * de ce tableau et ne tiendra pas compte du responsableId
      *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
+     * @param int $responsableId
+     * @param array|null $aEleveid
+     *            tableau d'identifiants d'élèves
+     * @return \Zend\Db\Sql\Select
      */
-    public function getSqlString($select)
+    private function selectEffectifsParGrilleTarif(int $responsableId, $aEleveid)
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function selectDroitsInscription($responsableId = null)
-    {
-        $where = new Where();
-        $where->equalTo('millesime', $this->millesime)
-            ->equalTo('inscrit', 1)
-            ->equalTo('gratuit', 0)
-            ->equalTo('fa', 0); // inscrit, ni gratuit, ni organisme, ni fa
-
-        $select = new Select();
-        $select->from([
-            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
-        ])
+        if (is_null($aEleveid)) {
+            $where = new Where(null, Where::COMBINED_BY_OR);
+            $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
+                $responsableId);
+        } else {
+            $where = new Where();
+            $where->in('ele.eleveId', $aEleveid);
+        }
+        $predicate = new Predicate\ElevesResponsablePayant($this->millesime, 'sco',
+            [
+                $where
+            ], Where::COMBINED_BY_AND);
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
+        return $this->sql->select(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'tar.tarifId = sco.tarifId', [])
-            ->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'sco.eleveId = ele.eleveid', [])
-            ->join(
+        ], 'ele.eleveId = sco.eleveId',
             [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'ele.responsable1Id = res.responsableId', [
-                'responsableId'
+                'grilleCode' => 'grilleTarif',
+                'grilleTarif' => 'grilleTarif'
             ])
             ->columns([
-
-            'montant' => new Expression('SUM(`tar`.`montant`)')
+            'quantite' => new Expression('count(*)')
         ])
-            ->where($where)
-            ->group('responsableId');
-        if ($responsableId) {
-            $select->having((new Where())->equalTo('responsableId', $responsableId));
-        }
-        // die($this->getSqlString($select));
-        return $select;
+            ->where($predicate)
+            ->group('grilleCode');
     }
 
-    public function droitsInscription($responsableId)
+    public function getDuplicatasResponsable(int $responsableId)
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectDroitsInscription($responsableId));
-        $result = $statement->execute();
-        $total = 0;
-        foreach ($result as $row) {
-            $total += $row['montant'];
+        if (empty($this->duplicatas)) {
+            $duplicatasPaEleve = $this->renderResult(
+                $this->selectDuplicatasParEleve($responsableId));
+            $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
+            $detailDuplicatas = [];
+            $nbDuplicatas = 0;
+            foreach ($duplicatasPaEleve as $row) {
+                $nbDuplicatas += $row['duplicata'];
+                $detailDuplicatas[$row['eleveId']] = [
+                    'nom' => $row['nom'],
+                    'prenom' => $row['prenom'],
+                    'grilleTarif' => $row['grilleTarif'],
+                    'duplicata' => $row['duplicata']
+                ];
+            }
+            $montantDuplicatas = $tTarifs->getMontant($tTarifs->getDuplicataCodeGrille(),
+                $nbDuplicatas);
+            $this->duplicatas = [
+                'detailDuplicatas' => $detailDuplicatas,
+                'montantDuplicatas' => $montantDuplicatas
+            ];
         }
-        return $total;
+        return $this->duplicatas;
     }
 
-    public function resteAPayer($responsableId)
+    /**
+     * Renvoie la liste des élèves d'un responsable (nom, prénom, grille tarifaire, nb de
+     * duplicatas)
+     *
+     * @param int $responsableId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectDuplicatasParEleve(int $responsableId)
     {
-        $where = new Where();
-        $where->equalTo('millesime', $this->millesime)
-            ->equalTo('responsableId', $responsableId)
-            ->equalTo('inscrit', 1)
-            ->
-        // inscrit
-        equalTo('gratuit', 0)
-            ->
-        // ni gratuit, ni organisme
-        equalTo('fa', 0)
-            ->
-        // pas fa
-        equalTo('paiement', 0); // préinscrit
-
-        $select = new Select();
-        $select->from([
-            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
+        $where = new Where(null, Where::COMBINED_BY_OR);
+        $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
+            $responsableId);
+        $predicate = new Where([
+            $where
+        ], Where::COMBINED_BY_AND);
+        $predicate->equalTo('millesime', $this->millesime);
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
+        return $this->sql->select(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns([
+            'eleveId' => 'eleveid',
+            'nom',
+            'prenom'
         ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'tar.tarifId = sco.tarifId', [])
-            ->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'sco.eleveId = ele.eleveid', [])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'ele.responsable1Id = res.responsableId', [])
-            ->columns([
-            'montant' => new Expression('SUM(`tar`.`montant`)')
+        ], 'ele.eleveId = sco.eleveId', [
+            'duplicata',
+            'grilleTarif'
         ])
-            ->where($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute();
-        $total = 0;
-        foreach ($result as $row) {
-            $total += $row['montant'];
+            ->where($predicate);
+    }
+
+    /**
+     * Renvoie le montant total du par un responsable pour le millesime en cours. Si on
+     * passe un tableau d'identifiants d'élèves, ce seront ces élèves qui seront pris en
+     * compte pour les abonnements. Par contre, pour les duplicatas, c'est bien le
+     * responsableId qui est pris en compte.
+     *
+     * @param int $responsableId
+     * @param array $aEleveId
+     * @return float
+     */
+    public function calculMontantTotal(int $responsableId, array $aEleveId)
+    {
+        if (empty($aEleveId)) {
+            $aEleveId = [
+                - 1
+            ]; // pour compatibilité de la clause IN de MySql
         }
-        return $total;
+        $montant = $this->getAbonnementsResponsable($responsableId, $aEleveId)['montantAbonnements'];
+        $montant += $this->getDuplicatasResponsable($responsableId)['montantDuplicatas'];
+        return $montant;
     }
 }

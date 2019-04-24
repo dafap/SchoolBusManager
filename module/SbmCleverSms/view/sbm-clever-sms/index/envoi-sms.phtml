@@ -1,0 +1,70 @@
+<?php
+/**
+ * Page de saisie d'un SMS
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-clever-sms/index
+ * @filesource envoi-sms.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 avr. 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/mgc/cleversms/envoi-sms.css'));
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('/js/cleversms/envoi-sms.js'));
+$this->inlineScript()->captureStart();
+?>
+js_envoi_sms.init(1000);
+<?php
+$this->inlineScript()->captureEnd();
+if (empty($this->destinataires)) {
+    $liste = false;
+} else {
+    $liste = count((array) $this->destinataires) > 1;
+}
+$tels = [];
+foreach ($this->telephones as $value) {
+    $tels[] = $this->telephone($value);
+}
+?>
+<h1>Envoi d'un SMS par le service de transport</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+	<?php if ($liste):?>
+	    <p class="description">Voir la liste des destinataires en dessous
+			du formulaire.</p>
+	<?php else :?>
+	    <dl>
+			<dt>Destinataire</dt>
+			<dd><?= $this->responsable . ' (' . implode(' ; ', $tels) . ')';?></dd>
+		</dl>
+	<?php endif;?>
+	</div>
+	<div id="fiche-inner">
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formHidden($this->form->get('csrf'));?>
+	    <fieldset class="sbm-page1">
+			<div id="body-wrapper">
+			<?=$this->formRow($this->form->get('body'));?>
+			<div id="sms-body-msg"></div>
+			</div>
+			<div>
+				<?= $this->formSubmit($this->form->get('submit'));?>
+				<?= $this->formSubmit($this->form->get('cancel'));?>
+			</div>
+		</fieldset>
+	<?php $this->form()->closeTag();?>
+	</div>
+	<div id="fiche-footer">
+	<?php if ($liste):?>
+	    <h3>Liste des destinataires</h3>
+		<ul>
+	    <?php foreach ($this->destinataires as $to):?>
+	        <li><?= $to['titre'] . ' ' . $to['nom'] . ' ' . $to['prenom'] . ' (' . $to['email'] . ')';?></li>
+	    <?php endforeach;?>
+	    </ul>
+	<?php endif;?>
+	</div>
+</div>

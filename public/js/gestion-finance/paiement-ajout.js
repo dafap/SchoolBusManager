@@ -6,7 +6,7 @@
  * @filesource paiement-ajout.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 16 avr. 2019
  * @version 2019-2.5.0
  */
 
@@ -15,39 +15,38 @@
  * et propose la méthode publique init().
  */
 var js_paiement_ajout = (function(){
-	var montantDuplicatas;
+	var sommeDue;
+	var sommePayee;
 	var nbPreinscrits;
 	/**
-	 * méthode privée chargeListe() faisant un appel ajax pour mettre à jour :
-	 * - montantDuplicatas
-	 * - nbPreinscrits
+	 * méthode privée chargeListe() faisant un appel ajax pour mettre à jour 
+	 * - la liste des enfants
+	 * - le montant du
+	 * - le montant proposé dans le formulaire
 	 * Elle modifie le document html en remplaçant le tableau des preinscrits et le montant du.
-	 * Elle appelle la méthode privée echoSommeDue().
+	 * Elle appelle la méthode privée totalAPayer().
 	 */
 	function chargeListe() {
 		var valeur = $("#responsableId").val() | 0;
 		$.ajax({
 			url : '/sbmajaxfinance/listepreinscrits/responsableId:'+valeur,
 			dataType: 'json',
-			success : function(dataJson){
-				var montantDu = parseFloat(montantDuplicatas);			        			        
+			success : function(dataJson){		        			        
 				$("#tbody-preinscrits").empty();
-				$("#tbody-preinscrits").append('<tr><th>Nom</th><th>Prénom</th><th>Montant</th><th></th></tr>');
+				$("#tbody-preinscrits").append('<tr><th>Nom</th><th>Prénom</th><th>Tarif</th><th>Duplicata</th><th></th></tr>');
 				if (dataJson.success) {
-			    	montantDuplicatas = dataJson.duplicatas;
 			    	nbPreinscrits = 0;
 			    	$.each(dataJson.data, function(k, d) {
 			        	nbPreinscrits++;
 			        	var nom = d['nom'];
 			        	var prenom = d['prenom'];
-			        	var montant = d['montant'];
-			        	montantDu += parseFloat(montant);
+			        	var tarif = d['grilleTarif'];
+			        	var duplicata = d['duplicata'];
 			        	var checkbox = '<input type="checkbox" name="eleveId[]" value="'+d['eleveId']+'" checked>';
-			            $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+montant+"</td><td>"+checkbox+"</td></tr>");
+			            $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+tarif+"</td><td class=\"align-right\">"+duplicata+"</td><td>"+checkbox+"</td></tr>");
 			        });
 			    }
-			    echoSommeDue(montantDu);
-			    $("#paiement-montant").val(parseFloat(montantDu).toFixed(2));
+				totalAPayer();
 			},
 			error : function(xhr, ajaxOptions, thrownError) {
 				alert(xhr.status + " " + thrownError);
@@ -55,32 +54,52 @@ var js_paiement_ajout = (function(){
 		});
 	}
 	/**
-	 * méthode privée totalAPayer() qui renvoit le total des sommes dues inscrites dans le tableau.
-	 * Elle appelle la méthode privée echoSommeDue().
+	 * méthode privée totalAPayer() qui demande le total des sommes dues pour les élèves cochés dans le tableau.
+	 * Elle appelle la méthode privée echoSommeDue() et elle met à jour la somme proposée dans le formulaire.
 	 * 
 	 * @return float
 	 */
 	function totalAPayer() {
-		var total = montantDuplicatas;
-		$("#tbody-preinscrits > tr:not(:first)").each(function(i) {
-			var element = $("td:nth-child(4) > input[type=checkbox]")[i];
+		var result = [];
+		$("#tbody-preinscrits > tr:not(:first)").each(function(i) {			
+			var element = $("td:nth-child(5) > input[type=checkbox]")[i];
 			if ($(element).is(':checked')) {
-		    	var cellMontant = $(element).parent().parent().find("td:nth-child(3)")[0];
-		    	total=total+parseFloat($(cellMontant).text());
+				result.push(element.value);
 			}
 		});
-		echoSommeDue(total);
-		return total;  
+		var responsableId = $("#responsableId").val() | 0;
+		var eleveIds = encodeURIComponent(JSON.stringify(result));
+		var urlstr = '/sbmajaxfinance/calculmontant/responsableId:'+responsableId+'/eleveIds:'+eleveIds;
+		$.ajax({
+			url: urlstr,
+			dataType: 'json',
+			success: function(dataJson) {
+				sommeDue = dataJson.total;
+				sommePayee = dataJson.paye;
+				var solde = dataJson.solde;
+				if (dataJson.success == 0) {
+					alert('Le responsable est inconnu.');
+				}
+				echoSommeDue();
+			    $("#paiement-montant").val(parseFloat(solde).toFixed(2));
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status + " " + thrownError);
+			}
+		});
 	}
 	/**
 	 * méthode privée echoSommeDue() qui met à jour la <div id="somme-due"> dans le document.
 	 * 
 	 * @param float montant
 	 */
-	function echoSommeDue(montant) {
-		var texte = '<p class="left-10px">Somme due : '+parseFloat(montant).toFixed(2)+' €</p>';
+	function echoSommeDue() {
+		var texte = '<span class="left-10px">Somme due : '+parseFloat(sommeDue).toFixed(2)+' €</span	>';
 		$("#somme-due").empty();
 		$("#somme-due").append(texte);
+		texte = '<span class="left-10px">Somme payée : '+parseFloat(sommePayee).toFixed(2)+' €</span	>';
+		$("#somme-payee").empty();
+		$("#somme-payee").append(texte);
 	}
 	// mise en place des listeners
 	$(document).ready(function() {
@@ -89,7 +108,7 @@ var js_paiement_ajout = (function(){
 			chargeListe();
 		}).trigger('change');
 		// listener sur les cases à cocher du tableau des préinscrits
-		$("#tbody-preinscrits").on('click', "input[type=checkbox]", function() {
+		$("#tbody-preinscrits").on('change', "input[type=checkbox]", function() {
 		      $("#paiement-montant").val(parseFloat(totalAPayer()).toFixed(2));
 		});
 		// listener sur le submit du formulaire paiement
@@ -98,13 +117,17 @@ var js_paiement_ajout = (function(){
 			if ($(btn).length && $(btn).is("[name]") && $(btn).attr("name")=="cancel") {
 		    	return true;
 			}
-			var sommeDue=totalAPayer();
 			var montant=$("#paiement-montant").val() | 0;
 			if (nbPreinscrits>0 && montant>0 && sommeDue==0) {
 		    	return confirm("Vous n'avez pas coché d'enfant ; ce paiement ne validera pas les préinscriptions. Confirmez-vous ?");
 			} 
-			if (montant!=sommeDue) {
-		    	return confirm("Le montant indiqué ne correspond pas à la somme due. Confirmez-vous ?");
+			var solde = sommeDue-sommePayee;
+			if (montant!=solde) {
+		    	return confirm("Le montant indiqué ("+
+		    			parseFloat(montant).toFixed(2)+
+		    			") ne correspond pas à la somme due ("+
+		    			parseFloat(solde).toFixed(2)+
+		    			"). Confirmez-vous ?");
 			}
 			return true;
 		});
@@ -112,7 +135,6 @@ var js_paiement_ajout = (function(){
 	// méthodes publiques
 	return {
 		"init": function(){
-			montantDuplicatas = 0.0;
 			nbPreinscrits = 0;
 			chargeListe();
 		}

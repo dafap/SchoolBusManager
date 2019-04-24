@@ -4,17 +4,17 @@
  *
  * Cette liste peut être donner les paiements d'un responsable ou de tous les paiements (éventuellement filtrée par les critères indiqués)
  * La vue reçoit la propriété `url_retour` du controller.
- * 
+ *
  * Chaque bouton `group` est implémenté dans un formulaire de façon à envoyer en post la route_retour, l'action_retour et la page_retour.
  * Ce bouton n'est visible que dans la gestion des paiements (liste complète ou groupée). Il est invisible pour les paiements relatifs à un
  * responsable indiqué.
- * 
+ *
  * @project sbm
  * @package module\SbmGestion\view\sbm-gestion\finance
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév.2019
+ * @date 17 avr.2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -133,7 +133,6 @@ if (! $this->h2) {
     unset($actions['detail']);
 }
 ?>
-?>
 
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
@@ -148,15 +147,15 @@ if (! $this->h2) {
 <?php if ($this->h2): ?>
         <h2>Paiements effectués par <?= $this->responsable; ?></h2>
         <?php
-    $totalDu = $this->montantInscriptions + $this->nbDuplicata * $this->duplicata;
+    $totalDu = $this->resultats->getSolde();
     ?>
-		<p class="left-10px">Total du : <?= $fmt->formatCurrency($totalDu, 'EUR');?>
+		<p class="left-10px">Total du : <?= $fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
             <span class="left-95px">
-            	Payé : <?= $fmt->formatCurrency($this->totalPaye, 'EUR');?></span>
+            	Payé : <?= $fmt->formatCurrency($this->resultats->getPaiements(), 'EUR');?></span>
 			<span class="left-95px">
-				Reste du : <?= $fmt->formatCurrency($totalDu - $this->totalPaye, 'EUR');?></span>
+				Reste du : <?= $fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></span>
 		</p>
-<?php endif; ?>	
+<?php endif; ?>
 		<div class="menu float-left">
 			<?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
@@ -200,11 +199,11 @@ if (! $this->h2) {
                 str_replace("\n", '; ', $texte_voir) . '\');return false;';
             $hiddens['paiementId'] = $paiement->paiementId;
             /*
-             * Pour responsableId il y a 2 cas :
-             * - si h2 == true alors responsableId correspond au responsableId de la liste et de la
-             * ligne (liste des paiements d'un responsable)
-             * - si h2 == false alors responsableId correspond au responsableId de la ligne. Dans
-             * ce cas, le responsableId de la liste est -1.
+             * Pour responsableId il y a 2 cas : - si h2 == true alors responsableId
+             * correspond au responsableId de la liste et de la ligne (liste des paiements
+             * d'un responsable) - si h2 == false alors responsableId correspond au
+             * responsableId de la ligne. Dans ce cas, le responsableId de la liste est
+             * -1.
              */
             $hiddens['responsableId'] = $paiement->responsableId;
             $hiddens['responsable'] = $this->escapeHtml($paiement->responsable);
@@ -254,7 +253,7 @@ if (! $this->h2) {
 					    <?= renderCheckbox($this, 'selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
 					<td class="boutons">
 						<?= $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);?></td>
-				</tr>         
+				</tr>
         <?php endforeach;?>
     </tbody>
 		</table>

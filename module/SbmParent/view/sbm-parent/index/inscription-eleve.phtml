@@ -12,13 +12,14 @@
  * @filesource inscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/mgc/sbm-parent/index/edit.css'));
 $this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basepath('/js/parent/edit-eleve.js'));
 $texteDemandeR2 = <<<EOT
-La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera
+Le transport pour cette 2ème adresse ne sera
     validé qu’en fonction de la disponibilité des places sur les circuits existants.
     Vous serez informés prochainement des suites données à votre demande par mail.
 EOT;
@@ -39,57 +40,81 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
 ?>
 <h1>Inscription d'un enfant</h1>
-
 <div id="fiche-wrapper">
 	<div id="fiche-header"></div>
-	<div id="fiche-inner">
+	<div id="fiche-content">
 		<?=$this->form()->openTag($this->form);?>
 		<?=$this->formHidden($this->form->get('eleveId'));?>
 		<?=$this->formHidden($this->form->get('responsable1Id'));?>
 		<?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="enfant-ajout-nom" class="row-inner ajout">
-				<?=$this->formRow($this->form->get('nom'));?></div>
-			<div id="enfant-ajout-prenom" class="row-inner ajout">
-				<?=$this->formRow($this->form->get('prenom'));?></div>
-			<div id="enfant-ajout-dateN" class="row-inner ajout">
-				<?=$this->formRowDate($this->form->get('dateN'));?></div>
-			<div>
-				<div class="enfant-label">Responsable</div>
-				    <?=$identiteResponsable;?></div>
-			<div>
-				<div class="enfant-label">Adresse</div>
-				    <?=$this->responsable->adresseL1;?></div>
-			<div>
-				<div class="enfant-label">Adresse</div>
-    				<?=$this->responsable->adresseL2;?></div>
-			<div>
-				<div class="enfant-label">Commune</div>
-				    <?=$this->responsable->codePostal . ' ' . $this->responsable->commune;?></div>
-			<div id="enfant-ajout-etablissementId" class="row-inner ajout">
-				<?=$this->formRow($this->form->get('etablissementId'));?></div>
-			<div id="enfant-ajout-classeId" class="row-inner ajout">
-				<?=$this->formRow($this->form->get('classeId'));?></div>
-			<div id="wrapper-radio" class="clearfix">
-				<div id="enfant-ajout-joursTransport"
-					class="row-inner ajout float-left">
-				    <?=$this->formRow($this->form->get('joursTransport'));?></div>
-				<div id="enfant-ajout-ga" class="row-inner ajout float-left">
-				    <?=$this->formRow($this->form->get('ga'));?></div>
-				<div id="enfant-ajout-fa" class="row-inner ajout float-left">
-				    <?=$this->formRow($this->form->get('fa'));?></div>
+			<div class="table2cols">
+				<div class="zone col1">
+					<div id="enfant-ajout-nom" class="row-inner">
+				        <?=$this->formRow($this->form->get('nom'));?></div>
+					<div id="enfant-ajout-prenom" class="row-inner">
+					   <?=$this->formRow($this->form->get('prenom'));?></div>
+					<div class="table2cols">
+						<div id="enfant-ajout-dateN" class="row-inner zone col11">
+					   		<?=$this->formRowDate($this->form->get('dateN'));?></div>
+						<div id="enfant-ajout-dateN" class="row-inner zone col12">
+					    	<?=$this->formSelect($this->form->get('sexe'));?></div>
+					</div>
+					<div id="z3cg-r1" class="bloc-wrapper">
+						<fieldset>
+							<div>
+								<div class="label-enfant">Responsable</div>
+                    				<?=$identiteResponsable;?></div>
+							<div>
+								<div class="label-enfant">Adresse</div>
+                    				<?=$this->responsable->adresseL1;?></div>
+							<div>
+								<div class="label-enfant">Adresse</div>
+                    				<?=$this->responsable->adresseL2;?></div>
+							<div>
+								<div class="label-enfant">Commune</div>
+                    				<?=$this->responsable->codePostal;?>
+                    				<?=$this->responsable->commune;?>
+                    		</div>
+						</fieldset>
+					</div>
+					<div id="enfant_ap"></div>
+					<div id="wrapper-radio-col1" class="table2cols">
+						<div id="wrapper-joursTransport"
+							class="bloc-wrapper zone col13">
+                		<?=$this->formRow($this->form->get('joursTransport'));?></div>
+						<div id="wrapper-fa" class="bloc-wrapper zone">
+						<?=$this->formRow($this->form->get('fa'));?></div>
+					</div>
+				</div>
+				<div class="zone col2">
+					<div id="enfant-ajout-etablissementId" class="row-inner">
+					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
+					<div class="table2cols">
+						<div class="zone col21">
+							<div id="enfant-ajout-classeId" class="row-inner">
+					   		<?=$this->formRow($this->form->get('classeId'));?></div>
+							<div id="wrapper-radio-col2" class="table2cols">
+								<div id="wrapper-regimeId"
+									class="bloc-wrapper zone fit-content">
+					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
+								<div id="wrapper-ga" class="bloc-wrapper zone fit-content">
+								<?=$this->formRow($this->form->get('ga'));?></div>
+							</div>
+						</div>
+					</div>
+					<div id="z3cd-r1"></div>
+					<div id="enfant_ga"></div>
+				</div>
 			</div>
-			<div id="enfant_ga"></div>
-			<div id="user">
-				<div id="wrapper-commentaire">
-				    <?=$this->formRow($this->form->get('commentaire'));?></div>
-			</div>
-			<div id="enfant-ajout-buttons" class="row-inner ajout">
-        		<?=$this->formSubmit($this->form->get('submit'));?>
-        		<?=$this->formSubmit($this->form->get('cancel'));?>
-        	</div>
+			<div id="wrapper-commentaire">
+				<?=$this->formRow($this->form->get('commentaire'));?></div>
+			<div id="enfant-ajout-buttons" class="row-inner">
+            	<?=$this->formSubmit($this->form->get('submit'));?>
+            	<?=$this->formSubmit($this->form->get('cancel'));?>
+            </div>
 		</fieldset>
-		<?=$this->form()->closeTag();?>
+    <?=$this->form()->closeTag();?>
     </div>
 	<div id="fiche-footer"></div>
 </div>
@@ -97,37 +122,33 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 	<div id="content_enfant_ga">
     	<?=$this->formHidden($this->formga->get('r2responsable2Id'));?>
 	    <?=$this->formHidden($this->formga->get('r2userId'));?>
-    	<div id="_titre" class="row-inner edit">
+    	<div id="_titre" class="row-inner">
 		    <?=$this->formRow($this->formga->get('r2titre'));?></div>
-		<div id="_nom" class="row-inner edit">
+		<div id="_nom" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2nom'));?></div>
-		<div id="_prenom" class="row-inner edit">
+		<div id="_prenom" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2prenom'));?></div>
-		<div id="_adresseL1" class="row-inner edit">
+		<div id="_adresseL1" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2adresseL1'));?></div>
-		<div id="_adresseL2" class="row-inner edit">
+		<div id="_adresseL2" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2adresseL2'));?></div>
-		<div id="_codePostal" class="row-inner edit">
+		<div id="_codePostal" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2codePostal'));?></div>
-		<div id="_communeId" class="row-inner edit">
+		<div id="_communeId" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2communeId'));?></div>
-		<div id="_telephone_bloc">
-			<div id="_telephoneF" class="row-inner edit" style="display: inline-block;">
+		<div id="_telephone_bloc" class="clearfix">
+			<div id="_telephoneF" class="row-inner float-left"
+				style="display: inline-block;">
 				<?=$this->formRow($this->formga->get('r2telephoneF'));?></div>
-			<?php
-
-if ($this->layout()->hassbmservicesms) :
-    ?>
-			<div id="_smsF" class="row-inner edit" style="vertical-align:top; margin-left: 20px; display: inline-block;">
-				Accepte SMS ?
-				<?=$this->formRadio($this->formga->get('r2smsF'));?></div>
-			<?php endif;
-
-?>
+				<?php if ($this->layout()->hassbmservicesms) :?>
+				<div id="_smsF" class="row-inner float-left left-20px">
+					<?=$this->formLabel($this->formga->get('r2smsF'));?>
+					<?=$this->formRadio($this->formga->get('r2smsF'));?></div>
+				<?php endif;?>
 		</div>
-		<div id="_email" class="row-inner edit">
+		<div id="_email" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2email'));?></div>
-		<div id="_demandeR2" class="row-inner edit">
+		<div id="_demandeR2" class="row-inner bloc-wrapper">
 			<?=$this->formRow($this->form->get('demandeR2'));?>
 		</div>
 	</div>

@@ -37,7 +37,8 @@ class NomTable implements FilterInterface
         if (preg_match_all($pattern, $value, $array)) {
             for ($i = 0; $i < count($array[0]); $i ++) {
                 $value = str_replace($array[0][$i],
-                    $this->db_manager->getCanonicName($array[2][$i], $array[1][$i]), $value);
+                    $this->db_manager->getCanonicName($array[2][$i], $array[1][$i]),
+                    $value);
             }
         }
         return $value;

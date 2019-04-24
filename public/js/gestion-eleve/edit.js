@@ -5,12 +5,11 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
+ * @date 18 avr. 2019
  * @version 2019-2.5.0
  */
 
 var js_edit = (function() {
-	var tarifs = [];
 	var disableAccordR1;
 	var disableAccordR2;
 	var subventionR1;
@@ -67,15 +66,8 @@ var js_edit = (function() {
 			$("#wrapper-dateFin").show();
 		}
 	}
-	function majMontantInscription(ancomplet) {
-		$("#tabs-3-montant").empty();
-		if (ancomplet) {
-			$("#eleve-tarifId").val(1);
-			// $("#tabs-3-montant").html(js_edit.tarifs[1] + ' €');
-		} else {
-			$("#eleve-tarifId").val(3);
-			// $("#tabs-3-montant").html(js_edit.tarifs[3] + ' €');
-		}
+	function majGrilleTarifaire() {
+		$("#tabs-3-grilleTarif").empty();
 	}
 	function montreMotifDerogation(derogation) {
 		if (derogation) {
@@ -237,6 +229,9 @@ var js_edit = (function() {
 					alert(xhr.status + ' ' + thrownError);
 				}
 			});
+		});
+		$("input[name=regimeId]").change(function(){
+			majGrilleTarifaire();
 		});
 		$("#eleve-anneeComplete").click(function() 
 		{
@@ -517,14 +512,13 @@ var js_edit = (function() {
 	});
 	return {
 		"init" : function(disableAccordR1, disableAccordR2, subventionR1,
-				subventionR2, tarifs, hasPhoto) 
+				subventionR2, hasPhoto) 
 		{
 			js_edit.setHasPhoto(hasPhoto);
 			js_edit.setDisableAccordR1(disableAccordR1);
 			js_edit.setDisableAccordR2(disableAccordR2);
 			js_edit.setSubventionR1(subventionR1);
 			js_edit.setSubventionR2(subventionR2);
-			js_edit.tarifs = tarifs;
 			$("#tabs").tabs();
 			montreDebutFin($("#eleve-anneeComplete").is(":checked"));
 			// majMontantInscription($("#eleve-anneeComplete").is(":checked"));

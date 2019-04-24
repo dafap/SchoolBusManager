@@ -153,7 +153,8 @@ class DocTable extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                // prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la zone
+                // prend la valeur auto ou un nombre de 1 à 100 (% de la largeur de la
+                // zone
                 // d'écriture) - null par défaut
                 'type' => 'text',
                 'name' => 'width',

@@ -91,7 +91,7 @@ $url_mail = $this->url('sbmgestion/eleve', [
 ]);
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-msm'
+        'action' => 'envoi-sms'
     ]);
 }
 $url_retour = $this->url('sbmgestion');
@@ -100,7 +100,8 @@ $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/eleve', [
         'action' => 'responsable-liste'
     ]), $url_rapports, 'fam-printer', null, $hiddens);
-$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de
+                                       // 'documentId'
                                        // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = [
@@ -229,6 +230,7 @@ $actions = [
                     'formaction' => $url_sms,
                     'title' => 'Envoyer un SMS'
                 ];
+                $hiddens['telephones[]'] = $this->oResponsable->telephonesPourSms();
             }
             if (! empty($responsable['email'])) {
                 $buttons['ecrire'] = [

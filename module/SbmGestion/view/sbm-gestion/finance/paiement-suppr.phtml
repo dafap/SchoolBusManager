@@ -3,69 +3,81 @@
  * Ecran de confirmation de la suppression d'un paiement
  *
  * La suppression d'un paiement doit être archivée. Le motif de la suppression sera saisi.
- * 
+ *
  * @project sbm
  * @package module\SbmGestion\view\sbm-gestion\finance
  * @filesource paiement-suppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-suppr.js'));
+$this->inlineScript()->captureStart();
+?>
+js_paiement_suppr.init();
+<?php
+$this->inlineScript()->captureEnd();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $modeDePaiement = $this->escapeHtml(
     $this->libelles->getLibelle('modeDePaiement', $this->data->codeModeDePaiement));
 ?>
 <h1>Suppression d'un paiement</h1>
-<div id="suppr-wrapper">
-	<p>
+<div id="suppression-wrapper" class="clearfix">
+	<fieldset class="float-left">
 		<i>Vous avez demandé la suppression du paiement suivant :</i>
-	</p>
-	<div class="header-wrapper">
-		<ul>
-			<li>Responsable : <b>
+		<div class="header-wrapper">
+			<ul>
+				<li>Responsable : <b>
 				<?= $this->escapeHtml($this->responsable); ?></b></li>
-			<li>Montant : <b>
+				<li>Montant : <b>
 				<?= $fmt->formatCurrency($this->data->montant, 'EUR'); ?></b></li>
-			<li>Caisse : <b>
+				<li>Caisse : <b>
 				<?= $this->escapeHtml($this->libelles->getLibelle('caisse', $this->data->codeCaisse)); ?>
 				</b></li>
-			<li>Exercice budgétaire : <b>
+				<li>Exercice budgétaire : <b>
 				<?= $this->data->exercice; ?></b></li>
-			<li>Année scolaire : <b>
+				<li>Année scolaire : <b>
 				<?= $this->data->anneeScolaire; ?></b></li>
-			<li>Date du paiement : <b>
+				<li>Date du paiement : <b>
 				<?= DateLib::formatDateTimeFromMysql($this->data->datePaiement); ?></b></li>
-			<li>Date de valeur : <b>
+				<li>Date de valeur : <b>
 				<?= DateLib::formatDateFromMysql($this->data->dateValeur); ?></b></li>
-			<li>Date de dépôt : <b>
+				<li>Date de dépôt : <b>
 				<?= DateLib::formatDateTimeFromMysql($this->data->dateDepot); ?></b></li>
-			<li>Mode de paiement : <b>
+				<li>Mode de paiement : <b>
 				<?= $this->escapeHtml($modeDePaiement); ?>
 				</b></li>
 		<?php if ($this->data->codeModeDePaiement == $this->libelles->getCode('modeDePaiement', 'chèque')) :?>
 			<li>Banque : <b>
 				<?= $this->escapeHtml($this->data->banque); ?></b></li>
-			<li>Titulaire du compte : <b>
+				<li>Titulaire du compte : <b>
 				<?= $this->escapeHtml($this->data->titulaire); ?></b></li>
-			<li>Référence du chèque : <b>
+				<li>Référence du chèque : <b>
 				<?= $this->escapeHtml($this->data->reference); ?></b></li>
 		<?php endif; ?>
 		</ul>
-	</div>
-	<p>
-		<i>Pour confirmer, donnez la raison puis cliquez sur le bouton de
-			confirmation.</i>
-	</p>
-	<?= $this->form()->openTag($form);?>
-	<?= $this->formHidden($this->form->get('paiementId'));?>
-	<div id="paiement-suppr-note" class="row-inner edit"
-		style="vertical-align: top;">
-    	<?= $this->formRow($this->form->get('note'));?></div>
-	<div id="paiement-suppr-buttons" class="row-inner edit">
-    	<?= $this->formSubmit($this->form->get('submit'));?>
-     	<?= $this->formSubmit($this->form->get('cancel'));?></div>
-	<?= $this->form()->closeTag();?>
+		</div>
+	</fieldset>
+	<fieldset class="float-left" style="width: 50%;">
+		<i>Pour confirmer, indiquez la nature du paiement et éventuellement
+			cochez les élèves qui doivent être désabonnés, donnez la raison puis
+			cliquez sur le bouton de confirmation.</i>
+	    <?= $this->form()->openTag($form);?>
+	    <?= $this->formHidden($this->form->get('paiementId'));?>
+	    <div id="paiement-suppr-nature" class="row-inner">
+	    	<?= $this->formRow($this->form->get('natures'));?></div>
+		<div id="paiement-suppr-liste" class="row-inner">
+	    	<?= $this->formRow($this->form->get('eleveIds'));?></div>
+		<div id="paiement-suppr-note" class="row-inner"
+			style="vertical-align: top;">
+    	    <?= $this->formRow($this->form->get('note'));?></div>
+		<div id="paiement-suppr-buttons" class="row-inner">
+    	    <?= $this->formSubmit($this->form->get('submit'));?>
+     	    <?= $this->formSubmit($this->form->get('cancel'));?></div>
+	    <?= $this->form()->closeTag();?>
+	</fieldset>
 </div>

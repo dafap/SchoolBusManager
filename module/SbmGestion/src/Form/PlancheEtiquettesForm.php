@@ -143,8 +143,8 @@ class PlancheEtiquettesForm extends Form
     }
 
     /**
-     * Dessine la planche d'étiquettes ou renvoie un hidden s'il n'y a qu'une étiquette dans la
-     * planche
+     * Dessine la planche d'étiquettes ou renvoie un hidden s'il n'y a qu'une étiquette
+     * dans la planche
      *
      * @return string
      */

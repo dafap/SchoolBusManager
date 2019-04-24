@@ -1,16 +1,16 @@
 <?php
 /**
- * Actions destinées aux réponses à des demandes ajax pour les fichiers annexes : 
+ * Actions destinées aux réponses à des demandes ajax pour les fichiers annexes :
  * circuits, classes, communes, etablissements, services, stations, transporteurs
  *
  * Le layout est désactivé dans ce module
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
+ * @date 28 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -405,7 +405,8 @@ class TransportController extends AbstractActionController
         return $this->getResponse()->setContent(
             Json::encode(
                 [
-                    'data' => array_flip($stations), // échange key/value pour conserver le tri
+                    'data' => array_flip($stations), // échange key/value pour conserver
+                                                      // le tri
                     'success' => 1
                 ]));
     }
@@ -449,6 +450,78 @@ class TransportController extends AbstractActionController
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     *
+     * @formatter:off
+     * Cette méthode doit recevoir en GET, au choix :<ul>
+     * <li>soit le paramètre 'circuitId'</li>
+     * <li>soit les paramètres 'serviceId' et 'stationId'</li></ul>
+     * En cas de succès, elle renvoie un tableau 4 colonnes x 3 lignes encodé JSON composé
+     * de la façon suivante :<ol>
+     * <li>première ligne correspond à l'horaire1 défini dans la fiche service</li>
+     * <li>deuxième ligne correspond à l'horaire2 défini dans la fiche service</li>
+     * <li>troisième ligne correspond à l'horaire3 défini dans la fiche service</li></ol>
+     * Chaque ligne est composée de :<ol>
+     * <li>horaire décodé de la fiche service</li>
+     * <li>horaire de l'aller (matin) ou vide</li>
+     * <li>horaire du premier retour ou vide</li>
+     * <li>horaire du second retour éventuel ou vide</li></ol>
+     * @formatter:on
+     *
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function tablehorairescircuitAction()
+    {
+        try {
+            $horaires = $this->db_manager->get('Sbm\Horaires');
+            $circuitId = $this->params('$circuitId', false);
+            if ($circuitId) {
+                $result = $horaires->getTableHoraires($circuitId);
+                return $this->getResponse()->setContent(
+                    Json::encode([
+                        'table' => $result,
+                        'success' => 1
+                    ]));
+            } else {
+                $serviceId = $this->params('serviceId', false);
+                $stationId = $this->params('stationId', false);
+                if ($serviceId && $stationId) {
+                    $result = $horaires->getTableHoraires(
+                        [
+                            'serviceId' => $serviceId,
+                            'stationId' => $stationId
+                        ]);
+                    return $this->getResponse()->setContent(
+                        Json::encode([
+                            'table' => $result,
+                            'success' => 1
+                        ]));
+                } elseif ($serviceId) {
+                    // on renvoie un tableau ou seule la première colonne est connue
+                    $result = $horaires->getTableHoraires($serviceId);
+                    return $this->getResponse()->setContent(
+                        Json::encode([
+                            'table' => $result,
+                            'success' => 1
+                        ]));
+                } else {
+                    $msg = 'Impossible de déterminer les horaires car on ne connait pas le service.';
+                    return $this->getResponse()->setContent(
+                        Json::encode([
+                            'cr' => $msg,
+                            'success' => 0
+                        ]));
+                }
+            }
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([

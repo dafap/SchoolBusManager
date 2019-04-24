@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
@@ -150,23 +150,22 @@ $actions = [
 	<div id="liste-inner">
 		<table class="stations">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Commune</th>
 					<th>Nom</th>
+					<th>Complément</th>
 					<th>Visible</th>
 					<th>Ouverte</th>
 					<th>Inscrits</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php
-
-            foreach ($stations as $station) :
-                ?>
+            <?php foreach ($stations as $station) :?>
             <?php
                 $pt = new Point($station->x, $station->y);
-                $ptOk = $this->projection->isValid($pt, 'station'); // stations et etablissements
+                $ptOk = $this->projection->isValid($pt, 'station'); // stations et
+                                                                    // etablissements
                                                                     // ont la même config
                 $nbInscrits = $this->effectifStations->transportes($station->stationId);
                 // construction des JS pour selection
@@ -215,21 +214,18 @@ $actions = [
                     ]
                 ];
                 ?>
-                <tr class="<?=$css;?>">
+                <tr class="petit <?=$css;?>">
 					<td>
-					<?php
-
-                if (! $ptOk) :
-                    ?>
+					<?php if (! $ptOk) :?>
 					   <i class="fam-error"></i>
-					<?php endif;
-
-                ?>
+					<?php endif; ?>
 					</td>
 					<td class="commune">
 						<?=$this->escapeHtml($station->commune);?></td>
 					<td class="nom">
 						<?=$this->escapeHtml($station->nom);?></td>
+					<td class="complement">
+						<?=$this->escapeHtml($station->aliasCG);?></td>
 					<td class="visible">
 						<?=$station->visible ? 'Oui' : 'Non';?></td>
 					<td class="ouverte">
@@ -242,10 +238,7 @@ $actions = [
 					<td class="boutons">
 						<?=$this->listeLigneActions($station->stationId, $hiddens, $buttons);?></td>
 				</tr>
-            <?php
-            endforeach
-            ;
-            ?>
+            <?php endforeach;?>
             </tbody>
 		</table>
 	</div>

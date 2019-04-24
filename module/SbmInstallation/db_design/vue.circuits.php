@@ -7,8 +7,8 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 mars 2019
+ * @version 2019-2.5.0
  */
 return [
     'name' => 'circuits',
@@ -45,16 +45,25 @@ return [
                 'field' => 's1'
             ],
             [
+                'field' => 'z1'
+            ],
+            [
                 'field' => 'm2'
             ],
             [
                 'field' => 's2'
             ],
             [
+                'field' => 'z2'
+            ],
+            [
                 'field' => 'm3'
             ],
             [
                 'field' => 's3'
+            ],
+            [
+                'field' => 'z3'
             ],
             [
                 'field' => 'distance'
@@ -88,8 +97,29 @@ return [
                 'relation' => 'ser.serviceId = cir.serviceId',
                 'fields' => [
                     [
+                        'field' => 'alias',
+                        'alias' => 'serv_alias'
+                    ],
+                    [
+                        'field' => 'aliasTr',
+                        'alias' => 'serv_aliasTr'
+                    ],
+                    [
+                        'field' => 'aliasCG',
+                        'alias' => 'serv_aliasCG'
+                    ],
+                    [
                         'field' => 'nom',
                         'alias' => 'service'
+                    ],
+                    [
+                        'field' => 'horaire1'
+                    ],
+                    [
+                        'field' => 'horaire2'
+                    ],
+                    [
+                        'field' => 'horaire3'
                     ],
                     [
                         'field' => 'nbPlaces'
@@ -105,6 +135,58 @@ return [
                     ],
                     [
                         'field' => 'transporteurId'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'lots',
+                'type' => 'table',
+                'alias' => 'lot',
+                'relation' => 'ser.lotId=lot.lotId',
+                'fields' => [
+                    [
+                        'field' => 'marche',
+                        'alias' => 'lot_marche'
+                    ],
+                    [
+                        'field' => 'lot',
+                        'alias' => 'lot_lot'
+                    ],
+                    [
+                        'field' => 'libelle',
+                        'alias' => 'lot_libelle'
+                    ],
+                    [
+                        'field' => 'transporteurId',
+                        'alias' => 'lot_transporteurId'
+                    ],
+                    [
+                        'field' => 'dateDebut',
+                        'alias' => 'lot_dateDebut'
+                    ],
+                    [
+                        'field' => 'dateFin',
+                        'alias' => 'lot_dateFin'
+                    ],
+                    [
+                        'field' => 'actif',
+                        'alias' => 'lot_actif'
+                    ],
+                    [
+                        'field' => 'selection',
+                        'alias' => 'lot_selection'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'transporteurs',
+                'type' => 'table',
+                'alias' => 'tit',
+                'relation' => 'tit.transporteurId = lot.transporteurId',
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'lot_transporteur'
                     ]
                 ]
             ],

@@ -43,12 +43,12 @@ class Bootstrap
         if ((static::$vendorPath = static::findParentPath('vendor'))) {
             $zf2ModulePaths[] = static::$vendorPath;
         }
-        
+
         static::initAutoloader();
-        
+
         // use ModuleManager to load this module and it's dependencies
         $application_config = include static::findParentPath('config') .
-             DIRECTORY_SEPARATOR . 'application.config.php';
+            DIRECTORY_SEPARATOR . 'application.config.php';
         $smConfig = isset($application_config['service_manager']) ? $application_config['service_manager'] : [];
         $config = [
             'module_listener_options' => [
@@ -59,7 +59,7 @@ class Bootstrap
             ],
             'modules' => $application_config['modules']
         ];
-        
+
         $serviceManager = new ServiceManager(new ServiceManagerConfig($smConfig));
         $serviceManager->setService('ApplicationConfig', $application_config);
         // Load modules
@@ -83,17 +83,17 @@ class Bootstrap
         if (! static::$vendorPath) {
             static::$vendorPath = static::findParentPath('vendor');
         }
-        
+
         $inc = static::$vendorPath . DIRECTORY_SEPARATOR . 'autoload.php';
         if (file_exists($inc)) {
             include $inc;
         }
-        
+
         if (! class_exists('Zend\Loader\AutoloaderFactory')) {
             throw new RuntimeException(
                 'Unable to load ZF2. Run `php composer.phar install`');
         }
-        
+
         AutoloaderFactory::factory(
             [
                 'Zend\Loader\StandardAutoloader' => [

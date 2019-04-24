@@ -8,12 +8,12 @@
  * @filesource view/sbm-gestion/transport/classe-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2018
- * @version 2018-2.4.1
+ * @date 30 mars 2019
+ * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
-$url_retour = $this->url('sbmgestion/transport', 
+$url_retour = $this->url('sbmgestion/transport',
     [
         'action' => 'classe-liste',
         'page' => $this->page
@@ -40,17 +40,17 @@ $actions = [
 <?= $this->formHidden($this->form->get('classeId'));?>
 <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="sbm-page1">
-			<div id="classe-ajout-nom" class="row-inner ajout">
+			<div id="wrapper-nom" class="row-inner ajout">
 			<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="classe-ajout-aliasCG" class="row-inner ajout">
+			<div id="wrapper-aliasCG" class="row-inner ajout">
 			<?= $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="classe-ajout-niveau" class="row-inner ajout">
+			<div id="wrapper-niveau" class="row-inner ajout">
 			<?= $this->formRow($this->form->get('niveau')); ?></div>
-			<div id="classe-edit-rang" class="row-inner edit">
+			<div id="wrapper-edit-rang" class="row-inner edit">
 			<?= $this->formRow($this->form->get('rang'));?></div>
-			<div id="classe-ajout-suivantId" class="row-inner ajout">
+			<div id="wrapper-suivantId" class="row-inner ajout">
 			<?= $this->formRow($this->form->get('suivantId')); ?></div>
-			<div id="classe-ajout-buttons" class="row-inner ajout">
+			<div id="wrapper-buttons" class="row-inner ajout">
             <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel')); ?>
             </div>
 		</fieldset>

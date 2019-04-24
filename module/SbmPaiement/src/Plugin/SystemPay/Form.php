@@ -66,9 +66,8 @@ class Form extends ZendForm
     }
 
     /**
-     * Surcharge la méthode en calculant la signature
-     * Toutes les données du formulaire viennent d'un tableau associatif dont l'une des clés est
-     * `certificat`
+     * Surcharge la méthode en calculant la signature Toutes les données du formulaire
+     * viennent d'un tableau associatif dont l'une des clés est `certificat`
      *
      * @param array $data
      */

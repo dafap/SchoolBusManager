@@ -14,7 +14,8 @@ use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
+// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id,
+// valeur
 // (ne pas mettre de guillemet dans la chaine)
 $js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
@@ -79,7 +80,7 @@ $actions = [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
         'title' => 'Liste à imprimer',
-		'formtarget' => '_blank'
+        'formtarget' => '_blank'
     ]
 ];
 if ($this->categorie == 2) {

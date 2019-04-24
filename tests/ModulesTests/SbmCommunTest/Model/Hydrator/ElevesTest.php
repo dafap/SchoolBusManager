@@ -24,24 +24,21 @@ class ElevesTest extends PHPUnit_Framework_TestCase
     public function testSA()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'nom' => 'Délas',
-                'prenom' => 'Stéphane'
-            ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'nomSA',
-                'prenomSA'
-            ]);
-        $object->setCalculateFields(
-            [
-                'nomSA',
-                'prenomSA'
-            ]);
-        
+        $object->exchangeArray([
+            'nom' => 'Délas',
+            'prenom' => 'Stéphane'
+        ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'nomSA',
+            'prenomSA'
+        ]);
+        $object->setCalculateFields([
+            'nomSA',
+            'prenomSA'
+        ]);
+
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
         $this->assertArrayHasKey('nomSA', $data);
@@ -57,17 +54,15 @@ class ElevesTest extends PHPUnit_Framework_TestCase
     public function testDataCreation()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'nom' => 'Tartempion',
-                'prenom' => 'Marius'
-            ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateCreation'
-            ]);
+        $object->exchangeArray([
+            'nom' => 'Tartempion',
+            'prenom' => 'Marius'
+        ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateCreation'
+        ]);
         $object->addCalculateField('dateCreation');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -81,17 +76,15 @@ class ElevesTest extends PHPUnit_Framework_TestCase
     public function testDateModification()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'nom' => 'Tartempion',
-                'prenom' => 'Marius'
-            ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateModification'
-            ]);
+        $object->exchangeArray([
+            'nom' => 'Tartempion',
+            'prenom' => 'Marius'
+        ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -112,12 +105,11 @@ class ElevesTest extends PHPUnit_Framework_TestCase
                 'prenom' => 'Marius',
                 'dateModification' => $ancienne_date
             ]);
-        $object->setArrayMask(
-            [
-                'nom',
-                'prenom',
-                'dateModification'
-            ]);
+        $object->setArrayMask([
+            'nom',
+            'prenom',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);

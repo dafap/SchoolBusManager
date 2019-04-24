@@ -42,7 +42,8 @@ $("#chk%d").change(function() {
   });\n
 EOT;
 
-// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id, valeur
+// gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id,
+// valeur
 // (ne pas mettre de guillemet dans la chaine)
 $js_op = 'window.document.getElementById(\'op%s%s\').value=\'%s\';';
 
@@ -160,7 +161,8 @@ $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/eleve', [
         'action' => 'eleve-liste'
     ]), $url_rapports, 'fam-printer', null, $hiddens);
-$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de
+                                       // 'documentId'
 
 $actions = [
     'cancel' => [
@@ -273,8 +275,8 @@ $actions = [
             // responsable 2
             if ($eleve['responsable2Id']) {
                 $r = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES,
-                    'utf-8', false);
+                    str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']),
+                    ENT_QUOTES, 'utf-8', false);
                 $hiddensR2 = [
                     'responsableId' => $eleve['responsable2Id'],
                     'info' => $r,

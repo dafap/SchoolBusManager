@@ -9,8 +9,8 @@
  * @filesource vue.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 9 avr. 2019
+ * @version 2019-2.5.0
  */
 use Zend\Db\Sql\Select;
 
@@ -47,6 +47,9 @@ return [
             ],
             [
                 'field' => 'dateN'
+            ],
+            [
+                'field' => 'sexe'
             ],
             [
                 'field' => 'numero'
@@ -132,6 +135,9 @@ return [
                     ],
                     [
                         'field' => 'subventionR2'
+                    ],
+                    [
+                        'field' => 'grilleTarif'
                     ]
                 ]
             ],
@@ -181,7 +187,14 @@ return [
                 'table' => 'responsables',
                 'type' => 'table',
                 'alias' => 'r2',
-                'relation' => 'ele.responsable2Id = r2.responsableId', // obligatoire case when r2.responsableId IS NULL then '' else concat(r2.nom, ' ', r2.prenom) end
+                'relation' => 'ele.responsable2Id = r2.responsableId', // obligatoire
+                                                                        // case when
+                                                                        // r2.responsableId
+                                                                        // IS NULL then ''
+                                                                        // else
+                                                                        // concat(r2.nom,
+                                                                        // ' ', r2.prenom)
+                                                                        // end
                 'fields' => [
                     [
                         'expression' => [
@@ -192,23 +205,15 @@ return [
                     ]
                 ],
                 'jointure' => Select::JOIN_LEFT
-            ],
-            /*[
-                'table' => 'responsables',
-                'type' => 'table',
-                'alias' => 'rf',
-                'relation' => 'ele.responsableFId = rf.responsableId', // obligatoire
-                'fields' => [
-                    [
-                        'expression' => [
-                            'value' => "CASE WHEN rf.responsableId IS NULL THEN CONCAT(r1.nom, ' ', r1.prenom) ELSE CONCAT(rf.nom, ' ', rf.prenom) END",
-                            'type' => 'varchar(61)'
-                        ],
-                        'alias' => 'responsableFNomPrenom'
-                    ]
-                ],
-                'jointure' => Select::JOIN_LEFT
-            ]*/
+            ]
+            /*
+         * [ 'table' => 'responsables', 'type' => 'table', 'alias' => 'rf', 'relation' =>
+         * 'ele.responsableFId = rf.responsableId', // obligatoire 'fields' => [ [
+         * 'expression' => [ 'value' => "CASE WHEN rf.responsableId IS NULL THEN
+         * CONCAT(r1.nom, ' ', r1.prenom) ELSE CONCAT(rf.nom, ' ', rf.prenom) END", 'type'
+         * => 'varchar(61)' ], 'alias' => 'responsableFNomPrenom' ] ], 'jointure' =>
+         * Select::JOIN_LEFT ]
+         */
         ]
     ]
 ];

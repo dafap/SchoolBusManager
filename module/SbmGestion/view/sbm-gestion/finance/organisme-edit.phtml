@@ -7,7 +7,7 @@
  * @filesource organisme-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -39,29 +39,29 @@ $actions = [
 		<?= $this->formHidden($this->form->get('organismeId'));?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="organisme-edit-nom" class="row-inner edit">
+			<div id="wrapper-nom" class="row-inner edit">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="organisme-edit-adresse1" class="row-inner edit">
+			<div id="wrapper-adresse1" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresse1')); ?></div>
-			<div id="organisme-edit-adresse2" class="row-inner edit">
+			<div id="wrapper-adresse2" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresse2')); ?></div>
-			<div id="organisme-edit-codePostal" class="row-inner edit">
+			<div id="wrapper-codePostal" class="row-inner edit">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
-			<div id="organisme-edit-comuneId" class="row-inner edit">
+			<div id="wrapper-comuneId" class="row-inner edit">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
-			<div id="organisme-edit-telephone" class="row-inner edit">
+			<div id="wrapper-telephone" class="row-inner edit">
 				<?= $this->formRow($this->form->get('telephone')); ?></div>
-			<div id="organisme-edit-fax" class="row-inner edit">
+			<div id="wrapper-fax" class="row-inner edit">
 				<?= $this->formRow($this->form->get('fax')); ?></div>
-			<div id="organisme-edit-email" class="row-inner edit">
+			<div id="wrapper-email" class="row-inner edit">
 				<?= $this->formRow($this->form->get('email')); ?></div>
-			<div id="organisme-edit-siret" class="row-inner edit">
+			<div id="wrapper-siret" class="row-inner edit">
 				<?= $this->formRow($this->form->get('siret')); ?></div>
-			<div id="organisme-edit-naf" class="row-inner edit">
+			<div id="wrapper-naf" class="row-inner edit">
 				<?= $this->formRow($this->form->get('naf')); ?></div>
-			<div id="organisme-edit-tvaIntraCommunautaire" class="row-inner edit">
+			<div id="wrapper-tvaIntraCommunautaire" class="row-inner edit">
 				<?= $this->formRow($this->form->get('tvaIntraCommunautaire')); ?></div>
-			<div id="organisme-edit-buttons" class="row-inner edit">
+			<div id="wrapper-buttons" class="row-inner edit">
         		<?= $this->formSubmit($this->form->get('submit'));?>
                 <?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

@@ -8,7 +8,7 @@
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
+ * @date 25 mars 2019
  * @version 2019-2.5.0
  */
 return [
@@ -22,13 +22,31 @@ return [
                 'field' => 'serviceId'
             ],
             [
+                'field' => 'alias'
+            ],
+            [
+                'field' => 'aliasTr'
+            ],
+            [
+                'field' => 'aliasCG'
+            ],
+            [
+                'field' => 'lotId'
+            ],
+            [
                 'field' => 'selection'
             ],
             [
                 'field' => 'nom'
             ],
             [
-                'field' => 'aliasCG'
+                'field' => 'horaire1'
+            ],
+            [
+                'field' => 'horaire2'
+            ],
+            [
+                'field' => 'horaire3'
             ],
             [
                 'field' => 'transporteurId'
@@ -56,8 +74,65 @@ return [
             'table' => 'services', // obligatoire mais peut être une vue
             'type' => 'table', // optionnel, 'table' par défaut
             'alias' => 'ser'
-        ], // optionnel
+        ],
         'join' => [
+            [
+                'table' => 'lots',
+                'type' => 'table',
+                'alias' => 'lots',
+                'relation' => 'lots.lotId=ser.lotId',
+                'fields' => [
+                    [
+                        'field' => 'marche'
+                    ],
+                    [
+                        'field' => 'lot'
+                    ],
+                    [
+                        'field' => 'libelle'
+                    ],
+                    [
+                        'field' => 'complement'
+                    ],
+                    [
+                        'field' => 'dateDebut'
+                    ],
+                    [
+                        'field' => 'dateFin'
+                    ],
+                    [
+                        'field' => 'transporteurId',
+                        'alias' => 'titulaireId'
+                    ],
+                    [
+                        'field' => 'commentaire'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'transporteurs', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'tit', // optionnel
+                'relation' => 'tit.transporteurId = lots.transporteurId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'titulaire'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'ctit', // optionnel
+                'relation' => 'ctit.communeId = tit.communeId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeTitulaire'
+                    ]
+                ]
+            ],
             [
                 'table' => 'transporteurs', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
@@ -73,8 +148,8 @@ return [
             [
                 'table' => 'communes', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
-                'alias' => 'com', // optionnel
-                'relation' => 'com.communeId = tra.communeId', // obligatoire
+                'alias' => 'ctra', // optionnel
+                'relation' => 'ctra.communeId = tra.communeId', // obligatoire
                 'fields' => [
                     [
                         'field' => 'nom',

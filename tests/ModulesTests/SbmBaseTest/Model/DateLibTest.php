@@ -22,42 +22,42 @@ class DateLibTest extends TestCase
     public function testDateFromMysqlToMysql()
     {
         $date = DateLib::todayToMysql();
-        $this->assertEquals($date, 
+        $this->assertEquals($date,
             DateLib::formatDateToMysql(DateLib::formatDateFromMysql($date)));
         $dt = DateLib::nowToMysql();
         list ($date, $time) = explode(' ', $dt);
-        $this->assertEquals($date, 
+        $this->assertEquals($date,
             DateLib::formatDateToMysql(DateLib::formatDateFromMysql($dt)));
     }
 
     public function testDateTimeFromMysqlToMysql()
     {
         $dt = DateLib::nowToMysql();
-        $this->assertEquals($dt, 
+        $this->assertEquals($dt,
             DateLib::formatDateTimeToMysql(DateLib::formatDateTimeFromMysql($dt)));
         $date = DateLib::todayToMysql();
-        $this->assertEquals("$date 00:00:00", 
+        $this->assertEquals("$date 00:00:00",
             DateLib::formatDateTimeToMysql(DateLib::formatDateTimeFromMysql($date)));
     }
 
     public function testDateToMysqlFromMysql()
     {
         $date = DateLib::today();
-        $this->assertEquals($date, 
+        $this->assertEquals($date,
             DateLib::formatDateFromMysql(DateLib::formatDateToMysql($date)));
         $dt = DateLib::now();
         list ($date, $time) = explode(' ', $dt);
-        $this->assertEquals($date, 
+        $this->assertEquals($date,
             DateLib::formatDateFromMysql(DateLib::formatDateToMysql($dt)));
     }
 
     public function testDateTimeToMysqlFromMysql()
     {
         $dt = DateLib::now();
-        $this->assertEquals($dt, 
+        $this->assertEquals($dt,
             DateLib::formatDateTimeFromMysql(DateLib::formatDateTimeToMysql($dt)));
         $date = DateLib::today();
-        $this->assertEquals("$date 00:00:00", 
+        $this->assertEquals("$date 00:00:00",
             DateLib::formatDateTimeFromMysql(DateLib::formatDateTimeToMysql($date)));
     }
 

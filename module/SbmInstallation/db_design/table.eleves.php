@@ -9,7 +9,7 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 22 mars 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -24,7 +24,8 @@ return [
         'fields' => [
             'eleveId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'mailchimp' => 'tinyint(1) NOT NULL DEFAULT "1"', // prendre en compte pour mailchimp
+            'mailchimp' => 'tinyint(1) NOT NULL DEFAULT "1"', // prendre en compte pour
+                                                               // mailchimp
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'nom' => 'varchar(30) NOT NULL',
@@ -32,15 +33,14 @@ return [
             'prenom' => 'varchar(30) NOT NULL',
             'prenomSA' => 'varchar(30) NOT NULL',
             'dateN' => 'date NOT NULL',
+            'sexe' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 ou 2
             'numero' => 'int(11) NOT NULL',
             'responsable1Id' => 'int(11) NOT NULL DEFAULT "0"',
             'x1' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'y1' => 'decimal(18,10) NOT NULL DEFAULT "0"',
-            'geopt1' => 'GEOMETRY',
             'responsable2Id' => 'int(11) DEFAULT NULL',
             'x2' => 'decimal(18,10) DEFAULT NULL',
             'y2' => 'decimal(18,10) DEFAULT NULL',
-            'geopt2' => 'GEOMETRY',
             'responsableFId' => 'int(11) DEFAULT NULL',
             'note' => 'text NULL',
             'id_ccda' => 'int(11)'

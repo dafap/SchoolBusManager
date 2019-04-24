@@ -54,10 +54,9 @@ class Photos
     private $csvFile;
 
     /**
-     * Les éléments du tableau sont les paramètres nécessaires.
-     * Ils sont initialisés dans PhotosFactory.
-     * Chaque paramètre s'obtient comme une propriété de la classe Photos par la
-     * méthode __get()
+     * Les éléments du tableau sont les paramètres nécessaires. Ils sont initialisés dans
+     * PhotosFactory. Chaque paramètre s'obtient comme une propriété de la classe Photos
+     * par la méthode __get()
      *
      * @param array $config
      */
@@ -90,8 +89,8 @@ class Photos
     }
 
     /**
-     * Rechercher les eleveId à marquer
-     * Marquer les dateExtraction dans scolarites pour les eleveId trouvés
+     * Rechercher les eleveId à marquer Marquer les dateExtraction dans scolarites pour
+     * les eleveId trouvés
      *
      * @param int $millesime
      * @param string $dateDebut

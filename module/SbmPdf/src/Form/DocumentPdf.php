@@ -2512,12 +2512,10 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
     }
 
     /**
-     * Le validateur est sur l'élément recordSource (hidden] alors que les contrôles visibles sont
-     * TrecordSource (table] ou RrecordSource (requête].
-     * 1/ affecter recordSource de la valeur du contrôle visible
-     * 2/ calculer isValid(]
-     * 3/ si une erreur est sur recordSource, affecter cette erreur sur le contrôle visible
-     *
+     * Le validateur est sur l'élément recordSource (hidden] alors que les contrôles
+     * visibles sont TrecordSource (table] ou RrecordSource (requête]. 1/ affecter
+     * recordSource de la valeur du contrôle visible 2/ calculer isValid(] 3/ si une
+     * erreur est sur recordSource, affecter cette erreur sur le contrôle visible
      * (non-PHPdoc]
      *
      * @see \Zend\Form\Form::isValid(]
@@ -2546,7 +2544,8 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                 if (! is_null($type) && $type == 'text') {
                     $e->setAttribute('maxlength', $maxLength);
                 }
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -2557,9 +2556,8 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
     }
 
     /**
-     * Modification de la méthode en version 2016-2
-     * On ne crée plus d'instance pour appeler get_class_methods() mais
-     * on passe le nom de la classe.
+     * Modification de la méthode en version 2016-2 On ne crée plus d'instance pour
+     * appeler get_class_methods() mais on passe le nom de la classe.
      *
      * @param string $section
      *
@@ -2569,16 +2567,11 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
     {
         return StdLib::getParam($section, $this->template_method_list, []);
         /*
-         * $templateSectionMethod = 'template' . $section . 'method';
-         * $methods = get_class_methods(Tcpdf::class);
-         * $list = [];
-         * foreach ($methods as $method) {
-         * if (strpos(strtolower($method), $templateSectionMethod) === 0) {
-         * $id = substr($method, strlen($templateSectionMethod));
-         * $list[$id] = Tcpdf::{$method}('?');
-         * }
-         * }
-         * return $list;
+         * $templateSectionMethod = 'template' . $section . 'method'; $methods =
+         * get_class_methods(Tcpdf::class); $list = []; foreach ($methods as $method) { if
+         * (strpos(strtolower($method), $templateSectionMethod) === 0) { $id =
+         * substr($method, strlen($templateSectionMethod)); $list[$id] =
+         * Tcpdf::{$method}('?'); } } return $list;
          */
     }
 

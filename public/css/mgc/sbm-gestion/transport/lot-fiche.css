@@ -1,0 +1,39 @@
+/**
+ * Feuille de style des formulaires de saisie des lots de marché
+ * 
+ * @project sbm
+ * @package public/css/mgc/sbm-gestion/transport
+ * @filesource lot-fiche.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 mars 2019
+ * @version 2019-2.5.0
+ **/
+label.sbm-label {
+	display: inline-block;
+	width: 170px;
+}
+label.commentaire {
+	display: block;
+}
+input.marche, input.lot {
+	width: calc(0.6em * 13);
+}
+input.libelle, input.complement {
+	width: calc(0.6em * 45);
+}
+select.transporteurId {
+	width: calc(4px + 0.6em * 45););
+}
+input.dateDebut, input.dateFin {
+	width: calc(0.6em * 17);
+}
+textarea.commentaire {
+	width: 99.5%;
+	min-height: 90px;
+	border-radius: 4px 4px 4px 4px;
+}
+.boutons input[type="submit"] {
+	margin-top: 6px;
+	margin-left: 20px;
+}

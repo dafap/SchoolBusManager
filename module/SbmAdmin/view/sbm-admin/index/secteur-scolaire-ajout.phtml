@@ -3,13 +3,13 @@
  * Page de création d'une nouvelle entrée d'un secteur scolaire
  *
  * Destiné à l'administrateur
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource secteur-scolaire-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -39,9 +39,11 @@ $actions = [
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset class="page1">
-			<div><?= $this->formRow($this->form->get('etablissementId'));?></div>
-			<div><?= $this->formRow($this->form->get('communeId'));?></div>
-			<div id="secteur-scolaire-buttons">  
+			<div id="wrapper-etablissementId">
+				<?= $this->formRow($this->form->get('etablissementId'));?></div>
+			<div id="wrapper-communeId">
+				<?= $this->formRow($this->form->get('communeId'));?></div>
+			<div id="wrapper-buttons">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

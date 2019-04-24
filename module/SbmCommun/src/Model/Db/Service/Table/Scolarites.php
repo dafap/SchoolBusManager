@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -38,43 +38,56 @@ class Scolarites extends AbstractSbmTable
     }
 
     /**
-     * Renvoie true si l'établissement a changé ou si c'est un nouvel enregistrement
-     * ou si district == 0
-     *
-     * (non-PHPdoc)
+     * Renvoie true si c'est un nouvel enregistrement ou si l'enregistrement précédents
+     * n'avait pas les droits (district = 0 ou distances < 1 km) ou si les éléments de
+     * détermination des droits et tarifs ont changé (etablissement, regime) (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
-        $changeEtab = false;
         try {
             $old_data = $this->getRecord($obj_data->getId());
-            $changeEtab = $old_data->district == 0; // pour forcer l'actualisation de district
-            $is_new = false;
+            // update
+            if ($obj_data->isUnchanged($old_data)) {
+                try {
+                    $forceCalculDroits = ! $old_data->avoirDroits();
+                } catch (ExceptionObjectData\ExceptionInterface $e) {
+                    $forceCalculDroits = true;
+                }
+                return $forceCalculDroits;
+            }
+            try {
+                $forceCalculDroits = $this->recalculerLesDroits($obj_data, $old_data);
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
+                $forceCalculDroits = true;
+            }
+            $obj_data->addCalculateField('dateModification');
         } catch (Exception\ExceptionInterface $e) {
-            $is_new = true;
-        }
-        if ($is_new) {
+            // insert
             $obj_data->setCalculateFields([
                 'dateInscription'
             ]);
-            $changeEtab = true;
-        } else {
-            // on vérifie si des données ont changé
-            if ($obj_data->isUnchanged($old_data)) {
-                return $changeEtab;
-            }
-            try {
-                $changeEtab |= $obj_data->etablissementId != $old_data->etablissementId;
-            } catch (ExceptionObjectData\ExceptionInterface $e) {
-                $changeEtab = false;
-            }
-            $obj_data->addCalculateField('dateModification');
+            $forceCalculDroits = true;
         }
+        $ok = parent::saveRecord($obj_data) !== false;
+        return $forceCalculDroits && $ok;
+    }
 
-        parent::saveRecord($obj_data);
-        return $changeEtab;
+    /**
+     * L'ancien enregistrement n'avait pas les droits ou le régime a changé ou
+     * l'établissement a changé
+     *
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $old_data
+     * @return boolean
+     */
+    private function recalculerLesDroits(ObjectDataInterface $obj_data,
+        ObjectDataInterface $old_data)
+    {
+        return ! $old_data->avoirDroits() ||
+            $obj_data->regimeId != $old_data->regimeId ||
+            $obj_data->etablissementId != $old_data->etablissementId;
     }
 
     /**
@@ -85,8 +98,8 @@ class Scolarites extends AbstractSbmTable
      * @param array|int $aEleveId
      *            Tableau de eleveId à mettre à jour ou index eleveId à mettre à jour
      * @param bool $paiement
-     *            Indique s'il faut valider (true par défaut) ou invalider (false) le paiement
-     *            
+     *            Indique s'il faut valider (true par défaut) ou invalider (false) le
+     *            paiement
      * @return int Nombre de lignes mises à jour
      */
     public function setPaiement($millesime, $aEleveId, $paiement = true)
@@ -184,8 +197,8 @@ class Scolarites extends AbstractSbmTable
     }
 
     /**
-     * Par défaut, ajoute un duplicata dans le compte des duplicatas de l'élève.
-     * Si $cancel, alors retire un duplicata du compte de l'élève.
+     * Par défaut, ajoute un duplicata dans le compte des duplicatas de l'élève. Si
+     * $cancel, alors retire un duplicata du compte de l'élève.
      *
      * @param int $millesime
      * @param int $eleveId

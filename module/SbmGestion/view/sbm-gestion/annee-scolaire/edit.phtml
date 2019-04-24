@@ -13,33 +13,18 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 /*
- * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de date
- * à l'entrée et à la sortie. Sinon, le jquery fonctionne bien !
- *
- * $this->jQuery('jquery-ui');
- * $this->headScript()->captureStart();
- * ?>
- * $(document).ready(function($){
- * $("#-calendar-dateDebut").datepicker({
- * showOtherMonths:true,
- * selectOtherMonth: true
+ * On n'utilise pas le datepicker parce qu'il faudrait écrire les conversions de format de
+ * date à l'entrée et à la sortie. Sinon, le jquery fonctionne bien ! $this->jQuery('jquery-ui');
+ * $this->headScript()->captureStart(); ?> $(document).ready(function($){
+ * $("#-calendar-dateDebut").datepicker({ showOtherMonths:true, selectOtherMonth: true });
+ * $("#calendar-dateFin").datepicker({ showOtherMonths:true, selectOtherMonth: true });
+ * $("#calendar-echeance").datepicker({ showOtherMonths:true, selectOtherMonth: true });
  * });
- * $("#calendar-dateFin").datepicker({
- * showOtherMonths:true,
- * selectOtherMonth: true
- * });
- * $("#calendar-echeance").datepicker({
- * showOtherMonths:true,
- * selectOtherMonth: true
- * });
- * });
- *
- * <?php
- * $this->headScript()->captureEnd();
+ * <?php $this->headScript()->captureEnd();
  */
 
 $as_libelle = sprintf("%4d-%4d", $this->millesime, $this->millesime + 1);
-$url_retour = $this->url('sbmgestion/anneescolaire', 
+$url_retour = $this->url('sbmgestion/anneescolaire',
     [
         'action' => 'voir',
         'millesime' => $this->millesime
@@ -55,10 +40,10 @@ $actions = [
 
 switch ($this->data['nature']) {
     case 'INS':
-    $element = $this->form->get('echeance');
-    $element->setLabel('Date limite');
-    break;
-    case 'PERM' :
+        $element = $this->form->get('echeance');
+        $element->setLabel('Date limite');
+        break;
+    case 'PERM':
         $element = $this->form->get('dateDebut');
         $element->setLabel('Date 1');
         $element = $this->form->get('dateFin');
@@ -67,8 +52,8 @@ switch ($this->data['nature']) {
         $element->setLabel('Date 3');
     default:
         ;
-    break;
-} 
+        break;
+}
 ?>
 <h1>Modification d'un élément du calendrier de l'année scolaire <?= $as_libelle;?></h1>
 <div id="fiche-wrapper">

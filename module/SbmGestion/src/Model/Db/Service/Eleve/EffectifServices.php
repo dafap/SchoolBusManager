@@ -9,12 +9,13 @@
  * @filesource EffectifServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
+use SbmGestion\Model\Db\Service\EffectifInterface;
 
 class EffectifServices extends AbstractEffectifType2 implements EffectifInterface
 {

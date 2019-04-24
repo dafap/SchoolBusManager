@@ -8,8 +8,8 @@
  * @filesource Station.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 7 avr. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -22,11 +22,10 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('station');
         $this->setAttribute('method', 'post');
-        $this->add(
-            [
-                'name' => 'stationId',
-                'type' => 'hidden'
-            ]);
+        $this->add([
+            'name' => 'stationId',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -84,7 +83,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Nom CG',
+                    'label' => 'Complément',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -102,7 +101,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Code CG',
+                    'label' => 'Code',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -177,6 +176,24 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     'label' => 'Ouverte',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'equipement',
+                'type' => 'textarea',
+                'attributes' => [
+                    'id' => 'station-equipement',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Équipement',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-top'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

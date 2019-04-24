@@ -2,84 +2,27 @@
 /**
  * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs responsables
  *
- * 
+ *
  * @project sbm
- * @package SbmCommun/Model/Db/Service/Query/Eleve
+ * @package SbmCommun/src/Model/Db/Service/Query/Eleve
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
+ * @date 12 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Zend\Paginator\Paginator;
-use Zend\Paginator\Adapter\DbSelect;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ElevesResponsables implements FactoryInterface
+class ElevesResponsables extends AbstractQuery
 {
 
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var int
-     */
-    protected $millesime;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Select
-     */
-    protected $select;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -95,6 +38,7 @@ class ElevesResponsables implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero',
                 'responsable1Id' => 'responsable1Id',
                 'responsable2Id' => 'responsable2Id',
@@ -123,7 +67,6 @@ class ElevesResponsables implements FactoryInterface
         ], 'r1.communeId=r1c.communeId', [
             'communeR1' => 'nom'
         ]);
-        return $this;
     }
 
     /**
@@ -138,9 +81,9 @@ class ElevesResponsables implements FactoryInterface
         $where = new Where();
         $where->equalTo('eleveId', $eleveId);
         $select = clone $this->select;
-        $select->where($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute()->current();
+        ;
+        return $this->renderResult($select->where($where))
+            ->current();
     }
 
     /**
@@ -153,15 +96,12 @@ class ElevesResponsables implements FactoryInterface
      */
     public function withR2(Where $where, $order = null)
     {
-        $select = $this->selectR2($where, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult($this->selectR2($where, $order));
     }
 
     public function paginatorR2(Where $where, $order = null)
     {
-        return new Paginator(
-            new DbSelect($this->selectR2($where, $order), $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectR2($where, $order));
     }
 
     private function selectR2(Where $where, $order = null)
@@ -197,9 +137,9 @@ class ElevesResponsables implements FactoryInterface
     }
 
     /**
-     * Si on ne précise pas le millesime, on utilise le millesime courant
-     * Noter que pour examiner le contenu de la requête, on peut la transformer en tableau
-     * par la fonction php iterator_to_array().
+     * Si on ne précise pas le millesime, on utilise le millesime courant Noter que pour
+     * examiner le contenu de la requête, on peut la transformer en tableau par la
+     * fonction php iterator_to_array().
      *
      * @param Where $where
      * @param string|array $order
@@ -209,16 +149,12 @@ class ElevesResponsables implements FactoryInterface
      */
     public function withScolaritesR2(Where $where, $order = null, $millesime = null)
     {
-        $select = $this->selectScolaritesR2($where, $order, $millesime);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult($this->selectScolaritesR2($where, $order, $millesime));
     }
 
     public function paginatorScolaritesR2(Where $where, $order = null, $millesime = null)
     {
-        return new Paginator(
-            new DbSelect($this->selectScolaritesR2($where, $order),
-                $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectScolaritesR2($where, $order));
     }
 
     private function selectScolaritesR2(Where $where, $order = null, $millesime = null)
@@ -268,6 +204,8 @@ class ElevesResponsables implements FactoryInterface
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
+                'grilleCode' => 'grilleTarif',
+                'grilleTarif' => 'grilleTarif',
                 'tarifId' => 'tarifId',
                 'regimeId' => 'regimeId',
                 'motifDerogation' => 'motifDerogation',
@@ -333,7 +271,9 @@ class ElevesResponsables implements FactoryInterface
         if (! is_null($order)) {
             $select->order($order);
         }
-        // die($this->getSqlString($select->where($where)));
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
         return $select->where($where);
     }
 
@@ -347,9 +287,8 @@ class ElevesResponsables implements FactoryInterface
      */
     public function withScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
     {
-        $select = $this->selectScolaritesEleveGroup($where, $order, $millesime);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult(
+            $this->selectScolaritesEleveGroup($where, $order, $millesime));
     }
 
     /**
@@ -363,9 +302,7 @@ class ElevesResponsables implements FactoryInterface
     public function paginatorScolaritesEleveGroup(Where $where, $order = null,
         $millesime = null)
     {
-        return new Paginator(
-            new DbSelect($this->selectScolaritesEleveGroup($where, $order),
-                $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectScolaritesEleveGroup($where, $order));
     }
 
     /**
@@ -443,6 +380,8 @@ class ElevesResponsables implements FactoryInterface
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
+                'grilleCode' => 'grilleTarif',
+                'grilleTarif' => 'grilleTarif',
                 'tarifId' => 'tarifId',
                 'regimeId' => 'regimeId',
                 'motifDerogation' => 'motifDerogation',
@@ -506,13 +445,15 @@ class ElevesResponsables implements FactoryInterface
         if (! is_null($order)) {
             $select->order($order);
         }
-        // die($this->getSqlString($select->where($where)));
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
         return $select->where($where);
     }
 
     /**
-     * Requête préparée renvoyant les positions géographiques des domiciles de l'élève (chez,
-     * responsable1, responsable2),
+     * Requête préparée renvoyant les positions géographiques des domiciles de l'élève
+     * (chez, responsable1, responsable2),
      *
      * @param Where $where
      * @param string $order
@@ -521,10 +462,7 @@ class ElevesResponsables implements FactoryInterface
      */
     public function getLocalisation(Where $where, $order = null)
     {
-        $select = $this->selectLocalisation($where, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-        ;
+        return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
     private function selectLocalisation(Where $where, $order = null)
@@ -542,6 +480,7 @@ class ElevesResponsables implements FactoryInterface
                 'nom_eleve' => 'nomSA',
                 'prenom_eleve' => 'prenomSA',
                 'dateN',
+                'sexe',
                 'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.x, sco.x)'),
                 'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.y, sco.y)')
             ])
@@ -549,6 +488,7 @@ class ElevesResponsables implements FactoryInterface
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId=sco.eleveId',
             [
+                'regimeId' => 'regimeId',
                 'transportGA' => new Expression(
                     'CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
                 'x_eleve' => 'x',

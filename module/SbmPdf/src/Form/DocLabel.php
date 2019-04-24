@@ -584,5 +584,6 @@ class DocLabel extends Form implements InputFilterProviderInterface
     }
 
     public function setMaxLength()
-    {}
+    {
+    }
 }

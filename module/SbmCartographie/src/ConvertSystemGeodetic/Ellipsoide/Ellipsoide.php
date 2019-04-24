@@ -5,17 +5,17 @@
  * On doit définir le grand axe a et au choix :
  *  - soit le petit axe b
  *  - soit l'inverse de l'aplatissement
- *  
+ *
  *  On peut également donner l'excentricité.
- *  
+ *
  *  Ce qui n'est pas donné sera calculé.
- * 
+ *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Ellipsoide
  * @filesource Ellipsoide.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2018
+ * @date 17 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
@@ -167,7 +167,6 @@ class Ellipsoide
      *
      * @param number $invF
      *            inverse de l'aplatissement
-     *
      * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
      */
     public function setF($invF)
@@ -206,7 +205,7 @@ class Ellipsoide
     }
 
     /**
-     * 
+     *
      * @throws \
      *
      * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\RangeException
@@ -238,5 +237,41 @@ class Ellipsoide
         } else {
             throw new Exception\RangeException(__METHOD__ . ' - division par zéro !');
         }
+    }
+
+    /**
+     * Le rayon moyen, noté R1, est égal au tiers de la somme du grand-axe et du
+     * demi-petit axe de l'ellipsoïde.
+     *
+     * @return number
+     */
+    public function getRayonMoyen()
+    {
+        return (2 * $this->getA() + $this->getB()) / 3;
+    }
+
+    /**
+     * Le rayon authalique, noté R2, est le rayon d'une sphère fictive d'aire (surface)
+     * égale à celle de l'ellipsoïde considéré.
+     *
+     * @return number
+     */
+    public function getRayonAuthalique()
+    {
+        $a = $this->getA();
+        $b = $this->getB();
+        $ln = log(($a + sqrt($a ** 2 - $b ** 2)) / b);
+        return sqtr(($a ** 2 + $a * ($b ** 2) * $ln / sqrt($a ** 2 - $b ** 2)) / 2);
+    }
+
+    /**
+     * Le rayon volumétrique, noté R3, est le rayon d'une sphère fictive de volume égal à
+     * celui de l'ellipsoïde considéré.
+     *
+     * @return number
+     */
+    public function getRayonVolumétrique()
+    {
+        return pow((($this->getA() ** 2) * $this->getB()), 1 / 3);
     }
 }

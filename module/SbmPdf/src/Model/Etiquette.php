@@ -70,11 +70,9 @@ class Etiquette
 
     /**
      * Initialise la structure.
-     *
-     * Doit être suivi par :
-     * $label->setCurrentColumn($j); // optionnel
-     * $label->setCurrentRow($k); // optionnel
-     * list($this->x, $this->y) = $label->xyStart(); // nécessaire
+     * Doit être suivi par : $label->setCurrentColumn($j); // optionnel
+     * $label->setCurrentRow($k); // optionnel list($this->x, $this->y) =
+     * $label->xyStart(); // nécessaire
      *
      * @param ServiceLocatorInterface $db_manager
      * @param int $documentId
@@ -87,8 +85,8 @@ class Etiquette
         // Lecture des tables system document, doclabel et docfields pour initialiser les
         // paramètres de la structure
         /*
-         * il ne semble pas être nécessaire d'utiliser la config du document dans cette classe.
-         * (en réserve au cas où ...)
+         * il ne semble pas être nécessaire d'utiliser la config du document dans cette
+         * classe. (en réserve au cas où ...)
          */
         // $t = $this->db_manager->get('Sbm\Db\System\Documents');
         // try {
@@ -119,8 +117,8 @@ class Etiquette
     }
 
     /**
-     * Donne le nombre de lignes d'écriture dans une étiquette.
-     * On ne compte pas les photos
+     * Donne le nombre de lignes d'écriture dans une étiquette. On ne compte pas les
+     * photos
      *
      * @return int
      */
@@ -176,10 +174,9 @@ class Etiquette
     }
 
     /**
-     * Initialise la colonne courante.
-     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement
-     * utilisée.
-     * Utile également pour tirer des duplicatas.
+     * Initialise la colonne courante. Permet de fixer la position de la première
+     * étiquette à tirer sur une planche partiellement utilisée. Utile également pour
+     * tirer des duplicatas.
      *
      * @param int $n
      */
@@ -189,10 +186,9 @@ class Etiquette
     }
 
     /**
-     * Initialise la ligne courante.
-     * Permet de fixer la position de la première étiquette à tirer sur une planche partiellement
-     * utilisée.
-     * Utile également pour tirer des duplicatas.
+     * Initialise la ligne courante. Permet de fixer la position de la première étiquette
+     * à tirer sur une planche partiellement utilisée. Utile également pour tirer des
+     * duplicatas.
      *
      * @param int $n
      */
@@ -232,15 +228,12 @@ class Etiquette
     }
 
     /**
-     * Renvoie la position (X, Y) d'origine de l'étiquette courante.
-     * Si la première ligne est décalée (pas de label mais un label_width)
-     * alors X en tient compte et est décalé d'autant que nécessaire.
-     *
-     * L'affectation dans la classe Tcpdf se fera de la façon suivante :
-     * list($this->x, $this->y) = $label->xyStart();
-     *
-     * Pour un changement d'étiquette on fera :
-     * $label = new Etiquette($sm, $documentId);
+     * Renvoie la position (X, Y) d'origine de l'étiquette courante. Si la première ligne
+     * est décalée (pas de label mais un label_width) alors X en tient compte et est
+     * décalé d'autant que nécessaire.
+     * L'affectation dans la classe Tcpdf se fera de la façon suivante : list($this->x,
+     * $this->y) = $label->xyStart();
+     * Pour un changement d'étiquette on fera : $label = new Etiquette($sm, $documentId);
      * list($this->x, $this->y) = $label->xyStart();
      *
      * @return array of float (x, y) en coordonnées absolue (page)
@@ -261,10 +254,8 @@ class Etiquette
 
     /**
      * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans l'étiquette.
-     *
-     * On fera :
-     * list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la ligne qu'on vient
-     * d'écrire
+     * On fera : list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la
+     * ligne qu'on vient d'écrire
      *
      * @param int $rang
      *
@@ -288,16 +279,10 @@ class Etiquette
 
     /**
      * Renvoie la position (X, Y) de la prochaine ligne d'écriture dans une étiquette.
-     * Changement d'étiquette si nécessaire.
-     * Si la page est pleine, renvoie false.
-     *
-     * Usage dans Tcpdf:<code>
-     * if (($xy = $label->NextPosition($i)) == false) {
-     * $this->AddPage();
-     * list($this->x, $this->y) = $label->NewPage();
-     * } else {
-     * list($this->x, $this->y) = $xy;
-     * }</code>
+     * Changement d'étiquette si nécessaire. Si la page est pleine, renvoie false.
+     * Usage dans Tcpdf:<code> if (($xy = $label->NextPosition($i)) == false) {
+     * $this->AddPage(); list($this->x, $this->y) = $label->NewPage(); } else {
+     * list($this->x, $this->y) = $xy; }</code>
      *
      * @param int $rang
      * @return array|boolean

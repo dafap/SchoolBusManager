@@ -31,16 +31,16 @@ class Conditions
 {
 
     /**
-     * Nom de la variable dans la condition.
-     * Cette variable sera définie dans la méthode value()
+     * Nom de la variable dans la condition. Cette variable sera définie dans la méthode
+     * value()
      *
      * @var string
      */
     const VAR_NAME = 'valeur_a_tester_pour_la_condition';
 
     /**
-     * Condition formée dans la méthode parse() à partir d'une analyse de la chaine fournie par la
-     * méthode setCondition()
+     * Condition formée dans la méthode parse() à partir d'une analyse de la chaine
+     * fournie par la méthode setCondition()
      *
      * @var string
      */
@@ -57,9 +57,9 @@ class Conditions
      * Construit un object Conditions
      *
      * @param string $condition
-     *            condition à tester. L'égalité est notée = ou ==, la variable est notée ?.
-     *            Les structures acceptées sont décrites dans les méthodes commençant par
-     *            `struct_`.
+     *            condition à tester. L'égalité est notée = ou ==, la variable est notée
+     *            ?. Les structures acceptées sont décrites dans les méthodes commençant
+     *            par `struct_`.
      * @throws Exception si la condition n'est pas une chaine
      */
     public function __construct($condition)
@@ -90,9 +90,8 @@ class Conditions
     }
 
     /**
-     * Affecte la propriété `condition`
-     * par la transformation de la condition reçue pour appliquer les structures et les règles de
-     * sécurité
+     * Affecte la propriété `condition` par la transformation de la condition reçue pour
+     * appliquer les structures et les règles de sécurité
      *
      * @param string $condition
      */
@@ -107,7 +106,8 @@ class Conditions
     }
 
     /**
-     * Renvoie la liste des structures définies comme méthodes dont le nom commence par "struct_"
+     * Renvoie la liste des structures définies comme méthodes dont le nom commence par
+     * "struct_"
      *
      * @return array
      */
@@ -195,8 +195,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? dans (...)` en une structure `in_array(?, [...))` correcte pour
-     * le langage PHP et met à jour la propriété `enable_in_array`
+     * Transforme la structure `? dans (...)` en une structure `in_array(?, [...))`
+     * correcte pour le langage PHP et met à jour la propriété `enable_in_array`
      *
      * @param string $condition
      * @return string
@@ -215,8 +215,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? sauf (...)` en une structure `!in_array(?, [...))` correcte pour
-     * le langage PHP et met à jour la propriété `enable_in_array`
+     * Transforme la structure `? sauf (...)` en une structure `!in_array(?, [...))`
+     * correcte pour le langage PHP et met à jour la propriété `enable_in_array`
      *
      * @param string $condition
      * @return string
@@ -235,8 +235,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? est null` en `is_null(?)`
-     * et met à jour la propriété `enable_is_null`
+     * Transforme la structure `? est null` en `is_null(?)` et met à jour la propriété
+     * `enable_is_null`
      *
      * @param string $condition
      * @return string
@@ -254,8 +254,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? pas null` en `!is_null(?)`
-     * et met à jour la propriété `enable_is_null`
+     * Transforme la structure `? pas null` en `!is_null(?)` et met à jour la propriété
+     * `enable_is_null`
      *
      * @param string $condition
      * @return string
@@ -309,8 +309,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? commence par xxx` en `(mb_substr(?, 0, mb_strlen('xxx')) ==
-     * 'xxx')` et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
+     * Transforme la structure `? commence par xxx` en `(mb_substr(?, 0, mb_strlen('xxx'))
+     * == 'xxx')` et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
      *
      * @param string $condition
      * @return string
@@ -330,8 +330,9 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? ne commence pas par xxx` en `(mb_substr(?, 0, mb_strlen('xxx'))
-     * != 'xxx')` et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
+     * Transforme la structure `? ne commence pas par xxx` en `(mb_substr(?, 0,
+     * mb_strlen('xxx')) != 'xxx')` et met à jour les propriétés `enable_mb_strlen` et
+     * `enable_mb_substr`
      *
      * @param string $condition
      * @return string
@@ -351,8 +352,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? finit par xxx` en `(mb_substr(?, -mb_strlen('xxx')) == 'xxx')`
-     * et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
+     * Transforme la structure `? finit par xxx` en `(mb_substr(?, -mb_strlen('xxx')) ==
+     * 'xxx')` et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
      *
      * @param string $condition
      * @return string
@@ -372,8 +373,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? finit par xxx` en `(mb_substr(?, -mb_strlen('xxx')) != 'xxx')`
-     * et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
+     * Transforme la structure `? finit par xxx` en `(mb_substr(?, -mb_strlen('xxx')) !=
+     * 'xxx')` et met à jour les propriétés `enable_mb_strlen` et `enable_mb_substr`
      *
      * @param string $condition
      * @return string
@@ -393,8 +394,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? contient xxx`par `(mb_strpos(?, 'xxx') !== false) `
-     * et met à jour la propriété `enable_mb_strpos`
+     * Transforme la structure `? contient xxx`par `(mb_strpos(?, 'xxx') !== false) ` et
+     * met à jour la propriété `enable_mb_strpos`
      *
      * @param string $condition
      * @return string
@@ -413,8 +414,8 @@ class Conditions
     }
 
     /**
-     * Transforme la structure `? ne contient pas xxx`par `(mb_strpos(?, 'xxx') === false) `
-     * et met à jour la propriété `enable_mb_strpos`
+     * Transforme la structure `? ne contient pas xxx`par `(mb_strpos(?, 'xxx') === false)
+     * ` et met à jour la propriété `enable_mb_strpos`
      *
      * @param string $condition
      * @return string

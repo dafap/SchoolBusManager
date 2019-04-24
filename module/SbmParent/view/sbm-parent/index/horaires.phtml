@@ -9,9 +9,10 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
- * @version 2018-2.4.0
+ * @date 23 avr. 2019
+ * @version 2019-2.5.0
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/mgc/sbm-parent/index/horaires.css'));
 $url_retour = $this->url('sbmparent');
 $url_horaires = $this->url('sbmdocument', [
     'action' => 'horaires'
@@ -54,10 +55,7 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 }
 ?>
 <div id="fiche-wrapper" class="parent horaires">
-	<h1>Transport de <?php
-
-echo $this->enfant;
-?></h1>
+	<h1>Transport de <?=$this->enfant;?></h1>
 	<div id="fiche-header">
 		<div class="clearfix">
 			<div class="float-left">
@@ -71,14 +69,8 @@ echo $this->enfant;
 			</div>
 		</div>
 		<div class="clearfix">
-			<h3 class="float-left"><?php
-
-echo implode('<br>', $h3contentG);
-?></h3>
-			<h3 class="float-right"><?php
-
-echo implode('<br>', $h3contentD);
-?></h3>
+			<h3 class="float-left"><?=implode('<br>', $h3contentG);?></h3>
+			<h3 class="float-right"><?=implode('<br>', $h3contentD);?></h3>
 		</div>
 	</div>
 	<div id=fiche-inner>
@@ -95,30 +87,17 @@ echo implode('<br>', $h3contentD);
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
+	                <?php for ($i = 0; $i < count($data); $i ++) :?>
 	                <?php
-
-                for ($i = 0; $i < count($data); $i ++) :
-                    ?>
-	                <?php
-
                     $css = $this->cycle([
                         'odd',
                         'even'
                     ])->next();
                     ?>
-	                <tr class="<?php
-
-                    echo $css;
-                    ?>">
-						<td><?php
-
-                    echo implode('</td><td>', $aller[$i]);
-                    ?></td>
+	                <tr class="<?=$css;?>">
+						<td><?=implode('</td><td>', $aller[$i]);?></td>
 					</tr>
-	                <?php
-                endfor
-                ;
-                ?>
+	                <?php endfor;?>
 				</tbody>
 			</table>
 		</fieldset>
@@ -136,48 +115,28 @@ echo implode('<br>', $h3contentD);
 						<th>Nom des élèves</th>
 						<th>Remarques</th>
 					</tr>
+	                <?php for ($i = 0; $i < count($data); $i ++) :?>
 	                <?php
-
-                for ($i = 0; $i < count($data); $i ++) :
-                    ?>
-	                <?php
-
                     $css = $this->cycle([
                         'odd',
                         'even'
                     ])->next();
                     ?>
-	                <tr class="<?php
-
-                    echo $css;
-                    ?>">
-						<td><?php
-
-                    echo implode('</td><td>', $retour[$i]);
-                    ?></td>
+	                <tr class="<?=$css;?>">
+						<td><?=implode('</td><td>', $retour[$i]);?></td>
 					</tr>
-	                <?php
-                endfor
-                ;
-                ?>
+	                <?php endfor;?>
 				</tbody>
 			</table>
 		</fieldset>
 		<div class="left-95px top-6px">
-			<form method="post" action="<?php
-
-echo $url_retour;
-?>">
+			<form method="post" action="<?=$url_retour;?>">
 				<input type="submit" class="default" name="horaires"
-					value="Imprimer" formaction="<?php
-
-    echo $url_horaires;
-    ?>"
+					value="Imprimer" formaction="<?=$url_horaires;?>"
 					formtarget="_blank"> <input type="submit" class="default"
 					name="cancel" value="Retour">
 			</form>
 		</div>
 	</div>
 	<div id="fiche-footer"></div>
-
 </div>

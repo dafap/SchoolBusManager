@@ -32,16 +32,14 @@ class EleveControllerFactory implements FactoryInterface
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
-            'mail_config' => StdLib::getParamR(
-                [
-                    'sbm',
-                    'mail'
-                ], $config_application),
-            'img' => StdLib::getParamR(
-                [
-                    'sbm',
-                    'img'
-                ], $config_application),
+            'mail_config' => StdLib::getParamR([
+                'sbm',
+                'mail'
+            ], $config_application),
+            'img' => StdLib::getParamR([
+                'sbm',
+                'img'
+            ], $config_application),
             'client' => StdLib::getParamR([
                 'sbm',
                 'client'

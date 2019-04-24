@@ -100,20 +100,15 @@ class EleveGestionController extends AbstractActionController
     }
 
     /**
-     * Le paramètre 'op' de POST prend les valeurs 1 ou 2.
-     * 1 : entrée dans le processus d'affectation. On prépare un formulaire formDecision et les
-     * points ptElv et ptEta
-     * 2 : sortie par post du formulaire formDecision
-     * - cancel : retour à affecter-liste
-     * - submit : traitement du formulaire, enregistrement de la décision et passage au formulaire
-     * formAffectation
-     * - ni l'un, ni l'autre : F5 ou back() de l'internaute
-     * 3 : sortie du formulaire formAffectation
-     * - cancel : retour à affecter-liste
-     * - back : passage au cas n°2
-     * - submit : traitement du formulaire, enregistrement de l'affectation et retour à
-     * affecter-liste
-     * - aucun ce ceux la : F5 ou back() de l'internaute
+     * Le paramètre 'op' de POST prend les valeurs 1 ou 2. 1 : entrée dans le processus
+     * d'affectation. On prépare un formulaire formDecision et les points ptElv et ptEta 2
+     * : sortie par post du formulaire formDecision - cancel : retour à affecter-liste -
+     * submit : traitement du formulaire, enregistrement de la décision et passage au
+     * formulaire formAffectation - ni l'un, ni l'autre : F5 ou back() de l'internaute 3 :
+     * sortie du formulaire formAffectation - cancel : retour à affecter-liste - back :
+     * passage au cas n°2 - submit : traitement du formulaire, enregistrement de
+     * l'affectation et retour à affecter-liste - aucun ce ceux la : F5 ou back() de
+     * l'internaute
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -188,7 +183,8 @@ class EleveGestionController extends AbstractActionController
                                 'page' => $page
                             ]);
                     } else {
-                        // le trajet est accordé. Il faut le préciser. On l'enregistrera en phase
+                        // le trajet est accordé. Il faut le préciser. On l'enregistrera
+                        // en phase
                         // 2. Pour le moment, mettre la décision en session
                         Session::set('decision', $decision);
                         $formDecision = new FormGestion\AffectationDecision(
@@ -450,7 +446,8 @@ class EleveGestionController extends AbstractActionController
                 'critere' => 'tous',
                 'document' => 'Liste de contrôle des cartes'
             ]);
-        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de controle
+        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de
+        // controle
         $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
         $where = new Where();
         $where->equalTo('nature', 'ImpressionCartes')->greaterThanOrEqualTo('code', 1);
@@ -687,7 +684,8 @@ class EleveGestionController extends AbstractActionController
                 'selection' => 'nouvelle',
                 'document' => 'Liste de contrôle des cartes'
             ]);
-        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de controle
+        // initialisation des documentId à utiliser pour les cartes, étiquettes, liste de
+        // controle
         $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
         $where = new Where();
         $where->equalTo('nature', 'ImpressionCartes')->greaterThanOrEqualTo('code', 1);

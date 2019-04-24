@@ -44,18 +44,11 @@ return [
         'mail' => [
             'transport' => [
                 /*
-                 * 'mode' => 'smtp', // 'smtp' ou 'sendmail'
-                 * 'smtpOptions' => [
-                 * 'host' => 'smtp.free.fr',
-                 * 'port' => '25', // 25, 587 ou 2525 si connexion TLS ; 465 ou 25025 si connexion
-                 * SSL
-                 * 'connexion_class' => 'plain',
-                 * 'connexion_config' => [
-                 * 'username' => '',
-                 * 'password' => '',
-                 * 'from' => ''
-                 * ]
-                 * ],
+                 * 'mode' => 'smtp', // 'smtp' ou 'sendmail' 'smtpOptions' => [ 'host' =>
+                 * 'smtp.free.fr', 'port' => '25', // 25, 587 ou 2525 si connexion TLS ;
+                 * 465 ou 25025 si connexion SSL 'connexion_class' => 'plain',
+                 * 'connexion_config' => [ 'username' => '', 'password' => '', 'from' =>
+                 * '' ] ],
                  */
                 'transportSsl' => [
                     'use_ssl' => false,

@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/etablissement-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -48,66 +48,66 @@ $actions = [
 		<?= $this->formHidden($this->form->get('csrf'));?>
 		<fieldset class="sbm-page1 clearfix">
 			<div class="float-left cols-1">
-				<div id="etablissement-edit-etablissementId" class="row-inner edit">
+				<div id="wrapper-etablissementId" class="row-inner edit">
 					<?= $this->formRow($this->form->get('codeEtablissement')); ?></div>
-				<div id="etablissement-edit-nom" class="row-inner edit">
+				<div id="wrapper-nom" class="row-inner edit">
 					<?= $this->formRow($this->form->get('nom')); ?></div>
-				<div id="etablissement-edit-alias" class="row-inner edit">
+				<div id="wrapper-alias" class="row-inner edit">
 					<?= $this->formRow($this->form->get('alias')); ?></div>
-				<div id="etablissement-edit-adresse1" class="row-inner edit">
+				<div id="wrapper-adresse1" class="row-inner edit">
 					<?= $this->formRow($this->form->get('adresse1')); ?></div>
-				<div id="etablissement-edit-adresse2" class="row-inner edit">
+				<div id="wrapper-adresse2" class="row-inner edit">
 					<?= $this->formRow($this->form->get('adresse2')); ?></div>
-				<div id="etablissement-edit-codePostal" class="row-inner edit">
+				<div id="wrapper-codePostal" class="row-inner edit">
 					<?= $this->formRow($this->form->get('codePostal')); ?></div>
-				<div id="etablissement-edit-communeId" class="row-inner edit">
+				<div id="wrapper-communeId" class="row-inner edit">
 					<?= $this->formRow($this->form->get('communeId')); ?></div>
-				<div id="etablissement-edit-telephone" class="row-inner edit">
+				<div id="wrapper-telephone" class="row-inner edit">
 					<?= $this->formRow($this->form->get('telephone')); ?></div>
-				<div id="etablissement-edit-fax" class="row-inner edit">
+				<div id="wrapper-fax" class="row-inner edit">
 					<?= $this->formRow($this->form->get('fax')); ?></div>
-				<div id="etablissement-edit-email" class="row-inner edit">
+				<div id="wrapper-email" class="row-inner edit">
 					<?= $this->formRow($this->form->get('email')); ?></div>
-				<div id="etablissement-edit-directeur" class="row-inner edit">
+				<div id="wrapper-directeur" class="row-inner edit">
 					<?= $this->formRow($this->form->get('directeur')); ?></div>
-				<div id="etablissement-edit-regrPeda" class="row-inner edit">
+				<div id="wrapper-regrPeda" class="row-inner edit">
 					<?= $this->formRow($this->form->get('regrPeda')); ?></div>
-				<div id="etablissement-edit-rattacheA" class="row-inner edit">
+				<div id="wrapper-rattacheA" class="row-inner edit">
 					<?= $this->formRow($this->form->get('rattacheA')); ?></div>
-				<div id="etablissement-edit-x" class="row-inner edit">
+				<div id="wrapper-x" class="row-inner edit">
 					<?= $this->formRow($this->form->get('x')); ?></div>
-				<div id="etablissement-edit-y" class="row-inner edit">
+				<div id="wrapper-y" class="row-inner edit">
 					<?= $this->formRow($this->form->get('y')); ?></div>
-				<div id="etablissement-edit-desservie" class="row-inner edit">
+				<div id="wrapper-desservie" class="row-inner edit">
 					<?= $this->formRow($this->form->get('desservie')); ?></div>
-				<div id="etablissement-edit-visible" class="row-inner edit">
+				<div id="wrapper-visible" class="row-inner edit">
 					<?= $this->formRow($this->form->get('visible')); ?></div>
 			</div>
 			<div class="float-left cols-2">
-				<div id="etablissement-edit-niveau" class="row-inner edit">
+				<div id="wrapper-niveau" class="row-inner edit">
 					<?= $this->formRow($this->form->get('niveau')); ?></div>
-				<div id="etablissement-edit-statut"
+				<div id="wrapper-statut"
 					class="row-inner edit multicheckbox">
 					<?= $this->formRow($this->form->get('statut')); ?></div>
-				<div id="etablissement-edit-jOuverture"
+				<div id="wrapper-jOuverture"
 					class="row-inner edit multicheckbox">
 					<?= $this->formRow($this->form->get('jOuverture')); ?></div>
 				<div class="clearfix">
 					<div id="horaires-matin" class="row-inner edit float-left cols-3">
 						<fieldset class="">
 							<legend>Horaires du matin</legend>
-							<div id="etablissement-edit-hMatin" class="row-inner edit">
+							<div id="wrapper-hMatin" class="row-inner edit">
 								<?= $this->formRow($this->form->get('hMatin')); ?></div>
-							<div id="etablissement-edit-hMidi" class="row-inner edit">
+							<div id="wrapper-hMidi" class="row-inner edit">
 								<?= $this->formRow($this->form->get('hMidi')); ?></div>
 						</fieldset>
 					</div>
 					<div id="horaires-soir" class="row-inner edit float-left cols-3">
 						<fieldset class="">
 							<legend>Horaires de l'après-midi</legend>
-							<div id="etablissement-edit-hAMidi" class="row-inner edit">
+							<div id="wrapper-hAMidi" class="row-inner edit">
 								<?= $this->formRow($this->form->get('hAMidi')); ?></div>
-							<div id="etablissement-edit-hSoir" class="row-inner edit">
+							<div id="wrapper-hSoir" class="row-inner edit">
 								<?= $this->formRow($this->form->get('hSoir')); ?></div>
 						</fieldset>
 					</div>
@@ -117,7 +117,7 @@ $actions = [
 						class="row-inner edit float-left cols-3">
 						<fieldset class="rows-2">
 							<legend>Ouverture de la garderie</legend>
-							<div id="etablissement-edit-hGarderieOMatin"
+							<div id="wrapper-hGarderieOMatin"
 								class="row-inner edit float-left">
 								<?= $this->formRow($this->form->get('hGarderieOMatin')); ?></div>
 						</fieldset>
@@ -126,15 +126,15 @@ $actions = [
 						class="row-inner edit float-left cols-3">
 						<fieldset>
 							<legend>Fermeture de la garderie</legend>
-							<div id="etablissement-edit-hGarderieFSoir"
+							<div id="wrapper-hGarderieFSoir"
 								class="row-inner edit float-left">
 								<?= $this->formRow($this->form->get('hGarderieFSoir')); ?></div>
-							<div id="etablissement-edit-hGarderieFMidi"
+							<div id="wrapper-hGarderieFMidi"
 								class="row-inner edit float-left">
 								<?= $this->formRow($this->form->get('hGarderieFMidi')); ?></div>
 						</fieldset>
 					</div>
-					<div id="etablissement-edit-buttons" class="row-inner edit">
+					<div id="wrapper-buttons" class="row-inner edit">
     					<?= $this->formSubmit($this->form->get('submit'));?>
     					<?= $this->formSubmit($this->form->get('cancel'));?>
     					</div>

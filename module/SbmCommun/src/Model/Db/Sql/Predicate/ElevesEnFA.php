@@ -1,43 +1,23 @@
 <?php
 /**
- * Renvoi un Where (Predicate) dont les conditions donnent les élèves payants
- * 
+ * Renvoi un Where (Predicate) dont les conditions donnent les élèves en famille d'accueil
+ *
  * @project sbm
- * @package SbmCommun/Model/Db/Sql/Predicate
+ * @package SbmCommun/src/Model/Db/Sql/Predicate
  * @filesource ElevesEnFA.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 août 2018
- * @version 2018-2.4.4
+ * @date 24 avr. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
 use Zend\Db\Sql\Where;
 
-class ElevesEnFA extends Where
+class ElevesEnFA extends AbstractElevesPredicate
 {
 
-    private $millesime;
-
-    private $alias;
-
-    /**
-     *
-     * @param int $millesime            
-     * @param string $alias
-     *            nom ou alias de la table scolarites
-     * @param array $predicates            
-     * @param string $defaultCombination            
-     */
-    public function __construct($millesime, $alias = '', array $predicates = null, 
-        $defaultCombination = self::COMBINED_BY_AND)
-    {
-        $this->millesime = $millesime;
-        $this->alias = $alias;
-        parent::__construct($predicates, $defaultCombination);
-    }
-
-    public function __invoke()
+    public function __invoke(): Where
     {
         if ($this->alias) {
             $prefixe = $this->alias . '.';
@@ -45,6 +25,7 @@ class ElevesEnFA extends Where
             $prefixe = '';
         }
         return $this->literal($prefixe . 'inscrit = 1')
+            ->literal($prefixe . 'selection = 0')
             ->literal($prefixe . 'paiement = 0')
             ->literal($prefixe . 'fa = 1')
             ->literal($prefixe . 'gratuit <> 1')

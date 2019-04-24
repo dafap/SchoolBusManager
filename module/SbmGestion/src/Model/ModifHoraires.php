@@ -2,15 +2,15 @@
 /**
  * Classe permettant de modifier les horaires d'un ensemble de points d'arrêts
  *
- * Les points d'arrêts marqués 'selection' auront leurs horaires modifiés comme 
+ * Les points d'arrêts marqués 'selection' auront leurs horaires modifiés comme
  * décrit dans le tableau actions.
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 27 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model;
@@ -48,7 +48,10 @@ class ModifHoraires
             'm3',
             's1',
             's2',
-            's3'
+            's3',
+            'z1',
+            'z2',
+            'z3'
         ];
         $millesime = Session::get('millesime');
         $circuits = $this->tcircuits->fetchAll(
@@ -88,4 +91,3 @@ class ModifHoraires
         return $cr;
     }
 }
- 

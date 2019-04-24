@@ -1,0 +1,60 @@
+<?php
+/**
+ * Affiche le résultat de la requête GET push/{referencePush}
+ *
+ * EN ATTENTE : Semble n'être utile que pour les envois différés.
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-clever-sms/index
+ * @filesource envoi-info.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 avr. 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmservicesms', [
+    'action' => 'index',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$translate = [
+    'reference' => 'Référence',
+    'nb_recipients' => 'Nb destinataires',
+    'units' => 'Unités',
+    'filename' => 'Fichier',
+    'text' => 'Texte',
+    'encoding' => 'Encodage',
+    'send_date' => 'Date d\'envoi',
+    'mo' => 'Nb réponses'
+];
+echo '<pre>';
+die(print_r($this->envoi_info));
+?>
+<h1>Informations sur un envoi</h1>
+<div id='clever-sms-wrapper'>
+	<div id='clever-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+<?php if ($this->envoi_info->isValid()) :?>
+	<fieldset id='clever-sms-inner' class='sbm-page1 top-12px'>
+		<dl class='inline'>
+		<?php foreach ($this->envoi_info->getResponse()['push'] as $key => $value) :?>
+			<dt><?=$translate[$key];?></dt>
+			<dd><?=$value;?>
+		<?php endforeach;?>
+		</dl>
+	</fieldset>
+<?php else : ?>
+	<div id='clever-sms-footer'>
+	<?=$this->envoi_info->getMessage();?>
+	</div>
+<?php endif;?>
+</div>

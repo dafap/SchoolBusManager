@@ -10,12 +10,13 @@
  * @filesource EffectifCommunes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
+use SbmGestion\Model\Db\Service\EffectifInterface;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Having;
 use Zend\Db\Sql\Where;
@@ -27,7 +28,8 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
     {
         $this->structure = [];
         // calcul du nombre d'élèves inscrits ou préinscrits ( = sauf rayés)
-        // - pour la commune du R1 : inscrit = 1 AND sco.communeId IS NULL AND demandeR1 > 0
+        // - pour la commune du R1 : inscrit = 1 AND sco.communeId IS NULL AND demandeR1 >
+        // 0
         $filtre = array_merge($this->getFiltreDemandes($sanspreinscrits),
             [
                 'inscrit' => 1,

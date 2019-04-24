@@ -23,9 +23,9 @@ class EnvoiMailFactoryTest extends PHPUnit_Framework_TestCase
     public function testCreateService()
     {
         $message = __METHOD__ .
-             ' - EnvoiMailFactory ne renvoie pas un objet de type EnvoiMail.';
+            ' - EnvoiMailFactory ne renvoie pas un objet de type EnvoiMail.';
         $serviceLocator = new ServiceManager();
-        $serviceLocator->setService('SbmMail\Config', 
+        $serviceLocator->setService('SbmMail\Config',
             [
                 'transport' => [],
                 'message' => [],

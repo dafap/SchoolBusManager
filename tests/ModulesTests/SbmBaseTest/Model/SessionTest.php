@@ -30,7 +30,7 @@ class SessionTest extends TestCase
     public function testGet()
     {
         $this->assertEquals('valeur', Session::get('test', 'default', $this->namespace));
-        $this->assertEquals('default', 
+        $this->assertEquals('default',
             Session::get('inconnu', 'default', $this->namespace));
     }
 

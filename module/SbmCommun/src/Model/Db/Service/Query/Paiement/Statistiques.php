@@ -2,53 +2,23 @@
 /**
  * Requêtes pour les statistiques concernant les paiements
  * (classe déclarée dans mocule.config.php sous l'alias 'Sbm\Statistiques\Paiement')
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Paiement
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 13 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class Statistiques implements FactoryInterface
+class Statistiques extends AbstractQuery
 {
-
-    /**
-     *
-     * @var int
-     */
-    protected $millesime;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
     /**
      * Modes de paiement
      *
@@ -56,30 +26,8 @@ class Statistiques implements FactoryInterface
      */
     protected $modes;
 
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
-        return $this;
     }
 
     /**
@@ -124,10 +72,7 @@ class Statistiques implements FactoryInterface
             $where->equalTo('anneeScolaire', $as);
             $select->where($where);
         }
-
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        // $statement->execute() renvoie un \Zend\Db\Adapter\Driver\ResultInterface
-        $result = $statement->execute();
+        $result = $this->renderResult($select);
         $totalASMode = [];
         $totalAS = [];
         $totalGeneral = 0;

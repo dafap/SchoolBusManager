@@ -24,19 +24,18 @@ class RegisteredTableGatewayControlTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->ctrl_list = new ControlListRegisteredClasses();
-        $this->ctrl_list->setSkip(
-            [
-                'AbstractSbmTableGateway',
-                'Exception'
-            ]);
+        $this->ctrl_list->setSkip([
+            'AbstractSbmTableGateway',
+            'Exception'
+        ]);
     }
 
     public function testDebug()
     {
         $ns = 'SbmCommun\Model\Db\Service\TableGateway';
-        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager', 
+        $unregistred = $this->ctrl_list->unregistredNamespaceInSection($ns, 'db_manager',
             'factories');
-        
+
         $this->assertEmpty($unregistred, implode("\n", $unregistred));
     }
 }

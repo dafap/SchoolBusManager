@@ -43,10 +43,8 @@ class Responsable
     /**
      * Le constructeur s'assure qu'un responsable est en session et qu'il correspond bien
      * à l'utilisateur authentifié (vérif par l'email).
-     *
-     * Si ce n'est pas le cas, le responsable correspondant à l'utilisateur authentifié est en
-     * session.
-     *
+     * Si ce n'est pas le cas, le responsable correspondant à l'utilisateur authentifié
+     * est en session.
      * S'il n'existe pas de responsable correspondant à cet utilisateur, une exception est
      * lancée. Il faudra la traiter en demandant la création du responsable.
      *
@@ -113,10 +111,11 @@ class Responsable
     }
 
     /**
-     * Si invalide, va chercher le responsable correspondant à l'utilisateur autentifié dans la
-     * table des responsables
+     * Si invalide, va chercher le responsable correspondant à l'utilisateur autentifié
+     * dans la table des responsables
      *
-     * @throws \SbmFront\Model\Responsable\Exception S'il n'y a pas de responsable correspondant à l'utilisateur autentifié
+     * @throws \SbmFront\Model\Responsable\Exception S'il n'y a pas de responsable
+     *         correspondant à l'utilisateur autentifié
      */
     private function init()
     {

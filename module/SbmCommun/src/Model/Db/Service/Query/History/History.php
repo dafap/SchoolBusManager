@@ -3,38 +3,22 @@
  * Requêtes sur la table système `history`
  *
  * Description longue du fichier s'il y en a une
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/History
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 13 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
-use Zend\Db\Sql\Sql;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class History implements FactoryInterface
+class History extends AbstractQuery
 {
-
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    private $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
 
     /**
      *
@@ -42,41 +26,14 @@ class History implements FactoryInterface
      */
     private $history_name;
 
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    private $sql;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
         $this->history_name = $this->db_manager->getCanonicName('history', 'sys');
-        return $this;
     }
 
     /**
-     * Changements du dernier jour
-     * On vérifie si la table affectation a été modifié pour le millesime indiqué
+     * Changements du dernier jour On vérifie si la table affectation a été modifié pour
+     * le millesime indiqué
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -97,7 +54,6 @@ class History implements FactoryInterface
             ->order([
             'dt'
         ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $this->renderResult($select);
     }
 }

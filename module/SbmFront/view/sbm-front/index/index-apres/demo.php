@@ -28,6 +28,6 @@ $format = <<<EOT
 </div>
 EOT;
 
-return sprintf($format, $this->accueil, $this->client['name'],
-    $adresse, $this->client['code_postal'], $this->client['commune'],
+return sprintf($format, $this->accueil, $this->client['name'], $adresse,
+    $this->client['code_postal'], $this->client['commune'],
     $this->telephone($this->client['telephone']), $this->client['email']);

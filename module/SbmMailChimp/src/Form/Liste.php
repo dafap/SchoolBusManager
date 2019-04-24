@@ -477,12 +477,12 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
      * Fait un Form::getData() puis structure le résultat pour l'API v3
      *
      * @param boolean $with_id
-     *            si vrai alors l'id de la liste est dans le résultat, sinon il n'y est pas
+     *            si vrai alors l'id de la liste est dans le résultat, sinon il n'y est
+     *            pas
      * @param int $flag
      *            constante définié dans FormInterface
-     *            
-     * @return array tableau associatif structuré comme l'indique le résultat d'un appel par l'API
-     *         v3
+     * @return array tableau associatif structuré comme l'indique le résultat d'un appel
+     *         par l'API v3
      */
     public function getDataForApi3($with_id = true, $flag = FormInterface::VALUES_NORMALIZED)
     {
@@ -520,10 +520,11 @@ class Liste extends AbstractSbmForm implements InputFilterProviderInterface
      * Fait un Form::setData($data) à partir d'un tableau structuré selon l'API v3
      *
      * @param array $data
-     *            tableau associatif structuré comme l'indique le résultat d'un appel par l'API v3
+     *            tableau associatif structuré comme l'indique le résultat d'un appel par
+     *            l'API v3
      * @param boolean $with_id
-     *            si vrai alors l'id de la liste est mis dans les data, sinon il est laissé vide
-     *            
+     *            si vrai alors l'id de la liste est mis dans les data, sinon il est
+     *            laissé vide
      * @return \SbmMailChimp\Form\Liste
      */
     public function setDataFromApi3($data, $with_id = true)

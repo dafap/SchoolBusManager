@@ -60,8 +60,8 @@ class Users implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu %s.';
-            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(sprintf($message),
-                gettype($serviceLocator));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(
+                sprintf($message), gettype($serviceLocator));
         }
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
         $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d H:i:s');
@@ -89,7 +89,6 @@ class Users implements FactoryInterface
      *
      * @param int $limit
      *            Si 0 (par défaut) pas de limit; sinon indiquer la valeur
-     *            
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getMembersForMailChimpListe($limit = 0)
@@ -162,19 +161,15 @@ class Users implements FactoryInterface
     }
 
     /**
-     * Ce sont les usr qui ont des enfants inscrits cette année ou qui en avait l'an dernier.
-     * Pour 2016 cela donne :
-     * SELECT DISTINCT `u1`.`email`, `u1`.`prenom`, `u1`.`nom`, `u1`.`categorieId`, `u1`.`confirme`
-     * FROM `sbm_t_users` AS `u1`
-     * INNER JOIN `sbm_t_responsables` AS `r1` ON `r1`.`email` =`u1`.`email`
-     * INNER JOIN `sbm_t_eleves` AS `e1` ON `e1`.`responsable1Id` = `r1`.`responsableId` OR
-     * `e1`.`responsable2Id` = `r1`.`responsableId`
-     * INNER JOIN `sbm_t_scolarites` AS `s1` ON `e1`.`eleveId` = `s1`.`eleveId`
-     * WHERE `s1`.`millesime` = '2015'
-     * UNION
-     * SELECT DISTINCT email, prenom, nom, categorieId, confirme
-     * FROM `sbm_t_users` AS `u2`
-     * WHERE `u2`.`dateCreation` > '2016-05-01'
+     * Ce sont les usr qui ont des enfants inscrits cette année ou qui en avait l'an
+     * dernier. Pour 2016 cela donne : SELECT DISTINCT `u1`.`email`, `u1`.`prenom`,
+     * `u1`.`nom`, `u1`.`categorieId`, `u1`.`confirme` FROM `sbm_t_users` AS `u1` INNER
+     * JOIN `sbm_t_responsables` AS `r1` ON `r1`.`email` =`u1`.`email` INNER JOIN
+     * `sbm_t_eleves` AS `e1` ON `e1`.`responsable1Id` = `r1`.`responsableId` OR
+     * `e1`.`responsable2Id` = `r1`.`responsableId` INNER JOIN `sbm_t_scolarites` AS `s1`
+     * ON `e1`.`eleveId` = `s1`.`eleveId` WHERE `s1`.`millesime` = '2015' UNION SELECT
+     * DISTINCT email, prenom, nom, categorieId, confirme FROM `sbm_t_users` AS `u2` WHERE
+     * `u2`.`dateCreation` > '2016-05-01'
      */
     private function usrUtiles()
     {

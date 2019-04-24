@@ -1,16 +1,16 @@
 <?php
 /**
- * Filtres pour les requêtes de la classe SbmGestion\Model\Db\Service\Eleve\Liste
+ * Filtres pour les requêtes de la classe \SbmGestion\Model\Db\Service\Eleve\Liste
  *
  * Définition du filtre selon la structure utilisée dans la construction du Where.
- * (voir méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere($where, $filtre))
- * 
+ * (voir méthode \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere($where, $filtre))
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Filtre/Eleve
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 23 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -22,23 +22,20 @@ abstract class Filtre
 {
 
     /**
-     * Renvoie le filtre à utiliser comme paramètre dans l'appel de la méthode du même nom.
-     * Ne renvoie pas les élèves rayés.
-     * Pour la compatibilité avec les autres filtres, il est possible de passer
-     * 3 paramètres ou de les passer sous la forme d'un tableau associatif ou
-     * d'un tableau ordonné (serviceId, stationId, inscrit). Le 3ème élément du tableau
-     * est optionnel.
-     * Si le passage de paramètres se fait par un tableau, les autres paramètres de la
-     * fonction sont ignorés.
+     * Renvoie le filtre à utiliser comme paramètre dans l'appel de la méthode du même
+     * nom. Ne renvoie pas les élèves rayés. Pour la compatibilité avec les autres
+     * filtres, il est possible de passer 3 paramètres ou de les passer sous la forme d'un
+     * tableau associatif ou d'un tableau ordonné (serviceId, stationId, inscrit). Le 3ème
+     * élément du tableau est optionnel. Si le passage de paramètres se fait par un
+     * tableau, les autres paramètres de la fonction sont ignorés.
      *
      * @param string|array $args
      *            valeur recherchée pour serviceId ou tableau des 3 paramètres
      * @param int $stationId
      *            valeur recherchée
      * @param bool $inscrit
-     *            si true alors ne renvoie que les élèves inscrits
-     *            sinon renvoie aussi les préinscrits
-     *            
+     *            si true alors ne renvoie que les élèves inscrits sinon renvoie aussi les
+     *            préinscrits
      * @throws \SbmGestion\Model\Db\Service\Exception
      *
      * @return array : tableau structuré pour la méthode
@@ -48,7 +45,7 @@ abstract class Filtre
     {
         if (is_array($args)) {
             if (array_key_exists('serviceId', $args) &&
-                 array_key_exists('stationId', $args)) {
+                array_key_exists('stationId', $args)) {
                 $serviceId = $args['serviceId'];
                 $stationId = $args['stationId'];
                 $inscrit = StdLib::getParam('inscrit', $args, false);
@@ -60,7 +57,7 @@ abstract class Filtre
             } else {
                 throw new Exception(
                     __METHOD__ .
-                         ' : Le tableau passé en paramètre n\'a pas 2 ou 3 éléments.');
+                    ' : Le tableau passé en paramètre n\'a pas 2 ou 3 éléments.');
             }
         } elseif (is_null($stationId)) {
             throw new Exception(__METHOD__ . ' : Station indéterminée.');
@@ -113,10 +110,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param int $classeId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byClasse($classeId)
     {
@@ -127,10 +125,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param string $communeId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byCommune($communeId)
     {
@@ -145,10 +144,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param string $etablissementId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byEtablissement($etablissementId)
     {
@@ -159,22 +159,23 @@ abstract class Filtre
     }
 
     /**
-     * Filtre pour la requête byEtablissementService()<ul>
-     * <li>la condition `s.etablissementId` porte sur la table scolarites</li>
-     * <li>la condition `a.serviceId` porte sur une requête UNION</li></ul>
+     * Filtre pour la requête byEtablissementService()<ul> <li>la condition
+     * `s.etablissementId` porte sur la table scolarites</li> <li>la condition
+     * `a.serviceId` porte sur une requête UNION</li></ul>
      *
-     * @param string|array $args            
-     * @param string $serviceId            
+     * @param string|array $args
+     * @param string $serviceId
      *
      * @throws \SbmGestion\Model\Db\Service\Exception
      *
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byEtablissementService($args, $serviceId = null)
     {
         if (is_array($args)) {
             if (array_key_exists('etablissementId', $args) &&
-                 array_key_exists('serviceId', $args)) {
+                array_key_exists('serviceId', $args)) {
                 $etablissementId = $args['etablissementId'];
                 $serviceId = $args['serviceId'];
             } elseif (count($args) == 2) {
@@ -198,10 +199,26 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
+     * @param int $lotId
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     */
+    public static function byLot($lotId)
+    {
+        return [
+            'inscrit' => 1,
+            'lotId' => $lotId
+        ];
+    }
+
+    /**
+     *
      * @param string $serviceId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byService($serviceId)
     {
@@ -216,10 +233,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param int $stationId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byStation($stationId)
     {
@@ -239,10 +257,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param int $transporteurId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byTransporteur($transporteurId)
     {
@@ -253,10 +272,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param int $organismeId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byOrganisme($organismeId)
     {
@@ -267,10 +287,11 @@ abstract class Filtre
     }
 
     /**
-     * 
+     *
      * @param int $tarifId
-     * 
-     * @return array : tableau structuré pour la méthode SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
+     *
+     * @return array : tableau structuré pour la méthode
+     *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
     public static function byTarif($tarifId)
     {

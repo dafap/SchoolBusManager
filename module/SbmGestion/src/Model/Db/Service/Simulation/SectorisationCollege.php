@@ -79,7 +79,6 @@ class SectorisationCollege
      * Renvoie la communeId de résidence (du responsable 1)
      *
      * @return array ['communeId' => string, 'commune' => string]
-     *        
      * @throws \SbmGestion\Model\Db\Service\Simulation\Exception (Exception)
      */
     private function getCommune()

@@ -38,9 +38,9 @@
 		</dd>
 	</dl>
 <?php
-        $e = $this->exception->getPrevious();
-        if ($e) :
-            ?>
+$e = $this->exception->getPrevious();
+if ($e) :
+    ?>
 <hr />
 	<h2><?= $this->translate('Previous exceptions') ?>:</h2>
 	<ul class="unstyled">
@@ -63,10 +63,10 @@
 			</dl>
 		</li>
     <?php
-                $e = $e->getPrevious();
-            endwhile
-            ;
-            ?>
+        $e = $e->getPrevious();
+    endwhile
+    ;
+    ?>
 </ul>
 <?php endif; ?>
 

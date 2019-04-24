@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/classe-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,37 +40,37 @@ $actions = [
         <?= $this->formHidden($this->form->get('communeId'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="commune-edit-communeId" class="row-inner edit">
+			<div id="wrapper-communeId" class="row-inner edit">
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
-			<div id="commune-edit-nom" class="row-inner edit">
+			<div id="wrapper-nom" class="row-inner edit">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="commune-edit-nom-min" class="row-inner edit">
+			<div id="wrapper-nom-min" class="row-inner edit">
 				<?= $this->formRow($this->form->get('nom_min')); ?></div>
-			<div id="commune-edit-alias" class="row-inner edit">
+			<div id="wrapper-alias" class="row-inner edit">
 				<?= $this->formRow($this->form->get('alias')); ?></div>
-			<div id="commune-edit-alias-min" class="row-inner edit">
+			<div id="wrapper-alias-min" class="row-inner edit">
 				<?= $this->formRow($this->form->get('alias_min')); ?></div>
-			<div id="commune-edit-aliasCG" class="row-inner edit">
+			<div id="wrapper-aliasCG" class="row-inner edit">
 				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="commune-edit-codepostal" class="row-inner edit">
+			<div id="wrapper-codepostal" class="row-inner edit">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
-			<div id="commune-edit-departement" class="row-inner edit">
+			<div id="wrapper-departement" class="row-inner edit">
 				<?= $this->formRow($this->form->get('departement')); ?></div>
-			<div id="commune-edit-canton" class="row-inner edit">
+			<div id="wrapper-canton" class="row-inner edit">
 				<?= $this->formRow($this->form->get('canton')); ?></div>
-			<div id="commune-edit-population" class="row-inner edit">
+			<div id="wrapper-population" class="row-inner edit">
 				<?= $this->formRow($this->form->get('population')); ?></div>
-			<div id="commune-edit-membre" class="row-inner edit">
+			<div id="wrapper-membre" class="row-inner edit">
 				<?= $this->formRow($this->form->get('membre')); ?></div>
-			<div id="commune-edit-desservie" class="row-inner edit">
+			<div id="wrapper-desservie" class="row-inner edit">
 				<?= $this->formRow($this->form->get('desservie')); ?></div>
-			<div id="commune-edit-visible" class="row-inner edit">
+			<div id="wrapper-visible" class="row-inner edit">
 				<?= $this->formRow($this->form->get('visible')); ?></div>
-			<div id="commune-edit-inscriptionenligne" class="row-inner edit">
+			<div id="wrapper-inscriptionenligne" class="row-inner edit">
 				<?= $this->formRow($this->form->get('inscriptionenligne')); ?></div>
-			<div id="commune-edit-paiementenligne" class="row-inner edit">
+			<div id="wrapper-paiementenligne" class="row-inner edit">
 				<?= $this->formRow($this->form->get('paiementenligne')); ?></div>
-			<div id="commune-edit-buttons" class="row-inner edit">
+			<div id="wrapper-buttons" class="row-inner edit">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

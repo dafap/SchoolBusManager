@@ -8,7 +8,7 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -105,33 +105,33 @@ if ($this->responsableId) {
 		<?=$this->formHidden($this->form->get('nature'));?>
 		<?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="responsable-edit-ligne1" class="clearfix">
-				<div id="responsable-edit-titre" class="row-inner edit float-left">
+			<div id="wrapper-ligne1" class="clearfix">
+				<div id="wrapper-titre" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('titre'));?></div>
-				<div id="responsable-edit-nom" class="row-inner edit float-left">
+				<div id="wrapper-nom" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('nom'));?></div>
-				<div id="responsable-edit-prenom" class="row-inner edit float-left">
+				<div id="wrapper-prenom" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('prenom'));?></div>
 			</div>
-			<div id="responsable-edit-ligne2" class="clearfix">
-				<div id="responsable-edit-titre2" class="row-inner edit float-left">
+			<div id="wrapper-ligne2" class="clearfix">
+				<div id="wrapper-titre2" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('titre2'));?></div>
-				<div id="responsable-edit-nom2" class="row-inner edit float-left">
+				<div id="wrapper-nom2" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('nom2'));?></div>
-				<div id="responsable-edit-prenom2" class="row-inner edit float-left">
+				<div id="wrapper-prenom2" class="row-inner edit float-left">
 					<?=$this->formRow($this->form->get('prenom2'));?></div>
 			</div>
-			<div id="responsable-telephones" class="row-inner edit clearfix">
-				<div id="responsable-telephone-numbers" class="float-left">
+			<div id="wrapper-telephones" class="row-inner edit clearfix">
+				<div id="wrapper-telephone-numbers" class="float-left">
 					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneF'));?></div>
 					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneP'));?></div>
 					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneT'));?></div>
 				</div>
 				<?php
 
-if ($this->layout()->hassbmservicesms) :
+    if ($this->layout()->hassbmservicesms) :
         ?>
-				<div id="responsable-acceptsms" class="left-20px float-left">
+				<div id="wrapper-acceptsms" class="left-20px float-left">
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsF'));?></div>
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsP'));?></div>
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsT'));?></div>
@@ -140,36 +140,36 @@ if ($this->layout()->hassbmservicesms) :
 
     ?>
 			</div>
-			<div id="responsable-edit-email" class="row-inner edit">
+			<div id="wrapper-email" class="row-inner edit">
 				<?=$this->formRow($this->form->get('email'));?></div>
-			<div id="responsable-edit-adresseL1" class="row-inner edit">
+			<div id="wrapper-adresseL1" class="row-inner edit">
 				<?=$this->formRow($this->form->get('adresseL1'));?></div>
-			<div id="responsable-edit-adresseL2" class="row-inner edit">
+			<div id="wrapper-adresseL2" class="row-inner edit">
 				<?=$this->formRow($this->form->get('adresseL2'));?></div>
-			<div id="responsable-edit-codePostal" class="row-inner edit">
+			<div id="wrapper-codePostal" class="row-inner edit">
 				<?=$this->formRow($this->form->get('codePostal'));?></div>
-			<div id="responsable-edit-communeId" class="row-inner edit">
+			<div id="wrapper-communeId" class="row-inner edit">
 				<?=$this->formRow($this->form->get('communeId'));?></div>
-			<div id="responsable-edit-demenagement" class="row-inner edit">
+			<div id="wrapper-demenagement" class="row-inner edit">
 				<?=$this->formRow($this->form->get('demenagement'));?></div>
-			<div id="responsable-edit-blocAncien"
+			<div id="wrapper-blocAncien"
 				<?=$this->demenagement ? '' : 'style="display: none;"';?>>
-				<div id="responsable-edit-dateDemenagement" class="row-inner edit">
+				<div id="wrapper-dateDemenagement" class="row-inner edit">
 					<?=$this->formRow($this->form->get('dateDemenagement'));?></div>
-				<div id="responsable-edit-ancienAdresseL1" class="row-inner edit">
+				<div id="wrapper-ancienAdresseL1" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienAdresseL1'));?></div>
-				<div id="responsable-edit-ancienAdresseL2" class="row-inner edit">
+				<div id="wrapper-ancienAdresseL2" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienAdresseL2'));?></div>
-				<div id="responsable-edit-ancienCodePostal" class="row-inner edit">
+				<div id="wrapper-ancienCodePostal" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienCodePostal'));?></div>
-				<div id="responsable-edit-ancienCommuneId" class="row-inner edit">
+				<div id="wrapper-ancienCommuneId" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienCommuneId'));?></div>
 			</div>
-			<div id="responsable-edit-selection" class="row-inner edit">
+			<div id="wrapper-selection" class="row-inner edit">
 				<?=$this->formRow($this->form->get('selection'));?></div>
 			<div id="wrapper-commentaire" class="row-inner edit top-6px">
 				<?=$this->formRow($this->form->get('note'));?></div>
-			<div id="responsable-edit-buttons" class="row-inner edit">
+			<div id="wrapper-buttons" class="row-inner edit">
     			<?=$this->formSubmit($this->form->get('submit'));?>
     			<?=$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>

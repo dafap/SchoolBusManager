@@ -21,7 +21,8 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     private $tableName;
 
     /**
-     * Si tableName est un tableau, ce tableau décrit les éléménts à placer dans le formulaire
+     * Si tableName est un tableau, ce tableau décrit les éléménts à placer dans le
+     * formulaire
      *
      * @param string|array $tableName
      */
@@ -213,20 +214,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ]);
 
         /*
-         * $this->add([
-         * 'name' => 'aliasCG',
-         * 'type' => 'hidden',
-         * 'attributes' => [
-         * 'id' => 'critere-aliasCG',
-         * 'maxlength' => '30',
-         * 'class' => 'sbm-width-30c'
-         * ],
-         * 'options' => [
-         * 'label' => 'Nom CG',
-         * 'error_attributes' => [
-         * 'class' => 'sbm-error'
-         * ]
-         * ]
+         * $this->add([ 'name' => 'aliasCG', 'type' => 'hidden', 'attributes' => [ 'id' =>
+         * 'critere-aliasCG', 'maxlength' => '30', 'class' => 'sbm-width-30c' ], 'options'
+         * => [ 'label' => 'Nom CG', 'error_attributes' => [ 'class' => 'sbm-error' ] ]
          * ]);
          */
 
@@ -637,40 +627,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ]);
         /*
-         * $this->add([
-         * 'name' => 'tarifMontant',
-         * 'attributes' => [
-         * 'type' => 'text',
-         * 'id' => 'critere-tarif',
-         * 'maxlength' => '11',
-         * 'class' => 'sbm-width-10c'
-         * ],
-         * 'options' => [
-         * 'label' => 'Tarif',
-         * 'error_attributes' => [
-         * 'class' => 'sbm-error'
-         * ]
-         * ]
-         * ]);
-         * $this->add([
-         * 'name' => 'prelevement',
-         * 'type' => 'Zend\Form\Element\Checkbox',
-         * 'attributes' => [
-         * 'type' => 'checkbox',
-         * 'useHiddenElement' => true,
-         * 'options' => [
-         * 'checkedValue' => false,
-         * 'uncheckedValue' => true
-         * ],
-         * 'class' => 'sbm-checkbox'
-         * ],
-         * 'options' => [
-         * 'label' => 'Prélevés',
-         * 'error_attributes' => [
-         * 'class' => 'sbm-error'
-         * ]
-         * ]
-         * ]);
+         * $this->add([ 'name' => 'tarifMontant', 'attributes' => [ 'type' => 'text', 'id'
+         * => 'critere-tarif', 'maxlength' => '11', 'class' => 'sbm-width-10c' ],
+         * 'options' => [ 'label' => 'Tarif', 'error_attributes' => [ 'class' =>
+         * 'sbm-error' ] ] ]); $this->add([ 'name' => 'prelevement', 'type' =>
+         * 'Zend\Form\Element\Checkbox', 'attributes' => [ 'type' => 'checkbox',
+         * 'useHiddenElement' => true, 'options' => [ 'checkedValue' => false,
+         * 'uncheckedValue' => true ], 'class' => 'sbm-checkbox' ], 'options' => [ 'label'
+         * => 'Prélevés', 'error_attributes' => [ 'class' => 'sbm-error' ] ] ]);
          */
         $this->add(
             [
@@ -858,20 +822,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ]);
         /*
-         * $this->add([
-         * 'name' => 'aliasCG',
-         * 'attributes' => [
-         * 'type' => 'hidden',
-         * 'id' => 'critere-aliasCG',
-         * 'maxlength' => '50',
-         * 'class' => 'sbm-width-50c'
-         * ],
-         * 'options' => [
-         * 'label' => 'Nom CG',
-         * 'error_attributes' => [
-         * 'class' => 'sbm-error'
-         * ]
-         * ]
+         * $this->add([ 'name' => 'aliasCG', 'attributes' => [ 'type' => 'hidden', 'id' =>
+         * 'critere-aliasCG', 'maxlength' => '50', 'class' => 'sbm-width-50c' ], 'options'
+         * => [ 'label' => 'Nom CG', 'error_attributes' => [ 'class' => 'sbm-error' ] ]
          * ]);
          */
         $this->add(
@@ -1922,20 +1875,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ]);
         /*
-         * $this->add([
-         * 'name' => 'aliasCG',
-         * 'attributes' => [
-         * 'type' => 'hidden',
-         * 'id' => 'critere-aliasCG',
-         * 'maxlength' => '45',
-         * 'class' => 'sbm-width-25c'
-         * ],
-         * 'options' => [
-         * 'label' => 'Nom CG',
-         * 'error_attributes' => [
-         * 'class' => 'sbm-error'
-         * ]
-         * ]
+         * $this->add([ 'name' => 'aliasCG', 'attributes' => [ 'type' => 'hidden', 'id' =>
+         * 'critere-aliasCG', 'maxlength' => '45', 'class' => 'sbm-width-25c' ], 'options'
+         * => [ 'label' => 'Nom CG', 'error_attributes' => [ 'class' => 'sbm-error' ] ]
          * ]);
          */
 

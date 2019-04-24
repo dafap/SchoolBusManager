@@ -1,13 +1,13 @@
 <?php
 /**
  * Modification des horaires
- * 
+ *
  * @project sbm
  * @package SbmGestion/Form
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 27 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form;
@@ -32,12 +32,21 @@ class ModifHoraires extends Form
         $this->add($this->text('s2-sec'));
         $this->add($this->text('s3-min'));
         $this->add($this->text('s3-sec'));
+        $this->add($this->text('z1-min'));
+        $this->add($this->text('z1-sec'));
+        $this->add($this->text('z2-min'));
+        $this->add($this->text('z2-sec'));
+        $this->add($this->text('z3-min'));
+        $this->add($this->text('z3-sec'));
         $this->add($this->radio('m1-op'));
         $this->add($this->radio('m2-op'));
         $this->add($this->radio('m3-op'));
         $this->add($this->radio('s1-op'));
         $this->add($this->radio('s2-op'));
         $this->add($this->radio('s3-op'));
+        $this->add($this->radio('z1-op'));
+        $this->add($this->radio('z2-op'));
+        $this->add($this->radio('z3-op'));
         $this->add(
             [
                 'name' => 'cancel',
@@ -83,7 +92,7 @@ class ModifHoraires extends Form
             'type' => 'text',
             'name' => $name,
             'attributes' => [
-                'class' => 'sbm-width-5c'
+                'class' => "decalage $name"
             ],
             'options' => []
         ];
@@ -110,7 +119,16 @@ class ModifHoraires extends Form
                 's2-sec' => 0,
                 's3-op' => 0,
                 's3-min' => 0,
-                's3-sec' => 0
+                's3-sec' => 0,
+                'z1-op' => 0,
+                'z1-min' => 0,
+                'z1-sec' => 0,
+                'z2-op' => 0,
+                'z2-min' => 0,
+                'z2-sec' => 0,
+                'z3-op' => 0,
+                'z3-min' => 0,
+                'z3-sec' => 0
             ]);
     }
 }

@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 16 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -239,16 +239,16 @@ class Responsables extends AbstractSbmTable
     /**
      * Renvoie le `nom prénom` du responsable, éventuellement précédé du `titre`
      *
-     * @param int $responsabled
+     * @param int $responsableId
      *            référence du respondable
      * @param bool $with_titre
      *            indique si le titre doit être mis ou non
      *
      * @return string
      */
-    public function getNomPrenom($responsabled, $with_titre = false)
+    public function getNomPrenom($responsableId, $with_titre = false)
     {
-        $record = $this->getRecord($responsabled);
+        $record = $this->getRecord($responsableId);
         return ($with_titre ? $record->titre . ' ' : '') . $record->nom . ' ' .
             $record->prenom;
     }

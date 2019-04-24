@@ -7,7 +7,7 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -32,36 +32,28 @@ class Criteres extends SbmCommunCriteres
     }
 
     /**
-     * On filtre sur le millesime en cours.
-     * La propriété `data` est un tableau de la forme :<dl>
-     * <dt>array (size=10)</dt>
-     * <dd>'numero' => string '' (length=0)</dd>
-     * <dd>'nomSA' => string '' (length=0)</dd>
-     * <dd>'responsableSA' => string '' (length=0)</dd>
-     * <dd>'etablissementId' => string '' (length=0)</dd>
-     * <dd>'classeId' => string '' (length=0)</dd>
-     * <dd>'etat' => string '' (length=0)</dd>
-     * <dd>'demande' => string '' (length=0)</dd>
-     * <dd>'decision' => string '' (length=0)</dd>
-     * <dd>'derogation' => string '0' (length=1)</dd>
-     * <dd>'selection' => string '0' (length=1)</dd></dl>
-     *
-     * (non-PHPdoc)
+     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * :<dl> <dt>array (size=10)</dt> <dd>'numero' => string '' (length=0)</dd>
+     * <dd>'nomSA' => string '' (length=0)</dd> <dd>'responsableSA' => string ''
+     * (length=0)</dd> <dd>'etablissementId' => string '' (length=0)</dd> <dd>'classeId'
+     * => string '' (length=0)</dd> <dd>'etat' => string '' (length=0)</dd> <dd>'demande'
+     * => string '' (length=0)</dd> <dd>'decision' => string '' (length=0)</dd>
+     * <dd>'derogation' => string '0' (length=1)</dd> <dd>'selection' => string '0'
+     * (length=1)</dd></dl> (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
     public function getWhere($strict = [], $alias = [])
     {
-        $where = new Where();
         if ($this->sanspreinscrits) {
-            $where->literal('inscrit = 1')
-                ->nest()
-                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
-                'gratuit > 0')->unnest();
+            $elevesSansPreinscrits = new \SbmCommun\Model\Db\Sql\Predicate\ElevesSansPreinscrits(
+                Session::get('millesime'), 'sco');
+            $where = $elevesSansPreinscrits();
         } else {
-            $where->literal('inscrit = 1');
+            $elevesNonRayes = new \SbmCommun\Model\Db\Sql\Predicate\ElevesNonRayes(
+                Session::get('millesime'), 'sco');
+            $where = $elevesNonRayes();
         }
-        $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
         }
@@ -92,13 +84,11 @@ class Criteres extends SbmCommunCriteres
     }
 
     /**
-     * Prépare et renvoie un Where à partir des données de l'objet.
-     * Le tableau $descripteur est structuré de la façon suivante :<ul>
-     * <li>'strict' => [liste de champs ...]</li>
-     * <li>'expressions' => [liste de champs]</li></ul>
-     *
-     * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé
-     * dans le tableau 'expressions'.
+     * Prépare et renvoie un Where à partir des données de l'objet. Le tableau
+     * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
+     * champs ...]</li> <li>'expressions' => [liste de champs]</li></ul> En fait, cette
+     * méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le
+     * tableau 'expressions'.
      *
      * @param array $descripteur
      *
@@ -146,36 +136,28 @@ class Criteres extends SbmCommunCriteres
     }
 
     /**
-     * On filtre sur le millesime en cours.
-     * La propriété `data` est un tableau de la forme :<dl>
-     * <dt>array (size=10)</dt>
-     * <dd>'numero' => string '' (length=0)</dd>
-     * <dd>'nomSA' => string '' (length=0)</dd>
-     * <dd>'responsableSA' => string '' (length=0)</dd>
-     * <dd>'etablissementId' => string '' (length=0)</dd>
-     * <dd>'classeId' => string '' (length=0)</dd>
-     * <dd>'etat' => string '' (length=0)</dd>
-     * <dd>'demande' => string '' (length=0)</dd>
-     * <dd>'decision' => string '' (length=0)</dd>
-     * <dd>'derogation' => string '0' (length=1)</dd>
-     * <dd>'selection' => string '0' (length=1)</dd>
-     * </dl>
-     * (non-PHPdoc)
+     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * :<dl> <dt>array (size=10)</dt> <dd>'numero' => string '' (length=0)</dd>
+     * <dd>'nomSA' => string '' (length=0)</dd> <dd>'responsableSA' => string ''
+     * (length=0)</dd> <dd>'etablissementId' => string '' (length=0)</dd> <dd>'classeId'
+     * => string '' (length=0)</dd> <dd>'etat' => string '' (length=0)</dd> <dd>'demande'
+     * => string '' (length=0)</dd> <dd>'decision' => string '' (length=0)</dd>
+     * <dd>'derogation' => string '0' (length=1)</dd> <dd>'selection' => string '0'
+     * (length=1)</dd> </dl> (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
     public function getWhereForEleves($strict = [], $alias = [])
     {
-        $where = new Where();
         if ($this->sanspreinscrits) {
-            $where->literal('inscrit = 1')
-                ->nest()
-                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
-                'gratuit > 0')->unnest();
+            $elevesSansPreinscrits = new \SbmCommun\Model\Db\Sql\Predicate\ElevesSansPreinscrits(
+                Session::get('millesime'), 'sco');
+            $where = $elevesSansPreinscrits();
         } else {
-            $where->literal('inscrit = 1');
+            $elevesNonRayes = new \SbmCommun\Model\Db\Sql\Predicate\ElevesNonRayes(
+                Session::get('millesime'), 'sco');
+            $where = $elevesNonRayes();
         }
-        $where->equalTo('sco.millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
         }
@@ -211,13 +193,11 @@ class Criteres extends SbmCommunCriteres
     }
 
     /**
-     * Prépare et renvoie un Where à partir des données de l'objet.
-     * Le tableau $descripteur est structuré de la façon suivante :<ul>
-     * <li>'strict' => [liste de champs ...]</li>
-     * <li>'expressions' => [liste de champs]</li></ul>
-     *
-     * En fait, cette méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé
-     * dans le tableau 'expressions'.
+     * Prépare et renvoie un Where à partir des données de l'objet. Le tableau
+     * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
+     * champs ...]</li> <li>'expressions' => [liste de champs]</li></ul> En fait, cette
+     * méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le
+     * tableau 'expressions'.
      *
      * @param array $descripteur
      *

@@ -8,7 +8,7 @@
  * @filesource SansAccent.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 26 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Filter;
@@ -17,10 +17,12 @@ use Zend\Filter\FilterInterface;
 
 class SansAccent implements FilterInterface
 {
+
     public function filter($val)
     {
         if (is_string($val)) {
             // traite le texte utf8
+            // @formatter:off
             $val = str_replace(
                 [
                     'à', 'â', 'ä', 'á', 'ã', 'å', 'a̧', 'ą', 'ⱥ', 'ǎ', 'ȧ', 'ạ', 'ā',
@@ -77,13 +79,16 @@ class SansAccent implements FilterInterface
                     'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T',
                     'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'U',
                     'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y',
-                    'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 
+                    'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z', 'Z',
                     'ae', 'oe', 'AE', 'OE'
                 ],$val);
-                // traite les entités html (?:xxx) signifie que la parenthèse n'est pas capturante dans l'expression régulière
-                $val = htmlentities($val, ENT_NOQUOTES, 'utf-8');
-                $val = preg_replace('#\&([A-za-z])(?:acute|cedil|circ|grave|ring|tilde|uml)\;#', '\1', $val);
-                $val = preg_replace('#\&([A-za-z]{2})(?:lig)\;#', '\1', $val);
+            // @formatter:on
+            // traite les entités html (?:xxx) signifie que la parenthèse n'est pas
+            // capturante dans l'expression régulière
+            $val = htmlentities($val, ENT_NOQUOTES, 'utf-8');
+            $val = preg_replace(
+                '#\&([A-za-z])(?:acute|cedil|circ|grave|ring|tilde|uml)\;#', '\1', $val);
+            $val = preg_replace('#\&([A-za-z]{2})(?:lig)\;#', '\1', $val);
         } elseif (is_array($val)) {
             // traite les tableaux
             $vals = $val;
@@ -92,7 +97,7 @@ class SansAccent implements FilterInterface
                 $val[$this->filter($key)] = $this->filter($value);
             }
         }
-        
+
         return $val;
     }
 }

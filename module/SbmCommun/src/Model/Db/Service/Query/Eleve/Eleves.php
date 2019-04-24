@@ -3,71 +3,28 @@
  * Requête permettant d'obtenir des détails sur les élèves
  *
  * La table principale est `eleves`. Les tables jointes le sont par des LEFT JOIN ce qui rend les jointures non exclusives.
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class Eleves implements FactoryInterface
+class Eleves extends AbstractQuery
 {
 
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
-        return $this;
     }
 
     private function dernierMillesime($lequel, $responsableId)
@@ -102,6 +59,7 @@ class Eleves implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero',
                 'responsable1Id' => 'responsable1Id',
                 'x1' => 'x1',
@@ -122,6 +80,7 @@ class Eleves implements FactoryInterface
         ], 'ele.eleveId = sco.eleveId',
             [
                 'millesime',
+                'regimeId',
                 'paiement',
                 'inscrit',
                 'fa',
@@ -131,7 +90,8 @@ class Eleves implements FactoryInterface
                 'accordR1',
                 'accordR2',
                 'subventionR1',
-                'subventionR2'
+                'subventionR2',
+                'grilleTarif'
             ], Select::JOIN_LEFT)
             ->join(
             [
@@ -158,8 +118,10 @@ class Eleves implements FactoryInterface
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
+        return $this->renderResult($select->where($where));
     }
 
     public function duResponsable1($responsableId)
@@ -177,4 +139,3 @@ class Eleves implements FactoryInterface
         return $this->dernierMillesime('responsableFId', $responsableId);
     }
 }
- 

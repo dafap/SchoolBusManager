@@ -4,16 +4,16 @@
  *
  * S'il s'agit d'une entrée où le responsable n'est pas connu, on propose de choisir le responsable dans un Select
  * sinon (appel depuis la liste des paiements d'un responsables ou de la fiche d'un responsable), le responsableId est dans un Hidden.
- * 
+ *
  * En ajax, une fois le responsable précisé, on présente la liste des élèves préinscrits avec une case à cocher pour le sélectionner.
  * La sélection d'un enfant entraine le recalcul de la somme à payer, mais il est possible de surcharge cette valeur manuellement.
- * 
+ *
  * @project sbm
  * @package module\SbmGestion\view\sbm-gestion\finance
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -46,9 +46,11 @@ $actions = [
 <?php endif;?>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
-		<div id="somme-due"></div>
+
 		<div class="menu clearfix">
         <?= $this->listeZoneActions($hiddens, $actions);?>
+        <div id="somme-due" class="float-left"></div>
+        <div id="somme-payee"class="float-left"></div>
         </div>
 	</div>
 	<div id="fiche-inner">
@@ -60,35 +62,35 @@ $actions = [
 <?php if ($this->hidden_responsableId) : ?>
 				<?= $this->formHidden($this->form->get('responsableId')); ?>
 <?php else : ?>
-                <div id="paiement-edit-responsableId"
+                <div id="wrapper-edit-responsableId"
 					class="row-inner edit">
 					<?= $this->formRow($this->form->get('responsableId')); ?></div>
 <?php endif; ?>
 
-                <div id="paiement-edit-code-caisse"
+                <div id="wrapper-edit-code-caisse"
 					class="row-inner edit">
 					<?= $this->formRow($this->form->get('codeCaisse')); ?></div>
-				<div id="paiement-edit-montant" class="row-inner edit">
+				<div id="wrapper-edit-montant" class="row-inner edit">
 					<?= $this->formRow($this->form->get('montant')); ?></div>
-				<div id="paiement-edit-code-mode-de-paiement" class="row-inner edit">
+				<div id="wrapper-edit-code-mode-de-paiement" class="row-inner edit">
 					<?= $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
-				<div id="paiement-edit-exercice" class="row-inner edit">
+				<div id="wrapper-edit-exercice" class="row-inner edit">
 					<?= $this->formRow($this->form->get('exercice')); ?></div>
-				<div id="paiement-edit-annee-scolaire" class="row-inner edit">
+				<div id="wrapper-edit-annee-scolaire" class="row-inner edit">
 					<?= $this->formRow($this->form->get('anneeScolaire')); ?></div>
-				<div id="paiement-edit-date-paiement" class="row-inner edit">
+				<div id="wrapper-edit-date-paiement" class="row-inner edit">
 					<?= $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
-				<div id="paiement-edit-date-valeur" class="row-inner edit">
+				<div id="wrapper-edit-date-valeur" class="row-inner edit">
 					<?= $this->formRowDate($this->form->get('dateValeur')); ?></div>
-				<div id="paiement-edit-date-depot" class="row-inner edit">
+				<div id="wrapper-edit-date-depot" class="row-inner edit">
 					<?= $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
-				<div id="paiement-edit-titulaire" class="row-inner edit">
+				<div id="wrapper-edit-titulaire" class="row-inner edit">
 					<?= $this->formRow($this->form->get('titulaire')); ?></div>
-				<div id="paiement-edit-banque" class="row-inner edit">
+				<div id="wrapper-edit-banque" class="row-inner edit">
 					<?= $this->formRow($this->form->get('banque')); ?></div>
-				<div id="paiement-edit-reference" class="row-inner edit">
+				<div id="wrapper-edit-reference" class="row-inner edit">
 					<?= $this->formRow($this->form->get('reference')); ?></div>
-				<div id="paiement-edit-buttons" class="row-inner edit">
+				<div id="wrapper-edit-buttons" class="row-inner edit">
     				<?= $this->formSubmit($this->form->get('submit'));?>
     				<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 			</fieldset>

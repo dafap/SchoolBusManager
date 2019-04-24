@@ -59,9 +59,8 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
     }
 
     /**
-     * Traitement de l'évènement 'paiementOK'
-     * Le contexte de l'évènement n'est pas utilisé.
-     * Les paramètres sont les données à enregistrer.
+     * Traitement de l'évènement 'paiementOK' Le contexte de l'évènement n'est pas
+     * utilisé. Les paramètres sont les données à enregistrer.
      *
      * @param Event $e
      */

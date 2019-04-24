@@ -1,0 +1,34 @@
+<?php
+/**
+ * Page de suppression de l'enregistrement d'une campagne d'envoi de SMS
+ *
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-clever-sms/index
+ * @filesource suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 avr. 2019
+ * @version 2019-2.5.0
+ */
+use SbmBase\Model\DateLib;
+
+?>
+<h1>Suppression de l'enregistrement d'une campagne d'envoi de SMS</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de l'enregistrement suivant :</p>
+	<div class="header-wrapper">
+		<dl>
+			<dt>Date d'envoi</dt>
+			<dd><?= DateLib::formatDateFromMysql($this->data->send_date);?></dd>
+			<dt>Message</dt>
+			<dd><?= $this->escapeHtml($this->data->text);?></dd>
+			<dt>Nombre de destinataires</dt>
+			<dd><?=$this->data->nb_recipients;?></dd>
+		</dl>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($this->form);?>
+	<?= $this->formCollection($this->form);?>
+	<?= $this->form()->closeTag();?>
+</div>

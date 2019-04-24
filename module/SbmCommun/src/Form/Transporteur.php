@@ -8,8 +8,8 @@
  * @filesource Transporteur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 mars 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -22,11 +22,10 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         parent::__construct('transporteur');
         $this->setAttribute('method', 'post');
-        $this->add(
-            [
-                'name' => 'transporteurId',
-                'type' => 'hidden'
-            ]);
+        $this->add([
+            'name' => 'transporteurId',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -168,7 +167,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(
             [
                 'name' => 'email',
-                'type' => 'text',
+                'type' => 'Zend\Form\Element\Email',
                 'attributes' => [
                     'id' => 'transporteur-email',
                     'class' => 'sbm-width-50c'
@@ -309,7 +308,7 @@ class Transporteur extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ]);
-        
+
         $this->add(
             [
                 'name' => 'submit',

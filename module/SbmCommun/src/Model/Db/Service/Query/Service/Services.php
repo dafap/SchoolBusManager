@@ -7,77 +7,25 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
+ * @date 13 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
-use Zend\Db\Sql\Sql;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class Services implements FactoryInterface
+class Services extends AbstractQuery
 {
 
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var int
-     */
-    protected $millesime;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
-        return $this;
     }
 
     public function getServicesGivenEtablissement($etablissementId)
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
+        return $this->renderResult(
             $this->selectServicesGivenEtablissement($etablissementId));
-        return $statement->execute();
     }
 
     private function selectServicesGivenEtablissement($etablissementId)
@@ -91,6 +39,8 @@ class Services implements FactoryInterface
             ])
             ->columns([
             'serviceId',
+            'alias',
+            'aliasTr',
             'nom',
             'operateur',
             'nbPlaces'
@@ -101,6 +51,14 @@ class Services implements FactoryInterface
                     'table')
             ], 'ser.serviceId = etaser.serviceId', [])
             ->join([
+            'lot' => $this->db_manager->getCanonicName('lots')
+        ], 'ser.lotId = lot.lotId', [])
+            ->join([
+            'tit' => $this->db_manager->getCanonicName('transporteurs')
+        ], 'lot.transporteurId = tit.transporteurId', [
+            'titulaire' => 'nom'
+        ])
+            ->join([
             'tra' => $this->db_manager->getCanonicName('transporteurs')
         ], 'ser.transporteurId = tra.transporteurId', [
             'transporteur' => 'nom'
@@ -109,24 +67,25 @@ class Services implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau des services avec leur transporteur et un tableau d'établissements
-     * desservis par chaque service
+     * Renvoie un tableau des services avec leur transporteur et un tableau
+     * d'établissements desservis par chaque service
      *
      * @return array
      */
     public function getServicesWithEtablissements()
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectServicesWithEtablissements());
-        $rowset = $statement->execute();
+        $rowset = $this->renderResult($this->selectServicesWithEtablissements());
         $result = [];
         foreach ($rowset as $row) {
             if (! array_key_exists($row['serviceId'], $result)) {
                 $result[$row['serviceId']] = [
                     'serviceId' => $row['serviceId'],
+                    'alias' => $row['alias'],
+                    'aliasTr' => $row['aliasTr'],
                     'nom' => $row['nom'],
                     'operateur' => $row['operateur'],
                     'nbPlaces' => $row['nbPlaces'],
+                    'titulaire' => $row['titulaire'],
                     'transporteur' => $row['transporteur'],
                     'etablissements' => []
                 ];
@@ -141,9 +100,7 @@ class Services implements FactoryInterface
 
     public function paginatorServicesWithEtablissements()
     {
-        return new \Zend\Paginator\Paginator(
-            new \Zend\Paginator\Adapter\ArrayAdapter(
-                $this->getServicesWithEtablissements()));
+        return $this->paginator($this->getServicesWithEtablissements());
     }
 
     private function selectServicesWithEtablissements()
@@ -155,9 +112,19 @@ class Services implements FactoryInterface
             ])
             ->columns([
             'serviceId',
+            'alias',
+            'aliasTr',
             'nom',
             'operateur',
             'nbPlaces'
+        ])
+            ->join([
+            'lot' => $this->db_manager->getCanonicName('lots')
+        ], 'ser.lotId = lot.lotId', [])
+            ->join([
+            'tit' => $this->db_manager->getCanonicName('transporteurs')
+        ], 'lot.transporteurId = tit.transporteurId', [
+            'titulaire' => 'nom'
         ])
             ->join([
             'tra' => $this->db_manager->getCanonicName('transporteurs')
@@ -172,7 +139,8 @@ class Services implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'eta.etablissementId = etaser.etablissementId', [
+            ], 'eta.etablissementId = etaser.etablissementId',
+            [
                 'etablissement' => 'nom'
             ])
             ->join([
@@ -182,4 +150,4 @@ class Services implements FactoryInterface
         ])
             ->order('serviceId');
     }
-} 
+}

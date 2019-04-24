@@ -7,7 +7,7 @@
  * @filesource inscription-liste-de-diffusion.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 oct. 2018
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headScript()->appendFile('/js/jquery.min.js');
@@ -33,8 +33,8 @@ $this->inlineScript()->captureEnd();
 		réafficher en cliquant sur le bouton ci-dessous.</p>
 	<div>
 		<input type='button' value='Réafficher le formulaire'
-			onclick="$.removeCookie('MCPopupClosed', {path: '/'}); location.reload(true)"> <input
-			type='button' value='Retour à votre espace personnel'
+			onclick="$.removeCookie('MCPopupClosed', {path: '/'}); location.reload(true)">
+		<input type='button' value='Retour à votre espace personnel'
 			onclick="location.href='/parent'">
 	</div>
 </div>

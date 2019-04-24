@@ -8,17 +8,22 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 1 avril 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/transport/circuit-fiche.css'));
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-transport/circuit-edit.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+// initialisation du javascript
+$serviceId = $this->form->get('serviceId')->getValue();
+$stationId = $this->form->get('stationId')->getValue();
 $this->inlineScript()->captureStart();
 ?>
-multicheckbox_actions.init("circuit-edit-semaine");
-js_actions.init();
+multicheckbox_actions.init("wrapper-semaine");
+js_actions.initedit("<?=$serviceId;?>",<?=$stationId;?>);
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -50,49 +55,52 @@ $actions = [
         <?= $this->formHidden($this->form->get('millesime'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="circuit-edit-serviceId" class="row-inner">
+			<div id="wrapper-serviceId" class="row-inner serviceId">
 				<?= $this->formRow($this->form->get('serviceId')); ?></div>
-			<div id="circuit-edit-stationId" class="row-inner">
+			<div id="wrapper-stationId" class="row-inner stationId">
 				<?= $this->formRow($this->form->get('stationId')); ?></div>
-			<div id="circuit-ajout-passage" class="row-inner">
-				<?= $this->formRow($this->form->get('passage')); ?></div>
-			<div id="circuit-edit-typeArret" class="row-inner">
-				<?= $this->formRow($this->form->get('typeArret')); ?></div>
-			<div id="circuit-edit-distance" class="row-inner">
-				<?= $this->formRow($this->form->get('distance')); ?></div>
-			<div id="circuit-edit-montee" class="row-inner">
-				<?= $this->formRow($this->form->get('montee')); ?></div>
-			<div id="circuit-edit-descente" class="row-inner">
-				<?= $this->formRow($this->form->get('descente')); ?></div>
-			<div id="circuit-edit-semaine" class="row-inner semaine">
-				<?= $this->formRow($this->form->get('semaine')); ?></div>
 			<div class="clearfix">
-				<div id="horaire-matin" class="row-inner float-left cols-2">
-					<fieldset>
-						<legend>Horaires aller</legend>
-						<div id="circuit-m1" class="row-inner">
-							<?= $this->formRow($this->form->get('m1')); ?></div>
-						<div id="circuit-m2" class="row-inner">
-							<?= $this->formRow($this->form->get('m2')); ?></div>
-						<div id="circuit-m3" class="row-inner">
-							<?= $this->formRow($this->form->get('m3')); ?></div>
-					</fieldset>
+				<div class="tiers float-left">
+					<div id="wrapper-passage" class="row-inner">
+						<?= $this->formRow($this->form->get('passage')); ?></div>
+					<div id="wrapper-montee" class="row-inner">
+						<?= $this->formRow($this->form->get('montee')); ?></div>
 				</div>
-				<div id="horaires-soir" class="row-inner edit float-left cols-2">
-					<fieldset>
-						<legend>Horaires retour</legend>
-						<div id="circuit-s1" class="row-inner">
-							<?= $this->formRow($this->form->get('s1')); ?></div>
-						<div id="circuit-s2" class="row-inner">
-							<?= $this->formRow($this->form->get('s2')); ?></div>
-						<div id="circuit-s3" class="row-inner">
-							<?= $this->formRow($this->form->get('s3')); ?></div>
-					</fieldset>
+				<div class="tiers float-left">
+					<div id="wrapper-distance" class="row-inner">
+						<?= $this->formRow($this->form->get('distance')); ?></div>
+					<div id="wrapper-descente" class="row-inner">
+						<?= $this->formRow($this->form->get('descente')); ?></div>
 				</div>
+				<div id="wrapper-semaine" class="row-inner tiers-droite float-left">
+					<?= $this->formRow($this->form->get('semaine')); ?></div>
 			</div>
+			<fieldset class="horaires">
+				<legend class="horaires">
+					<div class="legend">Jours</div>
+					<div class="legend">Horaires aller</div>
+					<div class="legend">Horaires retour</div>
+				</legend>
+				<div id="wrapper-horaires-content" class="content">
+				<?php for ($i=1; $i<=3; $i++):?>
+					<div id="horaire<?= $i;?>" class="ligne">
+						<div id="wrapper-nature-horaire<?= $i;?>" class="row-inner nature">
+							<?= $this->nature[$i]; ?></div>
+						<div id="wrapper-m<?= $i;?>" class="row-inner aller">
+							<?= $this->formRow($this->form->get("m$i")); ?></div>
+						<div id="wrapper-s<?= $i;?>" class="row-inner retour1">
+							<?= $this->formRow($this->form->get("s$i")); ?></div>
+						<div id="wrapper-z<?= $i;?>" class="row-inner retour2">
+							<?= $this->formRow($this->form->get("z$i")); ?></div>
+					</div>
+				<?php endfor;?>
+				</div>
+			</fieldset>
+			<div id="wrapper-typeArret" class="row-inner">
+				<?= $this->formRow($this->form->get('typeArret')); ?></div>
 			<div class="clearfix">
 				<div id="commentaire-aller" class="row-inner float-left cols-2">
-					<div id="circuit-edit-commentaire1" class="row-inner">
+					<div id="wrapper-commentaire1" class="row-inner">
 						<?= $this->formRow($this->form->get('commentaire1')); ?></div>
 				</div>
 				<div id="copy" class="float-left left-10px">
@@ -102,11 +110,11 @@ $actions = [
 				</div>
 				<div id="commentaire-retour"
 					class="row-inner ajout float-left cols-2 left-10px">
-					<div id="circuit-edit-commentaire2" class="row-inner">
+					<div id="wrapper-commentaire2" class="row-inner">
 						<?= $this->formRow($this->form->get('commentaire2')); ?></div>
 				</div>
 			</div>
-			<div id="circuit-edit-buttons" class="row-inner">
+			<div id="wrapper-buttons" class="row-inner">
 				<?= $this->formSubmit($this->form->get('submit'));?>
 				<?= $this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>

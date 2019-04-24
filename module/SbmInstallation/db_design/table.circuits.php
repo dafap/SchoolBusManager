@@ -8,7 +8,7 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 3 avril 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -28,12 +28,15 @@ return [
             'stationId' => 'int(11) NOT NULL',
             'passage' => 'int(11) NOT NULL DEFAULT "1"',
             'semaine' => 'tinyint(4) UNSIGNED NOT NULL DEFAULT "31"',
-            'm1' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (4 jours)"',
-            's1' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (4 jours)"',
-            'm2' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (Me)"',
-            's2' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (Me)"',
-            'm3' => 'time NOT NULL DEFAULT "00:00:00" COMMENT "Aller (Sa)"',
-            's3' => 'time NOT NULL DEFAULT "23:59:59" COMMENT "Retour (Sa)"',
+            'm1' => 'time NOT NULL DEFAULT "00:00:00"',
+            's1' => 'time NOT NULL DEFAULT "23:59:59"',
+            'z1' => 'time NOT NULL DEFAULT "00:00:00"',
+            'm2' => 'time NOT NULL DEFAULT "00:00:00"',
+            's2' => 'time NOT NULL DEFAULT "23:59:59"',
+            'z2' => 'time NOT NULL DEFAULT "00:00:00"',
+            'm3' => 'time NOT NULL DEFAULT "00:00:00"',
+            's3' => 'time NOT NULL DEFAULT "23:59:59"',
+            'z3' => 'time NOT NULL DEFAULT "00:00:00"',
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'montee' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
             'descente' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',

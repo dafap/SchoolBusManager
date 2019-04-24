@@ -8,7 +8,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 fév. 2019
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -112,7 +112,7 @@ class Eleves extends AbstractSbmTable
         } else {
             // on vérifie si des données ont changé
             if ($dateNUnchanged && $obj_data->isUnchanged($old_data))
-                return;
+                return $obj_data->eleveId;
             if (! $obj_data->isUnchanged($old_data)) {
                 if ($old_data->nom != $obj_data->nom) {
                     $obj_data->addCalculateField('nomSA');
@@ -149,12 +149,10 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Marque les fiches dont les eleveId sont dans le tableau $arrayId
-     * selection = 1
+     * Marque les fiches dont les eleveId sont dans le tableau $arrayId selection = 1
      *
      * @param array $arrayId
      *            tableau des valeurs de eleveId à traiter
-     *            
      * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
      *
      * @return boolean|integer Nombre de lignes sélectionnées
@@ -191,8 +189,7 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Vérifie si un numero est occupé.
-     * Renvoie vrai s'il est occupé.
+     * Vérifie si un numero est occupé. Renvoie vrai s'il est occupé.
      *
      * @param int $n
      * @return boolean
@@ -205,8 +202,8 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable (1, 2 ou
-     * financier)
+     * Liste des élèves ayant la personne d'identifiant $responsableId comme responsable
+     * (1, 2 ou financier)
      *
      * @param int $responsableId
      *
@@ -258,7 +255,8 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * Liste des élèves ayant comme responsable financier la personne d'identifiant $responsableId
+     * Liste des élèves ayant comme responsable financier la personne d'identifiant
+     * $responsableId
      *
      * @param int $responsableId
      *
@@ -275,12 +273,9 @@ class Eleves extends AbstractSbmTable
     }
 
     /**
-     * On cherche un élève connaissant :
-     * 1/ son nom, son prenom et sa date de naissance
-     * 2/ son nom, son prenom et son responsable1Id
-     * 3/ son nom, son prenom et son responsable2Id
-     * La recherche s'effectue dans cet ordre s'arrête dès qu'on a trouvé.
-     *
+     * On cherche un élève connaissant : 1/ son nom, son prenom et sa date de naissance 2/
+     * son nom, son prenom et son responsable1Id 3/ son nom, son prenom et son
+     * responsable2Id La recherche s'effectue dans cet ordre s'arrête dès qu'on a trouvé.
      * Renvoie un SbmCommun\Model\Db\ObjectDataInterface ou false s'il n'est pas trouvé.
      * Renvoie false si l'un des paramètres est vide.
      *

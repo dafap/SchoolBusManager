@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,17 +40,17 @@ $actions = [
         <?= $this->formHidden($this->form->get('tarifId'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="tarif-ajout-nom" class="row-inner ajout">
+			<div id="wrapper-nom" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="tarif-ajout-montant" class="row-inner ajout">
+			<div id="wrapper-montant" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('montant')); ?></div>
-			<div id="tarif-ajout-rythme" class="row-inner ajout">
+			<div id="wrapper-rythme" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('rythme')); ?></div>
-			<div id="tarif-ajout-grille" class="row-inner ajout">
+			<div id="wrapper-grille" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('grille')); ?></div>
-			<div id="tarif-ajout-mode" class="row-inner ajout">
+			<div id="wrapper-mode" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('mode')); ?></div>
-			<div id="tarif-ajout-buttons" class="row-inner ajout">
+			<div id="wrapper-buttons" class="row-inner ajout">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

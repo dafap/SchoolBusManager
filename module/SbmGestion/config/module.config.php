@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 11 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
@@ -85,6 +85,8 @@ return [
             'Sbm\Db\Eleve\EffectifCommunes' => SbmGestionDbService\Eleve\EffectifCommunes::class,
             'Sbm\Db\Eleve\EffectifEtablissements' => SbmGestionDbService\Eleve\EffectifEtablissements::class,
             'Sbm\Db\Eleve\EffectifEtablissementsServices' => SbmGestionDbService\Eleve\EffectifEtablissementsServices::class,
+            'Sbm\Db\Eleve\EffectifLots' => SbmGestionDbService\Eleve\EffectifLots::class,
+            'Sbm\Db\Eleve\EffectifLotsServices' => SbmGestionDbService\Eleve\EffectifLotsServices::class,
             'Sbm\Db\Eleve\EffectifOrganismes' => SbmGestionDbService\Eleve\EffectifOrganismes::class,
             'Sbm\Db\Eleve\EffectifServices' => SbmGestionDbService\Eleve\EffectifServices::class,
             'Sbm\Db\Eleve\EffectifServicesEtablissements' => SbmGestionDbService\Eleve\EffectifServicesEtablissements::class,
@@ -93,6 +95,8 @@ return [
             'Sbm\Db\Eleve\EffectifTarifs' => SbmGestionDbService\Eleve\EffectifTarifs::class,
             'Sbm\Db\Eleve\EffectifTransporteurs' => SbmGestionDbService\Eleve\EffectifTransporteurs::class,
             'Sbm\Db\Eleve\EffectifTransporteursServices' => SbmGestionDbService\Eleve\EffectifTransporteursServices::class,
+            'Sbm\Db\Service\EffectifLots' => SbmGestionDbService\Service\EffectifLots::class,
+            'Sbm\Db\Service\EffectifTransporteurs'=>SbmGestionDbService\Service\EffectifTransporteurs::class,
             Cartes\Cartes::class => Cartes\CartesFactory::class,
             Photos\Photos::class => Photos\PhotosFactory::class
         ]

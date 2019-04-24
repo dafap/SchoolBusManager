@@ -1,7 +1,7 @@
 <?php
 /**
  * Structure de la table des `secteurs-scolaires-clg-pu`
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.secteurs-scolaires-clg-pu.php

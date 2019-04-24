@@ -1,0 +1,34 @@
+<?php
+/**
+ * Page de suppression d'un lot de marché
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource lot-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 mars 2019
+ * @version 2019-2.5.0
+ */
+?>
+<h1>Suppression d'un lot de marché</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du lot :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>Marché : <?=$this->escapeHtml($this->data->marche);?></li>
+			<li>Lot : <?=$this->escapeHtml($this->data->lot);?></li>
+			<li><?=$this->escapeHtml($this->data->libelle);?>
+			<?php if (! empty($this->data->complement)) : ?>
+			<br><?=$this->escapeHtml($this->data->complement);?>
+			<?php endif;?>
+			</li>
+			<li>Transporteur : <?=$this->escapeHtml($this->data->titulaire);?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?=$this->form()->openTag($form);?>
+	<?=$this->formCollection($form);?>
+	<?=$this->form()->closeTag();?>
+</div>

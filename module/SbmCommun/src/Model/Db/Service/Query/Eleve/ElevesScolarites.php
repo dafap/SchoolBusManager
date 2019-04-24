@@ -8,73 +8,23 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
-use SbmBase\Model\Session;
-use SbmCommun\Model\Db\Exception;
-use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use SbmCommun\Model\Db\Sql\Predicate as PredicateEleve;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Paginator\Paginator;
-use Zend\Paginator\Adapter\DbSelect;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ElevesScolarites implements FactoryInterface
+class ElevesScolarites extends AbstractQuery
 {
 
-    /**
-     *
-     * @var \SbmCommun\Model\Db\Service\DbManager
-     */
-    protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Sql
-     */
-    protected $sql;
-
-    /**
-     *
-     * @var \Zend\Db\Sql\Select
-     */
-    protected $select;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
+    protected function init()
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $message = 'SbmCommun\Model\Db\Service\DbManager attendu. %s reçu.';
-            throw new Exception\ExceptionNoDbManager(
-                sprintf($message, gettype($serviceLocator)));
-        }
-        $this->db_manager = $serviceLocator;
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
         $this->select = $this->sql->select()
             ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -90,6 +40,7 @@ class ElevesScolarites implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero',
                 'responsable1Id' => 'responsable1Id',
                 'x1' => 'x1',
@@ -141,6 +92,8 @@ class ElevesScolarites implements FactoryInterface
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
+                'grilleCode' => 'grilleTarif',
+                'grilleTarif' => 'grilleTarif',
                 'tarifId' => 'tarifId',
                 'organismeId' => 'organismeId',
                 'regimeId' => 'regimeId',
@@ -171,17 +124,25 @@ class ElevesScolarites implements FactoryInterface
                 'hasphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
             ], Select::JOIN_LEFT);
-        return $this;
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
+    }
+
+    private function jointureElevesResponsables(int $responsableId)
+    {
+        $jointure = new Predicate(null, Predicate::COMBINED_BY_OR);
+        return $jointure->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
+            $responsableId);
     }
 
     public function getEleve($eleveId)
     {
         $select = clone $this->select;
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->equalTo('ele.eleveId',
-            $eleveId);
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute()->current();
+        $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
+        return $this->renderResult($select->where($where))
+            ->current();
     }
 
     public function getEleveAdresse($eleveId, $trajet)
@@ -207,135 +168,129 @@ class ElevesScolarites implements FactoryInterface
                 'commune' => 'nom'
             ]);
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->equalTo('ele.eleveId',
-            $eleveId);
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
+        return $this->renderResult($select->where($where));
     }
 
     public function getElevesInscrits($responsableId)
     {
         $select = clone $this->select;
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->nest()
-            ->literal('district = 1')->or->literal('derogation = 1')
-            ->unnest()
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
-            ->unnest()
-            ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
-            $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        $elevesSansPreinscrits = new PredicateEleve\ElevesSansPreinscrits(
+            $this->millesime, 'sco', [
+                $this->jointureElevesResponsables($responsableId)
+            ]);
+        $where = $elevesSansPreinscrits();
+        return $this->renderResult($select->where($where));
+    }
+
+    public function getElevesPreinscritsOuEnAttente($responsableId)
+    {
+        $select = clone $this->select;
+        $jointure = $this->jointureElevesResponsables($responsableId);
+        $elevesPreinscrits = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
+            [
+                $jointure
+            ]);
+        $elevesEnAttente = new PredicateEleve\ElevesEnAttente($this->millesime, 'sco',
+            [
+                $jointure
+            ]);
+        $where = new Where([
+            $elevesPreinscrits(),
+            $elevesEnAttente()
+        ], Where::COMBINED_BY_OR);
+        return $this->renderResult($select->where($where));
     }
 
     public function getElevesPreinscrits($responsableId)
     {
         $select = clone $this->select;
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->nest()
-            ->nest()
-            ->literal('paiement = 0')
-            ->literal('fa = 0')
-            ->literal('gratuit = 0')
-            ->unnest()->or->nest()
-            ->literal('district = 0')
-            ->literal('derogation = 0')
-            ->unnest()
-            ->unnest()
-            ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
-            $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        $elevesPreinscrits = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
+            [
+                $this->jointureElevesResponsables($responsableId)
+            ]);
+        return $this->renderResult($select->where($elevesPreinscrits()));
     }
 
+    /**
+     * Renvoie le montant des abonnements dus par un responsable pour les élèves inscrits.
+     * Les droits d'inscription ont déjà été payés sauf pour les élèves gratuit , en
+     * famille d'accueil ou pris en charge par un organisme. Les duplicatas ne sont pas
+     * pris en compte.
+     *
+     * @param int $responsableId
+     *
+     * @return float (currency)
+     */
     public function getMontantElevesInscrits($responsableId)
     {
+        $tTarif = $this->db_manager->getCanonicName('tarifs', 'table');
+        $montant = 0.0;
         $select = $this->sql->select()
             ->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId = sco.eleveId', [])
-            ->join([
-            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
-        ], 'tar.tarifId = sco.tarifId', [
-            'montant',
-            'nomTarif' => 'nom'
         ])
+            ->join([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'ele.eleveId = sco.eleveId', [])
             ->columns([
-            'montantTotal' => new Expression('sum(tar.montant)')
-        ]);
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
-            ->unnest()
-            ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
-            $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute()->current()['montantTotal'];
+            'grilleCode',
+            'quantite' => new Expression('count(*)')
+        ])
+            ->group('grilleCode');
+        $elevesInscrits = new PredicateEleve\ElevesSansPreinscrits($this->millesime, 'sco',
+            [
+                $this->jointureElevesResponsables($responsableId)
+            ]);
+        $resultset = $this->renderResult($select->where($elevesInscrits()));
+        foreach ($resultset as $row) {
+            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite']);
+        }
+        return $montant;
+    }
+
+    public function getElevesPreinscritsWithGrille($responsableId)
+    {
+        $select = clone $this->select;
+        $where = new Where(null, Where::COMBINED_BY_OR);
+        $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
+            $responsableId);
+        $predicate = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
+            [
+                $where
+            ]);
+        return $this->renderResult($select->where($predicate()));
     }
 
     public function getElevesPreinscritsWithMontant($responsableId)
     {
-        $select = clone $this->select;
-        $select->join([
-            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
-        ], 'tar.tarifId = sco.tarifId', [
-            'montant',
-            'nomTarif' => 'nom'
-        ]);
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->literal('paiement = 0')
-            ->literal('fa = 0')
-            ->literal('gratuit = 0')
-            ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
-            $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        throw new \Exception(
+            'TODO : remplacer cette méthode par `getElevesPreinscritsWithGrille()');
     }
 
     /**
-     * On renvoie la liste des enfants de l'année inscrits ou préinscrits
-     * à l'exception des `gratuits`, des `famille d'accueil` et des pris en charges par un
-     * organisme
+     * On renvoie la liste des enfants de l'année inscrits ou préinscrits à l'exception
+     * des `en attente`, des `gratuits`, des `famille d'accueil` et des pris en charges
+     * par un organisme
      *
      * @param int $responsableId
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getElevesPayantsWithMontant($responsableId)
+    public function getElevesPayantsWithGrille($responsableId)
     {
         $select = clone $this->select;
-        $select->join([
-            'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
-        ], 'tar.tarifId = sco.tarifId', [
-            'montant',
-            'nomTarif' => 'nom'
-        ]);
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->literal('fa = 0')
-            ->literal('gratuit = 0')
-            ->nest()
-            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
-            $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        $elevesResponsablePayant = new PredicateEleve\ElevesResponsablePayant(
+            $this->millesime, 'sco', [
+                $this->jointureElevesResponsables($responsableId)
+            ]);
+        return $this->renderResult($select->where($elevesResponsablePayant));
+    }
+
+    public function getElevesPayantsWithMontant($responsableId)
+    {
+        throw new \Exception(
+            'TODO : remplacer cette méthode par `getElevesPayantsWithGrille()');
     }
 
     public function getNbDuplicatas($responsableId)
@@ -351,26 +306,22 @@ class ElevesScolarites implements FactoryInterface
             'nbDuplicatas' => new Expression('sum(sco.duplicata)')
         ]);
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
+        $where->equalTo('millesime', $this->millesime)
             ->nest()
             ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
             $responsableId)->unnest();
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute()->current()['nbDuplicatas'];
+        return $this->renderResult($select->where($where))
+            ->current()['nbDuplicatas'];
     }
 
     public function getInscritsNonAffectes()
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectInscritsNonAffectes());
-        return $statement->execute();
+        return $this->renderResult($this->selectInscritsNonAffectes());
     }
 
     public function paginatorInscritsNonAffectes()
     {
-        return new Paginator(
-            new DbSelect($this->selectInscritsNonAffectes(),
-                $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectInscritsNonAffectes());
     }
 
     private function selectInscritsNonAffectes()
@@ -399,36 +350,17 @@ class ElevesScolarites implements FactoryInterface
             ],
             'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime',
             [], Select::JOIN_LEFT);
-        // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
-        $predicate1 = new Predicate();
-        $predicate1->equalTo('sco.millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
-        // demande non traitée
-        $predicate2 = new Predicate();
-        $predicate2->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 1')->unnest()->OR->nest()->literal(
-            'ele.responsable2Id=r.responsableId')->and->literal('sco.demandeR2 = 1')->unnest();
-        // accord mais pas d'affectation
-        $predicate3 = new Predicate();
-        $predicate3->isNull('aff.eleveId')
-            ->nest()
-            ->nest()
-            ->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 2')
-            ->literal('sco.accordR1 = 1')
-            ->unnest()->or->nest()->literal('ele.responsable2Id = r.responsableId')->and->literal(
-            'sco.demandeR2 = 2')
-            ->literal('sco.accordR2 = 1')
-            ->unnest()
-            ->unnest();
-        // composition du where
-        $where = new Where();
-        $where->predicate($predicate1)
-            ->nest()
-            ->predicate($predicate2)->or->predicate($predicate3)->unnest();
-        return $select->where($where)->order([
+        // composition du where à partir des élèves inscrits
+        $nonAffectes = new Predicate(
+            [
+                new PredicateEleve\PredicateDemandeNonTraitee(),
+                new PredicateEleve\PredicateAccordSansAffectation()
+            ], Predicate::COMBINED_BY_OR);
+        $elevesInscritsNonAffectes = new PredicateEleve\ElevesSansPreinscrits(
+            $this->millesime, 'sco', [
+                $nonAffectes
+            ], Predicate::COMBINED_BY_AND);
+        return $select->where($elevesInscritsNonAffectes)->order([
             'nom',
             'prenom'
         ]);
@@ -436,16 +368,12 @@ class ElevesScolarites implements FactoryInterface
 
     public function getPreinscritsNonAffectes()
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectPreinscritsNonAffectes());
-        return $statement->execute();
+        return $this->renderResult($this->selectPreinscritsNonAffectes());
     }
 
     public function paginatorPreinscritsNonAffectes()
     {
-        return new Paginator(
-            new DbSelect($this->selectPreinscritsNonAffectes(),
-                $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectPreinscritsNonAffectes());
     }
 
     private function selectPreinscritsNonAffectes()
@@ -474,41 +402,17 @@ class ElevesScolarites implements FactoryInterface
             ],
             'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime',
             [], Select::JOIN_LEFT);
-        // inscrit : bon millesime dans scolarites et paiement enregistré ou fa
-        $predicate1 = new Predicate();
-        $predicate1->equalTo('sco.millesime', Session::get('millesime'))
-            ->literal('inscrit = 1')
-            ->literal('paiement = 0')
-            ->literal('fa = 0')
-            ->literal('gratuit = 0');
-        // demande non traitée
-        $predicate2 = new Predicate();
-        $predicate2->nest()
-            ->literal('ele.responsable1Id = r.responsableId')
-            ->literal('sco.demandeR1 = 1')
-            ->unnest()->OR->nest()
-            ->literal('ele.responsable2Id=r.responsableId')
-            ->literal('sco.demandeR2 = 1')
-            ->unnest();
-        // accord mais pas d'affectation
-        $predicate3 = new Predicate();
-        $predicate3->isNull('aff.eleveId')
-            ->nest()
-            ->nest()
-            ->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 2')
-            ->literal('sco.accordR1 = 1')
-            ->unnest()->or->nest()->literal('ele.responsable1Id = r.responsableId')->and->literal(
-            'sco.demandeR1 = 2')
-            ->literal('sco.accordR2 = 1')
-            ->unnest()
-            ->unnest();
-        // composition du where
-        $where = new Where();
-        $where->predicate($predicate1)
-            ->nest()
-            ->predicate($predicate2)->or->predicate($predicate3)->unnest();
-        return $select->where($where)->order([
+        // composition du where à partir des élèves préinscrits
+        $nonAffectes = new Predicate(
+            [
+                new PredicateEleve\PredicateDemandeNonTraitee(),
+                new PredicateEleve\PredicateAccordSansAffectation()
+            ], Predicate::COMBINED_BY_OR);
+        $elevesPreinscritsNonAffectes = new PredicateEleve\ElevesPreinscrits(
+            $this->millesime, 'sco', [
+                $nonAffectes
+            ], Predicate::COMBINED_BY_AND);
+        return $select->where($elevesPreinscritsNonAffectes)->order([
             'nom',
             'prenom'
         ]);
@@ -516,16 +420,12 @@ class ElevesScolarites implements FactoryInterface
 
     public function getDemandeGaDistanceR2Zero()
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectDemandeGaDistanceR2Zero());
-        return $statement->execute();
+        return $this->renderResult($this->selectDemandeGaDistanceR2Zero());
     }
 
     public function paginatorDemandeGaDistanceR2Zero()
     {
-        return new Paginator(
-            new DbSelect($this->selectDemandeGaDistanceR2Zero(),
-                $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectDemandeGaDistanceR2Zero());
     }
 
     private function selectDemandeGaDistanceR2Zero()
@@ -541,6 +441,7 @@ class ElevesScolarites implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero',
                 'responsable1Id' => 'responsable1Id',
                 'responsable2Id' => 'responsable2Id',
@@ -577,27 +478,27 @@ class ElevesScolarites implements FactoryInterface
         ], 'r2.communeId = comr2.communeId', [
             'communeR2' => 'nom'
         ], Select::JOIN_LEFT);
-        $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))
-            ->isNotNull('responsable2Id')
-            ->literal('demandeR2 = 1')
-            ->literal('distanceR2 = 0');
-        return $select->where($where);
+        $predicate = new Predicate();
+        $predicate->literal('demandeR2 = 1')->literal('distanceR2 = 0');
+        $demandeEnGA_distance0 = new PredicateEleve\ElevesEnGA($$this->millesime, 'sco',
+            [
+                $predicate
+            ]);
+        return $select->where($demandeEnGA_distance0);
     }
 
     public function getEnfants($responsableId, $ga = 1)
     {
         $select = clone $this->select;
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->equalTo(
+        $where->equalTo('millesime', $this->millesime)->equalTo(
             sprintf('responsable%dId', $ga), $responsableId);
-        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
-        return $statement->execute();
+        return $this->renderResult($select->where($where));
     }
 
     public function getScolaritePrecedente($eleveId)
     {
-        $millesime = Session::get('millesime');
+        $millesime = $this->millesime;
         $millesime --;
         $where = new Where();
         $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId);
@@ -639,21 +540,16 @@ class ElevesScolarites implements FactoryInterface
      * @param string $order
      * @param int $millesime
      *            (inutilisé mais gardé pour la compatibilité des appels)
-     *            
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
-        $select = $this->selectScolaritesR($where, $order);
-        // die($this->getSqlString($select));
-        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
+        return $this->paginator($this->selectScolaritesR($where, $order));
     }
 
     public function getScolaritesR($where, $order = null, $millesime = null)
     {
-        $statement = $this->sql->prepareStatementForSqlObject(
-            $this->selectScolaritesR($where, $order));
-        return $statement->execute();
+        return $this->renderResult($this->selectScolaritesR($where, $order));
     }
 
     private function selectScolaritesR($where, $order = null, $millesime = null)
@@ -697,13 +593,15 @@ class ElevesScolarites implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero'
             ])
             ->join(
             [
                 'res1' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Expression('ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
+            new Expression(
+                'ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
             [
                 'responsable1' => new Expression(
                     '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)')
@@ -733,7 +631,23 @@ class ElevesScolarites implements FactoryInterface
         ], 'affr1.service1Id = ser1r1.serviceId',
             [
                 'service1r1' => 'nom',
-                'service1IdR1' => 'serviceId'
+                'service1IdR1' => 'serviceId',
+                'service1AliasR1' => 'alias',
+                'service1AliasTrR1' => 'aliasTr'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'lot1r1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser1r1.lotId = lot1r1.lotId',
+            [
+                'service1MarcheR1' => 'marche',
+                'service1LotR1' => 'lot'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit1r1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1r1.transporteurId = tit1r1.transporteurId',
+            [
+                'service1TitulaireR1' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [
@@ -747,7 +661,23 @@ class ElevesScolarites implements FactoryInterface
         ], 'affr1.service2Id = ser2r1.serviceId',
             [
                 'service2r1' => 'nom',
-                'service2IdR1' => 'serviceId'
+                'service2IdR1' => 'serviceId',
+                'service2AliasR1' => 'alias',
+                'service2AliasTrR1' => 'aliasTr'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'lot2r1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser2r1.lotId = lot2r1.lotId',
+            [
+                'service2MarcheR1' => 'marche',
+                'service2LotR1' => 'lot'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit2r1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lor2r1.transporteurId = tit2r1.transporteurId',
+            [
+                'service2TitulaireR1' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [
@@ -760,7 +690,8 @@ class ElevesScolarites implements FactoryInterface
             [
                 'res2' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Expression('ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
+            new Expression(
+                'ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
             [
                 'responsable2' => new Expression(
                     '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)')
@@ -790,7 +721,23 @@ class ElevesScolarites implements FactoryInterface
         ], 'affr2.service1Id = ser1r2.serviceId',
             [
                 'service1r2' => 'nom',
-                'service1IdR2' => 'serviceId'
+                'service1IdR2' => 'serviceId',
+                'service1AliasR2' => 'alias',
+                'service1AliasTrR2' => 'aliasTr'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'lot1r2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser1r2.lotId = lot1r2.lotId',
+            [
+                'service1MarcheR2' => 'marche',
+                'service1LotR2' => 'lot'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit1r2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1r2.transporteurId = tit1r2.transporteurId',
+            [
+                'service1TitulaireR2' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [
@@ -804,7 +751,23 @@ class ElevesScolarites implements FactoryInterface
         ], 'affr2.service2Id = ser2r2.serviceId',
             [
                 'service2r2' => 'nom',
-                'service2IdR2' => 'serviceId'
+                'service2IdR2' => 'serviceId',
+                'service2AliasR2' => 'alias',
+                'service2AliasTrR2' => 'aliasTr'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'lot2r2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'ser2r2.lotId = lot2r2.lotId',
+            [
+                'service2MarcheR2' => 'marche',
+                'service2LotR2' => 'lot'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit2r2' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lor2r2.transporteurId = tit2r2.transporteurId',
+            [
+                'service2TitulaireR2' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [

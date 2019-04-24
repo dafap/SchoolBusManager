@@ -41,7 +41,7 @@ class DocumentControllerTest extends AbstractHttpControllerTestCase
         $controller = $controller_manager->get(DocumentController::class);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->pdf_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+        $this->assertInstanceOf(AuthenticationServiceFactory::class,
             $controller->authenticate);
         $this->assertInstanceOf(ResponsableManager::class, $controller->responsable);
     }

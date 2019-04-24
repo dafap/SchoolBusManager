@@ -3,13 +3,13 @@
  * Requêtes nécessaires pour ce module
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmParent/Model/Db/Service/Query
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
+ * @date 23 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Model\Db\Service\Query;
@@ -55,8 +55,8 @@ class Eleves implements FactoryInterface
     {
         if (! ($serviceLocator instanceof DbManager)) {
             $message = 'DbManager attendu. On a reçu %s.';
-            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(sprintf($message),
-                gettype($serviceLocator));
+            throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(
+                sprintf($message), gettype($serviceLocator));
         }
         $this->millesime = Session::get('millesime');
         $this->db_manager = $serviceLocator;
@@ -78,9 +78,9 @@ class Eleves implements FactoryInterface
     }
 
     /**
-     * Donne les informations (tables eleves, scolarites, etablissements, communes)
-     * d'une scolarité précédant le millésime courant.
-     * S'il y en a plusieurs, donne la plus récente.
+     * Donne les informations (tables eleves, scolarites, etablissements, communes) d'une
+     * scolarité précédant le millésime courant. S'il y en a plusieurs, donne la plus
+     * récente.
      *
      * @param int $eleveId
      *
@@ -187,8 +187,8 @@ class Eleves implements FactoryInterface
     }
 
     /**
-     * Liste des élèves d'un responsable donné que l'on peut réinscrire.
-     * Les élèves déjà inscrits ou préinscrits ne sont plus renvoyés.
+     * Liste des élèves d'un responsable donné que l'on peut réinscrire. Les élèves déjà
+     * inscrits ou préinscrits ne sont plus renvoyés.
      *
      * @param int $responsableId
      *
@@ -230,19 +230,19 @@ class Eleves implements FactoryInterface
     }
 
     /**
-     * Indique si l'élève a le même établissement que l'année précédente
+     * Indique si l'élève a le même établissement et le même régime que l'année précédente
      *
      * @param int $eleveId
-     * @return <b>boolean</b> :
-     *         0 s'il a changé d'établissement ; 1 s'il a le même
+     * @return <b>boolean</b> : 0 s'il a changé d'établissement ; 1 s'il a le même
      */
-    public function memeEtablissement($eleveId)
+    public function memeScolarite($eleveId)
     {
         $where = new Where();
         $where->equalTo('s1.millesime', $this->millesime - 1)
             ->equalTo('s2.millesime', $this->millesime)
             ->equalTo('s1.eleveId', $eleveId)
-            ->literal('s1.etablissementId = s2.etablissementId');
+            ->literal('s1.etablissementId = s2.etablissementId')
+            ->literal('s1.regimeId = s2.regimeId');
         $select = $this->sql->select();
         $select->from(
             [

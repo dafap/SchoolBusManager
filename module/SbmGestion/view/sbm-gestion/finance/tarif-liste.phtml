@@ -161,8 +161,12 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 						<?=$this->escapeHtml($tarif->mode);?></td>
 					<td class="effectif align-right">
 						<?=$this->effectifTarifs->transportes($tarif->tarifId);?>
+					
+					
 					<td class="effectif align-right">
 						<?=$this->effectifTarifs->demandes($tarif->tarifId);?>
+					
+					
 					<td class="centre selection">
 						<?=renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
 						</td>

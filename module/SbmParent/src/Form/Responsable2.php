@@ -15,7 +15,7 @@
  * @filesource Responsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
@@ -42,12 +42,10 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
      */
     private $hassbmservicesms;
 
-    /*
-     * public function __construct()
-     * {
-     * parent::__construct('responsable2');
-     * $this->
-     * }
+    /**
+     *
+     * @param null|int|string $name
+     * @param array $options
      */
     public function __construct($name = null, $options = [])
     {
@@ -331,7 +329,6 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
 
     /**
      * Ajoute le préfixe r2 aux clés qui ne l'ont pas
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\Form\Form::setData()
@@ -348,7 +345,6 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
     /**
      * Supprime le préfice r2 aux clés qui l'ont et renvoie un responsableId au lieu d'un
      * responsable2Id
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\Form\Form::getData()

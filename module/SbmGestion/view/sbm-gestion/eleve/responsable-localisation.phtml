@@ -14,12 +14,13 @@
  */
 // calcul du contenu de l'infobulle
 $description = [];
-$description[] = $domicile = '<b>' . implode(' ',
-    [
-        $this->responsable->titre,
-        $this->responsable->nom,
-        $this->responsable->prenom
-    ]) . '</b>';
+$description[] = $domicile = '<b>' .
+    implode(' ',
+        [
+            $this->responsable->titre,
+            $this->responsable->nom,
+            $this->responsable->prenom
+        ]) . '</b>';
 $description[] = $this->responsable->adresseL1;
 $domicile .= ' ' . $this->responsable->adresseL1;
 $tmp = $this->responsable->adresseL2;

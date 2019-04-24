@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2019
+ * @date 24 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -19,14 +19,26 @@ use Zend\Db\Sql\Where;
 class Tarifs extends AbstractSbmTable implements EffectifInterface
 {
 
+    const DP_AYANT_DROIT = 1;
+
+    const DP_GA_DEMI_TARIF = 2;
+
+    const INTERNE = 3;
+
+    const NON_AYANT_DROIT = 4;
+
+    const DUPLICATA = 5;
+
+    const DEGRESSIF = 1;
+
+    const LINEAIRE = 2;
+
     private $modes = [
-        1 => 'prélèvement',
-        2 => 'paiement en ligne',
-        3 => 'chèque ou espèces',
-        4 => 'par virement'
+        self::DEGRESSIF => 'dégressif',
+        self::LINEAIRE => 'à l\'unité'
     ];
 
-    private $mode_inconnu = "Le mode fournie est inconnu";
+    private $mode_inconnu = "Le mode demandé est inconnu";
 
     private $rythmes = [
         1 => 'annuel',
@@ -35,16 +47,17 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface
         4 => 'mensuel'
     ];
 
-    private $rythme_inconnu = "Le rythme fournie est inconnu";
+    private $rythme_inconnu = "Le rythme demandé est inconnu";
 
     private $grilles = [
-        1 => 'A',
-        2 => 'B',
-        3 => 'C',
-        4 => 'D'
+        self::DP_AYANT_DROIT => 'DP ayants droit',
+        self::DP_GA_DEMI_TARIF => 'DP en GA demi tarif',
+        self::INTERNE => 'Interne',
+        self::NON_AYANT_DROIT => 'Non ayant droit',
+        self::DUPLICATA => 'Duplicata'
     ];
 
-    private $grille_inconnu = "La grille fournie est inconnue";
+    private $grille_inconnu = "La grille demandée est inconnue";
 
     /**
      * Initialisation de la classe
@@ -78,85 +91,86 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface
         return $this->grilles;
     }
 
-    // ------------- recherche de données -----------------
-    /**
-     * Renvoie un Where pour getMontant() et getTarifId() en fonction de $choix
-     *
-     * La grille 1 contient les tarifs d'inscription
-     * - rythme = 1 : Tarif annuel
-     * - rythme = 3 : 3e trimestre
-     * - mode = 2 : paiement en ligne
-     * - mode = 3 : paiement en chèques ou espèces
-     * La grille 2 contient le tarif de duplicata (unique)
-     *
-     * @param string $choix
-     *
-     * @return \Zend\Db\Sql\Where
-     */
-    private function tarification($choix)
+    public function getGrille(int $grille)
     {
-        $where = new Where();
-        switch ($choix) {
-            case 'en ligne':
-                $where->literal('grille = 1')->literal('mode = 2');
-                break;
-            case 'tarif1':
-                $where->literal('grille = 1')->literal('rythme = 1');
-                break;
-            case 'tarif2':
-                $where->literal('grille = 1')->literal('rythme = 3');
-                break;
-            default: // duplicata
-                $where->literal('grille = 2');
-                break;
+        if (! array_key_exists($grille, $this->grilles)) {
+            throw new Exception\OutOfBoundsException($this->grille_inconnu);
         }
-        return $where;
+        return $this->grilles[$grille];
     }
 
+    public function getDuplicataCodeGrille()
+    {
+        return self::DUPLICATA;
+    }
+
+    // ------------- recherche de données -----------------
+
     /**
-     * Renvoie le montant d'un tarif
+     * Renvoie le montant d'un tarif connaissant la grille et la quantité
      *
-     * @param string $choix
+     * @param int $grille
+     * @param int $quantite
      *
      * @return float (currency)
      */
-    public function getMontant($choix)
+    public function getMontant(int $grille, int $quantite = 1)
     {
-        $resultset = $this->fetchAll($this->tarification($choix));
-        $row = $resultset->current();
-        return $row->montant;
+        if ($quantite >= 1) {
+            $where = new Where();
+            $where->equalTo('grille', $grille)->lessThanOrEqualTo('seuil', $quantite);
+            $resultset = $this->fetchAll($where, 'seuil DESC');
+            $row = $resultset->current();
+            // selon que la strategy est appliquée ou non
+            if ($row->mode == self::DEGRESSIF ||
+                $row->mode == $this->modes[self::DEGRESSIF]) {
+                return $row->montant;
+            } else {
+                return $row->montant * $quantite;
+            }
+        } else {
+            return 0.0;
+        }
     }
 
     /**
-     * Renvoie l'identifiant d'un tarif.
-     * Pour 'tarif1' (annuel) et 'tarif2' (trimestriel) s'il y a plusieurs tarifs,
-     * renvoie celui de plus petit montant
+     * Renvoie l'identifiant d'un tarif connaissant la grille et la quantité
      *
-     * @param string $choix
-     *            'en ligne' ou 'tarif1' (annuel) ou 'tarif2' (trimestriel)
+     * @param int $grille
+     * @param int $quantite
      *
      * @return integer
      */
-    public function getTarifId($choix)
+    public function getTarifId(int $grille, int $seuil = 1)
     {
-        $resultset = $this->fetchAll($this->tarification($choix), 'montant');
+        $where = new Where();
+        $where->equalTo('grille', $grille)->lessThanOrEqualTo('seuil', $seuil);
+        $resultset = $this->fetchAll($where, 'seuil DESC');
         $row = $resultset->current();
         return $row->tarifId;
     }
 
     /**
-     * Renvoie un tableau indexé [tarifId => montant, ...]
+     * Renvoie le tableau de grilles de tarifs [grille => [seuil => montant, ...], ...]
+     *
+     * @param int $grille
+     * @param int $seuil
      *
      * @return array
      */
-    public function getTarifs()
+    public function getTarifs(int $grille = null, int $seuil = null)
     {
         $where = new Where();
-        $where->literal('grille = 1');
+        if ($grille) {
+            $where->equalTo('grille', $grille);
+        }
+        if ($seuil) {
+            $where->equalTo('seuil', $seuil);
+        }
         $resultset = $this->fetchAll($where);
         $result = [];
         foreach ($resultset as $row) {
-            $result[$row->tarifId] = $row->montant;
+            $result[$row->grille][$row->seuil] = $row->montant;
         }
         return $result;
     }

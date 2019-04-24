@@ -8,10 +8,12 @@
  * @filesource eleve-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 fév. 2019
+ * @date 9 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/eleve/eleve-ajout.css'));
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout.js'));
 $this->inlineScript()->captureStart();
@@ -20,7 +22,8 @@ js_ajout.montreGa();
 <?php
 $this->inlineScript()->captureEnd();
 // ================= Fin JS =======================================================
-// le retour se fait dans l'action eleveAjoutAction() pour décharger le redirectorToOrigin()
+// le retour se fait dans l'action eleveAjoutAction() pour décharger le
+// redirectorToOrigin()
 $url_ici = $this->url('sbmgestion/eleve',
     [
         'action' => 'eleve-ajout',
@@ -30,7 +33,8 @@ $hiddens = [];
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
-        'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back()
+        'formaction' => $url_ici, // traitement de cancel pour un
+                                   // redirectToOrigin()->back()
                                    // proprement
         'title' => 'Retour'
     ]
@@ -74,25 +78,31 @@ if (! $this->form instanceof \Zend\Form\FormInterface) {
         </div>
 	</div>
 	<?php if ($this->form instanceof \Zend\Form\FormInterface) :?>
-	<div id="fiche-inner">	
+	<div id="fiche-inner" class="ajout">
     <?= $this->form()->openTag($this->form);?>
     <?= $this->formHidden($this->form->get('eleveId'));?>
-    <?= $this->formHidden($this->form->get('csrf'));?>    
+    <?= $this->formHidden($this->form->get('csrf'));?>
         <fieldset id="commun" class="sbm-page1">
 			<div id="commun-col1">
-				<div id="wrapper-nom" class="row-inner edit">
+				<div id="wrapper-nom" class="row-inner">
 				<?= $this->formRow($this->form->get('nom'));?></div>
-				<div id="wrapper-prenom" class="row-inner edit">
+				<div id="wrapper-prenom" class="row-inner">
 				<?= $this->formRow($this->form->get('prenom'));?></div>
-				<div id="wrapper-dateN" class="row-inner edit">
-				<?= $this->formRow($this->form->get('dateN'));?></div>
-				<div id="wrapper-responsable1Id" class="row-inner edit">
+				<div id="ligne-dateN-sexe">
+					<div id="wrapper-dateN" class="row-inner table-cell">
+						<?= $this->formRow($this->form->get('dateN'));?></div>
+					<div id="wrapper-sexe" class="row-inner table-cell align-right">
+						<?php $this->form->get('sexe')->setLabel('');?>
+						<?= $this->formRow($this->form->get('sexe'));?>
+					</div>
+				</div>
+				<div id="wrapper-responsable1Id" class="row-inner">
 				<?= $this->formRow($this->form->get('responsable1Id'));?></div>
 				<div id="wrapper-ga" class="row-inner edit">
 				<?= $this->formRow($this->form->get('ga'));?></div>
-				<div id="wrapper-responsable2Id" class="row-inner edit">
+				<div id="wrapper-responsable2Id" class="row-inner">
 				<?= $this->formRow($this->form->get('responsable2Id'));?></div>
-				<div id="eleve-edit-buttons" class="row-inner edit">
+				<div id="wrapper-buttons" class="row-inner edit">
                     <?= $this->formSubmit($this->form->get('submit'))?>
                     <?= $this->formSubmit($this->form->get('cancel'));?>
                 </div>

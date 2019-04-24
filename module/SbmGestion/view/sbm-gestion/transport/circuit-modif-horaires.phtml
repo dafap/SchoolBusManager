@@ -4,13 +4,17 @@
  *
  * Permet d'avancer ou de retarder le passage aux arrêts sélectionnés d'un
  * certain nombre de minutes et de secondes.
- * 
+ *
+ * Cette vue doit recevoir les paramètres $labelHoraires1, $labelHoraires2 et
+ * $labelHoraires3 qui seront les entêtes des colonnes des tableaux Horaires aller
+ * et Horaire retour.
+ *
  * @project sbm
  * @package view/sbm-gestion/transport
  * @filesource circuit-modif-horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
+ * @date 27 mars 2019
  * @version 2019-2.5.0
  */
 ?>
@@ -26,19 +30,19 @@
 						<legend>Horaires aller</legend>
 						<table>
 							<tr id="circuit-m1" class="row-inner">
-								<th>Lun Ma Je Ve</th>
+								<th><?= $this->labelHoraires1;?></th>
 								<td><?= $this->FormRadio($this->form->get('m1-op'));?></td>
 								<td><?= $this->formText($this->form->get('m1-min'));?> min</td>
 								<td><?= $this->formText($this->form->get('m1-sec'));?> sec</td>
 							</tr>
 							<tr id="circuit-m2" class="row-inner">
-								<th>Mercredi</th>
+								<th><?= $this->labelHoraires2;?></th>
 								<td><?= $this->FormRadio($this->form->get('m2-op'));?></td>
 								<td><?= $this->formText($this->form->get('m2-min'));?> min</td>
 								<td><?= $this->formText($this->form->get('m2-sec'));?> sec</td>
 							</tr>
 							<tr id="circuit-m3" class="row-inner">
-								<th>Samedi</th>
+								<th><?= $this->labelHoraires3;?></th>
 								<td><?= $this->FormRadio($this->form->get('m3-op'));?></td>
 								<td><?= $this->formText($this->form->get('m3-min'));?> min</td>
 								<td><?= $this->formText($this->form->get('m3-sec'));?> sec</td>
@@ -51,22 +55,58 @@
 						<legend>Horaires retour</legend>
 						<table id="circuit-s1" class="row-inner">
 							<tr>
-								<th>Lun Ma Je Ve</th>
-								<td><?= $this->FormRadio($this->form->get('s1-op'));?></td>
-								<td><?= $this->formText($this->form->get('s1-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('s1-sec'));?> sec</td>
+								<th><? $this->labelHoraires1;?></th>
+								<td>
+									<?= $this->FormRadio($this->form->get('s1-op'));?>
+									<br>
+									<?= $this->FormRadio($this->form->get('z1-op'));?>
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s1-min'));?> min
+									<br>
+									<?= $this->formText($this->form->get('z1-min'));?> min
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s1-sec'));?> sec
+									<br>
+									<?= $this->formText($this->form->get('z1-sec'));?> sec
+								</td>
 							</tr>
 							<tr id="circuit-s2" class="row-inner">
-								<th>Mercredi</th>
-								<td><?= $this->FormRadio($this->form->get('s2-op'));?></td>
-								<td><?= $this->formText($this->form->get('s2-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('s2-sec'));?> sec</td>
+								<th><? $this->labelHoraires2;?></th>
+								<td>
+									<?= $this->FormRadio($this->form->get('s2-op'));?>
+									<br>
+									<?= $this->FormRadio($this->form->get('z2-op'));?>
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s2-min'));?> min
+									<br>
+									<?= $this->formText($this->form->get('z2-min'));?> min
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s2-sec'));?> sec
+									<br>
+									<?= $this->formText($this->form->get('z2-sec'));?> sec
+								</td>
 							</tr>
 							<tr id="circuit-s3" class="row-inner">
-								<th>Samedi</th>
-								<td><?= $this->FormRadio($this->form->get('s3-op'));?></td>
-								<td><?= $this->formText($this->form->get('s3-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('s3-sec'));?> sec</td>
+								<th><? $this->labelHoraires3;?></th>
+								<td>
+									<?= $this->FormRadio($this->form->get('s3-op'));?>
+									<br>
+									<?= $this->FormRadio($this->form->get('z3-op'));?>
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s3-min'));?> min
+									<br>
+									<?= $this->formText($this->form->get('z3-min'));?> min
+								</td>
+								<td>
+									<?= $this->formText($this->form->get('s3-sec'));?> sec
+									<br>
+									<?= $this->formText($this->form->get('z3-sec'));?> sec
+								</td>
 							</tr>
 						</table>
 					</fieldset>

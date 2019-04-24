@@ -67,10 +67,9 @@ class MailChimpAdapter implements AdapterInterface
     }
 
     /**
-     * On lance la requête `get` sans préciser `offset` et `limit` car par défaut, offset = 0 et
-     * limit = 10.
-     * Dans le résultat, la clé `total_items` contient l'effectif total.
-     *
+     * On lance la requête `get` sans préciser `offset` et `limit` car par défaut, offset
+     * = 0 et limit = 10. Dans le résultat, la clé `total_items` contient l'effectif
+     * total.
      * (non-PHPdoc)
      *
      * @see \Countable::count()

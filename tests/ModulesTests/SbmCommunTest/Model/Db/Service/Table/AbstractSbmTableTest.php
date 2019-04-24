@@ -33,7 +33,7 @@ class AbstractSbmTableTest extends PHPUnit_Framework_TestCase
         try {
             $this->db_manager->get('Sbm\Db\ObjectData\Test');
         } catch (\Exception $e) {
-            $this->db_manager->setService('Sbm\Db\ObjectData\Test', 
+            $this->db_manager->setService('Sbm\Db\ObjectData\Test',
                 new TestAsset\ObjectSbmObjectData());
         }
         // enregistre le TableGateway pour le test
@@ -57,19 +57,19 @@ class AbstractSbmTableTest extends PHPUnit_Framework_TestCase
         } catch (\Exception $e) {
             $this->assertInstanceOf(Exception::class, $e, 'Exception d\'un mauvais type.');
         }
-        $this->assertFalse($result, 
+        $this->assertFalse($result,
             'La creation du service aurait du provoquer une exception.');
     }
 
     public function testCreateServiceWithGoodDbManager()
     {
-        $this->assertInstanceOf('SbmCommun\Model\Db\Service\DbManager', $this->db_manager, 
+        $this->assertInstanceOf('SbmCommun\Model\Db\Service\DbManager', $this->db_manager,
             'Mauvais type !!!');
         $test_sbm_table = new TestAsset\TestSbmTable();
         // Le service renvoie un TestSbmTable
         try {
             $service = $test_sbm_table->createService($this->db_manager);
-            $message = sprintf('%s attendu ; %s reçu.', TestAsset\TestSbmTable::class, 
+            $message = sprintf('%s attendu ; %s reçu.', TestAsset\TestSbmTable::class,
                 get_class($service));
             $this->assertInstanceOf(TestAsset\TestSbmTable::class, $service, $message);
         } catch (DbException $e) {

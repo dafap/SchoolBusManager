@@ -8,7 +8,7 @@
  * @filesource table.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 22 mars 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -29,9 +29,9 @@ return [
             'codeCG' => 'int(11) NOT NULL DEFAULT "0"',
             'x' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
             'y' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
-            'geopt' => 'GEOMETRY',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"'
+            'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"',
+            'equipement' => 'text NULL'
         ],
         'primary_key' => [
             'stationId'

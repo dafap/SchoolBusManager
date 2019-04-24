@@ -2,18 +2,14 @@
 /**
  * Controller du module SbmParent permettant de gérer les inscriptions des enfants
  *
- * Version 2.3.1 du 10 mars 2017 : adaptation pour tarif annuel ou 3e trimestre. Dans l'inscription
- * en ligne on applique toujours le tarif annuel. Voir la classe SbmParent\Model\OutilsInscription
- * pour plus de détail.
- *
- * Version 2.4.6 du 3 janvier 2019 : ajout de la gestion des photos
+ * Version de Millau Grands Causses
  *
  * @project sbm
  * @package SbmParent/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 21 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -36,9 +32,9 @@ class IndexController extends AbstractActionController
 {
 
     /**
-     * Place des commentaires sur l'écran suite à une demande de transport ne correspondant
-     * pas à un établissement auquel on a droit.
-     * Une dérogation est nécessaire.
+     * Place des commentaires sur l'écran suite à une demande de transport ne
+     * correspondant pas à un établissement auquel on a droit. Une dérogation est
+     * nécessaire.
      *
      * @param array $cr
      */
@@ -74,7 +70,8 @@ class IndexController extends AbstractActionController
             if ($this->authenticate->by()->hasIdentity() &&
                 (($e instanceof CreateResponsableException) ||
                 ($e->getPrevious() instanceof CreateResponsableException))) {
-                // il faut créer un responsable associé car la demande vient d'un gestionnaire ou
+                // il faut créer un responsable associé car la demande vient d'un
+                // gestionnaire ou
                 // autre administrateur
                 $this->flashMessenger()->addErrorMessage(
                     'Il faut compléter la fiche du responsable');
@@ -91,21 +88,22 @@ class IndexController extends AbstractActionController
             }
         }
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
-        $paiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $format_telephone = new \SbmCommun\Form\View\Helper\Telephone();
         return new ViewModel(
             [
                 'etatSite' => $tCalendar->etatDuSite(),
                 'paiementenligne' => $responsable->paiementenligne,
                 'permanences' => $tCalendar->getPermanences($responsable->commune),
                 'inscrits' => $query->getElevesInscrits($responsable->responsableId),
-                'preinscrits' => $query->getElevesPreinscrits($responsable->responsableId),
-                // ici, tarifs devient un tableau à partir de la version 2.3.1 et remplace montant
-                'tarifs' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getTarifs(),
-                'paiements' => $paiements->fetchAll(
+                'preinscrits' => $query->getElevesPreinscritsOuEnAttente($responsable->responsableId),
+                'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId
                     ]),
+                'facture' => $this->db_manager->get(
+                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    $responsable->responsableId),
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
                 'client' => $this->client,
@@ -116,12 +114,11 @@ class IndexController extends AbstractActionController
                         $responsable->adresseL2,
                         $responsable->codePostal . ' ' . $responsable->commune,
                         implode(' ; ',
-                            array_filter(
-                                [
-                                    implode(' ', str_split($responsable->telephoneF, 2)),
-                                    implode(' ', str_split($responsable->telephoneP, 2)),
-                                    implode(' ', str_split($responsable->telephoneT, 2))
-                                ]))
+                            [
+                                $format_telephone($responsable->telephoneF),
+                                $format_telephone($responsable->telephoneP),
+                                $format_telephone($responsable->telephoneT)
+                            ])
                     ])
             ]);
     }
@@ -170,8 +167,8 @@ class IndexController extends AbstractActionController
             if ($hasGa) {
                 $formga->setData($args);
             }
-            // Dans form->isValid(), on refuse si existence d'un élève de même nom, prénom, dateN
-            // et responsable 1 (ou 2).
+            // Dans form->isValid(), on refuse si existence d'un élève de même nom,
+            // prénom, dateN et responsable 1 (ou 2).
             // formga->isValid() n'est regardé que si hasGa.
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                 // Enregistrement du responsable2 en premier (si on a le droit)
@@ -192,8 +189,12 @@ class IndexController extends AbstractActionController
                 if ($outils->saveScolarite($data, $eleveId)) {
                     $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                         'Sbm\CalculDroitsTransport');
-                    $majDistances->majDistancesDistrict($eleveId, false);
-                    $cr = $majDistances->getCompteRendu();
+                    try {
+                        $majDistances->majDistancesDistrict($eleveId, false);
+                        $cr = $majDistances->getCompteRendu();
+                    } catch (\OutOfBoundsException $e) {
+                        $cr['message'] = $e->getMessage();
+                    }
                 }
                 if (empty($cr)) {
                     if ($args['fa']) {
@@ -225,17 +226,14 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Attention à la gestion du SbmParent\Form\Responsable2 ($formga)
-     * - les noms d'éléments sont préfixés par r2.
-     * Ils le sont aussi dans le POST donc dans args[].
-     * - par contre, la méthode setData() permet de placer directement des données, que leurs index
-     * soient préfixés on non
-     * - et getData() supprime le préfixe r2
-     * Cela permet de charger le formulaire par setData() indifféremment depuis la table
-     * responsables (sans préfixe)
-     * ou depuis le post (avec préfixe). Cela permet également de retrouver les données sans
-     * préfixe pour les envoyer dans
-     * un objectData() de la table responsables.
+     * Attention à la gestion du SbmParent\Form\Responsable2 ($formga) - les noms
+     * d'éléments sont préfixés par r2. Ils le sont aussi dans le POST donc dans args[]. -
+     * par contre, la méthode setData() permet de placer directement des données, que
+     * leurs index soient préfixés on non - et getData() supprime le préfixe r2 Cela
+     * permet de charger le formulaire par setData() indifféremment depuis la table
+     * responsables (sans préfixe) ou depuis le post (avec préfixe). Cela permet également
+     * de retrouver les données sans préfixe pour les envoyer dans un objectData() de la
+     * table responsables.
      *
      * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
@@ -305,8 +303,8 @@ class IndexController extends AbstractActionController
             if ($hasGa) {
                 $formgaComplet = $owner = $outils->isOwner($args['r2responsable2Id']);
             }
-            // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le cas
-            // où l'utilisateur déciderait d'en rajouter une.
+            // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le
+            // cas où l'utilisateur déciderait d'en rajouter une.
         }
         $formga = $this->form_manager->get(
             $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
@@ -317,9 +315,9 @@ class IndexController extends AbstractActionController
                 $formga->setData($args);
             }
             /**
-             * Dans form->isValid(), on refuse
-             * si existence d'un élève de même nom, prénom, dateN et n° différent.
-             * formga->isValid() n'est regardé que si hasGa.
+             * Dans form->isValid(), on refuse si existence d'un élève de même nom,
+             * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+             * hasGa.
              */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                 // Enregistrement du responsable2 en premier (si on a le droit)
@@ -336,10 +334,9 @@ class IndexController extends AbstractActionController
                 $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
                 // Enregistrement de sa scolarité
                 /**
-                 * Si on change d'établissement, on supprime les affecations reprises
-                 * et on recalcule les droits.
-                 * Mais si on supprime la demandeR2, il faut supprimer les affectations
-                 * la concernant (trajet == 2).
+                 * Si on change d'établissement, on supprime les affecations reprises et
+                 * on recalcule les droits. Mais si on supprime la demandeR2, il faut
+                 * supprimer les affectations la concernant (trajet == 2).
                  */
                 $cr = [];
                 if ($outils->saveScolarite($form->getData())) {
@@ -396,8 +393,8 @@ class IndexController extends AbstractActionController
                     }
                     $responsable2['owner'] = $owner;
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-                    // on a perdu le responsable2 mais le formulaire va demander de le recréer ou
-                    // de supprimer la ga
+                    // on a perdu le responsable2 mais le formulaire va demander de le
+                    // recréer ou de supprimer la ga
                     $responsable2 = null;
                 }
             } else {
@@ -409,7 +406,8 @@ class IndexController extends AbstractActionController
             $formga->setValueOptions('r2communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->visibles());
-        } catch (\Zend\Form\Exception\InvalidElementException $e) {}
+        } catch (\Zend\Form\Exception\InvalidElementException $e) {
+        }
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
             $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
@@ -435,10 +433,9 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Change l'état d'attente d'un enfant.
-     *
-     * L'état d'attente est enregistré dans le champ selection de la table scolarites
-     * Pas de vue. Renvoie sur la liste une fois le changement effectué
+     * Change l'état d'attente d'un enfant. L'état d'attente est enregistré dans le champ
+     * selection de la table scolarites Pas de vue. Renvoie sur la liste une fois le
+     * changement effectué
      *
      * @return \Zend\Http\PhpEnvironment\Response
      */
@@ -529,24 +526,16 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Cette méthode n'est pas utilisée pour SystemPay car elle n'ouvre pas correctement la page de
-     * paiement.
-     *
-     * Doit lancer un évènement
-     * - identifiant : 'SbmPaiement\AppelPlateforme'
-     * - évènement : 'appelPaiement'
-     * - target : objet enregistré sous 'SbmPaiement\Plugin\Plateforme'
-     * - params : [
-     * 'montant' => ..., // en euros
-     * 'count' => 1, // 1 pour un règlement comptant (sinon, le nombre d'échéances)
-     * 'first' => montant, // égal au montant en euros pour un paiement comptant
-     * 'period' => 1, // peu importe pour un paiement comptant
-     * 'email' => ..., // du responsable
-     * 'responsableId' => ...,
-     * 'nom' => ..., // du responsable
-     * 'prenom' => ..., // du responsable
-     * 'eleveIds' => [eleveId, eleveId, ...] // tableau simple des eleveId concernés
-     * ]
+     * Cette méthode n'est pas utilisée pour SystemPay car elle n'ouvre pas correctement
+     * la page de paiement. Doit lancer un évènement - identifiant :
+     * 'SbmPaiement\AppelPlateforme' - évènement : 'appelPaiement' - target : objet
+     * enregistré sous 'SbmPaiement\Plugin\Plateforme' - params : [ 'montant' => ..., //
+     * en euros 'count' => 1, // 1 pour un règlement comptant (sinon, le nombre
+     * d'échéances) 'first' => montant, // égal au montant en euros pour un paiement
+     * comptant 'period' => 1, // peu importe pour un paiement comptant 'email' => ..., //
+     * du responsable 'responsableId' => ..., 'nom' => ..., // du responsable 'prenom' =>
+     * ..., // du responsable 'eleveIds' => [eleveId, eleveId, ...] // tableau simple des
+     * eleveId concernés ]
      *
      * @return \Zend\Http\PhpEnvironment\Response
      */
@@ -620,7 +609,7 @@ class IndexController extends AbstractActionController
             $circuitId = $args['circuit' . $i . 'Id'];
             $circuits[$i] = $tCircuits->getRecord($circuitId);
             $nbInscrits[$i] = $effectifCircuits->transportes($circuitId);
-            $result = $rListe->query(Session::get('millesime'),
+            $result = $rListe->queryGroup(Session::get('millesime'),
                 FiltreEleve::byCircuit($circuits[$i]->serviceId, $circuits[$i]->stationId,
                     true), [
                     'nom',
@@ -644,7 +633,8 @@ class IndexController extends AbstractActionController
                 ])->stationId;
             $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId,
                 $stationId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {}
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+        }
 
         return new ViewModel(
             [
@@ -656,8 +646,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * On vide le champ établissementId du formulaire au début de la
-     * réinscription pour forcer à indiquer la scolarité.
+     * On vide le champ établissementId du formulaire au début de la réinscription pour
+     * forcer à indiquer la scolarité.
      *
      * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
@@ -750,17 +740,19 @@ class IndexController extends AbstractActionController
                 ->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->membres());
-            // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
-            // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
-            // responsableId (attention ! dans le post, les champs sont préfixés par r2)
+            // pour la garde alternée, on doit déterminer si le formulaire sera complet ou
+            // non afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout
+            // de
+            // même responsableId (attention ! dans le post, les champs sont préfixés par
+            // r2)
             $formgaComplet = true;
             if ($isPost) {
                 $hasGa = StdLib::getParam('ga', $args, false);
                 if ($hasGa) {
                     $formgaComplet = $owner = $outils->isOwner($args['r2responsable2Id']);
                 }
-                // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le cas
-                // où l'utilisateur déciderait d'en rajouter une.
+                // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour
+                // le cas où l'utilisateur déciderait d'en rajouter une.
             }
             $formga = $this->form_manager->get(
                 $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
@@ -771,9 +763,9 @@ class IndexController extends AbstractActionController
                     $formga->setData($args);
                 }
                 /**
-                 * Dans form->isValid(), on refuse
-                 * si existence d'un élève de même nom, prénom, dateN et n° différent.
-                 * formga->isValid() n'est regardé que si hasGa.
+                 * Dans form->isValid(), on refuse si existence d'un élève de même nom,
+                 * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+                 * hasGa.
                  */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                     // Enregistrement du responsable2 en premier (si on a le droit)
@@ -787,9 +779,13 @@ class IndexController extends AbstractActionController
                         $responsable2Id = null;
                     }
                     // Enregistrement de l'élève
-                    $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
-                    // Ajout des dates de début et de fin de l'année scolaire
                     $data = $form->getData();
+                    $ctrl = $outils->saveEleve($data, $hasGa, $responsable2Id);
+                    if ($ctrl != $eleveId) {
+                        die(var_dump($ctrl, $eleveId));
+                        throw new \Exception('Arrêt du programme. Incohérence des données.');
+                    }
+                    // Ajout des dates de début et de fin de l'année scolaire
                     $as = Session::get('as');
                     $data['dateDebut'] = $as['dateDebut'];
                     $data['dateFin'] = $as['dateFin'];
@@ -854,7 +850,8 @@ class IndexController extends AbstractActionController
                 }
                 unset($data['classeId'], $data['etablissementId']);
                 unset($data['commentaire']); // 2018 pour ne pas afficher le commentaire
-                                             // d'importation lors d'une reprise de données...
+                                             // d'importation lors d'une reprise de
+                                             // données...
                 unset($data['classeId']);
                 $hasGa = ! is_null($data['responsable2Id']);
                 $data['ga'] = $hasGa ? 1 : 0;
@@ -891,8 +888,8 @@ class IndexController extends AbstractActionController
                         }
                         $responsable2['owner'] = $owner;
                     } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-                        // on a perdu le responsable2 mais le formulaire va demander de le recréer
-                        // ou de supprimer la ga
+                        // on a perdu le responsable2 mais le formulaire va demander de le
+                        // recréer ou de supprimer la ga
                         $responsable2 = null;
                     }
                 } else {
@@ -914,7 +911,8 @@ class IndexController extends AbstractActionController
                 $formga->setValueOptions('r2communeId',
                     $this->db_manager->get('Sbm\Db\Select\Communes')
                         ->visibles());
-            } catch (\Zend\Form\Exception\InvalidElementException $e) {}
+            } catch (\Zend\Form\Exception\InvalidElementException $e) {
+            }
             $ophoto = new \SbmCommun\Model\Photo\Photo();
             try {
                 $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
@@ -993,8 +991,8 @@ class IndexController extends AbstractActionController
                     $this->flashMessenger()->addSuccessMessage(
                         'La photo a été enregistrée.');
                 } catch (\Exception $e) {
-                    // problème de fichier, de format de fichier ou d'image dont le format n'est
-                    // pas traité
+                    // problème de fichier, de format de fichier ou d'image dont le format
+                    // n'est pas traité
                     $this->flashMessenger()->addErrorMessage($e->getMessage());
                 }
             } else {

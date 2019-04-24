@@ -1,21 +1,23 @@
 <?php
 /**
- * Listes d'élèves affectés pour un ou plusieurs critères donnés
+ * Listes d'élèves pour un ou plusieurs critères donnés
  *
- * La jointure sur la table affectations nécessite que l'affectation soit faite (voir méthode select()).
+ * Il y a deux méthodes pour obtenir le résulatat de la requête (queryGroup...) et
+ * deux similaires pour un paginator avec la même requête (paginatorGroup...).
  *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Eleve
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmGestion\Model\Db\Service\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
@@ -49,7 +51,6 @@ class Liste extends AbstractQuery implements FactoryInterface
 
     /**
      * La nouvelle version n'initialise plus la propriété $select
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
@@ -68,153 +69,20 @@ class Liste extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Construit un select standard et précise les colonnes des tables.
-     * Les colonnes sont présentées dans un tableau associatif où la clé est
-     * l'alias de la table concernée. Les expressions portant sur des champs
-     * de plusieurs tables doivent être associées à l'alias `ele`
+     * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param array $columns
-     *            tableau associatif pécisant les colonnes à obtenir
-     *            Les clés sont :<ul>
-     *            <li>`ele` pour la table eleves et les expressions portant des champs
-     *            préfixés</li>
-     *            <li>`sco` pour la table scolarites</li>
-     *            <li>`eta` pour la table etablissements</li>
-     *            <li>`cla` pour la table classes</li>
-     *            <li>`aff` pour la table affectations</li>
-     *            <li>`res` pour la table responsables</li>
-     *            <li>`comres` pour la table communes du responsable</li>
-     *            <li>`comsco` pour la table communes de l'adresse perso d'un élève</li></ul>
-     *            A chaque clé est associé le tableau des colonnes à obtenir dans cette table.
-     * @param array $order
-     *            tableau de colonnes
-     * @param bool $distinct
+     * @param \Zend\Db\Sql\Select $select
      *
-     * @return \Zend\Db\Sql\Select
+     * @return string
      */
-    private function select($columns = [], $order = null, $distinct = true)
+    public function getSqlString($select)
     {
-        $select = $this->sql->select();
-        $select->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId=sco.eleveId',
-            empty($columns['sco']) ? [
-                'inscrit',
-                'paiement',
-                'fa',
-                'gratuit'
-            ] : $columns['sco'])
-            ->join(
-            [
-                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'sco.etablissementId = eta.etablissementId',
-            empty($columns['eta']) ? [
-                'etablissement' => 'nom'
-            ] : $columns['eta'])
-            ->join([
-            'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'sco.classeId = cla.classeId',
-            empty($columns['cla']) ? [
-                'classe' => 'nom'
-            ] : $columns['cla'])
-            ->join(
-            [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
-            empty($columns['aff']) ? [
-                'service1Id',
-                'service2Id'
-            ] : $columns['aff'])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'res.responsableId=aff.responsableId',
-            empty($columns['res']) ? [] : $columns['res'])
-            ->join([
-            'comres' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'res.communeId=comres.communeId',
-            empty($columns['comres']) ? [] : $columns['comres'])
-            ->join([
-            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comsco.communeId=sco.communeId',
-            empty($columns['comsco']) ? [] : $columns['comsco'], Select::JOIN_LEFT)
-            ->join([
-            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta1.stationId=aff.station1Id',
-            empty($columns['sta1']) ? [] : $columns['sta1'], Select::JOIN_LEFT)
-            ->join([
-            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta2.stationId=aff.station2Id',
-            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
-            ->join(
-            [
-                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = ele.eleveId',
-            [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
-            ], $select::JOIN_LEFT);
-        if (! empty($columns['ele'])) {
-            $select->columns($columns['ele']);
-        }
-        if (! empty($order)) {
-            $select->order($order);
-        }
-        if ($distinct) {
-            $select->quantifier(Select::QUANTIFIER_DISTINCT);
-        }
-        // die($this->getSqlString($select));
-        return $select;
+        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
     /**
-     * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves.
-     * Le sélect est filtré par le filtre donné.
-     * Utilisé dans les requêtes (by...) et les paginator...
-     *
-     * @param int $millesime
-     * @param array $filtre
-     * @param array $order
-     *
-     * @return \Zend\Db\Sql\Select
-     */
-    private function selectForGroup($millesime, $filtre, $order)
-    {
-        $columns = [
-            'ele' => [
-                'eleveId',
-                'nom',
-                'prenom',
-                'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
-                'adresseL2' => new Literal('IFNULL(sco.adresseL2, res.adresseL2)'),
-                'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
-                'commune' => new Literal('IFNULL(comsco.nom, comres.nom)')
-            ],
-            'res' => [
-                'email',
-                'responsable' => new Literal(
-                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
-            ],
-            'sta1' => [
-                'station1' => 'nom'
-            ],
-            'sta2' => [
-                'station2' => 'nom'
-            ]
-        ];
-        $select = $this->select1($columns, $order);
-        $where = new Where();
-        $where->equalTo('sco.millesime', $millesime);
-        $select->where($this->arrayToWhere($where, $filtre));
-        // die($this->getSqlString($select));
-        return $select;
-    }
-
-    /**
-     * Renvoie la liste des élèves pour un millesime et un filtre donnés et dans l'ordre demandé
+     * Renvoie la liste des élèves pour un millesime et un filtre donnés et dans l'ordre
+     * demandé
      *
      * @param int $millesime
      * @param array $filtre
@@ -222,9 +90,9 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function query($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
+    public function queryGroup($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
     {
-        $select = $this->selectForGroup($millesime, $filtre, $order);
+        $select = $this->selectGroup($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -238,112 +106,83 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
+    public function paginatorGroup($millesime, $filtre,
+        $order = ['commune', 'nom', 'prenom'])
     {
-        $select = $this->selectForGroup($millesime, $filtre, $order);
+        $select = $this->selectGroup($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
     /**
-     * Renvoie la liste des élèves pour un millesime, un établissement et un service donnés
-     * Traitement spécial pour
+     * Renvoie la liste des élèves pour un millesime et un lot de marché donné le filtre
      *
      * @param int $millesime
-     * @param int $etablissementId
+     * @param array $filtre
      * @param string|array $order
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byEtablissementService($millesime, $filtre, $order = ['nom', 'prenom'])
+    public function queryGroupParAffectations(int $millesime, array $filtre,
+        $order = ['serviceId', 'nom', 'prenom'])
     {
-        $select = $this->selectByEtablissementService($millesime, $filtre, $order);
+        $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    public function paginatorByEtablissementService($millesime, $filtre,
-        $order = ['nom', 'prenom'])
+    /**
+     * Renvoie un paginator sur les élèves pour un millesime et un lot de marché donné par
+     * le filtre
+     *
+     * @param int $millesime
+     * @param array $filtre
+     * @param array $order
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorGroupParAffectations(int $millesime, array $filtre,
+        $order = ['serviceId', 'nom', 'prenom'])
     {
-        $select = $this->selectByEtablissementService($millesime, $filtre, $order);
+        $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
-    private function selectByEtablissementService($millesime, $filtre, $order)
+    /**
+     * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves. Le
+     * sélect est filtré par le filtre donné. (utilisé dans queryGroup() et dans
+     * paginatorGroup())
+     *
+     * @param int $millesime
+     * @param array $filtre
+     * @param string|array $order
+     *
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectGroup(int $millesime, array $filtre, $order)
     {
-        $tableAffectations = $this->db_manager->getCanonicName('affectations', 'table');
-        $select1 = new Select();
-        $select1->from([
-            'a1' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
-            ])
-            ->where([
-            'a1.millesime' => $millesime
-        ]);
-
-        $select1cor2 = new Select();
-        $select1cor2->from([
-            'a1c2' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
-            ])
-            ->where([
-            'a1c2.millesime' => $millesime,
-            'correspondance' => 2
-        ]);
-
-        $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
-        $where2 = new Where();
-        $where2->equalTo('a2.millesime', $millesime)
-            ->isNotNull('service2Id')
-            ->isNull('correspondances.millesime');
-        $select2 = new Select();
-        $select2->from([
-            'a2' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station2Id',
-                'serviceId' => 'service2Id'
-            ])
-            ->join([
-            'correspondances' => $select1cor2
-        ], $jointure, [], Select::JOIN_LEFT)
-            ->where($where2);
-
         $where = new Where();
-        $where->equalTo('s.millesime', $millesime);
-        $select = $this->sql->select();
-        $select->from([
-            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        $where->equalTo('sco.millesime', $millesime);
+
+        $select = $this->sql->select()
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ],
+            'res.responsableId=ele.responsable1Id OR res.responsableId=ele.responsable2Id',
+            [
+                'email',
+                'responsable' => new Literal(
+                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+            ])
             ->join([
-            's' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e.eleveId=s.eleveId', [
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId=comres.communeId', [])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId=sco.eleveId', [
             'inscrit',
             'paiement',
             'fa',
@@ -352,166 +191,82 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 's.etablissementId = eta.etablissementId', [
+            ], 'sco.etablissementId = eta.etablissementId', [
                 'etablissement' => 'nom'
             ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 's.classeId = cla.classeId', [
+        ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ])
-            ->join([
-            'a' => $select1->combine($select2)
-        ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', [
-            'serviceId'
-        ])
-            ->join([
-            'r' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'r.responsableId=a.responsableId',
-            [
-                'email',
-                'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
-            ])
-            ->join([
-            'c' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r.communeId=c.communeId', [])
-            ->join([
-            'd' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'd.communeId=s.communeId', [], Select::JOIN_LEFT)
-            ->join([
-            'ser' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser.serviceId = a.serviceId', [])
             ->join(
             [
-                'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'tra.transporteurId = ser.transporteurId', [
-                'transporteur' => 'nom'
-            ])
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
+            [
+                'service1Id',
+                'service2Id'
+            ], SELECT::JOIN_LEFT)
             ->join([
-            'sta' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta.stationId = a.stationId', [
-            'station' => 'nom'
-        ])
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta1.stationId=aff.station1Id', [
+            'station1' => 'nom'
+        ], Select::JOIN_LEFT)
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta2.stationId=aff.station2Id', [
+            'station2' => 'nom'
+        ], Select::JOIN_LEFT)
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = e.eleveId',
+            ], 'photos.eleveId = ele.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
-            ], $select::JOIN_LEFT)
-            ->where($this->arrayToWhere($where, $filtre))
-            ->order($order)
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ], Select::JOIN_LEFT)
             ->columns(
             [
                 'eleveId',
                 'nom',
                 'prenom',
-                'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-                'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
-                'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-                'commune' => new Literal('IFNULL(d.nom, c.nom)')
-            ]);
+                'sexe',
+                'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
+                'adresseL2' => new Literal('IFNULL(sco.adresseL2, res.adresseL2)'),
+                'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
+                'commune' => new Literal('IFNULL(comsco.nom, comres.nom)')
+            ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($this->arrayToWhere($where, $filtre));
+
+        if (! empty($order)) {
+            $select->order($order);
+        }
         // die($this->getSqlString($select));
         return $select;
     }
 
     /**
-     * Renvoie la liste des élèves pour un millesime et un transporteur donnés
+     * Renvoie un Select pour la recherche des élèves par EtablissementService, par Lot ou
+     * par Transporteur. (utilisé par queryGroupParAffectations() et par
+     * paginatorGroupParAffectations())
      *
      * @param int $millesime
-     * @param int $transporteurId
+     * @param array $filtre
      * @param string|array $order
      *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     * @return \Zend\Db\Sql\Select
      */
-    public function byTransporteur($millesime, $filtre,
-        $order = ['commune', 'nom', 'prenom'])
+    private function selectGroupParAffectations(int $millesime, array $filtre, $order)
     {
-        $select = $this->selectByTransporteur($millesime, $filtre, $order);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
-    }
-
-    public function paginatorByTransporteur($millesime, $filtre,
-        $order = ['commune', 'nom', 'prenom'])
-    {
-        $select = $this->selectByTransporteur($millesime, $filtre, $order);
-        return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
-    }
-
-    private function selectByTransporteur($millesime, $filtre, $order)
-    {
-        $tableAffectations = $this->db_manager->getCanonicName('affectations', 'table');
-        $select1 = new Select();
-        $select1->from([
-            'a1' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
-            ])
-            ->where([
-            'a1.millesime' => $millesime
-        ]);
-
-        $select1cor2 = new Select();
-        $select1cor2->from([
-            'a1c2' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
-            ])
-            ->where([
-            'a1c2.millesime' => $millesime,
-            'correspondance' => 2
-        ]);
-
-        $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
-        $where2 = new Where();
-        $where2->equalTo('a2.millesime', $millesime)
-            ->isNotNull('service2Id')
-            ->isNull('correspondances.millesime');
-        $select2 = new Select();
-        $select2->from([
-            'a2' => $tableAffectations
-        ])
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'sens',
-                'responsableId',
-                'stationId' => 'station2Id',
-                'serviceId' => 'service2Id'
-            ])
-            ->join([
-            'correspondances' => $select1cor2
-        ], $jointure, [], Select::JOIN_LEFT)
-            ->where($where2);
-
         $where = new Where();
         $where->equalTo('s.millesime', $millesime);
-        $select = $this->sql->select();
-        $select->from([
+
+        $select = $this->sql->select()
+            ->from([
             'e' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->join([
@@ -534,7 +289,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             'classe' => 'nom'
         ])
             ->join([
-            'a' => $select1->combine($select2)
+            'a' => $this->affectations($millesime)
         ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', [])
             ->join([
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
@@ -556,120 +311,118 @@ class Liste extends AbstractQuery implements FactoryInterface
         ])
             ->join(
             [
+                'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'tra.transporteurId = ser.transporteurId', [
+                'transporteur' => 'nom'
+            ])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta.stationId = a.stationId', [
+            'station' => 'nom'
+        ])
+            ->join(
+            [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = e.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
-            ], $select::JOIN_LEFT)
+            ], Select::JOIN_LEFT)
             ->where($this->arrayToWhere($where, $filtre))
-            ->order($order)
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(
             [
                 'eleveId',
                 'nom',
                 'prenom',
+                'sexe',
                 'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
                 'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
                 'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
                 'commune' => new Literal('IFNULL(d.nom, c.nom)')
             ]);
-        // die($this->getSqlString($select));
-        return $select;
-    }
 
-    /**
-     * Groupes d'élèves pour classe, commune, etablissement, organisateur, tarif
-     */
-    private function select1($columns = [], $order = null, $distinct = true)
-    {
-        $select = $this->sql->select()
-            ->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ],
-            'res.responsableId=ele.responsable1Id OR res.responsableId=ele.responsable2Id',
-            empty($columns['res']) ? [] : $columns['res'])
-            ->join([
-            'comres' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'res.communeId=comres.communeId',
-            empty($columns['comres']) ? [] : $columns['comres'])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId=sco.eleveId',
-            empty($columns['sco']) ? [
-                'inscrit',
-                'paiement',
-                'fa',
-                'gratuit'
-            ] : $columns['sco'])
-            ->join(
-            [
-                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'sco.etablissementId = eta.etablissementId',
-            empty($columns['eta']) ? [
-                'etablissement' => 'nom'
-            ] : $columns['eta'])
-            ->join([
-            'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'sco.classeId = cla.classeId',
-            empty($columns['cla']) ? [
-                'classe' => 'nom'
-            ] : $columns['cla'])
-            ->join(
-            [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
-            empty($columns['aff']) ? [
-                'service1Id',
-                'service2Id'
-            ] : $columns['aff'], SELECT::JOIN_LEFT)
-            ->join([
-            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comsco.communeId=sco.communeId',
-            empty($columns['comsco']) ? [] : $columns['comsco'], Select::JOIN_LEFT)
-            ->join([
-            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta1.stationId=aff.station1Id',
-            empty($columns['sta1']) ? [] : $columns['sta1'], Select::JOIN_LEFT)
-            ->join([
-            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta2.stationId=aff.station2Id',
-            empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
-            ->join(
-            [
-                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = ele.eleveId',
-            [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
-            ], Select::JOIN_LEFT);
-        if (! empty($columns['ele'])) {
-            $select->columns($columns['ele']);
-        }
         if (! empty($order)) {
             $select->order($order);
         }
-        if ($distinct) {
-            $select->quantifier(Select::QUANTIFIER_DISTINCT);
-        }
-        // die($this->getSqlString($select));
+        //die($this->getSqlString($select));
         return $select;
     }
 
     /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
+     * Renvoie les points de montée et les services des élèves pour un millesime donné en
+     * tenant compte des correspondances. (pour selectGroupParAffectations)
      *
-     * @param \Zend\Db\Sql\Select $select
+     * @param int $millesime
      *
-     * @return string
+     * @return \Zend\Db\Sql\Select
      */
-    public function getSqlString($select)
+    private function affectations(int $millesime)
     {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
+        $tableAffectations = $this->db_manager->getCanonicName('affectations', 'table');
+        $select1 = $this->sql->select($tableAffectations)
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'sens',
+                'responsableId',
+                'stationId' => 'station1Id',
+                'serviceId' => 'service1Id'
+            ])
+            ->where([
+            'millesime' => $millesime
+        ]);
+
+        $select1cor2 = $this->sql->select($tableAffectations)
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'sens',
+                'stationId' => 'station1Id',
+                'serviceId' => 'service1Id'
+            ])
+            ->where([
+            'millesime' => $millesime,
+            'correspondance' => 2
+        ]);
+
+        $jointure = [
+            "a2.millesime=correspondances.millesime",
+            "a2.eleveId=correspondances.eleveId",
+            "a2.trajet=correspondances.trajet",
+            "a2.jours=correspondances.jours",
+            "a2.sens=correspondances.sens",
+            "a2.station2Id=correspondances.stationId"
+        ];
+        $where2 = new Where();
+        $where2->equalTo('a2.millesime', $millesime)
+            ->isNotNull('service2Id')
+            ->isNull('correspondances.millesime');
+        $select2 = $this->sql->select([
+            'a2' => $tableAffectations
+        ])
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'sens',
+                'responsableId',
+                'stationId' => 'station2Id',
+                'serviceId' => 'service2Id'
+            ])
+            ->join([
+            'correspondances' => $select1cor2
+        ], implode(' AND ', $jointure), [], Select::JOIN_LEFT)
+            ->where($where2);
+
+        return $select1->combine($select2);
     }
 }

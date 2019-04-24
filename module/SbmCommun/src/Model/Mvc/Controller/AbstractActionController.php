@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 26 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -27,14 +27,13 @@ use Zend\View\Model\ViewModel;
  * Quelques méthodes utiles
  *
  * @author admin
- *
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
 
     /**
-     * Booléen qui prend sa valeur lors de l'utilisation de postRedirectGet dans les méthode
-     * initListe, initAjout, initEdit, initSuppr
+     * Booléen qui prend sa valeur lors de l'utilisation de postRedirectGet dans les
+     * méthode initListe, initAjout, initEdit, initSuppr
      *
      * @var boolean
      */
@@ -72,8 +71,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * Retrieve serviceManager instance
-     * (provisoire pour la version 2.5 du framework - incompatible avec la version 3)
+     * Retrieve serviceManager instance (provisoire pour la version 2.5 du framework -
+     * incompatible avec la version 3)
      *
      * @return \Zend\ServiceManager\ServiceLocatorInterface
      */
@@ -83,9 +82,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * Get Base Url
-     *
-     * Get Base App Url
+     * Get Base Url Get Base App Url
      */
     protected function getBaseUrl()
     {
@@ -95,24 +92,23 @@ abstract class AbstractActionController extends ZendAbstractActionController
 
     /**
      * Cette procédure marque des fiches élèves 'selection = 1' à partir d'actions
-     * présentant un groupe d'élèves.
-     * L'appel doit nécessairement se faire depuis un `entityGroupSelectionAction()` car
-     * les paramètres sont récupérés en session depuis le namespace `entityGroupAction()`.
-     * La procédure présente d'abord une page de confirmation puis marque les fiches si
-     * la demande est confirmée.
+     * présentant un groupe d'élèves. L'appel doit nécessairement se faire depuis un
+     * `entityGroupSelectionAction()` car les paramètres sont récupérés en session depuis
+     * le namespace `entityGroupAction()`. La procédure présente d'abord une page de
+     * confirmation puis marque les fiches si la demande est confirmée.
      *
      * @param string $query
      *            nom de la requête (méthode de \SbmGestion\Model\Db\Service\Eleve\Liste)
      * @param string $filtre
      *            nom de la requête (méthode de \SbmGestion\Model\Db\Filtre\Eleve\Filtre)
      * @param string|array $idField
-     *            nom(s) de(s) id de sélection pour le filtre. C'est un scalaire ou un tableau.
+     *            nom(s) de(s) id de sélection pour le filtre. C'est un scalaire ou un
+     *            tableau.
      * @param array $retour
      *            de la forme ['route' => ..., 'action' => ...]
      * @param array $keys_hiddens
-     *            liste des noms des hiddens à passer dans le formulaire (reçoivent leur valeur par
-     *            post)
-     *
+     *            liste des noms des hiddens à passer dans le formulaire (reçoivent leur
+     *            valeur par post)
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
     protected function markSelectionEleves($query, $filtre, $idField, $retour,
@@ -202,6 +198,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
                         'page' => $this->params('page', 1),
                         'id' => $this->params('pr', 1)
                     ]);
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
+                echo '<h3>Debug:</h3>';
+                var_dump($form->getMessages());
             }
         }
         // on affiche le formulaire de confirmation
@@ -211,50 +210,39 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * On reçoit au choix :<ul>
-     * <li>en paramètre le $documentId</li>
-     * <li>par post un paramètre 'documentId'</li>
-     * </ul>
-     *
-     * Dans les deux cas, ce paramètre peut être numérique (le documentId de la table documents),
-     * une chaine de caractères ou un tableau.
-     *
-     * Si le caractère est numérique, c'est le documentId de la table système documents.
-     * Dans les autre cas, cela dépend de la présence ou non du paramètre GET 'id'.<ul>
-     * <li>s'il est absent, 'documentId' contient le name du document</li>
+     * On reçoit au choix :<ul> <li>en paramètre le $documentId</li> <li>par post un
+     * paramètre 'documentId'</li> </ul> Dans les deux cas, ce paramètre peut être
+     * numérique (le documentId de la table documents), une chaine de caractères ou un
+     * tableau. Si le caractère est numérique, c'est le documentId de la table système
+     * documents. Dans les autre cas, cela dépend de la présence ou non du paramètre GET
+     * 'id'.<ul> <li>s'il est absent, 'documentId' contient le name du document</li>
      * <li>s'il est présent, 'documentId' contient le libelle du menu et 'id' contient
-     * 'docaffectationId' de la table système 'docaffectations'.
-     * On retrouvera alors le 'documentId' dans la méthode Tcpdf::getDocumentId().</li>
-     * </ul>
-     *
-     * On lit les critères définis dans le formulaire de critères de la liste (en session avec le
-     * sessionNameSpace de xxxListeAction).
-     * On transmet le where pour les documents basés sur une table ou vue sql et les tableaux
-     * 'expression', 'criteres' et 'strict' pour ceux basés sur une requête SQL. Voir pour cela les
-     * objets ObjectData qui doivent définir les méthodes getWhere() et getCriteres().
-     *
-     * ATTENTION AU RETOUR EN CAS DE PB
+     * 'docaffectationId' de la table système 'docaffectations'. On retrouvera alors le
+     * 'documentId' dans la méthode Tcpdf::getDocumentId().</li> </ul> On lit les critères
+     * définis dans le formulaire de critères de la liste (en session avec le
+     * sessionNameSpace de xxxListeAction). On transmet le where pour les documents basés
+     * sur une table ou vue sql et les tableaux 'expression', 'criteres' et 'strict' pour
+     * ceux basés sur une requête SQL. Voir pour cela les objets ObjectData qui doivent
+     * définir les méthodes getWhere() et getCriteres(). ATTENTION AU RETOUR EN CAS DE PB
      * La pageRetour est indiquée par le paramètre pr (GET) or dans la page d'appel elle
      * est indiquée par le paramètre id.
      *
      * @param string|array $criteresObject
-     *            nom complet de la classe de l'ObjectData\Criteres
-     *            si c'est un tableau : <ul>
-     *            <li>la première valeur est le nom de la classe,</li>
-     *            <li>la deuxième est le paramètre de la méthode getWherePdf</li>
-     *            <li>la troisième est une fonction appelée pour modifier éventuellement le
+     *            nom complet de la classe de l'ObjectData\Criteres si c'est un tableau :
+     *            <ul> <li>la première valeur est le nom de la classe,</li> <li>la
+     *            deuxième est le paramètre de la méthode getWherePdf</li> <li>la
+     *            troisième est une fonction appelée pour modifier éventuellement le
      *            where</li></ul>
      * @param string|array $criteresFormName
-     *            nom complet de la classe du formulaire de recherche
-     *            si c'est un tableau, la première valeur est le nom de la classe, les autres sont
-     *            les paramètres du constructeur
+     *            nom complet de la classe du formulaire de recherche si c'est un tableau,
+     *            la première valeur est le nom de la classe, les autres sont les
+     *            paramètres du constructeur
      * @param int|string|null $documentId
      *            identifiant du document à créer
      * @param array $retour
      *            tableau ('route' => ..., 'action' => ...) pour le retour en cas d'échec
      * @param array $pdf_params
      *            tableau associatif de paramètres à passer
-     *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function documentPdf($criteresObject, $criteresForm, $documentId = null,
@@ -293,13 +281,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form = new $criteresForm[0]($criteresForm[1]);
             // on s'assure que le nom de la classe de l'object criteres commence par \
             $criteresObject = (array) $criteresObject;
-            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du descripteur
+            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
+            // descripteur
             // sera trouvée
             if (! isset($criteresObject[1])) {
                 $criteresObject[1] = null;
             }
             $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
-            // on crée la structure de l'objet criteres à partir des champs du formulaire et on la
+            // on crée la structure de l'objet criteres à partir des champs du formulaire
+            // et on la
             // charge
             $criteres_obj = new $criteresObject[0]($form->getElementNames());
             $criteres = Session::get('post', [],
@@ -308,9 +298,12 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $criteres_obj->exchangeArray($criteres);
             }
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
-            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en
-            // 3e paramètre dans le tableau $criteresObject. (Utile par exemple pour modifier le
-            // format date avant le déclanchement de l'évènement ou pour prendre en compte un autre
+            // adaptation éventuelle du where si une fonction callback (ou closure) est
+            // passée en
+            // 3e paramètre dans le tableau $criteresObject. (Utile par exemple pour
+            // modifier le
+            // format date avant le déclanchement de l'évènement ou pour prendre en compte
+            // un autre
             // where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $where = $criteresObject[2]($where, $args);
@@ -318,7 +311,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $call_pdf = $this->RenderPdfService;
 
             if ($docaffectationId = $this->params('id', false)) {
-                // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans
+                // $docaffectationId par get - $args['documentId'] contient le libellé du
+                // menu dans
                 // docaffectations
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
@@ -369,32 +363,28 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * initListe est une méthode de contrôle d'entrée dans les xxxListeAction()
-     * - si c'est un post, renvoie une redirection 303
-     * - si c'est un get ou un retour d'action, renvoie [paginator, form, retour] à partir des
-     * paramètres en session
-     * - si c'est une redirection 303, renvoie [paginator, form, retour] à partir du post
-     * initial
+     * initListe est une méthode de contrôle d'entrée dans les xxxListeAction() - si c'est
+     * un post, renvoie une redirection 303 - si c'est un get ou un retour d'action,
+     * renvoie [paginator, form, retour] à partir des paramètres en session - si c'est une
+     * redirection 303, renvoie [paginator, form, retour] à partir du post initial
      *
      * @param string $formName
-     *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur laquelle
-     *            il porte.
-     *            array : Tableau de définition des éléments à créer dans le formulaire
+     *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur
+     *            laquelle il porte. array : Tableau de définition des éléments à créer
+     *            dans le formulaire
      * @param \Closure $initForm
      *            Fonction anonyme lancée juste après la création du formulaire avec comme
-     *            paramètres le service manager et le formulaire.
-     *            Elle sert à initialiser les champs du formulaire, en particulier les listes
-     *            déroulantes.
+     *            paramètres le service manager et le formulaire. Elle sert à initialiser
+     *            les champs du formulaire, en particulier les listes déroulantes.
      * @param array $strictWhere
-     *            Liste des champs du formulaire pour lesquels l'égalité est recherché. Pour les
-     *            autres, on fait un Like
+     *            Liste des champs du formulaire pour lesquels l'égalité est recherché.
+     *            Pour les autres, on fait un Like
      * @param array $aliasWhere
      *            Liste des champs du formulaire qui sont des alias
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
-     *
-     * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b>
-     *         Il faut tester si c'est un Response. Sinon, le tableau est de la forme
-     *         ['paginator' => ..., 'form' => ..., 'retour' => boolean]
+     * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b> Il faut tester si
+     *         c'est un Response. Sinon, le tableau est de la forme ['paginator' => ...,
+     *         'form' => ..., 'retour' => boolean]
      */
     protected function initListe($formName, $initForm = null, $strictWhere = [],
         $aliasWhere = [])
@@ -402,20 +392,24 @@ abstract class AbstractActionController extends ZendAbstractActionController
         $retour = false;
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // renvoie redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops
+            // renvoie redirection 303 avec le contenu de post en session 'prg_post1'
+            // (Expire_Hops
             // = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (cas
+            // ce n'était pas un post. Prendre les paramètres éventuellement dans la
+            // session (cas
             // du paginator)
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
-            // c'est le tableau qui correspond au post après redirection 303; on le met en session
+            // c'est le tableau qui correspond au post après redirection 303; on le met en
+            // session
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
-                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace());
@@ -446,9 +440,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
                 $criteres_obj->exchangeArray($criteres_form->getData());
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
+                echo '<h3>Debug:</h3>';
+                var_dump($criteres_form->getMessages());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas
         // de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
@@ -462,28 +460,26 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * Partie commune de traitement de l'ajout d'un enregistrement.
-     * Le formulaire, le nom de la table, son type et son alias sont passés dans le paramètre
-     * $params
-     * Le paramètre $renvoyer permet de retourner des données de POST
+     * Partie commune de traitement de l'ajout d'un enregistrement. Le formulaire, le nom
+     * de la table, son type et son alias sont passés dans le paramètre $params Le
+     * paramètre $renvoyer permet de retourner des données de POST
      *
      * @param
      *            $db_manager
      * @param array $params
-     *            Tableau associatif dont les clés principales sont 'form' et 'data'.
-     *            La clé 'form' contient l'objet formulaire ;
-     *            la clé 'data' est un tableau associatif dont les clés sont 'table', 'type' et
-     *            'alias'
+     *            Tableau associatif dont les clés principales sont 'form' et 'data'. La
+     *            clé 'form' contient l'objet formulaire ; la clé 'data' est un tableau
+     *            associatif dont les clés sont 'table', 'type' et 'alias'
      * @param callable|null $renvoyer
-     *            Fonction perpettant d'extraire des données de POST ($args après PostRedirectGet)
+     *            Fonction perpettant d'extraire des données de POST ($args après
+     *            PostRedirectGet)
      * @param callable|null $initform
-     *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des
-     *            paramètres fournis en post ou en session)
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
-     *         un post,
-     *         ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un id,
-     *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
+     *            Fonction d'initialisation du formulaire. Son paramètre est $args
+     *            (tableau des paramètres fournis en post ou en session)
+     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303
+     *         si c'est un post, ou une chaine de compte-rendu parmi {'error', 'warning',
+     *         'success'} ou un id, ou le résultat de la fonction $renvoyer (souvent une
+     *         fonction anonyme)
      */
     protected function addData($db_manager, $params, $renvoyer = null, $initform = null)
     {
@@ -521,6 +517,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $this->flashMessenger()->addSuccessMessage(
                     "Un nouvel enregistrement a été ajouté.");
                 return 'success';
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
+                echo '<h3>Debug:</h3>';
+                var_dump($form->getMessages());
             }
         } else {
             $form->setData(
@@ -538,19 +537,18 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Partie commune à la modifiction d'un enregistrement dans une table
      *
      * @param array $params
-     *            tableau associatif dont les clés sont 'form' et 'data'.
-     *            La clé 'data' est elle-même associée à un tableau associatif dont les clés sont
+     *            tableau associatif dont les clés sont 'form' et 'data'. La clé 'data'
+     *            est elle-même associée à un tableau associatif dont les clés sont
      *            'table', 'type', 'alias' et 'id'
      * @param callable|null $renvoyer
-     *            Fonction de construction de la réponse. Son paramètre est $args (tableau des
-     *            paramètres fournis en post ou en session)
+     *            Fonction de construction de la réponse. Son paramètre est $args (tableau
+     *            des paramètres fournis en post ou en session)
      * @param callable|null $initform
-     *            Fonction d'initialisation du formulaire. Son paramètre est $args (tableau des
-     *            paramètres fournis en post ou en session)
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
-     *         un post,
-     *         ou un \SbmCommun\Model\Mvc\Controller\EditResponse contenant les données à renvoyer
+     *            Fonction d'initialisation du formulaire. Son paramètre est $args
+     *            (tableau des paramètres fournis en post ou en session)
+     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303
+     *         si c'est un post, ou un \SbmCommun\Model\Mvc\Controller\EditResponse
+     *         contenant les données à renvoyer
      */
     protected function editData($db_manager, $params, $renvoyer = null, $initform = null)
     {
@@ -558,7 +556,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // on aura le droit de rentrer en get que si un args a été sauvegardé en session avec
+            // on aura le droit de rentrer en get que si un args a été sauvegardé en
+            // session avec
             // un id de la donnée à modifier
             $args = Session::get('post', [], 'sbm_edit_' . $params['data']['table']);
             $isPost = false;
@@ -608,6 +607,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $this->flashMessenger()->addSuccessMessage(
                     "Les modifications ont été enregistrées.");
                 return new EditResponse('success', $args);
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
+                echo '<h3>Debug:</h3>';
+                var_dump($form->getMessages());
             }
         } else {
             $form->setData($table->getRecord($id)
@@ -624,18 +626,16 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Partie commune à la suppression d'un enregistrement dans une table
      *
      * @param array $params
-     *            tableau associatif dont les clés sont 'form' et 'data'.
-     *            La clé 'data' est elle-même associée à un tableau associatif dont les clés sont
-     *            'alias' et 'id'
-     *            (sa cle 'id' donne l'id passé en post)
+     *            tableau associatif dont les clés sont 'form' et 'data'. La clé 'data'
+     *            est elle-même associée à un tableau associatif dont les clés sont
+     *            'alias' et 'id' (sa cle 'id' donne l'id passé en post)
      * @param string $renvoyer
-     *            Fonction de construction de la réponse. Ses paramètres sont $id (valeur de l'id)
-     *            et $table (table dont l'alias est donné)
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303 si c'est
-     *         un post, ou une chaine de compte-rendu parmi {'error', 'warning', 'success'} ou un
-     *         id,
-     *         ou le résultat de la fonction $renvoyer (souvent une fonction anonyme)
+     *            Fonction de construction de la réponse. Ses paramètres sont $id (valeur
+     *            de l'id) et $table (table dont l'alias est donné)
+     * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303
+     *         si c'est un post, ou une chaine de compte-rendu parmi {'error', 'warning',
+     *         'success'} ou un id, ou le résultat de la fonction $renvoyer (souvent une
+     *         fonction anonyme)
      */
     protected function supprData($db_manager, $params, $renvoyer = null)
     {
@@ -667,7 +667,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 if ($id = StdLib::getParam($params['data']['id'], $args, false)) {
                     Session::set($params['data']['id'], $id, 'sbm_suppr');
                 } else {
-                    // ici, je controle si l'id en session est bien celui reçu par post (via prg).
+                    // ici, je controle si l'id en session est bien celui reçu par post
+                    // (via prg).
                     // On ne sait jamais !!!
                     $id = Session::get($params['data']['id'], - 1, 'sbm_suppr');
                     $ctrl = StdLib::getParam('id', $args, - 1);
@@ -685,7 +686,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 "L'enregistrement n'a pas été supprimé.");
             return new EditResponse('warning', $args);
         } else {
-            // pour les primary key composées de plusieurs champs, id est une chaine où les champs
+            // pour les primary key composées de plusieurs champs, id est une chaine où
+            // les champs
             // sont séparés par des |
             // id est transformé ici en tableau associatif
             // pour les primary key composées d'un seul champ, id est conservé en l'état
@@ -736,10 +738,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * Renvoie une chaine de la forme 'module_controller_action_item'
      *
      * @param string|null $action
-     *            Si $action est null alors on prend l'action indiquée dans la route courante
+     *            Si $action est null alors on prend l'action indiquée dans la route
+     *            courante
      * @param string|null $item
      *            Ce que l'on veut rajouter
-     *
      * @return string
      */
     protected function getSessionNamespace($action = null, $item = null)
@@ -755,17 +757,18 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * Renvoie une chaine de la forme 'module_controller'
-     * exemple : sbmfront_index
+     * Renvoie une chaine de la forme 'module_controller' exemple : sbmfront_index
      *
      * @return string
      */
     public function getModuleControllerName()
     {
         $parts = explode('\\', strtolower(get_class($this))); // de la forme {'sbmfront',
-                                                              // 'controller', 'indexcontroller'}
+                                                              // 'controller',
+                                                              // 'indexcontroller'}
         unset($parts[1]); // supprime 'controller'
-        return substr_replace(implode('_', $parts), '', - 10); // supprime 'controller' à la fin
+        return substr_replace(implode('_', $parts), '', - 10); // supprime 'controller' à
+                                                               // la fin
     }
 
     /**

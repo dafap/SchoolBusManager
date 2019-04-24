@@ -1,21 +1,21 @@
 <?php
 /**
- * Objet parent d'une projection 
+ * Objet parent d'une projection
  *
  * Cette classe abstraite représente une projection avec les méthodes générales de conversion et de calculs.
- * La classe dérivée devra initialiser l'ellipsoide ainsi que les données générales de la projection, 
+ * La classe dérivée devra initialiser l'ellipsoide ainsi que les données générales de la projection,
  * puis appeler l'une des méthodes suivantes :
  * - la méthode alg0019 si c'est une projection Lambert conique conforme dans le cas tangent
  * - la méthode alg0054 si c'est une projection Lambert conique conforme dans le cas sécant
- * 
+ *
  * Les latitudes, longitudes et SbmCartographie\Model\Point sont tous en radian, en entrée comme en sortie
- * 
+ *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Projection
  * @filesource AbstractProjection.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 sept. 2018
+ * @date 17 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Projection;
@@ -74,8 +74,8 @@ abstract class AbstractProjection
     protected $latitude_of_origin;
 
     /**
-     * Longitude en unités indiquées du centre de la projection par rapport au méridien origine
-     * (Greenwich)
+     * Longitude en unités indiquées du centre de la projection par rapport au méridien
+     * origine (Greenwich)
      *
      * @var float
      */
@@ -188,8 +188,8 @@ abstract class AbstractProjection
     ];
 
     /**
-     * Position du méridien d'origine par rapport au méridien de Greenwich (exprimé en degrés
-     * décimaux)
+     * Position du méridien d'origine par rapport au méridien de Greenwich (exprimé en
+     * degrés décimaux)
      *
      * @var float
      */
@@ -203,6 +203,11 @@ abstract class AbstractProjection
     protected function setEllipsoide(Ellipsoide $e)
     {
         $this->ellipsoide = $e;
+    }
+
+    public function getEllipsoide(): Ellipsoide
+    {
+        return $this->ellipsoide;
     }
 
     /**
@@ -358,8 +363,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Initialise, si nécessaire, les propriétés lambda_0, phi_0, phi_1 et phi_2 en radians en
-     * tenant compte de l'unité de la projection.
+     * Initialise, si nécessaire, les propriétés lambda_0, phi_0, phi_1 et phi_2 en
+     * radians en tenant compte de l'unité de la projection.
      *
      * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\DomainException
      */
@@ -398,12 +403,11 @@ abstract class AbstractProjection
     }
 
     /**
-     * Calcul de la latitude isométrique sur un ellipsoïde de première excentricité e au point de
-     * latitude $phi
+     * Calcul de la latitude isométrique sur un ellipsoïde de première excentricité e au
+     * point de latitude $phi
      *
      * @param float $phi
      *            $phi est en radians
-     *            
      * @return float
      */
     public function alg0001($phi)
@@ -415,13 +419,13 @@ abstract class AbstractProjection
     }
 
     /**
-     * Calcul de la latitude phi (exprimée en radians) à partir de la latitude isométrique $li
+     * Calcul de la latitude phi (exprimée en radians) à partir de la latitude isométrique
+     * $li
      *
      * @param float $li
      *            latitude isométrique
      * @param float $eps
      *            tolérance de convergence
-     *            
      * @return float
      */
     public function alg0002($li, $eps = 1e-11)
@@ -444,7 +448,6 @@ abstract class AbstractProjection
      *            latitude isométrique
      * @param float $phi
      *            en radians
-     *            
      * @return float
      */
     private function calculPourAlg0002sp1($li, $phi)
@@ -456,14 +459,13 @@ abstract class AbstractProjection
     }
 
     /**
-     * Transformation de coordonnées géographiques en coordonnées en projection conique conforme de
-     * Lambert
+     * Transformation de coordonnées géographiques en coordonnées en projection conique
+     * conforme de Lambert
      *
      * @param float $lambda
      *            en radians
      * @param float $phi
      *            en radians
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function alg0003($lambda, $phi)
@@ -476,8 +478,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Transformation de coordonnées en projection conique conforme de Lambert, en coordonnées
-     * géographiques
+     * Transformation de coordonnées en projection conique conforme de Lambert, en
+     * coordonnées géographiques
      *
      * @param float $x
      * @param float $y
@@ -496,7 +498,8 @@ abstract class AbstractProjection
     }
 
     /**
-     * Transformation de coordonnées géographiques ellipsoïdales en coordonnées cartésiennes
+     * Transformation de coordonnées géographiques ellipsoïdales en coordonnées
+     * cartésiennes
      *
      * @param float $lambda
      *            longitude
@@ -504,7 +507,6 @@ abstract class AbstractProjection
      *            latitude
      * @param float $he
      *            élévation
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function alg0009($lambda, $phi, $he = 0)
@@ -517,7 +519,8 @@ abstract class AbstractProjection
 
     /**
      * Transformation, pour un ellipsoïde donné, des coordonnées cartésiennes d’un point
-     * en coordonnées géographiques ellipsoïdales par la méthode de Heiskanen-Moritz-Boucher.
+     * en coordonnées géographiques ellipsoïdales par la méthode de
+     * Heiskanen-Moritz-Boucher.
      *
      * @param float $x
      * @param float $y
@@ -536,7 +539,8 @@ abstract class AbstractProjection
         while ($delta > $eps) {
             $phi_1 = $phi;
             $tmp = sin($phi_1);
-            $tmp = sqrt(1 - $this->getECarre() * $tmp * $tmp); // racine(1 - e² sin²($phi_1))
+            $tmp = sqrt(1 - $this->getECarre() * $tmp * $tmp); // racine(1 - e²
+                                                               // sin²($phi_1))
             $phi = atan2($z * $tmp,
                 $module_xy * $tmp - $this->getA() * $this->getECarre() * cos($phi_1));
             $delta = abs($phi - $phi_1);
@@ -565,7 +569,6 @@ abstract class AbstractProjection
      *            la rotation sur y
      * @param number $rz
      *            rotation sur z
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0,
@@ -577,15 +580,13 @@ abstract class AbstractProjection
     }
 
     /**
-     * Détermination des paramètres de calcul d’une projection Lambert conique conforme dans le cas
-     * tangent,
-     * avec ou sans facteur d'échelle en fonction des paramètres de définition usuels
-     *
+     * Détermination des paramètres de calcul d’une projection Lambert conique conforme
+     * dans le cas tangent, avec ou sans facteur d'échelle en fonction des paramètres de
+     * définition usuels
      * Utilise les propriétés k0 et phi_0 de l'objet (ainsi que lambda_0, x0 et y0).
-     *
      * Calcule les propriétés lambda_c, n, C, Xs et Ys.
-     * 
-     * @throws  \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
+     *
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
      */
     public function alg0019()
     {
@@ -620,14 +621,13 @@ abstract class AbstractProjection
     }
 
     /**
-     * Détermination des paramètres de calcul d'une projection Lambert conique conforme dans le cas
-     * sécant.
-     *
-     * Utilise les propriétés phi_0, phi_1 et phi_2 de l'objet (ainsi que lambda_0, x0 et y0).
-     *
+     * Détermination des paramètres de calcul d'une projection Lambert conique conforme
+     * dans le cas sécant.
+     * Utilise les propriétés phi_0, phi_1 et phi_2 de l'objet (ainsi que lambda_0, x0 et
+     * y0).
      * Calcule les propriétés lambda_c, n, C, Xs et Ys.
-     * 
-     * @throws  \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
+     *
+     * @throws \SbmCartographie\ConvertSystemGeodetic\Exception\OutOfRangeException
      */
     public function alg0054()
     {

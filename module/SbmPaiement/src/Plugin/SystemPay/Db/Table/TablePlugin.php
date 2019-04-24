@@ -110,8 +110,8 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     }
 
     /**
-     * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire.
-     * Le format créé est de la forme Y-m-d. Ici il faut Ymd.
+     * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire. Le
+     * format créé est de la forme Y-m-d. Ici il faut Ymd.
      *
      * @param Where $where
      */
@@ -126,8 +126,8 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                 }
                 if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
                     $item->getIdentifier() == 'vads_cust_name') {
-                        $item->setLike('%' . $item->getLike());
-                    }
+                    $item->setLike('%' . $item->getLike());
+                }
             }
         }
     }

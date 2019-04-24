@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
+ * @date 23 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller;
@@ -142,16 +142,19 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (login
+            // ce n'était pas un post. Prendre les paramètres éventuellement dans la
+            // session (login
             // ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
         } else {
-            // c'était un post ; on le met en session si ce n'est pas un retour ou un cancel
+            // c'était un post ; on le met en session si ce n'est pas un retour ou un
+            // cancel
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
-                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
@@ -198,7 +201,8 @@ class IndexController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas
         // de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
@@ -383,16 +387,19 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (login
+            // ce n'était pas un post. Prendre les paramètres éventuellement dans la
+            // session (login
             // ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         } else {
-            // c'était un post ; on le met en session si ce n'est pas un retour ou un cancel
+            // c'était un post ; on le met en session si ce n'est pas un retour ou un
+            // cancel
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
-                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
@@ -445,7 +452,8 @@ class IndexController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas
         // de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
@@ -454,7 +462,8 @@ class IndexController extends AbstractActionController
 
         switch ($categorie) {
             case 2:
-                // Filtre les résultats pour n'afficher que ce qui concerne ce transporteur
+                // Filtre les résultats pour n'afficher que ce qui concerne ce
+                // transporteur
                 try {
                     $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                         $userId);
@@ -482,7 +491,8 @@ class IndexController extends AbstractActionController
                 }
                 break;
             case 3:
-                // Filtre les résultats pour n'afficher que ce qui concerne cet établissement
+                // Filtre les résultats pour n'afficher que ce qui concerne cet
+                // établissement
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                     $userId);
                 $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId', $right);
@@ -516,9 +526,9 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function trPdfAction()
     {
@@ -566,7 +576,8 @@ class IndexController extends AbstractActionController
         }
         $call_pdf = $this->RenderPdfService;
         if ($docaffectationId = $this->params('id', false)) {
-            // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans
+            // $docaffectationId par get - $args['documentId'] contient le libellé du menu
+            // dans
             // docaffectations
             $call_pdf->setParam('docaffectationId', $docaffectationId);
         }
@@ -638,9 +649,9 @@ class IndexController extends AbstractActionController
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->query(
+                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId),
+                    FiltreEleve::byCircuit($circuit->lotId, $circuit->stationId),
                     [
                         'nom',
                         'prenom'
@@ -702,7 +713,8 @@ class IndexController extends AbstractActionController
         $data = iterator_to_array($resultset);
         if (! empty($data)) {
             $fields = array_keys(current($data));
-            // s'il faut utiliser l'enclosure pour telephone, rajouter une callback en 4e parametre
+            // s'il faut utiliser l'enclosure pour telephone, rajouter une callback en 4e
+            // parametre
             // de csvExport()
             // (voir
             // https://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields)

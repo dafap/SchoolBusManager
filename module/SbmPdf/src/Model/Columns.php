@@ -32,16 +32,16 @@ class Columns
     private $auth_userId;
 
     /**
-     * Source des données : alias d'une vue ou d'une table MySql ou chaine définissant une requête
-     * Sql
+     * Source des données : alias d'une vue ou d'une table MySql ou chaine définissant une
+     * requête Sql
      *
      * @var string
      */
     private $recordSource;
 
     /**
-     * Indique s'il s'agit d'une table ou vue enregistrée dans le service manager (T) ou une chaine
-     * définissant une requête Sql (R)
+     * Indique s'il s'agit d'une table ou vue enregistrée dans le service manager (T) ou
+     * une chaine définissant une requête Sql (R)
      *
      * @var string 'T' ou 'R'
      */
@@ -73,8 +73,8 @@ class Columns
     }
 
     /**
-     * Renvoie la liste des colonnes d'une table ou d'une requête sous la forme d'un tableau
-     * associatif
+     * Renvoie la liste des colonnes d'une table ou d'une requête sous la forme d'un
+     * tableau associatif
      *
      * @return array
      */
@@ -88,15 +88,15 @@ class Columns
     }
 
     /**
-     * Reçoit le nom d'enregistrement d'une classe dérivée de SbmAbstractClass (SbmCommun) et
-     * renvoie le nom d'enregistrement d'un EffectifInterface (SbmGestion)
+     * Reçoit le nom d'enregistrement d'une classe dérivée de SbmAbstractTable (SbmCommun)
+     * et renvoie le nom d'enregistrement d'un EffectifInterface (SbmGestion)
      *
      * @param string $stringSbmAbstractTable
      *
      * @return string
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable
-     * @see \SbmGestion\Model\Db\Service\Eleve\EffectifInterface
+     * @see \SbmGestion\Model\Db\Service\EffectifInterface
      */
     public static function getStringEffectifInterface($stringSbmAbstractTable)
     {
@@ -129,7 +129,8 @@ class Columns
 
     protected function sqlListeDesChamps()
     {
-        // remplacement des variables éventuelles : %millesime%, %date%, %heure% et %userId%
+        // remplacement des variables éventuelles : %millesime%, %date%, %heure% et
+        // %userId%
         // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
         $sql = $this->decodeSource($this->recordSource, $this->auth_userId);
         $result = [];

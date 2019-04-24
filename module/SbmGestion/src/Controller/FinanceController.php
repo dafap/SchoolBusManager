@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 17 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -28,9 +28,7 @@ class FinanceController extends AbstractActionController
 {
 
     /**
-     * Menu de gestion financière
-     *
-     * (non-PHPdoc)
+     * Menu de gestion financière (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
      */
@@ -40,7 +38,8 @@ class FinanceController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est
+                                            // vide
         $millesime = Session::get('millesime');
         $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
@@ -102,14 +101,15 @@ class FinanceController extends AbstractActionController
     public function paiementListeAction()
     {
         /*
-         * On commence par un PostRedirectGet pour régler les passages de paramètres provenant
-         * de $_POST ou d'une redirection. En effet, lorsqu'on lance une redirection pour revenir
-         * sur dans la liste après une action (ajouter, supprimer, modifier) les paramètres ne
-         * peuvent être passés que dans la route. C'est pas bien commode puisqu'ils sont alors vus
-         * dans la barre d'adresse. Pour éviter cela, on passe les paramètres pas methode post mais
-         * la redirection ne le permet pas. On utilise alors le prg. Cela règle en même temps le
-         * problème du F5 sur une page contenant un formulaire (voulez-vous renvoyer les données
-         * du formulaire ?).
+         * On commence par un PostRedirectGet pour régler les passages de paramètres
+         * provenant de $_POST ou d'une redirection. En effet, lorsqu'on lance une
+         * redirection pour revenir sur dans la liste après une action (ajouter,
+         * supprimer, modifier) les paramètres ne peuvent être passés que dans la route.
+         * C'est pas bien commode puisqu'ils sont alors vus dans la barre d'adresse. Pour
+         * éviter cela, on passe les paramètres pas methode post mais la redirection ne le
+         * permet pas. On utilise alors le prg. Cela règle en même temps le problème du F5
+         * sur une page contenant un formulaire (voulez-vous renvoyer les données du
+         * formulaire ?).
          */
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -124,7 +124,8 @@ class FinanceController extends AbstractActionController
                 $args = [];
                 Session::remove('post', $this->getSessionNamespace());
             } else {
-                // F5, back ou un redirect de sortie : reprendre le contexte d'avant en session
+                // F5, back ou un redirect de sortie : reprendre le contexte d'avant en
+                // session
                 $args = Session::get('post', [], $this->getSessionNamespace());
             }
         } else {
@@ -145,8 +146,8 @@ class FinanceController extends AbstractActionController
                     $args = array_merge($args, $prg);
                 }
             } else {
-                // vient du formulaire des critères ou de la sortie d'un paiement-ajout ou d'un
-                // paiement-edit
+                // vient du formulaire des critères ou de la sortie d'un paiement-ajout ou
+                // d'un paiement-edit
                 $args = $prg;
             }
             Session::set('post', $args, $this->getSessionNamespace());
@@ -161,8 +162,8 @@ class FinanceController extends AbstractActionController
         $url2_retour = array_key_exists('url2_retour', $args) ? $args['url2_retour'] : null;
         $op = array_key_exists('op', $args) ? $args['op'] : '';
         if ($retour_n2 = ($op == 'retour')) {
-            // le résultat du test est utilisé plus loin sous le nom de $retour_n2 (retour de
-            // niveau 2)
+            // le résultat du test est utilisé plus loin sous le nom de $retour_n2 (retour
+            // de niveau 2)
             $responsableId = - 1;
             $url2_retour = null;
         }
@@ -179,8 +180,8 @@ class FinanceController extends AbstractActionController
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->modeDePaiement();
             $criteres_form->setValueOptions('codeModeDePaiement', $value_options);
             $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-            // récupère les données du post pour les mettre en session si ce n'est pas un retour de
-            // niveau 2
+            // récupère les données du post pour les mettre en session si ce n'est pas un
+            // retour de niveau 2
             if (! $retour_n2 && $is_post) {
                 $criteres_form->setData($args);
                 if ($criteres_form->isValid()) {
@@ -188,8 +189,8 @@ class FinanceController extends AbstractActionController
                     Session::set('criteres', $criteres_obj->getArrayCopy());
                 }
             }
-            // récupère les données de la session si le post n'a pas été validé dans le formulaire
-            // (pas de post ou invalide)
+            // récupère les données de la session si le post n'a pas été validé dans le
+            // formulaire (pas de post ou invalide)
             $criteres_data = Session::get('criteres');
             if (! $criteres_form->hasValidated() && ! empty($criteres_data)) {
                 $criteres_obj->exchangeArray($criteres_data);
@@ -213,59 +214,25 @@ class FinanceController extends AbstractActionController
                 ]);
         } else {
             // gestion des paiements du $responsableId.
-            // L'appel peut provenir de la liste des responsables, de la fiche d'un responsable,
-            // de la fiche d'un eleve ou de la liste des paiements.
+            // L'appel peut provenir de la liste des responsables, de la fiche d'un
+            // responsable, de la fiche d'un eleve ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
-            $millesime = Session::get('millesime');
-            $as = sprintf('%d-%d', $millesime, $millesime + 1);
+            $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+            // calcul des montants dus, payés et du solde
+            $resultats = $this->db_manager->get(
+                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                $responsableId);
+            // condition pour le paginator
             $where = new Where();
-            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire', $as);
-            $totalPaye = $this->db_manager->get('Sbm\Db\Table\Paiements')->total($where);
-
-            $where = new Where();
-            $where->expression('responsableId = ?', $responsableId);
-            /*
-             * if (array_key_exists('nbPreinscrits', $args)) {
-             * $nomPrenom = $this->db_manager
-             * ->get('Sbm\Db\Table\Responsables')
-             * ->getNomPrenom($responsableId, true);
-             * $nbInscrits = $args['nbInscrits'];
-             * $nbPreinscrits = $args['nbPreinscrits'];
-             * $nbGratuits = $args['nbGratuits'];
-             * $nbFa = $args['nbFa'];
-             * } else {
-             */
-            $responsable = $this->db_manager->get('Sbm\Db\Query\Responsables')
-                ->withEffectifs($where, [
-                'responsableId'
-            ], $responsableId)
-                ->current();
-            $nomPrenom = sprintf('%s %s %s', $responsable['titre'], $responsable['nom'],
-                $responsable['prenom']);
-            $nbTarif1 = $responsable['nbTarif1'];
-            $nbTarif2 = $responsable['nbTarif2'];
-            $montantInscriptions = $responsable['montant'];
-            $nbDuplicata = $responsable['nbDuplicata'];
-            // }
-
+            $where->equalTo('responsableId', $responsableId);
             return new ViewModel(
                 [
                     'paginator' => $tablePaiements->paginator($where, $order),
                     'count_per_page' => $nb_paiements,
                     'criteres_form' => null,
                     'h2' => true,
-                    'responsable' => $nomPrenom,
-                    'montantInscriptions' => $montantInscriptions,
-                    'totalPaye' => $totalPaye,
-                    'tarif1' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
-                        'tarif1'),
-                    'tarif2' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
-                        'tarif2'),
-                    'duplicata' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
-                        'duplicata'),
-                    'nbTarif1' => $nbTarif1,
-                    'nbTarif2' => $nbTarif2,
-                    'nbDuplicata' => $nbDuplicata,
+                    'responsable' => $tResponsables->getNomPrenom($responsableId, true),
+                    'resultats' => $resultats,
                     'page' => $currentPage,
                     'responsableId' => $responsableId,
                     'url1_retour' => $url1_retour,
@@ -277,24 +244,27 @@ class FinanceController extends AbstractActionController
     public function paiementAjoutAction()
     {
         /*
-         * Reçoit en post les données suivantes à utiliser pour le retour : h2, responsableId,
-         * responsable, url1_retour et url2_retour
-         * Reçoit dans la route la page de la liste d'où l'on vient
+         * Reçoit en post les données suivantes à utiliser pour le retour : h2,
+         * responsableId, responsable, url1_retour et url2_retour Reçoit dans la route la
+         * page de la liste d'où l'on vient
          */
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session
+            // transforme un post en une redirection 303 avec le contenu de post en
+            // session
             // 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à
+            // la liste
             return $this->redirect()->toRoute('sbmgestion/finance',
                 [
                     'action' => 'paiement-liste',
                     'page' => $this->params('page', 1)
                 ]);
         }
-        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont
+        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du
+        // post sont
         // dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
         $args = $prg;
         // si $args contient la clé 'cancel' c'est un abandon de l'action
@@ -354,16 +324,38 @@ class FinanceController extends AbstractActionController
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                // sauvegarde après avoir validé les datas
-                $tablePaiements->saveRecord($form->getData());
+                $montant = $form->getData()->montant;
                 // validation des paiements dans les fiches scolarites
                 if (! empty($args['eleveId'])) {
-                    $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                    $tScolarites->setPaiement(Session::get('millesime'), $args['eleveId']);
+                    $responsableId = $form->getData()->responsableId;
+                    $resultats = $this->db_manager->get(
+                        \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                        $responsableId, $args['eleveId']);
+                    if ($montant >= $resultats->getSolde()) {
+                        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+                        $tScolarites->setPaiement(Session::get('millesime'),
+                            $args['eleveId']);
+                    }
+                    $msg = 'Les abonnements ont été mis à jour.';
+                } else {
+                    $msg = '';
+                }
+                // sauvegarde après avoir validé les datas
+                if ($montant > 0) {
+                    $tablePaiements->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        implode(' ', [
+                            "Le paiement est enregistré.",
+                            $msg
+                        ]));
+                } elseif ($msg) {
+                    $this->flashMessenger()->addWarningMessage($msg);
+                } else {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Le montant doit être strictement positif.');
                 }
                 // retour à la liste
-                $this->flashMessenger()->addSuccessMessage(
-                    "Les modifications ont été enregistrées.");
+
                 return $this->redirect()->toRoute('sbmgestion/finance',
                     [
                         'action' => 'paiement-liste',
@@ -397,17 +389,18 @@ class FinanceController extends AbstractActionController
 
     /**
      * Reçoit en post les données suivantes à utiliser pour le retour : paiementId, h2,
-     * responsableId, responsable, url1_retour et url2_retour
-     * (seuls paiementId et responsable sont utiles ici - les autres sont présents en raison de la
-     * compatibilité du formulaire avec 'groupe')
-     * Reçoit dans la route la page de la liste d'où l'on vient
+     * responsableId, responsable, url1_retour et url2_retour (seuls paiementId et
+     * responsable sont utiles ici - les autres sont présents en raison de la
+     * compatibilité du formulaire avec 'groupe') Reçoit dans la route la page de la liste
+     * d'où l'on vient
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
     public function paiementEditAction()
     {
         $currentPage = $this->params('page', 1);
-        $hidden_responsableId = false; // mettre true pour obtenir en hidden ; mettre false pour
+        $hidden_responsableId = false; // mettre true pour obtenir en hidden ; mettre
+                                       // false pour
                                        // obtenir un select
         $form = new Form\Paiement(
             [
@@ -491,16 +484,17 @@ class FinanceController extends AbstractActionController
      */
     public function paiementSupprAction()
     {
-        // attention, la suppression d'un paiement déposé chez le comptable doit être accompagnée
-        // d'un archivage. Mettre en place un trigger.
+        // attention, la suppression d'un paiement déposé chez le comptable doit être
+        // accompagnée d'un archivage. Mettre en place un trigger.
         // Si des élèves sont inscrits, la suppression provoquera une alerte.
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session
-            // 'prg_post1' (Expire_Hops = 1)
+            // transforme un post en une redirection 303 avec le contenu de post en
+            // session 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à
+            // la liste
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return $this->redirect()->toRoute('sbmgestion/finance',
                 [
@@ -509,8 +503,8 @@ class FinanceController extends AbstractActionController
                 ]);
         }
         $args = $prg;
-        // si $args contient la clé 'cancel' (ou si paiementId n'est pas défini) c'est un abandon
-        // de l'action
+        // si $args contient la clé 'cancel' (ou si paiementId n'est pas défini) c'est un
+        // abandon de l'action
         if (array_key_exists('cancel', $args) || ! array_key_exists('paiementId', $args)) {
             $this->flashMessenger()->addWarningMessage(
                 "L'enregistrement n'a pas été supprimé.");
@@ -520,13 +514,27 @@ class FinanceController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        // Si responsable est passé, on le met en session afin de le retrouver si nécessaire (cas
-        // d'un formulaire non validé)
+        // Si responsable est passé, on le met en session afin de le retrouver si
+        // nécessaire (cas d'un formulaire non validé)
         if (\array_key_exists('responsable', $args)) {
             Session::set('responsable', $args['responsable'], $this->getSessionNamespace());
         }
-
-        $paiementId = $args['paiementId'];
+        $paiementId = StdLib::getParam('paiementId', $args, false);
+        if (! $paiementId) {
+            $this->flashMessenger()->addErrorMessage(
+                'La référence du paiement est inconnue.');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        $data = $tablePaiements->getRecord($paiementId);
+        $responsableId = $data->responsableId;
+        $relationResponsableEleves = new Where(null, Where::COMBINED_BY_OR);
+        $relationResponsableEleves->equalTo('responsable1Id', $responsableId)->equalTo(
+            'responsable2Id', $responsableId);
         $form = $this->form_manager->get(Finances\FinancePaiementSuppr::class);
         $form->setAttribute('action',
             $this->url()
@@ -534,15 +542,17 @@ class FinanceController extends AbstractActionController
                 [
                     'action' => 'paiement-suppr',
                     'page' => $this->params('page', 1)
-                ]));
-
-        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-
+                ]))
+            ->setValueOptions('eleveIds',
+            $this->db_manager->get('Sbm\Db\Select\Eleves')
+                ->elevesAbonnes($relationResponsableEleves));
         if (array_key_exists('submit', $args)) { // suppression confirmée
             $form->setData($args);
             if ($form->isValid()) {
-                $data = $tablePaiements->getRecord($paiementId);
                 $data->note = $args['note'];
+                $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+                $tableScolarites->setPaiement(Session::get('millesime'), $args['eleveIds'],
+                    false);
                 $tablePaiements->saveRecord($data);
                 $tablePaiements->deleteRecord($paiementId);
                 $this->flashMessenger()->addSuccessMessage(
@@ -556,12 +566,11 @@ class FinanceController extends AbstractActionController
                 $args['responsable'] = Session::get('responsable');
             }
         } else {
-            $form->setData($tablePaiements->getRecord($paiementId)
-                ->getArrayCopy());
+            $form->setData($data->getArrayCopy());
         }
         return new ViewModel(
             [
-                'data' => $tablePaiements->getRecord($paiementId),
+                'data' => $data,
                 'form' => $form->prepare(),
                 'page' => $this->params('page', 1),
                 'paiementId' => $paiementId,
@@ -710,12 +719,10 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * On reçoit en post les arguments suivants : url1_retour, url2_retour, h2, responsableId,
-     * responsable
-     * - h2 vaut 1 (sinon, pas de bouton pour arriver à cette action)
-     * - responsableId est un entier > 1
-     * - responsable contient le titre, le nom et le prénom du responsable (sous forme d'une
-     * chaine)
+     * On reçoit en post les arguments suivants : url1_retour, url2_retour, h2,
+     * responsableId, responsable - h2 vaut 1 (sinon, pas de bouton pour arriver à cette
+     * action) - responsableId est un entier > 1 - responsable contient le titre, le nom
+     * et le prénom du responsable (sous forme d'une chaine)
      */
     public function paiementDetailAction()
     {
@@ -754,7 +761,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'liste' => $tEleves->getElevesPayantsWithMontant($responsableId),
+                'liste' => $tEleves->getElevesPayantsWithGrille($responsableId),
                 'args' => $args,
                 'totalEncaisse' => $totalEncaisse,
                 'montantDuplicatas' => $montantDuplicatas
@@ -763,12 +770,10 @@ class FinanceController extends AbstractActionController
 
     /**
      * On arrive ici depuis la page de choix des impressions à réaliser (méthode
-     * paiementDepotAction).
-     * Ici, le paramètre page correspond au numéro du formulaire et sert à mettre en place les bons
-     * valueOptions.
-     * Le formulaire de choix n'est pas un ObjectData, aussi on n'utilise pas la méthode
-     * documentPdf du parent AbstactActionController.
-     * Le where est construit dans la méthode.
+     * paiementDepotAction). Ici, le paramètre page correspond au numéro du formulaire et
+     * sert à mettre en place les bons valueOptions. Le formulaire de choix n'est pas un
+     * ObjectData, aussi on n'utilise pas la méthode documentPdf du parent
+     * AbstactActionController. Le where est construit dans la méthode.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -811,7 +816,8 @@ class FinanceController extends AbstractActionController
             $call_pdf->setParam('documentId', 'Bordereau de remise de valeurs');
             $aKey = $sBordereaux->decode($args['bordereau']); // tableau de la forme
                                                               // ['dateBordereau' => date,
-                                                              // 'codeModeDePaiement' => code]
+                                                              // 'codeModeDePaiement' =>
+                                                              // code]
             $where = new Where();
             $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo(
                 'codeModeDePaiement', $aKey['codeModeDePaiement']);
@@ -849,8 +855,7 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * Liste des tarifs
-     * (avec pagination)
+     * Liste des tarifs (avec pagination)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -874,7 +879,10 @@ class FinanceController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator(
-                    $args['where']),
+                    $args['where'], [
+                        'grille',
+                        'nom'
+                    ]),
                 'effectifTarifs' => $effectifTarifs,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_tarifs', 10),
@@ -883,8 +891,7 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * Modification d'une fiche de tarif
-     * (la validation porte sur un champ csrf)
+     * Modification d'une fiche de tarif (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -939,7 +946,6 @@ class FinanceController extends AbstractActionController
      * Suppression d'une fiche avec confirmation
      *
      * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifSupprAction()
@@ -1010,8 +1016,7 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * Ajout d'une nouvelle fiche de tarif
-     * (la validation porte sur un champ csrf)
+     * Ajout d'une nouvelle fiche de tarif (la validation porte sur un champ csrf)
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -1064,7 +1069,6 @@ class FinanceController extends AbstractActionController
      * renvoie la liste des élèves inscrits pour un tarif donné
      *
      * @todo : à faire
-     *
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifGroupAction()
@@ -1096,7 +1100,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
                         'tarifId' => $tarifId
                     ], [
@@ -1113,9 +1117,9 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function tarifPdfAction()
     {
@@ -1361,14 +1365,13 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->
-                // ->paginatorByOrganisme(Session::get('millesime'), $organismeId, [
-                paginator(Session::get('millesime'), [
-                    'organismeId' => $organismeId
-                ], [
-                    'nom',
-                    'prenom'
-                ]),
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
+                    Session::get('millesime'), [
+                        'organismeId' => $organismeId
+                    ], [
+                        'nom',
+                        'prenom'
+                    ]),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'organisme' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->getRecord(
                     $organismeId),
@@ -1400,9 +1403,9 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * envoie un evenement contenant les paramètres de création d'un document pdf
-     * (le listener SbmPdf\Listener\PdfListener lancera la création du pdf)
-     * Il n'y a pas de vue associée à cette action puisque la response html est créée par \TCPDF
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function organismePdfAction()
     {

@@ -35,8 +35,8 @@ class Select extends ZendSelect
     private $recordSource;
 
     /**
-     * On passe le recordSource (sql string) par le constructeur.
-     * On ne peut plus passer la table.
+     * On passe le recordSource (sql string) par le constructeur. On ne peut plus passer
+     * la table.
      *
      * @param string $recordSource
      */
@@ -60,7 +60,6 @@ class Select extends ZendSelect
 
     /**
      * Surcharge de la méthode
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\Db\Sql\Select::processSelect()
@@ -169,7 +168,8 @@ class Select extends ZendSelect
         }
         $fromTable = $platform->quoteIdentifier($alias);
         $table = $this->renderTable($table, $fromTable, false);
-        if ($alias) {} else {
+        if ($alias) {
+        } else {
             $fromTable = $table;
         }
 

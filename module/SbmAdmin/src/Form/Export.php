@@ -3,14 +3,14 @@
  * Choix des données à exporter
  *
  * Donnée avec coordonnées géographiques
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Form
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2018
- * @version 2018-2.4.1
+ * @date 24 avr. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmAdmin\Form;
 
@@ -386,6 +386,7 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
     {
         $where = new Where();
         $where->literal('sco.inscrit=1')
+            ->literal('sco.selection=0')
             ->nest()
             ->literal('accordR1 = 1')->or->literal('accordR2 = 1')->unnest();
         $data = $this->getData();

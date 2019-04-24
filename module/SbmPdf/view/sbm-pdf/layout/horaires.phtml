@@ -67,11 +67,13 @@ if ($voirRemarque1) {
 if ($voirRemarque1) :
     ?>
 	<tr>
-		<th width="5%">N°<br>arrêt</th>
+		<th width="5%">N°<br>arrêt
+		</th>
 		<th width="8.5%">Horaire</th>
 		<th width="20%">Nom de l'arrêt</th>
 		<th width="13%">Emplacement</th>
-		<th width="6.5%">Nbre<br>élèves</th>
+		<th width="6.5%">Nbre<br>élèves
+		</th>
 		<th width="29%">Nom des élèves</th>
 		<th width="18%">Remarques</th>
 	</tr>
@@ -80,11 +82,13 @@ if ($voirRemarque1) :
 else :
     ?>
 	<tr>
-		<th width="5%">N°<br>arrêt</th>
+		<th width="5%">N°<br>arrêt
+		</th>
 		<th width="8.5%">Horaire</th>
 		<th width="25%">Nom de l'arrêt</th>
 		<th width="23%">Emplacement</th>
-		<th width="6.5%">Nbre<br>élèves</th>
+		<th width="6.5%">Nbre<br>élèves
+		</th>
 		<th width="32%">Nom des élèves</th>
 	</tr>
 	<?php
@@ -102,7 +106,7 @@ foreach ((array) $this->allerRetour['aller'] as $row) :
     ?>
 	<?php
 
-$nb = count($row["liste"]);
+    $nb = count($row["liste"]);
     $effectif += $nb;
     ?>
     <tr>
@@ -114,7 +118,7 @@ $nb = count($row["liste"]);
 		<td width="<?=$voirRemarque1 ? '29%' : '32%';?>"><?=implode("<br>", $row["liste"]);?></td>
 		<?php
 
-if ($voirRemarque1) :
+    if ($voirRemarque1) :
         ?>
 		<td width="18%"><?=$row["commentaire1"];?></td>
 		<?php endif;
@@ -122,7 +126,6 @@ if ($voirRemarque1) :
     ?>
 	</tr>
 <?php
-
 endforeach
 ;
 ?>
@@ -152,11 +155,13 @@ if ($voirRemarque2) {
 if ($voirRemarque2) :
     ?>
 	<tr>
-		<th width="5%">N°<br>arrêt</th>
+		<th width="5%">N°<br>arrêt
+		</th>
 		<th width="8.5%">Horaire</th>
 		<th width="20%">Nom de l'arrêt</th>
 		<th width="13%">Emplacement</th>
-		<th width="6.5%">Nbre<br>élèves</th>
+		<th width="6.5%">Nbre<br>élèves
+		</th>
 		<th width="29%">Nom des élèves</th>
 		<th width="18%">Remarques</th>
 	</tr>
@@ -189,7 +194,7 @@ foreach ((array) $this->allerRetour['retour'] as $row) :
     ?>
 	<?php
 
-$nb = count($row["liste"]);
+    $nb = count($row["liste"]);
     $effectif += $nb;
     ?>
     <tr>
@@ -205,7 +210,7 @@ $nb = count($row["liste"]);
 			<?=implode("<br>", $row["liste"]);?></td>
 		<?php
 
-if ($voirRemarque2) :
+    if ($voirRemarque2) :
         ?>
 		<td width="18%">
 			<?=$row["commentaire2"];?></td>
@@ -214,7 +219,6 @@ if ($voirRemarque2) :
     ?>
 	</tr>
 <?php
-
 endforeach
 ;
 ?>

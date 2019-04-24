@@ -4,13 +4,13 @@
  *
  * Seuls l'email et l'identité sont nécessaires. Le reste sera demandé lors de la première connexion (en particulier le mot de passe).
  * A noter que les éléments SbmCommun\Form\Element\NomPropre et SbmCommun\Form\Element\Prenom ont leur propre méthode getInputSpecification()
- * 
+ *
  * @project sbm
  * @package SbmFront/Form
  * @filesource CreerCompte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 sept. 2018
+ * @date 16 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Form;
@@ -192,10 +192,12 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
     {
         $result = parent::isValid();
         if ($result) {
-            // vérifier qu'un compte de même nom et prénom n'existe pas déjà parmi les responsables
+            // vérifier qu'un compte de même nom et prénom n'existe pas déjà parmi les
+            // responsables
             // et les users
             $filterSA = new SansAccent();
-            // d'abord dans la table user pour savoir s'il n'y a pas un compte avec un autre email
+            // d'abord dans la table user pour savoir s'il n'y a pas un compte avec un
+            // autre email
             $where = new Where();
             $where->equalTo('nom', $this->data['nom'])->equalTo('prenom',
                 $this->data['prenom']);
@@ -212,9 +214,8 @@ class CreerCompte extends AbstractSbmForm implements InputFilterProviderInterfac
                 ]);
                 $result = false;
             } else {
-                // ensuite dans la table responsables pour savoir si entretemps une inscription
-                // papier
-                // n'a pas été enregistrée cette année.
+                // ensuite dans la table responsables pour savoir si entretemps une
+                // inscription papier n'a pas été enregistrée cette année.
                 unset($where);
                 $nomSA = $filterSA->filter($this->data['nom']);
                 $prenomSA = $filterSA->filter($this->data['prenom']);

@@ -49,11 +49,10 @@ class EnvoiMail implements ListenerAggregateInterface
     private $config;
 
     /**
-     * Tableau défini dans les module.config.php et sbm.local.php sous la clé 'sbm' => 'mail' => []
-     * Ce tableau a pour clés 'transport', 'message' et 'destinataires'.
-     * Les destinaitaires sont les adresses de réception des messages adressés au service de
-     * transport.
-     * (non utilisé ici)
+     * Tableau défini dans les module.config.php et sbm.local.php sous la clé 'sbm' =>
+     * 'mail' => [] Ce tableau a pour clés 'transport', 'message' et 'destinataires'. Les
+     * destinaitaires sont les adresses de réception des messages adressés au service de
+     * transport. (non utilisé ici)
      *
      * @param array $config_mail
      */
@@ -99,11 +98,10 @@ class EnvoiMail implements ListenerAggregateInterface
 
     /**
      * Traitement de l'évènement 'sendMail'
-     *
      * Les paramètres de l'évènement (params) sont les données à enregistrer.
      *
      * @param Event $e
-     * 
+     *
      * @throws \SbmMail\Model\Exception
      */
     public function onSendMail(Event $e)
@@ -161,7 +159,7 @@ class EnvoiMail implements ListenerAggregateInterface
     }
 
     /**
-     * 
+     *
      * @param string|array $destinataire
      * @throws Exception
      * @return \Zend\Mail\Address
@@ -181,18 +179,17 @@ class EnvoiMail implements ListenerAggregateInterface
     }
 
     /**
-     * Met en place dans $mail passé par référence le corps du message, avec attachments, et le
-     * header (content-type).
+     * Met en place dans $mail passé par référence le corps du message, avec attachments,
+     * et le header (content-type).
      *
      * @param \Zend\Mail\Message $mail
-     *            message passé par référence auquel il faut mettre un body avec éventuellement des
-     *            attachments
+     *            message passé par référence auquel il faut mettre un body avec
+     *            éventuellement des attachments
      * @param array $bodyinfo
-     *            Les clés de ce tableau sont 'text', 'html' et 'files'.<ul>
-     *            <li>'text' => Texte du message à envoyer sans formatage</li>
-     *            <li>'html' => Texte du message à envoyer au format html</li>
-     *            <li>'files' => array (tableau simple de noms de fichiers avec leur
-     *            path)</li></ul>
+     *            Les clés de ce tableau sont 'text', 'html' et 'files'.<ul> <li>'text' =>
+     *            Texte du message à envoyer sans formatage</li> <li>'html' => Texte du
+     *            message à envoyer au format html</li> <li>'files' => array (tableau
+     *            simple de noms de fichiers avec leur path)</li></ul>
      * @param string $encoding
      *
      * @throws \SbmMail\Model\Exception

@@ -65,8 +65,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     private $filelog;
 
     /**
-     * Nom de la plateforme de paiement (correspond à un plugin cad à un sous-répertoire de
-     * SbmPaiement\Model)
+     * Nom de la plateforme de paiement (correspond à un plugin cad à un sous-répertoire
+     * de SbmPaiement\Model)
      *
      * @var string
      */
@@ -114,64 +114,46 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     protected $error_msg = '';
 
     /**
-     * Cette méthode est appelée à la fin de la méthode createService().
-     * createService() lit la configuration enregistrée dans les fichiers de configuration standard
-     * ZF2 :
-     * /config/autoload/sbm.global.php
-     * /config/autoload/sbm.local.php
+     * Cette méthode est appelée à la fin de la méthode createService(). createService()
+     * lit la configuration enregistrée dans les fichiers de configuration standard ZF2 :
+     * /config/autoload/sbm.global.php /config/autoload/sbm.local.php
      * /module/SbmPaiement/config/module.config.php
-     *
-     * init() pourra lire ou inclure le fichier de configuration propre à chaque plugin qui se
-     * trouve dans le dossier config du plugin. Par exemple :
+     * init() pourra lire ou inclure le fichier de configuration propre à chaque plugin
+     * qui se trouve dans le dossier config du plugin. Par exemple :
      * /module/SbmPaiement/src/SbmPaiement/Model/SystemPay/config/systempay.config.php
-     *
      * Après cet appel, la propriété config devra contenir toute la configuration.
      */
     abstract protected function init();
 
     /**
-     * Cette méthode est appelée par la méthode notification() pour controler la validité de la
-     * notification.
-     * Cela peut être un contrôle de la signature ou une analyse du contenu de la notification.
-     * S'il y a un problème, les propriétés error_no (n° d'erreur) et error_msg (message d'erreur)
-     * seront renseignées.
-     * Si un traitement est nécessaire sur les données reçues, les données sous leur nouveau format
-     * seront placées dans
-     * la propriété data de l'objet.
+     * Cette méthode est appelée par la méthode notification() pour controler la validité
+     * de la notification. Cela peut être un contrôle de la signature ou une analyse du
+     * contenu de la notification. S'il y a un problème, les propriétés error_no (n°
+     * d'erreur) et error_msg (message d'erreur) seront renseignées. Si un traitement est
+     * nécessaire sur les données reçues, les données sous leur nouveau format seront
+     * placées dans la propriété data de l'objet.
      */
     abstract protected function validNotification(Parameters $data);
 
     /**
-     * Analyse le contenu de la propriété data pour savoir si le paiement a été réalisé par la
-     * plateforme.
-     * S'il a échoué, les propriétés error_no (n° d'erreur) et error_msg (message d'erreur) seront
-     * renseignées.
-     * Si un traitement est nécessaire sur les données reçues, les données sous leur nouveau format
-     * seront placées dans la propriété data de l'objet, en remplacement des données initiales. En
-     * particulier, la référence de la commande sera analysée pour retrouver les éléments qu'elle
+     * Analyse le contenu de la propriété data pour savoir si le paiement a été réalisé
+     * par la plateforme. S'il a échoué, les propriétés error_no (n° d'erreur) et
+     * error_msg (message d'erreur) seront renseignées. Si un traitement est nécessaire
+     * sur les données reçues, les données sous leur nouveau format seront placées dans la
+     * propriété data de l'objet, en remplacement des données initiales. En particulier,
+     * la référence de la commande sera analysée pour retrouver les éléments qu'elle
      * contient. (En effet, la référence peut dépendre des contraintes de la plateforme)
      */
     abstract protected function validPaiement();
 
     /**
-     * Si le paiement est valide, il faut préparer les données en vue de l'envoie d'un évènement
-     * qui permettra le traitement dans les tables scolarites et paiements.
-     * Voici les clés du tableau à fournir dans la propriété paiement :
-     * - type : DEBIT ou CREDIT
-     * - paiement : tableau contenant
-     * - datePaiement
-     * - dateValeur
-     * - responsableId
-     * - anneeScolaire
-     * - exercice
-     * - montant
-     * - codeModeDePaiement
-     * - codeCaisse
-     * - reference
-     * Voici la composition de la propriété scolarites
-     * - type : DEBIT ou CREDIT
-     * - millesime
-     * - eleveIds (tableau des eleveId concernés)
+     * Si le paiement est valide, il faut préparer les données en vue de l'envoie d'un
+     * évènement qui permettra le traitement dans les tables scolarites et paiements.
+     * Voici les clés du tableau à fournir dans la propriété paiement : - type : DEBIT ou
+     * CREDIT - paiement : tableau contenant - datePaiement - dateValeur - responsableId -
+     * anneeScolaire - exercice - montant - codeModeDePaiement - codeCaisse - reference
+     * Voici la composition de la propriété scolarites - type : DEBIT ou CREDIT -
+     * millesime - eleveIds (tableau des eleveId concernés)
      */
     abstract protected function prepareData();
 
@@ -257,25 +239,23 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
 
     /**
      * Vérification de REMOTE_ADDR puis vérification propre à la plateforme.
-     *
-     * - si bon, lance un évènement 'paiementNotification' avec comme `target` le ServiceManager
-     * et comme `argv` le tableau des data préparé par la méthode validNotification()
-     * - si mauvais, enregistre l'appel dans un fichier log en précisant l'url de l'appel
-     * et enfin, retourne un message de compte-rendu.
-     *
-     * La méthode validNotification($data) peut affecter la propriété $data (à partir du paramètre
-     * passé).
-     * Si elle ne le fait pas, la propriété est affectée après la validation.
-     *
-     * Les méthodes validNotification($data) et validPaiement() affectent les propriétés $error
-     * (int) et $error_msg (string).
-     * S'il n'y a pas d'erreur, $error_no == 0 et $error_msg == '' (initialisé à la construction)
+     * - si bon, lance un évènement 'paiementNotification' avec comme `target` le
+     * ServiceManager et comme `argv` le tableau des data préparé par la méthode
+     * validNotification() - si mauvais, enregistre l'appel dans un fichier log en
+     * précisant l'url de l'appel et enfin, retourne un message de compte-rendu.
+     * La méthode validNotification($data) peut affecter la propriété $data (à partir du
+     * paramètre passé). Si elle ne le fait pas, la propriété est affectée après la
+     * validation.
+     * Les méthodes validNotification($data) et validPaiement() affectent les propriétés
+     * $error (int) et $error_msg (string). S'il n'y a pas d'erreur, $error_no == 0 et
+     * $error_msg == '' (initialisé à la construction)
      *
      * @param Parameters $data
      *            données transmises en POST
      * @param string $remote_addr
      *            adresse IP de l'appel
-     * @return <b>string|false</b> renvoie false si l'adresse REMOTE_ADDR n'est pas autorisée
+     * @return <b>string|false</b> renvoie false si l'adresse REMOTE_ADDR n'est pas
+     *         autorisée
      */
     public function notification(Parameters $data, $remote_addr = '')
     {
@@ -285,7 +265,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
                 if (! isset($this->data))
                     $this->data = $data;
                 if ($this->validPaiement()) {
-                    // log en INFO puis lance un évènement 'paiementOK' avec $this->data en
+                    // log en INFO puis lance un évènement 'paiementOK' avec $this->data
+                    // en
                     // paramètre
                     $this->logError(Logger::INFO,
                         $this->error_no ? $this->error_msg : 'Paiement OK', $data);
@@ -295,7 +276,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
                         $this->scolarite);
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 } else {
-                    // log en NOTICE puis lance un évènement 'paiementKO' avec $this->data en
+                    // log en NOTICE puis lance un évènement 'paiementKO' avec $this->data
+                    // en
                     // paramètre
                     $this->logError(Logger::NOTICE, 'Paiement KO : ' . $this->error_msg,
                         $data);
@@ -303,7 +285,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
                     return 'Notification reçue le ' . date('d/m/Y à H/i/s') . ' (UTC).';
                 }
             } else {
-                // log en ERR puis lance un évènement 'notificationError' avec $data en paramètre
+                // log en ERR puis lance un évènement 'notificationError' avec $data en
+                // paramètre
                 $this->logError(Logger::ERR, $this->error_msg, $data);
                 $this->getEventManager()->trigger('notificationError', null, $data);
                 return "Notification incorrecte reçue le " . date('d/m/Y à H/i/s') .
@@ -312,7 +295,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
         } else {
             // log en WARN puis lance un évènement 'notificationForbidden'
             $this->logError(Logger::WARN,
-                'Notification interdite: Adresse IP non autorisée', [
+                'Notification interdite: Adresse IP non autorisée',
+                [
                     $remote_addr,
                     $data
                 ]);
@@ -345,7 +329,6 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      *
      * @param string|array $key
      *            la clé
-     *            
      * @throws Exception
      * @return mixed
      */

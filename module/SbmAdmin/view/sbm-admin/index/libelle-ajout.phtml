@@ -7,7 +7,7 @@
  * @filesource libelle-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -37,15 +37,15 @@ $actions = [
 		<?= $this->form()->openTag($this->form);?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="libelle-ajout-nature" class="row-inner ajout">
+			<div id="wrapper-nature" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('nature')); ?></div>
-			<div id="libelle-ajout-code" class="row-inner ajout">
+			<div id="wrapper-code" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('code')); ?></div>
-			<div id="libelle-ajout-libelle" class="row-inner ajout">
+			<div id="wrapper-libelle" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('libelle')); ?></div>
-			<div id="libelle-ajout-ouvert" class="row-inner ajout">
+			<div id="wrapper-ouvert" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('ouvert')); ?></div>
-			<div id="libelle-ajout-buttons" class="row-inner ajout">  
+			<div id="wrapper-buttons" class="row-inner ajout">
         		<?= $this->formSubmit($this->form->get('submit'))?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 		</fieldset>

@@ -10,12 +10,13 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
+ * @date 24 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
+use SbmGestion\Model\Db\Service\EffectifInterface;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 
@@ -61,8 +62,9 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
     /**
      *
      * @param int $rang
-     *            prend la valeur 1 ou 2 afin de faire la laison de l'enregistrement du circuit sur
-     *            les couples (station1Id, circuit1Id) ou (station2Id, circuit2Id)
+     *            prend la valeur 1 ou 2 afin de faire la laison de l'enregistrement du
+     *            circuit sur les couples (station1Id, circuit1Id) ou (station2Id,
+     *            circuit2Id)
      * @param array $conditions
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
@@ -99,14 +101,13 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
     }
 
     /**
-     * Conditions adaptées à l'algorithme mis en oeuvre mais limité à une correspondance :<ul>
-     * <li>Pour une liaison sans correspondance, on regarde le couple (a.service1Id,
-     * a.station1Id)</li>
-     * <li>Pour une liaison avec correspondance, la correspondance est remarquée par la présence
-     * d'un a.service2Id.
-     * Dans ce cas, la station2Id du service1Id devient la station1Id du service2Id. On doit donc
-     * considérer le couple (a.service2Id, a.station2Id). On ne doit donc pas regarder les
-     * enregistrements éventuels ayant correspondance = 2</li></ul>
+     * Conditions adaptées à l'algorithme mis en oeuvre mais limité à une correspondance
+     * :<ul> <li>Pour une liaison sans correspondance, on regarde le couple (a.service1Id,
+     * a.station1Id)</li> <li>Pour une liaison avec correspondance, la correspondance est
+     * remarquée par la présence d'un a.service2Id. Dans ce cas, la station2Id du
+     * service1Id devient la station1Id du service2Id. On doit donc considérer le couple
+     * (a.service2Id, a.station2Id). On ne doit donc pas regarder les enregistrements
+     * éventuels ayant correspondance = 2</li></ul>
      *
      *
      * @param bool $sanspreinscrits
@@ -115,10 +116,12 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
      */
     private function getConditions(bool $sanspreinscrits)
     {
-        // getFiltreDemande car on compte les élèves transportés mais sur tous les services, y
+        // getFiltreDemande car on compte les élèves transportés mais sur tous les
+        // services, y
         // compris sur les correspondances
         $conditions = $this->getFiltreDemandes($sanspreinscrits);
-        // On ne prend que sur la correspondance 1 pour utiliser les couples (a.service1Id,
+        // On ne prend que sur la correspondance 1 pour utiliser les couples
+        // (a.service1Id,
         // a.station1Id) et éventuellement (a.service2Id, a.station2Id)
         $conditions['correspondance'] = 1;
         return $conditions;

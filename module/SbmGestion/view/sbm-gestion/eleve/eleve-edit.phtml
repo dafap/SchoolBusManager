@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 11 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -76,6 +76,8 @@ $url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
 ]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/eleve/eleve-edit.css'));
 $this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/edit.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
@@ -90,11 +92,10 @@ const ELEVE_ID = <?= $this->eleveId;?>;
 const IDENTITE = "<?= urlencode($this->identite)?>";
 const URL_ICI = "<?= $url_ici;?>";
 
-js_edit.init(<?= $disableAccordR1;?>, 
-    <?= $disableAccordR2;?>, 
-    <?= $this->subventions['R1'];?>, 
-    <?= $this->subventions['R2'];?>, 
-    <?= $this->historique['scolarite']['tarifs'];?>,
+js_edit.init(<?= $disableAccordR1;?>,
+    <?= $disableAccordR2;?>,
+    <?= $this->subventions['R1'];?>,
+    <?= $this->subventions['R2'];?>,
     <?= $this->flashMessage ? 0 : 1;?>);
 <?php
 $this->inlineScript()->captureEnd();
@@ -110,7 +111,8 @@ $hiddens = [
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
-        'formaction' => $url_ici, // traitement de cancel pour un redirectToOrigin()->back()
+        'formaction' => $url_ici, // traitement de cancel pour un
+                                   // redirectToOrigin()->back()
                                    // proprement
         'title' => 'Retour'
     ],
@@ -139,7 +141,7 @@ $actions = [
         <?php if ($this->flashMessage) :?>
             <ul class="warning">
 				<li><?= $this->flashMessage; ?></li>
-			</ul>            
+			</ul>
         <?php endif;?>
         </div>
 	</div>
@@ -154,8 +156,14 @@ $actions = [
 						<?= $this->formRow($this->form->get('nom'));?></div>
 					<div id="wrapper-prenom" class="row-inner edit">
 						<?= $this->formRow($this->form->get('prenom'));?></div>
-					<div id="wrapper-dateN" class="row-inner edit">
-						<?= $this->formRow($this->form->get('dateN'));?></div>
+					<div id="ligne-dateN-sexe">
+						<div id="wrapper-dateN" class="row-inner edit">
+							<?= $this->formRow($this->form->get('dateN'));?></div>
+						<div id="wrapper-sexe" class="row-inner table-cell align-right">
+						<?php $this->form->get('sexe')->setLabel('');?>
+						<?= $this->formRow($this->form->get('sexe'));?>
+					</div>
+					</div>
 					<div id="wrapper-joursTransport" class="row-inner edit">
 						<?= $this->formRow($this->form->get('joursTransport'));?></div>
 				</div>
@@ -165,10 +173,14 @@ $actions = [
 					<br> <span class='annee-precedente etablissement-precedent'>
 						<?= $this->scolarite_precedente['etablissement']; ?></span>
 					</div>
-					<div id="wrapper-classeId" class="row-inner edit">
-						<?= $this->formRow($this->form->get('classeId'));?>
-					<span class='annee-precedente classe-precedente'>
-						<?= $this->scolarite_precedente['classe']; ?></span>
+					<div id="ligne-classe-regime">
+						<div id="wrapper-classeId" class="row-inner edit">
+							<?= $this->formRow($this->form->get('classeId'));?>
+							<span class='annee-precedente classe-precedente'>
+							<?= $this->scolarite_precedente['classe']; ?></span>
+						</div>
+						<div id="wrapper-regime" class="row-inner table-cell">
+							<?=$this->formRow($this->form->get('regimeId'));?></div>
 					</div>
 					<div id="commun-col2-periode" class="clearfix">
 						<div id="wrapper-anneeComplete" class="row-inner edit float-left">
@@ -184,9 +196,6 @@ $actions = [
 						<div id="wrapper-motifDerogation"
 							class="row-inner edit float-left">
 							<?= $this->formRow($this->form->get('motifDerogation'));?></div>
-					</div>
-					<div id="wrapper-tarifId" class="row-inner edit">
-						<?= $this->formRow($this->form->get('tarifId'));?>
 					</div>
 				</div>
 				<div id="commun-col3" class="float-left left-10px">
@@ -247,7 +256,7 @@ $actions = [
 										<div id="wrapper-subventionr1">
 											<?= $this->formRow($this->form->get('subventionR1'));?></div>
 									</div>
-									<div id="wrapper-motifRefusr1" class="float-left">
+									<div id="wrapper-motifRefusr1" class="float-right">
 									<?= $this->formRow($this->form->get('motifRefusR1'));?></div>
 								</div>
 
@@ -382,11 +391,12 @@ $actions = [
 									<?= formatDate($this->historique['scolarite']['dateCarte']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
-							<h3>Duplicatas facturés</h3>
-							<!-- div id="#scolarite-tarif">
-								<div class="eleve-tabs-3-col-2-label">Droits d'inscription</div>
-								<span id="tabs-3-montant"></span>
-							</div -->
+							<h3>Participation familiale</h3>
+							<div id="#scolarite-tarif">
+								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
+								<span id="tabs-3-grilleTarif">
+									<?=$this->historique['scolarite']['grilleTarif'];?></span>
+							</div>
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
 								<span id="nbduplicata" class="right-10px">
@@ -431,7 +441,7 @@ $actions = [
 				<?= $this->formRow($this->form->get('note'));?></div>
 			</div>
 		</fieldset>
-		<div id="eleve-edit-buttons" class="row-inner edit left-95px">
+		<div id="wrapper-buttons" class="row-inner edit left-95px">
             <?= $this->formSubmit($this->form->get('submit'));?>
             <?= $this->formSubmit($this->form->get('cancel'));?>
         </div>
@@ -444,10 +454,8 @@ $actions = [
 
 // gestion des messages d'erreur à améliorer
 /*
- * if (count($this->form->getMessages())) {
- * echo '<p><u>DEBUG</u></p>';
- * var_dump($this->form->getMessages());
- * }
+ * if (count($this->form->getMessages())) { echo '<p><u>DEBUG</u></p>';
+ * var_dump($this->form->getMessages()); }
  */
 
 // formulaire invisible de l'envoi d'une photo

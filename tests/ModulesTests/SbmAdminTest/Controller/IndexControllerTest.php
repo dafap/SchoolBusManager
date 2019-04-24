@@ -42,7 +42,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertInstanceOf(RenderPdfService::class, $controller->RenderPdfService);
         $this->assertInstanceOf(DbManager::class, $controller->db_manager);
         $this->assertInstanceOf(ServiceManager::class, $controller->form_manager);
-        $this->assertInstanceOf(AuthenticationServiceFactory::class, 
+        $this->assertInstanceOf(AuthenticationServiceFactory::class,
             $controller->authenticate);
         $this->assertTrue(is_array($controller->paginator_count_per_page));
     }

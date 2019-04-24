@@ -54,7 +54,8 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     }
 
     /**
-     * On ne doit pas éliminer les correspondances car on compte par circuit ou par station.
+     * On ne doit pas éliminer les correspondances car on compte par circuit ou par
+     * station.
      *
      * @param bool $sanspreinscrits
      * @return array
@@ -65,8 +66,8 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     }
 
     /**
-     * On compte les affectations pour un millesime correspondant à un index2Id
-     * lorsqu'il n'a pas déjà été compté en index1Id et correspondance=2
+     * On compte les affectations pour un millesime correspondant à un index2Id lorsqu'il
+     * n'a pas déjà été compté en index1Id et correspondance=2
      *
      * @param string $index
      * @param array $conditions

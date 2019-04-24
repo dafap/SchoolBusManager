@@ -29,19 +29,16 @@ class TcpdfFonts
     }
 
     /**
-     * Renvoie un tableau des polices disponibles pour TcPdf dont les clés sont les noms internes
-     * des polices et les valeurs sont les noms visibles.
-     * (directement disponible pour peupler un SELECT dans un formulaire)
+     * Renvoie un tableau des polices disponibles pour TcPdf dont les clés sont les noms
+     * internes des polices et les valeurs sont les noms visibles. (directement disponible
+     * pour peupler un SELECT dans un formulaire)
      *
      * @param boolean $mono
      *            (si true, ne renvoie que les polices à espacement fixe)
-     *            
      * @throws \Exception
-     * @return array <p>Chaque ligne du tableau est de la forme file => name où :</p>
-     *         <ul>
-     *         <li>file est le nom interne de la police</li>
-     *         <li>name est le nom de la police qui apparaitra dans la liste déroulante.</li>
-     *         </ul>
+     * @return array <p>Chaque ligne du tableau est de la forme file => name où :</p> <ul>
+     *         <li>file est le nom interne de la police</li> <li>name est le nom de la
+     *         police qui apparaitra dans la liste déroulante.</li> </ul>
      */
     public function getFonts($mono = false)
     {
@@ -99,7 +96,8 @@ class TcpdfFonts
 
     private function getFontFeatures($php_file)
     {
-        $cw = $file = $name = $type = null; // ces variables peuvent être surchargées par l'include
+        $cw = $file = $name = $type = null; // ces variables peuvent être surchargées par
+                                            // l'include
         include $php_file;
 
         if (! isset($cw))

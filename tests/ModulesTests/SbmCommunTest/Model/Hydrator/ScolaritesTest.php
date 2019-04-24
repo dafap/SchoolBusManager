@@ -24,17 +24,15 @@ class ScolaritesTest extends PHPUnit_Framework_TestCase
     public function testDataInscription()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'millesime' => 2016,
-                'eleveId' => 233
-            ]);
-        $object->setArrayMask(
-            [
-                'millesime',
-                'eleveId',
-                'dateInscription'
-            ]);
+        $object->exchangeArray([
+            'millesime' => 2016,
+            'eleveId' => 233
+        ]);
+        $object->setArrayMask([
+            'millesime',
+            'eleveId',
+            'dateInscription'
+        ]);
         $object->addCalculateField('dateInscription');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -48,17 +46,15 @@ class ScolaritesTest extends PHPUnit_Framework_TestCase
     public function testDateModification()
     {
         $object = new ObjectData();
-        $object->exchangeArray(
-            [
-                'millesime' => 2016,
-                'eleveId' => 233
-            ]);
-        $object->setArrayMask(
-            [
-                'millesime',
-                'eleveId',
-                'dateModification'
-            ]);
+        $object->exchangeArray([
+            'millesime' => 2016,
+            'eleveId' => 233
+        ]);
+        $object->setArrayMask([
+            'millesime',
+            'eleveId',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);
@@ -79,12 +75,11 @@ class ScolaritesTest extends PHPUnit_Framework_TestCase
                 'eleveId' => 233,
                 'dateModification' => $ancienne_date
             ]);
-        $object->setArrayMask(
-            [
-                'millesime',
-                'eleveId',
-                'dateModification'
-            ]);
+        $object->setArrayMask([
+            'millesime',
+            'eleveId',
+            'dateModification'
+        ]);
         $object->addCalculateField('dateModification');
         $hydrator = new Hydrator();
         $data = $hydrator->extract($object);

@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 11 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -38,13 +38,14 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est
+                                            // vide
         return new ViewModel();
     }
 
     /**
-     * On ne peut pas utiliser la méthode initListe('eleves') parce que l'objectDataCriteres est
-     * différent (méthode getWhere particulière)
+     * On ne peut pas utiliser la méthode initListe('eleves') parce que
+     * l'objectDataCriteres est différent (méthode getWhere particulière)
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -54,16 +55,19 @@ class EleveController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (cas
+            // ce n'était pas un post. Prendre les paramètres éventuellement dans la
+            // session (cas
             // du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
-            // c'était un post ; on le met en session si ce n'est pas un retour ou un cancel
+            // c'était un post ; on le met en session si ce n'est pas un retour ou un
+            // cancel
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
-                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit.
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit.
                 // Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace());
@@ -101,7 +105,8 @@ class EleveController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas
         // de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
@@ -174,16 +179,13 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Si on arrive par post, on passera :
-     * - ajouter : uniquement la présence de la clé.
-     * En général c'est le nom du bouton submit.
-     * - orinine : url d'origine de l'appel pour assurer un retour par redirectToOrigin()->back()
-     * à la fin de l'opération (en général dans eleveEditAction()).
-     * Si on arrive par get, on s'assurera que redirectToOrigin()->setBack() a bien été fait avant.
-     *
-     * Lorsqu'on arrive par post, on enregistre en session le paramètre responsableId s'il existe
-     * ou 0 sinon.
-     * Lorsqu'on arrive par get, on récupère le responsableId en session. Il va permettre
+     * Si on arrive par post, on passera : - ajouter : uniquement la présence de la clé.
+     * En général c'est le nom du bouton submit. - orinine : url d'origine de l'appel pour
+     * assurer un retour par redirectToOrigin()->back() à la fin de l'opération (en
+     * général dans eleveEditAction()). Si on arrive par get, on s'assurera que
+     * redirectToOrigin()->setBack() a bien été fait avant. Lorsqu'on arrive par post, on
+     * enregistre en session le paramètre responsableId s'il existe ou 0 sinon. Lorsqu'on
+     * arrive par get, on récupère le responsableId en session. Il va permettre
      * d'initialiser le responsable1Id du formulaire.
      *
      *
@@ -191,7 +193,8 @@ class EleveController extends AbstractActionController
      */
     public function eleveAjoutAction()
     {
-        $page = $this->params('page', 1); // paramètre du retour à la liste à la fin du processus
+        $page = $this->params('page', 1); // paramètre du retour à la liste à la fin du
+                                          // processus
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -259,7 +262,8 @@ class EleveController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $odata = $form->getData();
-                // les valeurs obligatoires sont prises dans odata, responsable2Id est pris dans
+                // les valeurs obligatoires sont prises dans odata, responsable2Id est
+                // pris dans
                 // args pour éviter de gérer les exceptions
                 $where = new Where();
                 $filtreSA = new \SbmCommun\Filter\SansAccent();
@@ -291,7 +295,8 @@ class EleveController extends AbstractActionController
         return new ViewModel(
             [
                 'page' => $page,
-                // form est le formulaire si les données ne sont pas validées (ou pas de données)
+                // form est le formulaire si les données ne sont pas validées (ou pas de
+                // données)
                 'form' => is_null($form) ? $form : $form->prepare(),
                 // liste est null ou est un resultset à parcourir pour montrer la liste
                 'eleves' => $resultset,
@@ -301,16 +306,11 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Reçoit un post avec :
-     * - eleveId d'un élève existant
-     * - info (nom prénom)
-     * Met ces informations en session.
-     * On reviendra ici en cas d'entrée par GET ultérieure (F5 ou back)
-     * Vérifie si la fiche scolarité existe pour cette année courante et oriente sur
-     * - si oui : eleveEditAction()
-     * - si non : eleveAjout31Action()
-     * On arrive ici obligatoirement par un post.
-     * Il n'y a pas de view associée.
+     * Reçoit un post avec : - eleveId d'un élève existant - info (nom prénom) Met ces
+     * informations en session. On reviendra ici en cas d'entrée par GET ultérieure (F5 ou
+     * back) Vérifie si la fiche scolarité existe pour cette année courante et oriente sur
+     * - si oui : eleveEditAction() - si non : eleveAjout31Action() On arrive ici
+     * obligatoirement par un post. Il n'y a pas de view associée.
      */
     public function eleveAjout21Action()
     {
@@ -359,17 +359,14 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Création de la fiche dans la table eleve et récupération de son eleveId
-     * puis passage en deleveAjout31Action()
-     * L'entrée se fait :
-     * - directement depuis eleveAjoutAction() s'il n'y a pas d'enregistrement ayant ces
-     * caractéristiques.
-     * Dans ce cas, le paramètre odata porte les informations à enregistrer.
-     * - par appel POST depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une
-     * nouvelle fiche.
-     * Dans ce cas, les paramètres reçus par POST sont :
-     * - le contenu du formulaire AddElevePhase1 renvoyé par des hiddens depuis la liste
-     * Le retour par get est interdit afin d'éviter de recréer cet enregistrement.
+     * Création de la fiche dans la table eleve et récupération de son eleveId puis
+     * passage en deleveAjout31Action() L'entrée se fait : - directement depuis
+     * eleveAjoutAction() s'il n'y a pas d'enregistrement ayant ces caractéristiques. Dans
+     * ce cas, le paramètre odata porte les informations à enregistrer. - par appel POST
+     * depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une nouvelle
+     * fiche. Dans ce cas, les paramètres reçus par POST sont : - le contenu du formulaire
+     * AddElevePhase1 renvoyé par des hiddens depuis la liste Le retour par get est
+     * interdit afin d'éviter de recréer cet enregistrement.
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $odata
      *
@@ -377,7 +374,8 @@ class EleveController extends AbstractActionController
      */
     public function eleveAjout22Action($odata = null)
     {
-        $page = $this->params('page', 1); // pour le retour à la liste à la fin du processus
+        $page = $this->params('page', 1); // pour le retour à la liste à la fin du
+                                          // processus
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         if (is_null($odata)) {
             $prg = $this->prg();
@@ -405,15 +403,13 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Il s'agit de compléter les informations de scolarité pour un élève existant.
-     * Donc en cas de F5 ou back
-     * on doit revenir en eleveAjout21Action() car la fiche eleve existe.
-     *
-     * L'entrée initiale se fait toujours par un appel fonction.
-     * On montre le formulaire AddElevePhase2 pour compléter les informations de scolarités.
-     * L'entrée par POST correspond au retour du formulaire et contient donc obligatoirement
-     * un 'cancel' ou un 'submit' et dans ce dernier cas les données doivent être validées par le
-     * formulaire.
+     * Il s'agit de compléter les informations de scolarité pour un élève existant. Donc
+     * en cas de F5 ou back on doit revenir en eleveAjout21Action() car la fiche eleve
+     * existe. L'entrée initiale se fait toujours par un appel fonction. On montre le
+     * formulaire AddElevePhase2 pour compléter les informations de scolarités. L'entrée
+     * par POST correspond au retour du formulaire et contient donc obligatoirement un
+     * 'cancel' ou un 'submit' et dans ce dernier cas les données doivent être validées
+     * par le formulaire.
      *
      * @param string $eleveId
      * @param string $info
@@ -428,7 +424,8 @@ class EleveController extends AbstractActionController
             if ($prg instanceof Response) {
                 return $prg;
             } elseif ($prg === false) {
-                // Cela pourrait être F5 ou back du navigateur. Il faut savoir si la fiche a été
+                // Cela pourrait être F5 ou back du navigateur. Il faut savoir si la fiche
+                // a été
                 // créée.
                 // On reviendra donc toujours à eleveAjout21Action() pour vérifier.
                 return $this->redirect()->toRoute('sbmgestion/eleve',
@@ -465,11 +462,10 @@ class EleveController extends AbstractActionController
                 $ispost = array_key_exists('submit', $args);
             }
         }
-        // ici on a un eleveId qui possède une fiche dans la table eleves et pour lequel on doit
-        // saisir la scolarite
+        // ici on a un eleveId qui possède une fiche dans la table eleves et pour lequel
+        // on doit saisir la scolarite
         $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $form = $this->form_manager->get(FormEleve\AddElevePhase2::class);
-
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/eleve',
@@ -483,9 +479,6 @@ class EleveController extends AbstractActionController
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
-            ->setValueOptions('tarifId',
-            $this->db_manager->get('Sbm\Db\Select\Tarifs')
-                ->grille(1))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
@@ -494,9 +487,16 @@ class EleveController extends AbstractActionController
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
                 $odata->internet = 0;
-                // ATTENTION - la version decazeville ajoute ici le choix du tarif en fonction de
-                // la date d'enregistrement
-                $tableScolarites->saveRecord($odata);
+                $recalcul = $tableScolarites->saveRecord($odata);
+                if ($recalcul) {
+                    $majDistances = $this->cartographie_manager->get(
+                        'Sbm\CalculDroitsTransport');
+                    try {
+                        $majDistances->majDistancesDistrict($eleveId);
+                    } catch (\Exception $e) {
+                        die($e->getMessage());
+                    }
+                }
                 $viewModel = $this->eleveEditAction(
                     [
                         'eleveId' => $eleveId,
@@ -520,6 +520,7 @@ class EleveController extends AbstractActionController
                 'responsable2Id' => isset($data['responsable2Id']) ? $data['responsable2Id'] : '',
                 'dateDebut' => Session::get('as')['dateDebut'],
                 'dateFin' => Session::get('as')['dateFin'],
+                'regimeId' => 0,
                 'demandeR1' => 1,
                 'demandeR2' => 0
             ]);
@@ -544,15 +545,11 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Cette méthode est généralement appelée par post et reçoit
-     * - eleveId
-     * - info
-     * - origine (optionnel) ou group (optionnel)
-     * - op = 'modifier' ou 'ajouter'
-     * Elle peut être appelée en passant un paramètre $args qui sera un tableau contenant ces 4
-     * clés.
-     * Mais si on arrive par eleveAjoutAction() on ne passera pas origine car le redirectToOrigin()
-     * est déjà en place.
+     * Cette méthode est généralement appelée par post et reçoit - eleveId - info -
+     * origine (optionnel) ou group (optionnel) - op = 'modifier' ou 'ajouter' Elle peut
+     * être appelée en passant un paramètre $args qui sera un tableau contenant ces 4
+     * clés. Mais si on arrive par eleveAjoutAction() on ne passera pas origine car le
+     * redirectToOrigin() est déjà en place.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -640,12 +637,8 @@ class EleveController extends AbstractActionController
         }
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-        // Ces tarifId1 et tarifId2 servent au js pour donner une valeur par défaut
-        // lorsque la coche AnneeComplete est mise ou retirée
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        $aTarifs = $tTarifs->getTarifs();
-        // ATTENTION Pour la version Decazeville, ajouter les lignes de définition de $tarifId1 et
-        // $tarifId2
+        // ATTENTION Pour la version de Millau on n'a besoin que des grilles tarifaires
         $qAffectations = $this->db_manager->get(
             'Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
@@ -693,7 +686,8 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
         $historique['scolarite']['dateCarte'] = $odata1->dateCarte;
-        $historique['scolarite']['tarifs'] = json_encode($aTarifs);
+        $historique['scolarite']['grilleTarif'] = $tTarifs->getGrille(
+            $odata1->grilleTarif);
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
 
@@ -712,20 +706,16 @@ class EleveController extends AbstractActionController
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
-            ->setValueOptions('tarifId',
-            $this->db_manager->get('Sbm\Db\Select\Tarifs')
-                ->grille(1))
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'));
         if (array_key_exists('submit', $args)) {
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
                 $dataValid = array_merge([
-
                     'millesime' => $millesime
                 ], $form->getData());
-                // changeR1 et changeR2 indiquent s'il faut mette à jour en cascade le changement
-                // de responsable dans la table affectations
+                // changeR1 et changeR2 indiquent s'il faut mette à jour en cascade le
+                // changement de responsable dans la table affectations
                 if (! $dataValid['ga'] && ! empty($dataValid['responsable2Id'])) {
                     $dataValid['responsable2Id'] = '';
                 }
@@ -748,7 +738,8 @@ class EleveController extends AbstractActionController
                 }
                 if ($changeR2) {
                     if (empty($dataValid['responsable2Id'])) {
-                        // suppression des affectations relatives à cet élève pour ce millesime
+                        // suppression des affectations relatives à cet élève pour ce
+                        // millesime
                         $tAffectations->deleteResponsableId($millesime, $eleveId,
                             $odata0->responsable2Id);
                         $dataValid['demandeR2'] = 0;
@@ -760,14 +751,13 @@ class EleveController extends AbstractActionController
                 }
                 // enregistrement dans la table scolarites
                 $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
-
                 $recalcul = $tScolarites->saveRecord($odata);
-                // recalcul des droits et des distances en cas de modification de la destination ou
-                // d'une origine
+                // recalcul des droits et des distances en cas de modification de la
+                // destination ou d'une origine
                 if ($recalcul || $changeR1 || $changeR2) {
                     $majDistances = $this->cartographie_manager->get(
                         'Sbm\CalculDroitsTransport');
-                    if ($odata1->district) {
+                    if ($odata1->avoirDroits() && $odata->regimeId == $odata1->regimeId) {
                         $majDistances->majDistancesDistrictSansPerte($eleveId);
                     } else {
                         try {
@@ -997,16 +987,14 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * On reçoit par post un paramètre 'documentId' qui peut être numérique (le documentId de la
-     * table documents) ou
-     * une chaine de caractères.
-     * Dans ce cas, cela peut être le name du document ou le libelle de docaffectations et
-     * alors le paramètre id passé par post contient docaffectationId.
-     * On lit les critères définis dans le formulaire de critères de eleve-liste (en session avec
-     * le sessionNameSpace de eleveListeAction).
-     * On transmet le where pour les documents basés sur une table ou vue sql et les tableaux
-     * expression, criteres et strict pour
-     * ceux basés sur une requête SQL.
+     * On reçoit par post un paramètre 'documentId' qui peut être numérique (le documentId
+     * de la table documents) ou une chaine de caractères. Dans ce cas, cela peut être le
+     * name du document ou le libelle de docaffectations et alors le paramètre id passé
+     * par post contient docaffectationId. On lit les critères définis dans le formulaire
+     * de critères de eleve-liste (en session avec le sessionNameSpace de
+     * eleveListeAction). On transmet le where pour les documents basés sur une table ou
+     * vue sql et les tableaux expression, criteres et strict pour ceux basés sur une
+     * requête SQL.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -1124,7 +1112,8 @@ class EleveController extends AbstractActionController
             try {
                 $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord(
                     $args['eleveId']);
-            } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {}
+            } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            }
             $this->flashMessenger()->addSuccessMessage('L\'inscription a été supprimée.');
             return $this->redirect()->toRoute('sbmgestion/eleve',
                 [
@@ -1232,7 +1221,8 @@ class EleveController extends AbstractActionController
         // nécessaire pour valider lat et lng
         $configCarte = StdLib::getParam('gestion',
             $this->cartographie_manager->get('cartes'));
-        // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un élève. Le
+        // ici, il faut un formulaire permettant de saisir l'adresse particulière d'un
+        // élève. Le
         // tout est enregistré dans scolarites
         $form = new FormEleve\LocalisationAdresse($configCarte['valide']);
         $form->setAttribute('action',
@@ -1381,12 +1371,11 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Liste des responsables
-     * Passer nbEnfants, nbInscrits et nbPreinscrits en strict parce qu'on recherche l'égalité et
-     * que l'on veut pouvoir compter les "== 0"
-     * Ici, le formulaire de critères utilise des alias de champs puisque certains champs doivent
-     * être préfixés pour lever les ambiguités
-     * (voir requête 'Sbm\Db\Query\Responsables') et d'autres sont des expressions.
+     * Liste des responsables Passer nbEnfants, nbInscrits et nbPreinscrits en strict
+     * parce qu'on recherche l'égalité et que l'on veut pouvoir compter les "== 0" Ici, le
+     * formulaire de critères utilise des alias de champs puisque certains champs doivent
+     * être préfixés pour lever les ambiguités (voir requête 'Sbm\Db\Query\Responsables')
+     * et d'autres sont des expressions.
      *
      * @return ViewModel
      */
@@ -1446,18 +1435,21 @@ class EleveController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session
+            // transforme un post en une redirection 303 avec le contenu de post en
+            // session
             // 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à la liste
+            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à
+            // la liste
             return $this->redirect()->toRoute('sbmgestion/eleve',
                 [
                     'action' => 'responsable-liste',
                     'page' => $currentPage
                 ]);
         }
-        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du post sont
+        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du
+        // post sont
         // dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
         $args = $prg;
         // si $args contient la clé 'cancel' c'est un abandon de l'action
@@ -1494,10 +1486,8 @@ class EleveController extends AbstractActionController
                 }
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
                 /*
-                 * return $this->redirect()->toRoute('sbmgestion/eleve', [
-                 * 'action' => 'responsable-liste',
-                 * 'page' => $currentPage
-                 * ));
+                 * return $this->redirect()->toRoute('sbmgestion/eleve', [ 'action' =>
+                 * 'responsable-liste', 'page' => $currentPage ));
                  */
                 $viewmodel = $this->responsableLocalisationAction(
                     $tableResponsables->getLastResponsableId(), $currentPage);
@@ -1522,7 +1512,8 @@ class EleveController extends AbstractActionController
         // utilisation de PostRedirectGet par mesure de sécurité
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en session
+            // transforme un post en une redirection 303 avec le contenu de post en
+            // session
             // 'prg_post1' (Expire_Hops = 1)
             return $prg;
         } elseif ($prg === false) {
@@ -2025,8 +2016,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Envoie un mail à un responsable.
-     * Reçoit en post les paramètres 'responsable', 'email', 'group' où group est l'url de retour
+     * Envoie un mail à un responsable. Reçoit en post les paramètres 'responsable',
+     * 'email', 'group' où group est l'url de retour
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -2296,26 +2287,16 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * GESTION DES PHOTOS
-     * Cette méthode affiche le formulaire.
-     * Le traitement se fait en AJAX pour
-     * - afficher un progressbar
-     * - afficher la photo après succès pendant 3 secondes
-     * - afficher un message pendant 3 secondes si il y a une erreur
-     * - quitter si on clique sur le bouton Abandonner
-     *
-     * La méthode envoiphotoAction() doit récupérer les paramètres POST suivants :
-     * - eleveId
-     * - info : nom prénom de l'élève (optionnel)
-     * - origine ou group : au choix, adresse de retour après envoi (succès ou échec)
-     * Les autres paramètres POST ne servent pas :
-     * - op : optionnel, vide, ne sert pas
-     * - email : optionnel, ne sert pas
-     * - responsable : optionnel, ne sert pas
-     *
-     * Elle dispose en GET de :
-     * - page : pas utile puisque c'est déjà dans origine ou dans group
-     * - id : optionnel, pas utile non plus
+     * GESTION DES PHOTOS Cette méthode affiche le formulaire. Le traitement se fait en
+     * AJAX pour - afficher un progressbar - afficher la photo après succès pendant 3
+     * secondes - afficher un message pendant 3 secondes si il y a une erreur - quitter si
+     * on clique sur le bouton Abandonner La méthode envoiphotoAction() doit récupérer les
+     * paramètres POST suivants : - eleveId - info : nom prénom de l'élève (optionnel) -
+     * origine ou group : au choix, adresse de retour après envoi (succès ou échec) Les
+     * autres paramètres POST ne servent pas : - op : optionnel, vide, ne sert pas - email
+     * : optionnel, ne sert pas - responsable : optionnel, ne sert pas Elle dispose en GET
+     * de : - page : pas utile puisque c'est déjà dans origine ou dans group - id :
+     * optionnel, pas utile non plus
      */
     public function envoiphotoAction()
     {

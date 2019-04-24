@@ -39,17 +39,20 @@ class ConfigControllerTest extends AbstractHttpControllerTestCase
 
     public function testEmailChangeActionResponse()
     {
-        // $this->assertInstanceOf(Response::class, $this->controller->emailChangeAction());
+        // $this->assertInstanceOf(Response::class,
+        // $this->controller->emailChangeAction());
     }
 
     public function testIndexChangeActionResponse()
     {
-        // $this->assertInstanceOf(Response::class, $this->controller->indexChangeAction());
+        // $this->assertInstanceOf(Response::class,
+        // $this->controller->indexChangeAction());
     }
 
     public function testLocalisationActionResponse()
     {
-        // $this->assertInstanceOf(Response::class, $this->controller->localisationAction());
+        // $this->assertInstanceOf(Response::class,
+        // $this->controller->localisationAction());
     }
 
     public function testMdpChangeActionResponse()
@@ -64,6 +67,7 @@ class ConfigControllerTest extends AbstractHttpControllerTestCase
 
     public function testModifCompteActionResponse()
     {
-        // $this->assertInstanceOf(Response::class, $this->controller->modifCompteAction());
+        // $this->assertInstanceOf(Response::class,
+        // $this->controller->modifCompteAction());
     }
 }

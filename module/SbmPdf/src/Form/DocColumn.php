@@ -567,7 +567,8 @@ class DocColumn extends Form implements InputFilterProviderInterface
                 if (! is_null($type) && $type == 'text') {
                     $e->setAttribute('maxlength', $maxLength);
                 }
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
         }
     }
 

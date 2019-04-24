@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/etablissement-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 30 mars 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -47,67 +47,67 @@ $actions = [
         <?= $this->formHidden($this->form->get('csrf'));?>
 		<fieldset class="sbm-page1 clearfix">
 			<div class="float-left cols-1">
-				<div id="etablissement-ajout-etablissementId"
+				<div id="wrapper-etablissementId"
 					class="row-inner ajout">
 					<?= $this->formRow($this->form->get('etablissementId')); ?></div>
-				<div id="etablissement-ajout-nom" class="row-inner ajout">
+				<div id="wrapper-nom" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('nom')); ?></div>
-				<div id="etablissement-ajout-alias" class="row-inner ajout">
+				<div id="wrapper-alias" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('alias')); ?></div>
-				<div id="etablissement-ajout-adresse1" class="row-inner ajout">
+				<div id="wrapper-adresse1" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('adresse1')); ?></div>
-				<div id="etablissement-ajout-adresse2" class="row-inner ajout">
+				<div id="wrapper-adresse2" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('adresse2')); ?></div>
-				<div id="etablissement-ajout-codePostal" class="row-inner ajout">
+				<div id="wrapper-codePostal" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('codePostal')); ?></div>
-				<div id="etablissement-ajout-communeId" class="row-inner ajout">
+				<div id="wrapper-communeId" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('communeId')); ?></div>
-				<div id="etablissement-ajout-telephone" class="row-inner ajout">
+				<div id="wrapper-telephone" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('telephone')); ?></div>
-				<div id="etablissement-ajout-fax" class="row-inner ajout">
+				<div id="wrapper-fax" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('fax')); ?></div>
-				<div id="etablissement-ajout-email" class="row-inner ajout">
+				<div id="wrapper-email" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('email')); ?></div>
-				<div id="etablissement-ajout-directeur" class="row-inner ajout">
+				<div id="wrapper-directeur" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('directeur')); ?></div>
-				<div id="etablissement-ajout-regrPeda" class="row-inner ajout">
+				<div id="wrapper-regrPeda" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('regrPeda')); ?></div>
-				<div id="etablissement-ajout-rattacheA" class="row-inner ajout">
+				<div id="wrapper-rattacheA" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('rattacheA')); ?></div>
-				<div id="etablissement-ajout-x" class="row-inner ajout">
+				<div id="wrapper-x" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('x')); ?></div>
-				<div id="etablissement-ajout-y" class="row-inner ajout">
+				<div id="wrapper-y" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('y')); ?></div>
-				<div id="etablissement-edit-desservie" class="row-inner edit">
+				<div id="wrapper-edit-desservie" class="row-inner edit">
 					<?= $this->formRow($this->form->get('desservie')); ?></div>
-				<div id="etablissement-ajout-visible" class="row-inner ajout">
+				<div id="wrapper-visible" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('visible')); ?></div>
 			</div>
 			<div class="float-left cols-2">
-				<div id="etablissement-ajout-niveau" class="row-inner ajout">
+				<div id="wrapper-niveau" class="row-inner ajout">
 					<?= $this->formRow($this->form->get('niveau')); ?></div>
-				<div id="etablissement-ajout-statut"
+				<div id="wrapper-statut"
 					class="row-inner ajout multicheckbox">
 					<?= $this->formRow($this->form->get('statut')); ?></div>
-				<div id="etablissement-ajout-jOuverture"
+				<div id="wrapper-jOuverture"
 					class="row-inner ajout multicheckbox">
 					<?= $this->formRow($this->form->get('jOuverture')); ?></div>
 				<div class="clearfix">
 					<div id="horaires-matin" class="row-inner ajout float-left cols-3">
 						<fieldset class="">
 							<legend>Horaires du matin</legend>
-							<div id="etablissement-ajout-hMatin" class="row-inner ajout">
+							<div id="wrapper-hMatin" class="row-inner ajout">
 								<?= $this->formRow($this->form->get('hMatin')); ?></div>
-							<div id="etablissement-ajout-hMidi" class="row-inner ajout">
+							<div id="wrapper-hMidi" class="row-inner ajout">
 								<?= $this->formRow($this->form->get('hMidi')); ?></div>
 						</fieldset>
 					</div>
 					<div id="horaires-soir" class="row-inner ajout float-left cols-3">
 						<fieldset class="">
 							<legend>Horaires de l'après-midi</legend>
-							<div id="etablissement-ajout-hAMidi" class="row-inner ajout">
+							<div id="wrapper-hAMidi" class="row-inner ajout">
 								<?= $this->formRow($this->form->get('hAMidi')); ?></div>
-							<div id="etablissement-ajout-hSoir" class="row-inner ajout">
+							<div id="wrapper-hSoir" class="row-inner ajout">
 								<?= $this->formRow($this->form->get('hSoir')); ?></div>
 						</fieldset>
 					</div>
@@ -117,7 +117,7 @@ $actions = [
 						class="row-inner ajout float-left cols-3">
 						<fieldset class="rows-2">
 							<legend>Ouverture de la garderie</legend>
-							<div id="etablissement-ajout-hGarderieOMatin"
+							<div id="wrapper-hGarderieOMatin"
 								class="row-inner ajout float-left">
 								<?= $this->formRow($this->form->get('hGarderieOMatin')); ?>
 								</div>
@@ -127,17 +127,17 @@ $actions = [
 						class="row-inner ajout float-left cols-3">
 						<fieldset>
 							<legend>Fermeture de la garderie</legend>
-							<div id="etablissement-ajout-hGarderieFSoir"
+							<div id="wrapper-hGarderieFSoir"
 								class="row-inner ajout float-left">
 								<?= $this->formRow($this->form->get('hGarderieFSoir')); ?>
 								</div>
-							<div id="etablissement-ajout-hGarderieFMidi"
+							<div id="wrapper-hGarderieFMidi"
 								class="row-inner ajout float-left">
 								<?= $this->formRow($this->form->get('hGarderieFMidi')); ?>
 								</div>
 						</fieldset>
 					</div>
-					<div id="etablissement-ajout-buttons" class="row-inner ajout">
+					<div id="wrapper-buttons" class="row-inner ajout">
     					<?= $this->formSubmit($this->form->get('submit'));?>
     					<?= $this->formSubmit($this->form->get('cancel'));?>
     				</div>
