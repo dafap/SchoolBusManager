@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 25 avr. 2019
  * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
@@ -33,8 +33,10 @@ class Calculs extends AbstractQuery
     /**
      * Renvoie les résultats d'analyse
      *
-     * @param mixed $param
+     * @param int $responsableId
+     * @param array $arrayEleveId
      * @param bool $force
+     *            force l'analyse, même si elle a déjà été faite
      * @return \SbmCommun\Model\Paiements\Resultats
      */
     public function getResultats(int $responsableId, array $arrayEleveId = null,
@@ -51,7 +53,7 @@ class Calculs extends AbstractQuery
      * @param int $responsableId
      * @param array $arrayEleveid
      */
-    private function analyse($responsableId, $arrayEleveId)
+    private function analyse(int $responsableId, array $arrayEleveId = null)
     {
         $this->resultats->setResponsableId($responsableId);
         $this->resultats->setArrayEleveId($arrayEleveId);
@@ -61,6 +63,10 @@ class Calculs extends AbstractQuery
         }
     }
 
+    /**
+     *
+     * @param int $responsableId
+     */
     private function analyseResponsable(int $responsableId)
     {
         $this->calculAbonnementsResponsable($responsableId);
@@ -68,6 +74,10 @@ class Calculs extends AbstractQuery
         $this->calculPaiementsResponsable($responsableId);
     }
 
+    /**
+     *
+     * @param array $arrayEleveId
+     */
     private function analyseListeEleves(array $arrayEleveId)
     {
         if (empty($arrayEleveId)) {
@@ -91,7 +101,11 @@ class Calculs extends AbstractQuery
             'responsable2Id', $responsableId);
     }
 
-    private function calculAbonnementsResponsable($responsableId)
+    /**
+     *
+     * @param int $responsableId
+     */
+    private function calculAbonnementsResponsable(int $responsableId)
     {
         $where = new Where(
             [
@@ -103,6 +117,10 @@ class Calculs extends AbstractQuery
         $this->appliquerGrilleTarif('tous', $this->selectAbonnementsEleves($where));
     }
 
+    /**
+     *
+     * @param array $arrayEleveId
+     */
     private function calculAbonnementsListeEleves(array $arrayEleveId)
     {
         $where = new Where();
@@ -111,7 +129,13 @@ class Calculs extends AbstractQuery
         ;
     }
 
-    private function appliquerGrilleTarif($nature, $select)
+    /**
+     *
+     * @param string $nature
+     *            'tous' ou 'inscrits' ou 'liste'
+     * @param \Zend\Db\Sql\Select $select
+     */
+    private function appliquerGrilleTarif(string $nature, \Zend\Db\Sql\Select $select)
     {
         $effectifsParGrilleTarif = $this->renderResult($select);
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
@@ -126,20 +150,26 @@ class Calculs extends AbstractQuery
             ];
             $montantAbonnements += $montantGrille;
         }
-        $this->resultats->setAbonnements($nature,
-            [
-                'detailAbonnements' => $detailAbonnements,
-                'montantAbonnements' => $montantAbonnements
-            ]);
+        $this->resultats->setAbonnementsMontant($nature, $montantAbonnements);
+        $this->resultats->setAbonnementsDetail($nature, $detailAbonnements);
+        ;
     }
 
-    private function calculDuplicatasResponsables($responsableId)
+    /**
+     *
+     * @param int $responsableId
+     */
+    private function calculDuplicatasResponsables(int $responsableId)
     {
         $this->compterDuplicatas('tous',
             $this->selectDuplicatasParEleve(
                 $this->relationResponsableEleves($responsableId)));
     }
 
+    /**
+     *
+     * @param array $arrayEleveId
+     */
     private function calculDuplicatasListeEleves(array $arrayEleveId)
     {
         $where = new Where();
@@ -147,50 +177,74 @@ class Calculs extends AbstractQuery
         $this->compterDuplicatas('liste', $this->selectDuplicatasParEleve($where));
     }
 
-    private function compterDuplicatas($nature, $select)
+    /**
+     * Cette méthode met à jour le montant des duplicatas et la liste des élèves pour la
+     * nature indiquée.
+     *
+     * @param string $nature
+     *            'tous' ou 'liste'
+     * @param \Zend\Db\Sql\Select $select
+     */
+    private function compterDuplicatas(string $nature, \Zend\Db\Sql\Select $select)
     {
         $duplicatasParEleve = $this->renderResult($select);
-        $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        $detailDuplicatas = [];
+        $listeEleves = [];
         $nbDuplicatas = 0;
         foreach ($duplicatasParEleve as $row) {
             $nbDuplicatas += $row['duplicata'];
-            $detailDuplicatas[$row['eleveId']] = [
+            $listeEleves[$row['eleveId']] = [
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
+                'grilleCode' => $row['grilleCode'],
                 'grilleTarif' => $row['grilleTarif'],
-                'duplicata' => $row['duplicata']
+                'duplicata' => $row['duplicata'],
+                'paiement' => $row['paiement']
             ];
         }
+        $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $montantDuplicatas = $tTarifs->getMontant($tTarifs->getDuplicataCodeGrille(),
             $nbDuplicatas);
-        $this->resultats->setDuplicatas($nature,
-            [
-                'detailDuplicatas' => $detailDuplicatas,
-                'montantDuplicatas' => $montantDuplicatas
-            ]);
+        $this->resultats->setListeEleves($nature, $listeEleves);
+        $this->resultats->setMontantDuplicatas($nature, $montantDuplicatas);
     }
 
+    /**
+     *
+     * @param int $responsableId
+     */
     private function calculPaiementsResponsable(int $responsableId)
     {
         $as = sprintf('%d-%d', $this->millesime, $this->millesime + 1);
         $where = new Where();
         $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire', $as);
-        $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-        $this->resultats->setPaiements($tPaiements->total($where));
+        $tPaiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
+        $this->resultats->setPaiementsTotal($tPaiements->total($where));
+        $this->resultats->setPaiementsDetail(
+            $tPaiements->fetchAll($where, 'datePaiement DESC')
+                ->toArray());
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Db\Sql\Select
+     */
     private function selectAbonnementsElevesInscrits(Where $where)
     {
         $predicates = [
             $where,
             new Literal('gratuit = 0')
         ];
-        $elevesPayantsInscrits = new Predicate\ElevesPayantsInscrits($this->millesime, 'sco',
-            $predicates);
+        $elevesPayantsInscrits = new Predicate\ElevesPayantsInscrits($this->millesime,
+            'sco', $predicates);
         return $this->selectAbonnements($elevesPayantsInscrits());
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Db\Sql\Select
+     */
     private function selectAbonnementsEleves(Where $where)
     {
         $predicates = [
@@ -200,8 +254,16 @@ class Calculs extends AbstractQuery
             new Predicate\ElevesResponsablePayant($this->millesime, 'sco', $predicates));
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Db\Sql\Select
+     */
     private function selectAbonnements(Where $where)
     {
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
         return $this->sql->select(
             [
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -222,15 +284,17 @@ class Calculs extends AbstractQuery
 
     /**
      * Renvoie un Select permettant d'obtenir la liste des élèves d'un responsable ou d'un
-     * tableau d'indentifiants (eleveId, nom, prénom, grille tarifaire, nb de duplicatas)
+     * tableau d'indentifiants (eleveId, nom, prénom, nb de duplicatas, grille tarifaire,
+     * paiement enregistré)
      *
-     * @param int $responsableId
+     * @param Where $where
      * @return \Zend\Db\Sql\Select
      */
     private function selectDuplicatasParEleve(Where $where)
     {
         $predicate = new Where([
-            $where
+            $where,
+            new Literal('sco.selection = 0')
         ], Where::COMBINED_BY_AND);
         $predicate->equalTo('millesime', $this->millesime);
         $this->addStrategy('grilleTarif',
@@ -242,15 +306,23 @@ class Calculs extends AbstractQuery
             ])
             ->columns([
             'eleveId' => 'eleveid',
-            'nom',
-            'prenom'
+            'nom' => 'nomSA',
+            'prenom' => 'prenomSA'
         ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId = sco.eleveId', [
-            'duplicata',
-            'grilleTarif'
-        ])
-            ->where($predicate);
+        ], 'ele.eleveId = sco.eleveId',
+            [
+                'duplicata',
+                'grilleCode' => 'grilleTarif',
+                'grilleTarif',
+                'paiement'
+            ])
+            ->where($predicate)
+            ->order([
+            'paiement DESC',
+            'nomSA',
+            'prenomSA'
+        ]);
     }
 }

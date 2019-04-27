@@ -96,14 +96,20 @@ class IndexController extends AbstractActionController
                 'paiementenligne' => $responsable->paiementenligne,
                 'permanences' => $tCalendar->getPermanences($responsable->commune),
                 'inscrits' => $query->getElevesInscrits($responsable->responsableId),
-                'preinscrits' => $query->getElevesPreinscritsOuEnAttente($responsable->responsableId),
+                'preinscrits' => $query->getElevesPreinscritsOuEnAttente(
+                    $responsable->responsableId),
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId
                     ]),
-                'facture' => $this->db_manager->get(
+                'resultats' => $this->db_manager->get(
                     \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
                     $responsable->responsableId),
+                'factures' => $this->db_manager->get('Sbm\Db\Table\Factures')->fetchAll(
+                    [
+                        'responsableId' => $responsable->responsableId,
+                        'millesime' => Session::get('millesime')
+                    ]),
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
                 'client' => $this->client,
@@ -783,7 +789,8 @@ class IndexController extends AbstractActionController
                     $ctrl = $outils->saveEleve($data, $hasGa, $responsable2Id);
                     if ($ctrl != $eleveId) {
                         die(var_dump($ctrl, $eleveId));
-                        throw new \Exception('Arrêt du programme. Incohérence des données.');
+                        throw new \Exception(
+                            'Arrêt du programme. Incohérence des données.');
                     }
                     // Ajout des dates de début et de fin de l'année scolaire
                     $as = Session::get('as');

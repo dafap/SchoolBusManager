@@ -9,12 +9,13 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
@@ -39,8 +40,94 @@ class DocumentController extends AbstractActionController
     }
 
     /**
-     * Action pour générer les horaires au format pdf
-     * Reçoit éventuellement en post un 'serviceId'
+     * Retrouve le responsableId enregistré en session dans l'action origine de l'appel
+     * L'appel doit se faire en POST en passant l'argument 'namespacectrl' qui contient la
+     * valeur : md5('nsArgsFacture'). Si ce n'est pas cette valeur alors il y a imposture.
+     * Si c'est bon, on cherche le paramètre 'nsArgsFacture' en session dans
+     * SBM_DG_SESSION qui indique le namespace de session dans lequel on trouvera 'post',
+     * un tableau contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par
+     * un die() puisque l'appel a du être fait dans une nouvelle fenêtre (target = _blank)
+     *
+     * @return int
+     */
+    private function getResponsableIdFromSession()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', false, $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $namespacectrl = StdLib::getParam('namespacectrl', $args, '');
+        if ($namespacectrl != md5('nsArgsFacture')) {
+            die('Imposteur !');
+        } else {
+            $nsArgsFacture = Session::get('nsArgsFacture', '');
+            $args = Session::get('post', false, $nsArgsFacture);
+        }
+        // on a récupéré le post de l'origine de l'appel qui doit contenir le
+        // responsableId
+        $responsableId = StdLib::getParam('responsableId', $args, false);
+        if ($responsableId === false) {
+            die('Le destinataire de la facture est inconnu.');
+        }
+        return $responsableId;
+    }
+
+    public function lesFacturesAction()
+    {
+        $responsableId = $this->getResponsableIdFromSession();
+        // factureset est un objet Iterator
+        $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,$responsableId);
+        $this->pdf_manager->get(Tcpdf::class)
+        ->setParams(
+            [
+                'documentId' => 'Facture à un responsable',
+                'layout' => 'sbm-pdf/layout/facture.phtml',
+                'args' => [
+                    'vendeur' => $this->organisateur,
+                    'acheteur' => $this->db_manager->get('Sbm\Db\Vue\Responsables')
+                    ->getRecord($responsableId)
+                ]
+            ])
+            ->setData($factureset)
+            ->run();
+    }
+
+    public function factureAction()
+    {
+        $responsableId = $this->getResponsableIdFromSession();
+        // objet qui calcule les résultats financiers pour le responsableId indiqué
+        // et qui prépare les éléments de la facture
+        $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
+            $this->db_manager->get(
+                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                $responsableId));
+        $this->pdf_manager->get(Tcpdf::class)
+            ->setParams(
+            [
+                'documentId' => 'Facture à un responsable',
+                'layout' => 'sbm-pdf/layout/facture.phtml',
+                'args' => [
+                    'vendeur' => $this->organisateur,
+                    'acheteur' => $this->db_manager->get('Sbm\Db\Vue\Responsables')
+                        ->getRecord($responsableId)
+                ]
+            ])
+            ->setData([
+            $facture
+        ])
+            ->run();
+
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+    }
+
+    /**
+     * Action pour générer les horaires au format pdf Reçoit éventuellement en post un
+     * 'serviceId'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -270,8 +357,7 @@ class DocumentController extends AbstractActionController
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
-        // formulaire (pas
-        // de post ou invalide)
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());

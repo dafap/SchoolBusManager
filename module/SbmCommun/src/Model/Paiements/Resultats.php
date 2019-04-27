@@ -9,27 +9,102 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
- * @version 2019-4.5
+ * @date 26 avr. 2019
+ * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Paiements;
+
+use SbmBase\Model\StdLib;
 
 class Resultats
 {
 
+    private const MONTANT_ABBONNEMENTS = 'montantAbonnements';
+
+    private const MONTANT_DUPLICATAS = 'montantDuplicatas';
+
+    private const MONTANT_PAIEMENTS = 'montantPaiements';
+
+    private const DETAIL_ABONNEMENTS = 'detailAbonnements';
+
+    private const DETAIL_PAIEMENTS = 'detailPaiements';
+
+    private const LISTE_ELEVES = 'detailDuplicatas';
+
+    private const NATURE_KEYS = [
+        'tous',
+        'liste'
+    ];
+
+    private const ABONNEMENT_KEYS = [
+        'tous',
+        'inscrits',
+        'liste'
+    ];
+
+    private const STRUCTURE_ABONNEMENT_KEYS = [
+        self::MONTANT_ABBONNEMENTS,
+        self::DETAIL_ABONNEMENTS
+    ];
+
+    private const DETAIL_ABONNEMENT_KEYS = [
+        'grille',
+        'quantite',
+        'montant'
+    ];
+
+    private const STRUCTURE_DUPLICATA_KEYS = [
+        self::MONTANT_DUPLICATAS,
+        self::LISTE_ELEVES
+    ];
+
+    private const LISTE_ELEVES_KEYS = [
+        'nom',
+        'prenom',
+        'grilleCode',
+        'grilleTarif',
+        'duplicata',
+        'paiement'
+    ];
+
+    /**
+     * tableau de structure des abonnements avec les clés de la propriété `abonnements`
+     * initialisée dans le constructeur. A chaque clé correspond un tableau vide ou
+     * structuré comme décrit dans la méthode validArrayAbonnements
+     *
+     * @var array
+     */
     private $abonnements;
 
+    /**
+     * tableau de structure des duplicatas avec les clés de la propriété `duplicatas`
+     * initialisée dans le constructeur. A chaque clé correspond un tableau vide ou
+     * structuré comme décrit dans la méthode validArrayDuplicatas
+     *
+     * @var array
+     */
     private $duplicatas;
 
+    /**
+     * Pour le moment, c'est le montant total.
+     *
+     * @todo : à remplacer par une structure qui donne la liste des paiements et le
+     *       montant total
+     * @var float
+     */
     private $paiements;
 
+    /**
+     *
+     * @var int
+     */
     private $responsableId;
 
+    /**
+     *
+     * @var array
+     */
     private $arrayEleveId;
-
-    private $abonnementKeys;
-
-    private $natureKeys;
 
     public function __construct()
     {
@@ -43,62 +118,116 @@ class Resultats
             'tous' => [],
             'liste' => []
         ];
-        $this->natureKeys = [
-            'tous',
-            'liste'
-        ];
-        $this->abonnementKeys = [
-            'tous',
-            'inscrits',
-            'liste'
-        ];
+
+        $this->paiements = [];
     }
 
-    private function validAbonnementKey($key)
+    /**
+     *
+     * @param string $key
+     * @return boolean
+     */
+    private function validAbonnementKey(string $key)
     {
-        return in_array($key, $this->abonnementKeys);
+        return in_array($key, self::ABONNEMENT_KEYS);
     }
 
-    private function validNatureKey($key)
+    /**
+     *
+     * @param string $key
+     * @return boolean
+     */
+    private function validNatureKey(string $key)
     {
-        return in_array($key, $this->natureKeys);
+        return in_array($key, self::NATURE_KEYS);
     }
 
-    private function validArrayAbonnement($array)
+    /**
+     *
+     * @param array $array
+     * @return boolean
+     */
+    private function validArrayAbonnement(array $array)
     {
-        $ok = array_key_exists('montantAbonnements', $array);
-        $ok &= array_key_exists('detailAbonnements', $array);
-        foreach ($array['detailAbonnements'] as $row) {
-            $ok &= array_key_exists('grille', $row);
-            $ok &= array_key_exists('quantite', $row);
-            $ok &= array_key_exists('montant', $row);
-        }
-        return $ok;
-    }
-
-    private function validArrayDuplicata($array)
-    {
-        $ok = array_key_exists('montantDuplicatas', $array);
-        $ok &= array_key_exists('detailDuplicatas', $array);
-        foreach ($array['detailDuplicatas'] as $row) {
-            $ok &= array_key_exists('nom', $row);
-            $ok &= array_key_exists('prenom', $row);
-            $ok &= array_key_exists('grilleTarif', $row);
-            $ok &= array_key_exists('duplicata', $row);
+        $ok = true;
+        foreach ($array as $row) {
+            foreach (self::DETAIL_ABONNEMENT_KEYS as $key) {
+                $ok &= array_key_exists($key, $row);
+            }
         }
         return $ok;
     }
 
     /**
      *
-     * @return mixed
+     * @param array $array
+     * @return boolean
+     */
+    private function validListeEleves(array $array)
+    {
+        $ok = true;
+        foreach ($array as $row) {
+            foreach (self::LISTE_ELEVES_KEYS as $key) {
+                $ok &= array_key_exists($key, $row);
+            }
+        }
+        return $ok;
+    }
+
+    /**
+     * Renvoie la structure de nature précisée avec 'DETAIL_ABONNEMENTS' et
+     * 'MONTANT_ABONNEMENTS' Renvoie les 3 structures si la nature n'est pas précisée
+     *
+     * @param null|string $nature
+     *            'tous', 'inscrits' ou 'liste'
+     * @return array|array[]
      */
     public function getAbonnements($nature = null)
     {
-        if ($nature) {
-            return $this->abonnements[$nature];
+        if ($nature && $this->validAbonnementKey($nature)) {
+            return StdLib::getParam($nature, $this->abonnements, []);
         }
         return $this->abonnements;
+    }
+
+    /**
+     * Renvoie le montant ou 0 s'il n'existe pas
+     *
+     * @param string $nature
+     *            'tous', 'inscrits' ou 'liste'
+     * @return float
+     */
+    public function getAbonnementsMontant(string $nature = 'tous'): float
+    {
+        if ($this->validAbonnementKey($nature)) {
+            return StdLib::getParamR([
+                $nature,
+                self::MONTANT_ABBONNEMENTS
+            ], $this->abonnements, 0);
+        } else {
+            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
+                'La nature indiquée est incorrecte.');
+        }
+    }
+
+    /**
+     * Renvoie la liste des abonnements
+     *
+     * @param string $nature
+     *            'tous', 'inscrits' ou 'liste'
+     * @return array
+     */
+    public function getAbonnementsDetail(string $nature = 'tous')
+    {
+        if ($this->validAbonnementKey($nature)) {
+            return StdLib::getParamR([
+                $nature,
+                self::DETAIL_ABONNEMENTS
+            ], $this->abonnements, []);
+        } else {
+            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
+                'La nature indiquée est incorrecte.');
+        }
     }
 
     /**
@@ -110,9 +239,32 @@ class Resultats
         return $this->duplicatas;
     }
 
-    public function getDetailListeEleve()
+    /**
+     *
+     * @param string $nature
+     *            'tous' ou 'liste'
+     * @return mixed
+     */
+    public function getListeEleves(string $nature = 'tous')
     {
-        return $this->duplicatas['detailDuplicatas'];
+        return StdLib::getParamR([
+            $nature,
+            self::LISTE_ELEVES
+        ], $this->duplicatas, []);
+    }
+
+    /**
+     *
+     * @param string $nature
+     *            'tous' ou 'liste'
+     * @return float
+     */
+    public function getMontantDuplicatas(string $nature = 'tous'): float
+    {
+        return StdLib::getParamR([
+            $nature,
+            self::MONTANT_DUPLICATAS
+        ], $this->duplicatas, 0);
     }
 
     /**
@@ -121,48 +273,76 @@ class Resultats
      */
     public function getPaiements()
     {
-        return $this->paiements ?: 0;
+        return $this->paiements;
     }
 
     /**
      *
-     * @return mixed
+     * @return float
      */
-    public function getResponsableId()
+    public function getPaiementsMontant(): float
+    {
+        return StdLib::getParam(self::MONTANT_PAIEMENTS, $this->paiements, 0);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getPaiementsDetail()
+    {
+        return StdLib::getParam(self::DETAIL_PAIEMENTS, $this->paiements, []);
+    }
+
+    /**
+     *
+     * @return int
+     */
+    public function getResponsableId(): int
     {
         return $this->responsableId;
     }
 
     /**
      *
-     * @return mixed
+     * @return array
      */
     public function getArrayEleveId()
     {
         return $this->arrayEleveId;
     }
 
-    public function getMontantTotal(string $nature = 'tous')
+    /**
+     *
+     * @param string $nature
+     *            'tous' ou 'liste'
+     * @throws \SbmCommun\Model\Exception\OutOfBoundsException
+     * @return number
+     */
+    public function getMontantTotal(string $nature = 'tous'): float
     {
         if ($this->validNatureKey($nature)) {
             if ($nature == 'tous') {
-                $montantAbonnements = $this->abonnements['tous']['montantAbonnements'];
+                $montantAbonnements = StdLib::getParamR(
+                    [
+                        'tous',
+                        self::MONTANT_ABBONNEMENTS
+                    ], $this->abonnements, 0);
             } else {
-                $montantAbonnements = $this->abonnements['inscrits']['montantAbonnements'] +
-                    $this->abonnements['liste']['montantAbonnements'];
+                $montantAbonnements = StdLib::getParamR(
+                    [
+                        'inscrits',
+                        self::MONTANT_ABBONNEMENTS
+                    ], $this->abonnements, 0) +
+                    StdLib::getParamR([
+                        'liste',
+                        self::MONTANT_ABBONNEMENTS
+                    ], $this->abonnements, 0);
             }
-            return $this->duplicatas['tous']['montantDuplicatas'] + $montantAbonnements;
-            ;
-        } else {
-            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
-                'La nature indiquée est incorrecte.');
-        }
-    }
-
-    public function getSolde(string $nature = 'tous')
-    {
-        if ($this->validNatureKey($nature)) {
-            return $this->getMontantTotal($nature) - $this->getPaiements();
+            return StdLib::getParamR([
+                'tous',
+                self::MONTANT_DUPLICATAS
+            ], $this->duplicatas, 0) + $montantAbonnements;
         } else {
             throw new \SbmCommun\Model\Exception\OutOfBoundsException(
                 'La nature indiquée est incorrecte.');
@@ -172,13 +352,42 @@ class Resultats
     /**
      *
      * @param string $nature
-     * @param array $abonnements
+     *            'tous' ou 'liste'
+     * @throws \SbmCommun\Model\Exception\OutOfBoundsException
+     * @return number
      */
-    public function setAbonnements(string $nature, array $abonnements)
+    public function getSolde(string $nature = 'tous')
+    {
+        if ($this->validNatureKey($nature)) {
+            return $this->getMontantTotal($nature) - $this->getPaiementsMontant($nature);
+        } else {
+            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
+                'La nature indiquée est incorrecte.');
+        }
+    }
+
+    /**
+     *
+     * @param string $nature
+     *            'tous', 'inscrits' ou 'liste'
+     * @param float $montant
+     * @throws \SbmCommun\Model\Exception\OutOfBoundsException
+     */
+    public function setAbonnementsMontant(string $nature, float $montant)
+    {
+        if ($this->validAbonnementKey($nature)) {
+            $this->abonnements[$nature][self::MONTANT_ABBONNEMENTS] = $montant;
+        } else {
+            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
+                'La nature des abonnements est incorrecte.');
+        }
+    }
+
+    public function setAbonnementsDetail(string $nature, array $abonnements)
     {
         if ($this->validAbonnementKey($nature)) {
             if ($this->validArrayAbonnement($abonnements)) {
-                $this->abonnements[$nature] = $abonnements;
+                $this->abonnements[$nature][self::DETAIL_ABONNEMENTS] = $abonnements;
             } else {
                 throw new \SbmCommun\Model\Exception\OutOfBoundsException(
                     'Le tableau des abonnements n\'est pas bien structuré.');
@@ -192,16 +401,35 @@ class Resultats
     /**
      *
      * @param string $nature
-     * @param array $duplicatas
+     *            'tous' ou 'liste'
+     * @param float $montantDuplicatas
+     * @throws \SbmCommun\Model\Exception\OutOfBoundsException
      */
-    public function setDuplicatas(string $nature, array $duplicatas)
+    public function setMontantDuplicatas(string $nature, float $montantDuplicatas)
     {
         if ($this->validNatureKey($nature)) {
-            if ($this->validArrayDuplicata($duplicatas)) {
-                $this->duplicatas[$nature] = $duplicatas;
+            $this->duplicatas[$nature][self::MONTANT_DUPLICATAS] = $montantDuplicatas;
+        } else {
+            throw new \SbmCommun\Model\Exception\OutOfBoundsException(
+                'Nature incorrecte.');
+        }
+    }
+
+    /**
+     *
+     * @param string $nature
+     *            'tous' ou 'liste'
+     * @param array $listeEleves
+     * @throws \SbmCommun\Model\Exception\OutOfBoundsException
+     */
+    public function setListeEleves(string $nature, array $listeEleves)
+    {
+        if ($this->validNatureKey($nature)) {
+            if ($this->validListeEleves($listeEleves)) {
+                $this->duplicatas[$nature][self::LISTE_ELEVES] = $listeEleves;
             } else {
                 throw new \SbmCommun\Model\Exception\OutOfBoundsException(
-                    'Le tableau des duplicatas n\'est pas bien structuré.');
+                    'La liste des élèves n\'est pas bien structuré.');
             }
         } else {
             throw new \SbmCommun\Model\Exception\OutOfBoundsException(
@@ -211,18 +439,27 @@ class Resultats
 
     /**
      *
-     * @param mixed $paiements
+     * @param float $paiements
      */
-    public function setPaiements($paiements)
+    public function setPaiementsTotal(float $paiements)
     {
-        $this->paiements = $paiements;
+        $this->paiements[self::MONTANT_PAIEMENTS] = $paiements;
     }
 
     /**
      *
-     * @param mixed $responsableId
+     * @param array $liste
      */
-    public function setResponsableId($responsableId)
+    public function setPaiementsDetail(array $liste)
+    {
+        $this->paiements[self::DETAIL_PAIEMENTS] = $liste;
+    }
+
+    /**
+     *
+     * @param int $responsableId
+     */
+    public function setResponsableId(int $responsableId)
     {
         $this->responsableId = $responsableId;
     }
@@ -231,7 +468,7 @@ class Resultats
      *
      * @param mixed $arrayEleveId
      */
-    public function setArrayEleveId($arrayEleveId)
+    public function setArrayEleveId(array $arrayEleveId = null)
     {
         $this->arrayEleveId = $arrayEleveId;
     }
@@ -240,8 +477,38 @@ class Resultats
      *
      * @return boolean
      */
-    function isEmpty()
+    public function isEmpty()
     {
         return empty($this->responsableId);
+    }
+
+    /**
+     * Renvoie une chaine de 32 caractères signature de la facture
+     *
+     * @return string
+     */
+    public function signature()
+    {
+        $tmp = sprintf("%011d", $this->responsableId);
+        foreach ($this->getListeEleves() as $key => $value) {
+            $tmp .= sprintf("%011d%02d%03d", $key, $value['grilleCode'],
+                $value['duplicata']);
+        }
+        return md5($tmp);
+    }
+
+    /**
+     * Deux résultats sont égaux s'ils ont les mêmes éléments de facturation (duplicata,
+     * liste d'élèves, abonnements). Il n'est pas tenu compte des paiements.
+     *
+     * @param Resultats $r
+     * @return boolean
+     */
+    public function equalTo(Resultats $r)
+    {
+        return $this->getMontantDuplicatas() == $r->getMontantDuplicatas() &&
+            $this->getMontantTotal() == $r->getMontantTotal() &&
+            $this->getListeEleves() == $r->getListeEleves() &&
+            $this->getAbonnementsDetail() == $r->getAbonnementsDetail();
     }
 }

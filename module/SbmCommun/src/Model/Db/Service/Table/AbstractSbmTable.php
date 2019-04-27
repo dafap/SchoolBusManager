@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 26 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -321,10 +321,10 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Retourne le contenu de la table. Les résultats sont hydratés et sont conformes au
      * ResultSetPrototype du TableGateway
      *
-     * @param \Zend\Db\Sql\Where|null $where
+     * @param \Zend\Db\Sql\Where|null|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
      * @param array|string|null $order
      * @param string $combination
-     *            One of the OP_* constants from Predicate\PredicateSet
+     *            One of the OP_* constants from \Zend\Db\Sql\Predicate\PredicateSet
      * @throws Exception\RuntimeException
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet

@@ -4,17 +4,19 @@
  * Justificatif du montant encaissé pour un responsable
  *
  * Variables de vue :
- * liste (liste des enfants payant) 
+ * liste (liste des enfants payant)
  * args : array(url1_retour, url2_retour, h2, responsableId, responsable)
- * 
+ *
  * @project sbm
  * @package SbmGestion\view\sbm-gestion\finance
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\DateLib;
+
 function renderCheckbox($view, $name, $id, $value)
 {
     $element = new \Zend\Form\Element\Checkbox($name);
@@ -23,124 +25,225 @@ function renderCheckbox($view, $name, $id, $value)
         ->setValue($value);
     return $view->formCheckbox($element);
 }
-
+// Les montants de la facture (avant l'initialisation du JavaScript)
+$montantDuplicatas = $this->resultats->getMontantDuplicatas('tous');
+$montantAbonnements = $this->resultats->getAbonnementsMontant('tous');
+$aboInscrits = $this->resultats->getAbonnementsMontant('inscrits');
+$montantTotal = $this->resultats->getMontantTotal('tous');
+$dejaPaye = $this->resultats->getPaiementsMontant();
+// styles css et scripts
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headLink()->appendStylesheet(
+    $this->basePath('/css/mgc/sbm-gestion/finance/paiement-detail.css'));
 $this->jQuery();
+$this->headScript()->appendFile(
+    $this->basePath(
+        '/js/jquery.formatCurrency-1.4.0.i18n/jquery.formatCurrency-1.4.0.min.js'));
+$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-detail.js'));
+$this->inlineScript()->captureStart();
+?>
+js_paiement_detail.init(<?=$this->args['responsableId']?>);
+<?php
+$this->inlineScript()->captureEnd();
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-$jsCallback = '';
-$jsTrigger = '';
-// modèle pour les jsCallback
-$modele = <<<EOT
-$("#chk%d").change(function() {
-    var action;
-    if ($(this).is(':checked')){
-       if (totalAPayer() > totalEncaisse()) {
-         alert('Impossible ! Le coût dépasse le total encaissé');
-         $(this).removeAttr('checked');
-         return false;
-       }
-       action = 'check';
-     } else {
-       action = 'uncheck';
-     }
-    $.ajax({
-				url : '/sbmajaxfinance/'+action+'paiementscolarite/eleveId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-
 $url_retour = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-liste',
         'page' => $this->page
     ]);
-$hiddens = [];
+$url_rapports = $this->url('sbmdocument', [
+    'action' => 'les-factures'
+]);
+$hiddens = [
+    'namespacectrl' => $this->namespacectrl
+];
+/*
+ * Impression spéciale de la facture qui déroge à la méthode habituelle $menuImpression =
+ * $this->menuRapports( $this->url('sbmgestion/finance', [ 'action' => 'paiement-detail'
+ * ]), $url_rapports, 'fam-printer', null, $hiddens); $hiddens =
+ * $menuImpression['hiddens']; // puis rajouter dans $actions[] 'rapports' =>
+ * $menuImpression['content']
+ */
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
+    ],
+    'rapports' => [
+        'class' => 'fam-printer',
+        'formaction' => $url_rapports,
+        'title' => 'Imprimer la facture',
+        'formtarget' => '_blank'
     ]
 ];
 ?>
 <div id="liste-wrapper">
-	<div id="liste-title" class="clearfix">
+	<div id="liste-title">
 		<h1>Détail des sommes à payer pour l'année en cours</h1>
-		<ul>
-			<li>Responsable : <?= $this->escapehtml($this->args['responsable']); ?></li>
-			<li>Montant encaissé : <?= $fmt->formatCurrency($this->totalEncaisse, 'EUR')?></li>
-			<li>Coût des duplicatas : <?= $fmt->formatCurrency($this->montantDuplicatas, 'EUR')?></li>
-		</ul>
+		<h3>Responsable :
+				<?= $this->escapehtml($this->args['responsable']); ?></h3>
 	</div>
 	<div id="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 	</div>
 	<div id="liste-inner">
-		<table class="libelles">
-			<tbody id="tbody-payants">
-				<tr>
-					<th>Nom</th>
-					<th>Prénom</th>
-					<th>Tarif</th>
-					<th>Nb duplicatas</th>
-					<th>Inscription payée</th>
-				</tr>
-	            <?php foreach ($this->liste as $enfant) : ?>
+		<div id="facture-wrapper" class="clearfix">
+			<fieldset class="float-left">
+				<legend>Facture</legend>
+				<table class="ligne-facture">
+					<tr>
+						<td>Coût des duplicatas :</td>
+						<td><span class="formatEuro">
+				<?= $montantDuplicatas;?></span></td>
+					</tr>
+					<tr>
+						<td>Coût des abonnements :
+							<ul class="detail-abonnements">
+								<li>Élèves inscrits : <span id="abo-inscrits" class="formatEuro">
+						<?= $aboInscrits;?></span>
+								</li>
+								<li>Élèves préinscrits : <span id="abo-preinscrits"
+									class="formatEuro">
+						<?= $montantAbonnements- $aboInscrits;?>
+						</span>
+								</li>
+							</ul>
+						</td>
+						<td><span class="formatEuro">
+				<?= $montantAbonnements;?></span></td>
+					</tr>
+					<tr class="separateur">
+						<td>Coût total :
+
+						<td><span class="formatEuro">
+				<?= $montantTotal;?></span></td>
+					</tr>
+					<tr>
+						<td>Montant encaissé :</td>
+						<td><span class="formatEuro">
+				<?= $dejaPaye;?></span></td>
+					</tr>
+					<tr>
+
+						<td class="">Reste à payer :</td>
+
+
+
+						<td><span class="formatEuro">
+			    <?= $montantTotal - $dejaPaye;?></span></td>
+					</tr>
+				</table>
+			</fieldset>
+			<fieldset class="float-left">
+				<legend>Abonnements facturés</legend>
+				<table class="liste-tarifs">
+					<tbody id="tbody-grille">
+						<tr>
+							<th>Tarif</th>
+							<th>Nombre</th>
+							<th>Montant</th>
+						</tr>
+					<?php foreach($this->resultats->getAbonnementsDetail('tous') as $row):?>
+					<tr>
+							<td><?=$row['grille'];?></td>
+							<td><?=$row['quantite'];?></td>
+							<td><span class="formatEuro"><?=$row['montant'];?></span></td>
+						</tr>
+					<?php endforeach;?>
+				</tbody>
+				</table>
+			</fieldset>
+			<fieldset class="float-left">
+				<legend>Liste des enfants</legend>
+				<table class="liste-eleves">
+					<tbody id="tbody-payants">
+						<tr>
+							<th>Nom</th>
+							<th>Prénom</th>
+							<th>Tarif</th>
+							<th>Nb de<br>duplicatas
+							</th>
+							<th>Abonnement<br>payé
+							</th>
+						</tr>
+	            <?php foreach ($this->resultats->getListeEleves('tous') as $eleveId => $enfant) : ?>
 	            <?php
-                $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
-                    $enfant['eleveId']);
-                $jsCallback .= sprintf("$modele\n", $enfant['eleveId'], $enfant['eleveId']);
+                // $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $eleveId);
+                // $jsCallback .= sprintf("$modele\n", $eleveId, $eleveId);
                 ?>
 	            <tr>
-					<td><?= $this->escapeHtml($enfant['nom']);?></td>
-					<td><?= $this->escapeHtml($enfant['prenom']);?></td>
-					<td class="align-right">
-						<?= $fmt->formatCurrency($enfant['montant'], 'EUR');?></td>
-					<td class="align-right">
+							<td><?= $this->escapeHtml($enfant['nom']);?></td>
+							<td><?= $this->escapeHtml($enfant['prenom']);?></td>
+							<td>
+						<?= $enfant['grilleTarif'];?></td>
+							<td>
 						<?= $enfant['duplicata'];?></td>
-					<td class="centre paiement">
-						<?= renderCheckbox($this, 'paiement', 'chk' . $enfant['eleveId'], $enfant['paiement'])?>
+							<td>
+						<?= renderCheckbox($this, 'paiement', "chk$eleveId", $enfant['paiement']);?>
 						</td>
-				</tr>
+						</tr>
 	            <?php endforeach;?>
 	       </tbody>
-		</table>
+				</table>
+				<p class="sbm-description">Si nécessaire, cochez ou décochez les
+					abonnements payés.</p>
+			</fieldset>
+		</div>
+		<div class="clearfix">
+			<div id="paiements-wrapper" class="float-left">
+				<fieldset>
+					<legend>Liste des paiements</legend>
+					<table class="liste-paiements">
+						<tbody id="tbody-paiements">
+							<tr>
+								<th>Date de paiement</th>
+								<th>Mode de paiement</th>
+								<th>Montant</th>
+							</tr>
+					<?php foreach ($this->resultats->getPaiementsDetail() as $row) :?>
+							<tr>
+								<td><?=DateLib::formatDateFromMysql($row['datePaiement']);?></td>
+								<td><?=$row['modeDePaiement'];?></td>
+								<td><span class="formatEuro"><?=$row['montant'];?></span></td>
+							</tr>
+					<?php endforeach;?>
+				</tbody>
+					</table>
+				</fieldset>
+			</div>
+			<div id="factures-wrapper" class="float-left">
+				<fieldset>
+					<legend>Liste des factures émises</legend>
+					<table class="liste-factures">
+						<tbody id="tbody-paiements">
+							<tr>
+								<th>Exercice</th>
+								<th>Numéro</th>
+								<th>Année scolaire</th>
+								<th>Date</th>
+								<th>Montant</th>
+							</tr>
+							<?php foreach ($this->factures as $row) :?>
+							<tr>
+								<td><?=$row->exercice;?></td>
+								<td><?=$row->numero;?></td>
+								<td><?=$row->millesime;?>-<?=$row->millesime + 1;?></td>
+								<td><?=DateLib::formatDateFromMysql($row->date);?></td>
+								<td><span class="formatEuro"><?=$row->montant;?></span></td>
+							</tr>
+							<?php endforeach;?>
+						</tbody>
+					</table>
+				</fieldset>
+			</div>
+		</div>
+		<p class="sbm-description">
+			Pour créer, numéroter et enregistrer une facture, il suffit d'en
+			demander l'impression.<br>Une nouvelle facture sera créée si les
+			éléments à facturer sont modifiés (abonnements ou duplicatas de carte
+			de transport).
+		</p>
 	</div>
 	<div id="liste-footer"></div>
 </div>
-<?php
-// mise en place des triggers pour les appels ajax des cases à cocher
-$this->headScript()->captureStart();
-?>
-$(function() {
-  function totalEncaisse() {
-  <?php
-if ($this->totalEncaisse > 0) {
-    echo 'return ' . $this->totalEncaisse . ';';
-} else {
-    echo 'return 0.0;';
-}
-?>
-}
-  function totalAPayer() {
-    var total = <?= $this->montantDuplicatas;?>;
-    $("#tbody-payants > tr:not(:first)").each(function(i) {
-        var element = $("td:nth-child(5) > input[type=checkbox]")[i];
-        if ($(element).is(':checked')) {
-            var cellMontant = $(element).parent().parent().find("td:nth-child(3)")[0];
-            total=total+parseFloat($(cellMontant).text());
-        }
-    });
-    return total;
-  }
-  function triggerChange() {
-    <?= $jsTrigger;?>
-  }
-  <?= $jsCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

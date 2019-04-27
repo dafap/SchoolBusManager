@@ -23,7 +23,8 @@ class FinanceController extends AbstractActionController
     const ROUTE = 'sbmajaxfinance';
 
     /**
-     * ajax - cocher la case paiement de scolarites
+     * ajax - cocher la case paiement de scolarites à condition que le montant déjà payé
+     * soit suffisant pour couvrir la somme due.
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -33,11 +34,36 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
+            $responsableId = $this->params('responsableId');
+            // die(var_dump($eleveId, $responsableId));
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
                 $eleveId, 1);
-            return $this->getResponse()->setContent(Json::encode([
-                'success' => 1
-            ]));
+            $resultats = $this->db_manager->get(
+                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                $responsableId);
+            $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
+            $sommeDue = $inscrits + $resultats->getMontantDuplicatas();
+            $dejaPaye = $resultats->getPaiements();
+            $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
+                $inscrits;
+            if ($sommeDue <= $dejaPaye) {
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'inscrits' => $inscrits,
+                            'preinscrits' => $preinscrits,
+                            'success' => 1
+                        ]));
+            } else {
+                $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
+                    $eleveId, 0);
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'cr' => 'Impossible ! Le coût dépasserait le total encaissé',
+                            'success' => 0
+                        ]));
+            }
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([
@@ -48,7 +74,8 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * ajax - décocher la case paiement de scolarites
+     * ajax - décocher la case paiement de scolarites à condition qu'il n'y ait pas de
+     * duplicatas
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -58,11 +85,35 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
-            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
-                $eleveId, 0);
-            return $this->getResponse()->setContent(Json::encode([
-                'success' => 1
-            ]));
+            $responsableId = $this->params('responsableId');
+            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+            $scolarite = $tScolarites->getRecord(
+                [
+                    'millesime' => $millesime,
+                    'eleveId' => $eleveId
+                ]);
+            if ($scolarite->duplicata) {
+                return $this->getResponse()->setContent(
+                    Json::encode(
+                        [
+                            'cr' => 'Impossible ! Cet élève a des duplicatas de carte de transport facturés.',
+                            'success' => 0
+                        ]));
+            }
+            $tScolarites->setPaiement($millesime, $eleveId, 0);
+            $resultats = $this->db_manager->get(
+                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                $responsableId);
+            $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
+            $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
+                $inscrits;
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'inscrits' => $inscrits,
+                        'preinscrits' => $preinscrits,
+                        'success' => 1
+                    ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([

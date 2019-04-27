@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -151,6 +151,8 @@ class FinanceController extends AbstractActionController
                 $args = $prg;
             }
             Session::set('post', $args, $this->getSessionNamespace());
+            Session::set('nsArgsFacture', $this->getSessionNamespace()); // en
+                                                                         // SBM_DG_SESSION
         }
 
         // la page vient de la route (compatibilité du paginateur)
@@ -196,8 +198,11 @@ class FinanceController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_data);
                 $criteres_form->setData($criteres_obj->getArrayCopy());
             }
+            // ici, on n'appelle pas l'impression des factures donc 'namespacectrl' n'est
+            // pas nécessaire
             return new ViewModel(
                 [
+                    'namespacectrl' => null,
                     'paginator' => $tablePaiements->paginator(
                         $criteres_obj->getWhere([
                             'codeCaisse',
@@ -227,6 +232,7 @@ class FinanceController extends AbstractActionController
             $where->equalTo('responsableId', $responsableId);
             return new ViewModel(
                 [
+                    'namespacectrl' => md5('nsArgsFacture'),
                     'paginator' => $tablePaiements->paginator($where, $order),
                     'count_per_page' => $nb_paiements,
                     'criteres_form' => null,
@@ -742,29 +748,23 @@ class FinanceController extends AbstractActionController
         } else {
             $args = $prg;
             Session::set('post', $args, $this->getSessionNamespace());
+            Session::set('nsArgsFacture', $this->getSessionNamespace()); // en
+                                                                         // SBM_DG_SESSION
         }
         $responsableId = $args['responsableId'];
-        $tEleves = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
-        $where = new Where();
-        $millesime = Session::get('millesime');
-        $as = sprintf('%d-%d', $millesime, $millesime + 1);
-        $where->equalTo('anneeScolaire', $as)->equalTo('responsableId', $responsableId);
-        $totalEncaisse = $this->db_manager->get('Sbm\Db\Table\Paiements')->total($where);
-        // duplicatas
-        $nbDuplicatas = $tEleves->getNbDuplicatas($responsableId);
-        if ($nbDuplicatas) {
-            $montantUnitaire = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getMontant(
-                'duplicata');
-            $montantDuplicatas = $nbDuplicatas * $montantUnitaire;
-        } else {
-            $montantDuplicatas = 0.00;
-        }
+        $resultats = $this->db_manager->get(
+            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $responsableId);
         return new ViewModel(
             [
-                'liste' => $tEleves->getElevesPayantsWithGrille($responsableId),
+                'namespacectrl' => md5('nsArgsFacture'),
                 'args' => $args,
-                'totalEncaisse' => $totalEncaisse,
-                'montantDuplicatas' => $montantDuplicatas
+                'resultats' => $resultats,
+                'factures' => $this->db_manager->get('Sbm\Db\Table\Factures')->fetchAll(
+                    [
+                        'millesime' => Session::get('millesime'),
+                        'responsableId' => $responsableId
+                    ], 'date')
             ]);
     }
 

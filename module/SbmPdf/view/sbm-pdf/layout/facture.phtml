@@ -1,0 +1,206 @@
+<?php
+/**
+ * Modèle de facture
+ *
+ * Attention, ne pas utiliser HeadStyle pour placer les styles horaires
+ * car ils seraient dans la section head du document Html et ne seraient
+ * pas interprétés dans Tcpdf.
+ *
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/layout
+ * @filesource facture.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 avr. 2019
+ * @version 2019-2.5.0
+ */
+use SbmBase\Model\DateLib;
+
+$facture = $this->data;
+$vendeur = $this->args['vendeur'];
+$acheteur = $this->args['acheteur'];
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<style>
+h1, h2 {
+	text-align: center;
+}
+
+p.center {
+	text-align: center;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+td {
+	font-size: 8pt;
+}
+
+table.entete td {
+	font-size: 12pt;
+}
+</style>
+<table class="entete">
+	<tr>
+		<td style="height: 30mm; width: 80mm;">
+			<?=$vendeur['name'];?><br>
+			<?=implode('<br>',$vendeur['adresse']);?><br>
+			<?=$vendeur['code_postal']?> <?=$vendeur['commune'];?>
+		</td>
+		<td style="text-align: right;">
+			Date de la facture : <?=DateLib::formatDateFromMysql($facture->getDate());?>
+		</td>
+	</tr>
+	<tr>
+		<td style="height: 34mm;"></td>
+		<td>
+			<?=$acheteur->nom?> <?=$acheteur->prenom;?><br>
+			<?=implode('<br>',array_filter([$acheteur->adresseL1, $acheteur->adresseL2]));?><br>
+			<?=$acheteur->codePostal;?> <?=$acheteur->commune;?>
+		</td>
+	</tr>
+</table>
+
+<h1>FACTURE N° <?=$facture->getExercice();?>-<?=$facture->getNumero();?></h1>
+<h2>TRANSPORTS SCOLAIRES</h2>
+<p class="center">Année scolaire <?=$facture->getMillesime();?>-<?=$facture->getMillesime() + 1;?></p>
+<p>Exercice <?=$facture->getExercice();?></p>
+<p>Montant de la facture : <?= $fmt->formatCurrency($facture->getMontant(), 'EUR');?></p>
+<hr>
+<p></p>
+<i><b>Relevé des dépenses de l'année scolaire</b></i>
+<br>
+<table cellspacing="5">
+	<tr>
+		<td width="250">Abonnements<br>
+			<table border="1" cellpadding="2">
+				<tr>
+					<th style="width: 155;">Tarif</th>
+					<th style="width: 40;">Nombre</th>
+					<th style="width: 55;">Montant</th>
+				</tr>
+				<?php foreach ($facture->getResultats()->getAbonnementsDetail() as $row) :?>
+				<tr>
+					<td><?=$row['grille'];?></td>
+					<td style="text-align: right;"><?=$row['quantite'];?></td>
+					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		</td>
+		<td width="430">Liste des enfants transportés<br>
+			<table border="1" cellpadding="2">
+				<tr>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th style="width: 95;">Tarif</th>
+					<th style="width: 52;">Duplicatas</th>
+				</tr>
+				<?php foreach ($facture->getResultats()->getListeEleves() as $row) :?>
+				<tr>
+					<td><?=$row['nom'];?></td>
+					<td><?=$row['prenom'];?></td>
+					<td><?=$row['grilleTarif'];?></td>
+					<td style="text-align: right"><?=$row['duplicata'];?></td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<?php if ($facture->getResultats()->getPaiementsMontant()):?>
+			Liste des paiements enregistrés<br>
+			<table border="1" cellpadding="2">
+				<tr>
+					<th style="width: 95;">Date</th>
+					<th style="width: 100;">Mode</th>
+					<th style="width: 55;">Montant</th>
+				</tr>
+				<?php foreach ($facture->getResultats()->getPaiementsDetail() as $row) :?>
+				<tr>
+					<td><?=DateLib::formatDateFromMysql($row['datePaiement']);?></td>
+					<td><?=$row['modeDePaiement'];?></td>
+					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		<?php else:?>
+		Aucun paiement enregistré.
+		<?php endif;?>
+		</td>
+		<td>
+		<?php if ($facture->getMontantDejaFacture()):?>
+			Liste des factures émises précédemment<br>
+			<table border="1" cellpadding="2">
+				<tr>
+					<th style="width: 95;">Numéro</th>
+					<th style="width: 100;">Date</th>
+					<th style="width: 55;">Montant</th>
+				</tr>
+				<?php foreach ($facture->getFacturesPrecedentes() as $row) :?>
+				<tr>
+					<td><?=$row['numero'];?></td>
+					<td><?=DateLib::formatDateFromMysql($row['date']);?></td>
+					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		<?php else:?>
+		Aucune facture précédente.
+		<?php endif;?>
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td style="width: 180;">Coût des duplicatas</td>
+		<td style="width: 70; text-align: right;">
+					<?=$fmt->formatCurrency($facture->getResultats()->getMontantDuplicatas(), 'EUR');?>
+					</td>
+	</tr>
+	<tr>
+		<td>Coût des abonnements</td>
+		<td style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getResultats()->getAbonnementsMontant(),'EUR');?>
+					</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<th>TOTAL</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getResultats()->getMontantTotal(),'EUR');?>
+					</th>
+	</tr>
+	<tr>
+		<th>Total déjà versé</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getResultats()->getPaiementsMontant(),'EUR');?>
+					</th>
+	</tr>
+	<tr>
+		<th>Net à payer</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getResultats()->getSolde(),'EUR');?>
+		</th>
+	</tr>
+</table>
+<?php if ($facture->getResultats()->getSolde() < 0) :?>
+<p class="center">Facture valant avoir</p>
+<?php elseif($facture->getResultats()->getSolde() == 0):?>
+<p class="center">Facture valant quittance</p>
+<?php elseif ($facture->getResultats()->getSolde() < $facture->getMontant()): ?>
+<p class="center">Facture valant reçu</p>
+<?php else:?>
+<p class="center">Facture impayée</p>
+<?php endif;?>

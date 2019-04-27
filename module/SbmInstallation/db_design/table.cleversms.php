@@ -21,7 +21,7 @@
  * @filesource table.lots.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
+ * @date 25 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -61,5 +61,5 @@ return [
         'collate' => 'utf8_unicode_ci'
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
-        'data.lots.php')
+        'data.cleversms.php')
 ];

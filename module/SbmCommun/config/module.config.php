@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 25 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
@@ -49,6 +49,7 @@ return [
             'Sbm\Db\ObjectData\ElevePhoto' => ObjectData\ElevePhoto::class,
             'Sbm\Db\ObjectData\Etablissement' => ObjectData\Etablissement::class,
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
+            'Sbm\Db\ObjectData\Facture' => ObjectData\Facture::class,
             'Sbm\Db\ObjectData\Lot' => ObjectData\Lot::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
             'Sbm\Db\ObjectData\Paiement' => ObjectData\Paiement::class,
@@ -87,6 +88,7 @@ return [
             'Sbm\Db\Table\ElevesPhotos' => Table\ElevesPhotos::class,
             'Sbm\Db\Table\Etablissements' => Table\Etablissements::class,
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
+            'Sbm\Db\Table\Factures' => Table\Factures::class,
             'Sbm\Db\Table\Lots' => Table\Lots::class,
             'Sbm\Db\Table\Organismes' => Table\Organismes::class,
             'Sbm\Db\Table\Paiements' => Table\Paiements::class,
@@ -123,6 +125,7 @@ return [
             'Sbm\Db\TableGateway\ElevesPhotos' => TableGateway\TableGatewayElevesPhotos::class,
             'Sbm\Db\TableGateway\Etablissements' => TableGateway\TableGatewayEtablissements::class,
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
+            'Sbm\Db\TableGateway\Factures' => TableGateway\TableGatewayFactures::class,
             'Sbm\Db\TableGateway\Lots' => TableGateway\TableGatewayLots::class,
             'Sbm\Db\TableGateway\Organismes' => TableGateway\TableGatewayOrganismes::class,
             'Sbm\Db\TableGateway\Paiements' => TableGateway\TableGatewayPaiements::class,

@@ -67,8 +67,15 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $qScolarite = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
-        $result = $qScolarite->getElevesPayantsWithGrille(1);
-        return new ViewModel(['array' => $result]);
+        $responsableId = 1;
+        $resultats = $this->db_manager->get(
+            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $responsableId);
+        $methodFacture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
+            $resultats);
+        // dump de l'objet 'obj'
+        return new ViewModel([
+            'obj' => $methodFacture
+        ]);
     }
 }

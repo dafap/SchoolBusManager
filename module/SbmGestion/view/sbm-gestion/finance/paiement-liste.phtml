@@ -14,7 +14,7 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr.2019
+ * @date 27 avr.2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -48,27 +48,26 @@ EOT;
 
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
-
 $paiements = $this->paginator->getCurrentItems();
-
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-
-if (! $this->h2) {
-    $url_retour_pour_group = $this->url('sbmgestion/finance',
-        [
-            'action' => 'paiement-liste',
-            'page' => $this->page
-        ]);
-}
+// hiddens sera modifié par la suite en fonction de h2
+$hiddens = [
+    'url1_retour' => $this->url1_retour,
+    'url2_retour' => $this->url2_retour,
+    'h2' => $this->h2,
+    'namespacectrl' => $this->namespacectrl,
+    /*
+     * Pour la compatibilité de traitement avec les formulaires de ligne (voir plus bas)
+     * - si h2 == true alors $responsableId est celui de la liste
+     * - si h2 == false alors $responsableId = -1 et le responsableId de la liste est aussi -1.
+     */
+    'responsableId' => $this->responsableId,
+    'responsable' => $this->escapeHtml($this->responsable)
+];
 $url_retour = empty($this->url2_retour) ? $this->url1_retour : $this->url2_retour;
 $url_ajouter = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-ajout',
-        'page' => $this->page
-    ]);
-$url_imprimer = $this->url('sbmgestion/finance',
-    [
-        'action' => 'paiement-depot',
         'page' => $this->page
     ]);
 $url_edit = $this->url('sbmgestion/finance',
@@ -81,29 +80,42 @@ $url_delete = $this->url('sbmgestion/finance',
         'action' => 'paiement-suppr',
         'page' => $this->page
     ]);
-if (! $this->h2) {
-    $url_group = $this->url('sbmgestion/finance', [
-        'action' => 'paiement-liste'
-    ]);
-}
 $url_detail = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-detail',
         'page' => $this->page
     ]);
+if ($this->h2) {
+    $url_imprimer = $this->url('sbmdocument', [
+        'action' => 'les-factures'
+    ]);
+    $rapports = [
+        'class' => 'fam-printer',
+        'formaction' => $url_imprimer,
+        'title' => 'Factures',
+        'formtarget' => '_blank'
+    ];
+} else {
+    $url_imprimer = $this->url('sbmgestion/finance',
+        [
+            'action' => 'paiement-depot',
+            'page' => $this->page
+        ]);
+    $rapports = [
+        'class' => 'fam-printer',
+        'formaction' => $url_imprimer,
+        'title' => 'Bordereaux de remise de valeurs'
+    ];
+    $url_retour_pour_group = $this->url('sbmgestion/finance',
+        [
+            'action' => 'paiement-liste',
+            'page' => $this->page
+        ]);
+    $url_group = $this->url('sbmgestion/finance', [
+        'action' => 'paiement-liste'
+    ]);
+}
 
-$hiddens = [
-    'url1_retour' => $this->url1_retour,
-    'url2_retour' => $this->url2_retour,
-    'h2' => $this->h2,
-    /*
-     * Pour la compatibilité de traitement avec les formulaires de ligne (voir plus bas)
-     * - si h2 == true alors $responsableId est celui de la liste
-     * - si h2 == false alors $responsableId = -1 et le responsableId de la liste est aussi -1.
-     */
-    'responsableId' => $this->responsableId,
-    'responsable' => $this->escapeHtml($this->responsable)
-];
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = [
@@ -113,23 +125,19 @@ $actions = [
         'onclick' => $js_retour,
         'title' => 'Retour'
     ],
-    'rapports' => [
-        'class' => 'fam-printer',
-        'formaction' => $url_imprimer,
-        'title' => 'Bordereaux de remise de valeurs'
-    ],
+    'rapports' => $rapports,
     'detail' => [
-        'class' => 'fam-group-gear',
+        'class' => 'fam-coins',
         'formaction' => $url_detail,
-        'title' => 'Justification des montants encaissés'
+        'title' => 'Facturation'
     ],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
-        'title' => 'Nouveau paiement'
+        'title' => 'Encaissement'
     ]
 ];
-if (! $this->h2) {
+if (!$this->h2) {
     unset($actions['detail']);
 }
 ?>
@@ -145,13 +153,13 @@ if (! $this->h2) {
 		</div>
 		<h1>Liste des paiements</h1>
 <?php if ($this->h2): ?>
-        <h2>Paiements effectués par <?= $this->responsable; ?></h2>
+        <h2>État du compte de <?= $this->responsable; ?></h2>
         <?php
     $totalDu = $this->resultats->getSolde();
     ?>
 		<p class="left-10px">Total du : <?= $fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
             <span class="left-95px">
-            	Payé : <?= $fmt->formatCurrency($this->resultats->getPaiements(), 'EUR');?></span>
+            	Payé : <?= $fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?></span>
 			<span class="left-95px">
 				Reste du : <?= $fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></span>
 		</p>
@@ -235,9 +243,9 @@ if (! $this->h2) {
                     'window.document.getElementById(\'url2_retour' . $paiement->paiementId .
                     '\').value=\'' . $url_retour_pour_group . '\';';
                 $buttons['groupe'] = [
-                    'class' => 'fam-group',
+                    'class' => 'fam-money-euro',
                     'formaction' => $url_group,
-                    'title' => 'liste de tous les paiements de ' . $r,
+                    'title' => 'état du compte de ' . $r,
                     'onclick' => $js
                 ];
             }

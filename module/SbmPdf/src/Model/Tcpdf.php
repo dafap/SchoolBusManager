@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -629,9 +629,8 @@ class Tcpdf extends \TCPDF
     /**
      * Si le pied de document n'est pas dans une page distincte, l'en-tête de page reste
      * celui de la section docbody (car la page est déjà commencée) sinon, on configure
-     * l'en-tête de page de cette section
-     * Pour le pied de page, on configure toujours celui qui est prévu dans la section
-     * docfooter
+     * l'en-tête de page de cette section Pour le pied de page, on configure toujours
+     * celui qui est prévu dans la section docfooter
      */
     protected function sectionDocumentFooter()
     {
@@ -898,8 +897,7 @@ class Tcpdf extends \TCPDF
 
     /**
      * Surcharge de la méthode pour la gestion des sections du document (docheader,
-     * docbody, docfooter)
-     * (non-PHPdoc)
+     * docbody, docfooter) (non-PHPdoc)
      *
      * @see TCPDF::AddPage()
      */
@@ -940,8 +938,7 @@ class Tcpdf extends \TCPDF
     /**
      * Surcharge de la méthode. Pour définir un nouveau modèle d'en-tête, il suffit
      * d'écrire une méthode templateHeaderMethod2(), templateHeaderMethod3()... en prenant
-     * modèle sur templateHeaderMethod1().
-     * (non-PHPdoc)
+     * modèle sur templateHeaderMethod1(). (non-PHPdoc)
      *
      * @see TCPDF::Header()
      */
@@ -1080,16 +1077,14 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Modèle de pied de page par défaut
-     * Il y aura toujours à droite le "numéro de page / nombre de pages" (exitant dans le
-     * modèle par défaut de tcpdf) On peut rajouter une chaine à gauche et une chaine au
-     * centre du pied de page.
-     * Le modèle de pied de page est se trouve dans
-     * $this->config['document']['pagefooter_string'] et s'obtient par
+     * Modèle de pied de page par défaut Il y aura toujours à droite le "numéro de page /
+     * nombre de pages" (exitant dans le modèle par défaut de tcpdf) On peut rajouter une
+     * chaine à gauche et une chaine au centre du pied de page. Le modèle de pied de page
+     * est se trouve dans $this->config['document']['pagefooter_string'] et s'obtient par
      * $this->getConfig('document', 'pagefooter_string','') Pour définir une chaine à
      * gauche : @gauche{chaine} Pour définir une chaine au centre : @centre{chaine} Tout
-     * ce qui ne sera pas dans l'accolade de l'une de ces 2 structures sera ignoré.
-     * Les chaines peuvent contenir les variables suivantes : %date% : date courante de
+     * ce qui ne sera pas dans l'accolade de l'une de ces 2 structures sera ignoré. Les
+     * chaines peuvent contenir les variables suivantes : %date% : date courante de
      * création du document %nombre% : nombre de lignes de données dans cette page
      * %somme(colonne)% où colonne est le rang de la colonne surlaquelle porte la somme (à
      * partir de 1) %max(colonne)% %min(colonne)% %moyenne(colonne)% Toute autre chaine
@@ -1735,9 +1730,8 @@ class Tcpdf extends \TCPDF
 
             if ($this->getRecordSourceType() == 'T') {
                 /**
-                 * POUR LES SOURCES qui sont des TABLES ou des VUES
-                 * La source doit être enregistrée dans le ServiceManager (table ou vue
-                 * MySql) sinon exception
+                 * POUR LES SOURCES qui sont des TABLES ou des VUES La source doit être
+                 * enregistrée dans le ServiceManager (table ou vue MySql) sinon exception
                  */
                 $table = $this->getRecordSourceTable();
 
@@ -1836,13 +1830,12 @@ class Tcpdf extends \TCPDF
                 $this->config['doctable']['columns'] = $table_columns;
             } else {
                 /**
-                 * POUR LES SOURCES qui sont des REQUETES SQL
-                 * On essaiera de poser un effectif sur les colonnes %transportes% et
-                 * %demandes% à condition qu'on ait fourni un paramètre
-                 * 'effectifClassName' correct (cad qu'il existe une classe
-                 * `effectifClass` implémentant `EffectifInterface` et possédant les
-                 * methodes `tranportes()` et éventuellement `demandes()`. Pour obtenir
-                 * des effectifs conditionnels, il faut qu'un paramètre
+                 * POUR LES SOURCES qui sont des REQUETES SQL On essaiera de poser un
+                 * effectif sur les colonnes %transportes% et %demandes% à condition qu'on
+                 * ait fourni un paramètre 'effectifClassName' correct (cad qu'il existe
+                 * une classe `effectifClass` implémentant `EffectifInterface` et
+                 * possédant les methodes `tranportes()` et éventuellement `demandes()`.
+                 * Pour obtenir des effectifs conditionnels, il faut qu'un paramètre
                  * 'caractereConditionnel' soit passé et que la classe `effectifClass`
                  * présente la méthode `setCaractereConditionnel`. Son appel se fera avant
                  * l'init.
@@ -2276,9 +2269,8 @@ class Tcpdf extends \TCPDF
                 }
             } else {
                 /**
-                 * c'est une requête Sql.
-                 * S'il n'y a pas de description des colonnes dans la table doccolumns
-                 * alors on en crée une par défaut.
+                 * c'est une requête Sql. S'il n'y a pas de description des colonnes dans
+                 * la table doccolumns alors on en crée une par défaut.
                  */
                 // remplacement des variables %millesime%, %date%, %heure% et %userId%
                 // et des opérateurs %gt%, %gtOrEq%, %lt%, %ltOrEq%, %ltgt%, %notEq%
@@ -2793,5 +2785,40 @@ class Tcpdf extends \TCPDF
         set_time_limit(300);
         // echo($codeHtml);
         $this->writeHTML($codeHtml, true, false, false, false, '');
+    }
+
+    // ======================================================================================================
+    // Modèle particulier pour les factures
+    //
+    public function templateDocBodyMethod7($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Modèle HTML à variables passées par le tableau associatif `args` (layout)';
+        }
+        $fichier_phtml = $this->getParam('layout', null);
+        if (empty($fichier_phtml)) {
+            throw new Exception("Le modèle de ce document n'a pas été défini.");
+        }
+        $viewRender = $this->pdf_manager->get('ViewRenderer');
+        $layout = new ViewModel();
+        $layout->setTemplate($fichier_phtml);
+        $layout->setVariables([
+            'args' => $this->getParam('args', null)
+        ]);
+        $saut_de_page = false;
+        foreach ($this->getData() as $value) {
+            if ($saut_de_page) {
+                $this->AddPage();
+            }
+            $layout->setVariable('data', $value);
+            $codeHtml = $viewRender->render($layout);
+            set_time_limit(300);
+            // echo($codeHtml);
+            $this->writeHTML($codeHtml, true, false, false, false, '');
+            $saut_de_page = true;
+        }
     }
 }

@@ -7,7 +7,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2019
+ * @date 26 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -448,15 +448,15 @@ echo $this->flashMessenger()->render('default');
 				<tfoot>
 					<tr>
 						<th colspan="4">Total à payer</th>
-						<td><?=$fmt->formatCurrency($this->facture->getMontantTotal(), 'EUR');?></td>
+						<td><?=$fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?></td>
 					</tr>
 					<tr>
 						<th colspan="4">Déjà payé</th>
-						<td><?=$fmt->formatCurrency($this->facture->getPaiements(), 'EUR');?></td>
+						<td><?=$fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?></td>
 					</tr>
 					<tr>
 						<th colspan="4">Solde</th>
-						<th><?=$fmt->formatCurrency($this->facture->getSolde(), 'EUR');?></th>
+						<th><?=$fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></th>
 					</tr>
 				</tfoot>
 			</table>
@@ -550,28 +550,53 @@ EOT;
 		</div>
     <?php endif;?>
 	</div>
-	<div id="parent-paiements">
-    <?php if ($nbPaiements) : ?>
-    <fieldset class="sbm-page1">
-			<legend>Paiements enregistrés</legend>
-			<table class="parent paiement">
-				<tbody>
-					<tr>
-						<th>Date du paiement</th>
-						<th>Moyen de paiement</th>
-						<th>Montant</th>
-					</tr>
-            <?php
-        foreach ($this->paiements as $row) {
-            echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) .
-                '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant .
-                '</td></tr>';
-        }
-        ?>
-            </tbody>
-			</table>
-		</fieldset>
-    <?php endif; ?>
-    </div>
+	<div id="wrapper-finance" class="clearfix">
+		<div id="parent-paiements" class="float-left">
+    	<?php if ($nbPaiements) : ?>
+    		<fieldset class="sbm-page1">
+				<legend>Paiements enregistrés</legend>
+				<table class="parent paiement">
+					<tbody>
+						<tr>
+							<th>Date du paiement</th>
+							<th>Moyen de paiement</th>
+							<th>Montant</th>
+						</tr>
+            <?php foreach ($this->paiements as $row) :?>
+            			<tr>
+            				<td><?=DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
+                			<td><?=$row->modeDePaiement;?></td>
+                			<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+                		</tr>
+        	<?php endforeach;?>
+            		</tbody>
+				</table>
+			</fieldset>
+    	<?php endif; ?>
+    	</div>
+		<div id="parent-factures" class="float-left">
+    	<?php if ($this->factures->count()) : ?>
+    		<fieldset class="sbm-page1">
+				<legend>Factures émises</legend>
+				<table class="parent factures">
+					<tbody>
+						<tr>
+							<th>Numéro</th>
+							<th>Date</th>
+							<th>Montant</th>
+						</tr>
+            <?php foreach ($this->factures as $row) :?>
+            			<tr>
+                			<td><?=$row->numero;?></td>
+            				<td><?=DateLib::formatDateTimeFromMysql($row->date);?></td>
+                			<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+                		</tr>
+        	<?php endforeach;?>
+            		</tbody>
+				</table>
+			</fieldset>
+    	<?php endif; ?>
+    	</div>
+	</div>
 </div>
 <?php endif; ?>
