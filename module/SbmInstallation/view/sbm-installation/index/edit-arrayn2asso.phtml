@@ -1,0 +1,33 @@
+<?php
+/**
+ * Page d'édition d'un tableau de configuration (partiellement) à 2 dimensions
+ * dont les champs de niveau 2 peuvent être des tableaux associatifs.
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource edit-arrayn2asso.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 avr. 2019
+ * @version 2019-2.5.0
+ */
+$this->themeCss('sbm-installation', 'gestion-config.css');
+$this->jQuery();
+$this->themeJs('sbm-installation', 'gestion-config.js');
+$this->inlineScript()->captureStart();
+?>
+js_edit_arrayN2Asso.init('<?= $this->labelButton;?>',<?= json_encode($this->fieldsN2);?>);
+<?php
+$this->inlineScript()->captureEnd();
+?>
+<div id="sbm-config">
+	<h1><?=$this->titrePage;?></h1>
+	<h2>Thème: <?=$this->theme;?></h2>
+	<fieldset class="sbm-page1">
+		<form method="post" name="formulaire">
+			<?= $this->sbmArrayN2Asso($this->config_sites);?>
+			<input type='submit' name='submit' value='Enregistrer'> <input
+				type='submit' name='cancel' value='Abandonner'>
+		</form>
+	</fieldset>
+</div>

@@ -8,7 +8,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -23,8 +23,7 @@ class IndexController extends AbstractActionController
 
     /**
      * Affectation du millesime de travail. S'il n'y en a pas en session, il prend le
-     * dernier millesime valide et le met en session.
-     * (non-PHPdoc)
+     * dernier millesime valide et le met en session. (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
      */
@@ -42,6 +41,7 @@ class IndexController extends AbstractActionController
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
+                
                 'elevesEnregistres' => current(
                     $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
                 'elevesInscrits' => current(

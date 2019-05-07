@@ -39,7 +39,9 @@ function printResult($args)
 // ------------------------------ DEBUT -----------------------------------------
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$retour = $this->url("sbminstall");
+$retour = $this->url("sbminstall", [
+    'action' => 'gestion-config'
+]);
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -61,7 +63,7 @@ $actions = [
 			<?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
-<?php if (is_null($this->form)) : ?>        	
+<?php if (is_null($this->form)) : ?>
 	<div id="data-inner">
 		<pre><?php printResult($this->args);?></pre>
 		<p>Création terminée.</p>

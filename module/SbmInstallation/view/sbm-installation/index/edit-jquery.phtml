@@ -1,0 +1,100 @@
+<?php
+/**
+ * Page du formulaire de modification de `jquery.config.php`
+ *
+ * Emplacement dépendant du thème à partir de config/themes
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource edit-jquery.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 4 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->themeCss('sbm-installation', 'gestion-config.css');
+$this->jQuery();
+$this->themeJs('sbm-installation', 'gestion-config.js');
+$this->inlineScript()->captureStart();
+?>
+js_edit_jquery.init();
+<?php
+$this->inlineScript()->captureEnd();
+$format_library = <<<'EOT'
+<label><span class="label">library</span><input type="text" name="%1$s|library" value="%1$s"></label>
+EOT;
+$format_mode = <<<'EOT'
+<label><span class="label">mode</span>
+<select name="%1$s|mode">
+<option value="prepend"%2$s>prepend</option>
+<option value="append"%3$s>append</option></select>
+</label>
+EOT;
+$format_css = <<<'EOT'
+<label><span class="label">CSS</span><input type="text" name="%1$s|css[]" value="%2$s"></label>
+EOT;
+$format_js = <<<'EOT'
+<label><span class="label">JS</span><input type="text" name="%1$s|js[]" value="%2$s"></label>
+EOT;
+?>
+<div id="sbm-config">
+	<h1>Modification de la configuration de JQuery</h1>
+	<h2>Thème: <?=$this->theme;?></h2>
+	<form method='post' name='edit-jquery' id='edit-jquery'>
+		<?php foreach ($this->config as $key => $value) :?>
+		<?php
+    if ($value['mode'] == 'prepend') {
+        $prepend = ' selected="selected"';
+        $append = '';
+    } else {
+        $prepend = '';
+        $append = ' selected="selected"';
+    }
+    $config_css = [
+        ''
+    ];
+    if (array_key_exists('css', $value)) {
+        $config_css = $value['css'];
+    }
+    $id = str_replace('.', '-', $key);
+    ?>
+    	<fieldset class="sbm-page1">
+		<?= sprintf($format_library, $key);?>
+		<?= sprintf($format_mode, $key, $prepend, $append);?>
+			<div class="clearfix">
+				<div class="float-left">
+		<?php
+
+    foreach ($config_css as $css) {
+        echo sprintf($format_css, $key, $css);
+    }
+    ?>
+    				<div id="addcssnew<?=$id?>"></div>
+				</div>
+				<input type='button' class="float-right" value='Autre CSS'
+					onclick='js_edit_jquery.addcss("<?=$key?>", "<?=$id?>")'>
+			</div>
+			<div class="clearfix">
+				<div class="float-left">
+		<?php
+
+    foreach ($value['js'] as $js) {
+        echo sprintf($format_js, $key, $js);
+    }
+    ?>
+    				<div id="addjsnew<?=$id?>"></div>
+				</div>
+				<input type='button' class="float-right" value='Autre JS'
+					onclick='js_edit_jquery.addjs("<?=$key?>", "<?=$id?>")'>
+			</div>
+		</fieldset>
+		<?php endforeach;?>
+		<div id="addlibrary"></div>
+		<input type='submit' class='calendar' name='submit'
+			value='Enregistrer'> <input type='submit' name='cancel'
+			value='Abandonner'> <input type='button'
+			value="Ajouter une bibliothèque"
+			onclick="js_edit_jquery.addlibrary('<?=md5(sprintf("dafap%d", time()));?>')">
+	</form>
+	<p class="sbm-description">Pour supprimer une bibliothèque, vider la ligne <i>library</i>.</p>
+</div>

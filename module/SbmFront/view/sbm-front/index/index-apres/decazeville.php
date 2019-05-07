@@ -5,9 +5,9 @@
  * Page d'accueil après la période d'inscription :
  * - message durant la période allant de la fin de la période d'inscription au début de l'année scolaire
  * - message après le début de l'année scolaire
- * 
+ *
  * Utilise $dateDebutAs définie dans index-apres.phtml
- * 
+ *
  * @project sbm
  * @package module/SbmFront/view/sbm-front/index/index-avant
  * @filesource decazeville.php
@@ -16,7 +16,7 @@
  * @date 30 sept. 2018
  * @version 2019-2.5.0
  */
-if ($dateDebutAs >= date('Y-m-d')) {
+if ($this->dateDebutAs >= date('Y-m-d')) {
     /**
      * entre la fin de la période d'inscription et le début de l'année scolaire
      */

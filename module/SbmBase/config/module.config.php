@@ -108,10 +108,17 @@ return [
         'aliases' => [
             'jQuery' => Helper\JQuery::class,
             'jquery' => Helper\JQuery::class,
-            'JQuery' => Helper\JQuery::class
+            'JQuery' => Helper\JQuery::class,
+            'themeJs' => helper\ThemeJs::class,
+            'themejs' => helper\ThemeJs::class,
+            'themeJS' => helper\ThemeJs::class,
+            'themeCss' => helper\ThemeCss::class,
+            'themecss' => helper\ThemeCss::class,
         ],
         'factories' => [
-            Helper\JQuery::class => Helper\JQueryFactory::class
+            Helper\JQuery::class => Helper\JQueryFactory::class,
+            Helper\ThemeCss::class=>Helper\ThemeCssFactory::class,
+            Helper\ThemeJs::class=>Helper\ThemeJsFactory::class
         ]
     ]
 ];

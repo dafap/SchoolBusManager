@@ -1,0 +1,190 @@
+<?php
+
+/**
+ * Page de gestion de la configuration de School Bus Manager
+ *
+ * Liste les fichiers de /config/theme
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource gestion-config.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_edit_cartes = $this->url('sbminstall', [
+    'action' => 'edit-cartes'
+]);
+$url_change_theme = $this->url('sbminstall', [
+    'action' => 'change-theme'
+]);
+$url_create = $this->url('sbminstall', [
+    'action' => 'create-tables'
+]);
+$url_edit_cleversms = $this->url('sbminstall', [
+    'action' => 'edit-clever-sms'
+]);
+$url_edit_client = $this->url('sbminstall', [
+    'action' => 'edit-client'
+]);
+$url_edit_css = $this->url('sbminstall', [
+    'action' => 'edit-css'
+]);
+$url_edit_google_maps_api = $this->url('sbminstall',
+    [
+        'action' => 'edit-google-maps-api'
+    ]);
+$url_edit_images = $this->url('sbminstall', [
+    'action' => 'gestion-images'
+]);
+$url_edit_jquery = $this->url('sbminstall', [
+    'action' => 'edit-jquery'
+]);
+$url_edit_mail = $this->url('sbminstall', [
+    'action' => 'edit-mail'
+]);
+$url_edit_mailchimp = $this->url('sbminstall', [
+    'action' => 'edit-mailchimp'
+]);
+$url_edit_sites = $this->url('sbminstall', [
+    'action' => 'edit-sites'
+]);
+$url_edit_systempay = $this->url('sbminstall', [
+    'action' => 'edit-systempay'
+]);
+$url_edit_page = $this->url('sbminstall', [
+    'action' => 'edit-page'
+]);
+$url_config_calendar = $this->url('sbminstall', [
+    'action' => 'edit-config-calendar'
+]);
+$url_retour = $this->url("sbminstall");
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<div id="sbm-config">
+	<h1>Configuration de l'application</h1>
+	<div id="data-header" class="clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="menugeneral-inner" class="clearfix">
+		<div class="col1">
+			<fieldset class="sbm-page1">
+				<legend>Actions réservées</legend>
+				<ul>
+			<?php
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration de la table calendar',
+        'formaction' => $url_config_calendar
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Création des tables',
+        'formaction' => $url_create
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Paramétrage des cartes',
+        'formaction' => $url_edit_cartes
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration de l\'API de CleverSMS Light',
+        'formaction' => $url_edit_cleversms
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Gestion des informations de l\'organisateur',
+        'formaction' => $url_edit_client
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [
+    'filename' => 'sbm.css'
+], [
+    'value' => 'Gestion de la feuille de style',
+    'formaction' => $url_edit_css
+]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Paramétrage de Google Maps API',
+        'formaction' => $url_edit_google_maps_api
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Gestion des images de l\'application',
+        'formaction' => $url_edit_images
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration de jQuery dans l\'application',
+        'formaction' => $url_edit_jquery
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Paramétrage du courrier électronique',
+        'formaction' => $url_edit_mail
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration de l\'API de MailChimp',
+        'formaction' => $url_edit_mailchimp
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Gestion des liens',
+        'formaction' => $url_edit_sites
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Paramétrage de systempay',
+        'formaction' => $url_edit_systempay
+    ]);
+?>
+			</ul>
+			</fieldset>
+		</div>
+		<div class="col2">
+			<fieldset class="sbm-page1">
+				<legend>Modification du contenu de la page d'accueil</legend>
+				<ul>
+			<?php
+include $this->theme->getIncludeView('sbm-installation/index/gestion-config');
+?>
+			</ul>
+			</fieldset>
+		</div>
+		<div class="theme">
+			<fieldset class="sbm-page1">
+				<h3>Théme : <?=$this->theme->getTheme();?></h3>
+				<legend>Choisir un autre thème</legend>
+				<form method="post" action="<?=$url_change_theme;?>">
+					<input type="hidden" name="op" value="change-theme">
+			<?php
+foreach ($this->files as $dossier) {
+    if ($dossier == '.' || $dossier == '..') {
+        continue;
+    }
+    echo sprintf('<p><input type="submit" class="default" name="theme" value="%s"></p>',
+        $dossier);
+}
+?>
+		</form>
+			</fieldset>
+		</div>
+	</div>
+</div>

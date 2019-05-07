@@ -1,0 +1,32 @@
+<?php
+/**
+ * Formulaire d'appel de la plate-forme de paiement
+ *
+ *
+ * @project sbm
+ * @package SbmPaiement/Plugin/PayFiP/view
+ * @filesource formulaire.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 mai 2019
+ * @version 2019-2.5.0
+ */
+
+
+    // @todo : Vérifier si c'est utile ici !!!
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->inlineScript()->captureStart();
+?>
+document.getElementById('plugin-formulaire').submit();
+<?php $this->inlineScript()->captureEnd();?>
+<div class="row">
+	<div class="col-sm-8 col-sm-offset-2">
+		<div class="widget widget-white text-center">
+			<i class="fam-arrow-refresh" style="font-size: 50px"></i>
+			<h3>Redirection vers la page de paiement en cours...</h3>
+                <?= $this->form($this->form);?>
+            </div>
+	</div>
+</div>

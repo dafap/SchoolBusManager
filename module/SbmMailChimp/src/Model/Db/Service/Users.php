@@ -64,7 +64,7 @@ class Users implements FactoryInterface
                 sprintf($message), gettype($serviceLocator));
         }
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
-        $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d H:i:s');
+        $this->dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d H:i:s');
         $this->millesime = $tCalendar->getDefaultMillesime();
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();

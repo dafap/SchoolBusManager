@@ -2,16 +2,27 @@
 /**
  * Page d'accueil avant la période d'inscription
  *
+ * Reçoit les propriétés suivantes :
+ * 'form' : objet SbmFront\Form\Login
+ * 'communes' : objet SbmCommun\Model\Db\Service\Table\Communes'),
+ * 'calendar' : objet SbmCommun\Model\Db\Service\Table\System\Calendar
+ * 'theme' : objet SbmInstallation\Model\Theme
+ * 'client' : tableau décrivant l'organisateur (array)
+ * 'accueil' : url du site de l'organisateur
+ * 'millesime' : (int)
+ * 'as' : année scolaire (string)
+ * 'dateDebutAs' : date de début de l'année scolaire (string)
+ * 'url_ts_region' : url du site d'inscription de la région (string)
  *
  * @project sbm
  * @package module/SbmFront/view/sbm-front/index
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 2 mai 2019
  * @version 2019-2.5.0
  */
-$msg = include 'index-avant/demo.php';
+$msg = include $this->theme->getIncludeView('sbm-front/index/index-avant');
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -43,7 +54,7 @@ $url_carte = $this->url('sbmcarte', [
 				<div class="centre">
 					<h3>Identifiez-vous</h3>
 					<div class="sbm-description">(si vous avez déjà créé votre compte)</div>
-				</div>	
+				</div>
 		    <?= $this->formRow($this->form->get('email')); ?>
 		    <br>
 		    <?= $this->formRow($this->form->get('mdp')); ?>

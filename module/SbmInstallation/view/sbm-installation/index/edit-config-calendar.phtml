@@ -1,0 +1,89 @@
+<?php
+/**
+ * Edite le modèle permettant de générer une nouvelle année scolaire dans la table calendar
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource edit-config-calendar.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->themeCss('sbm-installation', 'gestion-config.css');
+$this->jQuery();
+$this->themeJs('sbm-installation', 'gestion-config.js');
+$this->inlineScript()->captureStart();
+?>
+js_edit_calendar.init();
+<?php
+$this->inlineScript()->captureEnd();
+$items = [
+    'ordinal',
+    'nature',
+    'rang',
+    'libelle',
+    'description',
+    'exercice'
+];
+$format_element = <<<'EOT'
+<div id="%1$s%2$s">
+    <label><span class="label">%1$s</span><input type="text" name="%1$s[]" value="%3$s"></label>
+</div>
+EOT;
+?>
+<div id="sbm-config">
+	<h1>Configuration du modèle de création d'une année scolaire dans la
+		table calendar</h1>
+	<h2>Thème: <?=$this->theme;?></h2>
+
+	<form method="post" name="formulaire">
+		<fieldset class="sbm-page1 button">
+			<input type='submit' class='calendar' name='submit'
+				value='Enregistrer'> <input type='submit' name='cancel'
+				value='Abandonner'> <input type='button' name='add'
+				value='Ajouter un enregistrement' onclick='js_edit_calendar.add();'>
+			<p>Type et taille des champs:</p>
+			<ul>
+				<li><b>ordinal:</b> entier</li>
+				<li><b>nature:</b> chaine de 4 caractères</li>
+				<li><b>rang:</b> entier reprenant à 1 pour chaque nature différente</li>
+				<li><b>libelle:</b> chaine de 64 caractères.</li>
+				<li><b>description:</b> chaine de 255 caractères</li>
+				<li><b>exercice:</b> entier égal au millesime ou au millesime + 1</li>
+			</ul>
+			<p>
+				<i>Pour PERM, le champ 'libelle' doit contenir le code INSEE d'une
+					commune et le champ 'decription' reste vide.</i>
+			</p>
+			<p>Variables disponibles dans les champs 'libelle', 'description' et
+				'exercice'</p>
+			<ul>
+				<li><b>%as%</b> est remplacé par l'année scolaire</li>
+				<li><b>%libelle%</b> est remplacé par le contenu du champ 'libelle'</li>
+				<li><b>%ex1%</b> est remplacé dans 'exercice' par le millesime</li>
+				<li><b>%ex2%</b> est remplacé dans 'exercice' par le millesime + 1</li>
+			</ul>
+			<p>Pour nature = 'PERM'</p>
+			<ul>
+				<li>champ libelle : le code de la commune est remplacé par
+					'Permanence pour COMMUNE' (où COMMUNE est le nom de la commune en
+					majuscules)</li>
+				<li>champ description : il est rempli par le nom de la commune en
+					Minuscules</li>
+				<li>le champ 'description' dans
+
+			</ul>
+			<p>Pour supprimer un enregistrement, vide le champ ordinal.</p>
+		</fieldset>
+		<?php for ($idx = 0; $idx < count($this->config); $idx++) :?>
+		<fieldset class="sbm-page1">
+			<?php foreach ($items as $item) : ?>
+				<?php printf($format_element, $item, $idx, $this->config[$idx][$item]);?>
+    		<?php endforeach;?>
+    	</fieldset>
+    	<?php endfor;?>
+    	<div id="addnew"></div>
+	</form>
+
+</div>

@@ -3,7 +3,7 @@
  * Service donnant un Tablegateway pour la table Factures
  * (à déclarer dans module.config.php)
  *
- * Description longue du fichier s'il y en a une
+ * 
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/TableGateway

@@ -3,13 +3,13 @@
  * Injection des objets dans EleveController du module SbmAjax
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller/Service
  * @filesource EleveControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 déc. 2018
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller\Service;
@@ -27,6 +27,7 @@ class EleveControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
+            
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),

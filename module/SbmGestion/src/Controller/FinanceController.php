@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -202,6 +202,7 @@ class FinanceController extends AbstractActionController
             // pas nécessaire
             return new ViewModel(
                 [
+
                     'namespacectrl' => null,
                     'paginator' => $tablePaiements->paginator(
                         $criteres_obj->getWhere([
@@ -232,6 +233,7 @@ class FinanceController extends AbstractActionController
             $where->equalTo('responsableId', $responsableId);
             return new ViewModel(
                 [
+
                     'namespacectrl' => md5('nsArgsFacture'),
                     'paginator' => $tablePaiements->paginator($where, $order),
                     'count_per_page' => $nb_paiements,
@@ -385,6 +387,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'form' => $form->prepare(),
                 'page' => $this->params('page', 1),
                 'paiementId' => null,
@@ -470,6 +473,7 @@ class FinanceController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'paiementId' => StdLib::getParam('paiementId', $r->getResult()),
@@ -576,6 +580,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'data' => $data,
                 'form' => $form->prepare(),
                 'page' => $this->params('page', 1),
@@ -715,6 +720,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'form1' => $form1, // bordereaux en cours
                 'voirForm1' => ! empty($bordereauxEnCours),
                 'form2' => $form2, // nouveau bordereau
@@ -757,6 +763,7 @@ class FinanceController extends AbstractActionController
             $responsableId);
         return new ViewModel(
             [
+
                 'namespacectrl' => md5('nsArgsFacture'),
                 'args' => $args,
                 'resultats' => $resultats,
@@ -878,6 +885,7 @@ class FinanceController extends AbstractActionController
         $effectifTarifs->init();
         return new ViewModel(
             [
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator(
                     $args['where'], [
                         'grille',
@@ -933,6 +941,7 @@ class FinanceController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'tarifId' => $r->getResult()
@@ -1005,6 +1014,7 @@ class FinanceController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -1057,6 +1067,7 @@ class FinanceController extends AbstractActionController
             default:
                 return new ViewModel(
                     [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'tarifId' => null
@@ -1100,6 +1111,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
                         'tarifId' => $tarifId
@@ -1176,6 +1188,7 @@ class FinanceController extends AbstractActionController
         $effectifOrganismes->init();
         return new ViewModel(
             [
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->paginator(
                     $args['where']),
                 'effectifOrganismes' => $effectifOrganismes,
@@ -1217,6 +1230,7 @@ class FinanceController extends AbstractActionController
             default:
                 return new ViewModel(
                     [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'organismeId' => null
@@ -1259,6 +1273,7 @@ class FinanceController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'organismeId' => $r->getResult()
@@ -1326,6 +1341,7 @@ class FinanceController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -1365,6 +1381,7 @@ class FinanceController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
                         'organismeId' => $organismeId

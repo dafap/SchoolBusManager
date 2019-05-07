@@ -15,9 +15,21 @@
 namespace SbmFront\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
+/**
+ * Dispose des propriétés provenant de IndexControllerFactory :
+ * - theme (objet \SbmInstallation\Model\Theme)
+ * - db_manager (objet \SbmCommun\Model\Db\Service\DbManager)
+ * - login_form (objet \SbmFront\Form\Login)
+ * - client
+ * - accueil (url de l'organisateur - voir config/autoload/sbm.local.php)
+ * - url_ts_region (url du site d'inscription de la région - voir config/autoload/sbm.local.php)
+ * @author admin
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -33,15 +45,17 @@ class IndexController extends AbstractActionController
         $view = new ViewModel(
             [
                 'form' => $form->prepare(),
-                'communes_membres' => $this->communes_membres,
+                'communes' => $this->db_manager->get('Sbm\Db\Table\Communes'),
+                'calendar' => $tCalendar,
+                'theme' => $this->theme,
                 'client' => $this->client,
                 'accueil' => $this->accueil,
+                'millesime' => Session::get('millesime'),
                 'as' => Session::get('as')['libelle'],
-                'etat' => $tCalendar->etatDuSite(),
-                'permanences' => $tCalendar->getPermanences(),
+                'dateDebutAs' => Session::get('as')['dateDebut'],
                 'url_ts_region' => $this->url_ts_region
             ]);
-        switch ($tCalendar->etatDuSite()['etat']) {
+        switch ($tCalendar->getEtatDuSite()['etat']) {
             case 0:
                 $view->setTemplate('sbm-front/index/index-avant.phtml');
                 break;
@@ -67,15 +81,27 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $responsableId = 1;
-        $resultats = $this->db_manager->get(
-            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
-            $responsableId);
-        $methodFacture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
-            $resultats);
+        // $theme = new \SbmInstallation\Model\Theme();
+        $source = file_get_contents(
+            StdLib::concatPath(StdLib::findParentPath(__DIR__, 'config/themes'),
+                '/default/pages/accueil-pendant.html'));
+        $request = $this->getRequest();
+        // var_dump($request);
+        if ($request->isPost()) {
+            $content = $request->getPost();
+            $html = new \DOMDocument();
+            $html-loadHtml($source);
+            die(var_dump($content));
+            // $theme->setCssFile('sbm.css', $content);
+        }
         // dump de l'objet 'obj'
-        return new ViewModel([
-            'obj' => $methodFacture
-        ]);
+        return new ViewModel(
+            [
+                'obj' => // $theme->getCssFile('sbm.css'),
+                file_get_contents(
+                    StdLib::concatPath(StdLib::findParentPath(__DIR__, 'config/themes'),
+                        '/default/pages/accueil-pendant.html')),
+                'type' => 'html'
+            ]);
     }
 }

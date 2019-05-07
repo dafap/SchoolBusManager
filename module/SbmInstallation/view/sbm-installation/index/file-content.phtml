@@ -1,0 +1,58 @@
+<?php
+/**
+ * Formulaire permettant d'éditer le contenu d'un fichier texte
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource file-content.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->jQuery();
+$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+if ($this->type == 'html') {
+    $this->headScript()->captureStart();
+    ?>
+tinymce.init({
+    selector: "textarea",
+    language: "fr_FR",
+    menubar : false,
+    //statusbar: false,
+     plugins: [
+    'advlist autolink lists link image charmap print preview anchor textcolor noneditable',
+    'searchreplace visualblocks code fullscreen save',
+    'insertdatetime media table contextmenu paste code wordcount'
+  ],
+  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview | code',
+ });
+    <?php
+    $this->headScript()->captureEnd();
+}
+?>
+<h1>Éditeur</h1>
+<h2>Contenu du fichier <?=$this->filename;?> du thème <?=$this->theme->getTheme();?></h2>
+<div id="wrapper-editeur">
+	<fieldset class="sbm-page1">
+<?=$this->form()->openTag($this->form);?>
+<?=$this->formHidden($form->get('csrf'));?>
+<?=$this->formHidden($form->get('filename'));?>
+<?=$this->formRow($form->get('content'));?>
+<div class="inner-button">
+	<?=$this->formElement($form->get('submit'));?>
+	<?=$this->formElement($form->get('cancel'));?>
+</div>
+	</fieldset>
+<?php if ($this->type == 'html'):?>
+	<?php $help = $this->theme->getHelp($this->filename);?>
+	<fieldset class="sbm-page1 col2">
+	<legend>Variables disponibles</legend>
+	<ul>
+	<?php foreach($help as $key => $value):?>
+	<li><?=$key;?>: <?=$value;?></li>
+	<?php endforeach;?>
+	</ul>
+	</fieldset>
+<?php endif;?>
+</div>

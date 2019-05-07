@@ -3,22 +3,22 @@
  * Injection des objets dans IndexController
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Controller/Service
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2018
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Controller\Service;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmPaiement\Controller\IndexController;
 use SbmBase\Model\StdLib;
 use SbmFront\Model\Responsable\Service\ResponsableManager as Responsable;
+use SbmPaiement\Controller\IndexController;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -27,7 +27,7 @@ class IndexControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
-        $config_controller = [
+        $config_controller = [      
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
@@ -50,4 +50,3 @@ class IndexControllerFactory implements FactoryInterface
         return new IndexController($config_controller);
     }
 }
- 

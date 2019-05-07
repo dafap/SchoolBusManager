@@ -30,90 +30,39 @@ use Zend\View\Model\ViewModel;
 class IndexController extends AbstractActionController
 {
 
+    /**
+     * Dans cette version, le montant à payer n'est pas passé par le POST (c'est un
+     * leurre) mais est obtenu à partir de la facture émise ou récupérée si elle existe
+     * déjà. Le montant à payer est le solde de la facture.
+     *
+     * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
+     */
     public function formulaireAction()
     {
         try {
             $responsable = $this->responsable->get();
+            $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
+            // génère une facture ou la récupère si elle existe déjà
+            $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
+                $this->db_manager->get(
+                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    $responsableId));
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
         }
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false) {
-            return $this->redirect()->toRoute('sbmparent');
-        }
-        // prg contient le post ['montant' => ..., 'payer' => ...)
-        $args = $prg ?: [];
-
-        // préparation des données
-        // ATTENTION, dans les préinscrits il n'y a pas les EN ATTENTE
-        $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
-            $responsable->responsableId);
+        // préparation des paramètres pour la méthode getForm() de la plateforme
         $elevesIds = [];
-        /**
-         * VERSION 2.3.1
-         */
-        $eleveIdsAnneeComplete = [];
-        $eleveIds3emeTrimestre = [];
-        /**
-         * Fin de l'ajout VERSION 2.3.1
-         */
-        // ceux qui sont sélectionnés (selectionScolarite : selection dans table
-        // scolarites) sont
-        // mis en attente. Pas de paiement pour le moment.
-        // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district
-        // et sans
-        // dérogation
-        foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite'] &&
-                ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) &&
-                ($row['district'] || $row['derogation'])) {
-                /**
-                 * VERSION 2.3.1
-                 */
-                if ($row['anneeComplete']) {
-                    $eleveIdsAnneeComplete[] = $row['eleveId'];
-                } else {
-                    $eleveIds3emeTrimestre[] = $row['eleveId'];
-                }
-                /**
-                 * Fin de l'ajout VERSION 2.3.1
-                 */
-                $elevesIds[] = $row['eleveId'];
+        foreach ($facture->getResultats()->getListeEleves() as $eleveId => $row) {
+            if (! $row['paiement']) {
+                $elevesIds[] = $eleveId;
             }
         }
-        // vérification du montant
-        /*
-         * ANCIENNE VERSION $montantUnitaire = $this->db_manager
-         * ->get('Sbm\Db\Table\Tarifs') ->getMontant('inscription'); if ($args['montant']
-         * != $montantUnitaire * count($elevesIds)) {
-         * $this->flashMessenger()->addErrorMessage('Problème sur le montant à payer.
-         * Contactez l\'organisateur.'); return $this->redirect()->toRoute('login', [
-         * 'action' => 'home-page' )); } NOUVELLE VERSION 2.3.1
-         */
-        $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        $tarif1 = $tTarifs->getMontant('tarif1');
-        $tarif2 = $tTarifs->getMontant('tarif2');
-        $nbElvTarif1 = count($eleveIdsAnneeComplete);
-        $nbElvTarif2 = count($eleveIds3emeTrimestre);
-        if ($args['montant'] != $tarif1 * $nbElvTarif1 + $tarif2 * $nbElvTarif2) {
-            $this->flashMessenger()->addErrorMessage(
-                'Problème sur le montant à payer. Contactez l\'organisateur.');
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        /**
-         * Fin de l'ajout VERSION 2.3.1
-         */
-        // préparation des paramètres pour la méthode getForm() de la plateforme
         $params = [
-            'montant' => $args['montant'],
+            'montant' => $facture->getResultats()->getSolde(),
             'count' => 1,
-            'first' => $args['montant'],
+            'first' => $facture->getResultats()->getSolde(),
             'period' => 1,
             'email' => $responsable->email,
             'responsableId' => $responsable->responsableId,

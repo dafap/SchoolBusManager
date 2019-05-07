@@ -2,7 +2,7 @@
 /**
  * Ajoute les librairies JQuery nécessaires
  *
- * Description longue du fichier s'il y en a une
+ * 
  * 
  * @project sbm
  * @package SbmBase/Model/View/Helper

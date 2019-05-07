@@ -3,21 +3,21 @@
  * Injection des objets dans EleveController
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmGestion/Controller/Service
  * @filesource EleveControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2018
- * @version 2018-2.4.2
+ * @date 29 avr. 2019
+ * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller\Service;
 
+use SbmBase\Model\StdLib;
+use SbmGestion\Controller\EleveController;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmGestion\Controller\EleveController;
-use SbmBase\Model\StdLib;
 
 class EleveControllerFactory implements FactoryInterface
 {
@@ -27,6 +27,7 @@ class EleveControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
+            
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),

@@ -2,7 +2,7 @@
 /**
  * Exception lancée par une classe du namespace SbmCartographie\Model
  *
- * Description longue du fichier s'il y en a une
+ * 
  * 
  * @project sbm
  * @package SbmCartographie/Model/Exception

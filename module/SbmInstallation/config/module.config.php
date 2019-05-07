@@ -7,13 +7,14 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 30 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Image\Image;
 use SbmInstallation\Controller;
 use SbmInstallation\Form;
+use SbmInstallation\Model\View\Helper as ViewHelper;
 
 return [
     'acl' => [
@@ -50,7 +51,8 @@ return [
                 'tmpuploads' => './data/tmpuploads',
                 'url' => '/img/'
             ],
-            'cacher' => [ // liste des images utilisées dans SBM qu'il ne faut pas administrer
+            'cacher' => [ // liste des images utilisées dans SBM qu'il ne faut pas
+                           // administrer
                 '_blank.png',
                 'famfamfam-icons.png',
                 'favicon.ico',
@@ -58,15 +60,12 @@ return [
             ],
             'administrer' => [
                 /**
-                 * liste des images à administrer
-                 * - label : explication de la nature de l'image
-                 * - taille : prend les valeurs
-                 * FULL_SIZE (taille réelle de l'image ; width et height sont ignorés),
-                 * FIXED_SIZE (taille fixe ; width et height sont en pt)
-                 * PROPORTIONAL_SIZE (taille proportionnelle ; sera ramenée à la taille indiquée en
-                 * pt)
-                 * - width : en pt
-                 * - height : en pt
+                 * liste des images à administrer - label : explication de la nature de
+                 * l'image - taille : prend les valeurs FULL_SIZE (taille réelle de
+                 * l'image ; width et height sont ignorés), FIXED_SIZE (taille fixe ;
+                 * width et height sont en pt) PROPORTIONAL_SIZE (taille proportionnelle ;
+                 * sera ramenée à la taille indiquée en pt) - width : en pt - height : en
+                 * pt
                  */
                 'bandeau-sbm.png' => [
                     // utilisé dans CSS .page1 #header #bandeau
@@ -76,7 +75,8 @@ return [
                     'height' => 195
                 ],
                 'bas-de-mail-service-gestion.png' => [
-                    // utilisé dans \SbmGestion\Controller\EleveController::responsableMailAction()
+                    // utilisé dans
+                    // \SbmGestion\Controller\EleveController::responsableMailAction()
                     // et \SbmMail\Controller\IndexController::lastDayChangesAction()
                     'label' => 'Bas de mail personnalisé service transport',
                     'taille' => Image::PROPORTIONAL_SIZE,
@@ -152,9 +152,27 @@ return [
             ]
         ]
     ],
+    'service_manager' => [
+        'invokables' => [
+            \SbmInstallation\Model\Theme::class => \SbmInstallation\Model\Theme::class
+        ]
+    ],
     'form_manager' => [
         'invokables' => [
-            Form\DumpTables::class => Form\DumpTables::class
+            Form\DumpTables::class => Form\DumpTables::class,
+            Form\FileContent::class => Form\FileContent::class
+        ]
+    ],
+    'view_helpers' => [
+        'aliases' => [
+            'sbmArrayN2Idx' => ViewHelper\SbmArrayN2Idx::class,
+            'sbmarrayN2Idx' => ViewHelper\SbmArrayN2Idx::class,
+            'sbmArrayN2Asso' => ViewHelper\SbmArrayN2Asso::class,
+            'sbmarrayN2Asso' => ViewHelper\SbmArrayN2Asso::class
+        ],
+        'invokables' => [
+            ViewHelper\SbmArrayN2Idx::class => ViewHelper\SbmArrayN2Idx::class,
+            ViewHelper\SbmArrayN2Asso::class => ViewHelper\SbmArrayN2Asso::class
         ]
     ],
     'view_manager' => [

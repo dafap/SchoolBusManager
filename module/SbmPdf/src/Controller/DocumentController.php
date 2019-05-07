@@ -15,7 +15,6 @@
 namespace SbmPdf\Controller;
 
 use SbmBase\Model\Session;
-use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
@@ -39,47 +38,9 @@ class DocumentController extends AbstractActionController
     {
     }
 
-    /**
-     * Retrouve le responsableId enregistré en session dans l'action origine de l'appel
-     * L'appel doit se faire en POST en passant l'argument 'namespacectrl' qui contient la
-     * valeur : md5('nsArgsFacture'). Si ce n'est pas cette valeur alors il y a imposture.
-     * Si c'est bon, on cherche le paramètre 'nsArgsFacture' en session dans
-     * SBM_DG_SESSION qui indique le namespace de session dans lequel on trouvera 'post',
-     * un tableau contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par
-     * un die() puisque l'appel a du être fait dans une nouvelle fenêtre (target = _blank)
-     *
-     * @return int
-     */
-    private function getResponsableIdFromSession()
-    {
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false) {
-            $args = Session::get('post', false, $this->getSessionNamespace());
-        } else {
-            $args = $prg;
-            Session::set('post', $args, $this->getSessionNamespace());
-        }
-        $namespacectrl = StdLib::getParam('namespacectrl', $args, '');
-        if ($namespacectrl != md5('nsArgsFacture')) {
-            die('Imposteur !');
-        } else {
-            $nsArgsFacture = Session::get('nsArgsFacture', '');
-            $args = Session::get('post', false, $nsArgsFacture);
-        }
-        // on a récupéré le post de l'origine de l'appel qui doit contenir le
-        // responsableId
-        $responsableId = StdLib::getParam('responsableId', $args, false);
-        if ($responsableId === false) {
-            die('Le destinataire de la facture est inconnu.');
-        }
-        return $responsableId;
-    }
-
     public function lesFacturesAction()
     {
-        $responsableId = $this->getResponsableIdFromSession();
+        $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // factureset est un objet Iterator
         $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,$responsableId);
         $this->pdf_manager->get(Tcpdf::class)
@@ -99,7 +60,7 @@ class DocumentController extends AbstractActionController
 
     public function factureAction()
     {
-        $responsableId = $this->getResponsableIdFromSession();
+        $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
         $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,

@@ -10,7 +10,7 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 3 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun;
@@ -54,7 +54,10 @@ class Module extends AbstractModule implements BootstrapListenerInterface
             $millesime = $tCalendar->getDefaultMillesime();
             Session::set('millesime', $millesime);
         }
-        Session::set('as', $tCalendar->getAnneeScolaire($millesime));
+        try {
+            Session::set('as', $tCalendar->getAnneeScolaire($millesime));
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\RuntimeException $ex) {
+        }
         $application = $e->getParam('application');
         $config = $application->getConfig();
         $this->getSemaine(StdLib::getParamR([

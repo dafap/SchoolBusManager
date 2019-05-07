@@ -8,7 +8,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 7 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -35,6 +35,9 @@ $url_parent = $this->url('sbmparent');
 $url_change_reinscription = $this->url('sbmmailchimp');
 $url_images = $this->url('sbminstall', [
     'action' => 'gestion-images'
+]);
+$url_config = $this->url('sbminstall', [
+    'action' => 'gestion-config'
 ]);
 $url_update_hostname_validation = $this->url('sbminstall',
     [
@@ -76,26 +79,21 @@ $url_update_cacert = $this->url('sbminstall', [
 				<ul>
 					<li><a href="<?=$url_version;?>"><i class="fam-bullet-go"></i>Versions
 							des logiciels</a></li>
-					<li><a href="<?=$url_update_hostname_validation;?>"
-						target="_blank"><i class="fam-bullet-go"></i>Mise à jour du
-							validateur des hostnames</a></li>
-					<li><a href="<?=$url_update_cacert;?>"><i class="fam-bullet-go"></i>Mise
-							à jour du fichier cacert.pem</a></li>
 					<li><a href="<?=$url_fichierslog;?>"><i class="fam-bullet-go"></i>Fichiers
 							de log</a></li>
-					<li><a href="<?=$url_create;?>"><i class="fam-bullet-go"></i>Création
-							des tables</a></li>
-					<li><a href="<?=$url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie
-							des tables</a></li>
 					<li><a href="<?=$url_tablealias;?>"><i class="fam-bullet-go"></i>Liste
 							des alias des tables</a></li>
-
+					<li><a href="<?=$url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie
+							des tables</a></li>
+					<li><a href="<?=$url_config;?>"><i class="fam-bullet-go"></i>Configuration
+							de l'application</a></li>
+					<li><a href="<?=$url_update_hostname_validation;?>" target="_blank"><i
+							class="fam-bullet-go"></i>Mise à jour du validateur des hostnames</a></li>
+					<li><a href="<?=$url_update_cacert;?>"><i class="fam-bullet-go"></i>Mise
+							à jour du fichier cacert.pem</a></li>
 					<li><a href="<?=$url_change_reinscription;?>"><i
 							class="fam-bullet-go"></i>Gestion des listes de diffusion de
 							MailChimp</a></li>
-
-					<li><a href="<?=$url_images;?>"><i class="fam-bullet-go"></i>Gestion
-							des images de l'application</a></li>
 				</ul>
 			</fieldset>
 		</div>

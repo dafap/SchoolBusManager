@@ -2,7 +2,7 @@
 /**
  * Controller de l'API de Clever Sms Light
  *
- * Description longue du fichier s'il y en a une
+ *
  *
  * @project sbm
  * @package SbmCleverSms/src/Controller
@@ -49,6 +49,7 @@ class IndexController extends AbstractActionController
         $result = $this->curl_request->curlInitialize('accounts/me', 'GET')->curlExec();
         return new ViewModel(
             [
+
                 'account_info' => $result,
                 'page' => $this->params('page', 1)
             ]);
@@ -127,6 +128,7 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'form' => $form,
                 'responsable' => StdLib::getParam('responsable', $args, []),
                 'telephones' => $telephones
@@ -182,6 +184,7 @@ class IndexController extends AbstractActionController
                     $data = StdLib::getParam('data', $r->getResult());
                     return new ViewModel(
                         [
+
                             'form' => $form->prepare(),
                             'data' => $data,
                             'cleversmsId' => StdLib::getParam('id', $r->getResult())
@@ -217,6 +220,7 @@ class IndexController extends AbstractActionController
         $result = $this->curl_request->curlInitialize("push/$referencePush", 'GET')->curlExec();
         return new ViewModel(
             [
+
                 'envoi_info' => $result,
                 'page' => $this->params('page', 1)
             ]);
@@ -249,6 +253,7 @@ class IndexController extends AbstractActionController
         $result = $this->curl_request->curlInitialize("pushs/$referencePush/deliveries",
             'GET')->curlExec();
         return new ViewModel([
+
             'bilan' => $result,
             'page' => $this->params('page', 1)
         ]);
@@ -280,6 +285,7 @@ class IndexController extends AbstractActionController
         }
         $result = $this->curl_request->curlInitialize("pushs/$referencePush/mos", 'GET')->curlExec();
         return new ViewModel([
+
             'mos' => $result,
             'page' => $this->params('page', 1)
         ]);

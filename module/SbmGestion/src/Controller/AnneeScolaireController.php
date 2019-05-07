@@ -8,12 +8,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
+ * @date 3 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Form\Simulation;
@@ -169,17 +170,22 @@ class AnneeScolaireController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $config = include __DIR__ . '/../Model/Modele.inc.php';
-        $config = $config['annee-scolaire'];
-
-        $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $millesime = $table_calendar->getDernierMillesime();
-        if ($table_calendar->isValidMillesime($millesime)) {
+        $theme = new \SbmInstallation\Model\Theme();
+        $config = include StdLib::concatPath($theme->getThemeConfigFolder(),
+            'calendar.config.php');
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $tCommunes = $this->db_manager->get('Sbm\Db\Table\Communes');
+        $millesime = $tCalendar->getDernierMillesime();
+        if ($tCalendar->isValidMillesime($millesime)) {
             $millesime ++;
             $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
-
             $data = $this->db_manager->get('Sbm\Db\SysObjectData\Calendar');
-            foreach ($config['modele'] as $element) {
+            foreach ($config as $element) {
+                if ($element['nature'] == 'PERM') {
+                    $commune = $tCommunes->getRecord($element['libelle']);
+                    $element['libelle'] = sprintf('Permanence pour %s', $commune->nom);
+                    $element['description'] = $commune->nom_min;
+                }
                 $data->exchangeArray(
                     [
                         'calendarId' => null,
@@ -206,7 +212,7 @@ class AnneeScolaireController extends AbstractActionController
                             $millesime + 1
                         ], $element['exercice'])
                     ]);
-                $table_calendar->saveRecord($data);
+                $tCalendar->saveRecord($data);
             }
         } else {
             $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
@@ -216,7 +222,7 @@ class AnneeScolaireController extends AbstractActionController
             [
                 'as_libelle' => $as_libelle,
                 'millesime' => $millesime,
-                'table' => $table_calendar->getMillesime($millesime)
+                'table' => $tCalendar->getMillesime($millesime)
             ]);
         $viewmodel->setTemplate('sbm-gestion/annee-scolaire/voir.phtml');
         return $viewmodel;

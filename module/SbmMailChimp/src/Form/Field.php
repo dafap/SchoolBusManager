@@ -2,7 +2,7 @@
 /**
  * Formulaire d'édition d'un champ d'une liste de diffusion
  *
- * Description longue du fichier s'il y en a une
+ * 
  * 
  * @project sbm
  * @package SbmMailChimp/Form

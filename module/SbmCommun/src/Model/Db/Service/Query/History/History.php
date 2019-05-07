@@ -2,7 +2,7 @@
 /**
  * Requêtes sur la table système `history`
  *
- * Description longue du fichier s'il y en a une
+ * 
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/History

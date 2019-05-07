@@ -5,7 +5,7 @@
  *
  * La méthode _get() est définie
  * 
- * @project project_name
+ * @project sbm
  * @package package_name
  * @filesource Libelles.php
  * @encodage UTF-8

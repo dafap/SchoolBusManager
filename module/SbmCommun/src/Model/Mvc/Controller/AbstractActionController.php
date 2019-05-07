@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2019
+ * @date 27 mars 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -779,5 +779,43 @@ abstract class AbstractActionController extends ZendAbstractActionController
     protected function getCurrentActionFromRoute()
     {
         return $this->params('action', 'index');
+    }
+
+    /**
+     * Retrouve le responsableId enregistré en session dans l'action origine de l'appel
+     * L'appel doit se faire en POST en passant l'argument 'namespacectrl' qui contient la
+     * valeur : md5($nsArgCtrl). Si ce n'est pas cette valeur alors il y a imposture.
+     * Si c'est bon, on cherche le paramètre $nsArgCtrl en session dans
+     * SBM_DG_SESSION qui indique le namespace de session dans lequel on trouvera 'post',
+     * un tableau contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par
+     * un die() puisque l'appel a du être fait dans une nouvelle fenêtre (target = _blank)
+     *
+     * @return int
+     */
+    protected function getResponsableIdFromSession($nsArgCtrl)
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', false, $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $namespacectrl = StdLib::getParam('namespacectrl', $args, '');
+        if ($namespacectrl != md5($nsArgCtrl)) {
+            die('Imposteur !');
+        } else {
+            $nsArgsFacture = Session::get($nsArgCtrl, '');
+            $args = Session::get('post', false, $nsArgsFacture);
+        }
+        // on a récupéré le post de l'origine de l'appel qui doit contenir le
+        // responsableId
+        $responsableId = StdLib::getParam('responsableId', $args, false);
+        if ($responsableId === false) {
+            die('Le destinataire de la facture est inconnu.');
+        }
+        return $responsableId;
     }
 }

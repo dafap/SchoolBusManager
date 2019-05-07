@@ -7,11 +7,11 @@
  * @filesource bilan.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet($this->basePath('/css/mgc/cleversms/clever-sms.css'));
+$this->themeCss('cleversms', 'clever-sms.css');
 $url_retour = $this->url('sbmservicesms', [
     'action' => 'mos',
     'page' => $this->page

@@ -1,0 +1,1323 @@
+@CHARSET "UTF-8";
+
+html {
+	background: #E5E0D4;
+	color: #333;
+}
+
+body {
+	color: inherit;
+	margin: auto;
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida,
+		"Lucida Sans Unicode", sans-serif;
+	height: auto;
+	width: 1170px;
+	padding: 0;
+}
+
+input, select, textarea, button {
+	font-family: inherit;
+	font-size: 1em;
+}
+
+select {
+	letter-spacing: -1px;
+}
+
+input[type="submit"]:hover {
+	font-weight: bold;
+}
+
+th, td {
+	border-bottom: inherit;
+}
+
+dt {
+	font-weight: bold;
+	padding-top: 1rem;
+}
+/*-------- Classes générales ------*/
+.cursor-help {
+	cursor: help;
+}
+
+.cursor-zoom-in {
+	cursor: zoom-in;
+}
+
+.cursor-zoom-out {
+	cursor: zoom-out;
+}
+
+i.fam-help:hover {
+	cursor: help;
+}
+
+.align-right {
+	text-align: right;
+}
+
+.centre {
+	text-align: center;
+}
+
+.clearfix {
+	zoom: 1;
+}
+
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+.content {
+	padding-left: 2px;
+	padding-right: 2px;
+	min-height: 390px;
+	position: relative;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+.even {
+	background-color: #f3fafc;
+	border-bottom: 1px solid #e3eaec;
+}
+
+.odd {
+	border-bottom: 1px solid #e3eaec;
+}
+
+.even:hover, .odd:hover {
+	background-color: #feecc9;
+}
+
+.alert {
+	color: #a94442;
+}
+
+.warning {
+	color: #31708f;
+}
+
+.exces {
+	color: red;
+	font-weight: bold;
+}
+
+.gras {
+	font-weight: bold;
+}
+
+.noir {
+	color: black;
+}
+
+.nuit {
+	color: #000051;
+}
+
+.gris {
+	color: #b0b0b0;
+}
+
+.orange {
+	color: #f78042;
+}
+
+.barre {
+	text-decoration: line-through;
+}
+
+.page1 {
+	border: 1px solid #db001b;
+}
+
+.row-inner {
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+
+.petit {
+	font-size: 80%;
+}
+
+.sbm-description {
+	font-size: 80%;
+	color: #999;
+	margin-bottom: 2px;
+}
+
+*:hover.sbm-description {
+	font-size: 95%;
+}
+
+p.important {
+	font-size: 1.2em;
+	color: #db001b;
+}
+
+.compressed {
+	font-size: 80%;
+}
+
+.vecartement-6px {
+	min-height: 6px;
+}
+
+.top-6px {
+	margin-top: 6px;
+}
+
+.top-12px {
+	margin-top: 12px;
+}
+
+.top-18px {
+	margin-top: 18px;
+}
+
+.left-10px {
+	margin-left: 10px;
+}
+
+.left-20px {
+	margin-left: 20px;
+}
+
+.left-95px {
+	margin-left: 70px;
+}
+
+.right-10px {
+	margin-right: 10px;
+}
+
+.input-error {
+	background-color: #ffcbbf;
+	border: 2px inset #db001b;
+}
+
+div.explication {
+	text-align: justify;
+	padding-right: 15px;
+	padding-left: 15px;
+	color: #804040;
+}
+
+.invisible {
+	display: none;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+label.required:after {
+	color: #f78042;
+	content: ' *';
+}
+
+div.semaine {
+	width: 600px;
+}
+
+div.fit-content {
+	width: fit-content;
+}
+/*-------- Erreurs -------------*/
+div#error_wrapper {
+	width: 100%;
+	overflow: auto;
+}
+
+.row-inner ul {
+	color: #db001b;
+}
+
+div.erreur-a-droite {
+	position: relative;
+}
+
+div.erreur-a-droite ul {
+	position: absolute;
+	display: inline-block;
+	width: 400px;
+	margin: 0;
+}
+
+#responsable-telephone-numbers div.erreur-a-droite ul {
+	margin-left: 372px;
+}
+
+/*-------- Conteneur de la page ---*/
+#container-interface {
+	background-color: white;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: hidden;
+}
+
+/*-------- Page accueil --------*/
+div.table-page1 {
+	display: table;
+	width: 91%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.table-page1 div.row {
+	display: table-row;
+}
+
+div.table-page1 div.column1 {
+	display: table-cell;
+	border-right: 10px solid white;
+}
+
+div.table-page1 div.column2 {
+	display: table-cell;
+	width: 29%;
+}
+
+div.table-page1 div.column2 a {
+	color: #f78042;
+	text-decoration: none;
+}
+
+div.table-page1 div.column2 a:hover {
+	font-weight: bold;
+}
+
+div.centre {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.sbm-page1, fieldset.sbm-page1 {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+input.sbm-page1 {
+	margin-bottom: 3px;
+	width: 167px;
+}
+
+input.sbm-signup {
+	height: 45px;
+	border-radius: 4px 4px 4px 4px;
+	font-size: 120%;
+	color: #578bcb;
+	color: #f78042;
+}
+
+.column1 p {
+	text-align: justify;
+}
+
+h3.accueil {
+	margin-bottom: 0;
+}
+
+a.accueil {
+	text-decoration: none;
+	font-size: inherit;
+	color: #000077;
+}
+
+a.accueil:hover {
+	font-weight: bold;
+	color: #000051;
+}
+/*---------- les labels ---------*/
+label.align-right {
+	margin-right: 3px;
+}
+
+label.sbm-label-page1 {
+	display: inline-block;
+	width: 105px;
+}
+
+label.sbm-label-200px {
+	display: inline-block;
+	width: 200px;
+}
+
+label.sbm-label-top {
+	vertical-align: top;
+}
+
+.label-80 label {
+	display: inline-block;
+	width: 80px;
+}
+
+.label-120 label {
+	display: inline-block;
+	width: 120px;
+}
+
+.label-240 label {
+	display: inline-block;
+	width: 240px;
+}
+
+.label-360 label {
+	display: inline-block;
+	width: 360px;
+}
+/*---------- Menu dynamique ----------*/
+div.menu {
+	margin: 0;
+	padding: 0;
+	margin-right: 3px;
+	position: relative;
+	z-index: 100;
+}
+
+div.menu ul {
+	list-style: none;
+	-webkit-padding-start: 0;
+}
+
+div.menu ul.menubar {
+	margin-top: 0;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+}
+
+div.menu ul.menubar li {
+	float: left;
+	margin-left: 15px;
+}
+
+div.menu ul.menubar li.annee-scolaire {
+	padding-right: 200px;
+	font-weight: bold;
+}
+
+div.menu ul.menubar li.onglet {
+	position: relative;
+}
+
+div.menu a {
+	color: #1c94c4;
+	text-decoration: none;
+}
+
+div.menu a:hover {
+	font-weight: bold;
+}
+
+div.menu ul.menubar ul {
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	top: 16px;
+	left: 0;
+	z-index: 9999;
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	background-color: white;
+	padding-left: 0;
+}
+
+div.menu ul.menubar li.onglet:hover ul {
+	opacity: 1;
+	visibility: visible;
+}
+
+div.menu ul.menubar ul li {
+	float: none;
+	min-width: 200px;
+	margin-left: 0;
+	padding-left: 4px;
+}
+
+div.menu input[type=submit] {
+	cursor: pointer;
+}
+
+div.menu ul.menubar ul li input {
+	border: none;
+	background: none;
+}
+/*------------ FlashMessenger ----------------*/
+.flashMessenger ul {
+	margin: 0;
+	border-radius: 4px 4px 4px 4px;
+}
+
+.flashMessenger ul.success {
+	color: #3c763d;
+	background-color: #dff0d8;
+	border-color: #3c763d;
+}
+
+.flashMessenger ul.warning {
+	color: #836738;
+	background-color: #f7d09d;
+	border-color: #836738;
+}
+
+.flashMessenger ul.error {
+	color: #a94442;
+	background-color: #f2dede;
+	border-color: #a94442;
+}
+
+.flashMessenger ul.info, .info {
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #31708f;
+}
+
+.flashMessenger ul.default {
+	color: #333;
+	background-color: #fcf8e3;
+	dorder-color: #333;
+}
+/*--------------- Pagination ----------------------------*/
+/* la pagination est dans un clearfix pour que ça marche */
+div.clearfix div.pagination {
+	float: right;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 20px;
+	color: #176f94;
+	font-size: 110%;
+	font-weight: bold;
+}
+
+div.clearfix div.pagination .disabled {
+	display: none;
+}
+
+div.clearfix div.pagination span.nbItems, div.clearfix div.pagination span.current
+	{
+	color: orange;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+div.clearfix div.pagination span.current {
+	border: 1px solid orange;
+}
+
+div.clearfix div.pagination a.page {
+	margin-left: 3px;
+	margin-right: 3px;
+	text-decoration: none;
+	color: #1c94c4
+}
+
+div.clearfix div.pagination a.page:hover {
+	color: #156486;
+}
+/*------------ Selection (à coté du paginateur) ---------*/
+div.pagination-wrapper div.selection {
+	float: left;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 20px;
+	color: #176f94;
+	font-size: 110%;
+}
+/*-------------------- Menu général ---------------------*/
+#menugeneral-inner ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+#menugeneral-inner li {
+	padding-left: 25px;
+	margin-top: 3px;
+	margin-bottom: 6px;
+}
+
+#menugeneral-inner a {
+	text-decoration: none;
+	color: #496f9c;
+}
+
+#menugeneral-inner a:hover {
+	font-weight: bold;
+}
+
+#menugeneral {
+	min-width: 300px;
+}
+/*-------- Installation --------*/
+#sbm-config #menugeneral-inner div.col1 {
+	width: 400px;
+	margin-left: 10px;
+	float: left;
+}
+
+#sbm-config #menugeneral-inner div.col2 {
+	width: 470px;
+	margin-left: 10px;
+	float: left;
+}
+
+#sbm-config .col2 input {
+	white-space: normal;
+	max-width: 400px;
+	text-align: left;
+}
+
+#sbm-config div.theme {
+	float: right;
+	margin-right: 10px;
+}
+
+#sbm-config .theme p {
+	margin-left: 20px;
+}
+
+div#data-inner {
+	background-color: #f7fbf7;
+	text-align: left;
+	padding-bottom: 0.5em;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #333333;
+	overflow: auto;
+}
+
+#data-inner .even {
+	background-color: #e3f0e3;
+	border-bottom: 1px solid #badaba;
+}
+
+#data-inner .odd {
+	border-bottom: 1px solid #badaba;
+}
+
+#data-inner fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+#data-inner p {
+	font-style: italic;
+}
+
+#data-inner input.button, #data-inner input.confirm {
+	margin-left: 10px;
+}
+/*--------------- Suppression ---------------*/
+div#suppr-wrapper {
+	margin-left: 10em;
+}
+
+#suppr-wrapper fieldset {
+	border: 0;
+}
+
+#suppr-wrapper input.button, #suppr-wrapper input.confirm {
+	margin-left: 10px;
+}
+
+#suppr-wrapper textarea {
+	margin-left: 5px;
+}
+/*--------------- Listes --------------------*/
+div#liste-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+
+div#liste-header input {
+	margin-left: 15px;
+}
+
+div#liste-inner {
+	min-height: 400px;
+}
+
+div#liste-footer .criteres-wrapper fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div#liste-footer .criteres-wrapper input, div#liste-footer .criteres-wrapper select
+	{
+	margin-left: 2px;
+	margin-right: 9px;
+}
+
+div#liste-footer .criteres-wrapper label.sbm-new-line {
+	display: initial;
+}
+
+div#liste-footer .criteres-wrapper label.sbm-new-line:before {
+	content: "\A\A";
+	white-space: pre;
+}
+
+div#liste-inner .serviceid {
+	width: 58px;
+}
+
+div#liste-inner .horaire {
+	width: 68px;
+}
+
+div#liste-inner .nbplaces, div#liste-inner .nbinscrits {
+	text-align: right;
+	padding-right: 3px;
+}
+
+div#liste-inner .codepostal {
+	text-align: center;
+}
+
+div#liste-inner table.etablissements-services td.boutons {
+	min-width: 44px;
+}
+
+div#liste-inner table.eleves td.boutons {
+	min-width: 66px;
+}
+
+div#liste-inner table.pdf td.boutons {
+	min-width: 130px;
+}
+/*-------------- Fiches -----------------------------*/
+div#fiche-header {
+	margin-bottom: 10px;
+	position: relative;
+}
+
+div#fiche-header input {
+	margin-left: 15px;
+}
+
+div#fiche-inner {
+	min-height: 400px;
+}
+
+div#fiche-inner div.row-inner fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+	padding: 0;
+	padding-top: 0.35em;
+	padding-bottom: 0.625em;
+	padding-left: 0.5em;
+}
+
+div#fiche-inner div.row-inner input.cancel {
+	margin-top: 6px;
+	margin-left: 20px;
+}
+/*-------------- Fiche sbm-mailchimp-liste ----------*/
+#fiche-inner #sbm-mailchimp-liste label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+
+#fiche-inner #sbm-mailchimp-liste input.submit {
+	margin-top: 6px;
+	margin-left: 155px;
+}
+/*-------------- Fiche mdp --------------------------*/
+#fiche-inner #mdp label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 240px;
+}
+
+#fiche-inner #mdp input.submit {
+	margin-top: 6px;
+	margin-left: 120px;
+}
+/*-------------- Fiche calendrier -------------------*/
+#fiche-inner #calendar div.label, #fiche-inner #calendar label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+
+#fiche-inner #calendar input.submit {
+	margin-top: 6px;
+	margin-left: 120px;
+}
+/*-------------- Fiche circuits ---------------------*/
+/* dans fichier demo/sbm-gestion/circuit-fiche.css   */
+/*-------------- Fiche classes ----------------------*/
+#fiche-inner #classe label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+
+#fiche-inner #classe input.submit {
+	margin-top: 6px;
+	margin-left: 155px;
+}
+/*------------- Fiche communes ----------------------*/
+#fiche-inner #commune label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 300px;
+}
+
+#fiche-inner #commune input.submit {
+	margin-top: 6px;
+	margin-left: 305px;
+}
+
+/*-------------- Fiche eleves -----------------------*/
+/* (voir fichiers eleve-ajout.css ou eleve-edit.css) */
+/*-------------- Fiche etablissements ---------------*/
+#fiche-inner #etablissement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 130px;
+}
+
+#fiche-inner #etablissement input.submit {
+	margin-top: 6px;
+	margin-left: 300px;
+}
+
+#fiche-inner #etablissement .cols-1 {
+	width: 52%;
+}
+
+#fiche-inner #etablissement .cols-2 {
+	width: 46%;
+}
+
+#fiche-inner #etablissement .cols-3 {
+	width: 49.5%;
+}
+
+#fiche-inner #etablissement .rows-2 {
+	min-height: 5.5em;
+}
+/*-------------- Finances / Dépôt -------------------*/
+div.depot #fiche-inner label {
+	display: inline-block;
+	padding-left: 5px;
+}
+
+div.depot #fiche-inner input.submit {
+	margin-top: 6px;
+	margin-left: 20px;
+}
+/*-------------- Fiche libelles ---------------------*/
+#fiche-inner #libelle label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 70px;
+}
+
+#fiche-inner #libelle input.submit {
+	margin-top: 6px;
+	margin-left: 75px;
+}
+/*-------------- Fiche organismes ----------------*/
+#fiche-inner #organisme label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+
+#fiche-inner #organisme input.submit {
+	margin-top: 6px;
+	margin-left: 185px;
+}
+/*-------------- Fiche paiements --------------------*/
+#fiche-inner #paiement label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 175px;
+}
+
+#fiche-inner #paiement input.submit {
+	margin-top: 6px;
+	margin-left: 175px;
+}
+/*-------------- Fiche pdf --------------------------*/
+#fiche-inner .ui-widget {
+	font-size: 0.8125em;
+	font-family: Verdana, "Luxi sans", "Lucida Grande", Lucida,
+		"Lucida Sans Unicode", sans-serif;
+}
+
+#fiche-inner #documentpdf .accordion1 .col1 fieldset {
+	max-width: 360px;
+}
+
+#fiche-inner #documentpdf label {
+	display: inline-block;
+	padding-left: 5px;
+}
+
+#fiche-inner #documentpdf .accordion1 .col1 label {
+	min-width: 130px;
+}
+
+#fiche-inner #documentpdf .accordion1 .col2 label {
+	min-width: 12em;
+}
+
+#fiche-inner #documentpdf .accordion2 .col1 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion2 .col2 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion3 .col1 label {
+	min-width: 22.5em;
+}
+
+#fiche-inner #documentpdf .accordion3 .col2 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion4 .col1 label {
+	min-width: 19em;
+}
+
+#fiche-inner #documentpdf .accordion4 .col2 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion5 .col1 label {
+	min-width: 19em;
+}
+
+#fiche-inner #documentpdf .accordion5 .col2 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion6 .col1 label {
+	min-width: 12em;
+}
+
+#fiche-inner #documentpdf .accordion6 .col2 label {
+	min-width: 15.5em;
+}
+
+#fiche-inner #documentpdf .accordion7 .col1 label {
+	min-width: 19em;
+}
+
+#fiche-inner #documentpdf .accordion7 .col2 label {
+	min-width: 19em;
+}
+
+#fiche-inner #documentpdf input.submit {
+	margin-top: 6px;
+	margin-left: 300px;
+}
+
+#fiche-inner #documentpdf .cols-2 {
+	width: 50%;
+}
+/*-------------- Fiche responsables ---------------------*/
+#fiche-inner #responsable label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+
+#fiche-inner #responsable label.sbm-label-radio {
+	width: 5em;
+}
+
+#fiche-inner #responsable label.responsable-nom {
+	width: 7em;
+	margin-left: 20px;
+}
+
+#fiche-inner #responsable label.responsable-prenom {
+	width: 8.5em;
+	margin-left: 20px;
+}
+
+#fiche-inner #responsable select#responsable-titre2 {
+	vertical-align: top;
+}
+/*-------------- Fiche rpi ----------------------*/
+#fiche-inner #rpi label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 150px;
+}
+
+#fiche-inner #rpi input.submit {
+	margin-top: 6px;
+	margin-left: 155px;
+}
+/*-------------- Fiche secteurs scolaires ------------- */
+#fiche-inner #secteur-scolaire label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 170px;
+}
+
+#fiche-inner #secteur-scolaire input.submit {
+	margin-top: 6px;
+	margin-left: 175px;
+}
+/*-------------- Fiche services ---------------------*/
+/* dans le fichier demo/sbm-gestion/transport/service-fiche.css
+/*-------------- Fiche stations ---------------------*/
+#fiche-inner #station label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 140px;
+}
+
+#fiche-inner #station input.submit {
+	margin-top: 6px;
+	margin-left: 145px;
+}
+/*-------------- Fiche tarifs -----------------------*/
+#fiche-inner #tarif label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 155px;
+}
+
+#fiche-inner #tarif input.submit {
+	margin-top: 6px;
+	margin-left: 160px;
+}
+/*-------------- Fiche transporteurs ----------------*/
+#fiche-inner #transporteur label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 180px;
+}
+
+#fiche-inner #transporteur input.submit {
+	margin-top: 6px;
+	margin-left: 185px;
+}
+/*-------------- Fiche plugin -----------------------*/
+table.plugin {
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	border: 1px solid #f78042;
+	border-radius: 20px 20px 0 0;
+	box-shadow: 1px 1px 5px #9d3c06;
+}
+/*-------------- Fiche user ------------------------*/
+#fiche-inner #user div.label {
+	display: inline-block;
+	width: 150px;
+	padding-left: 5px;
+}
+
+#fiche-inner #user #wrapper-commentaire textarea {
+	width: 99.5%;
+	border-radius: 4px 4px 4px 4px;
+	height: 6rem;
+}
+
+#fiche-inner #user #wrapper-commentaire label {
+	display: block;
+	float: left;
+	left: 20px;
+}
+
+#fiche-inner #user .col1 label {
+	display: inline-block;
+	width: 155px;
+}
+
+#fiche-inner #user .colsuiv label {
+	margin-left: 43px;
+	margin-right: 5px;
+}
+/*-------------- Largeur des inputs text ------------*/
+input.sbm-width-5c, select.sbm-width-5c {
+	width: 3.5em;
+}
+
+input.sbm-width-10c, select.sbm-width-10c {
+	width: 7em;
+}
+
+input.sbm-width-15c, select.sbm-width-15c {
+	width: 10.5em;
+}
+
+input.sbm-width-20c, select.sbm-width-20c, textarea.sbm-width-20c {
+	width: 14em;
+}
+
+input.sbm-width-25c, select.sbm-width-25c, textarea.sbm-width-25c {
+	width: 17.5em;
+}
+
+input.sbm-width-30c, select.sbm-width-30c, textarea.sbm-width-30c {
+	width: 21em;
+}
+
+input.sbm-width-35c, select.sbm-width-35c, textarea.sbm-width-35c {
+	width: 24.5em;
+}
+
+input.sbm-width-40c, select.sbm-width-40c, textarea.sbm-width-40c {
+	width: 28em;
+}
+
+input.sbm-width-45c, select.sbm-width-45c, textarea.sbm-width-45c {
+	width: 31.5em;
+}
+
+input.sbm-width-50c, select.sbm-width-50c, textarea.sbm-width-50c {
+	width: 35em;
+}
+
+input.sbm-width-55c, select.sbm-width-55c, textarea.sbm-width-55c {
+	width: 38.5em;
+}
+
+textarea.sbm-width-40c, textarea.sbm-width-45c, textarea.sbm-width-50c,
+	textarea.sbm-width-55c {
+	height: 4rem;
+}
+/*------------- Largeur des labels -----------------*/
+label[class^="sbm-label-"] {
+	display: inline-block
+}
+
+label.sbm-label-35dem {
+	width: 5em;
+}
+
+label.sbm-label-70dem {
+	width: 8.5em;
+}
+
+label.sbm-label-105dem {
+	width: 12em;
+}
+
+label.sbm-label-140dem {
+	width: 15.5em;
+}
+
+label.sbm-label-175dem {
+	width: 19em;
+}
+
+label.sbm-label-210dem {
+	width: 22.5em;
+}
+
+label.sbm-label-245dem {
+	width: 26em;
+}
+
+label.sbm-label-280dem {
+	width: 29.5em;
+}
+
+label.sbm-label-315dem {
+	width: 33em;
+}
+
+label.sbm-label-350dem {
+	width: 36.5em;
+}
+/*---------------- Formulaire automatique -------------------------*/
+/* utilisation de l'aide de vue $this->form($formulaire)      -    */
+/* le formulaire se trouve dans un conteneur de class="inner-form" */
+div.inner-form-auto {
+	position: relative;
+}
+
+.inner-form-auto input, .inner-form-auto select {
+	position: absolute;
+	left: 155px;
+}
+
+.inner-form-auto input.button {
+	position: relative;
+	top: 30px;
+	left: 0;
+	margin-left: 15px;
+}
+
+label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 2;
+}
+/*---------------- Bloc bouton -------------------------------*/
+/* utilisation pour écarter les boutons dans la div           */
+div.bloc-bouton input {
+	margin-top: 30px;
+	margin-left: 15px;
+}
+/*---------------- Tableau de bord ---------------------------*/
+div#tableau-de-bord table.float-left {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+div#tableau-de-bord table.bleu, fieldset.bleu, fieldset.bleu legend {
+	background-color: #f3fafc;
+	border: solid 1px #31708f;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div#tableau-de-bord table.rose, fieldset.rose, fieldset.rose legend {
+	background-color: #fef3ed;
+	border: solid 1px #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div#tableau-de-bord table.jaune, fieldset.jaune, fieldset.jaune legend {
+	background-color: #fff8dd;
+	border: solid 1px #fecc22;
+	border-radius: 4px 4px 4px 4px;
+}
+
+fieldset.bleu, fieldset.rose, fieldset.jaune {
+	min-width: 310px;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+div#tableau-de-bord td {
+	border: 0px;
+}
+
+div#tableau-de-bord .bleu tr.separateur td {
+	border-bottom: solid 1px #31708f;
+}
+
+div#tableau-de-bord .rose tr.separateur td {
+	border-bottom: solid 1px #f78042;
+}
+
+div#tableau-de-bord .jaune tr.separateur td {
+	border-bottom: solid 1px #fecc22;
+}
+
+div#tableau-de-bord td.effectif {
+	text-align: right;
+	padding-right: 6px;
+	width: 4em;
+}
+
+div#tableau-de-bord td.euro {
+	text-align: right;
+	padding-right: 6px;
+	width: 11em;
+}
+
+dl.statistiques {
+	margin: 0;
+	margin-top: 0.5em;
+}
+
+dl.statistiques dt {
+	padding-top: 0.2em;
+}
+
+dl.statistiques dd {
+	padding-bottom: 0.3em;
+}
+
+.bleu dl.separateur {
+	border-top: solid 1px #31708f;
+	margin-top: 0;
+}
+
+.rose dl.separateur {
+	border-top: solid 1px #f78042;
+	margin-top: 0;
+}
+
+.jaune dl.separateur {
+	border-top: solid 1px #fecc22;
+	margin-top: 0;
+}
+/*---------------- Espace parents ---------------------------*/
+/* (voir les fichiers du dossier [projet]/sbm-parent)        */
+/*--------------------- Mail --------------------------------*/
+#mail textarea {
+	width: 99.5%;
+	height: 15rem;
+	border-radius: 4px 4px 4px 4px;
+}
+
+#mail input[type=text] {
+	width: 99.5%;
+	margin-bottom: 1rem;
+}
+
+#mail input[type=submit] {
+	margin-top: 0.5rem;
+}
+
+#mail label {
+	display: inline-block;
+	width: 120px;
+	margin-left: 5px;
+}
+/*---------------------- Documents ------------------------*/
+#fiche-inner .sbm-document-table label {
+	display: inline-block;
+	width: 450px;
+	padding-left: 5px;
+}
+
+#fiche-inner .sbm-document-table fieldset {
+	border: 1px solid #fdddcc;
+	border-radius: 4px 4px 4px 4px;
+}
+
+#fiche-inner .sbm-document-table fieldset label {
+	width: auto;
+}
+
+div.planche table {
+	margin-left: 70px;
+	border: 1px solid #31708f;
+	border-collapse: collapse;
+}
+
+div.planche table td {
+	border: 1px solid #31708f;
+}
+
+/*-------------------- Statistiques ----------------------*/
+table.statistiques th, table.statistiques td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.statistiques th.border-left, table.statistiques td.border-left {
+	border-left: 1px solid #e3eaec;
+}
+
+table.statistiques th.border-bold, table.statistiques td.border-bold {
+	border-left: 1px solid #9ab3ba;
+}

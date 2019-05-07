@@ -20,12 +20,11 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 avr. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet(
-    $this->basePath('/css/mgc/sbm-gestion/eleve/eleve-ajout.css'));
+$this->themeCss('sbm-gestion/eleve', 'eleve-ajout.css');
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('/js/gestion-eleve/ajout31.js'));
 $this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));

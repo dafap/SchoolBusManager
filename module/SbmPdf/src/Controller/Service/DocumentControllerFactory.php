@@ -1,15 +1,14 @@
 <?php
 /**
- * Description courte du fichier
+ * Injection des objets dans DocumentController du module SbmPdf
  *
- * Description longue du fichier s'il y en a une
  *
- * @project project_name
+ * @project sbm
  * @package package_name
  * @filesource DocumentControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr.. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller\Service;
@@ -28,6 +27,7 @@ class DocumentControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
+            
             'db_manager' => $sm->get('Sbm\DbManager'),
             'pdf_manager' => $sm->get('Sbm\PdfManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),

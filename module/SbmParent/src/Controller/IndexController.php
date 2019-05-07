@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -62,17 +62,31 @@ class IndexController extends AbstractActionController
         $this->flashMessenger()->addInfoMessage($message2);
     }
 
+    /**
+     * A noter que `paiementenligne` vient de l'objet
+     * SbmFront\Model\Responsable\Responsable initialisé par la vue `responsables` de la
+     * base de données qui va chercher la valeur dans la table `communes`. A noter aussi
+     * la mise en place du contrôle par session (post et nsArgsFacture) afin de récupérer
+     * le responsableId lors d'une demande de facture ou de paiement.
+     *
+     * {@inheritdoc}
+     * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
+     */
     public function indexAction()
     {
         try {
             $responsable = $this->responsable->get();
+            // mise en session pour contrôler la demande de factures et de paiement
+            Session::set('post', [
+                'responsableId' => $responsable->responsableId
+            ], $this->getSessionNamespace());
+            Session::set('nsArgsFacture', $this->getSessionNamespace());
         } catch (\Exception $e) {
             if ($this->authenticate->by()->hasIdentity() &&
                 (($e instanceof CreateResponsableException) ||
                 ($e->getPrevious() instanceof CreateResponsableException))) {
                 // il faut créer un responsable associé car la demande vient d'un
-                // gestionnaire ou
-                // autre administrateur
+                // gestionnaire ou autre administrateur
                 $this->flashMessenger()->addErrorMessage(
                     'Il faut compléter la fiche du responsable');
                 $retour = $this->url()->fromRoute('sbmparent');
@@ -92,7 +106,9 @@ class IndexController extends AbstractActionController
         $format_telephone = new \SbmCommun\Form\View\Helper\Telephone();
         return new ViewModel(
             [
-                'etatSite' => $tCalendar->etatDuSite(),
+
+                'namespacectrl' => md5('nsArgsFacture'),
+                'etatSite' => $tCalendar->getEtatDuSite(),
                 'paiementenligne' => $responsable->paiementenligne,
                 'permanences' => $tCalendar->getPermanences($responsable->commune),
                 'inscrits' => $query->getElevesInscrits($responsable->responsableId),
@@ -223,6 +239,7 @@ class IndexController extends AbstractActionController
                 ->visibles());
         return new ViewModel(
             [
+
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
                 'responsable' => $responsable,
@@ -426,6 +443,7 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel(
             [
+
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
                 'responsable' => $auth_responsable,
@@ -522,6 +540,7 @@ class IndexController extends AbstractActionController
 
         return new ViewModel(
             [
+
                 'form' => $form->prepare(),
                 'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
                     $args['id']),
@@ -644,6 +663,7 @@ class IndexController extends AbstractActionController
 
         return new ViewModel(
             [
+
                 'enfant' => $args['enfant'],
                 'circuits' => $circuits,
                 'eleves' => $eleves,
@@ -934,6 +954,7 @@ class IndexController extends AbstractActionController
         }
         $view = new ViewModel(
             [
+
                 'aReinscrire' => $aReinscrire,
                 'responsable' => $auth_responsable,
                 'responsable2' => $responsable2,
@@ -967,7 +988,8 @@ class IndexController extends AbstractActionController
             ->setData([
             'eleveId' => $eleveId
         ]);
-        return new ViewModel([
+            return new ViewModel([
+
             'formphoto' => $form->prepare()
         ]);
     }

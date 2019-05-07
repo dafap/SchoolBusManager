@@ -3,13 +3,13 @@
  * Injection des objets dans AdminController du module SbmAjax
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller/Service
  * @filesource AdminControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 sept. 2018
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller\Service;

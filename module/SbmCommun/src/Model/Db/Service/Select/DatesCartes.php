@@ -2,13 +2,13 @@
 /**
  * Service fournissant une liste des dates d'édition des cartes pour le millesime en cours
  *
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Select
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2018
+ * @date 2 mai. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -53,7 +53,7 @@ class DatesCartes implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
         $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
-        $this->dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $this->dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
         return $this;
     }
 
@@ -100,4 +100,4 @@ class DatesCartes implements FactoryInterface
         }
         return $array;
     }
-} 
+}

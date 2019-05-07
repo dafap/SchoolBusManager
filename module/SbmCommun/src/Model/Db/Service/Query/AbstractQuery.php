@@ -2,7 +2,7 @@
 /**
  * Quelques méthodes communes à toutes les classes
  *
- * Description longue du fichier s'il y en a une
+ * 
  *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Service/Query

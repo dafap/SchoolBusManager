@@ -12,7 +12,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 20 mars 2019
- * @version 2019-1
+ * @version 2019-2.5.0
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Distance;
 

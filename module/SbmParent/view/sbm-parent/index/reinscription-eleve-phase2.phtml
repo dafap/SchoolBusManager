@@ -15,11 +15,11 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet($this->basePath('/css/mgc/sbm-parent/index/edit.css'));
+$this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basepath('/js/parent/edit-eleve.js'));
 $texteDemandeR2 = <<<EOT

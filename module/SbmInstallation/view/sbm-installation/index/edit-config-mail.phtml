@@ -1,0 +1,90 @@
+<?php
+/**
+ * Page du formulaire de modification de la configuration de mail
+ *
+ * Emplacement dépendant du thème à partir de config/themes
+ *
+ * @project sbm
+ * @package SbmInstallation/view/sbm-installation/index
+ * @filesource edit-config-mail.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->themeCss('sbm-installation', 'gestion-config.css');
+$this->jQuery();
+$this->themeJs('sbm-installation', 'gestion-config.js');
+$this->inlineScript()->captureStart();
+?>
+js_edit_mail.init();
+<?php
+$this->inlineScript()->captureEnd();
+$format_destinataire = <<<'EOT'
+<fieldset class="retrait">
+    <div><label><span class="label">email</span>
+    <input type="text" name="message|destinataires|%d|name" value="%3$s"></label></div>
+    <div><label><span class="label">name</span>
+    <input type="text" name="%1$s[]" value="%3$s"></label></div>
+</fieldset>
+EOT;
+?>
+<div id="sbm-config">
+	<h1>Modification de la configuration de l'envoi de mail</h1>
+	<h2>Thème: <?=$this->theme;?></h2>
+	<?=$this->form()->openTag($this->form);?>
+	<fieldset class="sbm-page1">
+		<legend>Transport</legend>
+		<div><?=$this->formRow($this->form->get('transport|mode'))?></div>
+		<h3>Options SMTP</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|name'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|host'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|port'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_class'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|username'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|password'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|ssl'));?></div>
+			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|use_complete_quit'));?></div>
+		</div>
+	</fieldset>
+	<fieldset class="sbm-page1">
+		<legend>Messages</legend>
+		<h3>from</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('message|from|email'));?></div>
+			<div><?=$this->formRow($this->form->get('message|from|name'));?></div>
+		</div>
+		<h3>replyTo</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('message|replyTo|email'));?></div>
+			<div><?=$this->formRow($this->form->get('message|replyTo|name'));?></div>
+		</div>
+		<h3>subject</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('message|subject'));?></div>
+		</div>
+		<h3>body</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('message|body|text'));?></div>
+			<div><?=$this->formRow($this->form->get('message|body|html'));?></div>
+		</div>
+	</fieldset>
+
+	<fieldset class="sbm-page1">
+		<legend>Destinataires</legend>
+		<?php for ($i=0; $i < $this->nbDestinataires; $i++):?>
+		<fieldset>
+		<div><?=$this->formRow($this->form->get("destinataires|$i|email"));?></div>
+		<div><?=$this->formRow($this->form->get("destinataires|$i|name"));?></div>
+		</fieldset>
+		<?php endfor;?>
+		<div id="newDestinataire"></div>
+		<div>
+		<?=$this->formElement($this->form->get('submit'));?>
+		<?=$this->formElement($this->form->get('cancel'));?>
+		<?=$this->formElement($this->form->get('addDestinataire'));?>
+		</div>
+	</fieldset>
+	<?=$this->form()->closeTag();?>
+</div>

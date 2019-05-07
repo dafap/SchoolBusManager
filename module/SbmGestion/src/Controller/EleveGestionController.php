@@ -428,7 +428,7 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
         $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [
@@ -667,7 +667,7 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $dateDebut = $tCalendar->etatDuSite()['dateDebut']->format('Y-m-d');
+        $dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
         $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [

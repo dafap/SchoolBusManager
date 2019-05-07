@@ -2,7 +2,7 @@
 /**
  * Module destiné aux partenaires et permettant la consultation des données autorisées
  *
- * Description longue du fichier s'il y en a une
+ * 
  * 
  * @project sbm
  * @package SbmPortail

@@ -7,7 +7,7 @@
  *
  * Si la pile est vide, back() ne fait rien.
  * 
- * @project project_name
+ * @project sbm
  * @package package_name
  * @filesource RedirectBack.php
  * @encodage UTF-8

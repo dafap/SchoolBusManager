@@ -7,12 +7,11 @@
  * @filesource lot-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet(
-    $this->basePath('/css/mgc/sbm-gestion/transport/lot-fiche.css'));
+$this->themeCss('sbm-gestion/transport', 'lot-fiche.css');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport',
     [

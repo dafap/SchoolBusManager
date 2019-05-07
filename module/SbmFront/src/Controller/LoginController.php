@@ -2,7 +2,7 @@
 /**
  * Controller pour les actions d'authentification
  *
- * Description longue du fichier s'il y en a une
+ * 
  * 
  * @project sbm
  * @package SbmFront\Controller

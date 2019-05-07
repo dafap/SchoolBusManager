@@ -4,7 +4,7 @@
  *
  * (à déclarer dans module.config.php)
  * 
- * @project project_name
+ * @project sbm
  * @package package_name
  * @filesource DocColumns.php
  * @encodage UTF-8

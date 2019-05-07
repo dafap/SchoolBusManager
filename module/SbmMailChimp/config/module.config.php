@@ -1,15 +1,14 @@
 <?php
 /**
- * Description courte du fichier
+ * Fichier de configuration du module
  *
- * Description longue du fichier s'il y en a une
  *
- * @project project_name
+ * @project sbm
  * @package package_name
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmMailChimp\Controller;

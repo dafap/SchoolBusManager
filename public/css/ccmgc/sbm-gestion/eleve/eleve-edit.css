@@ -1,0 +1,309 @@
+/**
+ * Feuille de style des formulaires de saisie d'un élève
+ *
+ * (edit.phtml)
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-gestion/eleve
+ * @filesource eleve-edit.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 29 avr. 2019
+ * @version 2019-2.5.0
+ **/
+.table-cell div {
+	display: inline-block;
+}
+
+.annee-precedente {
+	background: #eee;
+	color: gray;
+	border-color: gray;
+	font-size: 80%;
+}
+
+#eleve {
+	line-height: 1.2em;
+	font-size: 0.95em;
+}
+
+#commun div.label {
+	display: inline-block;
+	padding-left: 5px;
+	min-width: 80px;
+}
+
+#commun label {
+	display: inline-block;
+	padding-left: 5px;
+}
+
+#commun-col1 {
+	width: 423px;
+}
+
+#commun-col1 div.label, #commun-col1 label {
+	width: 140px;
+}
+
+#commun-col1 #wrapper-joursTransport label {
+	width: 5em;
+	padding-left: 0;
+}
+
+#wrapper-joursTransport label:after {
+	content: none;
+}
+
+#ligne-dateDebut-dateFin label {
+	width: inherit;
+	margin-right: 3px;
+}
+
+#commun-col2 {
+	width: calc(100% - 603px);
+}
+
+#commun-col2 label {
+	width: 107px;
+}
+
+#commun-col2 label.dp {
+	width: 3.2em;
+}
+
+#commun-col2 label.interne {
+	width: 6em;
+	margin-right: 3px;
+}
+
+#commun-col2 label.sbm-label-radio:after {
+	content: none;
+}
+
+#commun-col2 span.annee-precedente {
+	margin-top: 3px;
+}
+
+#commun-col2 span.etablissement-precedent {
+	margin-left: 112px;
+}
+
+#commun-col2 span.classe-precedente {
+	margin-left: 20px;
+}
+
+#commun-col2-periode label {
+	width: inherit;
+	margin-right: 3px;
+}
+
+#commun-col3 {
+	width: 160px;
+}
+
+#commun-col3 div.input {
+	display: inline-block;
+}
+
+#commun-col3>div {
+	min-height: 19px;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+
+#commun-col3 div.label, #commun-col3 label {
+	display: inline-block;
+	padding-left: 5px;
+}
+
+#commun-col3 label.checkbox {
+	min-width: 130px;
+}
+
+div#wrapper-regime {
+	text-align: right;
+}
+
+#fiche-inner #wrapper-regime fieldset {
+	width: 150px;
+	display: inline-block;
+	margin-right: 15px;
+	text-align: right;
+	margin-right: 15px;
+}
+
+#wrapper-regime legend {
+	text-align: left;
+}
+
+#wrapper-regime legend:after, #wrapper-joursTransport legend:after,
+	#wrapper-demandeR1 legend:after {
+	color: #f78042;
+	content: '*';
+}
+
+div#ligne-dateN-sexe {
+	display: inline-table;
+	width: 100%;
+}
+
+#ligne-dateN-sexe div.table-cell {
+	display: table-cell;
+}
+
+#ligne-dateN-sexe div.align-right {
+	text-align: right;
+}
+
+div#ligne-classe-regime {
+	display: inline-table;
+	position: relative;
+	top: -0.3em;
+	width: 100%;
+}
+
+#ligne-classe-regime div.table-cell {
+	display: table-cell;
+}
+
+#ligne-classe-regime div.align-right {
+	text-align: right;
+}
+
+#wrapper-distanceR1 label {
+	margin-right: 5px;
+}
+
+div#wrapper-demandeR1 {
+	margin-left: 10px;
+}
+
+#wrapper-demandeR1 label.sbm-label-radio:after {
+	content: none;
+}
+
+#wrapper-anneeComplete label:after, #wrapper-derogation label:after,
+	#wrapper-district label:after, #wrapper-fa label:after,
+	#wrapper-paiement label:after {
+	content: none;
+}
+
+#wrapper-commentaire textarea {
+	width: 99.5%;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div#fiche-inner div#commun fieldset, div#fiche-inner div#tabs fieldset {
+	padding-bottom: 0.35em;
+}
+
+#fiche-inner #tabs {
+	font-size: 1em;
+}
+
+#tabs div.sbm-tabs-container {
+	min-height: 15em;
+}
+
+#tabs a {
+	font-size: 0.8725em;
+}
+
+#tabs label {
+	display: inline-block;
+	margin-right: 5px;
+	color: #333333;
+}
+
+#tabs #block-demander1 label, #tabs #block-demander2 label {
+	width: 83px;
+}
+
+#tabs #block-demander #wrapper-motifRefusr1, #tabs #block-demander #wrapper-motifRefusr2 {
+	max-width: 267px;
+}
+
+textarea.demande-motifRefus {
+	width: 267px;;
+}
+
+.wrapper-responsable {
+	min-height: 6em;
+	margin-left: 10px;
+}
+
+#wrapper-commentaire textarea.commentaire {
+	width: 99.5%;
+	border-radius: 4px 4px 4px 4px;
+}
+
+#wrapper-commentaire label.commentaire {
+	display: block;
+	float: left;
+	left: 20px;
+}
+
+.block-affectations h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+
+#tabs div.edit-tab-col1 {
+	max-width: 415px;
+}
+
+#tabs div.edit-tab-col2 {
+	max-width: 669px;
+}
+
+.block-affectations h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+
+div.eleve-tabs-3-col-1-label {
+	display: inline-block;
+	width: 150px;
+	padding-left: 5px;
+}
+
+div.eleve-tabs-3-col-2-label, div.eleve-tabs-3-col-3-label {
+	display: inline-block;
+	width: 170px;
+	padding-left: 5px;
+}
+
+table.eleve-affectations {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+	max-width: 695px;
+}
+
+table.eleve-affectations.annee-precedente {
+	border-color: gray;
+}
+
+table.eleve-affectations td.next {
+	border-left: 1px solid #fdddcc;
+}
+
+table.eleve-affectations.annee-precedente td.next {
+	border-left: 1px solid #dddddd;
+}
+
+table.eleve-affectations td.first {
+	width: 106px;
+}
+
+table.eleve-affectations td.second {
+	width: 81px;
+}
+
+table.eleve-affectations td.third {
+	width: 55px;
+}
+
+table.eleve-affectations td.last {
+	width: 42px;
+}

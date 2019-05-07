@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 27 avr. 2019
+ * @version 2018-2.5.0
  */
 use SbmPdf\Controller;
 use SbmPdf\Service;
@@ -46,6 +46,14 @@ return [
                     ]
                 ],
                 'actions' => [
+                    'facture' => [
+                        'allow' => [
+                            'roles' => [
+                                'parent',
+                                'secretariat'
+                            ]
+                        ]
+                    ],
                     'horaires' => [
                         'allow' => [
                             'roles' => [
@@ -155,4 +163,4 @@ return [
             __DIR__ . '/../view'
         ]
     ]
-]; 
+];

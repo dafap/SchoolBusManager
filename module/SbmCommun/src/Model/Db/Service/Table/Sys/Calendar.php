@@ -3,13 +3,13 @@
  * Gestion de la table système `calendar`
  *
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Service/Table/Sys
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
+ * @date 2 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
@@ -187,7 +187,7 @@ class Calendar extends AbstractSbmTable
      *            Millesime à vérifier
      * @param string $column
      *            Nom de la colonne
-     *            
+     *
      * @return bool
      */
     private function isValidColDate($millesime, $column)
@@ -233,7 +233,7 @@ class Calendar extends AbstractSbmTable
      *         <li>dateFin (DateTime - fin de la période d'inscription)</li>
      *         <li>echeance (DateTime - date limite de paiement)</li></ul>
      */
-    public function etatDuSite()
+    public function getEtatDuSite()
     {
         $millesime = $this->getDefaultMillesime();
         $where = new Where();
@@ -331,4 +331,3 @@ class Calendar extends AbstractSbmTable
         ]);
     }
 }
- 

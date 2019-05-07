@@ -8,7 +8,7 @@
  * @filesource table.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -34,7 +34,7 @@ return [
             'transporteurId' => 'int(11) NOT NULL DEFAULT "0"',
             'nbPlaces' => 'tinyint(3) unsigned NOT NULL DEFAULT "0"',
             'surEtatCG' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'operateur' => 'varchar(4) NOT NULL DEFAULT "CCDA"',
+            'operateur' => 'varchar(5) NOT NULL DEFAULT "CCMGC"',
             'kmAVide' => 'decimal(7,3) NOT NULL DEFAULT "0"',
             'kmEnCharge' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'natureCarte' => 'tinyint(1) NOT NULL DEFAULT "1"',

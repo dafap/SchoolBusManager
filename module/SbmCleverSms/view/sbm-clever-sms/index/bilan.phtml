@@ -7,11 +7,11 @@
  * @filesource bilan.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
+ * @date 29 avr. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet($this->basePath('/css/mgc/cleversms/clever-sms.css'));
+$this->themeCss('cleversms', 'clever-sms.css');
 $url_retour = $this->url('sbmservicesms', [
     'action' => 'bilan',
     'page' => $this->page
@@ -40,11 +40,11 @@ $translate = [
 	<div id='clever-sms-inner' class='colonnes'>
 	<?php foreach ($this->bilan->getResponse()['deliveries'] as $row) :?>
 	    <?php
-	    $css = $this->cycle([
-                    "even",
-                    "odd"
-                ])->next();
-	    ?>
+        $css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        ?>
 		<dl class='info <?=$css;?>'>
 			<dt>Envoi au <?=$this->telephone(current($row));?></dt>
 		<?php $keys = array_keys($row);?>

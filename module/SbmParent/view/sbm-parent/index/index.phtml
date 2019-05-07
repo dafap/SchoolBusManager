@@ -7,19 +7,17 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2019
+ * @date 3 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->headLink()->appendStylesheet(
-    $this->basePath('/css/mgc/sbm-parent/index/index.css'));
+$this->themeCss('sbm-parent/index', 'index.css');
 $this->jQuery('jquery-ui');
 $this->headScript()->appendFile($this->basePath('/js/parent/index.js'));
 
-$montantTotal = 0;
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $enAttente = false;
 
@@ -54,19 +52,20 @@ $url_delete = $this->url('sbmparent', [
 $url_attente = $this->url('sbmparent', [
     'action' => 'attente-eleve'
 ]);
+$url_facture = $this->url('sbmdocument', [
+    'action' => 'facture'
+]);
 ?>
 <div id="winpopup">
 	<div id="winpopup-content"
 		style="margin-left: 30px; margin-right: 30px;"></div>
 </div>
 <div class="flashMessenger float-right">
-<?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?>
+<?=$this->flashMessenger()->render('success');?>
+<?=$this->flashMessenger()->render('warning');?>
+<?=$this->flashMessenger()->render('error');?>
+<?=$this->flashMessenger()->render('info');?>
+<?=$this->flashMessenger()->render('default');?>
 </div>
 <h1>Espace parent</h1>
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
@@ -98,7 +97,7 @@ echo $this->flashMessenger()->render('default');
 		dans la mesure des places disponibles à la rentrée.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
-        <li><?php echo "Pour les habitants de $row";?></li>
+        <li>Pour les habitants de <?=$row;?></li>
     <?php endforeach;?>
     </ul>
 	<p>
@@ -111,7 +110,7 @@ echo $this->flashMessenger()->render('default');
 		les inscriptions.
 	</p>
 	<blockquote>
-	<?php echo implode('<br>', $this->adresse);?>
+	<?=implode('<br>', $this->adresse);?>
 	</blockquote>
 	<div class="menu clearfix">
     <?php
@@ -134,7 +133,7 @@ echo $this->flashMessenger()->render('default');
     <p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Les inscriptions en ligne sont fermées.</p>
 	<p>Pour inscrire un enfant, prenez contact avec le service transport de
-		<?php echo $this->client['name'];?>. Au delà du <?php echo $dateFin;?> les
+		<?=$this->client['name'];?>. Au delà du <?= $dateFin;?> les
 		places seront attribuées à la rentrée en fonction des disponibilités
 		dans les cars.</p>
 	<?php endif;?>
@@ -436,7 +435,17 @@ echo $this->flashMessenger()->render('default');
                 $pasdephoto = ' Pas de photo';
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
-            $modeleligne = '<tr class="petit %s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="alert">%s</td></tr>';
+            $modeleligne = <<< EOT
+<tr class="petit %s">
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td>%s</td>
+    <td class="alert">%s</td>
+</tr>
+EOT;
             echo sprintf($modeleligne, $this->cycle([
                 "odd",
                 "even"
@@ -473,7 +482,7 @@ echo $this->flashMessenger()->render('default');
                 'value' => 'Inscrire un autre enfant'
             ]
         ];
-        if ($montantTotal > 0 && $this->paiementenligne) {
+        if ($this->resultats->getSolde() > 0 && $this->paiementenligne) {
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
@@ -486,8 +495,15 @@ echo $this->flashMessenger()->render('default');
                 'title' => $payerTitle
             ];
         }
+        $boutons['facture'] = [
+            'class' => 'button default float-right left-10px',
+            'formaction' => $url_facture,
+            'formtarget' => '_blank',
+            'value' => 'Imprimer la facture'
+        ];
         echo $this->listeZoneActions([
-            'montant' => $montantTotal
+            'montant' => $this->resultats->getSolde(),
+            'namespacectrl' => $this->namespacectrl
         ], $boutons);
         ?>
             </div>
@@ -506,23 +522,26 @@ Passé ce délai, votre demande d'inscription ne devient plus prioritaire et
 ne sera traitée que dans la mesure des places disponibles à la rentrée. Vous
 devrez vous rendre à la permanence qui se tiendra à la Communauté de communes
 pour connaitre la suite donnée à votre demande, payer et retirer la carte de transport.
-Pour les habitants de
+Pour les habitants de %s.
 EOT;
-                $msg .= $this->permanences[0] . '.';
+                $msg = sprintf($msg, $this->permanences[0]);
                 break;
             default:
-                $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
-                $msg .= $this->permanences[0] . '.';
+                $msg =  <<<EOT
+Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la
+distribution des cartes. Pour les habitants de %s.
+EOT;
+                $msg = sprintf($msg, $this->permanences[0]);
                 break;
         }
         ?>
-        <?php if (! $this->paiementenligne && $montantTotal > 0) : ?>
+        <?php if (! $this->paiementenligne && $this->resultats->getSolde() > 0) : ?>
         <p class="sbm-description">Les habitants de votre commune ne
 			peuvent pas payer en ligne. Prenez contact avec le service Transport
 			pour connaitre la marche à suivre pour votre cas particulier.</p>
-        <?php elseif ($montantTotal > 0) : ?>
+        <?php elseif ($this->resultats->getSolde() > 0) : ?>
 		<p class="sbm-description">
-			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?php echo $msg;?>
+			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?=$msg;?>
 		</p>
 		<?php endif;?>
 		<div id="help-preinscrits-content" class="invisible">
@@ -536,16 +555,15 @@ EOT;
 				les élèves en attente d'orientation). Vous recevrez alors la carte de transport
 				par la poste.</li>
 				<li>vous rendre à la Communauté de communes (pour les habitant de
-				<?php echo $this->permanences[0];?>) pour payer en espèces ou par chèque et
+				<?=$this->permanences[0];?>) pour payer en espèces ou par chèque et
 				retirer la carte de transport. Toutefois, votre demande ne sera plus prioritaire
 				et ne sera satisfaite que dans la mesure des places disponibles.</li>
 			</ul>
 			<div class="centre">
-				<?php echo $this->client['name'];?><br>
-				<?php echo $this->client['adresse'][0]; ?><br>
-				<?php echo $this->client['adresse'][1]; ?><br>
-				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br>
-				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
+				<?=$this->client['name'];?><br>
+				<?=implode('<br>',$this->client['adresse']);?><br>
+				<?=$this->client['code_postal']; ?> <?=$this->client['commune'];?><br>
+				Tél. <?=$this->telephone($this->client['telephone']);?>
 		    </div>
 		</div>
     <?php endif;?>

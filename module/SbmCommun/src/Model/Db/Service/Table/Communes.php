@@ -8,7 +8,7 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2019
+ * @date 2 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -80,6 +80,70 @@ class Communes extends AbstractSbmTable implements EffectifInterface
             'selection' => $selection
         ]);
         parent::saveRecord($oData);
+    }
+
+    /**
+     * Renvoie la liste des communes membres dans l'ordre alphabétique
+     *
+     * @return array
+     */
+    public function getListeMembre()
+    {
+        $liste = [];
+        foreach( $this->fetchAll([
+            'membre' => 1
+        ], 'nom') as $commune) {
+            $liste[] = $commune->nom;
+        }
+        return $liste;
+    }
+
+    /**
+     * Renvoie la liste des communes desservies dans l'ordre alphabétique
+     *
+     * @return array
+     */
+    public function getListeDesservie()
+    {
+        $liste = [];
+        foreach( $this->fetchAll([
+            'desservie' => 1
+        ], 'nom') as $commune) {
+            $liste[] = $commune->nom;
+        }
+        return $liste;
+    }
+
+    /**
+     * Renvoie la liste des communes avec inscription en ligne autorisée dans l'ordre alphabétique
+     *
+     * @return array
+     */
+    public function getListeInscriptionEnLigne()
+    {
+        $liste = [];
+        foreach( $this->fetchAll([
+            'inscriptionenligne' => 1
+        ], 'nom') as $commune) {
+            $liste[] = $commune->nom;
+        }
+        return $liste;
+    }
+
+    /**
+     * Renvoie la liste des communes avec paiement en ligne autorisé dans l'ordre alphabétique
+     *
+     * @return array
+     */
+    public function getListePaiementEnLigne()
+    {
+        $liste = [];
+        foreach( $this->fetchAll([
+            'paiementenligne' => 1
+        ], 'nom') as $commune) {
+            $liste[] = $commune->nom;
+        }
+        return $liste;
     }
 }
 
