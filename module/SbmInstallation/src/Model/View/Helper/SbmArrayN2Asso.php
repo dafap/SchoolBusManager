@@ -63,7 +63,7 @@ class SbmArrayN2Asso extends AbstractHelper
         $ligne = <<<'EOT'
 <div class="wrapper-element" id="wrapper-%3$s">
     <label for="%3$s">%1$s</label>
-    <input type="text" id="%3$s" name="%1$s" value="%2$s">
+    <input type="text" id="%3$s" class="noncol" name="%1$s" value="%2$s">
 </div>
 EOT;
         return sprintf($ligne, $name, $this->escaper->escapeHtml($value), $id);
@@ -74,8 +74,9 @@ EOT;
         $ligne = <<<'EOT'
 <div class="wrapper-element" id="wrapper-%4$s">
     <label for="index-%4$s">%1$s</label>
-    <input type="text" id="index-%4$s" name="index-%1$s" value="%2$s"> <code>=></code>
-    <input type="text" id="value-%4$s" name="value-%1$s" value="%3$s">
+    <input type="text" id="index-%4$s" class="col1" name="index-%1$s" value="%2$s">
+    <code>=></code>
+    <input type="text" id="value-%4$s" class="col2" name="value-%1$s" value="%3$s">
 </div>
 EOT;
         return sprintf($ligne, $name, $index, $this->escaper->escapeHtml($value), $id);

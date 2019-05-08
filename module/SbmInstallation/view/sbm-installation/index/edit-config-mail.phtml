@@ -9,10 +9,10 @@
  * @filesource edit-config-mail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
-$this->themeCss('sbm-installation', 'gestion-config.css');
+$this->themeCss('sbm-installation', 'edit-config-mail.css');
 $this->jQuery();
 $this->themeJs('sbm-installation', 'gestion-config.js');
 $this->inlineScript()->captureStart();
@@ -45,7 +45,9 @@ EOT;
 			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|username'));?></div>
 			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|password'));?></div>
 			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|ssl'));?></div>
-			<div><?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|use_complete_quit'));?></div>
+			<div class="labellong">
+				<?=$this->formRow($this->form->get('transport|smtpOptions|connexion_config|use_complete_quit'));?>
+			</div>
 		</div>
 	</fieldset>
 	<fieldset class="sbm-page1">
@@ -66,12 +68,12 @@ EOT;
 		</div>
 		<h3>body</h3>
 		<div class="retrait">
-			<div><?=$this->formRow($this->form->get('message|body|text'));?></div>
-			<div><?=$this->formRow($this->form->get('message|body|html'));?></div>
+			<div class="labellong"><?=$this->formRow($this->form->get('message|body|text'));?></div>
+			<div class="labellong"><?=$this->formRow($this->form->get('message|body|html'));?></div>
 		</div>
 	</fieldset>
 
-	<fieldset class="sbm-page1">
+	<fieldset class="sbm-page1 destinataires">
 		<legend>Destinataires</legend>
 		<?php for ($i=0; $i < $this->nbDestinataires; $i++):?>
 		<fieldset>

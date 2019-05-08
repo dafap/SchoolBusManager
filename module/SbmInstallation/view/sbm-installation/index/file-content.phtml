@@ -7,9 +7,10 @@
  * @filesource file-content.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
+$this->themeCss('sbm-installation', 'file-content.css');
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
 if ($this->type == 'html') {

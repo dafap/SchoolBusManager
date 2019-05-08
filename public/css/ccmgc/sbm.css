@@ -1,35 +1,15 @@
-div#wrapper-editeur {
-	zoom: 1;
-}
+/**
+ * Feuille de style des pages du module
+ * 
+ * @project sbm
+ * @package public/css/ccmgc
+ * @filesource sbm.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 mai 2019
+ * @version 2019-2.5.0
+ **/
 
-#wrapper-editeur fieldset.sbm-page1 {
-	float: left;
-	width: 800px;
-}
-
-#wrapper-editeur fieldset.sbm-page1.col2 {
-	width: 300px;
-}
-
-#wrapper-editeur .col2 ul {
-	padding-left: 15px;
-}
-
-#wrapper-editeur .col2 li {
-	list-style-type: square;
-	padding-left: 4em;
-	text-indent: -4em;
-}
-
-#wrapper-editeur textarea.file-content {
-	width: 100%;
-	height: 320px;
-}
-
-label.bloc {
-	display: block;
-	font-weight: bold;
-}
 
 #menugeneral-inner form {
 	display: inline-block;

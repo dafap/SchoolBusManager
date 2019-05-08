@@ -1,0 +1,47 @@
+/**
+ * Feuille de style des pages du module
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-installation
+ * @filesource edit-arrayn2asso.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 mai 2019
+ * @version 2019-2.5.0
+ **/
+#sbm-config label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 11em;
+}
+
+#sbm-config fieldset.sbm-page1 {
+	margin-bottom: 0.3em;
+}
+
+#sbm-config input[type=text].noncol {
+	width: 25em;
+	margin-bottom: 0.5em;
+}
+
+#sbm-config input[type=text].col1 {
+	width: 25em;
+	margin-bottom: 0.5em;
+}
+
+
+#sbm-config input[type=text].col2 {
+	width: 48em;
+	margin-bottom: 0.5em;
+}
+
+
+#sbm-config input[type=submit] {
+	margin-top: 1em;
+	margin-left: 15px;
+}
+
+#sbm-config input[type=button], #sbm-config button {
+	margin-top: 1em;
+	margin-left: 50px;
+}
