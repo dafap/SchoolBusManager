@@ -1,13 +1,13 @@
 <?php
 /**
  * Liste des règles de correspondance pour le passage dans un établissement de niveau supérieur
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource simulation-etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -88,8 +88,8 @@ $actions = [
             <?php foreach($data as $row): ?>
             	<?php
                 $hiddens = [
-                    'origineId' => $row->origineId,
-                    'suivantId' => $row->suivantId,
+                    'origineId' => $row['origineId'],
+                    'suivantId' => $row['suivantId'],
                     'origine' => 'simulation-etablissement-liste'
                 ];
                 $buttons = [
@@ -102,17 +102,17 @@ $actions = [
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
 					<td class="communeetaborigine">
-					   <?= $this->escapeHtml($row->communeetaborigine); ?></td>
+					   <?= $this->escapeHtml($row['communeetaborigine']); ?></td>
 					<td class="etablissementorigine">
-					   <?= $this->escapeHtml($row->etablissementorigine); ?></td>
+					   <?= $this->escapeHtml($row['etablissementorigine']); ?></td>
 					<td class="communeetabsuivant">
-					   <?= $this->escapeHtml($row->communeetabsuivant); ?></td>
+					   <?= $this->escapeHtml($row['communeetabsuivant']); ?></td>
 					<td class="etablissementsuivant">
-					   <?= $this->escapeHtml($row->etablissementsuivant); ?></td>
+					   <?= $this->escapeHtml($row['etablissementsuivant']); ?></td>
 					<td class="boutons">
-						<?=$this->listeLigneActions($row->origineId .'|' .$row->suivantId,$hiddens,$buttons);?>
+						<?=$this->listeLigneActions($row['origineId'] .'|' .$row['suivantId'],$hiddens,$buttons);?>
 					</td>
-				</tr>         
+				</tr>
             <?php endforeach;?>
             </tbody>
 		</table>
