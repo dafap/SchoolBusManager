@@ -8,7 +8,7 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -98,7 +98,7 @@ class Paiements extends AbstractSbmTable
      *            exercice budgétaire concerné
      * @param int|null $anneeScolaire
      *            année scolaire concernée
-     *            
+     *
      * @return int Nombre de lignes du bordereau
      */
     public function marqueBordereau($date, $codeModeDePaiement, $codeCaisse,
@@ -127,7 +127,7 @@ class Paiements extends AbstractSbmTable
      *            format dateMysql
      * @param int $codeModeDePaiement
      *            code du mode de paiement du bordereau à annuler
-     *            
+     *
      * @return int Nombre de lignes du bordereau annulé
      */
     public function annuleBordereau($dateBordereau, $codeModeDePaiement)
@@ -150,7 +150,7 @@ class Paiements extends AbstractSbmTable
      *            mode de paiement concerné par ce bordereau
      * @param int $codeCaisseComptable
      *            code caisse du comptable
-     *            
+     *
      * @return int
      */
     public function clotureDepot($dateBordereau, $codeModeDePaiement, $codeCaisseComptable)
@@ -179,7 +179,7 @@ class Paiements extends AbstractSbmTable
      *            code du mode de paiement du bordereau à annuler
      * @param int $codeCaisse
      *            code caisse dans laquelle les paiements concernés seront placés
-     *            
+     *
      * @return int Nombre de lignes du bordereau du depot annulé
      */
     public function annuleDepot($dateDepot, $dateBordereau, $codeModeDePaiement,
@@ -203,7 +203,7 @@ class Paiements extends AbstractSbmTable
      *            code d'un mode de paiement
      * @param bool $encours
      *            si true, renvoie la date du bordereau en cours ou null s'il n'y en a pas
-     *            
+     *
      * @return string format dateMysql
      */
     public function dateDernierBordereau($codeModeDePaiement, $encours = false)
@@ -251,7 +251,7 @@ class Paiements extends AbstractSbmTable
      * @param string|null $dateBordereau
      *            string : date au format dateMysql
      *            null (par défaut) : renvoie la somme du bordereau en cours
-     *            
+     *
      * @return float
      */
     public function sommeBordereau($codeModeDePaiement, $dateBordereau = null)
@@ -303,7 +303,7 @@ class Paiements extends AbstractSbmTable
             'somme' => new Expression('sum(montant)')
         ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
-        return $result->somme;
+        return $result->somme ?: 0;
     }
 }
 
