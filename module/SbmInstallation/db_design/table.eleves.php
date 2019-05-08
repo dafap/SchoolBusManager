@@ -9,7 +9,7 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mars 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -43,7 +43,7 @@ return [
             'y2' => 'decimal(18,10) DEFAULT NULL',
             'responsableFId' => 'int(11) DEFAULT NULL',
             'note' => 'text NULL',
-            'id_ccda' => 'int(11)'
+            'id_mgc' => 'int(11)'
         ], // gid CCDA
         'primary_key' => [
             'eleveId'

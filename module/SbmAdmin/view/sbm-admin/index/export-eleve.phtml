@@ -1,15 +1,15 @@
 <?php
 /**
  * Exportation de données géolocalisées
- * 
+ *
  * Vue des critères d'exportation des élèves
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource export-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -29,7 +29,7 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 		<?= $this->form()->openTag($this->form);?>
 	    <fieldset class="sbm-page1">
 			<div class="row-inner label-120">
-				<?= $this->formRow($this->form->get('id_ccda'));?></div>
+				<?= $this->formRow($this->form->get('id_mgc'));?></div>
 			<div class="row-inner label-120">
 				<?= $this->formRow($this->form->get('numero'));?></div>
 			<div class="row-inner label-120">

@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -475,7 +475,7 @@ class ElevesResponsables extends AbstractQuery
         ])
             ->columns(
             [
-                'id_ccda',
+                'id_mgc',
                 'numero',
                 'nom_eleve' => 'nomSA',
                 'prenom_eleve' => 'prenomSA',

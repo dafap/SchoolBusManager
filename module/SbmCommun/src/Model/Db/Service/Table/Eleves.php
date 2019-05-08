@@ -8,7 +8,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -31,9 +31,9 @@ class Eleves extends AbstractSbmTable
     public function getRecordByGid($gid)
     {
         $array_where = [
-            'id_ccda = ?' => $gid
+            'id_mgc = ?' => $gid
         ];
-        $condition_msg = "id_ccda = $gid";
+        $condition_msg = "id_mgc = $gid";
 
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();
