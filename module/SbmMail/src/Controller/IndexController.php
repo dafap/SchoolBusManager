@@ -11,7 +11,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2019
+ * @date 8 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmMail\Controller;
@@ -69,7 +69,7 @@ class IndexController extends AbstractActionController
                 }
                 // envoie l'email
                 $params = [
-                    'bcc' => StdLib::getParam('destinataires', $this->mail_config),
+                    'to' => StdLib::getParam('destinataires', $this->mail_config),
                     'cc' => [
                         [
                             'email' => $user['email'],
