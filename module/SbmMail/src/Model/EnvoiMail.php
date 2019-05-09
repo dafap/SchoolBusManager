@@ -6,22 +6,22 @@
  * - name : sendMail
  * - target : null
  * - params : [
- *       'to' => [],     // tableau des adresses des destinataires. 
+ *       'to' => [],     // tableau des adresses des destinataires.
  *                       // Les adresses sont données sous la forme ['email' => string, 'name' => string]
  *       'cc' => [],     // comme 'to' - optionnel
- *       'bcc' => [],    // comme 'to' - optionnel                      
+ *       'bcc' => [],    // comme 'to' - optionnel
  *       'subject' => string, // sujet qui sera concaténé à config['sbm']['mail']['message']['subject']
- *       'body' => [],   // le corps du message et les fichiers joints sous la forme 
+ *       'body' => [],   // le corps du message et les fichiers joints sous la forme
  *                       // ['text' => string, 'html' => string, 'files' => [])
  *                       // où files est un tableau de pièces jointes (chemin complet dans le filename)
  *       ]
- *           
+ *
  * @project sbm
  * @package SbmMail/Model
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmMail\Model;
@@ -146,10 +146,10 @@ class EnvoiMail implements ListenerAggregateInterface
                 $options->setName($this->config['transport']['smtpOptions']['name']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_class'])) {
-                // $options->setConnectionClass($config['transport']['smtpOptions']['connexion_class']);
+                $options->setConnectionClass($this->config['transport']['smtpOptions']['connexion_class']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_config'])) {
-                // $options->setConnectionConfig($config['transport']['smtpOptions']['connexion_config']);
+                $options->setConnectionConfig($this->config['transport']['smtpOptions']['connexion_config']);
             }
             $transport = new Mail\Transport\Smtp($options);
         } else {
@@ -254,4 +254,4 @@ class EnvoiMail implements ListenerAggregateInterface
             ->get('content-type')
             ->setType($type);
     }
-} 
+}

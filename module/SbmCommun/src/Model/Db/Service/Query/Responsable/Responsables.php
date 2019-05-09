@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -151,9 +151,9 @@ class Responsables extends AbstractQuery
      * @param array $order
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($where, $order = null, $responsableId = null)
+    public function paginatorResponsables($where, $order = null, $responsableId = null)
     {
-        return parent::paginator(
+        return $this->paginator(
             $this->selectResponsables($where, $order, $responsableId));
     }
 

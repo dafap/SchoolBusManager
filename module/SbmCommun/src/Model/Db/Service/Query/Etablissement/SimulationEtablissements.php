@@ -8,7 +8,7 @@
  * @filesource SimulationEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
@@ -31,12 +31,12 @@ class SimulationEtablissements extends AbstractQuery
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($where, $order = [])
+    public function paginatorSE($where, $order = [])
     {
-        return parent::paginator($this->select($where, $order));
+        return $this->paginator($this->selectSE($where, $order));
     }
 
-    private function select($filtre, $order = [])
+    private function selectSE($filtre, $order = [])
     {
         $select1 = $this->sql->select();
         $select1->from(
@@ -91,7 +91,7 @@ class SimulationEtablissements extends AbstractQuery
     {
         $where = new Where();
         $where->equalTo('origineId', $id);
-        return $this->renderResult($this->select($where))
+        return $this->renderResult($this->selectSE($where))
             ->current();
     }
 }

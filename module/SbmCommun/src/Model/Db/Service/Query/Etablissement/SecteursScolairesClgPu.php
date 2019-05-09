@@ -8,7 +8,7 @@
  * @filesource SecteursScolairesClgPu.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
@@ -29,7 +29,7 @@ class SecteursScolairesClgPu extends AbstractQuery
         foreach ($id as $key => $value) {
             $where->equalTo($key, $value);
         }
-        return $this->renderResult($this->select($where))
+        return $this->renderResult($this->selectSS($where))
             ->current();
     }
 
@@ -41,12 +41,12 @@ class SecteursScolairesClgPu extends AbstractQuery
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($where, $order = [])
+    public function paginatorSS($where, $order = [])
     {
-        return parent::paginator($this->select($where, $order));
+        return $this->paginator($this->selectSS($where, $order));
     }
 
-    private function select($filtre, $order = [])
+    private function selectSS($filtre, $order = [])
     {
         $where = new Where();
         $where->literal('eta.niveau = 4')->literal('eta.statut = 1');

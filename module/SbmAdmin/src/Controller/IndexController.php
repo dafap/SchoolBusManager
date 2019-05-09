@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAdmin\Controller;
@@ -545,7 +545,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get(
-                    'Sbm\Db\Query\SecteursScolairesClgPu')->paginator($args['where'],
+                    'Sbm\Db\Query\SecteursScolairesClgPu')->paginatorSS($args['where'],
                     [
                         'communeetab',
                         'etablissement',
@@ -714,7 +714,7 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get(
-                    'Sbm\Db\Query\SimulationEtablissements')->paginator($args['where'],
+                    'Sbm\Db\Query\SimulationEtablissements')->paginatorSE($args['where'],
                     [
                         'communeetaborigine',
                         'niveauetaborigine',

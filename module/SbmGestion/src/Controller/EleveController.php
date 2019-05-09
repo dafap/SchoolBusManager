@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1416,7 +1416,7 @@ class EleveController extends AbstractActionController
 
         return new ViewModel(
             [
-                'paginator' => $this->db_manager->get('Sbm\Db\Query\Responsables')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\Responsables')->paginatorResponsables(
                     $args['where'], [
 
                         'nom',
