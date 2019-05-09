@@ -7,7 +7,7 @@
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 9 mai 2019
  * @version 2019-2.4.8
  */
 use SbmBase\Model\StdLib;
@@ -24,7 +24,7 @@ return [
             'token' => 'varchar(32) DEFAULT NULL', // pour une entrée directe par un lien - usage unique
             'tokenalive' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si le token est actif. Il ne l'est pas par défaut
             'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si l'email a été confirmé. Il ne l'est pas par défaut
-            'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // compte actif ou désactivé
+            'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // compte actif ou désactivé
             'selection' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // n'est modifié que pour titre, nom, prenom, email, mdp
