@@ -7,7 +7,7 @@
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -29,7 +29,7 @@ return [
             'confirme' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // indique si l'email a été
                                                                        // confirmé. Il ne l'est pas
                                                                        // par défaut
-            'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"', // compte actif ou désactivé
+            'active' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // compte actif ou désactivé
             'selection' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
             'dateCreation' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
             'dateModification' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"', // n'est
