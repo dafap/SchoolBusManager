@@ -8,7 +8,7 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 9 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -75,12 +75,20 @@ $elementTitre->setValue($this->identity['titre'])
 				<div id="responsable-edit-prenom2" class="row-inner edit float-left">
 					<?= $this->formRow($this->form->get('prenom2')); ?></div>
 			</div>
-			<div id="responsable-edit-telephoneF" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneF')); ?></div>
-			<div id="responsable-edit-telephoneP" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneP')); ?></div>
-			<div id="responsable-edit-telephoneT" class="row-inner edit">
-				<?= $this->formRow($this->form->get('telephoneT')); ?></div>
+			<div id="wrapper-telephones" class="row-inner edit clearfix">
+				<div id="wrapper-telephone-numbers" class="float-left">
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneF'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneP'));?></div>
+					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneT'));?></div>
+				</div>
+				<?php if ($this->layout()->hassbmservicesms) :?>
+				<div id="wrapper-acceptsms" class="left-20px float-left">
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsF'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsP'));?></div>
+					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsT'));?></div>
+				</div>
+				<?php endif;?>
+			</div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresseL1')); ?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit">
