@@ -21,7 +21,7 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2018
+ * @date 9 mai 2019
  * @version 2018-2.4.0
  */
 namespace SbmMail\Model;
@@ -144,10 +144,10 @@ class EnvoiMail implements ListenerAggregateInterface
                 $options->setName($this->config['transport']['smtpOptions']['name']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_class'])) {
-                // $options->setConnectionClass($config['transport']['smtpOptions']['connexion_class']);
+                $options->setConnectionClass($this->config['transport']['smtpOptions']['connexion_class']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_config'])) {
-                // $options->setConnectionConfig($config['transport']['smtpOptions']['connexion_config']);
+                $options->setConnectionConfig($this->config['transport']['smtpOptions']['connexion_config']);
             }
             $transport = new Mail\Transport\Smtp($options);
         } else {
