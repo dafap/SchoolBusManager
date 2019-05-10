@@ -2,13 +2,13 @@
 
 /**
  * Liste des rpi
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource rpi-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value, $disabled = false)
@@ -57,7 +57,7 @@ $url_rapports = $this->url('sbmadmin', [
     'action' => 'rpi-pdf',
     'page' => $this->page
 ]);
-$url_retour = $this->url('sbmadmin');
+$url_retour = $this->url('sbmgestion/transport');
 $hiddens = [];
 $menuImpression = $this->menuRapports($this->url('sbmadmin', [
     'action' => 'rpi-liste'
@@ -149,7 +149,7 @@ $actions = [
 					<td class="boutons">
 					<?= $this->listeLigneActions($row->rpiId, $hiddens, $buttons);?>
 					</td>
-				</tr>         
+				</tr>
             <?php endforeach;?>
             </tbody>
 		</table>

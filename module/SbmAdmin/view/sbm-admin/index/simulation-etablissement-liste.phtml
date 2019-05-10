@@ -7,7 +7,7 @@
  * @filesource simulation-etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
+ * @date 10 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -32,7 +32,7 @@ $url_rapports = $this->url('sbmadmin',
         'action' => 'simulation-etablissement-pdf',
         'page' => $this->page
     ]);
-$url_retour = $this->url('sbmadmin');
+$url_retour = $this->url('sbmgestion/transport');
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [

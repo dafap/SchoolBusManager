@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 10 mai 2019
  * @version 2018-2.5.0
  */
 namespace SbmAdmin\Controller\Service;
@@ -27,7 +27,7 @@ class IndexControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
-            
+            'theme' => $sm->get(\SbmInstallation\Model\Theme::class),
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),

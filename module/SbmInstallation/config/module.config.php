@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2019
+ * @date 11 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -34,6 +34,41 @@ return [
                         ]
                     ],
                     'upload-image' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-css' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-clever-sms' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-client' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-page' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-sites' => [
                         'allow' => [
                             'roles' => [
                                 'admin'

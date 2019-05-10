@@ -1,13 +1,13 @@
 <?php
 /**
  * Liste des secteurs scolaires des collèges publics
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource secteur-scolaire-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -32,7 +32,7 @@ $url_rapports = $this->url('sbmadmin',
         'action' => 'secteur-scolaire-pdf',
         'page' => $this->page
     ]);
-$url_retour = $this->url('sbmadmin');
+$url_retour = $this->url('sbmgestion/transport');
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [
@@ -77,16 +77,16 @@ $actions = [
 		<table class="liste-inner secteurs-scolaires">
 			<tbody>
 				<tr>
-					<th>Commune de l'établissement</th>
-					<th>Etablissement</th>
-					<th>Communes du secteur scolaire</th>
+					<th>Commune du collège</th>
+					<th>Collège</th>
+					<th>Commune du secteur scolaire</th>
 					<th></th>
 				</tr>
             <?php foreach($data as $row): ?>
 				<?php
                 $hiddens = [
-                    'etablissementId' => $row->etablissementId,
-                    'communeId' => $row->communeId,
+                    'etablissementId' => $row['etablissementId'],
+                    'communeId' => $row['communeId'],
                     'origine' => 'secteur-scolaire-liste'
                 ];
                 $buttons = [
@@ -98,12 +98,12 @@ $actions = [
                 ];
                 ?>
                 <tr class="<?=$this->cycle(["even", "odd"])->next();?>">
-					<td class="communeetab"><?= $this->escapeHtml($row->communeetab); ?></td>
-					<td class="etablissement"><?= $this->escapeHtml($row->etablissement); ?></td>
-					<td class="commune"><?= $this->escapeHtml($row->commune); ?></td>
+					<td class="communeetab"><?= $this->escapeHtml($row['communeetab']); ?></td>
+					<td class="etablissement"><?= $this->escapeHtml($row['etablissement']); ?></td>
+					<td class="commune"><?= $this->escapeHtml($row['commune']); ?></td>
 					<td class="boutons">
 						<?= $this->listeLigneActions($this->serviceId, $hiddens, $buttons);?></td>
-				</tr>         
+				</tr>
             <?php endforeach;?>
             </tbody>
 		</table>

@@ -2,13 +2,13 @@
 
 /**
  * Liste des utilisateurs
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 10 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -75,7 +75,7 @@ $url_creer_comptes_parent = $this->url('sbmadmin',
         'action' => 'user-prepare-nouveaux-comptes',
         'page' => $this->page
     ]);
-$url_retour = $this->url('sbmadmin');
+$url_retour = $this->url('sbmgestion/transport');
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [
@@ -174,7 +174,7 @@ $actions = [
 					<td class="boutons">
             			<?= $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);?>
 				    </td>
-				</tr>         
+				</tr>
         <?php endforeach;?>
             </tbody>
 		</table>
