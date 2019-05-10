@@ -8,7 +8,7 @@
  * @filesource AbstractCreate.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
+ * @date 10 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Model;
@@ -285,7 +285,7 @@ class CreateTables
             is_array($entityStructure['keys']) && ! empty($entityStructure['keys'])) {
             $keys_str = [];
             foreach ($entityStructure['keys'] as $key => $value) {
-                $unique = array_key_exists('unique', $value) && $value['unique'] ? 'UNIQUE ' : '';
+                $unique = (array_key_exists('unique', $value) && $value['unique']) ? 'UNIQUE ' : '';
                 $tmp = implode('`,`', $value['fields']);
                 $command .= $sep . $unique . "KEY `$key` (`$tmp`)";
                 $keys_str[] = $tmp;
