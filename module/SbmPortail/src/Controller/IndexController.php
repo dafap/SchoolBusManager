@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller;
@@ -651,7 +651,7 @@ class IndexController extends AbstractActionController
             [
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->lotId, $circuit->stationId),
+                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId),
                     [
                         'nom',
                         'prenom'

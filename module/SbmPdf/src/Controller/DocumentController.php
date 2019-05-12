@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
@@ -154,7 +154,7 @@ class DocumentController extends AbstractActionController
                         ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->lotId;
+                        $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -175,7 +175,7 @@ class DocumentController extends AbstractActionController
                         ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->lotId;
+                        $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -193,7 +193,7 @@ class DocumentController extends AbstractActionController
                     $services = [];
                     $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll();
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->lotId;
+                        $services[] = $objectService->serviceId;
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(

@@ -7,7 +7,7 @@
  * @filesource org-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -56,10 +56,10 @@ $services = $this->paginator->getCurrentItems();
 					<th></th>
 				</tr>
         <?php
-
-        foreach ($services as $serviceId => $service) :
+        foreach ($services as $service) :
             ?>
         <?php
+        $serviceId =$service['serviceId'];
             if (method_exists($this->effectifServices, 'transportes')) {
                 $nbInscrits = $this->effectifServices->transportes($serviceId);
             } else {

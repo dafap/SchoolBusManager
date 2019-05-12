@@ -7,7 +7,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
@@ -100,7 +100,7 @@ class Services extends AbstractQuery
 
     public function paginatorServicesWithEtablissements()
     {
-        return $this->paginator($this->getServicesWithEtablissements());
+        return $this->paginator($this->selectServicesWithEtablissements());
     }
 
     private function selectServicesWithEtablissements()

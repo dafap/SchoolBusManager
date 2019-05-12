@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -675,7 +675,7 @@ class ElevesScolarites extends AbstractQuery
             ->join(
             [
                 'tit2r1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lor2r1.transporteurId = tit2r1.transporteurId',
+            ], 'lot2r1.transporteurId = tit2r1.transporteurId',
             [
                 'service2TitulaireR1' => 'nom'
             ], Select::JOIN_LEFT)
@@ -765,7 +765,7 @@ class ElevesScolarites extends AbstractQuery
             ->join(
             [
                 'tit2r2' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lor2r2.transporteurId = tit2r2.transporteurId',
+            ], 'lot2r2.transporteurId = tit2r2.transporteurId',
             [
                 'service2TitulaireR2' => 'nom'
             ], Select::JOIN_LEFT)

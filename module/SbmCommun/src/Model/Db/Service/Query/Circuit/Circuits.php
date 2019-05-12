@@ -7,7 +7,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
@@ -100,7 +100,7 @@ class Circuits extends AbstractQuery
     public function complet($serviceId, $horaire, $callback = null)
     {
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('serviceId', $serviceId);
+        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId', $serviceId);
         switch ($horaire) {
             case 'matin':
                 $order = 'm1';
@@ -156,6 +156,7 @@ class Circuits extends AbstractQuery
             ->columns($columns)
             ->where($where)
             ->order($order);
+        //$result = ;
         $result = iterator_to_array($this->renderResult($select));
         if (is_callable($callback)) {
             foreach ($result as &$arret) {
