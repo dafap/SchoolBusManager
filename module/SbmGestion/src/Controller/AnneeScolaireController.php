@@ -8,7 +8,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -131,12 +131,19 @@ class AnneeScolaireController extends AbstractActionController
         $as_libelle = sprintf("%s-%s", $millesime, $millesime + 1);
         $table_calendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $auth = $this->authenticate->by('email');
+        // on cherche si ce millesime a déjà des circuits enregistrés
+        $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+        $resultset = $tCircuits->fetchAll([
+            'millesime' => $millesime
+        ]);
+        $circuitsVides = $resultset->count() == 0;
         return new ViewModel(
             [
                 'as_libelle' => $as_libelle,
                 'millesime' => $millesime,
                 'table' => $table_calendar->getMillesime($millesime),
-                'admin' => $auth->getCategorieId() > 253
+                'admin' => $auth->getCategorieId() > 253,
+                'circuitsVides' => $circuitsVides
             ]);
     }
 

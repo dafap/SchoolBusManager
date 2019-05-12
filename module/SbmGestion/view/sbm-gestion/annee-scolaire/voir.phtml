@@ -3,19 +3,29 @@
  * Page de présentation des éléments d'une année scolaire
  *
  * Cette page vérifie si le paramétrage est complet. Elle permet d'ouvrir ou de fermer l'année scolaire.
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/anneescolaire
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_ici = $this->url('sbmgestion/anneescolaire', [
+    'action' => 'voir',
+    'millesime' => $this->millesime
+]);
 $url_retour = $this->url('sbmgestion/anneescolaire');
 $url_ouvrir = $this->url('sbmgestion/anneescolaire', [
     'action' => 'ouvrir'
+]);
+$url_dupliquer = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-dupliquer'
+]);
+$url_vider = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-vider'
 ]);
 $hiddens = [
     'millesime' => $this->millesime
@@ -35,7 +45,7 @@ foreach ($this->table as $row) {
     $ouvert &= $row['ouvert'] == 1;
 }
 if ($etat) {
-    if ($this->admin) {
+    if (/*$this->admin*/ true) {
         if ($ouvert) {
             $msg = 'L\'année scolaire est ouverte.';
             $hiddens['ouvert'] = 0;
@@ -46,12 +56,29 @@ if ($etat) {
             ];
         } else {
             $msg = 'L\'année scolaire est fermée.';
-            $hiddens['ouvert'] = 1;
-            $actions['ouvrir'] = [
-                'class' => 'fam-date-go',
-                'formaction' => $url_ouvrir,
-                'title' => 'Ouvrir l\'année scolaire'
-            ];
+            $hiddens['origine'] = $url_ici;
+            if ($this->circuitsVides) {
+                $msg .= ' Avant de l\'ouvrir, créez les circuits ou dupliquez les.';
+                $actions['dupliquer'] = [
+                    'class' => 'fam-plugin-add',
+                    'formaction' => $url_dupliquer,
+                    'title' => 'Générer les circuits pour cette année scolaire ' .
+                    $this->as
+                ];
+            } else {
+                $actions['dupliquer'] = [
+                    'class' => 'fam-plugin-delete',
+                    'formaction' => $url_vider,
+                    'title' => 'Supprimer les circuits de cette année scolaire ' .
+                    $this->as
+                ];
+                $hiddens['ouvert'] = 1;
+                $actions['ouvrir'] = [
+                    'class' => 'fam-date-go',
+                    'formaction' => $url_ouvrir,
+                    'title' => 'Ouvrir l\'année scolaire'
+                ];
+            }
         }
     } else {
         if ($ouvert) {

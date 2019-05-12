@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -49,12 +49,10 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
 
-$url_dupliquer = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-dupliquer'
-]);
-$url_vider = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-vider'
-]);
+/*
+ * $url_dupliquer = $this->url('sbmgestion/transport', [ 'action' => 'circuit-dupliquer'
+ * ]); $url_vider = $this->url('sbmgestion/transport', [ 'action' => 'circuit-vider' ]);
+ */
 $url_ajouter = $this->url('sbmgestion/transport',
     [
         'action' => 'circuit-ajout',
@@ -89,21 +87,21 @@ $actions = [
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
-    'dupliquer' => [
+    /*'dupliquer' => [
         'class' => $this->circuitsVides ? 'fam-plugin-add' : 'fam-plugin-delete',
         'formaction' => $this->circuitsVides ? $url_dupliquer : $url_vider,
         'title' => ($this->circuitsVides ? 'Générer' : 'Vider') .
         ' les circuits pour l\'année scolaire ' . $this->as
-    ],
+    ],*/
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Nouvel arrêt sur un circuit'
     ]
 ];
-if (! $this->admin) {
-    unset($actions['dupliquer']);
-}
+/*
+ * if (! $this->admin) { unset($actions['dupliquer']); }
+ */
 ?>
 <h1>Liste des circuits</h1>
 <div id="liste-wrapper">
@@ -201,9 +199,10 @@ if (! $this->admin) {
                 ]
             ];
             for ($i = 1; $i <= 3; $i ++) {
-                $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
-                    return $v != '00:00:00';
-                });
+                $horaires["h$i"] = array_filter($horaires["h$i"],
+                    function ($v) {
+                        return $v != '00:00:00';
+                    });
             }
             ?>
             	<tr class="petit <?=$css;?>">

@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 12 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -83,7 +83,7 @@ class TransportController extends AbstractActionController
         $effectifCircuits->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
                     $args['where']),
                 'effectifCircuits' => $effectifCircuits,
@@ -110,11 +110,12 @@ class TransportController extends AbstractActionController
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-            ->setValueOptions('semaine', [ // pour le validator
-            1 => '',
-            2 => '',
-            4 => ''
-        ])
+            ->setValueOptions('semaine',
+            [ // pour le validator
+                1 => '',
+                2 => '',
+                4 => ''
+            ])
             ->setHoraires($this->db_manager->get('Sbm\Horaires'));
         $params = [
             'data' => [
@@ -168,7 +169,7 @@ class TransportController extends AbstractActionController
                     $form->setValueOptions('semaine', $value_options);
                     return new ViewModel(
                         [
-                            
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'circuitId' => $circuitId,
@@ -231,8 +232,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -258,12 +259,14 @@ class TransportController extends AbstractActionController
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
-                ->setValueOptions('semaine', [ // pour le validator
-                    1 => '',
-                    2 => '',
-                    4 => ''
-                ])
-                ->setHoraires($this->db_manager->get('Sbm\Horaires'));;
+            ->setValueOptions('semaine',
+            [ // pour le validator
+                1 => '',
+                2 => '',
+                4 => ''
+            ])
+            ->setHoraires($this->db_manager->get('Sbm\Horaires'));
+        ;
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -301,8 +304,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'circuitId' => null,
@@ -359,7 +362,7 @@ class TransportController extends AbstractActionController
         $where->equalTo('selection', 1);
         $view = new ViewModel(
             [
-                
+
                 'form' => $form,
                 'nbSelection' => $tcircuits->fetchAll($where)->count()
             ]);
@@ -405,7 +408,7 @@ class TransportController extends AbstractActionController
             $form->initData();
         }
         return new ViewModel([
-            
+
             'form' => $form,
             'page' => $currentPage
         ]);
@@ -441,7 +444,7 @@ class TransportController extends AbstractActionController
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
         return new ViewModel(
             [
-                
+
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
                     FiltreEleve::byCircuit($circuit->lotId, $circuit->stationId, false),
@@ -466,41 +469,54 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
+        if ($prg) {
+            $origine = StdLib::getParam('origine', $prg, false);
+            if ($origine) {
+                $this->redirectToOrigin()->setBack($origine);
+            }
+            $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+            // millesime en cours pour cette session
+            $millesime = Session::get('millesime');
+            // on cherche si ce millesime a déjà des circuits enregistrés
+            $resultset = $tCircuits->fetchAll([
+                'millesime' => $millesime
+            ]);
+            if ($resultset->count()) {
+                $this->flashMessenger()->addErrorMessage(
+                    'Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'circuit-liste',
+                            'page' => 1
+                        ]);
+                }
+            }
+            // on cherche le dernier millesime dans les circuits
+            $dernierMillesimeCircuits = $tCircuits->getDernierMillesime();
 
-        $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
-        // millesime en cours pour cette session
-        $millesime = Session::get('millesime');
-        // on cherche si ce millesime a déjà des circuits enregistrés
-        $resultset = $tCircuits->fetchAll([
-            'millesime' => $millesime
-        ]);
-        if ($resultset->count()) {
-            $this->flashMessenger()->addErrorMessage(
-                'Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
+            $where = new Where();
+            $where->equalTo('millesime', $dernierMillesimeCircuits);
+            $resultset = $tCircuits->fetchAll($where);
+            foreach ($resultset as $row) {
+                $row->circuitId = null;
+                $row->millesime = $millesime;
+                $tCircuits->saveRecord($row);
+            }
+            $this->flashMessenger()->addSuccessMessage(
+                'Les circuits de cette année scolaire viennent d\'être générés.');
+        }
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
                     'action' => 'circuit-liste',
                     'page' => 1
                 ]);
         }
-        // on cherche le dernier millesime dans les circuits
-        $dernierMillesimeCircuits = $tCircuits->getDernierMillesime();
-
-        $where = new Where();
-        $where->equalTo('millesime', $dernierMillesimeCircuits);
-        $resultset = $tCircuits->fetchAll($where);
-        foreach ($resultset as $row) {
-            $row->circuitId = null;
-            $row->millesime = $millesime;
-            $tCircuits->saveRecord($row);
-        }
-        $this->flashMessenger()->addSuccessMessage(
-            'Les circuits de cette année scolaire viennent d\'être générés.');
-        return $this->redirect()->toRoute('sbmgestion/transport',
-            [
-                'action' => 'circuit-liste',
-                'page' => 1
-            ]);
     }
 
     /**
@@ -512,42 +528,50 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = $prg ?: [];
-        $millesime = Session::get('millesime');
-        $form = new Form\ButtonForm([
-            'id' => null
-        ],
-            [
-                'supproui' => [
-                    'class' => 'confirm',
-                    'value' => 'Confirmer'
-                ],
-                'supprnon' => [
-                    'class' => 'confirm',
-                    'value' => 'Abandonner'
-                ]
-            ]);
-        $confirme = StdLib::getParam('supproui', $args, false);
-        $cancel = StdLib::getParam('supprnon', $args, false);
-        if ($cancel || $confirme) {
-            $form->setData($args);
-            if ($form->isValid()) {
-                if ($confirme) {
+        if ($prg) {
+            $origine = StdLib::getParam('origine', $prg, false);
+            if ($origine) {
+                var_dump($origine);
+                $this->redirectToOrigin()->setBack($origine);
+            }
+            $millesime = Session::get('millesime');
+            $form = new Form\ButtonForm([
+                'id' => null
+            ],
+                [
+                    'supproui' => [
+                        'class' => 'confirm',
+                        'value' => 'Confirmer'
+                    ],
+                    'supprnon' => [
+                        'class' => 'confirm',
+                        'value' => 'Abandonner'
+                    ]
+                ]);
+            $confirme = StdLib::getParam('supproui', $prg, false);
+            $cancel = StdLib::getParam('supprnon', $prg, false);
+            if (! $cancel && ! $confirme) {
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'as' => $millesime . '-' . ($millesime + 1)
+                    ]);
+            } elseif ($confirme) {
+                $form->setData($prg);
+                if ($form->isValid()) {
                     $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
                     $tCircuits->viderMillesime($millesime);
                 }
-                return $this->redirect()->toRoute('sbmgestion/transport',
-                    [
-                        'action' => 'circuit-liste'
-                    ]);
             }
         }
-        return new ViewModel(
-            [
-                
-                'form' => $form->prepare(),
-                'as' => $millesime . '-' . ($millesime + 1)
-            ]);
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'circuit-liste'
+                ]);
+        }
     }
 
     /**
@@ -659,7 +683,7 @@ class TransportController extends AbstractActionController
         $effectifClasses->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Classes')->paginator(
                     $args['where'], [
                         'niveau',
@@ -710,8 +734,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'classeId' => $r->getResult()
@@ -784,8 +808,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -832,8 +856,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'classeId' => null
@@ -876,7 +900,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byClasse($classeId),
                     [
@@ -975,7 +999,7 @@ class TransportController extends AbstractActionController
         $effectifCommunes->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Communes')->paginator(
                     $args['where']),
                 'effectifCommunes' => $effectifCommunes,
@@ -1021,8 +1045,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'communeId' => $r->getResult()
@@ -1095,8 +1119,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -1140,8 +1164,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'communeId' => null
@@ -1184,7 +1208,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byCommune($communeId),
                     [
@@ -1303,7 +1327,7 @@ class TransportController extends AbstractActionController
         $effectifEtablissements->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->paginator(
                     $args['where']),
                 'effectifEtablissements' => $effectifEtablissements,
@@ -1359,8 +1383,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'etablissementId' => $r->getResult()
@@ -1433,8 +1457,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -1492,8 +1516,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'etablissementId' => null
@@ -1536,7 +1560,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'),
                     FiltreEleve::byEtablissement($etablissementId), [
@@ -1738,7 +1762,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'form' => $form->prepare(),
                 'description' => $description,
                 'etablissement' => [
@@ -1830,7 +1854,7 @@ class TransportController extends AbstractActionController
         $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
         return new ViewModel(
             [
-                
+
                 'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                     $etablissementId),
                 'paginator' => $table->paginator($where),
@@ -1962,7 +1986,7 @@ class TransportController extends AbstractActionController
         $effectifServicesEtablissements->setCaractereConditionnel($serviceId)->init();
         return new ViewModel(
             [
-                
+
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
                     $serviceId),
                 'data' => $table->fetchAll(
@@ -2060,7 +2084,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'origine' => $origine,
                 'form' => $form->prepare(),
                 'page' => $currentPage,
@@ -2145,7 +2169,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'etablissementId' => $etablissementId,
                 'serviceId' => $serviceId,
                 'origine' => $origine,
@@ -2193,7 +2217,7 @@ class TransportController extends AbstractActionController
         }
         $viewModel = new ViewModel(
             [
-                
+
                 'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'),
@@ -2238,7 +2262,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Lots')->paginator(
                     $args['where'], [
                         'marche',
@@ -2282,8 +2306,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'communeId' => null
@@ -2324,8 +2348,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'lotId' => $r->getResult()
@@ -2393,8 +2417,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -2453,7 +2477,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'), FiltreEleve::byLot($lotId),
                     [
@@ -2541,7 +2565,7 @@ class TransportController extends AbstractActionController
         $effectifLotsServices->setCaractereConditionnel($lotId)->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
                     $where, [
                         'serviceId'
@@ -2605,7 +2629,7 @@ class TransportController extends AbstractActionController
         $effectifServices->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
                     $args['where']),
                 'page' => $this->params('page', 1),
@@ -2662,8 +2686,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'serviceId' => $r->getResult()
@@ -2737,8 +2761,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -2792,8 +2816,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'serviceId' => null
@@ -2839,7 +2863,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                
+
                 'h1' => 'Groupe des élèves inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byService($serviceId),
@@ -2975,7 +2999,7 @@ class TransportController extends AbstractActionController
         $effectifStations->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Stations')->paginator(
                     $args['where']),
                 'effectifStations' => $effectifStations,
@@ -3003,7 +3027,7 @@ class TransportController extends AbstractActionController
         $effectifStations->init();
         return new ViewModel(
             [
-                
+
                 'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->stationsNonDesservies(),
                 'effectifStations' => $effectifStations,
                 'page' => $currentPage
@@ -3082,7 +3106,7 @@ class TransportController extends AbstractActionController
                         ]);
                     return new ViewModel(
                         [
-                            
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'stationId' => $r->getResult()
@@ -3169,8 +3193,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -3298,7 +3322,7 @@ class TransportController extends AbstractActionController
             }
             $view = new ViewModel(
                 [
-                    
+
                     'form' => $form->prepare(),
                     'page' => $currentPage,
                     'stationId' => null
@@ -3321,7 +3345,7 @@ class TransportController extends AbstractActionController
             }
             $view = new ViewModel(
                 [
-                    
+
                     'form' => $formCarte->prepare(),
                     'description' => '<b>Nouvelle station</b>',
                     'station' => [
@@ -3365,7 +3389,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                
+
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'), FiltreEleve::byStation($stationId),
                     [
@@ -3426,7 +3450,7 @@ class TransportController extends AbstractActionController
         $effectifStationsServices->setCaractereConditionnel($stationId)->init();
         return new ViewModel(
             [
-                
+
                 'data' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->fetchAll(
                     [
                         'millesime' => Session::get('millesime'),
@@ -3472,7 +3496,7 @@ class TransportController extends AbstractActionController
             ]);
         $view = new ViewModel(
             [
-                
+
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     $millesime, FiltreEleve::byCircuit($serviceId, $stationId, false),
                     [
@@ -3738,7 +3762,7 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-                
+
                 'form' => $form->prepare(),
                 'description' => $description,
                 'station' => [
@@ -3788,7 +3812,7 @@ class TransportController extends AbstractActionController
                 ]);
         }
         return new ViewModel([
-            
+
             'form' => $form->prepare(),
             'page' => $currentPage
         ]);
@@ -3813,7 +3837,7 @@ class TransportController extends AbstractActionController
         $effectifTransporteurs->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->paginator(
                     $args['where']),
                 'effectifTransporteurs' => $effectifTransporteurs,
@@ -3861,8 +3885,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'transporteurId' => $r->getResult()
@@ -3935,8 +3959,8 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     return new ViewModel(
-                    [
-                    
+                        [
+
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
@@ -3983,8 +4007,8 @@ class TransportController extends AbstractActionController
                 break;
             default:
                 return new ViewModel(
-                [
-                
+                    [
+
                         'form' => $form->prepare(),
                         'page' => $currentPage,
                         'transporteurId' => null
@@ -4028,7 +4052,7 @@ class TransportController extends AbstractActionController
 
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'),
                     FiltreEleve::byTransporteur($transporteurId),
@@ -4085,7 +4109,7 @@ class TransportController extends AbstractActionController
         $effectifTransporteursServices->setCaractereConditionnel($transporteurId)->init();
         return new ViewModel(
             [
-                
+
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
                     $where, [
                         'serviceId'
