@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2019
+ * @date 15 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
@@ -385,8 +385,8 @@ class IndexController extends AbstractActionController
                     $data = $form->getData();
                     // Form is valid, save the form!
                     $source = $data['image-file']['tmp_name'];
-                    $dest = StdLib::concatPath($this->img['path']['system'],
-                        $data['image-file']['name']);
+                    $dest = StdLib::concatPath($this->img['path']['system'], $prg['fname']);
+                    //    $data['image-file']['name']);
                     // $dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR .
                     // $data['image-file']['name'];
                     copy($source, $dest);
