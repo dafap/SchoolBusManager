@@ -8,8 +8,8 @@
  * @filesource Libelle.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 13 mai 2019
+ * @version 2019-2.5.0
  */
 namespace SbmAdmin\Form;
 
@@ -158,6 +158,15 @@ class Libelle extends AbstractSbmForm implements InputFilterProviderInterface
                 'filters' => [
                     [
                         'name' => 'Zend\Filter\Digits'
+                    ]
+                ]
+            ],
+            'libelle' => [
+                'name' => 'libelle',
+                'requierd' => true,
+                'filters' => [
+                    [
+                        'name' => 'StringTrim'
                     ]
                 ]
             ]
