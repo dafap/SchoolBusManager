@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 27 avr. 2019
+ * @date 13 mai 2019
  * @version 2018-2.5.0
  */
 use SbmPdf\Controller;
@@ -50,7 +50,16 @@ return [
                         'allow' => [
                             'roles' => [
                                 'parent',
-                                'secretariat'
+                                'secretariat',
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'les-factures'=>[
+                        'allow' => [
+                            'roles' => [
+                                'secretariat',
+                                'gestion'
                             ]
                         ]
                     ],
@@ -60,7 +69,8 @@ return [
                                 'parent',
                                 'transporteur',
                                 'etablissement',
-                                'secretariat'
+                                'secretariat',
+                                'gestion'
                             ]
                         ]
                     ],
