@@ -7,13 +7,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 12 mai 2019
+ * @date 14 mai 2019
  * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
 use SbmGestion\Controller\Service;
-use SbmGestion\Model\Cartes\Cartes;
+use SbmGestion\Model\Cartes;
 use SbmGestion\Model\Db\Service as SbmGestionDbService;
 use SbmGestion\Model\Photos\Photos;
 use SbmGestion\Model\View\Helper as ViewHelper;
