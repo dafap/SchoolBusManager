@@ -6,13 +6,13 @@
  * - form
  * - page
  * - document
- * 
+ *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/document
  * @filesource field-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 14 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -58,7 +58,7 @@ $actions = [
 	</div>
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
-    		<?= $this->form()->openTag($this->form);?> 
+    		<?= $this->form()->openTag($this->form);?>
     		<?= $this->formHidden($this->form->get('docfieldId'));?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
     		<?= $this->formHidden($this->form->get('name'));?>
@@ -72,6 +72,8 @@ $actions = [
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('fieldname'));?></div>
 					<div class="sbm-document-table">
+						<?= $this->formRow($this->form->get('nature'));?></div>
+					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('fieldname_width'));?></div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('fieldname_align'));?></div>
@@ -83,8 +85,6 @@ $actions = [
 						<?= $this->formRow($this->form->get('fieldname_completion'));?></div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('filter'));?></div>
-					<div class="sbm-document-table">
-						<?= $this->formRow($this->form->get('is_date'));?></div>
 					<div class="sbm-document-table">
 						<?= $this->formRow($this->form->get('format'));?></div>
 				</div>
