@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
+ * @date 13 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -754,10 +754,12 @@ class EleveController extends AbstractActionController
                 $recalcul = $tScolarites->saveRecord($odata);
                 // recalcul des droits et des distances en cas de modification de la
                 // destination ou d'une origine
-                if ($recalcul || $changeR1 || $changeR2) {
+                if ($recalcul || $changeR1 || $changeR2 ||
+                    $odata->derogation != $odata1->derogation) {
                     $majDistances = $this->cartographie_manager->get(
                         'Sbm\CalculDroitsTransport');
-                    if ($odata1->avoirDroits() && $odata->regimeId == $odata1->regimeId) {
+                    if ($odata1->avoirDroits() && $odata->regimeId == $odata1->regimeId &&
+                        $odata->derogation == $odata1->derogation) {
                         $majDistances->majDistancesDistrictSansPerte($eleveId);
                     } else {
                         try {
