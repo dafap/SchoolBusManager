@@ -20,7 +20,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2019
+ * @date 13 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Service;
@@ -240,7 +240,7 @@ class CalculDroits implements FactoryInterface
                         $result = $this->domicilesEcole($niveau, $domiciles, $destination);
                         break;
                 }
-                if ($result['droit']) {
+                if ($result['droit'] || $scolarite->derogation == 1) {
                     if ($r2HorsSecteur) {
                         $this->data['grilleTarif'] = 2; // DP en GA avec 2e parent hors
                                                         // secteur
