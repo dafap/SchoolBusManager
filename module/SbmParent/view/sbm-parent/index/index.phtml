@@ -7,7 +7,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2019
+ * @date 13 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -20,7 +20,12 @@ $this->headScript()->appendFile($this->basePath('/js/parent/index.js'));
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $enAttente = false;
-
+$adresse_client = implode(', ',
+    [
+        $this->client['name'],
+        implode(', ', $this->client['adresse']),
+        sprintf('%s %s', $this->client['code_postal'], $this->client['commune'])
+    ]);
 $nbPreinscrits = $this->preinscrits->count();
 $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
@@ -77,24 +82,22 @@ $url_facture = $this->url('sbmdocument', [
 	<?= $dateLimite;?> pour ceux qui sont en attente d'affectation).</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Avant le <?= $dateFin; ?> (ou le <?= $dateLimite; ?>
-	pour ceux en attente d'orientation) afin de retenir une place :</p>
+	<p>Avant le <?= $dateFin; ?> afin de retenir une place :</p>
 	<ul>
 		<li>Inscrivez tous vos enfants qui doivent utiliser le service de
 			transports scolaires</li>
-		<li>Transmettez une photo d'identité qui sera imprimée sur la carte de
-			transport. En cas de réinscription, si une photo est déjà présente
-			sur la fiche de votre enfant, vous pourrez la conserver ou la
-			changer.</li>
+		<li>Transmettez une photo d'identité récente qui sera imprimée sur la
+			carte de transport. En cas de réinscription, si une photo de moins de
+			deux ans est déjà présente sur la fiche de votre enfant, vous pourrez
+			la conserver ou la changer.</li>
 		<li>Payez en ligne ou transmettez votre paiement par courrier au
-			service de transport.</li>
+			service de transport de <?=$adresse_client;?>.</li>
 	</ul>
 	<p>Si les inscriptions sont complètes dans le respect des dates
-		indiquées, vous recevrez les cartes de transport courant août.</p>
+		indiquées, vous recevrez les cartes de transport courant août ou
+		septembre.</p>
 	<p>Sinon, vous devrez vous présenter lors des permanences pour
-		compléter l'inscription, payer et retirer les cartes mais votre
-		inscription ne sera plus prioritaire et ne sera prise en compte que
-		dans la mesure des places disponibles à la rentrée.</p>
+		compléter l'inscription, payer et retirer les cartes.</p>
 	<ul>
     <?php foreach ($this->permanences as $row) :?>
         <li>Pour les habitants de <?=$row;?></li>
@@ -347,14 +350,14 @@ $url_facture = $this->url('sbmdocument', [
 		</fieldset>
 <?php if ($photo_manquante): ?>
         <p class="important">Veuillez transmettre une photo d'identité
-			pour obtenir la carte de transport.</p>
+			récente pour obtenir la carte de transport.</p>
 <?php elseif (Session::get('as')['dateDebut'] >= date('Y-m-d')):?>
 <?php if ($nbInscrits > 1):?>
 		<p class="sbm-description">Vous allez recevoir les cartes de transport
-			par courrier courant août.</p>
+			par courrier courant août ou septembre.</p>
 <?php else :?>
         <p class="sbm-description">Vous allez recevoir la carte de
-			transport par courrier courant août.</p>
+			transport par courrier courant août ou septembre.</p>
 <?php endif;?>
 <?php endif;?>
 		<p class="sbm-description">Les circuits et horaires seront
@@ -501,10 +504,11 @@ EOT;
             'formtarget' => '_blank',
             'value' => 'Imprimer la facture'
         ];
-        echo $this->listeZoneActions([
-            'montant' => $this->resultats->getSolde(),
-            'namespacectrl' => $this->namespacectrl
-        ], $boutons);
+        echo $this->listeZoneActions(
+            [
+                'montant' => $this->resultats->getSolde(),
+                'namespacectrl' => $this->namespacectrl
+            ], $boutons);
         ?>
             </div>
 		</div>
@@ -515,23 +519,22 @@ EOT;
                 break;
             case 1:
                 $msg = <<<EOT
-L'inscription doit être réglée avant le $dateFin (ou le $dateLimite pour les élèves
-en attente d'orientation) pour retenir une place définitive dans le circuit et recevoir
-la carte de transport par la poste.<br>
-Passé ce délai, votre demande d'inscription ne devient plus prioritaire et
-ne sera traitée que dans la mesure des places disponibles à la rentrée. Vous
-devrez vous rendre à la permanence qui se tiendra à la Communauté de communes
-pour connaitre la suite donnée à votre demande, payer et retirer la carte de transport.
+La carte de transport ne sera délivrée que si vous avez transmis une photo d'identité
+de l'élève et payé son abonnement.<br>
+L'inscription doit être réglée avant le $dateFin pour retenir une place définitive dans
+le circuit et recevoir la carte de transport par la poste.<br>
+Passé ce délai, vous devrez vous rendre à la permanence qui se tiendra à %s pour connaitre
+la suite donnée à votre demande, payer et retirer la carte de transport.
 Pour les habitants de %s.
 EOT;
-                $msg = sprintf($msg, $this->permanences[0]);
+                $msg = sprintf($msg,$adresse_client, $this->permanences[0]);
                 break;
             default:
-                $msg =  <<<EOT
-Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la
+                $msg = <<<EOT
+Pour valider les préinscriptions, rendez-vous à %s le jour de la
 distribution des cartes. Pour les habitants de %s.
 EOT;
-                $msg = sprintf($msg, $this->permanences[0]);
+                $msg = sprintf($msg,$adresse_client, $this->permanences[0]);
                 break;
         }
         ?>
@@ -548,16 +551,13 @@ EOT;
 			<p>Vous pouvez :</p>
 			<ul>
 				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire
-				avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour les élèves en attente
-				d'orientation). Vous recevrez alors la carte de transport par la poste.</li>
+				avant le <?= $dateFin;?>. Vous recevrez alors la carte de transport par la poste.</li>
 				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à
-				l'adresse ci-dessous avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour
-				les élèves en attente d'orientation). Vous recevrez alors la carte de transport
+				l'adresse ci-dessous avant le <?= $dateFin;?>. Vous recevrez alors la carte de transport
 				par la poste.</li>
-				<li>vous rendre à la Communauté de communes (pour les habitant de
+				<li>vous rendre à <?=$adresse_client;?> (pour les habitant de
 				<?=$this->permanences[0];?>) pour payer en espèces ou par chèque et
-				retirer la carte de transport. Toutefois, votre demande ne sera plus prioritaire
-				et ne sera satisfaite que dans la mesure des places disponibles.</li>
+				retirer la carte de transport.</li>
 			</ul>
 			<div class="centre">
 				<?=$this->client['name'];?><br>
@@ -582,10 +582,10 @@ EOT;
 						</tr>
             <?php foreach ($this->paiements as $row) :?>
             			<tr>
-            				<td><?=DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
-                			<td><?=$row->modeDePaiement;?></td>
-                			<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
-                		</tr>
+							<td><?=DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
+							<td><?=$row->modeDePaiement;?></td>
+							<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+						</tr>
         	<?php endforeach;?>
             		</tbody>
 				</table>
@@ -605,10 +605,10 @@ EOT;
 						</tr>
             <?php foreach ($this->factures as $row) :?>
             			<tr>
-                			<td><?=$row->numero;?></td>
-            				<td><?=DateLib::formatDateTimeFromMysql($row->date);?></td>
-                			<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
-                		</tr>
+							<td><?=$row->numero;?></td>
+							<td><?=DateLib::formatDateTimeFromMysql($row->date);?></td>
+							<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+						</tr>
         	<?php endforeach;?>
             		</tbody>
 				</table>
