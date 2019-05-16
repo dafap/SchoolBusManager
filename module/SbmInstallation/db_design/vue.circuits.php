@@ -7,7 +7,7 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
+ * @date 13 mai 2019
  * @version 2019-2.5.0
  */
 return [
@@ -144,6 +144,9 @@ return [
                 'alias' => 'lot',
                 'relation' => 'ser.lotId=lot.lotId',
                 'fields' => [
+                    [
+                        'field'=>'lotId'
+                    ],
                     [
                         'field' => 'marche',
                         'alias' => 'lot_marche'
