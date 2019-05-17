@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -447,7 +447,7 @@ class TransportController extends AbstractActionController
 
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->lotId, $circuit->stationId, false),
+                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false),
                     [
                         'nom',
                         'prenom'
@@ -618,7 +618,7 @@ class TransportController extends AbstractActionController
                 $circuitId = StdLib::getParam('circuitId', $args, - 1);
                 $ocircuit = $db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
                     $circuitId);
-                $serviceId = $ocircuit->lotId;
+                $serviceId = $ocircuit->serviceId;
                 $stationId = $ocircuit->stationId;
                 $where = new Where();
                 $where->nest()
