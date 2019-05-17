@@ -10,7 +10,7 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -267,7 +267,7 @@ abstract class Filtre
     {
         return [
             'inscrit' => 1,
-            'transporteurId' => $transporteurId
+            'ser.transporteurId' => $transporteurId
         ];
     }
 
