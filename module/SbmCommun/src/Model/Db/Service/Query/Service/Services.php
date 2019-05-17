@@ -7,7 +7,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
@@ -98,9 +98,17 @@ class Services extends AbstractQuery
         return $result;
     }
 
+    /**
+     * Attention, la structure du résultat est celle de getServicesWithEtablissements()
+     * mais le résultat est paginé.
+     *
+     * @return \Zend\Paginator\Paginator
+     */
     public function paginatorServicesWithEtablissements()
     {
-        return $this->paginator($this->selectServicesWithEtablissements());
+        return new \Zend\Paginator\Paginator(
+            new \Zend\Paginator\Adapter\ArrayAdapter(
+                $this->getServicesWithEtablissements()));
     }
 
     private function selectServicesWithEtablissements()
