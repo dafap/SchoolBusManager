@@ -8,7 +8,7 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 
@@ -55,6 +55,7 @@ return [
             'banque' => 'varchar(30) NOT NULL DEFAULT ""',
             'titulaire' => 'varchar(30) NOT NULL DEFAULT ""',
             'reference' => 'varchar(30) NOT NULL DEFAULT ""',
+            'justificatif' => 'varchar(30) NOT NULL DEFAULT ""',
             'note' => 'text NULL'
         ],
         'primary_key' => [
