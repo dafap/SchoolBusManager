@@ -572,7 +572,7 @@ class ElevesScolarites extends AbstractQuery
             ], 'eta.etablissementId = sco.etablissementId',
             [
                 'etablissement' => new Expression(
-                    '(CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END)')
+                    '(CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END)')
             ])
             ->join([
             'etacom' => $this->db_manager->getCanonicName('communes', 'table')

@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -333,7 +333,7 @@ class AffectationsServicesStations extends AbstractQuery
             ], 'sco.etablissementId=eta.etablissementId',
             [
                 'etablissement' => new Expression(
-                    'CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+                    'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'x_etablissement' => 'x',
                 'y_etablissement' => 'y'
             ])
@@ -510,7 +510,7 @@ class AffectationsServicesStations extends AbstractQuery
             ], 'sco.etablissementId=eta.etablissementId',
             [
                 'etablissement' => new Expression(
-                    'CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END')
+                    'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END')
             ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')

@@ -395,7 +395,7 @@ class ElevesResponsables extends AbstractQuery
             ], 'sco.etablissementId = eta.etablissementId',
             [
                 'etablissement' => new Expression(
-                    'CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+                    'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'xeta' => 'x',
                 'yeta' => 'y'
             ])
@@ -510,7 +510,7 @@ class ElevesResponsables extends AbstractQuery
             ], 'sco.etablissementId=eta.etablissementId',
             [
                 'etablissement' => new Expression(
-                    'CASE WHEN isnull(eta.alias) THEN eta.nom ELSE eta.alias END'),
+                    'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'x_etablissement' => 'x',
                 'y_etablissement' => 'y'
             ])
