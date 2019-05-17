@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -284,7 +284,7 @@ class ElevesScolarites extends AbstractQuery
             $this->millesime, 'sco', [
                 $this->jointureElevesResponsables($responsableId)
             ]);
-        return $this->renderResult($select->where($elevesResponsablePayant));
+        return $this->renderResult($select->where($elevesResponsablePayant()));
     }
 
     public function getElevesPayantsWithMontant($responsableId)
@@ -360,7 +360,7 @@ class ElevesScolarites extends AbstractQuery
             $this->millesime, 'sco', [
                 $nonAffectes
             ], Predicate::COMBINED_BY_AND);
-        return $select->where($elevesInscritsNonAffectes)->order([
+        return $select->where($elevesInscritsNonAffectes())->order([
             'nom',
             'prenom'
         ]);
@@ -412,7 +412,7 @@ class ElevesScolarites extends AbstractQuery
             $this->millesime, 'sco', [
                 $nonAffectes
             ], Predicate::COMBINED_BY_AND);
-        return $select->where($elevesPreinscritsNonAffectes)->order([
+        return $select->where($elevesPreinscritsNonAffectes())->order([
             'nom',
             'prenom'
         ]);
@@ -480,11 +480,11 @@ class ElevesScolarites extends AbstractQuery
         ], Select::JOIN_LEFT);
         $predicate = new Predicate();
         $predicate->literal('demandeR2 = 1')->literal('distanceR2 = 0');
-        $demandeEnGA_distance0 = new PredicateEleve\ElevesEnGA($$this->millesime, 'sco',
+        $demandeEnGA_distance0 = new PredicateEleve\ElevesEnGA($this->millesime, 'sco',
             [
                 $predicate
             ]);
-        return $select->where($demandeEnGA_distance0);
+        return $select->where($demandeEnGA_distance0());
     }
 
     public function getEnfants($responsableId, $ga = 1)

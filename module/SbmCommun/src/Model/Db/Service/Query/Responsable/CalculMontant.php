@@ -7,7 +7,7 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -115,7 +115,7 @@ class CalculMontant extends AbstractQuery
             ->columns([
             'quantite' => new Expression('count(*)')
         ])
-            ->where($predicate)
+            ->where($predicate())
             ->group('grilleCode');
     }
 

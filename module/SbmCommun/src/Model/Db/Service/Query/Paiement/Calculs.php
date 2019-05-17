@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2019
+ * @date 17 mai 2019
  * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
@@ -247,11 +247,11 @@ class Calculs extends AbstractQuery
      */
     private function selectAbonnementsEleves(Where $where)
     {
-        $predicates = [
-            $where
-        ];
-        return $this->selectAbonnements(
-            new Predicate\ElevesResponsablePayant($this->millesime, 'sco', $predicates));
+        $predicate = new Predicate\ElevesResponsablePayant($this->millesime, 'sco',
+            [
+                $where
+            ]);
+        return $this->selectAbonnements($predicate());
     }
 
     /**
@@ -304,11 +304,12 @@ class Calculs extends AbstractQuery
             [
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
             ])
-            ->columns([
-            'eleveId' => 'eleveid',
-            'nom' => 'nomSA',
-            'prenom' => 'prenomSA'
-        ])
+            ->columns(
+            [
+                'eleveId' => 'eleveid',
+                'nom' => 'nomSA',
+                'prenom' => 'prenomSA'
+            ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId',

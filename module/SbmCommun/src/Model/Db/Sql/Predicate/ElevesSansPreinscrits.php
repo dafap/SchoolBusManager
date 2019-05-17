@@ -8,7 +8,7 @@
  * @filesource ElevesSansPreinscrits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
@@ -29,7 +29,7 @@ class ElevesSansPreinscrits extends AbstractElevesPredicate
             ->literal($prefixe . 'selection = 0')
             ->equalTo($prefixe . 'millesime', $this->millesime)
             ->nest()
-            ->literal($prefixe . 'district = 1')->or->literal($prefixe . 'derogation = 1')
+            ->literal($prefixe . 'district = 1')->or->literal($prefixe . 'derogation >= 1')
             ->unnest()
             ->nest()
             ->literal($prefixe . 'paiement = 1')->or->literal($prefixe . 'fa = 1')->or->literal(

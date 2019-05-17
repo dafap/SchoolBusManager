@@ -7,17 +7,17 @@
  * @filesource PredicateAccordSansAffectation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
 use Zend\Db\Sql\Predicate\Predicate as ZendPredicate;
 
-class PredicateAccordSansAffectation extends ZendPredicate
+class PredicateAccordSansAffectation extends AbstractPredicate
 {
 
-    public function __invoke()
+    public function init()
     {
         return new ZendPredicate(
             [
