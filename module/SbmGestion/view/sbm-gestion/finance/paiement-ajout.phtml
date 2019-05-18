@@ -13,7 +13,7 @@
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -62,35 +62,37 @@ $actions = [
 <?php if ($this->hidden_responsableId) : ?>
 				<?= $this->formHidden($this->form->get('responsableId')); ?>
 <?php else : ?>
-                <div id="wrapper-edit-responsableId"
+                <div id="wrapper-responsableId"
 					class="row-inner edit">
 					<?= $this->formRow($this->form->get('responsableId')); ?></div>
 <?php endif; ?>
 
-                <div id="wrapper-edit-code-caisse"
+                <div id="wrapper-code-caisse"
 					class="row-inner edit">
 					<?= $this->formRow($this->form->get('codeCaisse')); ?></div>
-				<div id="wrapper-edit-montant" class="row-inner edit">
+				<div id="wrapper-montant" class="row-inner edit">
 					<?= $this->formRow($this->form->get('montant')); ?></div>
-				<div id="wrapper-edit-code-mode-de-paiement" class="row-inner edit">
+				<div id="wrapper-code-mode-de-paiement" class="row-inner edit">
 					<?= $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
-				<div id="wrapper-edit-exercice" class="row-inner edit">
+				<div id="wrapper-exercice" class="row-inner edit">
 					<?= $this->formRow($this->form->get('exercice')); ?></div>
-				<div id="wrapper-edit-annee-scolaire" class="row-inner edit">
+				<div id="wrapper-annee-scolaire" class="row-inner edit">
 					<?= $this->formRow($this->form->get('anneeScolaire')); ?></div>
-				<div id="wrapper-edit-date-paiement" class="row-inner edit">
+				<div id="wrapper-date-paiement" class="row-inner edit">
 					<?= $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
-				<div id="wrapper-edit-date-valeur" class="row-inner edit">
+				<div id="wrapper-date-valeur" class="row-inner edit">
 					<?= $this->formRowDate($this->form->get('dateValeur')); ?></div>
-				<div id="wrapper-edit-date-depot" class="row-inner edit">
+				<div id="wrapper-date-depot" class="row-inner edit">
 					<?= $this->formRowDateTime($this->form->get('dateDepot')); ?></div>
-				<div id="wrapper-edit-titulaire" class="row-inner edit">
+				<div id="wrapper-titulaire" class="row-inner edit">
 					<?= $this->formRow($this->form->get('titulaire')); ?></div>
-				<div id="wrapper-edit-banque" class="row-inner edit">
+				<div id="wrapper-banque" class="row-inner edit">
 					<?= $this->formRow($this->form->get('banque')); ?></div>
-				<div id="wrapper-edit-reference" class="row-inner edit">
+				<div id="wrapper-reference" class="row-inner edit">
 					<?= $this->formRow($this->form->get('reference')); ?></div>
-				<div id="wrapper-edit-buttons" class="row-inner edit">
+				<div id="wrapper-justificatif" class="row-inner edit">
+					<?= $this->formRow($this->form->get('justificatif')); ?></div>
+				<div id="wrapper-buttons" class="row-inner edit">
     				<?= $this->formSubmit($this->form->get('submit'));?>
     				<?= $this->formSubmit($this->form->get('cancel')); ?></div>
 			</fieldset>

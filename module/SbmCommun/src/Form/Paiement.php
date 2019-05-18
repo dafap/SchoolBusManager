@@ -8,7 +8,7 @@
  * @filesource Paiement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -258,6 +258,24 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'name' => 'justificatif',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'paiement-justificatif',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Justificatif',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'submit',
                 'attributes' => [
                     'type' => 'submit',
@@ -353,6 +371,10 @@ class Paiement extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'reference' => [
                 'name' => 'reference',
+                'required' => false
+            ],
+            'justificatif' => [
+                'name' => 'justificatif',
                 'required' => false
             ],
             'montant' => [

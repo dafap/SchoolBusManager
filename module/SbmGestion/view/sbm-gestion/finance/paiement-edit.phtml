@@ -9,7 +9,7 @@
  * @filesource paiement-edit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 17 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -72,6 +72,8 @@ $actions = [
 				<?= $this->formRow($this->form->get('banque')); ?></div>
 			<div id="wrapper-reference" class="row-inner edit">
 				<?= $this->formRow($this->form->get('reference')); ?></div>
+			<div id="wrapper-justificatif" class="row-inner edit">
+				<?= $this->formRow($this->form->get('justificatif')); ?></div>
 			<div id="wrapper-note" class="row-inner edit">
 				<?= $this->formRow($this->form->get('note')); ?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
