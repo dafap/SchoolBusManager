@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -139,7 +139,7 @@ class Scolarites extends AbstractSbmTable
                 'eleveId' => $eleveId,
                 $champ => $accord
             ]);
-        parent::saveRecord($oData);
+        return parent::saveRecord($oData);
     }
 
     /**
@@ -159,7 +159,7 @@ class Scolarites extends AbstractSbmTable
                 'eleveId' => $eleveId,
                 'inscrit' => $inscrit
             ]);
-        parent::saveRecord($oData);
+        return parent::saveRecord($oData);
     }
 
     /**
@@ -168,7 +168,7 @@ class Scolarites extends AbstractSbmTable
      * @param int $millesime
      * @param int $eleveId
      * @param int $derogation
-     *            0 ou 1
+     *            0 ou 1 ou 2
      */
     public function setDerogation($millesime, $eleveId, $derogation)
     {
@@ -179,7 +179,7 @@ class Scolarites extends AbstractSbmTable
                 'eleveId' => $eleveId,
                 'derogation' => $derogation
             ]);
-        parent::saveRecord($oData);
+        return parent::saveRecord($oData);
     }
 
     /**
@@ -215,7 +215,7 @@ class Scolarites extends AbstractSbmTable
         } else {
             $oData->duplicata ++;
         }
-        parent::saveRecord($oData);
+        return parent::saveRecord($oData);
     }
 
     /**
