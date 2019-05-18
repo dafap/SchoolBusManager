@@ -1,7 +1,7 @@
 <?php
 /**
  * Cette classe permet de lancer un évènement 'renderPdf' de la manière suivante :
- * 
+ *
  * $call_pdf = new RenderPdfService()
  * $call_pdf->setData($rowset)
  *          ->setHead(['column1', 'column2, 'column3')
@@ -15,7 +15,7 @@
  * @filesource RenderPdfService.pdf
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Service;
@@ -182,6 +182,13 @@ class RenderPdfService implements EventManagerAwareInterface, FactoryInterface
     public function setTableConfig($config = [])
     {
         $this->content['table_config'] = $config;
+        return $this;
+    }
+
+    public function setEndOfScriptFunction(callable $function_end, array $function_end_args = [])
+    {
+        $this->content['function_end'] = $function_end;
+        $this->content['function_end_args'] = $function_end_args;
         return $this;
     }
 }

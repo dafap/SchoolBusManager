@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPortail\Controller;
@@ -255,9 +255,12 @@ class IndexController extends AbstractActionController
                 'nom',
                 'prenom'
             ]))
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
             ->renderPdf();
-
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
     public function orgCircuitsAction()
@@ -577,14 +580,17 @@ class IndexController extends AbstractActionController
         $call_pdf = $this->RenderPdfService;
         if ($docaffectationId = $this->params('id', false)) {
             // $docaffectationId par get - $args['documentId'] contient le libellé du menu
-            // dans
-            // docaffectations
+            // dans docaffectations
             $call_pdf->setParam('docaffectationId', $docaffectationId);
         }
-        $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-        $call_pdf->renderPdf();
-
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $call_pdf->setParam('documentId', $documentId)
+            ->setParam('where', $where)
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
+            ->renderPdf();
     }
 
     public function trCircuitsAction()

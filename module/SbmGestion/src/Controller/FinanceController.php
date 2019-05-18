@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -828,10 +828,13 @@ class FinanceController extends AbstractActionController
             $where = new Where();
             $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo(
                 'codeModeDePaiement', $aKey['codeModeDePaiement']);
-            $call_pdf->setParam('where', $where);
-            $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-            $call_pdf->renderPdf();
-            die();
+            $call_pdf->setParam('where', $where)
+                ->setEndOfScriptFunction(
+                function () {
+                    $this->flashMessenger()
+                        ->addSuccessMessage("Création d'un pdf.");
+                })
+                ->renderPdf();
         }
         // le formulaire ne valide pas. Il s'agit du select qui est vide.
         return $this->redirect()->toRoute('sbmgestion/finance',

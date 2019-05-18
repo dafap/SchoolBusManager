@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -340,9 +340,12 @@ abstract class AbstractActionController extends ZendAbstractActionController
             foreach ($pdf_params as $key => $value) {
                 $call_pdf->setParam($key, $value);
             }
-            $call_pdf->renderPdf();
-
-            $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            $call_pdf->setEndOfScriptFunction(
+                function () {
+                    $this->flashMessenger()
+                        ->addSuccessMessage("Création d'un pdf.");
+                })
+                ->renderPdf();
         } catch (\Exception $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
                 throw $e;
@@ -784,11 +787,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * Retrouve le responsableId enregistré en session dans l'action origine de l'appel
      * L'appel doit se faire en POST en passant l'argument 'namespacectrl' qui contient la
-     * valeur : md5($nsArgCtrl). Si ce n'est pas cette valeur alors il y a imposture.
-     * Si c'est bon, on cherche le paramètre $nsArgCtrl en session dans
-     * SBM_DG_SESSION qui indique le namespace de session dans lequel on trouvera 'post',
-     * un tableau contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par
-     * un die() puisque l'appel a du être fait dans une nouvelle fenêtre (target = _blank)
+     * valeur : md5($nsArgCtrl). Si ce n'est pas cette valeur alors il y a imposture. Si
+     * c'est bon, on cherche le paramètre $nsArgCtrl en session dans SBM_DG_SESSION qui
+     * indique le namespace de session dans lequel on trouvera 'post', un tableau
+     * contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par un die()
+     * puisque l'appel a du être fait dans une nouvelle fenêtre (target = _blank)
      *
      * @return int
      */

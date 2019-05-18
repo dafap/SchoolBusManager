@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -518,9 +518,12 @@ class EleveGestionController extends AbstractActionController
                     'not empty' => []
                 ])
                     ->setParam('expression', $expression)
+                    ->setEndOfScriptFunction(
+                    function () {
+                        $this->flashMessenger()
+                            ->addSuccessMessage("Édition de cartes.");
+                    })
                     ->renderPdf();
-                $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-                $vue = false; // la http response est lancée par renderPdf()
             }
         }
         if ($vue) {
@@ -629,13 +632,16 @@ class EleveGestionController extends AbstractActionController
                     ])
                     ->setParam('position', $position)
                     ->setParam('duplicata', true)
+                    ->setEndOfScriptFunction(
+                    function () use ($millesime, $args) {
+                        if (empty($args['gratuit'])) {
+                            $this->db_manager->get('Sbm\Db\Table\Scolarites')
+                                ->addDuplicata($millesime, $args['eleveId']);
+                        }
+                        $this->flashMessenger()
+                            ->addSuccessMessage("Édition d'un duplicata.");
+                    })
                     ->renderPdf();
-                if (empty($args['gratuit'])) {
-                    $this->db_manager->get('Sbm\Db\Table\Scolarites')->addDuplicata(
-                        $millesime, $args['eleveId']);
-                }
-                $this->flashMessenger()->addSuccessMessage("Edition d'un duplicata.");
-                $vue = false; // la http response est lancée par renderPdf()
             }
         }
         if ($vue) {
@@ -743,9 +749,12 @@ class EleveGestionController extends AbstractActionController
                         'not empty' => []
                     ])
                         ->setParam('expression', $expression)
+                        ->setEndOfScriptFunction(
+                        function () {
+                            $this->flashMessenger()
+                                ->addSuccessMessage("Création d'un pdf.");
+                        })
                         ->renderPdf();
-                    $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-                    $vue = false; // la http response est lancée par renderPdf()
                 }
             }
         }

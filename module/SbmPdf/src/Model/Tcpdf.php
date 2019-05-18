@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -444,7 +444,7 @@ class Tcpdf extends \TCPDF
                     if (php_sapi_name() != 'cli') {
                         $response = $this->prepareResponseInline($name);
                         $response->send();
-                        die();
+                        $this->endOutput();
                     } else {
                         echo $this->getBuffer();
                     }
@@ -456,7 +456,7 @@ class Tcpdf extends \TCPDF
                     $this->IsOutputEmpty();
                     $response = $this->prepareResponseAttachment($name);
                     $response->send();
-                    die();
+                    $this->endOutput();
                     break;
                 }
             case 'F':
@@ -477,7 +477,7 @@ class Tcpdf extends \TCPDF
                         $response = $this->prepareResponseAttachment($name);
                     }
                     $response->send();
-                    die();
+                    $this->endOutput();
                     break;
                 }
             case 'E':
@@ -502,6 +502,36 @@ class Tcpdf extends \TCPDF
                 }
         }
         return '';
+    }
+
+    /**
+     * Initialise la fonction à exécuter après le Output et avant le endOutput()
+     *
+     * @param callable $f
+     * @param array $args
+     *
+     * @return \SbmPdf\Model\Tcpdf
+     */
+    public function setEndOfScriptFunction(callable $f = null, array $args = null)
+    {
+        $this->params['function_end'] = $f;
+        $this->params['function_end_args'] = $args;
+        return $this;
+    }
+
+    /**
+     * Exécute une fonction lorsqu'elle est paramétrée et met fin au script.
+     * La fonction est référencée dans params sous la clé 'function_end'
+     * Ses arguments sont référencés dans params sous la clé 'function_end_args'
+     */
+    private function endOutput()
+    {
+        $function_end = $this->getParam('function_end', null);
+        $function_end_args = $this->getParam('function_end_args', null);
+        if (is_callable($function_end)) {
+            $function_end($function_end_args);
+        }
+        die();
     }
 
     private function IsOutputEmpty()

@@ -2,24 +2,24 @@
 /**
  * Statistiques de gestion
  *
- * 
+ *
  * @project sbm
  * @package SbmGestion/Controller
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Resolver;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
-use SbmBase\Model\StdLib;
 
 class StatistiquesController extends AbstractActionController
 {
@@ -183,9 +183,13 @@ class StatistiquesController extends AbstractActionController
         $view->setTemplate("sbm-gestion/statistiques/$action.phtml");
         // die($renderer->render($view));
         $call_pdf = $this->RenderPdfService;
-        $call_pdf->setParam('documentId', $documentId)->setParam('html',
-            $renderer->render($view));
-        $call_pdf->renderPdf();
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $call_pdf->setParam('documentId', $documentId)
+            ->setParam('html', $renderer->render($view))
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
+            ->renderPdf();
     }
 }

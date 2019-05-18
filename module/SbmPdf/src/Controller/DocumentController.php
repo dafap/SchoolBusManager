@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2019
+ * @date 18 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
@@ -45,19 +45,24 @@ class DocumentController extends AbstractActionController
         $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
             $responsableId);
         if ($factureset->count()) {
-        $this->pdf_manager->get(Tcpdf::class)
-            ->setParams(
-            [
-                'documentId' => 'Facture à un responsable',
-                'layout' => 'sbm-pdf/layout/facture.phtml',
-                'args' => [
-                    'vendeur' => $this->organisateur,
-                    'acheteur' => $this->db_manager->get('Sbm\Db\Vue\Responsables')
-                        ->getRecord($responsableId)
-                ]
-            ])
-            ->setData($factureset)
-            ->run();
+            $this->pdf_manager->get(Tcpdf::class)
+                ->setParams(
+                [
+                    'documentId' => 'Facture à un responsable',
+                    'layout' => 'sbm-pdf/layout/facture.phtml',
+                    'args' => [
+                        'vendeur' => $this->organisateur,
+                        'acheteur' => $this->db_manager->get('Sbm\Db\Vue\Responsables')
+                            ->getRecord($responsableId)
+                    ]
+                ])
+                ->setData($factureset)
+                ->setEndOfScriptFunction(
+                function () {
+                    $this->flashMessenger()
+                        ->addSuccessMessage("Édition de factures.");
+                })
+                ->run();
         } else {
             return $this->factureAction();
         }
@@ -86,9 +91,12 @@ class DocumentController extends AbstractActionController
             ->setData([
             $facture
         ])
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Édition d'une facture.");
+            })
             ->run();
-
-        $this->flashMessenger()->addSuccessMessage("Édition d'une facture.");
     }
 
     /**
@@ -252,6 +260,11 @@ class DocumentController extends AbstractActionController
                     'layout' => 'sbm-pdf/layout/horaires.phtml'
                 ])
                 ->setData($ahoraires)
+                ->setEndOfScriptFunction(
+                function () {
+                    $this->FlashMessenger()
+                        ->addSuccessMessage('Édition des horaires.');
+                })
                 ->run();
         } else {
             $this->flashMessenger()->addInfoMessage('Rien à imprimer');
@@ -343,8 +356,11 @@ class DocumentController extends AbstractActionController
                 'layout' => 'sbm-pdf/layout/org-pdf.phtml'
             ])
             ->setData(iterator_to_array($data))
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
             ->run();
-
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 }
