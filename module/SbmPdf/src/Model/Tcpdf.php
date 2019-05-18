@@ -351,17 +351,29 @@ class Tcpdf extends \TCPDF
     /**
      * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le
      * script après un envoi inline ($dest = I ou FI)
+     * ATTENTION !!! la méthode Close() appelle la méthode _destroy() qui supprime les
+     * propriétés non préservées. Il faut donc préserver les propriétés de $params qui
+     * sont nécessaire pour la fin du script.
      *
      * {@inheritdoc}
      * @see TCPDF::Output()
      */
     public function Output($name = 'doc.pdf', $dest = 'I')
     {
+        // die(is_callable($this->getParam('function_end', null)) ? 'function_end
+        // trouvée':'function_end pas trouvée');
         // Output PDF to some destination
         // Finish document if necessary
         if ($this->state < 3) {
+            $function_end = $this->getParam('function_end', null);
+            $function_end_args = $this->getParam('function_end_args', null);
             $this->Close();
+            $this->params = [
+                'function_end' => $function_end,
+                'function_end_args' => $function_end_args
+            ];
         }
+
         // Normalize parameters
         if (is_bool($dest)) {
             $dest = $dest ? 'D' : 'F';
@@ -520,9 +532,9 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Exécute une fonction lorsqu'elle est paramétrée et met fin au script.
-     * La fonction est référencée dans params sous la clé 'function_end'
-     * Ses arguments sont référencés dans params sous la clé 'function_end_args'
+     * Exécute une fonction lorsqu'elle est paramétrée et met fin au script. La fonction
+     * est référencée dans params sous la clé 'function_end' Ses arguments sont référencés
+     * dans params sous la clé 'function_end_args'
      */
     private function endOutput()
     {
