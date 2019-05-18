@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
+ * @date 18 mai 2019
  * @version 2019-2.4.8
  */
 namespace SbmPortail\Controller;
@@ -164,7 +164,9 @@ class IndexController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('serviceId', 
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', 
@@ -230,13 +232,17 @@ class IndexController extends AbstractActionController
             ->setParam('where', $where)
             ->setData(
             $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
-                ->getScolaritesR($where, [
-                'nom',
-                'prenom'
-            ]))
+                ->getScolaritesR($where, 
+                [
+                    'nom',
+                    'prenom'
+                ]))
+            ->setParam('function_end', 
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
             ->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
     }
 
     public function orgCircuitsAction()
@@ -279,7 +285,8 @@ class IndexController extends AbstractActionController
             $oetablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                 $etablissementId);
             $etablissement = "$oetablissement->nom - $oetablissement->commune";
-            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(true);
+            $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byEtablissement(
+                true);
             
             $elevesTransportes = StdLib::getParamR(
                 [
@@ -326,7 +333,7 @@ class IndexController extends AbstractActionController
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
             $transporteur = $this->db_manager->get('Sbm\Db\Table\Transporteurs')->getRecord(
-				$transporteurId)->nom;	
+                $transporteurId)->nom;
             $stats = $this->db_manager->get('Sbm\Db\Eleve\Effectif')->byTransporteur(true);
             $elevesATransporter = StdLib::getParamR(
                 [
@@ -407,7 +414,9 @@ class IndexController extends AbstractActionController
         $criteres_form->setValueOptions('etablissementId', 
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId', $this->db_manager->get('Sbm\Db\Select\Classes')->tout())
+            ->setValueOptions('classeId', 
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
             ->setValueOptions('serviceId', 
             $this->db_manager->get('Sbm\Db\Select\Services'))
             ->setValueOptions('stationId', 
@@ -547,10 +556,14 @@ class IndexController extends AbstractActionController
             // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans docaffectations
             $call_pdf->setParam('docaffectationId', $docaffectationId);
         }
-        $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-        $call_pdf->renderPdf();
-        
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $call_pdf->setParam('documentId', $documentId)
+            ->setParam('where', $where)
+            ->setParam('function_end', 
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
+            ->renderPdf();
     }
 
     public function trCircuitsAction()

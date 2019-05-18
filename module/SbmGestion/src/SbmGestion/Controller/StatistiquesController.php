@@ -8,8 +8,8 @@
  * @filesource StatistiquesController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 18 mai 2019
+ * @version 2019-2.4.8
  */
 namespace SbmGestion\Controller;
 
@@ -182,9 +182,13 @@ class StatistiquesController extends AbstractActionController
         $view->setTemplate("sbm-gestion/statistiques/$action.phtml");
         // die($renderer->render($view));
         $call_pdf = $this->RenderPdfService;
-        $call_pdf->setParam('documentId', $documentId)->setParam('html', 
-            $renderer->render($view));
-        $call_pdf->renderPdf();
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        $call_pdf->setParam('documentId', $documentId)
+            ->setParam('html', $renderer->render($view))
+            ->setParam('function_end', 
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
+            ->renderPdf();
     }
 }

@@ -9,7 +9,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 18 mai 2019
  * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -341,10 +341,12 @@ abstract class AbstractActionController extends ZendAbstractActionController
             foreach ($pdf_params as $key => $value) {
                 $call_pdf->setParam($key, $value);
             }
-            
-            $call_pdf->renderPdf();
-            $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-            die();
+            $call_pdf->setParam('function_end', 
+                function () {
+                    $this->flashMessenger()
+                        ->addSuccessMessage("Création d'un pdf.");
+                })
+                ->renderPdf();
         } catch (\Exception $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
             $routeParams = [

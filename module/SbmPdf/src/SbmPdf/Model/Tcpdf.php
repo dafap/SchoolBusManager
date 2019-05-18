@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2019
+ * @date 18 mai 2019
  * @version 2019-2.4.8
  */
 namespace SbmPdf\Model;
@@ -326,6 +326,9 @@ class Tcpdf extends \TCPDF
 
     /**
      * Lance la construction du document pdf
+     * Envoie le pdf
+     * Lance la fonction indiquée en paramètre sous la clé 'function_end' avec 
+     * le tableau d'arguments indiqué en paramètre sous la clé 'function_end_args' 
      */
     public function run()
     {
@@ -333,7 +336,8 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docheader', false)) {
             $this->sectionDocumentHeader();
         }
-        
+		$function_end = $this->getParam('function_end', null);
+		$function_end_args = $this->getParam('function_end_args', null);
         // corps du document
         $this->sectionDocumentBody();
         
@@ -341,8 +345,8 @@ class Tcpdf extends \TCPDF
         if ($this->getConfig('document', 'docfooter', false)) {
             $this->sectionDocumentFooter();
         }
-        // $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'), 
-        //    $this->getConfig('document', 'out_mode', 'I'));
+        // $this->Output($this->getConfig('document', 'out_name', 'doc.pdf'),
+        // $this->getConfig('document', 'out_mode', 'I'));
         // die();
         $name = $this->getConfig('document', 'out_name', 'doc.pdf');
         if (headers_sent()) {
@@ -355,13 +359,17 @@ class Tcpdf extends \TCPDF
             ->addHeaderLine('Content-type', 'application/pdf')
             ->addHeaderLine('Content-Disposition', "inline; filename=\"$name\"")
             ->addHeaderLine('Tranfert-Encoding', 'chunked')
-            ->addHeaderLine('Cache-Control',
+            ->addHeaderLine('Cache-Control', 
             'private, must-revalidate, post-check=0, pre-check=0, max-age=1')
             ->addHeaderLine('Pragma', 'public')
             ->addHeaderLine('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT')
             ->addHeaderLine('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
         $response->setContent($this->getPDFData());
         $response->send();
+        // Action à faire avant die()		
+        if (is_callable($function_end)) {
+            $function_end($function_end_args);
+        }
         // sans l'instruction die(), la taille du contenu est incorrecte. Il semble que du code
         // html provenant du layer soit rajouté.
         die();
