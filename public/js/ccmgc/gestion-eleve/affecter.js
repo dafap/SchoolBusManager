@@ -1,12 +1,13 @@
 /**
+ * Thème : Millau Grands Causses
  * scripts dela page de sbm-gestion/eleve-gestion/affecter.phtml
  * 
  * @project sbm
  * @filesource affecter.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2016
- * @version 2016-2.1.10
+ * @date 19 mai 2019
+ * @version 2019-2.5.0
  */
 
 var js_affecter =(function(){

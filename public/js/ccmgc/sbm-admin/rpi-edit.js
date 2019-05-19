@@ -2,7 +2,7 @@
  * Ensemble des scripts de la page sbm-admin/index/rpi-edit.phtml
  * 
  * @project sbm
- * @filesource rpi/edit.js
+ * @filesource gestion-admin/rpi-edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 13 fév. 2019

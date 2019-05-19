@@ -7,7 +7,7 @@
  * @filesource localisation.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2016
+ * @date 19 mai 2019
  * @version 2016-2.1.10
  */
 
@@ -19,7 +19,7 @@
  * @param tMarker
  *            tableau des points à placer (ensemble des autres données)
  */
-function initialiser(titre, description, tMarkers) {
+function initialiser(scheme,titre,description,tMarkers) {
 	var marker;
 	var latlng = new google.maps.LatLng(CENTRE_LAT, CENTRE_LNG);
 	// initialisation des paramètres de la carte
@@ -43,7 +43,7 @@ function initialiser(titre, description, tMarkers) {
 	// define OSM map type pointing at the OpenStreetMap tile server
 	oCarte.mapTypes.set("OSM", new google.maps.ImageMapType({
 		getTileUrl : function(coord, zoom) {
-			return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x
+			return scheme+"://tile.openstreetmap.org/" + zoom + "/" + coord.x
 					+ "/" + coord.y + ".png";
 		},
 		tileSize : new google.maps.Size(256, 256),
