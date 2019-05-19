@@ -4,23 +4,23 @@
  *
  * Affichage des stations décrites dans $this->ptStations qui est un tableau de Point
  * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés décimaux.
- * 
+ *
  * Le style des markers peut être changé : remplacer BUBBLE par MARKER ligne 39
- * 
+ *
  * @project sbm
  * @package SbmCarographie/view/sbm-cartographie/carte
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/carte.js');
+$this->themeJS('commun', 'carte.js');
+$this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $i = 0;
 $tMarkers = "[\n";
@@ -52,7 +52,7 @@ $this->inlineScript()->captureStart();
 const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
 const INI_ZOOM = <?= $this->config['zoom']; ?>;
-initialiser(<?= $tMarkers;?>);
+initialiser("<?=$this->scheme;?>",<?=$tMarkers;?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */

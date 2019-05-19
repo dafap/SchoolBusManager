@@ -27,8 +27,7 @@ $msg = include $this->theme->getIncludeView('sbm-front/index/index-pendant');
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->headScript()->appendFile($this->basepath('/js/front/index.js'));
-
+$this->themeJS('sbm-front','index.js');
 $url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
 ]);

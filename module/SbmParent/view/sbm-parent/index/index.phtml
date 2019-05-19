@@ -7,7 +7,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -16,7 +16,7 @@ use SbmBase\Model\Session;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'index.css');
 $this->jQuery('jquery-ui');
-$this->headScript()->appendFile($this->basePath('/js/parent/index.js'));
+$this->themeJS('sbm-parent','index.js');
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $enAttente = false;
@@ -379,8 +379,8 @@ $url_facture = $this->url('sbmdocument', [
 					</tr>
             <?php
         foreach ($this->preinscrits as $row) {
-            $peutPayer = max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
-                ($row['district'] == 1 || $row['derogation'] == 1);
+            $peutPayer = (max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
+                $row['district'] == 1) || $row['derogation'] >= 1;
             if ($row['selectionScolarite']) {
                 $grilleTarif = '<span class="exces" title="Cet enfant n\'est pas inscrit.' .
                     ' Respectez les délais.">en attente</span>';
@@ -527,14 +527,14 @@ Passé ce délai, vous devrez vous rendre à la permanence qui se tiendra à %s 
 la suite donnée à votre demande, payer et retirer la carte de transport.
 Pour les habitants de %s.
 EOT;
-                $msg = sprintf($msg,$adresse_client, $this->permanences[0]);
+                $msg = sprintf($msg, $adresse_client, $this->permanences[0]);
                 break;
             default:
                 $msg = <<<EOT
 Pour valider les préinscriptions, rendez-vous à %s le jour de la
 distribution des cartes. Pour les habitants de %s.
 EOT;
-                $msg = sprintf($msg,$adresse_client, $this->permanences[0]);
+                $msg = sprintf($msg, $adresse_client, $this->permanences[0]);
                 break;
         }
         ?>

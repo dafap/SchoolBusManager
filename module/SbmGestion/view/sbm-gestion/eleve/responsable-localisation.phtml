@@ -3,13 +3,13 @@
  * Page de laocalisation d'un responsable dont les coordonnées sont données
  *
  * (Cette page est identique à SbmParent/view/sbm-parent/config/localisation.phtml)
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 // calcul du contenu de l'infobulle
@@ -46,15 +46,15 @@ if (! empty($telephones)) {
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/localisation.js');
+$this->themeJS('commun','localisation.js');
+$this->themeJS('commun','StyledMarker.js');
 // lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?= $this->config['zoom'];?>;
-initialiser('mon domicile', "<?= implode('<br/>', $description);?>", []);
+initialiser("<?=$this->scheme;?>",'mon domicile', "<?= implode('<br/>', $description);?>", []);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */

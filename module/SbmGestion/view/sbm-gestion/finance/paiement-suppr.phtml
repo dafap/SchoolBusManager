@@ -9,13 +9,13 @@
  * @filesource paiement-suppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-suppr.js'));
+$this->themeJS('gestion-finance','paiement-suppr.js');
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_suppr.init();

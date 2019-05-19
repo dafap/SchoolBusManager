@@ -10,13 +10,13 @@
  * @filesource rpi-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->headScript()->appendFile($this->basePath('/js/rpi/edit.js'));
-$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->themeJS('sbm-admin','rpi-edit.js');
+$this->themeJS('commun','checkallbox.js');
 $this->headScript()->captureStart();
 ?>
 multicheckbox_actions.init("classe-edit-niveau");

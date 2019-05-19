@@ -3,19 +3,19 @@
  * Page de localisation du domicile du 2e responsable en cas de garde alternée (inscriptions en ligne)
  *
  * Présente une carte et les boutons enregistrer ou abandonner
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource ga-localisation-bymap.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/localisation.js');
+$this->themeJS('commun', 'localisation.js');
+$this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $i = 0;
 $aMarkers = [
@@ -42,7 +42,7 @@ $this->inlineScript()->captureStart();
 const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?= $this->config['zoom'];?>;
-initialiser("domicile de l'élève", "<?= $this->description;?>", <?= json_encode($aMarkers);?>);
+initialiser("<?=$this->scheme;?>","domicile de l'élève","<?= $this->description;?>",<?= json_encode($aMarkers);?>);
 <?php $this->inlineScript()->captureEnd(); ?>
 <h1>Position d'un domicile sur la carte</h1>
 <div id="carte-wrapper">

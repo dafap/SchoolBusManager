@@ -3,13 +3,13 @@
  * Page de localisation d'un élève dont les coordonnées sont données
  *
  * (La carte est centrée avec les mêmes paramètres que pour les cartes des parents)
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource eleve-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -23,15 +23,15 @@ $description = '<b>' . $nomEleve . '</b>';
 
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/localisation.js');
+$this->themeJS('commun', 'localisation.js');
+$this->themeJS('commun', 'StyledMarker.js');
 // lancement du script (sera affiché dans le layout à la fin de la page
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?= $this->config['zoom'];?>;
-initialiser('mon domicile', "<?= $description;?>", []);
+initialiser("<?=$this->scheme;?>",'mon domicile', "<?= $description;?>", []);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */

@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1311,6 +1311,7 @@ class EleveController extends AbstractActionController
 
             // supprimer les références à l'adresse perso de l'élève
             $data = [
+                'scheme' =>$this->getRequest()->getUri()->getScheme(),
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $args['eleveId'],
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
@@ -1945,6 +1946,7 @@ class EleveController extends AbstractActionController
         }
         return new ViewModel(
             [
+                'scheme' =>$this->getRequest()->getUri()->getScheme(),
                 'form' => $form->prepare(),
                 'responsable' => $responsable,
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],

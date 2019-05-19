@@ -2,17 +2,17 @@
 /**
  * Formulaire d'envoi d'une photo
  * Le JavaScript est le même que pour l'envoi d'une photo par un parent.
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-gestion/eleve/index
  * @filesource envoiphoto.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/envoiphoto.js'));
+$this->themeJS('gestion-eleve', 'envoiphoto.js');
 $this->inlineScript()->captureStart();
 ?>
 js_envoi.init("<?= $this->url_retour;?>");

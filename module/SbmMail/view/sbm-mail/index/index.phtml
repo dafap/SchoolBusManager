@@ -12,7 +12,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
@@ -27,7 +27,7 @@ tinymce.init({
  });
 <?php
 $this->headScript()->captureEnd();
-$this->inlineScript()->prependFile($this->basePath('js/mail/index.js'));
+$this->themeJS('sbm-mail','index.js');
 ?>
 <h1>Envoi d'un message au service de transport</h1>
 <div id="fiche-wrapper">

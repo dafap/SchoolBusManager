@@ -1,17 +1,17 @@
 <?php
 /**
  * Formulaire d'envoi d'une photo
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource envoiphoto.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/parent/envoiphoto.js'));
+$this->themeJS('sbm-parent','envoiphoto.js');
 $this->inlineScript()->captureStart();
 ?>
 js_envoi.init();

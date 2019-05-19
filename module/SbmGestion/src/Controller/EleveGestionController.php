@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -239,6 +239,7 @@ class EleveGestionController extends AbstractActionController
             $this->cartographie_manager->get('cartes'));
         return new ViewModel(
             [
+                'scheme' =>$this->getRequest()->getUri()->getScheme(),
                 'decision' => $formDecision->prepare(),
                 'op' => $args['op'],
                 'page' => $page,
@@ -385,6 +386,7 @@ class EleveGestionController extends AbstractActionController
         $ptEta->setAttribute('description', $args['descriptioneta']);
         return new ViewModel(
             [
+                'scheme' =>$this->getRequest()->getUri()->getScheme(),
                 'ptR1' => $ptR1,
                 'ptEta' => $ptEta,
                 'form' => $form->prepare(),

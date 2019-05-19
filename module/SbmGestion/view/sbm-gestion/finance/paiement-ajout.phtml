@@ -13,12 +13,12 @@
  * @filesource paiement-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-ajout.js'));
+$this->themeJS('gestion-finance','paiement-ajout.js');
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_ajout.init();

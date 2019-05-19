@@ -2,13 +2,13 @@
 /**
  * Page de modification d'un élément de `calendar`
  *
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/anneescolaire
  * @filesource edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 14 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -50,6 +50,14 @@ switch ($this->data['nature']) {
         $element->setLabel('Date 2');
         $element = $this->form->get('echeance');
         $element->setLabel('Date 3');
+        $element = $this->form->get('date1');
+        $element->setLabel('Date 4');
+        $element = $this->form->get('date2');
+        $element->setLabel('Date 5');
+        $element = $this->form->get('date3');
+        $element->setLabel('Date 6');
+        $element = $this->form->get('date4');
+        $element->setLabel('Date 7');
     default:
         ;
         break;
@@ -80,6 +88,14 @@ switch ($this->data['nature']) {
 				<?= $this->formRowDate($this->form->get('dateFin'));?></div>
 			<div id="wrapper-echeance" class="row-inner edit">
 				<?= $this->formRowDate($this->form->get('echeance'));?></div>
+			<div id="wrapper-date1" class="row-inner edit">
+				<?= $this->formRowDate($this->form->get('date1'));?></div>
+			<div id="wrapper-date2" class="row-inner edit">
+				<?= $this->formRowDate($this->form->get('date2'));?></div>
+			<div id="wrapper-date3" class="row-inner edit">
+				<?= $this->formRowDate($this->form->get('date3'));?></div>
+			<div id="wrapper-date4" class="row-inner edit">
+				<?= $this->formRowDate($this->form->get('date4'));?></div>
 			<div id="wrapper-exercice" class="row-inner edit">
 			    <?= $this->formRow($this->form->get('exercice'));?></div>
 			<div id="wrapper-buttons" class="row-inner edit">

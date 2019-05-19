@@ -12,12 +12,12 @@
  * @filesource field-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->headScript()->appendFile($this->basePath('/js/pdf/field-edit.js'));
+$this->themeJS('sbm-pdf','field-edit.js');
 $this->inlineScript()->captureStart();
 ?>
  $("#accordion").accordion();

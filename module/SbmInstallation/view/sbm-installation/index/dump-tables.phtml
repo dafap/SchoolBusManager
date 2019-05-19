@@ -3,18 +3,18 @@
  * Page de sauvegarde des données
  *
  * Choix des tables à sauvegarder et affichage du compte-rendu.
- * 
+ *
  * @project sbm
  * @package SbmInstallation/view/sbm-installation/index
  * @filesource dump-tables.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('css/fam-icons-custom.css'));
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('js/checkallbox.js'));
+$this->themeJS('commun','checkallbox.js');
 $this->inlineScript()->captureStart();
 ?>
 multicheckbox_actions.init('tables');
@@ -72,7 +72,7 @@ if (! empty($inner)) {
     <div id='tables'><?= $this->formRow($element);?></div>
     <?php $element = $this->form->get('systems');?>
     <div id='systems'><?= $this->formRow($element);?></div>
-    <?php $element = $this->form->get('plugin');?> 
+    <?php $element = $this->form->get('plugin');?>
     <div><?= $this->formRow($element);?></div>
     <?php
     $element = $this->form->get('onscreen');
@@ -82,7 +82,7 @@ if (! empty($inner)) {
     echo $this->formElement($this->form->get('copy'));
 
     echo $this->form()->closeTag();
-    ?> 
+    ?>
 <?php endif; ?>
     </div>
 	<div id="data-footer"></div>

@@ -8,12 +8,12 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->inlineScript()->appendFile($this->basePath() . '/js/form-responsable.js');
+$this->themeJS('commun','form-responsable.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 if ($this->responsableId) {
     $h1 = "Modification d'un responsable";

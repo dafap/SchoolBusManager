@@ -3,19 +3,19 @@
  * Page de localisation d'une station
  *
  * La page présente une carte. Il suffit de cliquer sur la carte pour localiser la station
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport
  * @filesource station-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/localisation.js');
+$this->themeJS('commun','localisation.js');
+$this->themeJS('commun','StyledMarker.js');
 // préparation du script
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
@@ -49,7 +49,7 @@ $this->inlineScript()->captureStart();
 const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
 const INI_ZOOM = <?= $this->config['zoom'];?>;
-initialiser("point d'arrêt", "<?= $this->description;?>", <?= json_encode($aMarkers);?>);
+initialiser("<?=$this->scheme;?>","point d'arrêt","<?= $this->description;?>",<?= json_encode($aMarkers);?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */

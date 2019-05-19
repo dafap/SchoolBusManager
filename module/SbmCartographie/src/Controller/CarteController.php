@@ -3,13 +3,13 @@
  * Controller permettant de créer les cartes etablissements et stations
  *
  * Compatible ZF3
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Controller
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\Controller;
@@ -55,6 +55,7 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
+                'scheme' => $this->getRequest()->getUri()->getScheme(),
                 'ptEtablissements' => $ptEtablissements,
                 'config' => StdLib::getParam('etablissement', $this->config_cartes),
                 'url_api' => $this->url_api
@@ -88,10 +89,11 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
+                'scheme' => $this->getRequest()->getUri()->getScheme(),
                 'ptStations' => $ptStations,
                 // on utilise la même configuration (centre, zoom) que pour les établissements
                 'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);
     }
-} 
+}

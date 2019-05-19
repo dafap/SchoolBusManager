@@ -12,7 +12,7 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -38,7 +38,7 @@ $this->jQuery();
 $this->headScript()->appendFile(
     $this->basePath(
         '/js/jquery.formatCurrency-1.4.0.i18n/jquery.formatCurrency-1.4.0.min.js'));
-$this->headScript()->appendFile($this->basePath('/js/gestion-finance/paiement-detail.js'));
+$this->themeJS('gestion-finance','paiement-detail.js');
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_detail.init(<?=$this->args['responsableId']?>);

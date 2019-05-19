@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -25,8 +25,7 @@ function renderCheckbox($view, $name, $id, $value)
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->headScript()->appendFile(
-    $this->basePath() . '/js/gestion-transport/circuit-liste.js');
+$this->themeJS('gestion-transport','circuit-liste.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection

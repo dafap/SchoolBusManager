@@ -8,14 +8,14 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/transport', 'circuit-fiche.css');
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-transport/circuit-edit.js'));
-$this->headScript()->appendFile($this->basePath('/js/checkallbox.js'));
+$this->themeJS('gestion-transport','circuit-edit.js');
+$this->themeJS('commun','checkallbox.js');
 // initialisation du javascript
 $serviceId = $this->form->get('serviceId')->getValue();
 $stationId = $this->form->get('stationId')->getValue();

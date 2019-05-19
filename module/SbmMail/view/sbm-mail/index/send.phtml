@@ -4,18 +4,19 @@
  *
  * Si l'envoi se fait à une seule adresse, le destinataire est indiqué au dessus du formulaire d'envoi.
  * Sinon, la liste des destinataires est placée en dessous du formulaire.
- * 
+ *
  * La zone de saisie utilise tinymce pour mettre en forme le message envoyé.
- * 
+ *
  * @project sbm
  * @package SbmMail/view
  * @filesource send.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
+$this->themeJS('sbm-mail','index.js');
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
 $this->headScript()->captureStart();
 ?>
@@ -27,7 +28,6 @@ tinymce.init({
  });
 <?php
 $this->headScript()->captureEnd();
-$this->inlineScript()->prependFile($this->basePath('js/mail/index.js'));
 $this->destinataires = (array) $this->destinataires;
 $liste = count($this->destinataires) > 1;
 ?>

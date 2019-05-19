@@ -1,13 +1,13 @@
 <?php
 /**
  * Page de gestion du téléchargement d'un ensemble de photos
- * 
+ *
  * @project sbm
  * @package SbmGestion/viw/sbm-gestion/eleve-gestion
  * @filesource photos.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -30,7 +30,7 @@ $actions = [
     ]
 ];
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/cartes-photos.js'));
+$this->themeJS('gestion-eleve','cartes-photos.js');
 $this->inlineScript()->captureStart();
 ?>
 js_date.montreDate();
@@ -47,13 +47,13 @@ js_date.montreDate();
 	<p>Aucun lot de photos n'a été préparé pour cette année scolaire.</p>
 	<?php endif;?>
 	</div>
-	<div id="fiche-inner">	    
+	<div id="fiche-inner">
 		<?php echo $this->form()->openTag($this->form1); ?>
 	    <fieldset class="sbm-page1">
 			<p>
 				Si vous souhaitez préparer une nouvelle extraction, cliquez sur le
-				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés 
-				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?> 
+				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés
+				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?>
 				seront pris en compte.</p>
 			<div class="row-inner"><?php echo $this->formSubmit($this->form1->get('nouvelle')); ?></div>
 			<p>

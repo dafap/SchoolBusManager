@@ -4,17 +4,17 @@
  * Page de création/modification/duplication d'un document pdf par un formulaire présenté en accordéon.
  *
  * Cette vue utilise le javascript jQuery-ui accordion.
- * - La bibliothèque jquery-ui doit être montée. 
+ * - La bibliothèque jquery-ui doit être montée.
  * - La balise <form> doit avoir id="accordion" pour que ça marche
  * - A la fin du script de cette vue, il faut lancer le script par : $( "#accordion" ).accordion();
  * Elle repose sur le formulaire SbmPdf\Form\DocumentPdf
- * 
+ *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/document
  * @filesource pdf-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 
@@ -85,9 +85,9 @@ function blocAccordeon2cols($view, $label, $array2d)
 // =============================================================================================
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
+$this->themeJS('sbm-pdf','pdf-document.js');
 $this->headScript()
-    ->appendFile($this->basePath('js/tinymce/tinymce.min.js'))
-    ->appendFile($this->basePath('js/pdf/pdf-document.js'));
+    ->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
 $this->inlineScript()->captureStart();
 ?>
 js_document_edit.init();

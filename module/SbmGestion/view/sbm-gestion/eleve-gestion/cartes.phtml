@@ -6,16 +6,16 @@
  * - cartes non encore tirées des élèves affectés sur des circuits
  * - cartes tirées à une date donnée
  * - cartes des élèves sélectionnés
- * 
+ *
  * On peut également définir des critères de sélection sur les circuits, les transporteurs, les établissements, les communes de résidence
- * On peut préciser l'ordre de cartes à tirer 
- * 
+ * On peut préciser l'ordre de cartes à tirer
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource cartes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -38,7 +38,7 @@ $actions = [
     ]
 ];
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('/js/gestion-eleve/cartes-photos.js'));
+$this->themeJS('gestion-eleve','cartes-photos.js');
 $this->inlineScript()->captureStart();
 ?>
 js_date.montreDate();
@@ -53,13 +53,13 @@ js_date.montreDate();
 	<p>La dernière préparation a été faite le <?= DateLib::formatDateTimeFromMysql($this->lastDateCarte);?>.</p>
 	<?php endif;?>
 	</div>
-	<div id="fiche-inner">	    
+	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form1); ?>
 	    <fieldset class="sbm-page1">
 			<p>
 				Si vous souhaitez préparer une nouvelle édition, cliquez sur le
-				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés 
-				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?> 
+				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés
+				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?>
 				seront pris en compte.</p>
 			<div class="row-inner"><?= $this->formSubmit($this->form1->get('nouvelle')); ?></div>
 			<p>

@@ -3,13 +3,13 @@
  * Page d'affectation d'un élève inscrit
  *
  * Présente le formulaire d'affectation d'un élève inscrit
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  */
 // test sur le formulaire decision
@@ -33,9 +33,9 @@ $descriptionEta = addslashes(
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $this->headScript()->appendFile($this->url_api);
-$this->headScript()->appendFile('/js/StyledMarker.js');
-$this->headScript()->appendFile('/js/maps/carte.js');
-$this->headScript()->appendFile('/js/gestion-eleve/affecter.js');
+$this->themeJS('commun', 'carte.js');
+$this->themeJS('commun', 'StyledMarker.js');
+$this->themeJS('gestion-eleve', 'affecter.js');
 // construction du tableau de marqueurs pour la carte
 $tMarkers = "[\n";
 $color = '#fc6700';
@@ -59,7 +59,7 @@ $this->inlineScript()->captureStart();
 const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
 const INI_ZOOM = <?= $this->config['zoom']; ?>;
-initialiser(<?= $tMarkers;?>);
+initialiser("<?=$this->scheme;?>",<?= $tMarkers;?>);
 js_affecter.adaptedecision();
 <?php
 $this->inlineScript()->captureEnd();
@@ -123,7 +123,7 @@ $adresse = implode(' - ',
 <?php endif;?>
 <?php if ($this->op > 1) : ?>
     <?= $this->form($this->decision);?>
-<?php endif;?>			
+<?php endif;?>
     			</div>
 			</div>
 			<div id="carte-wrapper" class="float-right"
