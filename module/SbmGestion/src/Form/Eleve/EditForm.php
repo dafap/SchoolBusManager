@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -219,9 +219,6 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    //'use_hidden_element' => true,
-                    //'checked_value' => '1',
-                    //'unchecked_value' => '0',
                     'value_options' => [
                         '0' => 'Non',
                         '1' => 'Dérogation',
@@ -238,7 +235,6 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'motifDerogation',
                 'attributes' => [
                     'id' => 'eleve-motifDerogation',
-                    'class' => 'sbm-width-40c'
                 ],
                 'options' => [
                     /*
