@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mai 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
@@ -1202,5 +1202,10 @@ class IndexController extends AbstractActionController
             ]);
         $view->setTemplate('sbm-installation/index/file-content.phtml');
         return $view;
+    }
+
+    public function varEnvAction()
+    {
+        return [];
     }
 }

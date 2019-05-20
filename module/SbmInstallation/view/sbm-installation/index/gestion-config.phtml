@@ -10,7 +10,7 @@
  * @filesource gestion-config.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -59,6 +59,9 @@ $url_edit_page = $this->url('sbminstall', [
 ]);
 $url_config_calendar = $this->url('sbminstall', [
     'action' => 'edit-config-calendar'
+]);
+$url_var_env = $this->url('sbminstall', [
+    'action' => 'var-env'
 ]);
 $url_retour = $this->url("sbminstall");
 $hiddens = [];
@@ -184,6 +187,12 @@ foreach ($this->files as $dossier) {
 }
 ?>
 		</form>
+			</fieldset>
+			<fieldset class="sbm-page1">
+			<legend>Variables d'environnement</legend>
+			<form method="post" action="<?=$url_var_env;?>">
+			<input type="submit" class="default" name="var-env" value="Examiner">
+			</form>
 			</fieldset>
 		</div>
 	</div>

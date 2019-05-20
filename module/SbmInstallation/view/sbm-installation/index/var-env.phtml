@@ -1,0 +1,43 @@
+<?php
+/**
+ * Affiche les variables d'environnement
+ *
+ * @project sbm
+ * @package Sbm-installation/index
+ * @filesource var-env.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 mai 2019
+ * @version 2019-2.5.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbminstall', [
+    'action' => 'gestion-config'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<div id="sbm-var-env">
+	<h1>Variables d'environnement</h1>
+	<div id="data-header" class="clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="wrapper-var-env">
+		<pre>
+		<?php print_r(getenv());?>
+		</pre>
+	</div>
+</div>
