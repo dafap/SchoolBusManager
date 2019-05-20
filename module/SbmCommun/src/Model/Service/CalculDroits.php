@@ -2,6 +2,9 @@
 /**
  * Service calculant les droits au transport pour un élève pour le règlement de Millau Grands Causses
  *
+ * Les caractéristiqes des règles sont des constantes inscrites dans le trait GrilleTarifTrait
+ * (code des grilles, distance mini, filtre sur les communes ayant droit)
+ *
  * Par défaut, lors de la création d'une scolarité, il n'y a pas de droit au transport (scolarites.district = 0).
  *
  * Lors de l'inscription d'un élève, ou du déménagement des parents :
@@ -20,7 +23,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Service;
@@ -29,14 +32,14 @@ use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Exception;
 use SbmCartographie\Model\Point;
+use SbmCommun\Model\Paiements\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\Niveau;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class CalculDroits implements FactoryInterface
+class CalculDroits implements FactoryInterface, GrilleTarifInterface
 {
-
     /**
      * Table scolarites
      *
@@ -94,10 +97,10 @@ class CalculDroits implements FactoryInterface
                 sprintf(_("CartographieManager attendu, doit contenir %s."),
                     GoogleMaps\DistanceMatrix::class));
         }
-        $this->initData();
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
+        $this->initData();
         $this->distance = [
             'R1' => 0.0,
             'R2' => 0.0
@@ -113,7 +116,7 @@ class CalculDroits implements FactoryInterface
             'distanceR1' => 0.0,
             'distanceR2' => 0.0,
             'district' => 0,
-            'grilleTarif' => 4
+            'grilleTarif' => self::NON_AYANT_DROIT
         ];
         $this->setMillesime();
     }
@@ -181,6 +184,7 @@ class CalculDroits implements FactoryInterface
         // résidence du 1er responsable
         $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         $resp = $tResponsables->getRecord($elv->responsable1Id);
+        $r1HorsSecteur = ! $this->validCommune($resp->communeId);
         $domiciles[0] = new Point($resp->x, $resp->y);
         $domiciles[0]->setAttribute('communeId', $resp->communeId);
         $domiciles[0]->setDistance($scolarite->distanceR1);
@@ -193,10 +197,7 @@ class CalculDroits implements FactoryInterface
             $domiciles[1] = new Point($resp->x, $resp->y);
             $domiciles[1]->setAttribute('communeId', $resp->communeId);
             $domiciles[1]->setDistance($scolarite->distanceR2);
-            // cette résidence est-elle hors secteur ?
-            $communeR2 = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
-                $resp->communeId);
-            $r2HorsSecteur = $communeR2->membre == 0;
+            $r2HorsSecteur = ! $this->validCommune($resp->communeId);
         }
         // résidence de l'élève. Cette résidence remplace la résidence du 1er responsable
         $tmp1 = $scolarite->chez;
@@ -219,7 +220,7 @@ class CalculDroits implements FactoryInterface
                         $domiciles, $destination),
                     'droit' => true
                 ];
-                $this->data['grilleTarif'] = 3; // interne
+                $this->data['grilleTarif'] = self::INTERNE;
             } else {
                 // cas des élèves demi-pensionnaires
                 switch ($niveau) {
@@ -242,13 +243,12 @@ class CalculDroits implements FactoryInterface
                 }
                 if ($result['droit'] || $scolarite->derogation == 1) {
                     if ($r2HorsSecteur) {
-                        $this->data['grilleTarif'] = 2; // DP en GA avec 2e parent hors
-                                                        // secteur
+                        $this->data['grilleTarif'] = self::DP_DEMI_TARIF;
                     } else {
-                        $this->data['grilleTarif'] = 1; // DP ayant droit
+                        $this->data['grilleTarif'] = self::DP_PLEIN_TARIF;
                     }
                 } else {
-                    $this->data['grilleTarif'] = 4; // Non ayant droit
+                    $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
                 }
             }
             // on récupère la distance donnée par distanceMatrix
@@ -267,13 +267,7 @@ class CalculDroits implements FactoryInterface
                 }
             }
             $this->data['district'] = $result['droit'] ? 1 : 0;
-            // à faire à la fin pour garder les droits si la distance est trop faible
-            if ($result['droit'] && ! $this->validDistanceMini()) {
-                $result['droit'] = false;
-                $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
-            }
-            $this->setCompteRendu($result);
-            return $result['droit'];
+            $return_value = $result['droit'];
         } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
             /**
              * GoogleMaps API ne répond pas. Pour chaque domicile : - si pas de demande de
@@ -291,22 +285,54 @@ class CalculDroits implements FactoryInterface
             }
             $this->data['district'] = 1;
             if ($scolarite->regimeId == 1) {
-                $this->data['grilleTarif'] = 3; // interne
+                $this->data['grilleTarif'] = self::INTERNE;
             } elseif ($r2HorsSecteur) {
-                $this->data['grilleTarif'] = 2; // DP en GA avec 2e parent hors secteur
+                $this->data['grilleTarif'] = self::DP_DEMI_TARIF;
             } else {
-                $this->data['grilleTarif'] = 1; // DP ayant droit
+                $this->data['grilleTarif'] = self::DP_PLEIN_TARIF;
             }
-            return true;
+            $return_value = true;
         } catch (\Exception $e) {
             $this->data['district'] = 0;
-            return false;
+            $return_value = false;
         }
+        // à faire à la fin pour garder le district s'il n'y a pas de dérogation et si la
+        // distance est trop faible ou si les résidences sont hors secteur
+        $horsSecteur = $r1HorsSecteur && (! $r2 || $r2HorsSecteur);
+        if ($return_value && $scolarite->derogation != 1 &&
+            (! $this->validDistanceMini() || $horsSecteur)) {
+            $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
+            $return_value = $result['droit'] = false;
+            if ($horsSecteur) {
+                $result['message'] = 'Résidence hors secteur.';
+            } else {
+                $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
+            }
+        }
+        if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
+            $scolarite->derogation == 0) {
+            $this->data['accordR1'] = $this->data['accordR2'] = 0;
+        }
+        $this->setCompteRendu($result);
+        return $return_value;
     }
 
+    /**
+     * Vérifie que l'une des distances est supérieure à la distance minimale requise
+     *
+     * @return boolean
+     */
     private function validDistanceMini()
     {
-        return $this->data['distanceR1'] >= 1.0 || $this->data['distanceR2'] >= 1.0;
+        return $this->data['distanceR1'] >= self::DISTANCE_MINI ||
+            $this->data['distanceR2'] >= self::DISTANCE_MINI;
+    }
+
+    private function validCommune($communeId)
+    {
+        $communeR2 = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+            $communeId);
+        return $communeR2->{self::COMMUNES} != 0;
     }
 
     /**
@@ -730,7 +756,7 @@ class CalculDroits implements FactoryInterface
      */
     public function estEnAttente($row)
     {
-        return (max($row['distanceR1'], $row['distanceR2']) < 1 || $row['district'] == 0) &&
-            $row['derogation'] == 0;
+        return (max($row['distanceR1'], $row['distanceR2']) < self::DISTANCE_MINI ||
+            $row['district'] == 0) && $row['derogation'] == 0;
     }
 }

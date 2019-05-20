@@ -232,6 +232,8 @@ class IndexController extends AbstractActionController
                     $this->warningDerogationNecessaire($cr);
                 }
                 return $this->redirect()->toRoute('sbmparent');
+            } else {
+                var_dump($form->getMessages());
             }
         }
         $formga->setValueOptions('r2communeId',

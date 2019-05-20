@@ -7,7 +7,7 @@
  * @filesource ElevesResponsablePayant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
@@ -21,11 +21,13 @@ class ElevesResponsablePayant extends AbstractElevesPredicate
      *
      * @formatter off
      * Ceux qui ne sont pas en famille d'accueil et qui ne sont pas gratuit et qui sont
-     * inscrits ou qui ont payé et qui sont scolarisés dans ce millesime. En fait on ne
-     * prend pas les préinscrits rayés mais on prend les inscrits rayés. Donc c'est le
+     * inscrits avec un accord ou une derogation ou qui ont payé et qui sont scolarisés
+     * dans ce millesime. En fait on ne prend pas les préinscrits rayés ni les préinscrits
+     * non ayant droit sans derogation mais on prend les inscrits rayés. Donc c'est le
      * contraire de :
      * <ul>
      * <li> préinscits et rayés (paiement == 0 et inscrit == 0)</li>
+     * <li> non ayant droit sans dérogation (accordR1 == 0 et accordR2 == 0 et derogation == 0)</li>
      * <li> en fa (fa == 1)</li>
      * <li> gratuits ou pris en charge par un organisme (gratuit > 0)</li>
      * </ul>
@@ -45,7 +47,13 @@ class ElevesResponsablePayant extends AbstractElevesPredicate
             ->literal($prefixe . 'selection = 0')
             ->literal($prefixe . 'gratuit = 0')
             ->nest()
-            ->literal($prefixe . 'inscrit = 1')->or->literal($prefixe . 'paiement = 1')
+            ->nest()
+            ->literal($prefixe . 'inscrit = 1')
+            ->nest()
+            ->literal($prefixe . 'accordR1 = 1')->or->literal($prefixe . 'accordR2 = 1')->or->literal(
+            $prefixe . 'derogation > 0')
+            ->unnest()
+            ->unnest()->or->literal($prefixe . 'paiement = 1')
             ->unnest()
             ->equalTo($prefixe . 'millesime', $this->millesime);
     }

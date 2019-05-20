@@ -7,16 +7,17 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
+use SbmCommun\Model\Paiements\GrilleTarifInterface;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'index.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('sbm-parent','index.js');
+$this->themeJS('sbm-parent', 'index.js');
 
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $enAttente = false;
@@ -378,9 +379,10 @@ $url_facture = $this->url('sbmdocument', [
 						<th>Tarif</th>
 					</tr>
             <?php
+        $alerte = false;
         foreach ($this->preinscrits as $row) {
-            $peutPayer = (max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
-                $row['district'] == 1) || $row['derogation'] >= 1;
+            $peutPayer = $row['grilleCode'] != GrilleTarifInterface::NON_AYANT_DROIT ||
+                $row['derogation'] >= 1;
             if ($row['selectionScolarite']) {
                 $grilleTarif = '<span class="exces" title="Cet enfant n\'est pas inscrit.' .
                     ' Respectez les délais.">en attente</span>';
@@ -388,10 +390,12 @@ $url_facture = $this->url('sbmdocument', [
             } elseif ($peutPayer) {
                 $grilleTarif = $row['grilleTarif'];
             } else {
-                $grilleTarif = '<span class="exces" title=' .
-                    '"Pour obtenir une éventuelle dérogation, prenez contact avec le service des transports de ' .
-                    $this->client['name'] . '">' . $row['grilleTarif'] . '</span>';
-                // $enAttente = true;
+                $msgalerte = 'Pour obtenir une éventuelle dérogation, prenez contact avec le service des transports de : ';
+                $msgalerte.= $this->client['name'];
+                $grilleTarif = '<span class="exces" title="' .$msgalerte. '">' . $row['grilleTarif'] . '</span>';
+                $msgalerte .= ' ('.$this->telephone($this->client['telephone']) . ') ou ';
+                $msgalerte .= '<a href="'.$this->url('sbmparentconfig', ['action'=>'message']).'">Écrire</a>';
+                $alerte = true;
             }
             $hiddens = [
                 'id' => $row['eleveId']
@@ -455,6 +459,9 @@ EOT;
             ])->next(), $row['nom'], $row['prenom'], $row['etablissement'],
                 $row['communeEtablissement'], $grilleTarif, $btligne, $pasdephoto);
         }
+        if ($alerte) {
+            echo sprintf('<tr class="petit alert"><td colspan="7">%s</td></tr>', $msgalerte);
+        }
         ?>
             </tbody>
 				<tfoot>
@@ -489,7 +496,7 @@ EOT;
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
-                $payerTitle = "valider et payer toutes les inscriptions\nde la liste de enfants préinscrits.";
+                $payerTitle = "valider et payer toutes les inscriptions\nde la liste des enfants préinscrits.";
             }
             $boutons['payer'] = [
                 'class' => 'button default float-right left-10px',

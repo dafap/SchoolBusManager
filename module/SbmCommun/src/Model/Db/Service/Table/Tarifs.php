@@ -8,31 +8,17 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use SbmCommun\Model\Paiements\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
 use Zend\Db\Sql\Where;
 
-class Tarifs extends AbstractSbmTable implements EffectifInterface
+class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifInterface
 {
-
-    const DP_AYANT_DROIT = 1;
-
-    const DP_GA_DEMI_TARIF = 2;
-
-    const INTERNE = 3;
-
-    const NON_AYANT_DROIT = 4;
-
-    const DUPLICATA = 5;
-
-    const DEGRESSIF = 1;
-
-    const LINEAIRE = 2;
-
     private $modes = [
         self::DEGRESSIF => 'dégressif',
         self::LINEAIRE => 'à l\'unité'
@@ -50,8 +36,8 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface
     private $rythme_inconnu = "Le rythme demandé est inconnu";
 
     private $grilles = [
-        self::DP_AYANT_DROIT => 'DP ayants droit',
-        self::DP_GA_DEMI_TARIF => 'DP en GA demi tarif',
+        self::DP_PLEIN_TARIF=> 'DP ayants droit',
+        self::DP_DEMI_TARIF => 'DP en GA demi tarif',
         self::INTERNE => 'Interne',
         self::NON_AYANT_DROIT => 'Non ayant droit',
         self::DUPLICATA => 'Duplicata'
