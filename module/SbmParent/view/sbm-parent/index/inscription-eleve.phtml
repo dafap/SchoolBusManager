@@ -12,7 +12,7 @@
  * @filesource inscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 $this->themeCss('sbm-parent/index', 'edit.css');
@@ -24,18 +24,18 @@ Le transport pour cette 2ème adresse ne sera
     Vous serez informés prochainement des suites données à votre demande par mail.
 EOT;
 $texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
-?>
-<?php
-
 $this->headScript()->captureStart();
 ?>
 texteDemandeR2 = "<?=$texteDemandeR2;?>";
 <?php
-
 $this->headScript()->captureEnd();
-?>
-<?php
-
+// préparation du signalement d'erreur sur le sexe
+$elementErrorsHelper = new \Zend\Form\View\Helper\FormElementErrors();
+$elementError = $elementErrorsHelper->render($this->form->get('sexe'));
+if (!empty($elementError)) {
+    $this->form->get('sexe')->setAttribute('class', 'input-error');
+}
+//----- suite -----------
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
 ?>
@@ -58,7 +58,8 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 						<div id="enfant-ajout-dateN" class="row-inner zone col11">
 					   		<?=$this->formRowDate($this->form->get('dateN'));?></div>
 						<div id="enfant-ajout-dateN" class="row-inner zone col12">
-					    	<?=$this->formSelect($this->form->get('sexe'));?></div>
+					    	<?=$this->formSelect($this->form->get('sexe'));?>
+					    	<?=$elementError;?></div>
 					</div>
 					<div id="z3cg-r1" class="bloc-wrapper">
 						<fieldset>
