@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1762,7 +1762,9 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'form' => $form->prepare(),
                 'description' => $description,
                 'etablissement' => [
@@ -2675,9 +2677,25 @@ class TransportController extends AbstractActionController
             return $r;
         } else {
             switch ($r->getStatus()) {
+                case 'success':
+                    // en cas de succès, il faut éventuellement vider les horaires des
+                    // circuits
+                    $args = $r->getPost();
+                    $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+                    if (! $args['horaire1']) {
+                        $tCircuits->viderHoraire(Session::get('millesime'),
+                            $args['serviceId'], 1);
+                    }
+                    if (! $args['horaire2']) {
+                        $tCircuits->viderHoraire(Session::get('millesime'),
+                            $args['serviceId'], 2);
+                    }
+                    if (! $args['horaire3']) {
+                        $tCircuits->viderHoraire(Session::get('millesime'),
+                            $args['serviceId'], 3);
+                    }
                 case 'error':
                 case 'warning':
-                case 'success':
                     return $this->redirect()->toRoute('sbmgestion/transport',
                         [
                             'action' => 'service-liste',
@@ -3762,7 +3780,9 @@ class TransportController extends AbstractActionController
         }
         return new ViewModel(
             [
-
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'form' => $form->prepare(),
                 'description' => $description,
                 'station' => [

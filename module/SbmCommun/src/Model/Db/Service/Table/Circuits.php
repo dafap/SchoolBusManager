@@ -8,13 +8,14 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2019
+ * @date 20 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 
 class Circuits extends AbstractSbmTable implements EffectifInterface
 {
@@ -109,6 +110,46 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
         $resultset = $this->getTableGateway()->selectWith($select);
         $row = $resultset->current();
         return $row->millesime;
+    }
+
+    /**
+     * Vide les horaires n° $horaire du circuit correspondant au $serviceId donné en
+     * mettant la valeur par défaut dans chaque colonne de l'horaire et met à jour la
+     * colonne semaine
+     *
+     * @param int $millesime
+     * @param string $serviceId
+     * @param int $horaire
+     */
+    public function viderHoraire(int $millesime, string $serviceId, int $horaire)
+    {
+        switch ($horaire) {
+            case 1:
+                $filter = 6;
+                break;
+            case 2:
+                $filter = 5;
+                break;
+            case 3:
+                $filter = 3;
+                break;
+            default:
+                throw new \InvalidArgumentException('L\'horaire indiqué est incorrect.');
+                break;
+        }
+        $m = "m$horaire";
+        $s = "s$horaire";
+        $z = "z$horaire";
+        $this->table_gateway->update(
+            [
+                'semaine' => new Literal("semaine & $filter"),
+                $m => $this->column_defaults[$m],
+                $s => $this->column_defaults[$s],
+                $z => $this->column_defaults[$z]
+            ], [
+                'millesime' => $millesime,
+                'serviceId' => $serviceId
+            ]);
     }
 }
 
