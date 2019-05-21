@@ -15,27 +15,29 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('sbm-parent','edit-eleve.js');
+$this->themeJS('sbm-parent', 'edit-eleve.js');
 $texteDemandeR2 = <<<EOT
-Le transport pour cette 2ème adresse ne sera
-    validé qu’en fonction de la disponibilité des places sur les circuits existants.
-    Vous serez informés prochainement des suites données à votre demande par mail.
+Si cette deuxième adresse est dans le ressort territorial, une deuxième carte
+de transport sera attribuée. Sinon, vous devez faire une demande auprès du
+service régional des transports de l’Aveyron à l’adresse :
 EOT;
-$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
+$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2) . ' ' . $this->url_ts_region;
+$this->headScript()->captureStart();
 ?>
-<?php $this->headScript()->captureStart();?>
 texteDemandeR2 = "<?=$texteDemandeR2;?>";
-<?php $this->headScript()->captureEnd();?>
-<?php $this->inlineScript()->captureStart();?>
-js_photo.init(<?=$this->flashMessage ? 0 : 1;?>);
-<?php $this->inlineScript()->captureEnd();?>
 <?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+js_photo.init(<?=$this->flashMessage ? 0 : 1;?>);
+<?php
+$this->inlineScript()->captureEnd();
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
@@ -65,8 +67,8 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 		class="flashMessenger float-right orange top-12px"
 		<?= $this->flashMessage ? 'style="display: none;"' : ''?>>
 		<ul class="warning">
-			<li>Une photo d'identité est nécessaire pour obtenir la carte de
-				transport.</li>
+			<li>Une photo d'identité de moins de deux ans est nécessaire pour
+				obtenir la carte de transport.</li>
 		</ul>
 	</div>
 </div>
@@ -127,8 +129,7 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 					<div id="z3cg-r1"></div>
 					<div id="enfant_ap"></div>
 					<div id="wrapper-radio-col1" class="table2cols">
-						<div id="wrapper-joursTransport"
-							class="bloc-wrapper zone col13">
+						<div id="wrapper-joursTransport" class="bloc-wrapper zone col13">
                 		<?=$this->formRow($this->form->get('joursTransport'));?></div>
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
@@ -142,8 +143,7 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 							<div id="enfant-edit-classeId" class="row-inner">
 					   		<?=$this->formRow($this->form->get('classeId'));?></div>
 							<div id="wrapper-radio-col2" class="table2cols">
-								<div id="wrapper-regimeId"
-									class="bloc-wrapper zone fit-content">
+								<div id="wrapper-regimeId" class="bloc-wrapper zone fit-content">
 					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
 								<div id="wrapper-ga" class="bloc-wrapper zone fit-content">
 								<?=$this->formRow($this->form->get('ga'));?></div>

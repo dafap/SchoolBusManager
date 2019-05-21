@@ -19,11 +19,11 @@ $this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
 $this->themeJS('sbm-parent','edit-eleve.js');
 $texteDemandeR2 = <<<EOT
-Le transport pour cette 2ème adresse ne sera
-    validé qu’en fonction de la disponibilité des places sur les circuits existants.
-    Vous serez informés prochainement des suites données à votre demande par mail.
+Si cette deuxième adresse est dans le ressort territorial, une deuxième carte
+de transport sera attribuée. Sinon, vous devez faire une demande auprès du
+service régional des transports de l’Aveyron à l’adresse :
 EOT;
-$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
+$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2) . ' ' . $this->url_ts_region;
 $this->headScript()->captureStart();
 ?>
 texteDemandeR2 = "<?=$texteDemandeR2;?>";
@@ -50,14 +50,14 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     	<fieldset class="sbm-page1">
 			<div class="table2cols">
 				<div class="zone col1">
-					<div id="enfant-ajout-nom" class="row-inner">
+					<div id="enfant-nom" class="row-inner">
 				        <?=$this->formRow($this->form->get('nom'));?></div>
-					<div id="enfant-ajout-prenom" class="row-inner">
+					<div id="enfant-prenom" class="row-inner">
 					   <?=$this->formRow($this->form->get('prenom'));?></div>
 					<div class="table2cols">
-						<div id="enfant-ajout-dateN" class="row-inner zone col11">
+						<div id="enfant-dateN" class="row-inner zone col11">
 					   		<?=$this->formRowDate($this->form->get('dateN'));?></div>
-						<div id="enfant-ajout-dateN" class="row-inner zone col12">
+						<div id="enfant-sexe" class="row-inner zone col12">
 					    	<?=$this->formSelect($this->form->get('sexe'));?>
 					    	<?=$elementError;?></div>
 					</div>
@@ -89,11 +89,11 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 					</div>
 				</div>
 				<div class="zone col2">
-					<div id="enfant-ajout-etablissementId" class="row-inner">
+					<div id="enfant-etablissementId" class="row-inner">
 					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
 					<div class="table2cols">
 						<div class="zone col21">
-							<div id="enfant-ajout-classeId" class="row-inner">
+							<div id="enfant-classeId" class="row-inner">
 					   		<?=$this->formRow($this->form->get('classeId'));?></div>
 							<div id="wrapper-radio-col2" class="table2cols">
 								<div id="wrapper-regimeId"
@@ -110,7 +110,7 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 			</div>
 			<div id="wrapper-commentaire">
 				<?=$this->formRow($this->form->get('commentaire'));?></div>
-			<div id="enfant-ajout-buttons" class="row-inner">
+			<div id="enfant-buttons" class="row-inner">
             	<?=$this->formSubmit($this->form->get('submit'));?>
             	<?=$this->formSubmit($this->form->get('cancel'));?>
             </div>

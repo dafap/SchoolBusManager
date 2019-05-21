@@ -8,7 +8,7 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -16,19 +16,28 @@ $this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
 $this->themeJS('sbm-parent','edit-eleve.js');
 $texteDemandeR2 = <<<EOT
-La Communauté de communes vous informe que le transport pour cette 2ème adresse ne sera
-    validé qu’en fonction de la disponibilité des places sur les circuits existants.
-    Vous serez informés prochainement des suites données à votre demande par mail.
+Si cette deuxième adresse est dans le ressort territorial, une deuxième carte
+de transport sera attribuée. Sinon, vous devez faire une demande auprès du
+service régional des transports de l’Aveyron à l’adresse :
 EOT;
-$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2);
+$texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2) . ' ' . $this->url_ts_region;
+$this->headScript()->captureStart();
 ?>
-<?php $this->headScript()->captureStart();?>
 texteDemandeR2 = "<?=$texteDemandeR2;?>";
-<?php $this->headScript()->captureEnd();?>
-<?php $this->inlineScript()->captureStart();?>
-js_photo.init(<?=$this->flashMessage ? 0 : 1;?>);
-<?php $this->inlineScript()->captureEnd();?>
 <?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+js_photo.init(<?=$this->flashMessage ? 0 : 1;?>);
+<?php
+$this->inlineScript()->captureEnd();
+// préparation du signalement d'erreur sur le sexe
+$elementErrorsHelper = new \Zend\Form\View\Helper\FormElementErrors();
+$elementError = $elementErrorsHelper->render($this->form->get('sexe'));
+if (!empty($elementError)) {
+    $this->form->get('sexe')->setAttribute('class', 'input-error');
+}
+//----- suite -----------
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
@@ -73,15 +82,16 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
     	<fieldset class="sbm-page1">
 			<div class="table2cols">
 				<div class="zone col1">
-					<div id="enfant-edit-nom" class="row-inner">
+					<div id="enfant-nom" class="row-inner">
 				        <?=$this->formRow($this->form->get('nom'));?></div>
-					<div id="enfant-edit-prenom" class="row-inner">
+					<div id="enfant-prenom" class="row-inner">
 					   <?=$this->formRow($this->form->get('prenom'));?></div>
 					<div class="table2cols">
-						<div id="enfant-edit-dateN" class="row-inner zone col11">
+						<div id="enfant-dateN" class="row-inner zone col11">
 					   		<?=$this->formRowDate($this->form->get('dateN'));?></div>
-						<div id="enfant-edit-sexe" class="row-inner zone col12">
-					    	<?=$this->formSelect($this->form->get('sexe'));?></div>
+						<div id="enfant-sexe" class="row-inner zone col12">
+					    	<?=$this->formSelect($this->form->get('sexe'));?>
+					    	<?=$elementError;?></div>
 					</div>
 					<div id="z3cg-r1"></div>
 					<div id="enfant_ap"></div>
@@ -93,11 +103,11 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 					</div>
 				</div>
 				<div class="zone col2">
-					<div id="enfant-edit-etablissementId" class="row-inner">
+					<div id="enfant-etablissementId" class="row-inner">
 					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
 					<div class="table2cols">
 						<div class="zone col21">
-							<div id="enfant-edit-classeId" class="row-inner">
+							<div id="enfant-classeId" class="row-inner">
 					   		<?=$this->formRow($this->form->get('classeId'));?></div>
 							<div id="wrapper-radio-col2" class="table2cols">
 								<div id="wrapper-regimeId" class="bloc-wrapper zone fit-content">
@@ -127,7 +137,7 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 			</div>
 			<div id="wrapper-commentaire">
 				<?=$this->formRow($this->form->get('commentaire'));?></div>
-			<div id="enfant-edit-buttons" class="row-inner">
+			<div id="enfant-buttons" class="row-inner">
             	<?=$this->formSubmit($this->form->get('submit'));?>
             	<?=$this->formSubmit($this->form->get('cancel'));?>
             </div>
