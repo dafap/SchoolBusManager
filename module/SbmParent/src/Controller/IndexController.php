@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -232,7 +232,7 @@ class IndexController extends AbstractActionController
                     $this->warningDerogationNecessaire($cr);
                 }
                 return $this->redirect()->toRoute('sbmparent');
-            } else {
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
                 var_dump($form->getMessages());
             }
         }
@@ -241,7 +241,7 @@ class IndexController extends AbstractActionController
                 ->visibles());
         return new ViewModel(
             [
-
+                'url_ts_region' => $this->url_ts_region,
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
                 'responsable' => $responsable,
@@ -387,8 +387,9 @@ class IndexController extends AbstractActionController
             $responsable2 = Session::get('responsable2', null,
                 $this->getSessionNamespace());
         } else {
-            $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
-                $eleveId);
+            $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
+                ->getEleve($eleveId)
+                ->getArrayCopy();
             // adresse personnelle de l'élève
             if (! empty($data['communeEleveId'])) {
                 $data['ap'] = 1;
@@ -445,7 +446,7 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel(
             [
-
+                'url_ts_region' => $this->url_ts_region,
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
                 'responsable' => $auth_responsable,
@@ -956,7 +957,7 @@ class IndexController extends AbstractActionController
         }
         $view = new ViewModel(
             [
-
+                'url_ts_region' => $this->url_ts_region,
                 'aReinscrire' => $aReinscrire,
                 'responsable' => $auth_responsable,
                 'responsable2' => $responsable2,
@@ -990,7 +991,7 @@ class IndexController extends AbstractActionController
             ->setData([
             'eleveId' => $eleveId
         ]);
-            return new ViewModel([
+        return new ViewModel([
 
             'formphoto' => $form->prepare()
         ]);
