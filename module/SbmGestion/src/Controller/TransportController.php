@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -3363,7 +3363,7 @@ class TransportController extends AbstractActionController
             }
             $view = new ViewModel(
                 [
-
+                    'scheme' => $this->getRequest()->getUri()->getScheme(),
                     'form' => $formCarte->prepare(),
                     'description' => '<b>Nouvelle station</b>',
                     'station' => [
