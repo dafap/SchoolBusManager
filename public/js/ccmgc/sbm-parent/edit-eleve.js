@@ -5,17 +5,17 @@
  * @filesource edit-eleve.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 jan. 2019
+ * @date 21 mai 2019
  * @version 2019-2.4.6
  */
 var texteDemandeR2;
 function phraseDemandeR2(state) {
 	var div = $("#demandeR2-text");
 	if (div.length == 0) {
-		$('#r2enfant_demandeR2 fieldset').append(
+		$('#r2_demandeR2 fieldset').append(
 				'<div id="demandeR2-text"></div>');
 	}
-	div = $("#r2enfant_demandeR2 #demandeR2-text");
+	div = $("#r2_demandeR2 #demandeR2-text");
 	div.empty();
 	if (state) {
 		div.append(texteDemandeR2);
@@ -45,7 +45,7 @@ $(function() {
 			ch.each(function(i) {
 				if (this.id) {
 					this.id = this.id.replace('enfant_', '');
-					this.id = this.id.replace('?', 'enfant-edit-');
+					this.id = this.id.replace('?', 'enfant-');
 				}
 			});
 			bloc.find('label').prop('for', function(i, oldVal) {
@@ -156,6 +156,13 @@ $(function() {
 	if ($("#r2demandeR2").is(':checked')) {
 		phraseDemandeR2(true);
 	}
+});
+
+$(function(){
+	var r = $('input[type="radio"].input-error').parent().parent().parent();
+	r.addClass('input-error');
+	var c = $('input[type="checkbox"].input-error').parent().parent().parent();
+	c.addClass('input-error');
 });
 
 // Gestion des photos
