@@ -3,13 +3,13 @@
  * Injection des objets dans IndexController
  *
  * Préparation pour compatibilité avec ZF3
- * 
+ *
  * @project sbm
  * @package SbmParent/Controller/Service
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller\Service;
@@ -58,6 +58,10 @@ class IndexControllerFactory implements FactoryInterface
                 'sbm',
                 'layout',
                 'accueil'
+            ], $config_application),
+            'url_ts_region' => StdLib::getParamR([
+                'sbm',
+                'ts-region'
             ], $config_application),
             'paginator_count_per_page' => StdLib::getParamR(
                 [
