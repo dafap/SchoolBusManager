@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 avr. 2019
+ * @date 21 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -286,6 +286,7 @@ class Responsables extends AbstractSbmTable
      */
     private function getRecordByNomPrenomTelephone($nom, $prenom, $telephones)
     {
+        $telephones = array_filter($telephones);
         if (empty($nom) || empty($prenom) || empty($telephones)) {
             return false;
         }
