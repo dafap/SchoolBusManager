@@ -7,7 +7,7 @@
  * @filesource vue.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 return [
