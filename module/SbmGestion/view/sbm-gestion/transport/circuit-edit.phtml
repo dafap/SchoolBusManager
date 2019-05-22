@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -95,6 +95,8 @@ $actions = [
 				<?php endfor;?>
 				</div>
 			</fieldset>
+			<div id="wrapper-emplacement" class="row-inner">
+				<?= $this->formRow($this->form->get('emplacement')); ?></div>
 			<div id="wrapper-typeArret" class="row-inner">
 				<?= $this->formRow($this->form->get('typeArret')); ?></div>
 			<div class="clearfix">

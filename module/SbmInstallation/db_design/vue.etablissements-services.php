@@ -458,6 +458,10 @@ return [
                         'alias' => 'cir_descente'
                     ],
                     [
+                        'field' => 'emplacement',
+                        'alias' => 'cir_emplacement'
+                    ],
+                    [
                         'field' => 'typeArret',
                         'alias' => 'cir_typeArret'
                     ],

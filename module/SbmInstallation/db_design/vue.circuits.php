@@ -7,7 +7,7 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 return [
@@ -73,6 +73,9 @@ return [
             ],
             [
                 'field' => 'descente'
+            ],
+            [
+                'field' => 'emplacement'
             ],
             [
                 'field' => 'typeArret'
@@ -145,7 +148,7 @@ return [
                 'relation' => 'ser.lotId=lot.lotId',
                 'fields' => [
                     [
-                        'field'=>'lotId'
+                        'field' => 'lotId'
                     ],
                     [
                         'field' => 'marche',

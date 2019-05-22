@@ -9,7 +9,7 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 $this->themeCss('sbm-parent/index', 'horaires.css');
@@ -37,7 +37,7 @@ for ($i = 0; $i < $nbCircuits; $i ++) {
     $aller[$i] = [
         $data[$i]->m1,
         $data[$i]->station,
-        $data[$i]->typeArret,
+        $data[$i]->emplacement,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->t_nb_inscrits[$i]) ? '' : '(voir tableau ci-dessous)',
         $data[$i]->commentaire1
@@ -47,7 +47,7 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
     $retour[$j] = [
         $data[$i]->s2 . '<br>' . $data[$i]->s1,
         $data[$i]->station,
-        $data[$i]->typeArret,
+        $data[$i]->emplacement,
         empty($this->t_nb_inscrits[$i]) ? '' : $this->t_nb_inscrits[$i],
         empty($this->eleves[$i]) ? '' : implode('<br>', $this->eleves[$i]),
         $data[$i]->commentaire2

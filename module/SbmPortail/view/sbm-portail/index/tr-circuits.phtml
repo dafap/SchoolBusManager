@@ -7,7 +7,7 @@
  * @filesource tr-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 oct. 2018
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -55,7 +55,7 @@ $actions = [
 				<tr>
 					<th>Arrêt</th>
 					<th>Commune</th>
-					<th>Type</th>
+					<th>Emplacement</th>
 					<th colspan="2">Commentaire</th>
 					<th class="horaire">Matin</th>
 					<th class="horaire">Soir</th>
@@ -92,8 +92,8 @@ $actions = [
 						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="commune">
 						<?=$this->escapeHtml($circuit->communeStation);?></td>
-					<td class="type-arret">
-						<?=$this->escapeHtml($circuit->typeArret);?></td>
+					<td class="emplacement">
+						<?=$this->escapeHtml($circuit->emplacement);?></td>
 					<td class="commentaire1">
 						<?=$this->escapeHtml($circuit->commentaire1);?></td>
 					<td class="commentaire2">

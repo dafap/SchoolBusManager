@@ -1,13 +1,13 @@
 <?php
 /**
  * Page de consultation des inscrits sur un point d'arrêt d'un circuit
- * 
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
  * @filesource tr-circuit-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 oct. 2018
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -33,9 +33,9 @@ $actions = [
 	<div id="liste-title">
 		<ul>
 			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> - 
+			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> -
 				<?= $this->escapeHtml($this->circuit->communeStation);?></li>
-			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
+			<li>Emplacement : <?= $this->escapeHtml($this->circuit->emplacement); ?></li>
 			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
 			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>
 		</ul>

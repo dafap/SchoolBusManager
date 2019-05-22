@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -121,7 +121,7 @@ $actions = [
 					<th class="serviceid">Code</th>
 					<th>Service</th>
 					<th>Arrêt</th>
-					<th>Type</th>
+					<th>Emplacement</th>
 					<th>Mont.</th>
 					<th>Desc.</th>
 					<th class="horaire">H1</th>
@@ -211,8 +211,8 @@ $actions = [
 						<?=$this->escapeHtml($circuit->service);?></td>
 					<td class="station">
 						<?=$this->escapeHtml($circuit->station);?></td>
-					<td class="type-arret">
-						<?=$this->escapeHtml($circuit->typeArret);?></td>
+					<td class="emplacement">
+						<?=$this->escapeHtml($circuit->emplacement);?></td>
 					<td class="centre montee">
 						<?=$circuit->montee ? 'X' : '';?></td>
 					<td class="centre descente">

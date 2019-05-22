@@ -8,7 +8,7 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avril 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -380,6 +380,25 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 ],
                 'options' => [
                     'label' => 'Point de descente',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'emplacement',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'circuit-emplacement',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Emplacement',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],

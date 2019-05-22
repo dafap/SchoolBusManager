@@ -8,7 +8,7 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avril 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -40,6 +40,7 @@ return [
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'montee' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
             'descente' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
+            'emplacement' => 'varchar(45) NOT NULL',
             'typeArret' => 'text NULL',
             'commentaire1' => 'text NULL', // aller
             'commentaire2' => 'text NULL', // retour

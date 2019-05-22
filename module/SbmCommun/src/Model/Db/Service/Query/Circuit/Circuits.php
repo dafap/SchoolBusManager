@@ -7,7 +7,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
@@ -107,6 +107,7 @@ class Circuits extends AbstractQuery
                 $columns = [
                     'serviceId',
                     'horaire' => 'm1',
+                    'emplacement',
                     'typeArret',
                     'commentaire1'
                 ];
@@ -117,6 +118,7 @@ class Circuits extends AbstractQuery
                     'serviceId',
                     'horaire' => new Expression(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                    'emplacement',
                     'typeArret',
                     'commentaire2'
                 ];
@@ -126,6 +128,7 @@ class Circuits extends AbstractQuery
                 $columns = [
                     'horaire' => new Expression(
                         'CONCAT(IFNULL(s2, ""), " ", IFNULL(s1, ""))'),
+                    'emplacement',
                     'typeArret',
                     'commentaire1'
                 ];
@@ -193,6 +196,7 @@ class Circuits extends AbstractQuery
                 $order = 'm1 ASC';
                 $columns = [
                     'horaire' => 'm1',
+                    'emplacement',
                     'typeArret',
                     'commentaire1'
                 ];
@@ -204,6 +208,7 @@ class Circuits extends AbstractQuery
                 $columns = [
                     'horaire' => new Expression(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                    'emplacement',
                     'typeArret',
                     'commentaire2'
                 ];
@@ -215,6 +220,7 @@ class Circuits extends AbstractQuery
                 $columns = [
                     'horaire' => new Expression(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
+                    'emplacement',
                     'typeArret',
                     'commentaire1'
                 ];

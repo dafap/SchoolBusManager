@@ -11,7 +11,7 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
+ * @date 22 mai 2019
  * @version 2019-2.5.0
  */
 if (empty($this->allerRetour)) {
@@ -113,7 +113,7 @@ foreach ((array) $this->allerRetour['aller'] as $row) :
 		<td class="centre" width="5%"><?=$i ++;?></td>
 		<td width="8.5%"><?=$row["horaire"];?></td>
 		<td width="<?=$voirRemarque1 ? '20%' : '25%';?>"><?=$row["station"];?></td>
-		<td width="<?=$voirRemarque1 ? '13%' : '23%';?>"><?=$row["typeArret"];?></td>
+		<td width="<?=$voirRemarque1 ? '13%' : '23%';?>"><?=$row["emplacement"];?></td>
 		<td class="centre" width="6.5%"><?=$nb;?></td>
 		<td width="<?=$voirRemarque1 ? '29%' : '32%';?>"><?=implode("<br>", $row["liste"]);?></td>
 		<?php
@@ -203,7 +203,7 @@ foreach ((array) $this->allerRetour['retour'] as $row) :
 		<td width="<?=$voirRemarque2 ? '20%' : '25%';?>">
 			<?=$row["station"];?></td>
 		<td width="<?=$voirRemarque2 ? '13%' : '23%';?>">
-			<?=$row["typeArret"];?></td>
+			<?=$row["emplacement"];?></td>
 		<td class="centre" width="6.5%">
 			<?=$nb;?></td>
 		<td width="<?=$voirRemarque2 ? '29%' : '32%';?>">
