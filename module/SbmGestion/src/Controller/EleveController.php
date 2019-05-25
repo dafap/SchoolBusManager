@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -2042,7 +2042,7 @@ class EleveController extends AbstractActionController
             if (array_key_exists('ecrire', $args) && array_key_exists('email', $args)) {
                 $destinataire = [
                     'email' => $args['email'],
-                    'responsable' => StdLib::getParam('responsable', $args)
+                    'alias' => StdLib::getParam('responsable', $args)
                 ];
                 Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['email'], $args['responsable']);
@@ -2050,7 +2050,7 @@ class EleveController extends AbstractActionController
                 array_key_exists('emailr1', $args)) {
                 $destinataire = [
                     'email' => $args['emailr1'],
-                    'responsable' => StdLib::getParam('responsabler1', $args)
+                    'alias' => StdLib::getParam('responsabler1', $args)
                 ];
                 Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['emailr1'], $args['responsabler1']);
@@ -2058,7 +2058,7 @@ class EleveController extends AbstractActionController
                 array_key_exists('emailr2', $args)) {
                 $destinataire = [
                     'email' => $args['emailr2'],
-                    'responsable' => StdLib::getParam('responsabler2', $args)
+                    'alias' => StdLib::getParam('responsabler2', $args)
                 ];
                 Session::set('destinataire', $destinataire, $this->getSessionNamespace());
                 unset($args['emailr2'], $args['responsabler2']);
@@ -2110,7 +2110,7 @@ class EleveController extends AbstractActionController
                     'to' => [
                         [
                             'email' => $destinataire['email'],
-                            'name' => $destinataire['responsable'] ?: $destinataire['email']
+                            'name' => $destinataire['alias'] ?: $destinataire['email']
                         ]
                     ],
                     'bcc' => [

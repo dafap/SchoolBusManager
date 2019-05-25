@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2019
+ * @date 25 mai 2019
  * @version 2018-2.5.0
  */
 namespace SbmAdmin\Controller\Service;
@@ -32,6 +32,14 @@ class IndexControllerFactory implements FactoryInterface
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
+            'img' => StdLib::getParamR([
+                'sbm',
+                'img'
+            ], $config_application),
+            'client' => StdLib::getParamR([
+                'sbm',
+                'client'
+            ], $config_application),
             'paginator_count_per_page' => StdLib::getParamR(
                 [
                     'paginator',

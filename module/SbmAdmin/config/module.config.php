@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 10 mai 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 use SbmAdmin\Controller;
@@ -59,6 +59,13 @@ return [
                         ]
                     ],
                     'user-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-mail' =>[
                         'allow' => [
                             'roles' => [
                                 'gestion'

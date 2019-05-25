@@ -12,11 +12,10 @@
  * @filesource send.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
-$this->themeJS('sbm-mail','index.js');
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
 $this->headScript()->captureStart();
 ?>
@@ -28,6 +27,7 @@ tinymce.init({
  });
 <?php
 $this->headScript()->captureEnd();
+$this->themeJS('sbm-mail','index.js', 'prepend', 'inline');
 $this->destinataires = (array) $this->destinataires;
 $liste = count($this->destinataires) > 1;
 ?>
@@ -41,7 +41,7 @@ $liste = count($this->destinataires) > 1;
 	<?php $to = $this->destinataires[0];?>
 	    <dl>
 			<dt>Destinataire</dt>
-			<dd><?= $to['responsable'] . ' (' . $to['email'] . ')';?></dd>
+			<dd><?= $to['alias'] . ' (' . $to['email'] . ')';?></dd>
 		</dl>
 	<?php endif;?>
 	</div>

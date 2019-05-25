@@ -8,7 +8,7 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -50,6 +50,7 @@ EOT;
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $users = $this->paginator->getCurrentItems();
+$url_retour = $this->url('sbmgestion/transport');
 $url_edit = $this->url('sbmadmin', [
     'action' => 'user-edit',
     'page' => $this->page
@@ -75,7 +76,17 @@ $url_creer_comptes_parent = $this->url('sbmadmin',
         'action' => 'user-prepare-nouveaux-comptes',
         'page' => $this->page
     ]);
-$url_retour = $this->url('sbmgestion/transport');
+$url_ici = $this->url('sbmadmin', [
+    'action' => 'user-liste'
+]);
+$url_mail = $this->url('sbmadmin', [
+    'action' => 'user-mail'
+]);
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-sms'
+    ]);
+}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [
@@ -134,7 +145,14 @@ $actions = [
             // préparation des boutons de la ligne
             $hiddens = [
                 'userId' => $user->userId,
-                'email' => $user->email
+                'utilisateur' => implode(' ',
+                    [
+                        $this->escapeHtml($user->titre),
+                        $this->escapeHtml($user->nom),
+                        $this->escapeHtml($user->prenom)
+                    ]),
+                'email' => $user->email,
+                'origine' => $url_ici
             ];
             $buttons = [
                 'modifier' => [
@@ -151,6 +169,11 @@ $actions = [
                     'class' => 'fam-group-link',
                     'formaction' => $url_group,
                     'title' => 'fiche du compte associé (responsable, transporteur ou établissement)'
+                ],
+                'ecrire' => [
+                    'class' => 'fam-email',
+                    'formaction' => $url_mail,
+                    'title' => 'Envoyer un email'
                 ]
             ];
             ?>
