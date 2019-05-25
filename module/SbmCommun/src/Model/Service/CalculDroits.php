@@ -23,7 +23,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Service;
@@ -40,6 +40,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CalculDroits implements FactoryInterface, GrilleTarifInterface
 {
+
     /**
      * Table scolarites
      *
@@ -649,9 +650,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     {
         $droit = false;
         $aEtablissementsAyantDroit = [];
-        // on initialise $distances afin d'éviter une décalage si la réponse de
-        // distanceMatrix
-        // est invalide pour la première origine ($element->status != OK).
+        // on initialise $distances afin d'éviter un décalage si la réponse de
+        // distanceMatrix est invalide pour la première origine ($element->status != OK).
         $distances = [
             0
         ];
@@ -681,9 +681,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                             }
                             $j ++;
                         }
-                        // le droit est accordé pour l'établissement le plus proche
-                        // ou pour l'établissement du même RPI s'il fait partie d'un RPI
-                        // et si la classe n'est pas ouverte dans l'établissement le plus
+                        // le droit est accordé pour l'établissement le plus proche ou
+                        // pour l'établissement du même RPI s'il fait partie d'un RPI et
+                        // si la classe n'est pas ouverte dans l'établissement le plus
                         // proche
                         $procheEtablissementId = $this->getEtablissementId(
                             $procheEtablissementId,
@@ -696,7 +696,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                     return [
                         'droit' => $droit,
                         'distances' => $distances,
-                        'etablissementsAyantDroit' => $aEtablissementsAyantDroit
+                        'etablissementsAyantDroit' => array_filter($aEtablissementsAyantDroit)
                     ];
                 } else {
                     throw new GoogleMaps\Exception\Exception(
