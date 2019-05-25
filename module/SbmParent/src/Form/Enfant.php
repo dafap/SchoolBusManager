@@ -12,7 +12,7 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Form;
@@ -239,13 +239,21 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'dateN',
                 'attributes' => [
                     'id' => 'enfant_dateN',
-                    'tabindex' => 21,
                     'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Date de naissance',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'day_attributes'=>[
+                        'tabindex' => 21
+                    ],
+                    'month_attributes'=>[
+                        'tabindex' => 22
+                    ],
+                    'year_attributes'=>[
+                        'tabindex' => 23
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
