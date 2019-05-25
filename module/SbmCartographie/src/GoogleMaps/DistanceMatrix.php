@@ -1,19 +1,19 @@
 <?php
 /**
  * Utilisation de l'API GoogleMaps distanceMatrix pour calculer des distances
- * 
+ *
  * @project sbm
  * @package SbmCartographie/GoogleMaps
  * @filesource DistanceMatrix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCartographie\GoogleMaps;
 
-use SbmCartographie\Model\Point;
 use SbmBase\Model\StdLib;
+use SbmCartographie\Model\Point;
 
 class DistanceMatrix
 {
@@ -61,12 +61,13 @@ class DistanceMatrix
      *
      * @link http://www.php.net/manual/en/function.json-decode.php
      */
-    public function getJsonResult($origines, $destinations)
+    public function getJsonResult($origines, $destinations, $walking = false)
     {
-        return json_decode(
-            file_get_contents(
-                $this->getUrlGoogleApiDistanceMatrix($origines, $destinations), false,
-                $this->context));
+        $url_api = $this->getUrlGoogleApiDistanceMatrix($origines, $destinations);
+        if ($walking) {
+            $url_api = str_replace('mode=car', 'mode=walking', $url_api);
+        }
+        return json_decode(file_get_contents($url_api, false, $this->context));
     }
 
     /**
@@ -156,8 +157,8 @@ class DistanceMatrix
     }
 
     /**
-     * Renvoie une chaine formée par 'lat,lng' où lat et lng sont la latitude et la longitude en
-     * degrés décimaux.
+     * Renvoie une chaine formée par 'lat,lng' où lat et lng sont la latitude et la
+     * longitude en degrés décimaux.
      *
      * @param \SbmCartographie\Model\Point $point
      *
@@ -180,7 +181,9 @@ class DistanceMatrix
     }
 
     /**
-     * Renvoie la distance en mètres
+     * Renvoie la distance en mètres.
+     * Pour les distances inférieure à 1500 m on calcule aussi la distance à pied
+     * et on renvoie la plus petite
      *
      * @param Point $origine
      * @param Point $destination
@@ -191,8 +194,19 @@ class DistanceMatrix
      */
     public function calculDistance(Point $origine, Point $destination)
     {
+        $d = $this->lanceCalcul($origine, $destination) ;
+        if ($d < 1500) {
+            $w = $this->lanceCalcul($origine, $destination, true);
+            if ($w < $d) {
+                return $w;
+            }
+        }
+        return $d;
+    }
+    private function lanceCalcul(Point $origine, Point $destination, bool $walking = false)
+    {
         $d = null;
-        $obj = $this->getJsonResult($origine, $destination);
+        $obj = $this->getJsonResult($origine, $destination, $walking);
         if ($obj) {
             if ($obj->status == 'OK') {
 
@@ -215,8 +229,8 @@ class DistanceMatrix
     }
 
     /**
-     * Il y a plusieurs origines et une seule destination.
-     * Renvoie un tableau de distances des origines à la destination.
+     * Il y a plusieurs origines et une seule destination. Renvoie un tableau de distances
+     * des origines à la destination.
      *
      * @param array(Point) $origines
      *            tableau de Point
@@ -260,14 +274,13 @@ class DistanceMatrix
     }
 
     /**
-     * Il y a une seule origine et plusieurs destinations.
-     * La réponse de l'API donne donc un seul rows et plusieurs elements dans ce rows.
-     * Renvoie un tableau de distances de l'origine aux destinations
+     * Il y a une seule origine et plusieurs destinations. La réponse de l'API donne donc
+     * un seul rows et plusieurs elements dans ce rows. Renvoie un tableau de distances de
+     * l'origine aux destinations
      *
      * @param Point $origine
      * @param array(Point) $destinations
      *            tableau de Point
-     *            
      * @throws Exception\InvalidArgumentException
      * @throws Exception\ExceptionNoAnswer
      *
