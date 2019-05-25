@@ -15,7 +15,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 25 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -159,7 +159,10 @@ class CriteresEleves extends SbmCommunCriteres
                 case 3:
                     // Dérogation accordée
                     $where = $this->clauseDerogation($where);
-                    ;
+                    break;
+                case 4:
+                    // Non ayants droit acceptés
+                    $where=$this->clauseNonAyantDroit($where);
                     break;
             }
         }
@@ -512,6 +515,11 @@ class CriteresEleves extends SbmCommunCriteres
                     // dérogation
                     $where = $this->clauseDerogation($where, true);
                     $pageheader_string[] = 'élèves ayant une dérogation';
+                    break;
+                case 4:
+                    // non ayants droit acceptés
+                    $where = $this->clauseNonAyantDroit($where, true);
+                    $pageheader_string[] = 'élèves non ayants droit acceptés';
                     break;
             }
         }
@@ -1096,6 +1104,25 @@ class CriteresEleves extends SbmCommunCriteres
         } else {
             $where['criteres']['particularite'] = 3;
             $literal = 'inscrit = 1 AND derogation = 1';
+            $where['expression']['particularite'] = $literal;
+            return $where;
+        }
+    }
+
+    /**
+     *
+     * @param Where|array $where
+     * @param bool $pdf
+     *
+     * @return \Zend\Db\Sql\Where|array
+     */
+    private function clauseNonAyantDroit($where, $pdf = false)
+    {
+        if ($where instanceof Where) {
+            return $where->literal('derogation = 2');
+        } else {
+            $where['criteres']['particularite'] = 4;
+            $literal = 'inscrit = 1 AND derogation = 2';
             $where['expression']['particularite'] = $literal;
             return $where;
         }
