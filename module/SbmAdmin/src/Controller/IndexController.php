@@ -1315,7 +1315,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Envoie un mail à un responsable. Reçoit en post les paramètres 'userId',
-     * 'destinataire', 'email', 'origine' où origine est l'url de retour
+     * 'utilisateur', 'email', 'origine' où origine est l'url de retour Eventuellement,
+     * reçoit 'sujet' et 'contenu' initialisant le formulaire
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -1420,13 +1421,17 @@ class IndexController extends AbstractActionController
                 }
             }
         }
-
+        $form->setData(
+            [
+                'subject' => StdLib::getParam('sujet', $args, ''),
+            ]);
         $view = new ViewModel(
             [
                 'form' => $form->prepare(),
                 'destinataires' => [
                     $destinataire
-                ]
+                ],
+                'contenu' => StdLib::getParam('contenu', $args, '')
             ]);
         $view->setTemplate('sbm-mail/index/send.phtml');
         return $view;

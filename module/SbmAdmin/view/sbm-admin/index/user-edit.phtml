@@ -19,6 +19,19 @@ $url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page
 ]);
+$url_ici = $this->url('sbmadmin', [
+    'action' => 'user-edit'
+]);
+$url_mail = $this->url('sbmadmin', [
+    'action' => 'user-mail'
+]);
+// force_canonical est utilisée pour obtenir l'adresse absolue
+$url_confirm = $this->url('login', [
+    'action' => 'confirm',
+    'id' => $this->user->token
+], [
+    'force_canonical' => true
+]);
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -28,13 +41,26 @@ $actions = [
         'onclick' => sprintf($js, "'retour'")
     ]
 ];
-// force_canonical est utilisée pour obtenir l'adresse absolue
-$url_confirm = $this->url('login', [
-    'action' => 'confirm',
-    'id' => $this->user->token
-], [
-    'force_canonical' => true
-]);
+if ($this->user->token) {
+    $hiddens = [
+        'userId' => $this->user->userId,
+        'utilisateur' => implode(' ',
+            [
+                $this->user->titre,
+                $this->user->nom,
+                $this->user->prenom
+            ]),
+        'email' => $this->user->email,
+        'origine' => $url_ici,
+        'sujet' => 'Lien pour accéder à votre compte',
+        'contenu' => "Pour accéder à votre compte : $url_confirm"
+    ];
+    $actions['ecrire'] = [
+        'class' => 'fam-email',
+        'formaction' => $url_mail,
+        'title' => 'Envoyer un email avec le lien'
+    ];
+}
 ?>
 <h1>Compte d'un utilisateur</h1>
 <div id="fiche-wrapper">

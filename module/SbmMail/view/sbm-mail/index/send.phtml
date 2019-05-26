@@ -12,7 +12,7 @@
  * @filesource send.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
+ * @date 26 mai 2019
  * @version 2019-2.5.0
  */
 $this->jQuery();
@@ -25,9 +25,10 @@ tinymce.init({
     menubar : false,
     statusbar: false
  });
+var contenu = "<?= $this->contenu ?: '';?>";
 <?php
 $this->headScript()->captureEnd();
-$this->themeJS('sbm-mail','index.js', 'prepend', 'inline');
+$this->themeJS('sbm-mail', 'index.js', 'append', 'inline');
 $this->destinataires = (array) $this->destinataires;
 $liste = count($this->destinataires) > 1;
 ?>
