@@ -23,17 +23,7 @@ return [
             'sbmservicesms' => [
                 'allow' => [
                     'roles' => [
-                        'sadmin'
-                    ]
-                ],
-                'actions' => [
-                    'account-info' => [
-                        'allow' => [
-                            'roles' => [
-                                'gestion',
-                                'admin'
-                            ]
-                        ]
+                        'gestion'
                     ]
                 ]
             ]
