@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
+ * @date 26 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAdmin\Controller;
@@ -992,11 +992,18 @@ class IndexController extends AbstractActionController
         }
         $user = $tUser->getRecord($args['userId']);
         $form->setData($user->getArrayCopy());
+        $telephones = [];
+        if ($user->categorieId == 1) {
+            $telephones = $this->db_manager->get('Sbm\Db\Table\Responsables')
+                ->getRecordByEmail($user->email)
+                ->telephonesPourSms();
+        }
         return new ViewModel(
             [
                 'form' => $form->prepare(),
                 'user' => $user,
-                'page' => $this->params('page', 1)
+                'page' => $this->params('page', 1),
+                'telephones' => $telephones
             ]);
     }
 
@@ -1421,10 +1428,9 @@ class IndexController extends AbstractActionController
                 }
             }
         }
-        $form->setData(
-            [
-                'subject' => StdLib::getParam('sujet', $args, ''),
-            ]);
+        $form->setData([
+            'subject' => StdLib::getParam('sujet', $args, '')
+        ]);
         $view = new ViewModel(
             [
                 'form' => $form->prepare(),

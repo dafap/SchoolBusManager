@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr 2019
+ * @date 26 avr 2019
  * @version 2019-2.5.0
  */
 namespace SbmCleverSms\Controller;
@@ -56,7 +56,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * L'appel initial vient d'un POST contenant le paramètre 'url1_retour'
+     * L'appel initial vient d'un POST contenant les paramètre 'url1_retour', 'telephones'
+     * et 'responsable'
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
@@ -126,11 +127,14 @@ class IndexController extends AbstractActionController
                 }
             }
         }
+        $form->setData([
+            'body' => StdLib::getParam('contenu', $args, '')
+        ]);
         return new ViewModel(
             [
 
                 'form' => $form,
-                'responsable' => StdLib::getParam('responsable', $args, []),
+                'destinataires' => (array) StdLib::getParam('responsable', $args, []),
                 'telephones' => $telephones
             ]);
     }
@@ -307,9 +311,9 @@ class IndexController extends AbstractActionController
     private function retour(string $flashnamespace, string $flashmsg)
     {
         $this->flashMessenger()->addMessage($flashmsg, $flashnamespace);
-        //echo '<pre>';
-        //print_r($this->redirectToOrigin()->back());
-        //die();
+        // echo '<pre>';
+        // print_r($this->redirectToOrigin()->back());
+        // die();
         try {
             return $this->redirectToOrigin()->back();
         } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {

@@ -9,7 +9,7 @@
  * @filesource user-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
+ * @date 26 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -32,6 +32,11 @@ $url_confirm = $this->url('login', [
 ], [
     'force_canonical' => true
 ]);
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-sms'
+    ]);
+}
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -58,8 +63,18 @@ if ($this->user->token) {
     $actions['ecrire'] = [
         'class' => 'fam-email',
         'formaction' => $url_mail,
-        'title' => 'Envoyer un email avec le lien'
+        'title' => 'Envoyer le lien par email'
     ];
+    if ($this->telephones) {
+        $hiddens['telephones[]'] = $this->telephones;
+        $hiddens['url1_retour'] = $url_ici;
+        $hiddens['responsable'] = $hiddens['utilisateur'];
+        $actions['sms'] =[
+            'class' => 'fam-phone',
+            'formaction' => $url_sms,
+            'title' => 'Envoyer le lien par SMS'
+        ];
+    }
 }
 ?>
 <h1>Compte d'un utilisateur</h1>

@@ -8,7 +8,7 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
+ * @date 26 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -82,11 +82,6 @@ $url_ici = $this->url('sbmadmin', [
 $url_mail = $this->url('sbmadmin', [
     'action' => 'user-mail'
 ]);
-if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-sms'
-    ]);
-}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [
