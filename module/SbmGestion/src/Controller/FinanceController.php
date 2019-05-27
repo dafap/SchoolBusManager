@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 27 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -230,7 +230,8 @@ class FinanceController extends AbstractActionController
                 $responsableId);
             // condition pour le paginator
             $where = new Where();
-            $where->equalTo('responsableId', $responsableId);
+            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire',
+                Session::get('as')['libelle']);
             return new ViewModel(
                 [
 

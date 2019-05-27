@@ -38,7 +38,7 @@ $this->jQuery();
 $this->headScript()->appendFile(
     $this->basePath(
         '/js/jquery.formatCurrency-1.4.0.i18n/jquery.formatCurrency-1.4.0.min.js'));
-$this->themeJS('gestion-finance','paiement-detail.js');
+$this->themeJS('gestion-finance', 'paiement-detail.js');
 $this->inlineScript()->captureStart();
 ?>
 js_paiement_detail.init(<?=$this->args['responsableId']?>);
@@ -179,8 +179,10 @@ $actions = [
 							<td>
 						<?= $enfant['duplicata'];?></td>
 							<td>
-						<?= renderCheckbox($this, 'paiement', "chk$eleveId", $enfant['paiement']);?>
-						</td>
+							<?php if (!$enfant['fa'] && !$enfant['gratuit']):?>
+							<?= renderCheckbox($this, 'paiement', "chk$eleveId", $enfant['paiement']);?>
+							<?php endif;?>
+							</td>
 						</tr>
 	            <?php endforeach;?>
 	       </tbody>

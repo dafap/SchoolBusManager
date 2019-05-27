@@ -198,7 +198,9 @@ class Calculs extends AbstractQuery
                 'grilleCode' => $row['grilleCode'],
                 'grilleTarif' => $row['grilleTarif'],
                 'duplicata' => $row['duplicata'],
-                'paiement' => $row['paiement']
+                'paiement' => $row['paiement'],
+                'fa' => $row['fa'],
+                'gratuit' => $row['gratuit']
             ];
         }
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
@@ -317,7 +319,9 @@ class Calculs extends AbstractQuery
                 'duplicata',
                 'grilleCode' => 'grilleTarif',
                 'grilleTarif',
-                'paiement'
+                'paiement',
+                'fa',
+                'gratuit'
             ])
             ->where($predicate)
             ->order([
