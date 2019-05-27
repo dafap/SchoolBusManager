@@ -14,7 +14,7 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr.2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -86,14 +86,27 @@ $url_detail = $this->url('sbmgestion/finance',
         'page' => $this->page
     ]);
 if ($this->h2) {
-    $url_imprimer = $this->url('sbmdocument', [
+    $url_lesfactures = $this->url('sbmdocument', [
         'action' => 'les-factures'
+    ]);
+    $url_unefacture = $this->url('sbmdocument', [
+        'action' => 'facture'
     ]);
     $rapports = [
         'class' => 'fam-printer',
-        'formaction' => $url_imprimer,
-        'title' => 'Factures',
-        'formtarget' => '_blank'
+        'label' => true,
+        'menu' => [
+            'lesfactures' => [
+                'formaction' => $url_lesfactures,
+                'value' => 'Imprimer toutes les factures',
+                'formtarget' => '_blank'
+            ],
+            'unefacture' => [
+                'formaction' => $url_unefacture,
+                'value' => 'Imprimer la dernière facture',
+                'formtarget' => '_blank'
+            ]
+        ]
     ];
 } else {
     $url_imprimer = $this->url('sbmgestion/finance',

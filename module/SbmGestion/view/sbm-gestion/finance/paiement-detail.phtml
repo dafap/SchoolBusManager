@@ -50,8 +50,11 @@ $url_retour = $this->url('sbmgestion/finance',
         'action' => 'paiement-liste',
         'page' => $this->page
     ]);
-$url_rapports = $this->url('sbmdocument', [
+$url_lesfactures = $this->url('sbmdocument', [
     'action' => 'les-factures'
+]);
+$url_unefacture = $this->url('sbmdocument', [
+    'action' => 'facture'
 ]);
 $hiddens = [
     'namespacectrl' => $this->namespacectrl
@@ -71,9 +74,19 @@ $actions = [
     ],
     'rapports' => [
         'class' => 'fam-printer',
-        'formaction' => $url_rapports,
-        'title' => 'Imprimer la facture',
-        'formtarget' => '_blank'
+        'label' => true,
+        'menu' => [
+            'lesfactures' => [
+                'formaction' => $url_lesfactures,
+                'value' => 'Imprimer toutes les factures',
+                'formtarget' => '_blank'
+            ],
+            'unefacture' => [
+                'formaction' => $url_unefacture,
+                'value' => 'Imprimer la dernière facture',
+                'formtarget' => '_blank'
+            ]
+        ]
     ]
 ];
 ?>

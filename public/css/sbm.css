@@ -645,6 +645,10 @@ div#liste-header input {
 	margin-left: 15px;
 }
 
+div#liste-header li.onglet ul.navigation input {
+	margin-left: 0;
+}
+
 div#liste-inner {
 	min-height: 400px;
 }
