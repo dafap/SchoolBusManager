@@ -15,6 +15,13 @@ var js_edit = (function() {
 	var subventionR1;
 	var subventionR2;
 	var hasPhoto;
+	function majAbonnement() {}
+	function estTropPres() {
+		return ($("#eleve-distanceR1").val() <1) && ($("#eleve-distanceR2").val() < 1);
+	}
+	function estHorsDistrict() {
+		return ! $("#eleve-district").is(":checked");
+	}
 	function initAccord() {
 		$("input[name=subventionR1][type=hidden]").val(js_edit.subventionR1);
 		$("input[name=subventionR2][type=hidden]").val(js_edit.subventionR2);
@@ -68,6 +75,14 @@ var js_edit = (function() {
 	}
 	function majGrilleTarifaire() {
 		$("#tabs-3-grilleTarif").empty();
+	}
+	function montreDerogation() {
+		if (estTropPres() || estHorsDistrict()) {
+			$("#commun-col2-derogation").show();
+		} else {
+			$("#eleve-derogation").val(0);
+			$("#commun-col2-derogation").hide();
+		}
 	}
 	function montreMotifDerogation(derogation) {
 		if (derogation) {
@@ -236,11 +251,11 @@ var js_edit = (function() {
 		$("#eleve-anneeComplete").click(function() 
 		{
 			montreDebutFin($(this).is(":checked"));
-			majMontantInscription($(this).is(":checked"));
+			majAbonnement();
 		});
-		$("#eleve-derogation").click(function() 
+		$("#eleve-derogation").change(function() 
 		{
-			montreMotifDerogation($(this).is(":checked"));
+			montreMotifDerogation($(this).find("option:selected").val() > 0);
 		});
 		$("#eleve-ga").click(function() 
 		{
@@ -323,6 +338,7 @@ var js_edit = (function() {
 				{
 					$(myid).val(data.distance);
 					$(myid).css('cursor', 'auto');
+					montreDerogation();
 				},
 				error : function(xhr, ajaxOptions, thrownError) 
 				{
@@ -330,6 +346,9 @@ var js_edit = (function() {
 					$(myid).css('cursor', 'auto');
 				}
 			});
+		});
+		$("input[type='text'][name^='distanceR']").blur(function() {
+			montreDerogation();
 		});
 		$("#eleve-responsable1Id").change(function() 
 		{
@@ -521,8 +540,9 @@ var js_edit = (function() {
 			js_edit.setSubventionR2(subventionR2);
 			$("#tabs").tabs();
 			montreDebutFin($("#eleve-anneeComplete").is(":checked"));
-			// majMontantInscription($("#eleve-anneeComplete").is(":checked"));
-			montreMotifDerogation($("#eleve-derogation").is(":checked"));
+			majAbonnement();
+			montreDerogation();
+			montreMotifDerogation($("#eleve-derogation").find("option:selected").val() > 0);
 			montreOngletGa($("#eleve-ga").is(":checked"));
 			montreMotifRefus($("#eleve-accordR1").is(":checked"), $(
 					"#eleve-subventionR1").is(":checked"), 'r1');

@@ -8,7 +8,7 @@
  * @filesource eleve-edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 19 mai 2019
  * @version 2019-2.5.0
  **/
 .table-cell div {
@@ -220,8 +220,14 @@ div#fiche-inner div#commun fieldset, div#fiche-inner div#tabs fieldset {
 	width: 83px;
 }
 
-#tabs #block-demander #wrapper-motifRefusr1, #tabs #block-demander #wrapper-motifRefusr2 {
+#tabs #block-demander #wrapper-motifRefusr1, #tabs #block-demander #wrapper-motifRefusr2
+	{
 	max-width: 267px;
+}
+
+textarea[name="motifDerogation"] {
+	width: 24em;
+	height: 4rem;
 }
 
 textarea.demande-motifRefus {

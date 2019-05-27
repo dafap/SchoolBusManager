@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 27 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -116,7 +116,8 @@ class IndexController extends AbstractActionController
                     $responsable->responsableId),
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
-                        'responsableId' => $responsable->responsableId
+                        'responsableId' => $responsable->responsableId,
+                        'anneeScolaire' => Session::get('as')['libelle']
                     ]),
                 'resultats' => $this->db_manager->get(
                     \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(

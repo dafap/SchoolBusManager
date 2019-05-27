@@ -9,7 +9,7 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2019
+ * @date 27 mai 2019
  * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Paiements;
@@ -68,6 +68,13 @@ class Resultats
     ];
 
     /**
+     * Le millesime va servir dans la signature
+     *
+     * @var int
+     */
+    private $millesime;
+
+    /**
      * tableau de structure des abonnements avec les clés de la propriété `abonnements`
      * initialisée dans le constructeur. A chaque clé correspond un tableau vide ou
      * structuré comme décrit dans la méthode validArrayAbonnements
@@ -106,8 +113,9 @@ class Resultats
      */
     private $arrayEleveId;
 
-    public function __construct()
+    public function __construct(int $millesime)
     {
+        $this->millesime = $millesime;
         $this->responsableId = null;
         $this->abonnements = [
             'tous' => [],
@@ -211,7 +219,9 @@ class Resultats
     }
 
     /**
-     * Renvoie la liste des abonnements
+     * Renvoie la liste des abonnements. Cette liste est composée d'enregistreents indexés
+     * sur 'grilleCode' et présentant les clés suivantes :<ul> <li>grille</li>
+     * <li>quantite</li> <li>montant</li></ul>
      *
      * @param string $nature
      *            'tous', 'inscrits' ou 'liste'
@@ -231,6 +241,8 @@ class Resultats
     }
 
     /**
+     * Attention, le nom est trompeur ! Renvoie la structure décrite dans le constructeur.
+     * Voir aussi la méthode getMontantDuplicatas()
      *
      * @return mixed
      */
@@ -240,6 +252,9 @@ class Resultats
     }
 
     /**
+     * Cette liste est composée d'enregistrements indexés par 'eleveId' et présentant les
+     * clés suivantes : <ul><li>nom</li> <li>prenom</li> <li>grilleCode</li>
+     * <li>grilleTarif</li> <li>duplicata</li> <li>paiement</li></ul>
      *
      * @param string $nature
      *            'tous' ou 'liste'
@@ -477,7 +492,7 @@ class Resultats
      *
      * @return boolean
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->responsableId);
     }
@@ -489,10 +504,14 @@ class Resultats
      */
     public function signature()
     {
-        $tmp = sprintf("%011d", $this->responsableId);
+        $tmp = sprintf("%04d%011d%.2f%.2f", $this->millesime, $this->responsableId,
+            $this->getMontantDuplicatas(), $this->getMontantTotal());
         foreach ($this->getListeEleves() as $key => $value) {
             $tmp .= sprintf("%011d%02d%03d", $key, $value['grilleCode'],
                 $value['duplicata']);
+        }
+        foreach ($this->getAbonnementsDetail() as $key => $value) {
+            $tmp .= sprintf("%02d%02d%.2f", $key,$value['quantite'], $value['montant']);
         }
         return md5($tmp);
     }
@@ -504,11 +523,33 @@ class Resultats
      * @param Resultats $r
      * @return boolean
      */
-    public function equalTo(Resultats $r)
+    public function equalTo(Resultats $r): bool
     {
         return $this->getMontantDuplicatas() == $r->getMontantDuplicatas() &&
             $this->getMontantTotal() == $r->getMontantTotal() &&
-            $this->getListeEleves() == $r->getListeEleves() &&
+            $this->equalListeEleves($r->getListeEleves()) &&
             $this->getAbonnementsDetail() == $r->getAbonnementsDetail();
+    }
+
+    /**
+     * Compare la listeEleves de l'objet à une autre listeEleves sans tenir compte du
+     * paiement
+     *
+     * @param array $listeEleves
+     * @return boolean
+     */
+    private function equalListeEleves(array $listeEleves): bool
+    {
+        if (array_keys($this->getListeEleves()) == array_keys($listeEleves)) {
+            foreach ($this->getListeEleves() as $eleveId => $detail) {
+                $other = $listeEleves[$eleveId];
+                unset($detail['paiement'], $other['paiement']);
+                if ($other != $detail) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

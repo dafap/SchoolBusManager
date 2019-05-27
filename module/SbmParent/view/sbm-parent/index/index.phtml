@@ -7,7 +7,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 27 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -467,15 +467,21 @@ EOT;
 				<tfoot>
 					<tr>
 						<th colspan="4">Total à payer</th>
-						<td><?=$fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?></td>
+						<td class="align-right">
+							<?=$fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
+							</td>
 					</tr>
 					<tr>
 						<th colspan="4">Déjà payé</th>
-						<td><?=$fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?></td>
+						<td class="align-right">
+							<?=$fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?>
+							</td>
 					</tr>
 					<tr>
 						<th colspan="4">Solde</th>
-						<th><?=$fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></th>
+						<th class="align-right">
+							<?=$fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?>
+							</th>
 					</tr>
 				</tfoot>
 			</table>
@@ -591,7 +597,7 @@ EOT;
             			<tr>
 							<td><?=DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
 							<td><?=$row->modeDePaiement;?></td>
-							<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+							<td class="align-right"><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
 						</tr>
         	<?php endforeach;?>
             		</tbody>
@@ -613,8 +619,8 @@ EOT;
             <?php foreach ($this->factures as $row) :?>
             			<tr>
 							<td><?=$row->numero;?></td>
-							<td><?=DateLib::formatDateTimeFromMysql($row->date);?></td>
-							<td><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
+							<td><?=DateLib::formatDateFromMysql($row->date);?></td>
+							<td class="align-right"><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
 						</tr>
         	<?php endforeach;?>
             		</tbody>

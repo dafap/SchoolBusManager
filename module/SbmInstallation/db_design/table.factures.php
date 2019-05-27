@@ -10,7 +10,7 @@
  * @filesource table.factures.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2019
+ * @date 27 avr. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -52,7 +52,6 @@ return [
             'FACTURES_signature' => [
                 'unique' => false,
                 'fields' => [
-                    'millesime',
                     'signature'
                 ]
             ]

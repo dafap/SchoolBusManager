@@ -12,13 +12,14 @@
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 27 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Paiements;
 
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
+use Zend\Db\Sql\Where;
 
 class Facture
 {
@@ -48,17 +49,23 @@ class Facture
     private $oFacture;
 
     /**
-     * Resultats de la facture précédente dans le cas où il y en a une
      *
-     * @var Resultats
+     * @var array
      */
-    private $lastResultats;
+    private $facturesPrecedentes;
 
     /**
      *
      * @var float
      */
     private $montantDejaFacture;
+
+    /**
+     * Attention, ne pas utiliser directement !!! Appeler la méthode getNonveauNumero()
+     *
+     * @var int
+     */
+    private $_nouveau_numero;
 
     /**
      *
@@ -155,8 +162,9 @@ class Facture
     {
         $this->db_manager = $dbManager;
         $this->resultats = $resultats;
-        $this->lastResultats = null;
         $this->montantDejaFacture = 0;
+        $this->facturesPrecedentes = [];
+        $this->_nouveau_numero = 0;
         $this->tFactures = $dbManager->get('Sbm\Db\Table\Factures');
         $this->oFacture = $this->tFactures->getObjData();
         $this->oFacture->exchangeArray(
@@ -167,75 +175,98 @@ class Facture
                 'date' => DateLib::todayToMysql(),
                 'montant' => 0
             ]);
-        $this->search();
     }
 
     /**
-     * Recherche une facture par sa signature dans le millesime en cours et pour le
-     * responsable indiqué dans resultats. Si la facture existe, met à jour les propriétés
-     * numero et date. Si elle n'existe pas, crée une nouvelle facture dans la table
+     * Si on veut facturer, la facture sera créée à partir de la propriété 'resultats'
+     * lorsque la signature de ce resultats n'est pas la même que la signature de la
+     * dernière facture pour ce débiteur. Pour obtenir les facturesPrecedentes on se
+     * contente de rechercher les factures de numéro antérieur à celle qu'on doit sortir.
+     * En même temps on met à jour la propriété 'montantDejaFacture'
+     *
+     * @return \SbmCommun\Model\Paiements\Facture
      */
-    protected function search()
+    public function facturer()
     {
-        $facturesPrecedentes = [];
-        try {
-            $rowset = $this->tFactures->fetchAll(
-                [
-                    'millesime' => $this->getMillesime(),
-                    'responsableId' => $this->getResponsableId()
-                ], [
-                    'numero DESC'
-                ]);
-            $creer = true;
-            if ($rowset->count()) {
-                foreach ($rowset as $row) {
-                    if ($this->trouve($row)) {
-                        $creer = false;
-                        $this->oFacture = $row;
-                    } else {
-                        if (! $this->lastResultats) {
-                            $this->lastResultats = unserialize($row->content);
-                        }
-                        $facturesPrecedentes[] = [
-                            'numero' => $row->exercice . '-' . $row->numero,
-                            'date' => $row->date,
-                            'montant' => $row->montant
-                        ];
-                    }
+        $this->facturesPrecedentes = [];
+        $this->montantDejaFacture = 0;
+        // try {
+        $rowset = $this->tFactures->fetchAll(
+            [
+                'millesime' => $this->getMillesime(),
+                'responsableId' => $this->getResponsableId()
+            ], [
+                'numero DESC'
+            ]);
+        $creer = true;
+        if ($rowset->count()) {
+            $derniereFacture = $this->tFactures->derniereFacture($this->getMillesime(),
+                $this->getResponsableId());
+            if ($derniereFacture &&
+                $derniereFacture->signature == $this->getResultats()->signature()) {
+                $creer = false;
+                $this->oFacture = $derniereFacture;
+            }
+            foreach ($rowset as $row) {
+                if ($creer || $row->numero != $derniereFacture->numero) {
+                    $this->facturesPrecedentes[] = [
+                        'numero' => $row->exercice . '-' . $row->numero,
+                        'date' => $row->date,
+                        'montant' => $row->montant
+                    ];
+                    $this->montantDejaFacture += $row->montant;
                 }
             }
-            if ($creer) {
-                $this->add();
-            }
-            //
-            $numero = sprintf("%s-%s", $this->getExercice(), $this->getNumero());
-            foreach ($facturesPrecedentes as $array) {
-                if ($array['numero'] < $numero) {
-                    $this->facturesPrecedentes[] = $array;
-                    $this->montantDejaFacture += $array['montant'];
-                }
-            }
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\RuntimeException $e) {
         }
+        if ($creer) {
+            $this->add();
+        }
+        return $this;
+        // } catch (\SbmCommun\Model\Db\Service\Table\Exception\RuntimeException $e) {
+        // }
     }
 
-    protected function trouve(\SbmCommun\Model\Db\ObjectData\Facture $ofacture)
+    protected function lire($numero)
     {
-        $resultats = unserialize($ofacture->content);
-        return $ofacture->signature == $this->resultats->signature() &&
-            $this->resultats->equalTo($resultats);
+        $this->facturesPrecedentes = [];
+        $this->montantDejaFacture = 0;
+        // try {
+        $where = new Where();
+        $where->equalTo('millesime', $this->getMillesime())
+            ->equalTo('responsableId', $this->getResponsableId())
+            ->lessThanOrEqualTo('numero', $numero);
+        $rowset = $this->tFactures->fetchAll($where, [
+            'numero DESC'
+        ]);
+        if ($rowset->count()) {
+            foreach ($rowset as $row) {
+                if ($row->numero == $numero) {
+                    $this->oFacture = $row;
+                } else {
+                    $this->facturesPrecedentes[] = [
+                        'numero' => $row->exercice . '-' . $row->numero,
+                        'date' => $row->date,
+                        'montant' => $row->montant
+                    ];
+                    $this->montantDejaFacture += $row->montant;
+                }
+            }
+        }
+        return $this;
+        // } catch (\SbmCommun\Model\Db\Service\Table\Exception\RuntimeException $e) {
+        // }
     }
 
     /**
-     * Crée une facture dans la table factures en ajoutant le résultat dans la table et
-     * mets à jour la propriété numero et date
+     * Crée une facture dans la table factures si son montant n'est pas null en ajoutant
+     * le résultat dans la table et mets à jour la propriété numero et date
      */
     protected function add()
     {
         $this->oFacture->exchangeArray(
             [
                 'exercice' => $this->getExercice(),
-                'numero' => $this->nouveauNumero(),
+                'numero' => $this->getNouveauNumero(),
                 'millesime' => $this->getMillesime(),
                 'responsableId' => $this->resultats->getResponsableId(),
                 'date' => $this->getDate(),
@@ -244,11 +275,22 @@ class Facture
                 'signature' => $this->resultats->signature(),
                 'content' => serialize($this->resultats)
             ]);
-        $this->tFactures->saveRecord($this->oFacture);
+        if ($this->oFacture->montant) {
+            $this->tFactures->saveRecord($this->oFacture);
+        }
     }
 
-    private function nouveauNumero()
+    /**
+     * Donne un nouveau numéro. Le redonne si on l'a déjà recherché.
+     *
+     * @return int
+     */
+    private function getNouveauNumero(): int
     {
-        return $this->tFactures->dernierNumero($this->getExercice()) + 1;
+        if (! $this->_nouveau_numero) {
+            $this->_nouveau_numero = $this->tFactures->dernierNumero($this->getExercice()) +
+                1;
+        }
+        return $this->_nouveau_numero;
     }
 }
