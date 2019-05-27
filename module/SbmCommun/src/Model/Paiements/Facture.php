@@ -226,7 +226,7 @@ class Facture
         // }
     }
 
-    protected function lire($numero)
+    public function lire($numero)
     {
         $this->facturesPrecedentes = [];
         $this->montantDejaFacture = 0;
