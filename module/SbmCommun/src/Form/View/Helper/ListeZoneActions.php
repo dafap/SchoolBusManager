@@ -29,7 +29,7 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\View\Helper;
@@ -162,7 +162,7 @@ class ListeZoneActions extends AbstractListeAction
     {
         $result = '<li';
         if (array_key_exists('menu', $attributes) &&
-            empty($attributes['menu'] && array_key_exists('title', $attributes))) {
+            empty($attributes['menu']) && array_key_exists('title', $attributes)) {
             $result .= ' title="' . $attributes['title'] . '"';
         }
         if (array_key_exists('class', $attributes)) {
