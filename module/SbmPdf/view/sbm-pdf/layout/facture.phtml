@@ -11,7 +11,7 @@
  * @filesource facture.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -106,7 +106,7 @@ table.entete td {
 				<tr>
 					<td><?=$row['nom'];?></td>
 					<td><?=$row['prenom'];?></td>
-					<td><?=$row['grilleTarif'];?></td>
+					<td><?=(!$row['fa'] && !$row['gratuit']) ? $row['grilleTarif']: '';?></td>
 					<td style="text-align: right"><?=$row['duplicata'];?></td>
 				</tr>
 				<?php endforeach;?>

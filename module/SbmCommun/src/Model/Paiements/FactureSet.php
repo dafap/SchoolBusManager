@@ -7,7 +7,7 @@
  * @filesource FactureSet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Paiements;
@@ -35,9 +35,14 @@ class FactureSet implements \Iterator, \Countable
      */
     private $rowset;
 
-    public function __construct($dbManager, $responsableId)
+    public function __construct($dbManager, int $responsableId, $resultats)
     {
         $this->db_manager = $dbManager;
+        // on s'assure d'abord que la dernière facture a été créée
+        $facture = new Facture($dbManager, $resultats);
+        $facture->facturer();
+        unset($facture);
+        // maintenant on est sur que la dernière facture a été créée
         $tFactures = $dbManager->get('Sbm\Db\Table\Factures');
         try {
             $this->rowset = $tFactures->fetchAll(
@@ -65,7 +70,8 @@ class FactureSet implements \Iterator, \Countable
     {
         $objectdataFacture = $this->rowset->current();
         $resultats = unserialize($objectdataFacture->content);
-        return new Facture($this->db_manager, $resultats);
+        $facture = new Facture($this->db_manager, $resultats);
+        return $facture->lire($objectdataFacture->numero);
     }
 
     public function rewind()

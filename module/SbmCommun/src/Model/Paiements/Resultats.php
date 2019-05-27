@@ -507,8 +507,8 @@ class Resultats
         $tmp = sprintf("%04d%011d%.2f%.2f", $this->millesime, $this->responsableId,
             $this->getMontantDuplicatas(), $this->getMontantTotal());
         foreach ($this->getListeEleves() as $key => $value) {
-            $tmp .= sprintf("%011d%02d%03d", $key, $value['grilleCode'],
-                $value['duplicata']);
+            $tmp .= sprintf("%011d%02d%03d%d%d", $key, $value['grilleCode'],
+                $value['duplicata'], $value['fa'], $value['gratuit']);
         }
         foreach ($this->getAbonnementsDetail() as $key => $value) {
             $tmp .= sprintf("%02d%02d%.2f", $key,$value['quantite'], $value['montant']);
