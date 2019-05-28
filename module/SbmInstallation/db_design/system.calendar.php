@@ -3,7 +3,7 @@
  * Description des champs utilisés dans les tables (table `calendar`)
  *
  * Cette table définit les années scolaires, les périodes de l'année, les périodes de facturation, les périodes de prélèvement, les vacances scolaires
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource system.calendar.php
@@ -33,6 +33,10 @@ return [
             'dateDebut' => 'date',
             'dateFin' => 'date',
             'echeance' => 'date',
+            'date1' => 'date',
+            'date2' => 'date',
+            'date3' => 'date',
+            'date4' => 'date',
             'exercice' => 'int(4) NOT NULL DEFAULT "0"'
         ],
         'primary_key' => [

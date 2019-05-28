@@ -9,7 +9,7 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2019
+ * @date 14 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
@@ -289,6 +289,18 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[DateLib::formatDateFromMysql($row->dateDebut)] = $commune;
                 $aPermanences[DateLib::formatDateFromMysql($row->dateFin)] = $commune;
                 $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
+                if (!is_null($row->date1)) {
+                    $aPermanences[DateLib::formatDateFromMysql($row->date1)] = $commune;
+                }
+                if (!is_null($row->date2)) {
+                    $aPermanences[DateLib::formatDateFromMysql($row->date2)] = $commune;
+                }
+                if (!is_null($row->date3)) {
+                    $aPermanences[DateLib::formatDateFromMysql($row->date3)] = $commune;
+                }
+                if (!is_null($row->date4)) {
+                    $aPermanences[DateLib::formatDateFromMysql($row->date4)] = $commune;
+                }
             }
             $aPermanences = array_keys($aPermanences);
             if (count($aPermanences) == 1) {
@@ -302,6 +314,18 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[$row->dateDebut][$commune] = $commune;
                 $aPermanences[$row->dateFin][$commune] = $commune;
                 $aPermanences[$row->echeance][$commune] = $commune;
+                if (!is_null($row->date1)) {
+                    $aPermanences[$row->date1][$commune] = $commune;
+                }
+                if (!is_null($row->date2)) {
+                    $aPermanences[$row->date2][$commune] = $commune;
+                }
+                if (!is_null($row->date3)) {
+                    $aPermanences[$row->date3][$commune] = $commune;
+                }
+                if (!is_null($row->date4)) {
+                    $aPermanences[$row->date4][$commune] = $commune;
+                }
             }
             ksort($aPermanences);
             foreach ($aPermanences as $date => $liste) {

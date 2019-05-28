@@ -1,7 +1,7 @@
 <?php
 /**
  * Affiche la liste des éléments d'une année scolaire
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/anneescolaire
  * @filesource calendar.inc.php
@@ -23,6 +23,10 @@ use SbmBase\Model\DateLib;
 			<th>Date de début</th>
 			<th>Date de fin</th>
 			<th>Echéance</th>
+			<th>Autre date</th>
+			<th>Autre date</th>
+			<th>Autre date</th>
+			<th>Autre date</th>
 			<th>Exercice</th>
 			<th></th>
 		</tr>
@@ -43,6 +47,32 @@ use SbmBase\Model\DateLib;
 			<td><?= DateLib::formatDateFromMysql($element['dateDebut']);?></td>
 			<td><?= DateLib::formatDateFromMysql($element['dateFin']);?></td>
 			<td><?= DateLib::formatDateFromMysql($element['echeance']);?></td>
+			<td>
+			<?php
+			 if (!is_null($element['date1'])) {
+			     echo DateLib::formatDateFromMysql($element['date1']);
+			 }
+			 ?>
+			</td>
+			<?php
+			 if (!is_null($element['date2'])) {
+			     echo DateLib::formatDateFromMysql($element['date2']);
+			 }
+			 ?>
+			<td>
+			<?php
+			 if (!is_null($element['date3'])) {
+			     echo DateLib::formatDateFromMysql($element['date3']);
+			 }
+			 ?>
+			</td>
+			<td>
+			<?php
+			 if (!is_null($element['date4'])) {
+			     echo DateLib::formatDateFromMysql($element['date4']);
+			 }
+			 ?>
+			</td>
 			<td><?= $element['exercice'];?></td>
 			<td><a href="<?= $url_edit;?>" class="bouton" title="Editer"><i
 					class="fam-date-edit"></i></a></td>

@@ -7,8 +7,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 14 mai 2019
+ * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
 
@@ -21,17 +21,15 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('calendar');
         $this->setAttribute('method', 'post');
-        $this->add(
-            [
-                'name' => 'calendarId',
-                'type' => 'hidden'
-            ]);
-        $this->add(
-            [
-                'name' => 'millesime',
-                'type' => 'hidden'
-            ]);
-        
+        $this->add([
+            'name' => 'calendarId',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'millesime',
+            'type' => 'hidden'
+        ]);
+
         $this->add(
             [
                 'name' => 'csrf',
@@ -103,12 +101,92 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'echeance',
-                'type' => 'Zend\Form\Element\DateSelect',
+                'type' => '\SbmCommun\Form\Element\DateSelect',
                 'attributes' => [
                     'id' => 'calendar-echeance'
                 ],
                 'options' => [
                     'label' => 'Echéance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'date1',
+                'type' => '\SbmCommun\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-date1',
+                ],
+                'options' => [
+                    'label' => 'Permanence',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'date2',
+                'type' => '\SbmCommun\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-date2'
+                ],
+                'options' => [
+                    'label' => 'Permanence',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'date3',
+                'type' => '\SbmCommun\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-date3'
+                ],
+                'options' => [
+                    'label' => 'Permanence',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'create_empty_option' => true,
+                    'min_year' => date('Y') - 20,
+                    'max_year' => date('Y') + 2,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'date4',
+                'type' => '\SbmCommun\Form\Element\DateSelect',
+                'attributes' => [
+                    'id' => 'calendar-date4'
+                ],
+                'options' => [
+                    'label' => 'Permanence',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -174,10 +252,6 @@ class Calendar extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'dateFin' => [
                 'name' => 'dateFin',
-                'required' => true
-            ],
-            'echeance' => [
-                'name' => 'echeance',
                 'required' => true
             ]
         ];
