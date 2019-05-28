@@ -11,7 +11,7 @@
  * @filesource lot-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -33,7 +33,7 @@ $modele = <<<EOT
 $("#chk%s").change(function() {
     var action = ($(this).is(':checked'))?'check':'uncheck';
     $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectionservice/serviceId:%s',
+				url : '/sbmajaxtransport/'+action+'selectionlot/lotId:%s',
 				success : function(data) {},
 				error : function(xhr, ajaxOptions, thrownError) {
 					alert(xhr.status + " " + thrownError);

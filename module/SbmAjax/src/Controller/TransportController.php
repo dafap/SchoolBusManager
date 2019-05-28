@@ -10,7 +10,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mars 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -293,6 +293,52 @@ class TransportController extends AbstractActionController
             $etablissementId = $this->params('etablissementId');
             $this->db_manager->get('Sbm\Db\Table\Etablissements')->setDesservie(
                 $etablissementId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - cocher la case sélection des lots
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function checkselectionlotAction()
+    {
+        try {
+            $lotId = $this->params('lotId');
+            $this->db_manager->get('Sbm\Db\Table\Lots')->setSelection($lotId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - décocher la case sélection des lots
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function uncheckselectionlotAction()
+    {
+        try {
+            $lotId = $this->params('lotId');
+            $this->db_manager->get('Sbm\Db\Table\Lots')->setSelection($lotId, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));

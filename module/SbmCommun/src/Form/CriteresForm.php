@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -1005,6 +1005,131 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'ouvert' => [
                 'name' => 'ouvert',
+                'required' => false
+            ]
+        ];
+    }
+
+    private function formLots()
+    {
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'marche',
+                'attributes' => [
+                    'id' => 'critere-marche',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Marché',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'lot',
+                'attributes' => [
+                    'id' => 'critere-lot',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Lot',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'dateFin',
+                'attributes' => [
+                    'id' => 'critere-dateFin',
+                    'class' => 'sbm-width-20c'
+                ],
+                'options' => [
+                    'label' => 'Échéance',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'empty_option' => 'Toutes',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'actif',
+                'attributes' => [
+                    'useHiddenElement' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'En cours ',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => [
+                    'useHiddenElement' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sélection ',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+    }
+
+    private function formLotsSpecification()
+    {
+        return [
+            'marche' => [
+                'name' => 'marche',
+                'required' => false
+            ],
+            'lot' => [
+                'name' => 'lot',
+                'required' => false
+            ],
+            'dateFin' => [
+                'name' => 'dateFin',
+                'required' => false
+            ],
+            'actif' => [
+                'name' => 'actif',
+                'required' => false
+            ],
+            'selection' => [
+                'name' => 'selection',
                 'required' => false
             ]
         ];

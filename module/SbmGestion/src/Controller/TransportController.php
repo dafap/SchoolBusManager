@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -2247,7 +2247,13 @@ class TransportController extends AbstractActionController
      */
     public function lotListeAction()
     {
-        $args = $this->initListe('lots');
+        $args = $this->initListe('lots',
+            function ($config, $form) {
+                $selectLots = $config['db_manager']->get('Sbm\Db\Select\Lots');
+                $form->setValueOptions('marche', $selectLots->marche())
+                    ->setValueOptions('lot', $selectLots->lot())
+                    ->setValueOptions('dateFin', $selectLots->dateFin());
+            });
         if ($args instanceof Response)
             return $args;
         try {
@@ -2267,6 +2273,7 @@ class TransportController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Lots')->paginator(
                     $args['where'], [
+                        'actif DESC',
                         'marche',
                         'lot'
                     ]),
@@ -2652,7 +2659,9 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
         $form->modifFormForEdit()
-            ->setValueOptions('lotId', $this->db_manager->get('Sbm\Db\Select\Lots'))
+            ->setValueOptions('lotId',
+            $this->db_manager->get('Sbm\Db\Select\Lots')
+                ->lotId())
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
@@ -2800,7 +2809,9 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
-        $form->setValueOptions('lotId', $this->db_manager->get('Sbm\Db\Select\Lots'))
+        $form->setValueOptions('lotId',
+            $this->db_manager->get('Sbm\Db\Select\Lots')
+                ->lotId())
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
@@ -3363,7 +3374,9 @@ class TransportController extends AbstractActionController
             }
             $view = new ViewModel(
                 [
-                    'scheme' => $this->getRequest()->getUri()->getScheme(),
+                    'scheme' => $this->getRequest()
+                        ->getUri()
+                        ->getScheme(),
                     'form' => $formCarte->prepare(),
                     'description' => '<b>Nouvelle station</b>',
                     'station' => [
