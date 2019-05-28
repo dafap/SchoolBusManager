@@ -3,28 +3,28 @@
  * Adapter pour une autentification par email
  *
  * (version adaptée pour ZF3)
- * 
+ *
  * @project sbm
  * @package SbmAuthentification/Authentication
  * @filesource AdapterEmail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2018
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAuthentification\Authentication;
 
-use Zend\Authentication\Adapter\ValidatableAdapterInterface;
-use Zend\Authentication\Result;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmAuthentification\Model\Mdp;
+use Zend\Authentication\Result;
+use Zend\Authentication\Adapter\ValidatableAdapterInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AdapterEmail implements ValidatableAdapterInterface
 {
 
     /**
      * Correspond à l'email
-     * 
+     *
      * @var string
      */
     protected $identity;
@@ -83,7 +83,7 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\AdapterInterface::authenticate()
-     * 
+     *
      * @throws \SbmAuthentification\Authentication\Exception\RuntimeException
      */
     public function authenticate()
@@ -102,7 +102,7 @@ class AdapterEmail implements ValidatableAdapterInterface
                 $identity = $odata->getArrayCopy();
                 unset($identity['mdp']);
                 unset($identity['token']);
-                $odata->completeForLogin();
+                $odata->clearToken()->completeForLogin();
                 $tUsers->saveRecord($odata);
                 return new Result(Result::SUCCESS, $identity, [
                     'Identification réussie.'
@@ -139,7 +139,7 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setIdentity()
-     * 
+     *
      * @throws \SbmAuthentification\Authentication\Exception\InvalidArgumentException
      */
     public function setIdentity($identity)
@@ -174,7 +174,7 @@ class AdapterEmail implements ValidatableAdapterInterface
      * (non-PHPdoc)
      *
      * @see \Zend\Authentication\Adapter\ValidatableAdapterInterface::setCredential()
-     * 
+     *
      * @throws \SbmAuthentification\Authentication\Exception\InvalidArgumentException
      */
     public function setCredential($credential)
