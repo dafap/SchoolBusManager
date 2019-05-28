@@ -2,14 +2,12 @@
 /**
  * Controller pour les actions d'authentification
  *
- *
- *
  * @project sbm
  * @package SbmFront\Controller
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2_ mai 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller;
@@ -712,12 +710,18 @@ EOT;
     {
         $auth = $this->authenticate->by('email');
         if ($auth->hasIdentity()) {
+            $this->redirectToOrigin()->setBack(
+                $this->getRequest()
+                    ->getHeader('Referer')
+                    ->uri()
+                    ->getPath());
             return $this->redirect()->toRoute('SbmMail');
         }
-        return new ViewModel([
-            'theme' => $this->theme,
-            'accueil' => $this->accueil,
-            'client' => $this->client
-        ]);
+        return new ViewModel(
+            [
+                'theme' => $this->theme,
+                'accueil' => $this->accueil,
+                'client' => $this->client
+            ]);
     }
 }
