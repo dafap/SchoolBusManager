@@ -2,14 +2,14 @@
 /**
  * Controller pour les actions d'authentification
  *
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmFront\Controller
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 fév. 2019
+ * @date 2_ mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller;
@@ -75,9 +75,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Entrée pour confirmer l'email lors de la création d'un compte ou de la demande de changement
-     * d'email.
-     * On ne peut rien faire tant que le mot de passe n'est pas donné.
+     * Entrée pour confirmer l'email lors de la création d'un compte ou de la demande de
+     * changement d'email. On ne peut rien faire tant que le mot de passe n'est pas donné.
      */
     public function confirmAction()
     {
@@ -152,9 +151,9 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * En fonction de la catégorie de l'utilisateur,
-     * - redirige vers une route par défaut (suivre redirect())
-     * - fixe une route pour le menu du layout (bienvenue) (suivre $container->home)
+     * En fonction de la catégorie de l'utilisateur, - redirige vers une route par défaut
+     * (suivre redirect()) - fixe une route pour le menu du layout (bienvenue) (suivre
+     * $container->home)
      *
      * @return \Zend\Http\Response
      */
@@ -176,7 +175,7 @@ class LoginController extends AbstractActionController
                             // ne sont pas autorisées pour les parents de cette commune.
                             $commune = $responsable->commune;
                             $message = <<<EOT
-Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants 
+Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants
 de votre commune.
 EOT;
                             $this->flashMessenger()->addErrorMessage($message);
@@ -192,7 +191,7 @@ EOT;
                             // le paiement en ligne n'est pas permi pour les parents de
                             // cette commune
                             $message = <<<EOT
-Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants 
+Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants
 de votre commune.'
 EOT;
                             $this->flashMessenger()->addInfoMessage($message);
@@ -262,7 +261,8 @@ EOT;
     {
         try {
             $this->responsable->get()->clear();
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
         $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
@@ -280,8 +280,8 @@ EOT;
     }
 
     /**
-     * On demande l'email et on envoie un lien pour entrer.
-     * A l'entrée on doit donner un nouveau mot de passe avant de continuer.
+     * On demande l'email et on envoie un lien pour entrer. A l'entrée on doit donner un
+     * nouveau mot de passe avant de continuer.
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -373,9 +373,9 @@ EOT;
     }
 
     /**
-     * Envoie un lien pour entrer sans mot de passe.
-     * A l'entrée on doit donner un nouveau mot de passe avant de continuer.
-     * Cette action est utile pour le service, pour dépaner par téléphone.
+     * Envoie un lien pour entrer sans mot de passe. A l'entrée on doit donner un nouveau
+     * mot de passe avant de continuer. Cette action est utile pour le service, pour
+     * dépaner par téléphone.
      */
     public function mdpResetAction()
     {
@@ -451,9 +451,8 @@ EOT;
     }
 
     /**
-     * Permet à l'utilisateur de changer son email.
-     * Un lien est adressé sur cet email. Une confirmation est nécessaire pour que le changement
-     * prenne effet.
+     * Permet à l'utilisateur de changer son email. Un lien est adressé sur cet email. Une
+     * confirmation est nécessaire pour que le changement prenne effet.
      */
     public function emailChangeAction()
     {
@@ -546,7 +545,8 @@ EOT;
             $form->bind($table_users->getObjData());
             $form->setData($args);
             if ($form->isValid()) {
-                // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des
+                // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède
+                // des
                 // méthodes qui vont bien)
                 $odata = $form->getData()->completeToCreate();
                 $table_users->saveRecord($odata);
@@ -622,8 +622,8 @@ EOT;
     }
 
     /**
-     * Modification d'un compte (civilité, nom, prénom)
-     * Selon la catégorie, on ne verra qu'une partie des informations.
+     * Modification d'un compte (civilité, nom, prénom) Selon la catégorie, on ne verra
+     * qu'une partie des informations.
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -647,7 +647,8 @@ EOT;
             if (\array_key_exists('submit', $args)) {
                 $form->setData($args);
                 if ($form->isValid()) {
-                    // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui possède des
+                    // prépare data (c'est un \SbmCommun\Model\Db\ObjectData\User qui
+                    // possède des
                     // méthodes qui vont bien)
                     $oUser = $form->getData()->completeToModif();
                     $table_users->saveRecord($oUser);
@@ -706,5 +707,17 @@ EOT;
             return $this->redirect()->toRoute('home');
         }
     }
+
+    public function contactAction()
+    {
+        $auth = $this->authenticate->by('email');
+        if ($auth->hasIdentity()) {
+            return $this->redirect()->toRoute('SbmMail');
+        }
+        return new ViewModel([
+            'theme' => $this->theme,
+            'accueil' => $this->accueil,
+            'client' => $this->client
+        ]);
+    }
 }
- 

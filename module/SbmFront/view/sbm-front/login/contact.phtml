@@ -1,0 +1,37 @@
+<?php
+/**
+ * Page de contact
+ *
+ * @project sbm
+ * @package SbmFront/view/sbm-front/login
+ * @filesource contact.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 28 mai 2019
+ * @version 2019-2.5.0
+ */
+$msg = include $this->theme->getIncludeView('sbm-front/login/contact');
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => '/',
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Contact</h1>
+<div class="fiche-wrapper">
+	<div class="header-wrapper clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+	<?= $this->flashMessenger()->render('success');?>
+	<?= $this->flashMessenger()->render('warning');?>
+	<?= $this->flashMessenger()->render('error');?>
+	<?= $this->flashMessenger()->render('info');?>
+	<?= $this->flashMessenger()->render('default');?>
+	</div>
+	</div>
+	<div class="contenu"><?= $msg;?></div>
+</div>

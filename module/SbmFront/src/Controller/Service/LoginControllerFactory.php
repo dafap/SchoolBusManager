@@ -8,7 +8,7 @@
  * @filesource LoginControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller\Service;
@@ -29,6 +29,7 @@ class LoginControllerFactory implements FactoryInterface
         $cm = $sm->get('Sbm\CartographieManager');
         $config_application = $sm->get('config');
         $config_controller = [
+            'theme' => $sm->get(\SbmInstallation\Model\Theme::class),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
@@ -46,6 +47,11 @@ class LoginControllerFactory implements FactoryInterface
             'client' => StdLib::getParamR([
                 'sbm',
                 'client'
+            ], $config_application),
+            'accueil' => StdLib::getParamR([
+                'sbm',
+                'layout',
+                'accueil'
             ], $config_application)
         ];
         return new LoginController($config_controller);

@@ -58,6 +58,13 @@ return [
                             ]
                         ]
                     ],
+                    'contact' => [
+                        'allow' => [
+                            'roles' => [
+                                'guest'
+                            ]
+                        ]
+                    ],
                     'creer-compte' => [
                         'allow' => [
                             'roles' => [

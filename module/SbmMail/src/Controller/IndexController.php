@@ -11,7 +11,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmMail\Controller;
@@ -28,8 +28,7 @@ class IndexController extends AbstractActionController
 
     /**
      * Par défaut, page d'envoi d'un message au service de transport. (à configurer dans
-     * config/autolaod/sbm.local.php)
-     * (non-PHPdoc)
+     * config/autolaod/sbm.local.php) (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
      */
@@ -97,10 +96,13 @@ class IndexController extends AbstractActionController
         $form->setData([
             'userId' => $user['userId']
         ]);
-        return new ViewModel([
-            'form' => $form->prepare(),
-            'user' => $user
-        ]);
+        return new ViewModel(
+            [
+                'theme' => $this->theme,
+                'client' => $this->client,
+                'form' => $form->prepare(),
+                'user' => $user
+            ]);
     }
 
     /**

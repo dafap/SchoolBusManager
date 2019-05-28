@@ -12,9 +12,11 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
+$msg = include $this->theme->getIncludeView('sbm-mail/index/index');
+
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
 $this->headScript()->captureStart();
@@ -25,6 +27,7 @@ tinymce.init({
     menubar : false,
     statusbar: false
  });
+var contenu = "<?= $this->contenu ?: '';?>";
 <?php
 $this->headScript()->captureEnd();
 $this->themeJS('sbm-mail','index.js', 'prepend', 'inline');
@@ -38,6 +41,7 @@ $this->themeJS('sbm-mail','index.js', 'prepend', 'inline');
 		</p>
 		<p>Si vous n'êtes pas cette personne, nous vous prions de bien vouloir
 			vous déconnecter.</p>
+		<?= $msg; ?>
 	</div>
 	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form);?>
