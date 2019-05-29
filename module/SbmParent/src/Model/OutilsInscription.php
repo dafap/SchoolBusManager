@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 29 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Model;
@@ -221,6 +221,8 @@ class OutilsInscription
      * les distances. Le recalcul des distances est nécessaire (true) si l'une des
      * condition est remplie :<ul> <li>l'établissement a changé,</li> <li>c'est un nouvel
      * enregistrement</li> <li>district = 0</li></ul>
+     * Il est nécessaire de remettre accordR1 et accordR2 à 1 pour traiter le cas de non
+     * ayant droits repassant ayant droit par changement d'établissement ou de domicile.
      *
      * @param array $data
      *            tableau de données contenant la scolarité
@@ -234,7 +236,9 @@ class OutilsInscription
         $oData = $tScolarites->getObjData();
         if (is_null($eleveId)) {
             $array = [
-                'millesime' => $this->millesime
+                'millesime' => $this->millesime,
+                'accordR1' => 1,
+                'accordR2' => 1
             ];
         } else {
             $array = [
@@ -246,10 +250,13 @@ class OutilsInscription
                 'duplicata' => 0,
                 'anneeComplete' => 1,
                 'subventionR1' => 0,
-                'subventionR2' => 0
+                'subventionR2' => 0,
+                'accordR1' => 1,
+                'accordR2' => 1
             ];
         }
         $oData->exchangeArray(array_merge($data, $array));
+
         return $tScolarites->saveRecord($oData);
     }
 
