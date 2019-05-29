@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
+ * @date 29 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -340,7 +340,7 @@ class FinanceController extends AbstractActionController
                     $resultats = $this->db_manager->get(
                         \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
                         $responsableId, $args['eleveId']);
-                    if ($montant >= $resultats->getSolde()) {
+                    if ($montant >= $resultats->getSolde('liste')) {
                         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                         $tScolarites->setPaiement(Session::get('millesime'),
                             $args['eleveId']);
