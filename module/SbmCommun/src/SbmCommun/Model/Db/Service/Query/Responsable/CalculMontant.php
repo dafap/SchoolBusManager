@@ -7,8 +7,8 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2018
- * @version 2018-2.4.4
+ * @date 29 mai 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -97,7 +97,7 @@ class CalculMontant implements FactoryInterface
             ->join(
             [
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-            ], 'sco.eleveId = ele.eleveid', [])
+            ], 'sco.eleveId = ele.eleveId', [])
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
@@ -155,7 +155,7 @@ class CalculMontant implements FactoryInterface
             ->join(
             [
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-            ], 'sco.eleveId = ele.eleveid', [])
+            ], 'sco.eleveId = ele.eleveId', [])
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')

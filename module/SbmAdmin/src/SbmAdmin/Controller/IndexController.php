@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
+ * @date 29 mai 2019
  * @version 2019-2.4.8
  */
 namespace SbmAdmin\Controller;

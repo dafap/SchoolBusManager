@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
- * @version 2019-2.4.7
+ * @date 29 mai 2019
+ * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -633,7 +633,7 @@ class ElevesScolarites implements FactoryInterface
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
             ->columns([
-            'eleveid'
+            'eleveId'
         ])
             ->join(
             [
@@ -694,7 +694,7 @@ class ElevesScolarites implements FactoryInterface
             ->columns(
             [
                 'millesime',
-                'eleveid',
+                'eleveId',
                 'inscrit',
                 'fa',
                 'paiement',
