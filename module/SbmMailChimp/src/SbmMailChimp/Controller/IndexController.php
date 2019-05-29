@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 30 mai 2019
+ * @version 2019-2.4.8
  */
 namespace SbmMailChimp\Controller;
 
@@ -1340,9 +1340,9 @@ class IndexController extends AbstractActionController
             $method = "lists/$id_list/members";
             $container = 'members';
             $mailchimp = new MailChimp($this->mailchimp_key);
-            $total_items = StdLib::getParam('total_items', $mailchimp->get($method));
-            $method = sprintf('%s?offset=%d&count=%d', $method, 0, $total_items);
-            $members = StdLib::getParam('members', $mailchimp->get($method), []);
+			$result = $mailchimp->get($method);
+            $total_items = StdLib::getParam('total_items', $result);
+            $members = StdLib::getParam('members', $result, []);
             $emails = [];
             foreach ($members as $member) {
                 $emails[] = $member['email_address'];
