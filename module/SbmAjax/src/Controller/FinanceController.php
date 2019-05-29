@@ -9,7 +9,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 29 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -43,7 +43,7 @@ class FinanceController extends AbstractActionController
                 $responsableId);
             $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
             $sommeDue = $inscrits + $resultats->getMontantDuplicatas();
-            $dejaPaye = $resultats->getPaiements();
+            $dejaPaye = $resultats->getPaiementsMontant();
             $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
                 $inscrits;
             if ($sommeDue <= $dejaPaye) {
@@ -368,7 +368,7 @@ class FinanceController extends AbstractActionController
             Json::encode(
                 [
                     'total' => $resultat->getMontantTotal('liste'),
-                    'paye' => $resultat->getPaiements(),
+                    'paye' => $resultat->getPaiementsMontant(),
                     'solde' => $resultat->getSolde('liste'),
                     'success' => 1
                 ]));
