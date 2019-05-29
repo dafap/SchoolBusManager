@@ -9,7 +9,7 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
+ * @date 29 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -86,6 +86,17 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
     }
 
 
+    /**
+     * Renvoie la chaine de requête (après l'appel de la requête)
+     *
+     * @param \Zend\Db\Sql\Select $select
+     *
+     * @return string
+     */
+    public function getSqlString($select)
+    {
+        return $select->getSqlString($this->dbAdapter->getPlatform());
+    }
 
     protected function getFiltreDemandes(bool $sanspreinscrits)
     {
