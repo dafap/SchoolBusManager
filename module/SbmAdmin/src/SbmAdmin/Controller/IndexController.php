@@ -1302,7 +1302,7 @@ class IndexController extends AbstractActionController
                 $oUser->exchangeArray(
                     [
                         'userId' => null,
-                        'categorieid' => 1,
+                        'categorieId' => 1,
                         'titre' => $responsable['titre'],
                         'nom' => $responsable['nom'],
                         'prenom' => $responsable['prenom'],
