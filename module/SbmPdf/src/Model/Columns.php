@@ -7,7 +7,7 @@
  * @filesource Columns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
+ * @date 30 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -101,6 +101,9 @@ class Columns
     public static function getStringEffectifInterface($stringSbmAbstractTable)
     {
         $parts = explode('\\', $stringSbmAbstractTable);
+        if (getenv('APPLICATION_ENV') == 'development' && count($parts) < 4) {
+            die(var_dump($stringSbmAbstractTable));
+        }
         $parts[2] = 'Eleve';
         $parts[3] = 'Effectif' . $parts[3];
         return implode('\\', $parts);
