@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 30 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Model;
@@ -803,7 +803,7 @@ class Tcpdf extends \TCPDF
                 ->by()
                 ->getUserId());
         if (! empty($filter)) {
-            $where->literal($filter);
+            $where->literal("($filter)");
         }
         return $where;
     }
