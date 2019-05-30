@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 30 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -282,15 +282,13 @@ abstract class AbstractActionController extends ZendAbstractActionController
             // on s'assure que le nom de la classe de l'object criteres commence par \
             $criteresObject = (array) $criteresObject;
             // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
-            // descripteur
-            // sera trouvée
+            // descripteur sera trouvée
             if (! isset($criteresObject[1])) {
                 $criteresObject[1] = null;
             }
             $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
             // on crée la structure de l'objet criteres à partir des champs du formulaire
-            // et on la
-            // charge
+            // et on la charge
             $criteres_obj = new $criteresObject[0]($form->getElementNames());
             $criteres = Session::get('post', [],
                 str_replace('pdf', 'liste', $this->getSessionNamespace()));
@@ -299,12 +297,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
             }
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
             // adaptation éventuelle du where si une fonction callback (ou closure) est
-            // passée en
-            // 3e paramètre dans le tableau $criteresObject. (Utile par exemple pour
-            // modifier le
-            // format date avant le déclanchement de l'évènement ou pour prendre en compte
-            // un autre
-            // where pour les groupes).
+            // passée en 3e paramètre dans le tableau $criteresObject. (Utile par exemple
+            // pour modifier le format date avant le déclanchement de l'évènement ou pour
+            // prendre en compte un autre where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $where = $criteresObject[2]($where, $args);
             }
@@ -312,8 +307,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
 
             if ($docaffectationId = $this->params('id', false)) {
                 // $docaffectationId par get - $args['documentId'] contient le libellé du
-                // menu dans
-                // docaffectations
+                // menu dans docaffectations
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
             $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
@@ -396,13 +390,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
         $prg = $this->prg();
         if ($prg instanceof Response) {
             // renvoie redirection 303 avec le contenu de post en session 'prg_post1'
-            // (Expire_Hops
-            // = 1)
+            // (Expire_Hops= 1)
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la
-            // session (cas
-            // du paginator)
+            // session (cas du paginator)
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
@@ -449,8 +441,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
-        // formulaire (pas
-        // de post ou invalide)
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -560,8 +551,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // on aura le droit de rentrer en get que si un args a été sauvegardé en
-            // session avec
-            // un id de la donnée à modifier
+            // session avec un id de la donnée à modifier
             $args = Session::get('post', [], 'sbm_edit_' . $params['data']['table']);
             $isPost = false;
             $cancel = false;
@@ -690,8 +680,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             return new EditResponse('warning', $args);
         } else {
             // pour les primary key composées de plusieurs champs, id est une chaine où
-            // les champs
-            // sont séparés par des |
+            // les champs sont séparés par des |
             // id est transformé ici en tableau associatif
             // pour les primary key composées d'un seul champ, id est conservé en l'état
             $id = $table->getObjData()->getValidId($id);
