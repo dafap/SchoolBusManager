@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
+ * @date 30 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAdmin\Controller;
@@ -270,7 +270,12 @@ class IndexController extends AbstractActionController
     {
         $criteresObject = [
             ObjectDataCriteres::class,
-            null,
+            [
+                'strict' => [
+                    'nature',
+                    'code'
+                ]
+            ],
             function ($where, $args) {
                 $nature = StdLib::getParam('nature', $args, - 1);
                 $where = new Where();
@@ -278,11 +283,14 @@ class IndexController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $criteresForm = [
+            Form\CriteresForm::class,
+            'libelles'
+        ];
         $documentId = null;
         $retour = [
-            'route' => 'sbmgestion/transport',
-            'action' => 'classe-group'
+            'route' => 'sbmadmin',
+            'action' => 'libelle-group'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }

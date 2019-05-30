@@ -7,7 +7,7 @@
  * @filesource libelle-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 sept. 2018
+ * @date 30 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -16,15 +16,19 @@ $retour = $this->url('sbmadmin', [
     'action' => 'libelle-liste',
     'page' => $this->page
 ]);
-$pdf = $this->url('sbmadmin', [
-    'action' => 'libelle-pdf',
-    'page' => $this->page
-]);
+$url_rapports = $this->url('sbmadmin',
+    [
+        'action' => 'libelle-group-pdf'
+    ]);
 $hiddens = [
     'nature' => $this->nature,
-    'code' => $this->code
+    //'code' => $this->code
 ];
-
+$menuImpression = $this->menuRapports(
+    $this->url('sbmadmin', [
+        'action' => 'libelle-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = [
@@ -34,11 +38,7 @@ $actions = [
         'title' => 'Retour',
         'onclick' => $js_retour
     ],
-    'rapports' => [
-        'class' => 'fam-printer',
-        'formaction' => $pdf,
-        'title' => 'Rapports à imprimer'
-    ]
+    'rapports' => $menuImpression['content'],
 ];
 ?>
 <h1>Libellés de même nature</h1>
@@ -70,7 +70,7 @@ $actions = [
 					<td class="code centre"><?= $this->escapeHtml($row['code']); ?></td>
 					<td class="libelle"><?= $this->escapeHtml($row['libelle']); ?></td>
 					<td class="ouvert centre"><?= $this->escapeHtml($row['ouvert']); ?></td>
-				</tr>         
+				</tr>
                     <?php endforeach;?>
                 </tbody>
 		</table>
