@@ -18,12 +18,12 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->themeJS('gestion-transport','etablissement-service-ajout.js');
+$this->themeJS('gestion-transport', 'etablissement-service-ajout.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport',
     [
@@ -62,24 +62,20 @@ if ($this->origine == 'service-etablissement') {
 	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form);?>
     	<fieldset class="sbm-page1">
-
         <?= $this->formHidden($this->form->get('origine'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
         <?php if ($this->origine == 'service-etablissement') :?>
             <?= $this->formHidden($this->form->get('serviceId'));?>
-            <div id="wrapper-etablissementId"
-				class="row-inner ajout">
+            <div id="wrapper-etablissementId" class="row-inner ajout">
             	<?= $this->formRow($this->form->get('etablissementId'));?>
             </div>
         <?php else :?>
             <?= $this->formHidden($this->form->get('etablissementId'));?>
-            <div id="wrapper-serviceId"
-				class="row-inner ajout">' .
+            <div id="wrapper-serviceId" class="row-inner ajout">
             	<?= $this->formRow($this->form->get('serviceId'));?>
             </div>
         <?php endif;?>
-    		<div id="wrapper-stationId"
-				class="row-inner ajout">
+    		<div id="wrapper-stationId" class="row-inner ajout">
         		<?= $this->formRow($this->form->get('stationId'));?>
         		<p class="sbm-description">Commencez par choisir <?= $description1;?><br>Si
 					la station n'est pas dans la liste, allez d'abord la rajouter dans

@@ -3,38 +3,38 @@
  * Formulaire d'affectation d'un élève
  *
  * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un élève
- * 
+ *
  * @project sbm
  * @package SbmAjax/view/sbm-ajax/eleve
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 
-/*
- * Pour DEBUG
- * décommenter les lignes suivantes
+/**
+ * Pour DEBUG décommenter les lignes suivantes
  *
- * $msg_alert = '"eleveId: "+$("#formaffectation' . $this->trajet . ' input[name=eleveId]").val()';
- * $msg_alert .= '+"\nmillesime: "+$("#formaffectation' . $this->trajet . '
- * input[name=millesime]").val()';
- * $msg_alert .= '+"\ntrajet: "+$("#formaffectation' . $this->trajet . '
- * input[name=trajet]").val()';
+ * @formatter off
+ *
+ * $msg_alert = '"etablissementId:"+$("#formaffectation' . $this->trajet . ' input[name=etablissementId]").val()';
+ * $msg_alert .= '+"\neleveId:"+$("#formaffectation' . $this->trajet . ' input[name=eleveId]").val()';
+ * $msg_alert .= '+"\nmillesime: "+$("#formaffectation' . $this->trajet . 'input[name=millesime]").val()';
+ * $msg_alert .= '+"\ntrajet: "+$("#formaffectation' . $this->trajet . ' input[name=trajet]").val()';
  * $msg_alert .= '+"\njours: "+$("#formaffectation' . $this->trajet . ' input[name=jours]").val()';
  * $msg_alert .= '+"\nsens: "+$("#formaffectation' . $this->trajet . ' input[name=sens]").val()';
- * $msg_alert .= '+"\ncorrespondance: "+$("#formaffectation' . $this->trajet . '
- * input[name=correspondance]").val()';
- * $msg_alert .= '+"\nresponsableId: "+$("#formaffectation' . $this->trajet . '
- * input[name=responsableId]").val()';
- * $msg_alert .= '+"\ndemandeR1: "+$("#formaffectation' . $this->trajet . '
- * input[name=demandeR1]").val()';
+ * $msg_alert .= '+"\ncorrespondance: "+$("#formaffectation' . $this->trajet . 'input[name=correspondance]").val()';
+ * $msg_alert .= '+"\nresponsableId: "+$("#formaffectation' . $this->trajet . ' input[name=responsableId]").val()';
+ * $msg_alert .= '+"\ndemandeR1: "+$("#formaffectation' . $this->trajet . 'input[name=demandeR1]").val()';
  * $msg_alert .= '+"\nop: "+$("#formaffectation' . $this->trajet . ' input[name=op]").val()';
  * $msg_alert .= '+"\nservice1: "+$("#affectation-service1Id option:selected").val()';
  *
- * /* et ajouter la ligne qui suit dans inlineScript()->captureStart()
- * alert(<?= $msg_alert;?>);
+ *
+ * et ajouter la ligne qui suit dans inlineScript()->captureStart()
+ * alert(<?=$msg_alert;?>);
+ *
+ * @formatter off
  */
 ?>
 <?php $this->headStyle()->captureStart(); ?>
@@ -49,8 +49,7 @@
 	line-height: 1.5em;
 }
 #formaffectation<?= $this->trajet;?> input.button {
-    position: relative;
-    top: 1.5rem;
+    margin-top: 1.5rem;
 }
 #formaffectation<?= $this->trajet;?> input.button.cancel {
     margin-left: 100px;
@@ -67,9 +66,27 @@ var urlform = '<?= $this->form->getAttribute('action'); ?>';
 var station1Id = <?= $this->station1Id ?:'null';?>;
 var station2Id = <?= $this->station2Id?:'null';?>;
 affectation().init(station1Id, station2Id, is_xmlhttprequest, formaffectation, urlform);
+
 <?php $this->inlineScript()->captureEnd();?>
 <?= $this->inlineScript();?>
 <div id="formaffectation<?= $this->trajet;?>">
 <?= $this->form($this->form);?>
 </div>
 <div id="errors"></div>
+<p>
+	Besoin d'aide <i class="fam-help"></i>
+</p>
+<div id="formaffectation-help" style="display: none;">
+	<p class="sbm-description">Si vous ne trouvez pas un service dans les
+		listes déroulantes, vérifiez que ce service dessert l'établissement de
+		l'élève. Pour cela :</p>
+	<ul class="sbm-description">
+		<li>allez dans Gestion du réseau de transport</li>
+		<li>cherchez l'établissement dans Etablissements</li>
+		<li>cliquez sur le bouton <i class="fam-table-relationship"></i>
+			Services desservant cet établissement
+		</li>
+		<li>ajoutez <i class="fam-add"></i> le service manquant
+		</li>
+	</ul>
+</div>

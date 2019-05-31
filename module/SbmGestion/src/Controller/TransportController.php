@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -60,7 +60,7 @@ class TransportController extends AbstractActionController
                     $config['db_manager']->get('Sbm\Db\Select\Stations')
                         ->ouvertes());
                 $form->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services'));
+                    $config['db_manager']->get('Sbm\Db\Select\Services')->tout());
             }, [
                 'serviceId',
                 'stationId'
@@ -106,7 +106,7 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services'))
+            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
@@ -255,7 +255,7 @@ class TransportController extends AbstractActionController
         // $horaires = $this->db_manager->get('Sbm\Horaires');
         $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services'))
+            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
@@ -2048,7 +2048,7 @@ class TransportController extends AbstractActionController
             $etablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                 $etablissementId);
             $form->setValueOptions('serviceId',
-                $this->db_manager->get('Sbm\Db\Select\Services'));
+                $this->db_manager->get('Sbm\Db\Select\Services')->tout());
         } else {
             $etablissement = null;
             $service = $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
@@ -2628,7 +2628,7 @@ class TransportController extends AbstractActionController
                 $form->setValueOptions('transporteurId',
                     $config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
                     ->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services'));
+                    $config['db_manager']->get('Sbm\Db\Select\Services')->tout());
             }, [
                 'transporteurId'
             ]);

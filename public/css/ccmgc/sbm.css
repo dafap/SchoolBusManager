@@ -49,6 +49,7 @@
 
 .page1 #header #bandeau {
 	background-image: url("/img/bandeau-sbm.png");
+	background-size: 100% 195px;
 	background-repeat: no-repeat;
 }
 /*-------- Footer -----------------*/

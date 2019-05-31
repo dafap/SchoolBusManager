@@ -3,13 +3,13 @@
  * Abstract controller action pour les controllers de ce module
  *
  * La méthode params() surcharge la méthode de Zend
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2018
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -83,5 +83,13 @@ class AbstractActionController extends ZendAbstractActionController
         } else {
             return parent::params($param, $default);
         }
+    }
+
+    protected function debugTrace($args)
+    {
+        $fp = fopen('debug-ajax.txt', 'a');
+        fputs($fp, print_r($args, true));
+        fputs($fp, "\n");
+        fclose($fp);
     }
 }

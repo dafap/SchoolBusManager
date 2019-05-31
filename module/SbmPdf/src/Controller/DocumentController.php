@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmPdf\Controller;
@@ -322,7 +322,7 @@ class DocumentController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
             ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services'))
+            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());

@@ -188,7 +188,7 @@ return [
             'Sbm\Db\Select\Lots' => Select\LotsForSelect::class,
             'Sbm\Db\Select\Organismes' => Select\Organismes::class,
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,
-            'Sbm\Db\Select\Services' => Select\Services::class,
+            'Sbm\Db\Select\Services' => Select\ServicesForSelect::class,
             'Sbm\Db\Select\Stations' => Select\StationsForSelect::class,
             'Sbm\Db\Select\Tarifs' => Select\TarifsForSelect::class,
             'Sbm\Db\Select\Transporteurs' => Select\Transporteurs::class,

@@ -3,13 +3,13 @@
  * Actions destinées aux réponses à des demandes ajax pour les élèves et les responsables
  *
  * Le layout est désactivé dans ce module
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -127,8 +127,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * ajax - change responsable
-     * Renvoie les données d'un responsable dont la référence est passée par GET
+     * ajax - change responsable Renvoie les données d'un responsable dont la référence
+     * est passée par GET
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -155,16 +155,15 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Initialise et renvoie le formulaire d'affectation
-     * (méthode utilisée dans les méthodes publiques formaffectationAction() et
-     * formaffectationvalidateAction()
+     * Initialise et renvoie le formulaire d'affectation (méthode utilisée dans les
+     * méthodes publiques formaffectationAction() et formaffectationvalidateAction()
      *
      * @return \SbmGestion\Form\AffectationDecision
      */
-    private function getFormAffectationDecision($trajet)
+    private function getFormAffectationDecision(string $etablissementId, $trajet)
     {
         $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services');
+        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->to($etablissementId);
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
         $form->setAttribute('action',
@@ -180,19 +179,20 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Renvoie le code html d'un formulaire
-     * $trajet est le numéro du responsable (1 ou 2)
+     * Renvoie le code html d'un formulaire $trajet est le numéro du responsable (1 ou 2)
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function formaffectationAction()
     {
+        $etablissementId = $this->params('etablissementId', '');
         $trajet = $this->params('trajet', 1);
         $station1Id = $this->params('station1Id', null);
         $station2Id = $this->params('station2Id', null);
         $aData = [
             'millesime' => Session::get('millesime'),
+            'etablissementId' => $etablissementId,
             'eleveId' => $this->params('eleveId', 0),
             'trajet' => $trajet,
             'jours' => '31', // Lu Ma Me Je Ve
@@ -211,7 +211,8 @@ class EleveController extends AbstractActionController
                 'trajet' => $trajet,
                 'station1Id' => $station1Id,
                 'station2Id' => $station2Id,
-                'form' => $this->getFormAffectationDecision($trajet)->setData($aData),
+                'form' => $this->getFormAffectationDecision($etablissementId, $trajet)->setData(
+                    $aData),
                 'is_xmlhttprequest' => 1
             ]);
     }
@@ -226,8 +227,9 @@ class EleveController extends AbstractActionController
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-
+$this->debugTrace([1=>'avant isPost']);
         if ($request->isPost()) {
+$this->debugTrace([1=>'dans isPost']);
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Opération abandonnée.';
                 $this->flashMessenger()->addInfoMessage($messages);
@@ -236,7 +238,8 @@ class EleveController extends AbstractActionController
                     'success' => 1
                 ]));
             } else {
-                $form = $this->getFormAffectationDecision($request->getPost('trajet'))
+                $form = $this->getFormAffectationDecision(
+                    $request->getPost('etablissementId'), $request->getPost('trajet'))
                     ->setData($request->getPost());
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
@@ -261,7 +264,8 @@ class EleveController extends AbstractActionController
                     try {
                         switch ($form->getData()['op']) {
                             case 'add':
-                                // ré-écrire saveRecord pour calculer le bon correspondance
+                                // ré-écrire saveRecord pour calculer le bon
+                                // correspondance
                                 $tAffectations->insertRecord($oData);
                                 $messages = 'Nouvelle affectation enregistrée.';
                                 $this->flashMessenger()->addSuccessMessage(
@@ -274,7 +278,8 @@ class EleveController extends AbstractActionController
                                     'Affectation modifiée.');
                                 break;
                             case 'delete':
-                                // ré-écrire deleteRecord pour mettre à jour les correspondances
+                                // ré-écrire deleteRecord pour mettre à jour les
+                                // correspondances
                                 // qui restent
                                 $tAffectations->deleteRecord($oData);
                                 $messages = 'Affectation supprimée.';
@@ -438,9 +443,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Renvoie la distance d'un domicile à un établissement
-     * L'argument passé en GET dans args contient une chaine de la forme
-     * responsableId:valeur/etablissementId:valeur
+     * Renvoie la distance d'un domicile à un établissement L'argument passé en GET dans
+     * args contient une chaine de la forme responsableId:valeur/etablissementId:valeur
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -722,13 +726,12 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Reçoie en POST les données du formulaire \SbmCommun\Model\Photo\Photo::getForm()<ul>
-     * <li>eleveId (post)</li>
-     * <li>filephoto (files)</li></ul>
-     * Vérifie si elles sont valide et les enregistre dans la table `elevesphotos`
-     * Renvoie un compte rendu :<ul>
-     * <li>success = 1 et src = la chaine src à placer dans la balise `img`</li>
-     * <li>success = 10x et cr = la chaine à afficher en cas d'erreur</li></ul>
+     * Reçoie en POST les données du formulaire
+     * \SbmCommun\Model\Photo\Photo::getForm()<ul> <li>eleveId (post)</li> <li>filephoto
+     * (files)</li></ul> Vérifie si elles sont valide et les enregistre dans la table
+     * `elevesphotos` Renvoie un compte rendu :<ul> <li>success = 1 et src = la chaine src
+     * à placer dans la balise `img`</li> <li>success = 10x et cr = la chaine à afficher
+     * en cas d'erreur</li></ul>
      *
      * @method POST
      * @return \Zend\Stdlib\ResponseInterface
@@ -756,7 +759,8 @@ class EleveController extends AbstractActionController
                 $blob = $ophoto->getImageJpegAsString($source);
                 unlink($source);
             } catch (\Exception $e) {
-                // problème de fichier, de format de fichier ou d'image dont le format n'est pas
+                // problème de fichier, de format de fichier ou d'image dont le format
+                // n'est pas
                 // traité
                 return $this->getResponse()->setContent(
                     Json::encode([
@@ -789,10 +793,10 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Reçoie en POST le paramètre eleveId et supprime la photo dans la table ElevesPhotos.
-     * Renvoie un compte rendu : <ul>
-     * <li>success = 1 et src = sans photo gif</li>
-     * <li>success = 20x et cr = message d'erreur à afficher en cas d'erreur</li></ul>
+     * Reçoie en POST le paramètre eleveId et supprime la photo dans la table
+     * ElevesPhotos. Renvoie un compte rendu : <ul> <li>success = 1 et src = sans photo
+     * gif</li> <li>success = 20x et cr = message d'erreur à afficher en cas
+     * d'erreur</li></ul>
      *
      * @method POST
      * @return \Zend\Stdlib\ResponseInterface

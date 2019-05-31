@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 
@@ -490,9 +490,12 @@ var js_edit = (function() {
 		});
 		$("#tabs").on('click', "i[data-button=btnaffectation]", function() 
 		{
+			var etablissementId = $("#eleve-etablissementId").val();
 			var trajet = $(this).attr('data-trajet');
 			var respid = '#eleve-responsable' + trajet + 'Id';
-			var href = '/sbmajaxeleve/formaffectation/eleveId:'
+			var href = '/sbmajaxeleve/formaffectation/etablissementId:'
+						+ etablissementId
+				        + '/eleveId:'
 						+ ELEVE_ID
 						+ '/trajet:'
 						+ trajet
@@ -725,6 +728,9 @@ function affectation() {
 			}
 		});
 	}
+	$('i[class="fam-help"').click(function(){
+		$("#formaffectation-help").show();
+	});
 	$('#affectation-cancel').click(function() 
 	{
 		btnclick = 'cancel';
@@ -744,6 +750,7 @@ function affectation() {
 		var demande = 'demandeR' + trajet;
 		var data = {
 			'csrf' : $(formaffectation + ' input[name=csrf]').val(),
+			'etablissementId' : $(formaffectation + ' input[name=etablissementId]').val(),
 			'eleveId' : $(formaffectation + ' input[name=eleveId]').val(),
 			'millesime' : $(formaffectation + ' input[name=millesime]').val(),
 			'trajet' : trajet,

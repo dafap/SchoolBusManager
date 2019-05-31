@@ -7,7 +7,7 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 fév. 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form;
@@ -61,6 +61,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             ]);
         // les hiddens reçus en post et à transmettre à nouveau
         foreach ([
+            'etablissementId',
             'eleveId',
             'millesime',
             'trajet',
@@ -143,7 +144,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
 
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Checkbox',
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'derogation',
                 'attributes' => [
                     'id' => 'decision-derogation',
@@ -153,6 +154,11 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
                     'label' => 'Dérogation',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        '0' => 'Non',
+                        '1' => 'Dérogation',
+                        '2' => 'Non ayant-droit'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

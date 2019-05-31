@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -157,7 +157,7 @@ class EleveGestionController extends AbstractActionController
                 ]));
         if ($args['op'] == 2) {
             $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-            $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services');
+            $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->tout();
             $formDecision->setValueOptions('station1Id', $values_options1)
                 ->setValueOptions('station2Id', $values_options1)
                 ->setValueOptions('service1Id', $values_options2)
@@ -192,7 +192,7 @@ class EleveGestionController extends AbstractActionController
                         $values_options1 = $this->db_manager->get(
                             'Sbm\Db\Select\Stations')->ouvertes();
                         $values_options2 = $this->db_manager->get(
-                            'Sbm\Db\Select\Services');
+                            'Sbm\Db\Select\Services')->tout();
                         $formDecision->setValueOptions('station1Id', $values_options1)
                             ->setValueOptions('station2Id', $values_options1)
                             ->setValueOptions('service1Id', $values_options2)
@@ -239,7 +239,9 @@ class EleveGestionController extends AbstractActionController
             $this->cartographie_manager->get('cartes'));
         return new ViewModel(
             [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'decision' => $formDecision->prepare(),
                 'op' => $args['op'],
                 'page' => $page,
@@ -386,7 +388,9 @@ class EleveGestionController extends AbstractActionController
         $ptEta->setAttribute('description', $args['descriptioneta']);
         return new ViewModel(
             [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'ptR1' => $ptR1,
                 'ptEta' => $ptEta,
                 'form' => $form->prepare(),
