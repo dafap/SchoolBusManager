@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
@@ -163,6 +163,7 @@ return [
             'Sbm\Db\Vue\Responsables' => Table\Vue\Responsables::class,
             'Sbm\Db\Vue\Services' => Table\Vue\Services::class,
             'Sbm\Db\Vue\Stations' => Table\Vue\Stations::class,
+            'Sbm\Db\Vue\Tarifs' => Table\Vue\Tarifs::class,
             'Sbm\Db\Vue\Transporteurs' => Table\Vue\Transporteurs::class,
 
             'Sbm\Db\VueGateway\Circuits' => TableGateway\Vue\TableGatewayCircuits::class,
@@ -175,6 +176,7 @@ return [
             'Sbm\Db\VueGateway\Responsables' => TableGateway\Vue\TableGatewayResponsables::class,
             'Sbm\Db\VueGateway\Services' => TableGateway\Vue\TableGatewayServices::class,
             'Sbm\Db\VueGateway\Stations' => TableGateway\Vue\TableGatewayStations::class,
+            'Sbm\Db\VueGateway\Tarifs'=> TableGateway\Vue\TableGatewayTarifs::class,
             'Sbm\Db\VueGateway\Transporteurs' => TableGateway\Vue\TableGatewayTransporteurs::class,
 
             'Sbm\Db\Select\Bordereaux' => Select\BordereauxForSelect::class,

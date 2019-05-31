@@ -1,11 +1,11 @@
 <?php
 /**
- * Service donnant un Tablegateway pour le vue Classes
+ * Service donnant un Tablegateway pour le vue Tarifs
  * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/TableGateway/Vue
- * @filesource TableGatewayClasses.php
+ * @filesource TableGatewayTarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 31 mai 2019
@@ -15,13 +15,13 @@ namespace SbmCommun\Model\Db\Service\TableGateway\Vue;
 
 use SbmCommun\Model\Db\Service\TableGateway\AbstractSbmTableGateway;
 
-class TableGatewayClasses extends AbstractSbmTableGateway
+class TableGatewayTarifs extends AbstractSbmTableGateway
 {
 
     protected function init()
     {
-        $this->table_name = 'classes';
+        $this->table_name = 'tarifs';
         $this->type = 'vue';
-        $this->data_object_alias = 'Sbm\Db\ObjectData\Classe';
+        $this->data_object_alias = 'Sbm\Db\ObjectData\Tarif';
     }
 }

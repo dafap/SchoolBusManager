@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form;
@@ -2162,7 +2162,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-select2'
                 ],
                 'options' => [
-                    'label' => 'Rythme de paiement',
+                    'label' => 'Type de grille',
                     'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2196,7 +2196,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'class' => 'sbm-select2'
                 ],
                 'options' => [
-                    'label' => 'Mode de paiement',
+                    'label' => 'Mode de calcul',
                     'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'

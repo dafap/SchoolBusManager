@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -26,14 +26,17 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $mode_inconnu = "Le mode demandé est inconnu";
 
+    /**
+     * Dans cette version, le rythme est remplacé par le type de grille
+     *
+     * @var array
+     */
     private $rythmes = [
-        1 => 'annuel',
-        2 => 'semestriel',
-        3 => 'trimestriel',
-        4 => 'mensuel'
+        1 => 'abonnement',
+        2 => 'duplicatas'
     ];
 
-    private $rythme_inconnu = "Le rythme demandé est inconnu";
+    private $rythme_inconnu = "Le type demandé est inconnu";
 
     private $grilles = [
         self::DP_PLEIN_TARIF=> 'DP ayants droit',

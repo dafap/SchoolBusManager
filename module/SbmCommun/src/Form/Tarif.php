@@ -8,7 +8,7 @@
  * @filesource Tarif
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2018
+ * @date 31 mai 2019
  * @version 2018-2.4.1
  */
 namespace SbmCommun\Form;
@@ -83,11 +83,11 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Rythme de paiement',
+                    'label' => 'Type de grille',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisissez un rythme de paiement',
+                    'empty_option' => 'Choisissez le type',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -106,7 +106,7 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisissez une grille',
+                    'empty_option' => 'Choisissez la grille',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -121,11 +121,11 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-15c'
                 ],
                 'options' => [
-                    'label' => 'Mode de paiement',
+                    'label' => 'Mode de calcul',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisissez un mode de paiement',
+                    'empty_option' => 'Choisissez le mode de calcul',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]

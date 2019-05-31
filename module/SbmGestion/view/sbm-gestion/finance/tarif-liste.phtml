@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 31 mai 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -110,7 +110,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 				<tr>
 					<th>Nom</th>
 					<th>Montant</th>
-					<th>Rythme</th>
+					<th>Type</th>
 					<th>Grille</th>
 					<th>Mode</th>
 					<th>Transportés</th>
@@ -160,13 +160,13 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="attributs">
 						<?=$this->escapeHtml($tarif->mode);?></td>
 					<td class="effectif align-right">
-						<?=$this->effectifTarifs->transportes($tarif->tarifId);?>
-					
-					
+						<?=$this->effectifTarifs->transportes($tarif->grilleTarif);?>
+
+
 					<td class="effectif align-right">
-						<?=$this->effectifTarifs->demandes($tarif->tarifId);?>
-					
-					
+						<?=$this->effectifTarifs->demandes($tarif->grilleTarif);?>
+
+
 					<td class="centre selection">
 						<?=renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
 						</td>
@@ -180,6 +180,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
         ?>
         </tbody>
 		</table>
+		<p class="sbm-description">Les effectifs indiqués sont des effectifs par grille tarifaire.</p>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">

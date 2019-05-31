@@ -890,7 +890,7 @@ class FinanceController extends AbstractActionController
         return new ViewModel(
             [
 
-                'paginator' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Tarifs')->paginator(
                     $args['where'], [
                         'grille',
                         'nom'
@@ -1156,8 +1156,7 @@ class FinanceController extends AbstractActionController
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                'effectifClassName' => $this->db_manager->get(
-                    'Sbm\Db\Eleve\EffectifTarifs')
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifTarifs'
             ]);
     }
 
