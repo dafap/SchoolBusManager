@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
+ * @date 31 mai 2019
  * @version 2019-4.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
@@ -235,7 +235,8 @@ class Calculs extends AbstractQuery
     {
         $predicates = [
             $where,
-            new Literal('gratuit = 0')
+            new Literal('gratuit = 0'),
+            new Literal('fa = 0')
         ];
         $elevesPayantsInscrits = new Predicate\ElevesPayantsInscrits($this->millesime,
             'sco', $predicates);

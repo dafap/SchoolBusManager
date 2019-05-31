@@ -8,7 +8,7 @@
  * @filesource ElevesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 31 mai 2019
  * @version 2019-5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -46,7 +46,8 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
     public function elevesAbonnes(Where $where = null)
     {
         $predicates = [
-            new Literal('gratuit = 0')
+            new Literal('gratuit = 0'),
+            new Literal('fa = 0')
         ];
         if ($where) {
             $predicates[] = $where;
