@@ -227,9 +227,7 @@ class EleveController extends AbstractActionController
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-$this->debugTrace([1=>'avant isPost']);
         if ($request->isPost()) {
-$this->debugTrace([1=>'dans isPost']);
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Opération abandonnée.';
                 $this->flashMessenger()->addInfoMessage($messages);
