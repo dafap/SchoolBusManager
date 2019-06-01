@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
+ * @date 01 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -167,6 +167,7 @@ class IndexController extends AbstractActionController
         $outils = new OutilsInscription($this->db_manager, $responsable->responsableId,
             $authUserId);
         $form = $this->form_manager->get(Form\Enfant::class);
+        $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmparent', [
@@ -175,9 +176,6 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('classeId',
-            $this->db_manager->get('Sbm\Db\Select\Classes')
-                ->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setData([
             'responsable1Id' => $responsable->responsableId
@@ -185,6 +183,13 @@ class IndexController extends AbstractActionController
         // Le formulaire de garde alterné est prévu complet pour une saisie
         $formga = $this->form_manager->get(Form\Service\Responsable2Complet::class);
         if (array_key_exists('submit', $args)) {
+            if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
+                $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                    $args['etablissementId']);
+                $form->setValueOptions('classeId',
+                    $this->db_manager->get('Sbm\Db\Select\Classes')
+                    ->niveau($etablissement->niveau, 'in'));
+            }
             $form->setData($args);
             $hasGa = StdLib::getParam('ga', $args, false);
             if ($hasGa) {
@@ -336,6 +341,13 @@ class IndexController extends AbstractActionController
             $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
 
         if ($isPost) {
+            if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
+                $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                    $args['etablissementId']);
+                $form->setValueOptions('classeId',
+                    $this->db_manager->get('Sbm\Db\Select\Classes')
+                        ->niveau($etablissement->niveau, 'in'));
+            }
             $form->setData($args);
             if ($hasGa) {
                 $formga->setData($args);
@@ -391,6 +403,12 @@ class IndexController extends AbstractActionController
             $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
                 ->getEleve($eleveId)
                 ->getArrayCopy();
+            // adapte le select classeId
+            $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                $data['etablissementId']);
+            $form->setValueOptions('classeId',
+                $this->db_manager->get('Sbm\Db\Select\Classes')
+                    ->niveau($etablissement->niveau, 'in'));
             // adresse personnelle de l'élève
             if (! empty($data['communeEleveId'])) {
                 $data['ap'] = 1;
@@ -747,6 +765,7 @@ class IndexController extends AbstractActionController
             $outils = new OutilsInscription($this->db_manager,
                 $auth_responsable->responsableId, $authUserId, $eleveId);
             $form = $this->form_manager->get(Form\Enfant::class);
+            $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
             $form->setAttribute('action',
                 $this->url()
                     ->fromRoute('sbmparent', [
@@ -763,9 +782,6 @@ class IndexController extends AbstractActionController
             $form->setValueOptions('etablissementId',
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
                     ->visibles())
-                ->setValueOptions('classeId',
-                $this->db_manager->get('Sbm\Db\Select\Classes')
-                    ->tout())
                 ->setValueOptions('joursTransport', Semaine::getJours())
                 ->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
@@ -788,6 +804,13 @@ class IndexController extends AbstractActionController
                 $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
 
             if ($isPost) {
+                if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
+                    $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                        $args['etablissementId']);
+                    $form->setValueOptions('classeId',
+                        $this->db_manager->get('Sbm\Db\Select\Classes')
+                            ->niveau($etablissement->niveau, 'in'));
+                }
                 $form->setData($args);
                 if ($hasGa) {
                     $formga->setData($args);

@@ -5,7 +5,7 @@
  * @filesource edit-eleve.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 01 juin 2019
  * @version 2019-2.4.6
  */
 var texteDemandeR2;
@@ -53,6 +53,37 @@ $(function() {
 			});
 			bloc.removeAttr("id").appendTo("#enfant_ap");
 		}
+	});
+	// adapte le select de la classe à l'établissement
+	$("#enfant_etablissementId").change(function(){
+		var classeId = $("#enfant_classeId").val();
+		var etablissementId = $(this).val();
+		$.ajax({
+			url : '/sbmajaxparent/getclassesforselect/etablissementId:' + etablissementId,
+			dataType : 'json',
+			success : function(dataJson) {
+				if (dataJson.success == 1) {
+					var select = $("#enfant_classeId");
+					select.empty();
+					$.each(dataJson.data, function(niveau, descripteur){
+						var optgroup = $("<optgroup></optgroup>");
+						optgroup.attr('label',descripteur.label);
+						$.each(descripteur.options, function(id, libelle){
+							var option = $("<option></option>");
+							option.val(id);
+							option.text(libelle);
+							optgroup.append(option);
+						});
+						select.append(optgroup);
+					});
+				} else {
+					alert(dataJson.cr);
+				}
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status + " " + thrownError);
+			}
+		});
 	});
 	// adapte le select de la commune au code postal pour l'adresse personnelle
 	$("#enfant_ap").on(

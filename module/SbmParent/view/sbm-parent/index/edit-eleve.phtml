@@ -8,13 +8,13 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 01 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('sbm-parent','edit-eleve.js');
+$this->themeJS('sbm-parent', 'edit-eleve.js');
 $texteDemandeR2 = <<<EOT
 Si cette deuxième adresse est dans le ressort territorial, une deuxième carte
 de transport sera attribuée. Sinon, vous devez faire une demande auprès du
@@ -34,10 +34,10 @@ $this->inlineScript()->captureEnd();
 // préparation du signalement d'erreur sur le sexe
 $elementErrorsHelper = new \Zend\Form\View\Helper\FormElementErrors();
 $elementError = $elementErrorsHelper->render($this->form->get('sexe'));
-if (!empty($elementError)) {
+if (! empty($elementError)) {
     $this->form->get('sexe')->setAttribute('class', 'input-error');
 }
-//----- suite -----------
+// ----- suite -----------
 $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
     $this->responsable->nom, $this->responsable->prenom);
 if ($this->hasGa) {
@@ -96,7 +96,8 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 					<div id="z3cg-r1"></div>
 					<div id="enfant_ap"></div>
 					<div id="wrapper-radio-col1" class="table2cols">
-						<div id="wrapper-joursTransport" class="bloc-wrapper zone col13">
+						<div id="wrapper-joursTransport"
+							class="row-inner bloc-wrapper zone col13">
                 		<?=$this->formRow($this->form->get('joursTransport'));?></div>
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
