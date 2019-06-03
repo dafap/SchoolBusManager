@@ -9,7 +9,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -127,6 +127,36 @@ class EleveController extends AbstractActionController
     }
 
     /**
+     * ajax - renvoie une structure permettant d'adapter le Select de classeId en fonction
+     * du niveau de l'établissement dont l'identifiant est etablissementId passé par GET
+     * method GET
+     * Cette méthode est aussi dans ParentController
+     *
+     * @method GET
+     * @return mixed
+     */
+    public function getclassesforselectAction()
+    {
+        try {
+            $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
+            $etablissement = $tEtablissements->getRecord($this->params('etablissementId'));
+            $queryClasses = $this->db_manager->get('Sbm\Db\Select\Classes');
+            $classes = $queryClasses->niveau($etablissement->niveau, 'in');
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => $classes,
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
      * ajax - change responsable Renvoie les données d'un responsable dont la référence
      * est passée par GET
      *
@@ -163,7 +193,8 @@ class EleveController extends AbstractActionController
     private function getFormAffectationDecision(string $etablissementId, $trajet)
     {
         $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->to($etablissementId);
+        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->to(
+            $etablissementId);
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
         $form->setAttribute('action',
@@ -293,6 +324,7 @@ class EleveController extends AbstractActionController
                         $response->setContent(
                             Json::encode([
                                 'cr' => "$messages",
+                                'nb' => $tAffectations->count($oData->millesime, $oData->eleveId),
                                 'success' => 1
                             ]));
                     } catch (\Exception $e) {

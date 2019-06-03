@@ -2,13 +2,13 @@
 /**
  * Gestion de la table `affectations`
  *
- * 
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -36,6 +36,14 @@ class Affectations extends AbstractSbmTable
         ];
     }
 
+    public function count(int $millesime, int $eleveId): int
+    {
+        return $this->fetchAll([
+            'millesime' => $millesime,
+            'eleveId' => $eleveId
+        ])->count();
+    }
+
     public function insertRecord(ObjectDataInterface $obj_data)
     {
         while (! $this->is_newRecord($obj_data->getId())) {
@@ -51,8 +59,8 @@ class Affectations extends AbstractSbmTable
     }
 
     /**
-     * Suppression d'un enregistrement.
-     * Il y a renumérotation des correspondances après la suppression
+     * Suppression d'un enregistrement. Il y a renumérotation des correspondances après la
+     * suppression
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $item
      *            (non-PHPdoc)
@@ -103,7 +111,8 @@ class Affectations extends AbstractSbmTable
     }
 
     /**
-     * Suppression des enregistrements relatifs à un responsableId pour un élève particulier
+     * Suppression des enregistrements relatifs à un responsableId pour un élève
+     * particulier
      *
      * @param int $millesime
      * @param int $eleveId

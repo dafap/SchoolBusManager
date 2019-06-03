@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -306,11 +306,12 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Reçoit un post avec : - eleveId d'un élève existant - info (nom prénom) Met ces
-     * informations en session. On reviendra ici en cas d'entrée par GET ultérieure (F5 ou
-     * back) Vérifie si la fiche scolarité existe pour cette année courante et oriente sur
-     * - si oui : eleveEditAction() - si non : eleveAjout31Action() On arrive ici
-     * obligatoirement par un post. Il n'y a pas de view associée.
+     * Reçoit un post avec :<ul><li>eleveId d'un élève existant</li><li>info (nom
+     * prénom)</li></ul> Met ces informations en session car on reviendra ici en cas
+     * d'entrée par GET ultérieure (F5 ou back). Vérifie si la fiche scolarité existe pour
+     * cette année courante et oriente sur :<ul><li>si oui : eleveEditAction()</li><li>si
+     * non : eleveAjout31Action()</li></ul>On arrive ici obligatoirement par un post. Il
+     * n'y a pas de view associée.
      */
     public function eleveAjout21Action()
     {
@@ -359,14 +360,15 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Création de la fiche dans la table eleve et récupération de son eleveId puis
-     * passage en deleveAjout31Action() L'entrée se fait : - directement depuis
+     * Création de la fiche dans la table eleves et récupération de son eleveId puis
+     * passage en eleveAjout31Action(). L'entrée se fait :<ul><li>directement depuis
      * eleveAjoutAction() s'il n'y a pas d'enregistrement ayant ces caractéristiques. Dans
-     * ce cas, le paramètre odata porte les informations à enregistrer. - par appel POST
-     * depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une nouvelle
-     * fiche. Dans ce cas, les paramètres reçus par POST sont : - le contenu du formulaire
-     * AddElevePhase1 renvoyé par des hiddens depuis la liste Le retour par get est
-     * interdit afin d'éviter de recréer cet enregistrement.
+     * ce cas, le paramètre odata porte les informations à enregistrer.</li><li>par appel
+     * POST depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une
+     * nouvelle fiche. Dans ce cas, les paramètres reçus par POST sont :<ul><li>ceux du
+     * formulaire AddElevePhase1</li><li>ceux renvoyé par les hiddens depuis la
+     * liste</li></ul></li></ul> Le retour par get est interdit afin d'éviter de recréer
+     * cet enregistrement.
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $odata
      *
@@ -409,7 +411,9 @@ class EleveController extends AbstractActionController
      * formulaire AddElevePhase2 pour compléter les informations de scolarités. L'entrée
      * par POST correspond au retour du formulaire et contient donc obligatoirement un
      * 'cancel' ou un 'submit' et dans ce dernier cas les données doivent être validées
-     * par le formulaire.
+     * par le formulaire. La scolarité n'étant pas connue, le formulaire proposera une
+     * liste déroulante vide pour la classe qui sera mise à jour par ajax en fonction du
+     * niveau de l'établissement sélectionné.
      *
      * @param string $eleveId
      * @param string $info
@@ -466,6 +470,7 @@ class EleveController extends AbstractActionController
         // on doit saisir la scolarite
         $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $form = $this->form_manager->get(FormEleve\AddElevePhase2::class);
+        $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
         $form->setAttribute('action',
             $this->url()
                 ->fromRoute('sbmgestion/eleve',
@@ -476,12 +481,17 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('classeId',
-            $this->db_manager->get('Sbm\Db\Select\Classes')
-                ->tout())
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
+            // avant de valider, il faut donner les valeurs possibles pour classeId
+            if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
+                $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                    $args['etablissementId']);
+                $form->setValueOptions('classeId',
+                    $this->db_manager->get('Sbm\Db\Select\Classes')
+                        ->niveau($etablissement->niveau, 'in'));
+            }
             $form->setData($args);
             if ($form->isValid()) {
                 $odata = $form->getData();
@@ -545,11 +555,13 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Cette méthode est généralement appelée par post et reçoit - eleveId - info -
-     * origine (optionnel) ou group (optionnel) - op = 'modifier' ou 'ajouter' Elle peut
-     * être appelée en passant un paramètre $args qui sera un tableau contenant ces 4
-     * clés. Mais si on arrive par eleveAjoutAction() on ne passera pas origine car le
-     * redirectToOrigin() est déjà en place.
+     * Cette méthode est appelée :<ul><li>par post et reçoit :
+     * <ul><li>eleveId</li><li>info</li><li>origine (optionnel) ou group
+     * (optionnel)</li><li>op = 'modifier' ou 'ajouter'</li></ul></li><li>comme une
+     * fonction en passant un paramètre $args qui sera un tableau contenant les 4
+     * clés.</li></ul> Si on arrive par eleveAjoutAction() on ne passera pas origine car
+     * le redirectToOrigin() est déjà en place. <p>La liste déroulante de Classe doit être
+     * initialisée en tenant compte du niveau de l'établissement.</p>
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -709,6 +721,13 @@ class EleveController extends AbstractActionController
             ->setValueOptions('joursTransport', Semaine::getJours())
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'));
         if (array_key_exists('submit', $args)) {
+            if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
+                $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                    $args['etablissementId']);
+                $form->setValueOptions('classeId',
+                    $this->db_manager->get('Sbm\Db\Select\Classes')
+                        ->niveau($etablissement->niveau, 'in'));
+            }
             $form->setData($args);
             if ($form->isValid()) { // controle le csrf
                 $dataValid = array_merge([
@@ -790,6 +809,12 @@ class EleveController extends AbstractActionController
                 $adata1['dateDebut'] = Session::get('as')['dateDebut'];
                 $adata1['dateFin'] = Session::get('as')['dateFin'];
             }
+            // adapte le select classeId
+            $etablissement = $this->db_manager->get('Sbm\Db\Table\Etablissements')->getRecord(
+                $adata1['etablissementId']);
+            $form->setValueOptions('classeId',
+                $this->db_manager->get('Sbm\Db\Select\Classes')
+                    ->niveau($etablissement->niveau, 'in'));
             $form->setData(array_merge($odata0->getArrayCopy(), $adata1));
         }
         // historique des responsables
@@ -1311,7 +1336,9 @@ class EleveController extends AbstractActionController
 
             // supprimer les références à l'adresse perso de l'élève
             $data = [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'millesime' => Session::get('millesime'),
                 'eleveId' => $args['eleveId'],
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
@@ -1946,7 +1973,9 @@ class EleveController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'form' => $form->prepare(),
                 'responsable' => $responsable,
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
