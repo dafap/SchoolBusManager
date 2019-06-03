@@ -20,7 +20,7 @@
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -196,48 +196,12 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'district',
-                'attributes' => [
-                    'id' => 'eleve-district',
-                    'value' => '1'
-                ],
-                'options' => [
-                    'label' => 'District',
-                    'label_attributes' => [
-                        'class' => 'sbm-label checkbox'
-                    ],
-                    'use_hidden_element' => true,
-                    'checked_value' => '1',
-                    'unchecked_value' => '0'
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'fa',
                 'attributes' => [
                     'id' => 'eleve-fa'
                 ],
                 'options' => [
                     'label' => 'Famille d\'accueil',
-                    'label_attributes' => [
-                        'class' => 'sbm-label checkbox'
-                    ],
-                    'use_hidden_element' => true,
-                    'checked_value' => '1',
-                    'unchecked_value' => '0'
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'paiement',
-                'attributes' => [
-                    'id' => 'eleve-paiement',
-                    'value' => '0'
-                ],
-                'options' => [
-                    'label' => 'Paiement',
                     'label_attributes' => [
                         'class' => 'sbm-label checkbox'
                     ],

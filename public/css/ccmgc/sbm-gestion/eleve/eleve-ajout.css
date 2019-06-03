@@ -8,18 +8,20 @@
  * @filesource eleve-ajout.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  **/
 .table-cell div {
 	display: inline-block;
 }
+
 .annee-precedente {
 	background: #eee;
 	color: gray;
 	border-color: gray;
 	font-size: 80%;
 }
+
 #eleve {
 	line-height: 1.2em;
 }
@@ -88,6 +90,11 @@
 
 #commun-col2 span.classe-precedente {
 	margin-left: 20px;
+}
+
+#commun-col2-periode label {
+	width: inherit;
+	margin-right: 3px;
 }
 
 #commun-col3 {
@@ -182,4 +189,10 @@ div#wrapper-demandeR1 {
 #wrapper-commentaire textarea {
 	width: 99.5%;
 	border-radius: 4px 4px 4px 4px;
+}
+
+textarea[name="motifDerogation"] {
+	width: 22em;
+	height: 4rem;
+	margin-left: 4px;
 }

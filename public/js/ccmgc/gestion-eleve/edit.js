@@ -9,6 +9,13 @@
  * @version 2019-2.5.0
  */
 
+$(function(){
+	var r = $('input[type="radio"].input-error').parent().parent().parent();
+	r.addClass('input-error');
+	var c = $('input[type="checkbox"].input-error').parent().parent().parent();
+	c.addClass('input-error');
+});
+
 var js_edit = (function() {
 	var disableAccordR1;
 	var disableAccordR2;

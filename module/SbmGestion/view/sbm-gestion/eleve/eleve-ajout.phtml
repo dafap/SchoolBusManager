@@ -8,9 +8,11 @@
  * @filesource eleve-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\DateLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-ajout.css');
 $this->jQuery();
@@ -147,7 +149,7 @@ if (! $this->form instanceof \Zend\Form\FormInterface) {
 					<td class="prenom">
 						<?= $this->escapeHtml($eleve['prenom']); ?></td>
 					<td class="dateN">
-						<?= $this->escapeHtml($eleve['dateN']); ?></td>
+						<?= $this->escapeHtml(DateLib::formatDateFromMysql($eleve['dateN']));?></td>
 					<td class="responsable1">
 						<?= $this->escapehtml($eleve['responsable1NomPrenom']); ?></td>
 					<td class="commune1">

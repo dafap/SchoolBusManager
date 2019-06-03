@@ -20,9 +20,11 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\DateLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-ajout.css');
 $this->jQuery();
@@ -88,28 +90,20 @@ $actions = [
 				<div id="commun-col1" class="float-left">
 					<div>
 						<div class="label">Nom de l'élève</div>
-							<?= $this->data['nom']?></div>
+							<?= $this->data['nom'];?></div>
 					<div>
 						<div class="label">Prénom de l'élève</div>
-							<?= $this->data['prenom']?></div>
+							<?= $this->data['prenom'];?></div>
 					<div id="ligne-dateN-sexe">
 						<div class="table-cell">
 							<div class="label">Date de naissance</div>
-							<?= $this->data['dateN']?></div>
+							<?= DateLib::formatDateFromMysql($this->data['dateN']);?></div>
 						<div class="table-cell">
 							<div class="label2">Sexe</div>
-							<?= $this->data['sexe'] == 1 ? 'masculin' : 'féminin'?></div>
+							<?= $this->data['sexe'] == 1 ? 'masculin' : 'féminin';?></div>
 					</div>
 					<div id="wrapper-joursTransport" class="row-inner">
 						<?= $this->formRow($this->form->get('joursTransport'));?></div>
-					<div id="wrapper-anneeComplete" class="row-inner">
-						<?= $this->formRow($this->form->get('anneeComplete'));?></div>
-					<div id="ligne-dateDebut-dateFin" class="clearfix">
-						<div id="wrapper-dateDebut" class="row-inner float-left">
-							<?= $this->formRow($this->form->get('dateDebut'));?></div>
-						<div id="wrapper-dateFin" class="row-inner float-left">
-							<?= $this->formRow($this->form->get('dateFin'));?></div>
-					</div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner">
@@ -125,6 +119,14 @@ $actions = [
 						</div>
 						<div id="wrapper-regime" class="row-inner table-cell">
 							<?=$this->formRow($this->form->get('regimeId'));?></div>
+					</div>
+					<div id="commun-col2-periode" class="clearfix">
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateFin'));?></div>
 					</div>
 					<div id="commun-col2-derogation" class="clearfix">
 						<div id="wrapper-derogation" class="row-inner float-left">
@@ -142,12 +144,8 @@ $actions = [
 						<div class="label">Etat</div>
 						<div class="input">en cours...</div>
 					</div>
-					<div id="wrapper-district">
-						<?= $this->formRow($this->form->get('district'));?></div>
 					<div id="wrapper-fa">
 						<?= $this->formRow($this->form->get('fa'));?></div>
-					<div id="wrapper-paiement">
-						<?= $this->formRow($this->form->get('paiement'));?></div>
 					<div id="wrapper-ga">
 						<?= empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
 				</div>
@@ -171,7 +169,7 @@ $actions = [
 							Tél. <?= implode(' - ', $telephonesR1);?></div>
 					</div>
 					<div class="clearfix">
-						<div id="wrapper-distanceR1" class="float-left top-18px">
+						<div id="wrapper-distanceR1" class="row-inner float-left top-18px">
 							<?= $this->formRow($this->form->get('distanceR1'));?></div>
 						<div id="wrapper-demandeR1" class="row-inner float-left">
 							<?= $this->formRow($this->form->get('demandeR1'));?></div>
