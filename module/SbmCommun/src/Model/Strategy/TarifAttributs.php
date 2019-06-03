@@ -8,7 +8,7 @@
  * @filesource TarifRythme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 oct. 2018
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Strategy;
@@ -32,10 +32,10 @@ class TarifAttributs implements StrategyInterface
     }
 
     /**
-     * 
-     * {@inheritDoc}
+     *
+     * {@inheritdoc}
      * @see \Zend\Hydrator\Strategy\StrategyInterface::extract()
-     * 
+     *
      * @throws \SbmCommun\Model\Strategy\Exception\RuntimeException
      */
     public function extract($param)
@@ -50,21 +50,25 @@ class TarifAttributs implements StrategyInterface
                     return $key;
             }
         }
-        throw new Exception\RuntimeException(sprintf($this->error_message . " : %s", $param));
+        throw new Exception\RuntimeException(
+            sprintf($this->error_message . " : %s", $param));
     }
 
     /**
-     * 
-     * {@inheritDoc}
+     *
+     * {@inheritdoc}
      * @see \Zend\Hydrator\Strategy\StrategyInterface::hydrate()
-     * 
+     *
      * @throws \SbmCommun\Model\Strategy\Exception\RuntimeException
      */
     public function hydrate($value)
     {
-        if (array_key_exists($value, $this->codes)) {
+        if (is_null($value)) {
+            return $value;
+        } elseif (array_key_exists($value, $this->codes)) {
             return $this->codes[$value];
         }
-        throw new Exception\RuntimeException(sprintf($this->error_message . " : %s", $value));
+        throw new Exception\RuntimeException(
+            sprintf($this->error_message . " : %s", $value));
     }
 }

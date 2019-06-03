@@ -25,6 +25,9 @@ class Eleves extends AbstractQuery
 
     protected function init()
     {
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+            ->getStrategie('grille'));
     }
 
     private function dernierMillesime($lequel, $responsableId)
@@ -118,10 +121,8 @@ class Eleves extends AbstractQuery
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
-        $this->addStrategy('grilleTarif',
-            $this->db_manager->get('Sbm\Db\Table\Tarifs')
-                ->getStrategie('grille'));
-        return $this->renderResult($select->where($where));
+            echo sprintf("<pre>%s</pre>\n",$this->getSqlString($select));
+        return $this->renderResult($select);
     }
 
     public function duResponsable1($responsableId)
