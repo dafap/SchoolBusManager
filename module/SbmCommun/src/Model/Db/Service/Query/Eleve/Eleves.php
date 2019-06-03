@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 03 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -121,7 +121,6 @@ class Eleves extends AbstractQuery
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
-            echo sprintf("<pre>%s</pre>\n",$this->getSqlString($select));
         return $this->renderResult($select);
     }
 
