@@ -8,7 +8,7 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
+ * @date 04 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -20,6 +20,8 @@ use Zend\Db\Sql\Where;
 
 class Paiements extends AbstractSbmTable
 {
+
+    const MAXI = 200;
 
     /**
      * Initialisation de la station
@@ -60,8 +62,8 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Renvoie le paiementId d'un paiement pour les paramètres indiqués.
-     * Renvoie null si le paiement n'est pas enregistré
+     * Renvoie le paiementId d'un paiement pour les paramètres indiqués. Renvoie null si
+     * le paiement n'est pas enregistré
      *
      * @param int $responsableId
      * @param string $datePaiement
@@ -84,9 +86,9 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Marque la date dans dateBordereau pour les paiements non déposés dont <ul>
-     * <li>la date de valeur est antérieure à date indiquée</li>
-     * <li>qui correspondent au mode de paiement et à la caisse indiqués</li></ul>
+     * Marque la date dans dateBordereau pour les paiements non déposés dont <ul> <li>la
+     * date de valeur est antérieure à date indiquée</li> <li>qui correspondent au mode de
+     * paiement et à la caisse indiqués</li></ul>
      *
      * @param string $date
      *            format dateMysql
@@ -98,7 +100,6 @@ class Paiements extends AbstractSbmTable
      *            exercice budgétaire concerné
      * @param int|null $anneeScolaire
      *            année scolaire concernée
-     *
      * @return int Nombre de lignes du bordereau
      */
     public function marqueBordereau($date, $codeModeDePaiement, $codeCaisse,
@@ -115,6 +116,17 @@ class Paiements extends AbstractSbmTable
         if (! is_null($anneeScolaire)) {
             $where->equalTo('anneeScolaire', $anneeScolaire);
         }
+        $select = $this->table_gateway->getSql()->select();
+        $select->where($where)
+            ->order('paiementId DESC')
+            ->limit(self::MAXI);
+        $resultset = $this->table_gateway->selectWith($select);
+        if ($resultset->count()) {
+            $paiementIdMaxi = $resultset->current()->paiementId;
+        } else {
+            $paiementIdMaxi = - 1;
+        }
+        $where->lessThanOrEqualTo('paiementId', $paiementIdMaxi);
         return $this->table_gateway->update([
             'dateBordereau' => $date
         ], $where);
@@ -127,7 +139,6 @@ class Paiements extends AbstractSbmTable
      *            format dateMysql
      * @param int $codeModeDePaiement
      *            code du mode de paiement du bordereau à annuler
-     *
      * @return int Nombre de lignes du bordereau annulé
      */
     public function annuleBordereau($dateBordereau, $codeModeDePaiement)
@@ -150,7 +161,6 @@ class Paiements extends AbstractSbmTable
      *            mode de paiement concerné par ce bordereau
      * @param int $codeCaisseComptable
      *            code caisse du comptable
-     *
      * @return int
      */
     public function clotureDepot($dateBordereau, $codeModeDePaiement, $codeCaisseComptable)
@@ -168,8 +178,8 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Annule le dépôt d'un bordereau sans annuler le bordereau et replace les paiements dans la
-     * caisse indiquée.
+     * Annule le dépôt d'un bordereau sans annuler le bordereau et replace les paiements
+     * dans la caisse indiquée.
      *
      * @param string $dateDepot
      *            format dateMysql
@@ -179,7 +189,6 @@ class Paiements extends AbstractSbmTable
      *            code du mode de paiement du bordereau à annuler
      * @param int $codeCaisse
      *            code caisse dans laquelle les paiements concernés seront placés
-     *
      * @return int Nombre de lignes du bordereau du depot annulé
      */
     public function annuleDepot($dateDepot, $dateBordereau, $codeModeDePaiement,
@@ -197,13 +206,13 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Donnne la dernière dateBordereau du lot de paiements filtré par les paramètres donnés
+     * Donnne la dernière dateBordereau du lot de paiements filtré par les paramètres
+     * donnés
      *
      * @param int $codeModeDePaiement
      *            code d'un mode de paiement
      * @param bool $encours
      *            si true, renvoie la date du bordereau en cours ou null s'il n'y en a pas
-     *
      * @return string format dateMysql
      */
     public function dateDernierBordereau($codeModeDePaiement, $encours = false)
@@ -242,16 +251,15 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Renvoie le montant total d'un bordereau.
-     * Par défaut, n'examine que les bordereaux en cours.
-     * Si le codeModeDePaiement est null, renvoie le total des bordereaux en cours.
+     * Renvoie le montant total d'un bordereau. Par défaut, n'examine que les bordereaux
+     * en cours. Si le codeModeDePaiement est null, renvoie le total des bordereaux en
+     * cours.
      *
      * @param int|null $codeModeDePaiement
      *            code d'un mode de paiement
      * @param string|null $dateBordereau
-     *            string : date au format dateMysql
-     *            null (par défaut) : renvoie la somme du bordereau en cours
-     *
+     *            string : date au format dateMysql null (par défaut) : renvoie la somme
+     *            du bordereau en cours
      * @return float
      */
     public function sommeBordereau($codeModeDePaiement, $dateBordereau = null)

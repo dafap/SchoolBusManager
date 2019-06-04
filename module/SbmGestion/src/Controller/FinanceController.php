@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
+ * @date 04 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -660,14 +660,50 @@ class FinanceController extends AbstractActionController
                 if (empty($args['exercice'])) {
                     $args['exercice'] = null;
                 }
-                $now = DateLib::nowToMysql();
-                $n = $this->db_manager->get('Sbm\Db\Table\Paiements')->marqueBordereau(
-                    $now, $args['codeModeDePaiement'], $args['codeCaisse'],
-                    $args['exercice'], $args['anneeScolaire']);
-                $message = sprintf(
-                    'Un bordereau daté du %s a été créé. Il contient %d enregistrements.',
-                    DateLib::formatDateTimeFromMysql($now), $n);
-                $this->flashMessenger()->addSuccessMessage($message);
+                $nb_bordereau = 0;
+                $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+                $bloque = false;
+                $typeMessage = 'success';
+                try {
+                    $dateDernierBordereau = DateLib::formatDateFromMysql(
+                        $tPaiements->dateDernierBordereau($args['codeModeDePaiement']));
+                    $bloque = $dateDernierBordereau == DateLib::today();
+                } catch (\Exception $e) {
+                }
+                if ($bloque) {
+                    $message = "Impossible ! Un bordereau de ce type de paiement a déjà été créé aujourd'hui.";
+                    $typeMessage = 'warning';
+                } else {
+                    do {
+                        if ($nb_bordereau) {
+                            sleep(2); // pour imposer un changement dans $now
+                        }
+                        $nb_bordereau ++;
+                        $now = DateLib::nowToMysql();
+                        $n = $tPaiements->marqueBordereau($now,
+                            $args['codeModeDePaiement'], $args['codeCaisse'],
+                            $args['exercice'], $args['anneeScolaire']);
+                    } while ($n == $tPaiements::MAXI);
+                    if ($n == 0) {
+                        $n = 200;
+                        $nb_bordereau --;
+                    }
+                    if ($nb_bordereau <= 1) {
+                        if ($nb_bordereau) {
+                            $message = sprintf(
+                                'Un bordereau daté du %s a été créé. Il contient %d enregistrements.',
+                                DateLib::formatDateTimeFromMysql($now), $n);
+                        } else {
+                            $message = "Il n'y avait pas de paiements de ce type en attente de dépôt.";
+                        }
+                    } else {
+                        $message = sprintf(
+                            '%d bordereaux datés du %s ont été créés. Ils contienent %d enregistrements.',
+                            $nb_bordereau, DateLib::formatDateTimeFromMysql($now),
+                            $n + ($nb_bordereau - 1) * $tPaiements::MAXI);
+                    }
+                }
+                $this->flashMessenger()->addMessage($message, $typeMessage);
                 return $this->redirect()->toRoute('sbmgestion/finance',
                     [
                         'action' => 'paiement-depot'
