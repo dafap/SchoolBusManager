@@ -92,6 +92,7 @@ class EleveGestionController extends AbstractActionController
         return new ViewModel(
             [
                 'criteres_form' => $form,
+                'inscrit' => $choix == 'inscrit',
                 'paginator' => $choix == 'inscrit' ? $query->paginatorInscritsNonAffectes() : $query->paginatorPreinscritsNonAffectes(),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
                 'page' => $this->params('page', 1),
@@ -184,8 +185,7 @@ class EleveGestionController extends AbstractActionController
                             ]);
                     } else {
                         // le trajet est accordé. Il faut le préciser. On l'enregistrera
-                        // en phase
-                        // 2. Pour le moment, mettre la décision en session
+                        // en phase2. Pour le moment, mettre la décision en session
                         Session::set('decision', $decision);
                         $formDecision = new FormGestion\AffectationDecision(
                             $args['trajet'], 2);
@@ -227,7 +227,7 @@ class EleveGestionController extends AbstractActionController
         $eleve = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
             ->getEleveAdresse($args['eleveId'], $args['trajet'])
             ->current();
-        $formDecision->setData(array_merge($eleve, $args));
+        $formDecision->setData(array_merge($eleve->getArrayCopy(), $args));
 
         $oDistanceMatrix = $this->cartographie_manager->get(
             GoogleMaps\DistanceMatrix::class);

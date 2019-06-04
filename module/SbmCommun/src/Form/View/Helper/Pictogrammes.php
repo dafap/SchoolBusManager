@@ -1,7 +1,7 @@
 <?php
 /**
  * Construction des pictogrammes de début de ligne pour les listes
- * 
+ *
  * Usage :
  * - définir les pictogrammes d'une ligne
  *   $this->pictogrammes('init')->addPreinscrit($condition)->addSansAffectations($nb_affectations);
@@ -15,7 +15,7 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 jan. 2019
+ * @date 04 juin 2019
  * @version 2019-2.4.6
  */
 namespace SbmCommun\Form\View\Helper;
@@ -40,7 +40,7 @@ class Pictogrammes extends AbstractHelper
      *            si 'init' on renvoie une structure vide,
      *            si null on renvoie le code
      *            sinon on renvoie la structure pour la faire suivre d'une méthode d'ajout
-     *            
+     *
      * @return string|\SbmCommun\Form\View\Helper\Pictogrammes
      */
     public function __invoke($init = null)
@@ -84,7 +84,9 @@ class Pictogrammes extends AbstractHelper
 
     public function addDistanceZero($demande1, $distance1, $demande2, $distance2)
     {
-        if (($demande1 > 0 && $distance1 == 0.0) || ($demande2 > 0 && $distance2 == 0.0)) {
+        $zero1 = $distance1 == 0.0 || $distance1 == 99;
+        $zero2 = $distance2 == 0.0 || $distance2 == 99;
+        if (($demande1 > 0 && $zero1) || ($demande2 > 0 && $zero2)) {
             $this->pictogrammes[] = '<i class="fam-cog-error" title="Vérifier les distances"></i>';
         }
         return $this;

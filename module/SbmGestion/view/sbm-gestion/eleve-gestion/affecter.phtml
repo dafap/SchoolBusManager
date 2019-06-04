@@ -9,7 +9,7 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 04 juin 2019
  * @version 2019-2.5.0
  */
 // test sur le formulaire decision
@@ -31,6 +31,7 @@ $descriptionEta = addslashes(
         ]));
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/eleve-gestion', 'affecter.css');
 $this->jQuery();
 $this->headScript()->appendFile($this->url_api);
 $this->themeJS('commun', 'carte.js');
@@ -56,8 +57,8 @@ $tMarkers .= ']';
 // lancement des scripts d'initialisation
 $this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
-const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
+const CENTRE_LAT = <?= ($this->ptElv->getLatitude() + $this->ptEta->getLatitude()) / 2; ?>;
+const CENTRE_LNG = <?= ($this->ptElv->getLongitude() + $this->ptEta->getLongitude()) / 2; ?>;
 const INI_ZOOM = <?= $this->config['zoom']; ?>;
 initialiser("<?=$this->scheme;?>",<?= $tMarkers;?>);
 js_affecter.adaptedecision();
@@ -116,13 +117,13 @@ $adresse = implode(' - ',
     </div>
     <?= $this->form()->closeTag(); ?>
 <?php else:?>
-    <p>Transport accepté</p>
-					<p class="sbm-description">Précisez le circuit, le point de montée
-						et, en cas de correspondance, le point de descente et le circuit
-						suivant.'</p>
+    <h3>Transport accepté</h3>
 <?php endif;?>
 <?php if ($this->op > 1) : ?>
     <?= $this->form($this->decision);?>
+    <p class="sbm-description">Précisez le circuit, le point de montée
+						et, en cas de correspondance, le point de descente et le circuit
+						suivant.'</p>
 <?php endif;?>
     			</div>
 			</div>

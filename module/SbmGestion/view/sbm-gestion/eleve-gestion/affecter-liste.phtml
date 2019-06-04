@@ -2,14 +2,15 @@
 /**
  * Page d'affectation des élèves inscrits
  *
- * Présente la liste des élèves inscrits sans affectation et un bouton individuel pour les affecter à un circuit
- * 
+ * Présente la liste des élèves inscrits sans affectation et un bouton individuel
+ * pour les affecter à un circuit
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource affecter-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 fév. 2019
+ * @date 04 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -17,8 +18,19 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
-
 $url_retour = $this->url('sbmgestion/gestioneleve');
+$url_affecter = $this->url('sbmgestion/gestioneleve',
+    [
+        'action' => 'affecter',
+        'page' => $this->page
+    ]);
+$buttons = [
+    'affecter' => [
+        'class' => 'fam-car-add',
+        'formaction' => $url_affecter,
+        'title' => 'affecter'
+    ]
+];
 $hiddens = [];
 $actions = [
     'retour' => [
@@ -31,7 +43,8 @@ $actions = [
 <h1>Liste des élèves <?= $this->title;?> sans affectation</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
-		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="menu float-left">
+			<?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<div class="flashMessenger float-right">
 			<?= $this->flashMessenger()->render('success');?>
 			<?= $this->flashMessenger()->render('warning');?>
@@ -45,8 +58,10 @@ $actions = [
 		<table class="data">
 			<tbody>
 				<tr>
+					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
+					<th>Régime</th>
 					<th>Adresse</th>
 					<th>Commune</th>
 					<th>Etablissement scolaire</th>
@@ -57,15 +72,21 @@ $actions = [
 <?php
         $distance = $row['estR1'] ? $row['distanceR1'] : $row['distanceR2'];
         if ($row['district'] || $row['derogation']) {
-            $tr_css = $distance < 1 ? 'alert' : ($distance < 3 ? 'warning' : '');
+            if ($distance == 0 || $distance == 99) {
+                $tr_css = 'warning';
+            } elseif ($distance < 1) {
+                $tr_css = 'alert';
+            } else {
+                $tr_css = '';
+            }
         } else {
-            $tr_css = 'alert';
+            $tr_css = 'error';
         }
-        $url_affecter = $this->url('sbmgestion/gestioneleve',
-            [
-                'action' => 'affecter',
-                'page' => $this->page
-            ]);
+        $this->pictogrammes('init')
+            ->addPreinscrit(! $this->inscrit)
+            ->addSansPhoto(! $row['hasphoto'])
+            ->addDistanceZero($row['demandeR1'], $row['distanceR1'], $row['demandeR2'],
+            $row['distanceR2']);
         $hiddens = [
             'eleveId' => $row['eleveId'],
             'millesime' => $row['millesime'],
@@ -76,13 +97,6 @@ $actions = [
             'responsableId' => $row['responsableId'],
             'op' => 1
         ];
-        $buttons = [
-            'affecter' => [
-                'class' => 'fam-car-add',
-                'formaction' => $url_affecter,
-                'title' => 'affecter'
-            ]
-        ];
         $cle = implode('|',
             [
                 $row['millesime'],
@@ -91,15 +105,18 @@ $actions = [
                 $row['responsableId']
             ]);
         $adresse = implode('<br/>',
-            [
-                $this->escapeHtml($row['adresseL1']),
-                $this->escapeHtml($row['adresseL2'])
-            ]);
+            array_filter(
+                [
+                    $this->escapeHtml($row['adresseL1']),
+                    $this->escapeHtml($row['adresseL2'])
+                ]));
         ?>
             	<tr
-					class="<?= $tr_css . ' ' . $this->cycle(['even', 'odd'])->next(); ?>">
+					class="petit <?= $tr_css . ' ' . $this->cycle(['even', 'odd'])->next(); ?>">
+					<td><?= $this->pictogrammes(); ?></td>
 					<td><?= $this->escapeHtml($row['nom']); ?></td>
 					<td><?= $this->escapeHtml($row['prenom']); ?></td>
+					<td><?= $row['regimeId'] ? 'Interne' : 'DP';?></td>
 					<td><?= $adresse?></td>
 					<td><?= $this->escapeHtml($row['commune']); ?></td>
 					<td><?= $this->escapeHtml($row['etablissement']); ?></td>
@@ -107,7 +124,7 @@ $actions = [
 					<td><?= $distance; ?></td>
 					<td><?= $this->listeLigneActions($cle, $hiddens, $buttons); ?></td>
 				</tr>
-<?php endforeach;?>	
+<?php endforeach;?>
 		</tbody>
 		</table>
 	</div>
@@ -131,9 +148,8 @@ $actions = [
 			<p class="sbm-description float-right">
 				<span class="alert">En rouge</span> les demandes qui ne semblent pas
 				être éligibles, à moins d'une dérogation.<br> <span class="warning">En
-					bleu</span> les demandes d'élèves situés entre 1km et 3km de
-				l'établissement scolaire.<br> En noir les demandes d'élèves ayant
-				droit.
+					bleu</span> les demandes d'élèves où la distance n'a pas été
+				renseignée.<br> En noir les demandes d'élèves ayant droit.
 			</p>
 		</div>
 	</div>

@@ -7,7 +7,7 @@
  * @filesource localisation.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 04 juin 2019
  * @version 2019-2.5.0
  */
 function initialiser(scheme,tMarkers) {
@@ -37,7 +37,7 @@ function initialiser(scheme,tMarkers) {
             return scheme+"://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
         },
         tileSize: new google.maps.Size(256,256),
-        name: "OpenStreetMap",
+        name: "Carte",
         maxZoom: 18,
         opacity: 1,
         alt: "Carte OpenStreetMap"
