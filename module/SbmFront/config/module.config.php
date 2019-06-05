@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2018
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 use SbmFront\Controller;
@@ -36,8 +36,33 @@ return [
             'home' => [
                 'actions' => [
                     'hors-zone' => [
-                        'roles' => [
-                            'parent'
+                        'deny' => [
+                            'roles' => [
+                                'guest'
+                            ]
+                        ],
+                        'allow' => [
+                            'roles' => [
+                                'parent'
+                            ]
+                        ]
+                    ],
+                    'test' => [
+                        'deny' => [
+                            'roles' => [
+                                'guest',
+                                'parent',
+                                'transporteur',
+                                'etablissement',
+                                'secretariat',
+                                'gestion',
+                                'admin'
+                            ]
+                        ],
+                        'allow' => [
+                            'roles' => [
+                                'sadmin'
+                            ]
                         ]
                     ]
                 ]
