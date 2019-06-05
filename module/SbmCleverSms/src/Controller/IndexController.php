@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCleverSms\Controller;
@@ -132,11 +132,142 @@ class IndexController extends AbstractActionController
         ]);
         return new ViewModel(
             [
-
                 'form' => $form,
                 'destinataires' => (array) StdLib::getParam('responsable', $args, []),
                 'telephones' => $telephones
             ]);
+    }
+
+    /**
+     * Recherche un paramètre post parmi les suivants : circuitId, classeId, communeId,
+     * etablissementId, lotId, organismeId, serviceId, stationId, tarifId, transporteurId
+     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1). Cette
+     * méthode propose un formulaire de saisie mais ne traite pas la réponse afin de ne
+     * pas compliquer l'analyse du post.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response
+     */
+    public function envoiGroupeAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], 'cleversms/envoigroup');
+            if (empty($args)) {
+                return $this->retour(FlashMessenger::NAMESPACE_WARNING,
+                    'Aucun SMS envoyé.');
+            }
+            $initRedirectToOrigin = false;
+        } else {
+            $args = $prg;
+            if (! array_key_exists('page', $args)) {
+                $args['page'] = $this->params('page', 1);
+            }
+            Session::set('post', $args, 'cleversms/envoigroup');
+            $initRedirectToOrigin = true;
+        }
+        $oTelephones = new \SbmGestion\Model\Communication\Telephones($args);
+        if ($initRedirectToOrigin) {
+            $this->redirectToOrigin()->setBack($oTelephones->getUrlBack());
+        }
+        if ($oTelephones->getFilterName() == 'circuit') {
+            $oCircuit = $this->db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
+                $oTelephones->getFilterValue());
+            $oTelephones->setQueryParams(
+                [
+                    'serviceId' => $oCircuit->serviceId,
+                    'stationId' => $oCircuit->stationId
+                ]);
+        }
+        $qTelephones = $this->db_manager->get('Sbm\Db\Query\Responsable\Telephones');
+        $resultset = $qTelephones->{$oTelephones->getQueryMethod()}(
+            $oTelephones->getQueryParam());
+        $aTo = [];
+        foreach ($resultset as $row) {
+            if ($row['telephoneF']) {
+                $aTo[$row['telephoneF']] = $row['to'];
+            }
+            if ($row['telephoneP']) {
+                $aTo[$row['telephoneP']] = $row['to'];
+            }
+            if ($row['telephoneT']) {
+                $aTo[$row['telephoneT']] = $row['to'];
+            }
+        }
+        if (empty($aTo)) {
+            $message = 'Aucun numéro de téléphone trouvé. Pas d\'envoi.';
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, $message);
+        }
+        Session::set('aTo', $aTo, 'cleversms/envoigroup');
+        $form = $this->form_manager->get(\SbmCleverSms\Form\Sms::class);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmservicesms', [
+                'action' => 'envoi-groupe-send'
+            ]));
+        $view = new ViewModel(
+            [
+                'form' => $form,
+                'destinataires' => $aTo,
+                'telephones' => array_keys($aTo)
+            ]);
+        return $view->setTemplate('sbm-clever-sms/index/envoi-sms.phtml');
+    }
+
+    public function envoiGroupeSendAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, 'Aucun SMS envoyé.');
+        }
+        $aTo = Session::get('aTo', [], 'cleversms/envoigroup');
+        if (empty($aTo) || array_key_exists('cancel', $prg)) {
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, 'Aucun SMS envoyé.');
+        }
+        $form = $this->form_manager->get(\SbmCleverSms\Form\Sms::class);
+        $form->setData($prg);
+        if ($form->isValid()) {
+            $datas = json_encode(
+                [
+                    'datas' => [
+                        'text' => $form->getData()['body'],
+                        'encoding' => 3,
+                        'phoneNumbers' => array_keys($aTo)
+                    ]
+                ]);
+            $response = $this->curl_request->curlInitialize('pushs', 'POST', $datas)->curlExec();
+            if ($response->isValid()) {
+                try {
+                    $tCleverSms = $this->db_manager->get('Sbm\Db\Table\CleverSms');
+                    $oCleverSms = $tCleverSms->getObjData();
+                    $oCleverSms->exchangeArray(
+                        array_merge($response->getResponse()['push'],
+                            [
+                                'http_code' => $response->getCode()
+                            ]));
+                    $tCleverSms->saveRecord($oCleverSms);
+                    $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
+                        'Envoi du SMS effectué.');
+                } catch (\Exception $e) {
+                    $this->curl_request->getLogger()->log(Logger::ERR,
+                        $response->getMessage(), $response->getResponse()['push']);
+                    $this->curl_request->getLogger()->log(Logger::ERR, $e->getMessage());
+                    $this->curl_request->getLogger()->log(Logger::ERR,
+                        $e->getTraceAsString());
+                    $this->retour(FlashMessenger::NAMESPACE_ERROR,
+                        'Envoi du SMS effectué mais non enregistré.' .
+                        ' Pour consulter les réponses utiliser l\'interface de CleverSms.');
+                }
+            } else {
+                $response->getLogger()->log(Logger::WARN, $response->getMessage());
+                return $this->retour(FlashMessenger::NAMESPACE_WARNING,
+                    'Échec de l\'envoi du SMS : ' . $response->getMessage());
+            }
+        }
+        return $this->retour(FlashMessenger::NAMESPACE_INFO, 'Données invalides.');
     }
 
     public function supprAction()

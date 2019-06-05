@@ -13,7 +13,7 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -56,6 +56,12 @@ $url_rapports = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_retour = $this->url('sbmgestion/transport');
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/transport', [
@@ -155,6 +161,13 @@ $actions = [
                         'title' => 'élèves de ' . $commune->nom
                     ]
                 ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
                 ?>
             	<tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="departement">

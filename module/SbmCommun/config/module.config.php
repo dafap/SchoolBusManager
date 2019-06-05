@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
@@ -203,6 +203,7 @@ return [
             'Sbm\Db\Query\AffectationsServicesStations' => Query\Eleve\AffectationsServicesStations::class,
             'Sbm\Db\Query\Responsables' => Query\Responsable\Responsables::class,
             'Sbm\Db\Query\Responsable\Montants' => Query\Responsable\CalculMontant::class,
+            'Sbm\Db\Query\Responsable\Telephones' => Query\Responsable\Telephones::class,
             'Sbm\Db\Query\Etablissements' => Query\Etablissement\Etablissements::class,
             'Sbm\Db\Query\SecteursScolairesClgPu' => Query\Etablissement\SecteursScolairesClgPu::class,
             'Sbm\Db\Query\Services' => Query\Service\Services::class,

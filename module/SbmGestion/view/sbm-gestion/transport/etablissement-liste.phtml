@@ -11,7 +11,7 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
@@ -106,6 +106,12 @@ $url_localiser = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_retour = $this->url('sbmgestion/transport');
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [
     'back' => $this->url('sbmgestion/transport',
         [
@@ -214,6 +220,13 @@ $actions = [
                     'title' => 'élèves inscrits dans cet établissement scolaire'
                 ]
             ];
+            if ($this->layout()->hassbmservicesms) {
+                $buttons['sms'] = [
+                    'class' => 'fam-phone',
+                    'formaction' => $url_sms,
+                    'title' => 'Envoyer un SMS'
+                ];
+            }
             ?>
             	<tr
 					class="petit <?=$this->cycle(["even","odd"])->next();?>">

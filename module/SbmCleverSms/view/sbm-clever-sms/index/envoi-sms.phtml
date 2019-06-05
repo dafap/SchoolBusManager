@@ -7,7 +7,7 @@
  * @filesource envoi-sms.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -61,8 +61,8 @@ foreach ($this->telephones as $value) {
 	<?php if ($liste):?>
 	    <h3>Liste des destinataires</h3>
 		<ul>
-	    <?php foreach ($this->destinataires as $to):?>
-	        <li><?= $to['titre'] . ' ' . $to['nom'] . ' ' . $to['prenom'] . ' (' . $to['email'] . ')';?></li>
+	    <?php foreach ($this->destinataires as $key => $to):?>
+	        <li><?= $to . ' (' . $key . ')';?></li>
 	    <?php endforeach;?>
 	    </ul>
 	<?php endif;?>

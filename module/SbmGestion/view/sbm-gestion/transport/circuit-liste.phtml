@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -25,7 +25,7 @@ function renderCheckbox($view, $name, $id, $value)
 }
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->themeJS('gestion-transport','circuit-liste.js');
+$this->themeJS('gestion-transport', 'circuit-liste.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle de jsCallback pour selection
@@ -73,6 +73,12 @@ $url_modifhoraires = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_retour = $this->url('sbmgestion/transport');
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/transport', [
@@ -86,12 +92,6 @@ $actions = [
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
-    /*'dupliquer' => [
-        'class' => $this->circuitsVides ? 'fam-plugin-add' : 'fam-plugin-delete',
-        'formaction' => $this->circuitsVides ? $url_dupliquer : $url_vider,
-        'title' => ($this->circuitsVides ? 'Générer' : 'Vider') .
-        ' les circuits pour l\'année scolaire ' . $this->as
-    ],*/
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
@@ -176,6 +176,13 @@ $actions = [
                         $circuit->serviceId, $circuit->station)
                 ]
             ];
+            if ($this->layout()->hassbmservicesms) {
+                $buttons['sms'] = [
+                    'class' => 'fam-phone',
+                    'formaction' => $url_sms,
+                    'title' => 'Envoyer un SMS'
+                ];
+            }
             $css = $this->cycle([
                 "even",
                 "odd"

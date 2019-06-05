@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
@@ -98,6 +98,12 @@ $url_suppr_doublon = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_retour = $this->url('sbmgestion/transport');
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [
     'back' => $url_origine
 ];
@@ -213,6 +219,13 @@ $actions = [
                             $station->commune)
                     ]
                 ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
                 ?>
                 <tr class="petit <?=$css;?>">
 					<td>

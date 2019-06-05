@@ -12,7 +12,7 @@
  * @filesource organisme-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -72,6 +72,12 @@ $url_group = $this->url('sbmgestion/finance',
         'action' => 'organisme-group',
         'id' => $this->page
     ]);
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/finance', [
@@ -152,6 +158,13 @@ $actions = [
                         'title' => 'élèves pris en chage par ' . $organisme->nom
                     ]
                 ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
                 ?>
                 <tr class="<?=$this->cycle(["even","odd"])->next();?>">
 					<td class="nom">

@@ -9,7 +9,7 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 sept.2018
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller;
@@ -79,11 +79,11 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
+
         // dump de l'objet 'obj'
         return new ViewModel(
             [
-                'obj' => null,
-                'type' => null
+                'obj' =>  null
             ]);
     }
 }

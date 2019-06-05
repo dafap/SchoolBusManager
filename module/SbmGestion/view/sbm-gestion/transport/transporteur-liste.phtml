@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/transport/transporteur-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 function renderCheckbox($view, $name, $id, $value)
@@ -76,6 +76,12 @@ $url_group = $this->url('sbmgestion/transport',
         'action' => 'transporteur-group',
         'id' => $this->page
     ]);
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
 $hiddens = [];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/transport', [
@@ -164,6 +170,13 @@ $actions = [
                         'title' => 'élèves pris en chage par ' . $transporteur->nom
                     ]
                 ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
                 ?>
                 <tr class="petit <?=$css;?>">
 					<td class="nom">

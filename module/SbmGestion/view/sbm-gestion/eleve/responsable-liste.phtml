@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2019
+ * @date 05 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
@@ -24,6 +24,7 @@ function renderCheckbox($view, $name, $id, $value)
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
+$this->themeJS('gestion-eleve', 'responsable-liste.js');
 $jsCallback = '';
 $jsTrigger = '';
 // modèle pour le jsCallback de selection
@@ -93,6 +94,15 @@ if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms', [
         'action' => 'envoi-sms'
     ]);
+    $actions_selection['sms'] = [
+        'class' => 'fam-phone',
+        'formaction' => $this->url('sbmservicesms',
+            [
+                'action' => 'envoi-groupe',
+                'page' => $this->page
+            ]),
+        'title' => 'Envoyer un SMS à tous les responsables sélectionnés'
+    ];
 }
 $url_retour = $this->url('sbmgestion');
 $hiddens = [];
@@ -293,6 +303,14 @@ $actions = [
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
+			<div class="sbm-description float-left">Pour envoyer un même message
+				à plusieurs responsables, sélectionnez-les.</div>
+			<div class="selection">
+				Pour les fiches sélectionnées :
+				<div class="menu float-right">
+					<?=$this->listeZoneActions([], $actions_selection);?>
+				</div>
+			</div>
 			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper responsables">
 			<?=$this->form()->openTag($this->criteres_form);?>
