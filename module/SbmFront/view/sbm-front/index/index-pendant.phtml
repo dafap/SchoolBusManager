@@ -7,8 +7,8 @@
  * @filesource view/sbm-front/index/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
- * @version 2019-2.4.7
+ * @date 05 juin 2019
+ * @version 2019-2.4.8
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -19,6 +19,8 @@ $url_carte = $this->url('sbmcarte', [
 ]);
 
 $communes_membres = implode(', ', $this->communes_membres);
+
+$liste_permanences = implode('</li><li>', $this->permanences);
 
 $format = <<<EOT
 <p class="premiere">La période d’inscription %s est ouverte du %s au %s. 
@@ -43,12 +45,8 @@ Les paiements peuvent se faire:
 <ul>
 <li>par carte bancaire sur ce site pour recevoir la carte de transport scolaire par courrier courant août ;</li>
 <li>par chèque ou espèces à la Communauté de communes lors des permanences (9h-12h30 et 13h30-17h30) 
-    organisées par date pour les habitants de : 
+    organisées les : 
 <ul>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
-<li>%s</li>
 <li>%s</li>
 </ul>La carte de transport sera donnée sur place.
 </li>
@@ -73,8 +71,7 @@ EOT;
 $msg = sprintf($format, $this->as, $this->etat['dateDebut']->format('d/m/Y'), 
     $this->etat['dateFin']->format('d/m/Y'), $this->etat['echeance']->format('d/m/Y'), 
     count($this->communes_membres), $this->client['name'], $communes_membres, 
-    $this->permanences[0], $this->permanences[1], $this->permanences[2], 
-    $this->permanences[3], $this->permanences[4], count($this->communes_membres), 
+    $liste_permanences, count($this->communes_membres), 
     $this->telephone($this->client['telephone']), $this->client['email'], 
     $this->client['name'], $this->client['adresse'][0], $this->client['adresse'][1], 
     $this->client['code_postal'], $this->client['commune'], count($this->communes_membres), 
