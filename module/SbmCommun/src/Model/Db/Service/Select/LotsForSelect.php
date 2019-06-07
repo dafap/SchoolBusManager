@@ -8,7 +8,7 @@
  * @filesource LotsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 7 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -40,7 +40,7 @@ class LotsForSelect implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         $this->table_name = $this->db_manager->getCanonicName('lots', 'table');
-        $this->table_name = $this->db_manager->getCanonicName('lots', 'vue');
+        $this->vue_name = $this->db_manager->getCanonicName('lots', 'vue');
         return $this;
     }
 
