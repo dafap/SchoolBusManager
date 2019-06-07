@@ -8,7 +8,7 @@
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
+ * @date 7 juin 2019
  * @version 2019-2.4.8
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -36,7 +36,7 @@ class User extends AbstractObjectData
             if (!$categorieId) {
                 $this->categorieId = 1;
             }
-        } catch (Exception\OutOfBoundsException $e) {
+        } catch (Exception $e) {
             $this->categorieId = 1;
         }
         if (! isset($this->mdp)) {
