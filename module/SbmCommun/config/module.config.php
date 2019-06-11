@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
+ * @date 11 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
@@ -156,7 +156,6 @@ return [
             'Sbm\Db\Vue\Circuits' => Table\Vue\Circuits::class,
             'Sbm\Db\Vue\Classes' => Table\Vue\Classes::class,
             'Sbm\Db\Vue\Etablissements' => Table\Vue\Etablissements::class,
-            'Sbm\Db\Vue\EtablissementsServices' => Table\Vue\EtablissementsServices::class,
             'Sbm\Db\Vue\Lots' => Table\Vue\Lots::class,
             'Sbm\Db\Vue\Organismes' => Table\Vue\Organismes::class,
             'Sbm\Db\Vue\Paiements' => Table\Vue\Paiements::class,
@@ -169,14 +168,13 @@ return [
             'Sbm\Db\VueGateway\Circuits' => TableGateway\Vue\TableGatewayCircuits::class,
             'Sbm\Db\VueGateway\Classes' => TableGateway\Vue\TableGatewayClasses::class,
             'Sbm\Db\VueGateway\Etablissements' => TableGateway\Vue\TableGatewayEtablissements::class,
-            'Sbm\Db\VueGateway\EtablissementsServices' => TableGateway\Vue\TableGatewayEtablissementsServices::class,
             'Sbm\Db\VueGateway\Lots' => TableGateway\Vue\TableGatewayLots::class,
             'Sbm\Db\VueGateway\Organismes' => TableGateway\Vue\TableGatewayOrganismes::class,
             'Sbm\Db\VueGateway\Paiements' => TableGateway\Vue\TableGatewayPaiements::class,
             'Sbm\Db\VueGateway\Responsables' => TableGateway\Vue\TableGatewayResponsables::class,
             'Sbm\Db\VueGateway\Services' => TableGateway\Vue\TableGatewayServices::class,
             'Sbm\Db\VueGateway\Stations' => TableGateway\Vue\TableGatewayStations::class,
-            'Sbm\Db\VueGateway\Tarifs'=> TableGateway\Vue\TableGatewayTarifs::class,
+            'Sbm\Db\VueGateway\Tarifs' => TableGateway\Vue\TableGatewayTarifs::class,
             'Sbm\Db\VueGateway\Transporteurs' => TableGateway\Vue\TableGatewayTransporteurs::class,
 
             'Sbm\Db\Select\Bordereaux' => Select\BordereauxForSelect::class,
@@ -203,8 +201,10 @@ return [
             'Sbm\Db\Query\AffectationsServicesStations' => Query\Eleve\AffectationsServicesStations::class,
             'Sbm\Db\Query\Responsables' => Query\Responsable\Responsables::class,
             'Sbm\Db\Query\Responsable\Montants' => Query\Responsable\CalculMontant::class,
+            'Sbm\Db\Query\Responsable\Emails' => Query\Responsable\Emails::class,
             'Sbm\Db\Query\Responsable\Telephones' => Query\Responsable\Telephones::class,
             'Sbm\Db\Query\Etablissements' => Query\Etablissement\Etablissements::class,
+            'Sbm\Db\Query\EtablissementsServices' => SbmCommun\Model\Db\Service\Query\Etablissement\EtablissementsServices::class,
             'Sbm\Db\Query\SecteursScolairesClgPu' => Query\Etablissement\SecteursScolairesClgPu::class,
             'Sbm\Db\Query\Services' => Query\Service\Services::class,
             'Sbm\Db\Query\SimulationEtablissements' => Query\Etablissement\SimulationEtablissements::class,

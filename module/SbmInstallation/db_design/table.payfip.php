@@ -14,8 +14,8 @@ use SbmBase\Model\StdLib;
 
 return [
     'name' => 'payfip',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
     'structure' => [

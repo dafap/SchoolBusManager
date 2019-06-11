@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -85,7 +85,7 @@ $actions = [
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
 			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
-			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> - 
+			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> -
 						<?= $this->escapeHtml($this->circuit->communeStation); ?></li>
 			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
 			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
@@ -153,7 +153,7 @@ $actions = [
         ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto']);
     ?>
-			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+			    <tr class="petit <?= $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>

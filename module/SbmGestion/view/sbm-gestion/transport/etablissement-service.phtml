@@ -111,6 +111,7 @@ $data = $this->paginator->getCurrentItems();
             foreach ($data as $entity) :
                 ?>
             	<?php
+            	$entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
                 $nbInscrits = $this->effectifEtablissementsServices->transportes(
                     $entity->serviceId);
                 $css = $this->cycle([

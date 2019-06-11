@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
+ * @date 11 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -1847,10 +1847,9 @@ class TransportController extends AbstractActionController
                     'page' => $pageRetour
                 ]);
         }
-        $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
+        $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
         $where = new Where();
-        $where->equalTo('etablissementId', $etablissementId)->equalTo('cir_millesime',
-            Session::get('millesime'));
+        $where->equalTo('etablissementId', $etablissementId);
         $effectifEtablissementsServices = $this->db_manager->get(
             'Sbm\Db\Eleve\EffectifEtablissementsServices');
         $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
@@ -1859,7 +1858,7 @@ class TransportController extends AbstractActionController
 
                 'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                     $etablissementId),
-                'paginator' => $table->paginator($where),
+                'paginator' => $table->paginatorES($where),
                 'count_per_page' => 15,
                 'effectifEtablissementsServices' => $effectifEtablissementsServices,
                 'page' => $currentPage
@@ -1982,7 +1981,7 @@ class TransportController extends AbstractActionController
                     'page' => $pageRetour
                 ]);
         }
-        $table = $this->db_manager->get('Sbm\Db\Vue\EtablissementsServices');
+        $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
         $effectifServicesEtablissements = $this->db_manager->get(
             'Sbm\Db\Eleve\EffectifServicesEtablissements');
         $effectifServicesEtablissements->setCaractereConditionnel($serviceId)->init();
@@ -1993,8 +1992,7 @@ class TransportController extends AbstractActionController
                     $serviceId),
                 'data' => $table->fetchAll(
                     [
-                        'serviceId' => $serviceId,
-                        'cir_millesime' => Session::get('millesime')
+                        'serviceId' => $serviceId
                     ]),
                 'effectifServicesEtablissements' => $effectifServicesEtablissements,
                 'page' => $currentPage,

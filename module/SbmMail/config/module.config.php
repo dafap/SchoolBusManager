@@ -9,9 +9,10 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2018
+ * @date 05 juin 2018
  * @version 2018-2.5.0
  */
+use SbmBase\Model\StdLib;
 use SbmMail\Controller;
 use SbmMail\Model;
 use SbmMail\Form\Mail;
@@ -52,15 +53,16 @@ return [
                  */
                 'transportSsl' => [
                     'use_ssl' => false,
+                    // ssl | tls
                     'connection_type' => 'tls'
                 ]
-            ], // ssl | tls
-
+            ],
             'message' => [
                 'type' => 'text/html',
                 'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,
                 'message_encoding' => 'UTF-8'
-            ]
+            ],
+            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs')
         ]
     ],
     'form_manager' => [

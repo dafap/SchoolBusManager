@@ -16,11 +16,13 @@
  */
 namespace SbmMail\Controller;
 
+use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmMail\Form;
 use SbmMail\Model\Template as MailTemplate;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
@@ -209,5 +211,164 @@ class IndexController extends AbstractActionController
         return $this->getResponse()
             ->setContent($message)
             ->setStatusCode(200);
+    }
+
+    /**
+     * Recherche un paramètre post parmi les suivants : circuitId, classeId, communeId,
+     * etablissementId, lotId, organismeId, serviceId, stationId, tarifId, transporteurId
+     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1). Cette
+     * méthode propose un formulaire de saisie mais ne traite pas la réponse afin de ne
+     * pas compliquer l'analyse du post.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response
+     */
+    public function envoiGroupeAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], 'sbmmail/envoigroup');
+            if (empty($args)) {
+                return $this->retour(FlashMessenger::NAMESPACE_WARNING,
+                    'Aucun SMS envoyé.');
+            }
+            $initRedirectToOrigin = false;
+        } else {
+            $args = $prg;
+            if (! array_key_exists('page', $args)) {
+                $args['page'] = $this->params('page', 1);
+            }
+            Session::set('post', $args, 'sbmmail/envoigroup');
+            $initRedirectToOrigin = true;
+        }
+        $oEmails = new \SbmGestion\Model\Communication\Emails($args);
+        if ($initRedirectToOrigin) {
+            $this->redirectToOrigin()->setBack($oEmails->getUrlBack());
+        }
+        if ($oEmails->getFilterName() == 'circuit') {
+            $oCircuit = $this->db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
+                $oEmails->getFilterValue());
+            $oEmails->setQueryParams(
+                [
+                    'serviceId' => $oCircuit->serviceId,
+                    'stationId' => $oCircuit->stationId
+                ]);
+        }
+        $qEmails = $this->db_manager->get('Sbm\Db\Query\Responsable\Emails');
+        $resultset = $qEmails->{$oEmails->getQueryMethod()}($oEmails->getQueryParam());
+        $aTo = [];
+        foreach ($resultset as $row) {
+            $aTo[$row['email']] = $row['to'];
+        }
+        if (empty($aTo)) {
+            $message = 'Aucun email trouvé. Pas d\'envoi.';
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, $message);
+        }
+        Session::set('aTo', $aTo, 'sbmmail/envoigroup');
+        $form = $this->form_manager->get(Form\Mail::class);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('SbmMail', [
+                'action' => 'envoi-groupe-send'
+            ]));
+        $view = new ViewModel(
+            [
+                'form' => $form,
+                'destinataires' => $aTo,
+                'emails' => array_keys($aTo)
+            ]);
+        return $view->setTemplate('sbm-mail/index/index.phtml');
+    }
+
+    public function envoiGroupeSendAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, 'Aucun SMS envoyé.');
+        }
+        $aTo = Session::get('aTo', [], 'sbmmail/envoigroup');
+        if (empty($aTo) || array_key_exists('cancel', $prg)) {
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING, 'Aucun SMS envoyé.');
+        }
+        $destinataires = [];
+        foreach ($aTo as $key => $value) {
+            $destinataires[] = [
+                'email' => $key,
+                'name' => $value
+            ];
+        }
+        $form = $this->form_manager->get(Form\Mail::class);
+        $form->setData($prg);
+        if ($form->isValid()) {
+            $data = $form->getData();
+            // préparation du corps
+            if ($data['body'] == strip_tags($data['body'])) {
+                // c'est du txt
+                $body = nl2br($data['body']);
+            } else {
+                // c'est du html
+                $body = $data['body'];
+            }
+            // préparation des paramètres d'envoi
+            $auth = $this->authenticate->by();
+            $user = $auth->getIdentity();
+            $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+            $mailTemplate = new MailTemplate(null, 'layout',
+                [
+                    'file_name' => $logo_bas_de_mail,
+                    'path' => StdLib::getParam('path', $this->img),
+                    'img_attributes' => StdLib::getParamR(
+                        [
+                            'administrer',
+                            $logo_bas_de_mail
+                        ], $this->img),
+                    'client' => $this->client
+                ]);
+
+            $params = [
+                'bcc' => $destinataires,
+                'to' => [
+                    [
+                        'email' => $user['email'],
+                        'name' => 'School bus manager'
+                    ]
+                ],
+                'subject' => $data['subject'],
+                'body' => [
+                    'html' => $mailTemplate->render([
+
+                        'body' => $body
+                    ])
+                ]
+            ];
+            // envoi du mail
+            $this->getEventManager()->addIdentifiers('SbmMail\Send');
+            $this->getEventManager()->trigger('sendMail', null, $params);
+            return $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
+                'Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
+        }
+        return $this->retour(FlashMessenger::NAMESPACE_INFO, 'Données invalides.');
+    }
+
+    /**
+     *
+     * @param string $flashnamespace
+     *            prend ses valeurs dans les constantes de FlashMessenger
+     * @param string $flashmsg
+     * @return \Zend\Http\Response
+     */
+    private function retour(string $flashnamespace, string $flashmsg)
+    {
+        $this->flashMessenger()->addMessage($flashmsg, $flashnamespace);
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
     }
 }

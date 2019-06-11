@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/classe-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
+ * @date 11 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -150,7 +150,7 @@ $data = $this->paginator->getCurrentItems();
         ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto']);
     ?>
-			    <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+			    <tr class="petit <?= $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>

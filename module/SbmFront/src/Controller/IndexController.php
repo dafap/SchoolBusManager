@@ -80,10 +80,19 @@ class IndexController extends AbstractActionController
     public function testAction()
     {
 
+        try {
+            $client = new \Zend\Soap\Client("https://www.tipi.budget.gouv.fr/tpa/services/securite");
+            //$result = $client->GetCountries();
+            //print_r($result);
+        } catch (\SoapFault $s) {
+            die('ERROR: [' . $s->faultcode . '] ' . $s->faultstring);
+        } catch (\Exception $e) {
+            die('ERROR: ' . $e->getMessage());
+        }
         // dump de l'objet 'obj'
         return new ViewModel(
             [
-                'obj' =>  null
+                'obj' =>  $client
             ]);
     }
 }
