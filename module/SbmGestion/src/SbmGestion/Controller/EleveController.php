@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
+ * @date 13 juin 2019
  * @version 2019-2.4.8
  */
 namespace SbmGestion\Controller;
@@ -527,9 +527,9 @@ class EleveController extends AbstractActionController
             ]);
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
-            $ophoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
                 $eleveId);
-            $dataphoto = $ophoto->image_src($ophoto->photo, 'jpeg');
+            $dataphoto = $ophoto->img_src($elevephoto->photo, 'jpeg');
         } catch (\Exception $e) {
             $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
         }
