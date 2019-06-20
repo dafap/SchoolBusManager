@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 16 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller\Service;
@@ -42,7 +42,7 @@ class IndexControllerFactory implements FactoryInterface
             ], $config_application),
             'mailchimp_key' => StdLib::getParamR([
                 'sbm',
-                'mailchimp'
+                'servicemail'
             ], $config_application, ''),
             'img' => StdLib::getParamR([
                 'sbm',

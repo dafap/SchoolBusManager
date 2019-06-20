@@ -51,9 +51,11 @@ $url_edit_mailchimp = $this->url('sbminstall', [
 $url_edit_sites = $this->url('sbminstall', [
     'action' => 'edit-sites'
 ]);
-$url_edit_systempay = $this->url('sbminstall', [
-    'action' => 'edit-systempay'
-]);
+//var_dump($this->plateforme_paiement);
+$url_edit_plateforme_paiement = $this->url('sbminstall',
+    [
+        'action' => 'edit-' . strtolower($this->plateforme_paiement['plateforme'])
+    ]);
 $url_edit_page = $this->url('sbminstall', [
     'action' => 'edit-page'
 ]);
@@ -93,11 +95,6 @@ $actions = [
 			<?php
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Configuration de la table calendar',
-        'formaction' => $url_config_calendar
-    ]);
-echo $this->ligneMenuAction('fam-bullet-go', [],
-    [
         'value' => 'Création des tables',
         'formaction' => $url_create
     ]);
@@ -108,13 +105,13 @@ echo $this->ligneMenuAction('fam-bullet-go', [],
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Configuration de l\'API de CleverSMS Light',
-        'formaction' => $url_edit_cleversms
+        'value' => 'Gestion des informations de l\'organisateur',
+        'formaction' => $url_edit_client
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Gestion des informations de l\'organisateur',
-        'formaction' => $url_edit_client
+        'value' => 'Gestion des liens',
+        'formaction' => $url_edit_sites
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [
     'filename' => 'sbm.css'
@@ -124,13 +121,18 @@ echo $this->ligneMenuAction('fam-bullet-go', [
 ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Paramétrage de Google Maps API',
-        'formaction' => $url_edit_google_maps_api
+        'value' => 'Gestion des images de l\'application',
+        'formaction' => $url_edit_images
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Gestion des images de l\'application',
-        'formaction' => $url_edit_images
+        'value' => 'Configuration de la table calendar',
+        'formaction' => $url_config_calendar
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration du courrier électronique',
+        'formaction' => $url_edit_mail
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
@@ -139,8 +141,8 @@ echo $this->ligneMenuAction('fam-bullet-go', [],
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Paramétrage du courrier électronique',
-        'formaction' => $url_edit_mail
+        'value' => 'Configuration de l\'API de Google Maps API',
+        'formaction' => $url_edit_google_maps_api
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
@@ -149,13 +151,13 @@ echo $this->ligneMenuAction('fam-bullet-go', [],
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Gestion des liens',
-        'formaction' => $url_edit_sites
+        'value' => 'Configuration de l\'API de CleverSMS Light',
+        'formaction' => $url_edit_cleversms
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [
-        'value' => 'Paramétrage de systempay',
-        'formaction' => $url_edit_systempay
+        'value' => 'Configuration de l\'API de PayFiP',
+        'formaction' => $url_edit_plateforme_paiement
     ]);
 ?>
 			</ul>
@@ -189,10 +191,11 @@ foreach ($this->files as $dossier) {
 		</form>
 			</fieldset>
 			<fieldset class="sbm-page1">
-			<legend>Variables d'environnement</legend>
-			<form method="post" action="<?=$url_var_env;?>">
-			<input type="submit" class="default" name="var-env" value="Examiner">
-			</form>
+				<legend>Variables d'environnement</legend>
+				<form method="post" action="<?=$url_var_env;?>">
+					<input type="submit" class="default" name="var-env"
+						value="Examiner">
+				</form>
 			</fieldset>
 		</div>
 	</div>

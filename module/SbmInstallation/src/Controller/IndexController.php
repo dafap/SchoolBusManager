@@ -57,9 +57,8 @@ class IndexController extends AbstractActionController
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbminstall');
         }
-        $config_paiement = $this->config_paiement;
-        $fileNamePaiement = strtolower($config_paiement['plateforme']) . '_error.log';
-        $filePaiement = StdLib::concatPath($config_paiement['path_filelog'],
+        $fileNamePaiement = strtolower($this->config_paiement['plateforme']) . '_error.log';
+        $filePaiement = StdLib::concatPath($this->config_paiement['path_filelog'],
             $fileNamePaiement);
         if (! file_exists($filePaiement)) {
             $f = fopen($filePaiement, 'w');
@@ -165,9 +164,8 @@ class IndexController extends AbstractActionController
         }
         if ($prg['fichier'] == 'paiement') {
             $title = 'Historique des transactions de la plateforme de paiement';
-            $config_paiement = $this->config_paiement;
-            $filename = strtolower($config_paiement['plateforme']) . '_error.log';
-            $filename = StdLib::concatPath($config_paiement['path_filelog'], $filename);
+            $filename = strtolower($this->config_paiement['plateforme']) . '_error.log';
+            $filename = StdLib::concatPath($this->config_paiement['path_filelog'], $filename);
         } else {
             $title = 'Contenu du fichier d\'erreurs';
             $filename = $this->error_log;
@@ -573,7 +571,8 @@ class IndexController extends AbstractActionController
         return new ViewModel(
             [
                 'theme' => $this->theme,
-                'files' => scandir(StdLib::findParentPath(__DIR__, 'config/themes'))
+                'files' => scandir(StdLib::findParentPath(__DIR__, 'config/themes')),
+                'plateforme_paiement' => $this->config_paiement
             ]);
     }
 
@@ -1096,6 +1095,44 @@ class IndexController extends AbstractActionController
                 'fieldsN2' => [
                     'authorized_ip',
                     'certificat'
+                ]
+            ]);
+        $view->setTemplate('sbm-installation/index/edit-arrayn2asso.phtml');
+        return $view;
+    }
+
+    public function editPayfipAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        } elseif (array_key_exists('submit', $args)) {
+            $this->theme->setConfigFileN2Asso('payfip.config.php', $args,
+                [
+                    'certificat',
+                    'saisie'
+                ]);
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        }
+        $view = new ViewModel(
+            [
+                'titrePage' => 'Configuration de PayFiP',
+                'theme' => $this->theme->getTheme(),
+                'config_sites' => $this->theme->getConfigFile('payfip.config.php'),
+                'labelButton' => 'Ajouter une ligne ',
+                'fieldsN2' => [
+                    'authorized_ip',
+                    'saisie'
                 ]
             ]);
         $view->setTemplate('sbm-installation/index/edit-arrayn2asso.phtml');
