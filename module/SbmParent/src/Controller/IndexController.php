@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2019
+ * @date 20 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -188,7 +188,7 @@ class IndexController extends AbstractActionController
                     $args['etablissementId']);
                 $form->setValueOptions('classeId',
                     $this->db_manager->get('Sbm\Db\Select\Classes')
-                    ->niveau($etablissement->niveau, 'in'));
+                        ->niveau($etablissement->niveau, 'in'));
             }
             $form->setData($args);
             $hasGa = StdLib::getParam('ga', $args, false);
@@ -570,62 +570,6 @@ class IndexController extends AbstractActionController
                     'Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances(
                     $args['id'])
             ]);
-    }
-
-    /**
-     * Cette méthode n'est pas utilisée pour SystemPay car elle n'ouvre pas correctement
-     * la page de paiement. Doit lancer un évènement - identifiant :
-     * 'SbmPaiement\AppelPlateforme' - évènement : 'appelPaiement' - target : objet
-     * enregistré sous 'SbmPaiement\Plugin\Plateforme' - params : [ 'montant' => ..., //
-     * en euros 'count' => 1, // 1 pour un règlement comptant (sinon, le nombre
-     * d'échéances) 'first' => montant, // égal au montant en euros pour un paiement
-     * comptant 'period' => 1, // peu importe pour un paiement comptant 'email' => ..., //
-     * du responsable 'responsableId' => ..., 'nom' => ..., // du responsable 'prenom' =>
-     * ..., // du responsable 'eleveIds' => [eleveId, eleveId, ...] // tableau simple des
-     * eleveId concernés ]
-     *
-     * @return \Zend\Http\PhpEnvironment\Response
-     */
-    public function payerAction()
-    {
-        try {
-            $responsable = $this->responsable->get();
-        } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'logout'
-            ]);
-        }
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false) {
-            return $this->redirect()->toRoute('sbmparent');
-        }
-        $args = $prg ?: [];
-        // args = ['montant' => ..., 'payer' => ...]
-        $preinscrits = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getElevesPreinscrits(
-            $responsable->responsableId);
-        $elevesIds = [];
-        foreach ($preinscrits as $row) {
-            if (! $row['selectionScolarite']) {
-                $elevesIds[] = $row['eleveId'];
-            }
-        }
-        $params = [
-            'montant' => $args['montant'],
-            'count' => 1,
-            'first' => $args['montant'],
-            'period' => 1,
-            'email' => $responsable->email,
-            'responsableId' => $responsable->responsableId,
-            'nom' => $responsable->nom,
-            'prenom' => $responsable->prenom,
-            'eleveIds' => $elevesIds
-        ];
-        $this->getEventManager()->addIdentifiers('SbmPaiement\AppelPlateforme');
-        $this->getEventManager()->trigger('appelPaiement',
-            $this->local_manager->get('SbmPaiement\Plugin\Plateforme'), $params);
-        return $this->redirect()->toUrl('https://paiement.systempay.fr/vads-payment/');
     }
 
     public function horairesAction()
