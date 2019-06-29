@@ -8,7 +8,7 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2019
+ * @date 28 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Plugin\PayFiP\Db\Table;
@@ -66,18 +66,42 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                         'class' => 'sbm-error'
                     ]
                 ]
+            ],[
+                'type'=> 'text',
+                'name' => 'exer',
+                'attributes'=>[
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Exercice',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
             ],
             [
                 'type' => 'Zend\Form\Element\Date',
                 'name' => 'dattrans',
                 'attributes' => [
                     'id' => 'critere-dattrans',
-                    'class' => ''
                 ],
                 'options' => [
                     'label' => 'Date du paiement',
-                    'label_attributes' => [
-                        'class' => ''
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ],
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'saisie',
+                'options' => [
+                    'label' => 'Mode',
+                    'empty_option' => 'Tous',
+                    'value_options' => [
+                        'T' => 'Test',
+                        'X' => 'Activation',
+                        'W' => 'Production'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -112,8 +136,8 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     /**
      * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire. Le
      * format créé est de la forme Y-m-d. Ici il faut Ymd.
-     * @todo à vérifier
      *
+     * @todo à vérifier
      * @param Where $where
      */
     public function adapteWhere(Where &$where)
@@ -123,12 +147,16 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
             foreach ($predicate as &$item) {
                 if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
                     $item->getIdentifier() == 'dattrans') {
-                        $item->setLike(str_replace('-', '', $item->getLike()));
+                    $datetmp = \DateTime::createFromFormat('Y-m-d|%', $item->getLike());
+                    if ($datetmp) {
+                        $item->setLike($datetmp->format('dmY'));
+                        // le % terminal est supprimé - comparaison stricte
                     }
-                    if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
-                        $item->getIdentifier() == 'titulaire') {
-                            $item->setLike('%' . $item->getLike());
-                        }
+                }
+                if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
+                    $item->getIdentifier() == 'titulaire') {
+                    $item->setLike('%' . $item->getLike());
+                }
             }
         }
     }

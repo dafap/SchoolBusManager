@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -162,6 +162,15 @@ class ElevesResponsables extends AbstractQuery
         if (is_null($millesime)) {
             $millesime = $this->millesime;
         }
+        $where_appel = new Where();
+        $where_appel->literal('notified = 0')->like('refdet', $this->millesime . '%');
+        $select_appels = $this->sql->select(
+            $this->db_manager->getCanonicName('appels', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+            ->where($where_appel);
         $where->equalTo('sco.millesime', $millesime);
         $select = clone $this->select;
         $select->join(
@@ -266,6 +275,13 @@ class ElevesResponsables extends AbstractQuery
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], $select::JOIN_LEFT)
+            ->join([
+            'appels' => $select_appels
+        ], 'appels.eleveId = ele.eleveId',
+            [
+                'appelNotifieOk' => new Expression(
+                    'CASE WHEN isnull(appels.eleveId) THEN TRUE ELSE FALSE END')
             ], $select::JOIN_LEFT)
             ->group('ele.eleveId');
         if (! is_null($order)) {

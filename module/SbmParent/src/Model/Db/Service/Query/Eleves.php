@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Model\Db\Service\Query;
@@ -104,6 +104,7 @@ class Eleves implements FactoryInterface
                 'prenom' => 'prenom',
                 'prenomSA' => 'prenomSA',
                 'dateN' => 'dateN',
+                'sexe' => 'sexe',
                 'numero' => 'numero',
                 'responsable1Id' => 'responsable1Id',
                 'x1' => 'x1',

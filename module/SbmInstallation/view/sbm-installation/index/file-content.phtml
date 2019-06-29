@@ -7,7 +7,7 @@
  * @filesource file-content.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 $this->themeCss('sbm-installation', 'file-content.css');
@@ -25,8 +25,8 @@ tinymce.init({
     'advlist autolink lists link image charmap print preview anchor textcolor noneditable',
     'searchreplace visualblocks code fullscreen save',
     'insertdatetime media table contextmenu paste code wordcount'
-  ],
-  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview | code',
+    ],
+    toolbar: 'insert | undo redo | formatselect | fontselect fontsizeselect forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link | removeformat | preview | code',
  });
     <?php
     $this->headScript()->captureEnd();
@@ -48,8 +48,8 @@ tinymce.init({
 <?php if ($this->type == 'html'):?>
 	<?php $help = $this->theme->getHelp($this->filename);?>
 	<fieldset class="sbm-page1 col2">
-	<legend>Variables disponibles</legend>
-	<ul>
+		<legend>Variables disponibles</legend>
+		<ul>
 	<?php foreach($help as $key => $value):?>
 	<li><?=$key;?>: <?=$value;?></li>
 	<?php endforeach;?>

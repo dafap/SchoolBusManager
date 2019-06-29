@@ -2,19 +2,12 @@
 /**
  * Ensemble de pages de retour de la plateforme de paiement
  *
- * Modification le 26 août 2015 dans formulaireAction() pour tenir compte de la dérogation accordée
- * dans la liste des élèves préinscrits à prendre en compte dans la table `appels` et ajout d'un
- * contrôle du montant du (montant reçu en post = montant à payer pour les eleveIds enregistrés dans `appels`)
- *
- * Modification le 10 mars 2017 dans formulaireAction() pour tenir compte de la tarification anneeComplete
- * ou 3eme trimestre. Changement de style des[].
- *
  * @project sbm
  * @package SbmPaiement/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Controller;
@@ -33,52 +26,58 @@ class IndexController extends AbstractActionController
     /**
      * Dans cette version, le montant à payer n'est pas passé par le POST (c'est un
      * leurre) mais est obtenu à partir de la facture émise ou récupérée si elle existe
-     * déjà. Le montant à payer est le solde de la facture.
+     * déjà. Le montant à payer est le solde de la facture. On considère que l'appel vient
+     * de l'URL \parent (en cas d'erreur).
      *
      * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
     public function formulaireAction()
     {
+        $prg = $this->getResponsableIdFromSession('nsArgsFacture');
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $responsableId = $prg;
         try {
             $responsable = $this->responsable->get();
-            $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
-            // génère une facture ou la récupère si elle existe déjà
-            $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
-                $this->db_manager->get(
-                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
-                    $responsableId));
+            if ($responsable->responsableId != $responsableId) {
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'logout'
+                ]);
+            }
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
             ]);
         }
-        // préparation des paramètres pour la méthode getForm() de la plateforme
-        $elevesIds = [];
-        foreach ($facture->getResultats()->getListeEleves() as $eleveId => $row) {
-            if (! $row['paiement']) {
-                $elevesIds[] = $eleveId;
-            }
+        try {
+            $this->plugin_plateforme->setResponsable($responsable)
+                ->prepare()
+                ->initPaiement();
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $message = 'Une tentative de paiement est en attente de traitement.';
+            $this->flashMessenger()->addErrorMessage($message);
+            $message = 'Un délai de 2 heures est nécessaire avant de pouvoir la renouveler.';
+            $this->flashMessenger()->addInfoMessage($message);
+            return $this->redirect()->toRoute('sbmparent');
         }
-        $params = [
-            'montant' => $facture->getResultats()->getSolde(),
-            'count' => 1,
-            'first' => $facture->getResultats()->getSolde(),
-            'period' => 1,
-            'email' => $responsable->email,
-            'responsableId' => $responsable->responsableId,
-            'nom' => $responsable->nom,
-            'prenom' => $responsable->prenom,
-            'eleveIds' => $elevesIds
-        ];
-        // refactoring à partir de la version 2.4.5 pour renvoyer tout ce qui est
-        // spécifique à une
-        // plateforme dans son plugin. L'enregistrement de la demande d'appel dans la
-        // table
-        // `appels`, nécessitant un id spécifique au plugin, est réalisé dans le plugin.
-        $objectPlateforme = $this->plugin_plateforme;
         return new ViewModel([
-            'form' => $objectPlateforme->getForm($params)
+            'oPlateforme' => $this->plugin_plateforme
         ]);
+    }
+
+    public function formAbandonnerAction()
+    {
+        try {
+            $this->plugin_plateforme->validFormAbandonner($this->getRequest()
+                ->getPost());
+            $this->flashMessenger()->addInfoMessage('Le paiement a été abandonné.');
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $this->flashMessenger()->addErrorMessage($message);
+        }
+        return $this->redirect()->toRoute('sbmparent');
     }
 
     public function listeAction()
@@ -155,8 +154,7 @@ class IndexController extends AbstractActionController
 
     public function notificationAction()
     {
-        $plugin = $this->plugin_plateforme;
-        $message = $plugin->notification($this->getRequest()
+        $message = $this->plugin_plateforme->notification($this->getRequest()
             ->getPost(), $this->getRequest()
             ->getServer()
             ->get('REMOTE_ADDR'));
@@ -168,6 +166,49 @@ class IndexController extends AbstractActionController
             return $this->getResponse()
                 ->setContent($message)
                 ->setStatusCode(200);
+        }
+    }
+
+    /**
+     * Reçoit en POST soit un idOp, soit un responsableId, soit un eleveId. Interroge la
+     * table des appels pour traiter tous les appels non notifiés correspondant à
+     * l'attribut trouvé en POST puis interroge le webservice pour mettre éventuellement à
+     * jour les paiements. Puis retourne à la page d'où vient cet demande.
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function majnotificationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            if (($args = Session::get('post', false, $this->getSessionNamespace())) ===
+                false) {
+            }
+        } else {
+            $args = $prg;
+        }
+        if ($args) {
+            try {
+                $this->plugin_plateforme->majnotification($args);
+                $this->flashMessenger()->addSuccessMessage(
+                    'Les notifications de paiement en ligne ont été mises à jour.');
+            } catch (\Exception $e) {
+                $this->flashMessenger()->addErrorMessage('La mise à jour a échoué.');
+            }
+        }
+        $http_referer = $this->getRequest()
+            ->getServer()
+            ->get('HTTP_REFERER');
+        if (array_key_exists('origine', $args)) {
+            return $this->redirect()->toUrl($args['origine']);
+        } elseif ($http_referer) {
+            return $this->redirect()->toUrl($http_referer);
+        } else {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'logout'
+            ]);
         }
     }
 

@@ -12,7 +12,7 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 20 juin 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -34,10 +34,7 @@ $dejaPaye = $this->resultats->getPaiementsMontant();
 // styles css et scripts
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/finance', 'paiement-detail.css');
-$this->jQuery();
-$this->headScript()->appendFile(
-    $this->basePath(
-        '/js/jquery.formatCurrency-1.4.0.i18n/jquery.formatCurrency-1.4.0.min.js'));
+$this->jQuery('jquery.formatCurrency');
 $this->themeJS('gestion-finance', 'paiement-detail.js');
 $this->inlineScript()->captureStart();
 ?>

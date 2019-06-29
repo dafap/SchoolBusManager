@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller;
@@ -62,6 +62,16 @@ class IndexController extends AbstractActionController
         $this->flashMessenger()->addInfoMessage($message2);
     }
 
+    private function controleEtatDuSite()
+    {
+        if ($this->authenticate->by()->getCategorieId() < 255) {
+            $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+            if (! $tCalendar->getEtatDuSite()['inscription']) {
+                throw new \Exception('Inscriptions fermées');
+            }
+        }
+    }
+
     /**
      * A noter que `paiementenligne` vient de l'objet
      * SbmFront\Model\Responsable\Responsable initialisé par la vue `responsables` de la
@@ -101,34 +111,43 @@ class IndexController extends AbstractActionController
                 ]);
             }
         }
+        // controle si des paiements en ligne ont été fait sans être notifiés
+        if ($this->plugin_plateforme instanceof \SbmPaiement\Plugin\PlateformeInterface) {
+            try {
+                $this->plugin_plateforme->setResponsable($responsable)->checkPaiement();
+            } catch (\Exception $e) {
+                $message = $e->getMessage();
+                $this->flashMessenger()->addErrorMessage($message);
+            }
+        }
+        // fin du contrôle de paiement en ligne
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $format_telephone = new \SbmCommun\Form\View\Helper\Telephone();
         return new ViewModel(
             [
-
+                'theme' => $this->theme,
                 'namespacectrl' => md5('nsArgsFacture'),
-                'etatSite' => $tCalendar->getEtatDuSite(),
-                'paiementenligne' => $responsable->paiementenligne,
-                'permanences' => $tCalendar->getPermanences($responsable->commune),
+                'responsable' => $responsable,
+                'calendar' => $tCalendar,
                 'inscrits' => $query->getElevesInscrits($responsable->responsableId),
                 'preinscrits' => $query->getElevesPreinscritsOuEnAttente(
                     $responsable->responsableId),
+                'affectations' => $this->db_manager->get(
+                    'Sbm\Db\Query\AffectationsServicesStations'),
+                'resultats' => $this->db_manager->get(
+                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    $responsable->responsableId, null, true), // pour forcer le calcul
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
                         'anneeScolaire' => Session::get('as')['libelle']
                     ]),
-                'resultats' => $this->db_manager->get(
-                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
-                    $responsable->responsableId),
                 'factures' => $this->db_manager->get('Sbm\Db\Table\Factures')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
                         'millesime' => Session::get('millesime')
                     ]),
-                'affectations' => $this->db_manager->get(
-                    'Sbm\Db\Query\AffectationsServicesStations'),
                 'client' => $this->client,
                 'accueil' => $this->accueil,
                 'adresse' => array_filter(
@@ -142,7 +161,8 @@ class IndexController extends AbstractActionController
                                 $format_telephone($responsable->telephoneP),
                                 $format_telephone($responsable->telephoneT)
                             ])
-                    ])
+                    ]),
+                'sadmin' => $this->authenticate->by()->getCategorieId() == 255
             ]);
     }
 
@@ -151,6 +171,7 @@ class IndexController extends AbstractActionController
         try {
             $responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
+            $this->controleEtatDuSite();
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
@@ -273,6 +294,7 @@ class IndexController extends AbstractActionController
         try {
             $auth_responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
+            $this->controleEtatDuSite();
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
@@ -396,6 +418,9 @@ class IndexController extends AbstractActionController
                     $this->warningDerogationNecessaire($cr);
                 }
                 return $this->redirect()->toRoute('sbmparent');
+            } elseif (getenv('APPLICATION_ENV') == 'development') {
+                echo '<h3>Debug:</h3>';
+                var_dump($form->getMessages());
             }
             $responsable2 = Session::get('responsable2', null,
                 $this->getSessionNamespace());
@@ -649,6 +674,7 @@ class IndexController extends AbstractActionController
         try {
             $auth_responsable = $this->responsable->get();
             $authUserId = $this->authenticate->by()->getUserId();
+            $this->controleEtatDuSite();
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
@@ -823,6 +849,9 @@ class IndexController extends AbstractActionController
                         $this->warningDerogationNecessaire($cr);
                     }
                     return $this->redirect()->toRoute('sbmparent');
+                } elseif (getenv('APPLICATION_ENV') == 'development') {
+                    echo '<h3>Debug:</h3>';
+                    var_dump($form->getMessages());
                 }
                 // $form->isValid() a échoué
                 $responsable2 = Session::get('responsable2', null,

@@ -1,0 +1,60 @@
+/**
+ * Feuille de style des pages index.phtml et reinscription-eleve-phase1.phtml du module SbmParent
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-paiement
+ * @filesource formulaire.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 juin 2019
+ * @version 2019-2.5.0
+ **/
+div.wrapper-page {
+	padding-left: 5px;
+}
+
+div.boutons {
+	margin-top: 1rem;
+	margin-left: 3em;
+}
+
+input[type="submit"] {
+	font-size: 10px;
+	color: black;
+	background-color: #a1cbe5;
+	border-top-width: 0;
+	border-bottom-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	border: 1px solid #31708f;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #31708f;
+	margin-right: 10px;
+}
+
+fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+.separateur {
+	border-top: 1px solid darkblue;
+	margin-top: 6px;
+	padding-top: 4px;
+}
+
+td {
+	border-top: inherit;
+	margin-top: inherit;
+	padding-top: inherit;
+	vertical-align: top;
+}
+
+.liste-tarifs td:nth-child(2), .liste-eleves td:nth-child(4),
+	.liste-eleves th:nth-child(4) {
+	text-align: center;
+}
+
+.ligne-facture td:nth-child(2), .liste-tarifs td:nth-child(3) {
+	text-align: right;
+}

@@ -16,6 +16,8 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+
 class Appels extends AbstractSbmTable
 {
 
@@ -39,14 +41,25 @@ class Appels extends AbstractSbmTable
         ]);
     }
 
-    public function saveRecord($obj_data)
+    /**
+     * On interdit d'enregistrer un appel si un enregistrement non notifié existe pour le
+     * même élève avec la même refdet. Dans ce cas, on lance une RuntimeException
+     * contenant le idOp du premier enregistrement trouvé en message.
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
+     */
+    public function saveRecord(ObjectDataInterface $obj_data)
     {
-        $rowset = $this->fetchAll([
-            'refdet' => $obj_data->refdet,
-            'notified' => 0
-        ]);
+        $rowset = $this->fetchAll(
+            [
+                'refdet' => $obj_data->refdet,
+                'eleveId' => $obj_data->eleveId,
+                'notified' => 0
+            ]);
         if ($rowset->count()) {
-            throw new Exception\RuntimeException('Un appel non notifié existe déjà pour cette dette.');
+            $row = $rowset->current();
+            throw new Exception\RuntimeException($row->idOp);
         }
         return parent::saveRecord($obj_data);
     }

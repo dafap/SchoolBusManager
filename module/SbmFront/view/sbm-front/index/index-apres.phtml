@@ -15,15 +15,17 @@
  * 'url_ts_region' : url du site d'inscription de la région (string)
  *
  * @project sbm
- * @package module/SbmFront
- * @filesource view/sbm-front/index/index.phtml
+ * @package SbmFront/view/sbm-front/index
+ * @filesource index-apres.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2019
+ * @date 23 juin 2019
  * @version 2019-2.5.0
  */
 $msg = include $this->theme->getIncludeView('sbm-front/index/index-apres');
-
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$this->themeJS('sbm-front','index.js');
 $url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
 ]);
@@ -61,8 +63,8 @@ $url_carte = $this->url('sbmcarte', [
 						de passe oublié ?</a>
 				</div>
 			</fieldset>
-			<p></p>
-			<?php if ($this->etat['etat'] == 1): ?>
+			<div class="vecartement-6px"></div>
+			<?php if ($this->calendar->getEtatDuSite()['inscription']): ?>
 			<fieldset class="sbm-page1">
 				<div class="centre">
 					<h3>Nouvel utilisateur</h3>
@@ -72,7 +74,7 @@ $url_carte = $this->url('sbmcarte', [
 					</div>
 				</div>
 			</fieldset>
-			<p></p>
+			<div class="vecartement-6px"></div>
 			<?php endif;?>
 			<?= $this->form()->closeTag(); ?>
 			<div class="sbm-page1">

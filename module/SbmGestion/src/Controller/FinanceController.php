@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 juin 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -100,40 +100,22 @@ class FinanceController extends AbstractActionController
 
     public function paiementListeAction()
     {
-        /*
-         * On commence par un PostRedirectGet pour régler les passages de paramètres
-         * provenant de $_POST ou d'une redirection. En effet, lorsqu'on lance une
-         * redirection pour revenir sur dans la liste après une action (ajouter,
-         * supprimer, modifier) les paramètres ne peuvent être passés que dans la route.
-         * C'est pas bien commode puisqu'ils sont alors vus dans la barre d'adresse. Pour
-         * éviter cela, on passe les paramètres pas methode post mais la redirection ne le
-         * permet pas. On utilise alors le prg. Cela règle en même temps le problème du F5
-         * sur une page contenant un formulaire (voulez-vous renvoyer les données du
-         * formulaire ?).
-         */
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post.
             $is_post = false;
-            // appel depuis finances, paginator, back, F5, redirect de sortie de
-            // paiementAjoutAction, paiementEditAction ou paiementSupprAction
             if ($this->params('id', '') == 'tous') {
                 // appel depuis finances : pas de post, éventuellement des criteres
                 $args = [];
                 Session::remove('post', $this->getSessionNamespace());
             } else {
-                // F5, back ou un redirect de sortie : reprendre le contexte d'avant en
-                // session
                 $args = Session::get('post', [], $this->getSessionNamespace());
             }
         } else {
-            // suite à un post,
-            // l'appel provient du formulaire de criteres ou de la liste des responsables
-            // ou de la sortie d'un paiement-ajout ou d'un paiement-edit
-            // ou d'un eleve-edit
-            // séparer les criteres et le post en session
+            // suite à un post, l'appel provient du formulaire de criteres ou de la liste
+            // des responsables ou de la sortie d'un paiement-ajout ou d'un paiement-edit
+            // ou d'un eleve-edit. Séparer les criteres et le post en session
             $is_post = true;
             if (array_key_exists('op', $prg)) {
                 // arrive de la liste des responsables ou d'une fiche élève
@@ -176,6 +158,7 @@ class FinanceController extends AbstractActionController
         $nb_paiements = $this->getPaginatorCountPerPage('nb_paiements', 15);
         if ($responsableId == - 1) {
             // pas de $responsableId - gestion de tous les paiements
+            $this->plugin_plateforme->majnotification([]); // toutes
             $criteres_form = new Form\CriteresForm('paiements');
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
@@ -223,6 +206,9 @@ class FinanceController extends AbstractActionController
             // L'appel peut provenir de la liste des responsables, de la fiche d'un
             // responsable, de la fiche d'un eleve ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
+            $this->plugin_plateforme->majnotification([
+                'responsableId' => $responsableId
+            ]);
             $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
             // calcul des montants dus, payés et du solde
             $resultats = $this->db_manager->get(

@@ -9,7 +9,7 @@
  * @filesource eleve-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
+ * @date 26 juin 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\StdLib;
@@ -22,10 +22,11 @@ $nomEleve = implode(' ', [
 $description = '<b>' . $nomEleve . '</b>';
 
 // mise en place des JS de googleMaps
+$this->inlineScript()->captureEnd();
 $this->headScript()->appendFile($this->url_api);
-$this->themeJS('commun', 'localisation.js');
-$this->themeJS('commun', 'StyledMarker.js');
-// lancement du script (sera affiché dans le layout à la fin de la page
+$this->themeJS('commun','localisation.js');
+$this->themeJS('commun','StyledMarker.js');
+// lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
@@ -35,7 +36,8 @@ initialiser("<?=$this->scheme;?>",'mon domicile', "<?= $description;?>", []);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
-?><h1>Adresse personnelle de <?= $nomEleve;?></h1>
+?>
+<h1>Adresse personnelle de <?= $nomEleve;?></h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="left-10px">
 	<?= $this->form()->openTag($this->form);?>

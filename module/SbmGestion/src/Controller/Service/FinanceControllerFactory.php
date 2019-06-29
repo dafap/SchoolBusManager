@@ -9,7 +9,7 @@
  * @filesource FinanceControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller\Service;
@@ -27,10 +27,11 @@ class FinanceControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
-            
+
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
+            'plugin_plateforme' => $sm->get('SbmPaiement\Plugin\Plateforme'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'mail_config' => StdLib::getParamR([

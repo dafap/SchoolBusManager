@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller\Service;
@@ -39,6 +39,10 @@ class IndexControllerFactory implements FactoryInterface
                 'sbm',
                 'layout',
                 'accueil'
+            ], $config_application),
+            'url_ts_organisateur' => StdLib::getParamR([
+                'sbm',
+                'ts-organisateur'
             ], $config_application),
             'url_ts_region' => StdLib::getParamR([
                 'sbm',

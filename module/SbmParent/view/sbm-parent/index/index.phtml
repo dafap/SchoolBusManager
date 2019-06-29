@@ -1,13 +1,28 @@
 <?php
 /**
- * Page d'entrée dans l'espace Parents - Version CCDA
+ * Page d'entrée dans l'espace Parents - Version Millau Grands Causses
+ *
+ * Elle dispose des propriétés suivantes :
+ * 'theme' : objet SbmInstallation\Model\Theme
+ * 'namespacectrl' : controle du namespace
+ * 'responsable' : objet responsable créé lors du login
+ * 'calendar' : objet SbmCommun\Model\Db\Service\Table\System\Calendar
+ * 'inscrits' : résultat de la requête Sbm\Db\Query\ElevesScolarites::getElevesInscrits()
+ * 'preinscrits' => résultat de la requête Sbm\Db\Query\ElevesScolarites::getElevesPreinscritsOuEnAttente()
+ * 'affectations' => résultat de la requête Sbm\Db\Query\AffectationsServicesStations
+ * 'resultats' => objet SbmCommun\Model\Paiement\resultats présentant les justificatifs des sommes dues
+ * 'paiements' => ensemble des paiements enregistrés pour ce parent durant cette année scolaire
+ * 'factures' => ensemble des factures enregistrées pour ce parent durant cette année scolaire
+ * 'client' : tableau décrivant l'organisateur (array)
+ * 'accueil' : url du site de l'organisateur
+ * 'adresse' : tableau de l'adresse du parent
  *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
+ * @date 24 juin 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -18,10 +33,11 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $this->themeCss('sbm-parent/index', 'index.css');
 $this->jQuery('jquery-ui');
 $this->themeJS('sbm-parent', 'index.js');
-
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+// initialisation nécessaire pour le popup help-preinscrits-content :
+$permanences = '';
 $enAttente = false;
-$adresse_client = implode(', ',
+$adresse_organisateur = implode(', ',
     [
         $this->client['name'],
         implode(', ', $this->client['adresse']),
@@ -30,10 +46,13 @@ $adresse_client = implode(', ',
 $nbPreinscrits = $this->preinscrits->count();
 $nbInscrits = $this->inscrits->count();
 $nbPaiements = $this->paiements->count();
-$etat = $this->etatSite['etat'];
-$dateLimite = $this->etatSite['echeance']->format('d/m/Y');
-$dateDebut = $this->etatSite['dateDebut']->format('d/m/Y');
-$dateFin = $this->etatSite['dateFin']->format('d/m/Y');
+$etatDuSite = $this->calendar->getEtatDuSite();
+// pour sadmin, autoriser les inscriptions et le paiement
+if ($this->sadmin) {
+    $etatDuSite['etat'] = $this->calendar::ETAT_PENDANT;
+    $etatDuSite['inscription'] = true;
+}
+$dateFin = $etatDuSite['dateFin']->format('d/m/Y');
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
 ]);
@@ -42,9 +61,6 @@ $url_payer = $this->url('sbmpaiement', [
 ]);
 $url_horaires = $this->url('sbmparent', [
     'action' => 'horaires'
-]);
-$url_modif_adresse = $this->url('sbmparentconfig', [
-    'action' => 'modif-adresse'
 ]);
 $url_envoi_photo = $this->url('sbmparent', [
     'action' => 'envoiphoto'
@@ -76,72 +92,22 @@ $url_facture = $this->url('sbmdocument', [
 <h1>Espace parent</h1>
 <?php if ($nbInscrits == 0 && $nbPreinscrits == 0) : ?>
 <div id="parent-wrapper" class="explication">
-	<?php if ($etat == 0) :?>
-	<p>Vos enfants ne sont pas inscrits pour l'année scolaire <?= Session::get('as')['libelle'];?>.</p>
-	<p>Vous pourrez les inscire entre le <?= $dateDebut;?>
-	et le <?= $dateFin;?> (ou jusqu'au
-	<?= $dateLimite;?> pour ceux qui sont en attente d'affectation).</p>
-	<?php elseif ($etat == 1) :?>
-	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Avant le <?= $dateFin; ?> afin de retenir une place :</p>
-	<ul>
-		<li>Inscrivez tous vos enfants qui doivent utiliser le service de
-			transports scolaires</li>
-		<li>Transmettez une photo d'identité récente qui sera imprimée sur la
-			carte de transport. En cas de réinscription, si une photo de moins de
-			deux ans est déjà présente sur la fiche de votre enfant, vous pourrez
-			la conserver ou la changer.</li>
-		<li>Payez en ligne ou transmettez votre paiement par courrier au
-			service de transport de <?=$adresse_client;?>.</li>
-	</ul>
-	<p>Si les inscriptions sont complètes dans le respect des dates
-		indiquées, vous recevrez les cartes de transport courant août ou
-		septembre.</p>
-	<p>Sinon, vous devrez vous présenter lors des permanences pour
-		compléter l'inscription, payer et retirer les cartes.</p>
-	<ul>
-    <?php foreach ($this->permanences as $row) :?>
-        <li>Pour les habitants de <?=$row;?></li>
-    <?php endforeach;?>
-    </ul>
-	<p>
-		<b>Quelque soit votre moyen de paiement, les inscriptions ne seront
-			prises en compte qu'une fois le paiement enregistré.</b>
-	</p>
-	<p>
-		<b><i>Vérifiez votre adresse et vos numéros de téléphone</i></b> puis
-		cliquez sur le bouton <b><i>Inscrire un enfant</i></b> pour commencer
-		les inscriptions.
-	</p>
-	<blockquote>
-	<?=implode('<br>', $this->adresse);?>
-	</blockquote>
-	<div class="menu clearfix">
-    <?php
-        echo $this->listeZoneActions([],
-            [
-                'modif-adresse' => [
-                    'class' => 'accueil default',
-                    'formaction' => $url_modif_adresse,
-                    'value' => 'Modifier adresse ou téléphone'
-                ],
-                'inscrire' => [
-                    'class' => 'accueil default',
-                    'formaction' => $url_ajoutEleve,
-                    'value' => 'Inscrire un enfant'
-                ]
-            ]);
-        ?>
-    </div>
-    <?php else :?>
-    <p>Vous n'avez pas d'enfant inscrit.</p>
-	<p>Les inscriptions en ligne sont fermées.</p>
-	<p>Pour inscrire un enfant, prenez contact avec le service transport de
-		<?=$this->client['name'];?>. Au delà du <?= $dateFin;?> les
-		places seront attribuées à la rentrée en fonction des disponibilités
-		dans les cars.</p>
-	<?php endif;?>
-
+	<?php
+    switch ($etatDuSite['etat']) {
+        case $this->calendar::ETAT_AVANT:
+            echo include $this->theme->getIncludeView('sbm-parent/index/index-avant');
+            break;
+        case $this->calendar::ETAT_PENDANT:
+            echo include $this->theme->getIncludeView('sbm-parent/index/index-pendant');
+            break;
+        case $this->calendar::ETAT_APRES:
+            echo include $this->theme->getIncludeView('sbm-parent/index/index-apres');
+            break;
+        default:
+            echo include $this->theme->getIncludeView('sbm-parent/index/index-ferme');
+            break;
+    }
+    ?>
 </div>
 <?php else : ?>
 <div id="parent-wrapper">
@@ -391,16 +357,20 @@ $url_facture = $this->url('sbmdocument', [
                 $grilleTarif = $row['grilleTarif'];
             } else {
                 $msgalerte = 'Pour obtenir une éventuelle dérogation, prenez contact avec le service des transports de : ';
-                $msgalerte.= $this->client['name'];
-                $grilleTarif = '<span class="exces" title="' .$msgalerte. '">' . $row['grilleTarif'] . '</span>';
-                $msgalerte .= ' ('.$this->telephone($this->client['telephone']) . ') ou ';
-                $msgalerte .= '<a href="'.$this->url('sbmparentconfig', ['action'=>'message']).'">Écrire</a>';
+                $msgalerte .= $this->client['name'];
+                $grilleTarif = '<span class="exces" title="' . $msgalerte . '">' .
+                    $row['grilleTarif'] . '</span>';
+                $msgalerte .= ' (' . $this->telephone($this->client['telephone']) . ') ou ';
+                $msgalerte .= '<a href="' .
+                    $this->url('sbmparentconfig', [
+                        'action' => 'message'
+                    ]) . '">Écrire</a>';
                 $alerte = true;
             }
             $hiddens = [
                 'id' => $row['eleveId']
             ];
-            if ($etat == 1) {
+            if ($etatDuSite['inscription']) {
                 $buttons = [
                     'modifier' => [
                         'class' => 'button ligne',
@@ -415,7 +385,7 @@ $url_facture = $this->url('sbmdocument', [
                         'value' => 'Supprimer'
                     ]
                 ];
-                if ($this->paiementenligne) {
+                if ($this->responsable->paiementenligne) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
                         $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
@@ -460,7 +430,8 @@ EOT;
                 $row['communeEtablissement'], $grilleTarif, $btligne, $pasdephoto);
         }
         if ($alerte) {
-            echo sprintf('<tr class="petit alert"><td colspan="7">%s</td></tr>', $msgalerte);
+            echo sprintf('<tr class="petit alert"><td colspan="7">%s</td></tr>',
+                $msgalerte);
         }
         ?>
             </tbody>
@@ -487,7 +458,7 @@ EOT;
 			</table>
 		</fieldset>
     <?php endif; ?>
-    <?php if ($etat == 1):?>
+    <?php if ($etatDuSite['inscription']):?>
         <div class="bouton-inscrire">
 			<div class="menu clearfix">
         <?php
@@ -498,7 +469,7 @@ EOT;
                 'value' => 'Inscrire un autre enfant'
             ]
         ];
-        if ($this->resultats->getSolde() > 0 && $this->paiementenligne) {
+        if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
@@ -525,37 +496,68 @@ EOT;
         ?>
             </div>
 		</div>
+        <?php if (! $this->responsable->paiementenligne && $this->resultats->getSolde() > 0) : ?>
+        <p class="sbm-description">Les habitants de votre commune ne
+			peuvent pas payer en ligne. Prenez contact avec le service Transport
+			pour connaitre la marche à suivre pour votre cas particulier.</p>
+        <?php elseif ($this->resultats->getSolde() > 0) : ?>
         <?php
-        switch ($etat) {
-            case 0:
-                $msg = '';
-                break;
-            case 1:
+        switch ($etatDuSite['etat']) {
+            case $this->calendar::ETAT_PENDANT:
+                $permanences = $this->calendar->getPermanences(
+                    $this->responsable->commune);
+                switch (count($permanences)) {
+                    case 0:
+                        $permanences = '';
+                        break;
+                    case 1:
+                        $permanences = current($permanences);
+                        break;
+                    default:
+                        $permanences = implode(', ', $permanences);
+                        break;
+                }
                 $msg = <<<EOT
 La carte de transport ne sera délivrée que si vous avez transmis une photo d'identité
 de l'élève et payé son abonnement.<br>
 L'inscription doit être réglée avant le $dateFin pour retenir une place définitive dans
 le circuit et recevoir la carte de transport par la poste.<br>
-Passé ce délai, vous devrez vous rendre à la permanence qui se tiendra à %s pour connaitre
-la suite donnée à votre demande, payer et retirer la carte de transport.
+Sinon, rendez-vous à une permanence qui se tiendra à %s pour connaitre
+la suite donnée à votre demande, payer et retirer la carte de transport.<br>
 Pour les habitants de %s.
 EOT;
-                $msg = sprintf($msg, $adresse_client, $this->permanences[0]);
+                $msg = sprintf($msg, $adresse_organisateur, $permanences);
+                break;
+            case $this->calendar::ETAT_APRES:
+                $permanences = $this->calendar->getPermanences(
+                    $this->responsable->commune);
+                switch (count($permanences)) {
+                    case 0:
+                        $permanences = '';
+                        break;
+                    case 1:
+                        $permanences = current($permanences);
+                        break;
+                    default:
+                        $permanences = implode(', ', $permanences);
+                        break;
+                }
+                $msg = <<<EOT
+La carte de transport ne sera délivrée que si vous avez transmis une photo d'identité
+de l'élève et payé son abonnement.<br>
+Si nécessaire, vous pouvez vous rendre à une permanence qui se tiendra à %s pour connaitre
+la suite donnée à votre demande, payer et retirer la carte de transport.<br>
+Pour les habitants de %s.<br>
+Si la date est passée, prenez rendez-vous.
+EOT;
+                $msg = sprintf($msg, $adresse_organisateur, $permanences);
                 break;
             default:
-                $msg = <<<EOT
-Pour valider les préinscriptions, rendez-vous à %s le jour de la
-distribution des cartes. Pour les habitants de %s.
-EOT;
-                $msg = sprintf($msg, $adresse_client, $this->permanences[0]);
+                // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de ETAT_FERME
+                $msg = '';
                 break;
         }
         ?>
-        <?php if (! $this->paiementenligne && $this->resultats->getSolde() > 0) : ?>
-        <p class="sbm-description">Les habitants de votre commune ne
-			peuvent pas payer en ligne. Prenez contact avec le service Transport
-			pour connaitre la marche à suivre pour votre cas particulier.</p>
-        <?php elseif ($this->resultats->getSolde() > 0) : ?>
 		<p class="sbm-description">
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?=$msg;?>
 		</p>
@@ -568,8 +570,8 @@ EOT;
 				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à
 				l'adresse ci-dessous avant le <?= $dateFin;?>. Vous recevrez alors la carte de transport
 				par la poste.</li>
-				<li>vous rendre à <?=$adresse_client;?> (pour les habitant de
-				<?=$this->permanences[0];?>) pour payer en espèces ou par chèque et
+				<li>vous rendre à <?=$adresse_organisateur;?> (pour les habitant de
+				<?=$permanences;?>) pour payer en espèces ou par chèque et
 				retirer la carte de transport.</li>
 			</ul>
 			<div class="centre">
@@ -579,6 +581,17 @@ EOT;
 				Tél. <?=$this->telephone($this->client['telephone']);?>
 		    </div>
 		</div>
+	<?php elseif ($this->resultats->getSolde() > 0):?>
+	<?php
+	$url_contact = $this->url('login', [
+	    'action' => 'contact'
+	]);
+	$msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
+	$msg = sprintf($msg, $url_contact);
+	?>
+	    <p class="sbm-description">
+			<i class="fam-help"></i> <b>Comment payer ?</b> <?=$msg;?>
+		</p>
     <?php endif;?>
 	</div>
 	<div id="wrapper-finance" class="clearfix">

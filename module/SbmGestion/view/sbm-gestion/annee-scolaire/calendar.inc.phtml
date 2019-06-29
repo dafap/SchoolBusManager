@@ -7,7 +7,7 @@
  * @filesource calendar.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
+ * @date 24 juin 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
@@ -54,6 +54,7 @@ use SbmBase\Model\DateLib;
 			 }
 			 ?>
 			</td>
+			<td>
 			<?php
 			 if (!is_null($element['date2'])) {
 			     echo DateLib::formatDateFromMysql($element['date2']);

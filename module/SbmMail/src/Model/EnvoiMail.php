@@ -2,7 +2,6 @@
 /**
  * Listener pour traiter une demande d'envoi de mail
  *
- *
  * L'évènement 'sendMail' contient :
  * - name : sendMail
  * - target : null

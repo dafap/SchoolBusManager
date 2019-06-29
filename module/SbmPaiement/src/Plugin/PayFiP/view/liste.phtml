@@ -11,7 +11,6 @@
  * @date 7 mai 2019
  * @version 2019-2.5.0
  */
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 
@@ -71,26 +70,28 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<tbody>
 				<tr>
 					<th>Mode</th>
-					<th>Numcli</th>
+					<th>Exercice</th>
 					<th>Nom Prénom</th>
 					<th>Email</th>
+					<th>Montant</th>
 					<th>Réf. dette</th>
 					<th>Date</th>
-					<th>Statut</th>
-					<th>Autorisation</th>
-					<th>Montant</th>
+					<th>Résultat</th>
+					<th>N° autorisation</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
             <?php foreach($datas as $notification): ?>
             <?php
                 $montant = $fmt->formatCurrency($notification->montant / 100, 'EUR');
-                // @todo Utiiser le bon changement de format de date / heure
-                $date_trans = formatDate($notification->dattrans, $notification->heurtrans);
-                // @todo à définir $title_voir
-                $title_voir = '';
+                $date_trans = \DateTime::createFromFormat('dmYHi',
+                    $notification->dattrans . $notification->heurtrans)->format(
+                    'd/m/Y H:i:s');
+                $title_voir = sprintf(
+                    "%s\nIdentifiant de l'opération %s\nNuméro de client PayFiP %s",
+                    $notification->objet, $notification->idOp, $notification->numcli);
                 $hiddens = [
-                'notificationId' => $notification->payfipId
+                    'notificationId' => $notification->payfipId
                 ];
                 $buttons = [
                     'voir' => [
@@ -100,27 +101,28 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
                     ]
                 ];
                 ?>
-                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
-                	<td class="saisie">
+                <tr
+					class="petit <?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="saisie">
                 		<?= $this->escapeHtml($notification->saisie); ?></td>
-                	<td class="numcli">
-                		<?= $this->escapeHtml($notification->numcli); ?></td>
-                	<td class="identite">
-                		<?= $this->escapeHtml($quelquechose); ?></td>
+					<td class="numcli">
+                		<?= $this->escapeHtml($notification->exer); ?></td>
+					<td class="identite">
+                		<?= $this->escapeHtml($notification->titulaire); ?></td>
 					<td class="mel">
 						<?= $this->escapeHtml($notification->mel); ?></td>
+					<td class="montant align-right">
+						<?= $montant; ?></td>
 					<td class="refdet">
 						<?= $this->escapeHtml($notification->refdet); ?></td>
 					<td class="date">
-						<?= $notification->dattrans.' '.$notification->heurtrans; ?></td>
-					<td class="resultrans">
+						<?= $date_trans; ?></td>
+					<td class="resultrans centre">
 						<?= $this->escapeHtml($notification->resultrans); ?></td>
 					<td class="numauto">
 						<?= $this->escapeHtml($notification->numauto); ?></td>
-					<td class="montant">
-						<?= $montant; ?></td>
 					<td class="centre selection">
-						<?= $this->renderCheckbox($this, 'selection', 'chk' . $notification->payfipId, $notification->selection)?></td>
+						<?= $this->renderCheckbox('selection', 'chk' . $notification->payfipId, $notification->selection)?></td>
 					<td class="boutons">
             			<?= $this->listeLigneActions($notification->payfipId, $hiddens, $buttons);?></td>
 				</tr>

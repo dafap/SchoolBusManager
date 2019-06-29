@@ -9,7 +9,7 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmFront\Controller;
@@ -51,17 +51,21 @@ class IndexController extends AbstractActionController
                 'millesime' => Session::get('millesime'),
                 'as' => Session::get('as')['libelle'],
                 'dateDebutAs' => Session::get('as')['dateDebut'],
+                'url_ts_organisateur' => $this->url_ts_organisateur,
                 'url_ts_region' => $this->url_ts_region
             ]);
         switch ($tCalendar->getEtatDuSite()['etat']) {
-            case 0:
+            case $tCalendar::ETAT_AVANT:
                 $view->setTemplate('sbm-front/index/index-avant.phtml');
                 break;
-            case 1:
+            case $tCalendar::ETAT_PENDANT:
                 $view->setTemplate('sbm-front/index/index-pendant.phtml');
                 break;
-            default:
+            case $tCalendar::ETAT_APRES:
                 $view->setTemplate('sbm-front/index/index-apres.phtml');
+                break;
+            default:
+                $view->setTemplate('sbm-front/index/index-ferme.phtml');
                 break;
         }
         return $view;
@@ -79,20 +83,11 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-
-        try {
-            $client = new \Zend\Soap\Client("https://www.tipi.budget.gouv.fr/tpa/services/securite");
-            //$result = $client->GetCountries();
-            //print_r($result);
-        } catch (\SoapFault $s) {
-            die('ERROR: [' . $s->faultcode . '] ' . $s->faultstring);
-        } catch (\Exception $e) {
-            die('ERROR: ' . $e->getMessage());
-        }
+        $array = [];
         // dump de l'objet 'obj'
         return new ViewModel(
             [
-                'obj' =>  $client
+                'obj' =>  $array
             ]);
     }
 }

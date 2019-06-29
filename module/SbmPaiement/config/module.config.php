@@ -2,26 +2,19 @@
 /**
  * Paramètres de configuration du module SbmPaiement
  *
- * Précise le système bancaire utilisé ainsi que ses paramètres.
- * 
- * Pour SP+ il faut indiquer :
- * - vads_ctx_mode (TEST ou PRODUCTION)
- * - vads_site_id (donné au moment de l'adhésion à la plateforme)
- * - certificat pour TEST et pour PRODUCTION (à récupérer sur l'outil de gestion, menu Paramétrage / Boutique/[nom de la boutique] / Certificat
- * 
- * Pour Paybox il faut indiquer :
- * 
+ * Partie indépendante des plugins utilisés
+ *
  * @project sbm
  * @package SbmPaiement/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2018
+ * @date 16 juin 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
 use SbmPaiement\Controller;
 use SbmPaiement\Listener;
-use SbmBase\Model\StdLib;
 
 if (! defined('MODULE_PAIEMENT_PATH')) {
     define('MODULE_PAIEMENT_PATH', dirname(__DIR__));
@@ -68,9 +61,6 @@ return [
         ]
     ],
     'service_manager' => [
-        'invokables' => [
-            'Sbm\AppelPaiement' => 'SbmPaiement\Service\Trigger'
-        ],
         'factories' => [
             Listener\PaiementOK::class => Listener\Service\PaiementOKFactory::class,
             Listener\ScolariteOK::class => Listener\Service\ScolariteOKFactory::class
@@ -104,16 +94,12 @@ return [
     ],
     'sbm' => [
         'paiement' => [
-            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs') // realpath(__DIR__
-                                                                           // .
-                                                                           // '/../../../data/logs')
+            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs')
         ]
     ],
     'csv' => [
         'path' => [
-            'tmpuploads' => StdLib::findParentPath(__DIR__, 'data/tmpuploads') // realpath(__DIR__
-                                                                               // .
-                                                                               // '/../../../data/')
+            'tmpuploads' => StdLib::findParentPath(__DIR__, 'data/tmpuploads')
         ],
         'parameters' => [
             'firstline' => true,

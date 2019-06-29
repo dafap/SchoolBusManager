@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
+ * @date 28 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmInstallation\Controller;
@@ -1114,10 +1114,9 @@ class IndexController extends AbstractActionController
                     'action' => 'gestion-config'
                 ]);
         } elseif (array_key_exists('submit', $args)) {
-            $this->theme->setConfigFileN2Asso('payfip.config.php', $args,
+            $this->theme->setConfigFileN2Idx('payfip.config.php', $args,
                 [
-                    'certificat',
-                    'saisie'
+                    'authorized_ip'
                 ]);
             return $this->redirect()->toRoute('sbminstall',
                 [
@@ -1128,14 +1127,13 @@ class IndexController extends AbstractActionController
             [
                 'titrePage' => 'Configuration de PayFiP',
                 'theme' => $this->theme->getTheme(),
-                'config_sites' => $this->theme->getConfigFile('payfip.config.php'),
+                'config_client' => $this->theme->getConfigFile('payfip.config.php'),
                 'labelButton' => 'Ajouter une ligne ',
                 'fieldsN2' => [
-                    'authorized_ip',
-                    'saisie'
+                    'authorized_ip'
                 ]
             ]);
-        $view->setTemplate('sbm-installation/index/edit-arrayn2asso.phtml');
+        $view->setTemplate('sbm-installation/index/edit-arrayn2idx.phtml');
         return $view;
     }
 

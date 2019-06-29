@@ -7,10 +7,11 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2019
+ * @date 28 juin 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
+use SbmCommun\Form\View\Helper as ViewHelper;
 use SbmCommun\Model\Db\ObjectData;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Service\Horaires;
@@ -19,6 +20,7 @@ use SbmCommun\Model\Db\Service\Query;
 use SbmCommun\Model\Db\Service\Select;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
+use SbmCommun\Model\Mvc\Controller\Plugin\Service as PluginController;
 use SbmCommun\Model\Service\CalculDroits;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Service\MajDistances;
@@ -34,8 +36,8 @@ if (! defined('APPL_NAME')) {
 return [
     'controller_plugins' => [
         'invokables' => [
-            'redirectToOrigin' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack',
-            'csvExport' => 'SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport'
+            'redirectToOrigin' => PluginController\RedirectBack::class,
+            'csvExport' => PluginController\CsvExport::class
         ]
     ],
     'db_manager' => [
@@ -252,22 +254,23 @@ return [
             'Sbm\FormManager' => FormManager::class
         ]
     ],
+    'view_helpers' => [
+        'invokables' => [
+            'affectations' => ViewHelper\Affectations::class,
+            'ligneMenuAction' => ViewHelper\LigneMenuAction::class,
+            'listeLigneActions' => ViewHelper\ListeLigneActions::class,
+            'listeZoneActions' => ViewHelper\ListeZoneActions::class,
+            'telephone' => ViewHelper\Telephone::class,
+            'pictogrammes' => ViewHelper\Pictogrammes::class,
+            'formRowDate' => ViewHelper\FormRowDate::class,
+            'formRowDateTime' => ViewHelper\FormRowDateTime::class,
+            'renderCheckbox' => ViewHelper\RenderCheckbox::class
+        ]
+    ],
     'view_manager' => [
         'template_map' => [
             'sbm/pagination' => __DIR__ . '/../view/partial/pagination.phtml',
             'sbm/mdpchange' => __DIR__ . '/../view/partial/mdpchange.phtml'
-        ]
-    ],
-    'view_helpers' => [
-        'invokables' => [
-            'affectations' => 'SbmCommun\Form\View\Helper\Affectations',
-            'ligneMenuAction' => 'SbmCommun\Form\View\Helper\LigneMenuAction',
-            'listeLigneActions' => 'SbmCommun\Form\View\Helper\ListeLigneActions',
-            'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',
-            'telephone' => 'SbmCommun\Form\View\Helper\Telephone',
-            'pictogrammes' => 'SbmCommun\Form\View\Helper\Pictogrammes',
-            'formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate',
-            'formRowDateTime' => 'SbmCommun\Form\View\Helper\FormRowDateTime'
         ]
     ]
 ];

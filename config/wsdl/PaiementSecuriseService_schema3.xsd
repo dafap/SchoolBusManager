@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://securite.service.tpa.cp.finances.gouv.fr/reponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="CreerPaiementSecuriseResponse">
+    <xs:sequence>
+      <xs:element name="idOp" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecupererDetailClientRequest">
+    <xs:sequence>
+      <xs:element name="numCli" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecupererDetailClientResponse">
+    <xs:sequence>
+      <xs:element name="libelleN1" type="xs:string" minOccurs="0"/>
+      <xs:element name="libelleN2" type="xs:string" minOccurs="0"/>
+      <xs:element name="libelleN3" type="xs:string" minOccurs="0"/>
+      <xs:element name="numcli" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecupererDetailPaiementSecuriseRequest">
+    <xs:sequence>
+      <xs:element name="idOp" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RecupererDetailPaiementSecuriseResponse">
+    <xs:sequence>
+      <xs:element name="dattrans" type="xs:string" minOccurs="0"/>
+      <xs:element name="exer" type="xs:string" minOccurs="0"/>
+      <xs:element name="heurtrans" type="xs:string" minOccurs="0"/>
+      <xs:element name="idOp" type="xs:string" minOccurs="0"/>
+      <xs:element name="mel" type="xs:string" minOccurs="0"/>
+      <xs:element name="montant" type="xs:string" minOccurs="0"/>
+      <xs:element name="numauto" type="xs:string" minOccurs="0"/>
+      <xs:element name="numcli" type="xs:string" minOccurs="0"/>
+      <xs:element name="objet" type="xs:string" minOccurs="0"/>
+      <xs:element name="refdet" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultrans" type="xs:string" minOccurs="0"/>
+      <xs:element name="saisie" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

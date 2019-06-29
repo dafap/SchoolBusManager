@@ -8,12 +8,12 @@
  * @filesource Exception.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 déc. 2018
+ * @date 20 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Photo;
 
-use SbmCommun\Model\Exception as ModelException;
+use SbmCommun\Model\Exception\OutOfBoundsException as ModelException;
 
 class Exception extends ModelException
 {

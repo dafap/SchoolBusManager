@@ -1,6 +1,6 @@
 <?php
 /**
- * Page d'accueil avant la période d'inscription
+ * Page d'accueil après la période d'inscription
  *
  * Reçoit les propriétés suivantes :
  * 'form' : objet SbmFront\Form\Login
@@ -16,18 +16,16 @@
  *
  * @project sbm
  * @package SbmFront/view/sbm-front/index
- * @filesource index-avant.phtml
+ * @filesource index-ferme.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 23 juin 2019
  * @version 2019-2.5.0
  */
-$msg = include $this->theme->getIncludeView('sbm-front/index/index-avant');
-
+$msg = include $this->theme->getIncludeView('sbm-front/index/index-ferme');
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $this->themeJS('sbm-front','index.js');
-
 $url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
 ]);
@@ -43,11 +41,11 @@ $url_carte = $this->url('sbmcarte', [
 		</div>
 		<div class="column2">
 			<div class="vecartement-6px">
-            <?= $this->flashMessenger()->render('success');?>
-            <?= $this->flashMessenger()->render('warning');?>
-            <?= $this->flashMessenger()->render('error');?>
-            <?= $this->flashMessenger()->render('info');?>
-            <?= $this->flashMessenger()->render('default');?>
+    		<?= $this->flashMessenger()->render('success');?>
+    		<?= $this->flashMessenger()->render('warning');?>
+    		<?= $this->flashMessenger()->render('error');?>
+    		<?= $this->flashMessenger()->render('info');?>
+    		<?= $this->flashMessenger()->render('default');?>
 		    </div>
 		    <?= $this->form()->openTag($this->form); ?>
 		    <fieldset class="sbm-page1">
@@ -65,19 +63,6 @@ $url_carte = $this->url('sbmcarte', [
 						de passe oublié ?</a>
 				</div>
 			</fieldset>
-			<div class="vecartement-6px"></div>
-			<?php if ($this->calendar->getEtatDuSite()['inscription']): ?>
-			<fieldset class="sbm-page1">
-				<div class="centre">
-					<h3>Nouvel utilisateur</h3>
-					<div class="sbm-description">(si vous n'avez pas de compte)</div>
-					<div class="centre">
-					    <?= $this->formSubmit($this->form->get('signup')); ?>
-					</div>
-				</div>
-			</fieldset>
-			<div class="vecartement-6px"></div>
-			<?php endif;?>
 			<div class="vecartement-6px"></div>
 			<?= $this->form()->closeTag(); ?>
 			<div class="sbm-page1">

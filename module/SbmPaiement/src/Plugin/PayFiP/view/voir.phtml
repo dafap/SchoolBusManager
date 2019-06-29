@@ -8,7 +8,7 @@
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2019
+ * @date 28 juin 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -27,6 +27,8 @@ $actions = [
     ]
 ];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+$dateheure = \DateTime::createFromFormat('dmYHi',
+    $this->notification->dattrans . $this->notification->heurtrans)->format('d/m/Y H:i');
 ?>
 <h1>Détail d'une notification de paiement</h1>
 <div class="liste-wrapper">
@@ -45,57 +47,51 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<tbody>
 				<tr>
 					<td>Mode</td>
-					<td><b><?= ''//$this->notification->vads_ctx_mode; ?></b></td>
+					<td><b><?= $this->notification->saisie; ?></b></td>
 				</tr>
 				<tr>
-					<td>Type d'opération</td>
-					<td><b><?= ''//$this->notification->vads_operation_type; ?></b></td>
-				</tr>
-				<tr>
-					<td>Date de la transaction</td>
-					<td><b><?= ''//$this->notification->vads_trans_date; ?></b></td>
-				</tr>
-				<tr>
-					<td>Référence de la transaction</td>
-					<td><b><?= ''//$this->notification->vads_trans_id; ?></b></td>
-				</tr>
-				<tr>
-					<td>Statut de la transaction</td>
-					<td><b><?= ''//$this->notification->vads_trans_status; ?></b></td>
-				</tr>
-				<tr>
-					<td>Résultat de la transaction</td>
-					<td><b><?= ''//$this->notification->vads_result; ?></b></td>
-				</tr>
-				<tr>
-					<td>Autorisation n°</td>
-					<td><b><?= ''//$this->notification->vads_auth_number; ?></b></td>
-				</tr>
-				<tr>
-					<td>Email</td>
-					<td><b><?= ''//$this->notification->vads_cust_email; ?></b></td>
-				</tr>
-				<tr>
-					<td>Référence du responsable</td>
-					<td><b><?= ''//$this->notification->vads_cust_id; ?></b></td>
-				</tr>
-				<tr>
-					<td>Nom du responsable</td>
-					<td><b><?= ''//$this->notification->vads_cust_name; ?></b></td>
-				</tr>
-				<tr>
-					<td>Référence de la commande</td>
-					<td><b><?= ''//$this->notification->vads_order_id; ?></b></td>
-				</tr>
-				<tr>
-					<td>Référence des élèves concernés</td>
-					<td><b><?= ''//$this->notification->ref_eleveIds; ?></b></td>
+					<td>Titulaire</td>
+					<td><b><?= $this->notification->titulaire; ?></b></td>
 				</tr>
 				<tr>
 					<td>Montant</td>
-					<td><b><?= ''//$fmt->formatCurrency($this->notification->vads_amount/100, 'EUR'); ?></b></td>
+					<td><b><?= $fmt->formatCurrency($this->notification->montant/100, 'EUR'); ?></b></td>
 				</tr>
-
+				<tr>
+					<td>Exercice</td>
+					<td><b><?= $this->notification->exer; ?></b></td>
+				</tr>
+				<tr>
+					<td>Date de la transaction</td>
+					<td><b><?= $dateheure;?></b></td>
+				</tr>
+				<tr>
+					<td>Résultat de la transaction</td>
+					<td><b><?= $this->notification->resultrans; ?></b></td>
+				</tr>
+				<tr>
+					<td>Objet de la transaction</td>
+					<td><b><?= $this->notification->objet; ?></b></td>
+				</tr>
+				<tr>
+					<td>Référence de la dette</td>
+					<td><b><?= $this->notification->refdet; ?></b></td>
+				</tr>
+				<tr>
+					<td>Autorisation n°</td>
+					<td><b><?= $this->notification->numauto; ?></b></td>
+				</tr>
+				<tr>
+					<td>Email</td>
+					<td><b><?= $this->notification->mel; ?></b></td>
+				</tr>
+				<tr>
+					<td>Identifiant de l'opération</td>
+					<td><b><?= $this->notification->idOp; ?></b></td>
+				</tr>
+				<tr>
+					<td>Numéro client PayFiP</td>
+					<td><b><?= $this->notification->numcli; ?></b></td>
 				</tr>
 			</tbody>
 		</table>

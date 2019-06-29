@@ -2,16 +2,16 @@
 /**
  * Application Sbm
  * Dessin du pied de page
- * 
+ *
  * L'appel se fait par :
- * $this->partial('layout/footer', ['client_name' => 'COBAS', 'footer_elements' => ['mentions légales' => 'SbmFront\about'))); 
+ * $this->partial('layout/footer', ['client_name' => 'COBAS', 'footer_elements' => ['mentions légales' => 'SbmFront\about')));
  *
  * @project sbm
  * @package module/SbmFront
  * @filesource view/layout/footer.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept.2018
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 ?>
@@ -20,10 +20,10 @@
   <?= $this->translate('School Bus Manager');?> : <a
 			href="https://www.dafap.fr" target="_blank"
 			title="Conception et r&eacute;alisation">Dafap informatique</a>
-  &copy;2013 - <?= date('Y')?> - <a href="https://www.ex2.com"
+  &copy;2013 - <?= date('Y')?> - <a href="https://www.ex2.com"  target="_blank"
 			title=" H&eacute;bergement web">Ex2Hosting</a>
 	</div>
-	<div class="float-right"> 
+	<div class="float-right">
   <?php
 // mentions légales, formulaire de contact ... passés dans un tableau associatif {$name =>
 // $url}

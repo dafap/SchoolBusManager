@@ -9,11 +9,12 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
@@ -27,11 +28,22 @@ class Eleves extends AbstractQuery
     {
         $this->addStrategy('grilleTarif',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
-            ->getStrategie('grille'));
+                ->getStrategie('grille'));
     }
 
     private function dernierMillesime($lequel, $responsableId)
     {
+        $where_appel = new Where();
+        $where_appel->literal('notified = 0')->like('refdet',
+            Session::get('millesime') . '%');
+        $select_appels = $this->sql->select(
+            $this->db_manager->getCanonicName('appels', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+            ->where($where_appel);
+
         $predicate = new Where();
         $predicate->literal('sc2.eleveId=sco.eleveId');
         $select2 = new Select();
@@ -43,6 +55,7 @@ class Eleves extends AbstractQuery
             'dernierMillesime' => new Literal('max(millesime)')
         ])
             ->where($predicate);
+
         $where = new Where();
         $where->equalTo('res.responsableId', $responsableId)
             ->nest()
@@ -119,6 +132,13 @@ class Eleves extends AbstractQuery
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], Select::JOIN_LEFT)
+            ->join([
+            'appels' => $select_appels
+        ], 'appels.eleveId = ele.eleveId',
+            [
+                'appelNotifieOk' => new Expression(
+                    'CASE WHEN isnull(appels.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
         return $this->renderResult($select);

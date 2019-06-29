@@ -9,7 +9,7 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
+ * @date 25 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmParent\Controller\Service;
@@ -38,11 +38,18 @@ class IndexControllerFactory implements FactoryInterface
                     'factories',
                     'SbmPaiement\Plugin\Plateforme'
                 ], $config_application));
+        if ($sm->has('SbmPaiement\Plugin\Plateforme')) {
+            $plugin_plateforme = $sm->get('SbmPaiement\Plugin\Plateforme');
+        } else {
+            $plugin_plateforme = null;
+        }
         $config_controller = [
+            'theme' => $sm->get(\SbmInstallation\Model\Theme::class),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'responsable' => $sm->get(Responsable::class),
+            'plugin_plateforme' => $plugin_plateforme,
             'local_manager' => $local_sm,
             'tmpuploads' => StdLib::getParamR([
                 'sbm',

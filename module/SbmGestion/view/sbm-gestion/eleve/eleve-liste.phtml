@@ -148,6 +148,9 @@ $url_add_photo = $this->url('sbmgestion/eleve',
         'page' => $this->page
     ]);
 $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
+$url_majnotification = $this->url('sbmpaiement', [
+    'action' => 'majnotification'
+]);
 
 // définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
 if (! empty($this->groupe)) {
@@ -377,6 +380,12 @@ $actions = [
                     'title' => 'supprimer',
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'supprimer')
                 ],
+                'majNotification' => [
+                    'class' => 'fam-transmit-error',
+                    'formaction' => $url_majnotification,
+                    'title' => 'Vérifier les paiements en ligne',
+                    'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'majNotification')
+                ],
                 'addphoto' => [
                     'class' => 'fam-camera-add',
                     'formaction' => $url_add_photo,
@@ -400,6 +409,9 @@ $actions = [
             if (! $eleve['sansphoto']) {
                 unset($buttons['addphoto']);
             }
+            if ($inscrit || $eleve['appelNotifieOk']) {
+                unset($buttons['majNotification']);
+            }
             ?>
                 <tr class="<?= $tr_css;?>">
 					<td <?= $rowspan;?>>
@@ -417,7 +429,7 @@ $actions = [
 					<td <?= $rowspan;?> <?= $ga ? ' title="garde alternée"' : '';?>>
 						<?= empty($itemR2)? '' : 'G.A.';?></td>
 					<td <?= $rowspan;?> class="etablissement">
-						<?= $this->escapeHtml($eleve['etablissement']);?> - 
+						<?= $this->escapeHtml($eleve['etablissement']);?> -
 						<?= $this->escapeHtml($eleve['communeEtablissement']);?></td>
 					<td <?= $rowspan;?> class="classe">
 						<?= $this->escapeHtml($eleve['classe']);?></td>
@@ -430,14 +442,14 @@ $actions = [
 					</td>
 					<td <?= $rowspan;?> class="boutons">
 						<?= $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);?></td>
-				</tr> 
+				</tr>
 				<?php if ($ga):?>
 				<tr class="<?= $tr_css;?>">
 					<td class="responsables"><?= $itemR2; ?></td>
 					<td class="service"><?= $this->printServices($eleve['eleveId'], 2);?></td>
 					<td class="station"><?= $this->printStations($eleve['eleveId'], 2);?></td>
 				</tr>
-					<?php endif;?>        
+					<?php endif;?>
         <?php endforeach;?>
     </tbody>
 		</table>

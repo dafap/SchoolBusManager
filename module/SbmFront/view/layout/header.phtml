@@ -2,17 +2,17 @@
 /**
  * Application Sbm
  * Dessin du haut de page
- * 
+ *
  * L'appel se fait par :
- * $this->partial('layout/header', array('client_name' => 'COBAS', 'footer_elements' => array('mentions légales' => 'SbmFront\about'))); 
+ * $this->partial('layout/header', array('client_name' => 'COBAS', 'footer_elements' => array('mentions légales' => 'SbmFront\about')));
  *
  * @project sbm
  * @package module/SbmFront
  * @filesource view/layout/header.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 25 juin 2019
+ * @version 2019-2.5.0
  */
 ?>
 <div id="top-site">
@@ -32,7 +32,7 @@ foreach ((array) $this->header_elements['left'] as $name => $url) {
         $title = '';
         $css = '';
     }
-    echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '">' . $name .
+    echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '" target="_blank">' . $name .
         '</a>';
     $sep = ' ';
 }
@@ -54,7 +54,7 @@ foreach ((array) $this->header_elements['right'] as $name => $url) {
         $title = '';
         $css = '';
     }
-    echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '">' . $name .
+    echo $sep . '<a' . $title . $accesskey . $css . ' href="' . $href . '" target="_blank">' . $name .
         '</a>';
     $sep = ' ';
 }

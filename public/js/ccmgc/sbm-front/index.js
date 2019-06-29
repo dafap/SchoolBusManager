@@ -6,24 +6,26 @@
  * @filesource front/index.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 fév. 2019
+ * @date 22 juin 2019
  * @version 2019-2.4.7
  */
 $(document).ready(function($) {
-	$("#help-delai").on("click", function() {
-		$("#help-delai").hide();
-		$("#help-delai-content").show();
+	$("*[id^='help-'").on("click", function() {
+		var id = $(this).attr('id');
+		id = id.replace('help', 'content');
+		$(this).hide();
+		$("#"+id).show();
 	});
-	$("#help-delai-content").on("click", function() {
-		$("#help-delai-content").hide();
-		$("#help-delai").show();
+	$("div[id^='content-'].retour").on("click", function() {
+		var id = $(this).attr('id');
+		id = id.replace('content', 'help');
+		$(this).hide();
+		$("#"+id).show();
 	});
-	$("#help-autre").on("click", function() {
-		$("#inscription").hide();
-		$("#help-autre-content").show();
-	});
-	$("#help-retour").on("click", function() {
-		$("#help-autre-content").hide();
-		$("#inscription").show();
+	$("div[id^='content-'] .retour").on("click", function() {
+		var id = $(this).parents("div").attr('id');
+		$("#"+id).hide();
+		id = id.replace('content', 'help');
+		$("#"+id).show();
 	});
 });

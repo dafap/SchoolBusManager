@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
+ * @date 29 juin 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\Session;
@@ -58,6 +58,9 @@ $url_add_photo = $this->url('sbmgestion/eleve',
         'action' => 'envoiphoto',
         'page' => $this->page
     ]);
+$url_majnotification = $this->url('sbmpaiement', [
+    'action' => 'majnotification'
+]);
 $hiddens = [
     'origine' => $url_origine,
     'responsableId' => $this->responsableId
@@ -101,6 +104,8 @@ if (! empty($email)) {
         'title' => 'Envoyer un email'
     ];
 }
+$personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->prenom,
+    $this->responsable->nom);
 ?>
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
@@ -131,19 +136,19 @@ if (! empty($email)) {
         switch ($key) :
             case 'resp1':
                 ?>
-			          <h3>Liste des élèves ayant cette personne comme responsable
+			          <h3>Liste des élèves ayant <?=$personne;?> pour responsable
 			1</h3>
 			    <?php
                 break;
             case 'resp2':
                 ?>
-                      <h3>Liste des élèves ayant cette personne comme
+                      <h3>Liste des élèves ayant <?=$personne;?> pour
 			responsable 2</h3>
 			    <?php
                 break;
             case 'fact':
                 ?>
-                      <h3>Liste des élèves ayant cette personne comme
+                      <h3>Liste des élèves ayant <?=$personne;?> pour
 			responsable financier</h3>
 			    <?php
                 break;
@@ -157,7 +162,8 @@ if (! empty($email)) {
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
-					<th class="centre">Inscrit<br>en</th>
+					<th class="centre">Inscrit<br>en
+					</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
 					<th>Tarif</th>
@@ -188,6 +194,11 @@ if (! empty($email)) {
                         'formaction' => $url_raye,
                         'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
                     ],
+                    'majNotification' => [
+                        'class' => 'fam-transmit-error',
+                        'formaction' => $url_majnotification,
+                        'title' => 'Vérifier les paiements en ligne'
+                    ],
                     'addphoto' => [
                         'class' => 'fam-camera-add',
                         'formaction' => $url_add_photo,
@@ -212,8 +223,12 @@ if (! empty($email)) {
                 $this->pictogrammes('init')
                     ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
                     ->addSansPhoto($row['sansphoto']);
+                if ($inscrit || $row['appelNotifieOk']) {
+                    unset($buttons['majNotification']);
+                }
                 $tr_css = 'noir';
             } else {
+                $this->pictogrammes('init');
                 $url_edit = $this->url('sbmgestion/eleve',
                     [
                         'action' => 'eleve-inscrire',
@@ -273,7 +288,7 @@ if (! empty($email)) {
             }
             ?>
 			    <tr
-					class="<?= $tr_css . ' ' . $this->cycle(["even", "odd"])->next();?>">
+					class="petit <?= $tr_css . ' ' . $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $row['nom']; ?></td>
 					<td><?= $row['prenom']; ?></td>

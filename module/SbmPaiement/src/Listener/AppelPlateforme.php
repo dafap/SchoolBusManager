@@ -2,10 +2,10 @@
 /**
  * Listener qui appelle la plateforme pour obtenir le formulaire de paiement.
  *
- * L'appel est déclanché par un évènement 'appelPaiement' lancé par 
+ * L'appel est déclanché par un évènement 'appelPaiement' lancé par
  * la méthode SbmParent\Controller\IndexController::payerAction().
  * On utilisera comme identifiant de l'évènement la chaine 'appelPaiement'.
- * 
+ *
  * Les paramètres de l'évènement contiennent les données suivantes :
  * - montant          : en euros (il faut le multiplier par 100 ici)
  * - count            : le nombre d'échéances (1 si paiement comptant, n si paiement en n fois)
@@ -16,14 +16,15 @@
  * - nom              : nom du responsable
  * - prénom           : prénom du responsable
  * - eleveIds         : tableau des eleveId, référence des élèves concernés par ce paiement
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Listener
  * @filesource AppelPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 fév. 2019
+ * @date 16 juin 2019
  * @version 2019-2.5.0
+ * @deprecated
  */
 namespace SbmPaiement\Listener;
 
@@ -76,6 +77,7 @@ class AppelPlateforme implements ListenerAggregateInterface
      * service manager sous la clé 'SbmPaiement\Plugin\Plateforme'
      *
      * @param Event $e
+     * @deprecated
      */
     public function onAppelPaiement(Event $e)
     {

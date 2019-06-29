@@ -9,7 +9,7 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2019
+ * @date 23 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
@@ -23,6 +23,10 @@ use DateTime;
 
 class Calendar extends AbstractSbmTable
 {
+    const ETAT_AVANT = 0;
+    const ETAT_PENDANT = 1;
+    const ETAT_APRES = 2;
+    const ETAT_FERME = 3;
 
     /**
      * Initialisation de la classe
@@ -40,8 +44,8 @@ class Calendar extends AbstractSbmTable
      *
      * @throws \SbmCommun\Model\Db\Service\Table\Exception\RuntimeException
      *
-     * @return array Toutes les colonnes de la table sont renvoyées en filtrant les lignes dont la
-     *         nature est 'AS'
+     * @return array Toutes les colonnes de la table sont renvoyées en filtrant les lignes
+     *         dont la nature est 'AS'
      */
     public function getAnneesScolaires()
     {
@@ -180,14 +184,13 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
-     * Vérifie si la colonne date précisée ne contient pas de valeur NULL pour le millesime
-     * indiqué.
+     * Vérifie si la colonne date précisée ne contient pas de valeur NULL pour le
+     * millesime indiqué.
      *
      * @param int $millesime
      *            Millesime à vérifier
      * @param string $column
      *            Nom de la colonne
-     *
      * @return bool
      */
     private function isValidColDate($millesime, $column)
@@ -220,18 +223,19 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
-     * Renvoie l'état du site vis à vis de la période d'inscripton.
-     * Les dates sont données sous forme de DateTime.
-     * L'état du site est :<ul>
-     * <li>0 : inscriptions annoncées</li>
-     * <li>1 : inscriptions ouvertes</li>
-     * <li>2 : inscriptions fermées</li></ul>
+     * Renvoie l'état du site vis à vis de la période d'inscripton. Les dates sont données
+     * sous forme de DateTime. L'état du site est :<ul> <li>0 : inscriptions
+     * annoncées</li> <li>1 : inscriptions ouvertes</li> <li>2 : inscriptions ouvertes
+     * pour les retardataires</li> <li>3 : inscriptions fermées</li></ul> ATTENTION !
+     * $aujourdhui est donné en jourmoisan heuresminutesecondes alors que dateDebut,
+     * dateFin et echeance sont donnés en jourmoisan donc il faut comparer au lendemain
+     * afin de prendre en compte la dernière journée. Mais ne pas modifier directement
+     * dateFin et echeance sinon les valeurs retournées ne sont pas bonnes.
      *
-     * @return array Les clés du tableau sont :<ul>
-     *         <li>'etat' (0, 1 ou 2)</li>
+     * @return array Les clés du tableau sont :<ul> <li>'etat' (0, 1, 2 ou 3)</li>
      *         <li>dateDebut (DateTime - début de la période d'inscription)</li>
-     *         <li>dateFin (DateTime - fin de la période d'inscription)</li>
-     *         <li>echeance (DateTime - date limite de paiement)</li></ul>
+     *         <li>dateFin (DateTime - fin de la période d'inscription)</li> <li>echeance
+     *         (DateTime - date limite de paiement)</li></ul>
      */
     public function getEtatDuSite()
     {
@@ -241,26 +245,37 @@ class Calendar extends AbstractSbmTable
         $resultset = $this->fetchAll($where);
         $row = $resultset->current();
         $dateDebut = DateTime::createFromFormat('Y-m-d', $row->dateDebut);
-        $dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin);
-        $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
+        $df = clone($dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin));
+        $de = clone($echeance = DateTime::createFromFormat('Y-m-d', $row->echeance));
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
             return [
-                'etat' => 0,
+                'etat' => self::ETAT_AVANT,
+                'inscription' => false,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > max($dateFin, $echeance)) {
+        } elseif ($aujourdhui > $de->modify('+1 day')) {
             return [
-                'etat' => 2,
+                'etat' => self::ETAT_FERME,
+                'inscription' => false,
+                'dateDebut' => $dateDebut,
+                'dateFin' => $dateFin,
+                'echeance' => $echeance
+            ];
+        } elseif ($aujourdhui > $df->modify('+1 day')) {
+            return [
+                'etat' => self::ETAT_APRES,
+                'inscription' => true,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
         } else {
             return [
-                'etat' => 1,
+                'etat' => self::ETAT_PENDANT,
+                'inscription' => true,
                 'dateDebut' => $dateDebut,
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
@@ -289,16 +304,16 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[DateLib::formatDateFromMysql($row->dateDebut)] = $commune;
                 $aPermanences[DateLib::formatDateFromMysql($row->dateFin)] = $commune;
                 $aPermanences[DateLib::formatDateFromMysql($row->echeance)] = $commune;
-                if (!is_null($row->date1)) {
+                if (! is_null($row->date1)) {
                     $aPermanences[DateLib::formatDateFromMysql($row->date1)] = $commune;
                 }
-                if (!is_null($row->date2)) {
+                if (! is_null($row->date2)) {
                     $aPermanences[DateLib::formatDateFromMysql($row->date2)] = $commune;
                 }
-                if (!is_null($row->date3)) {
+                if (! is_null($row->date3)) {
                     $aPermanences[DateLib::formatDateFromMysql($row->date3)] = $commune;
                 }
-                if (!is_null($row->date4)) {
+                if (! is_null($row->date4)) {
                     $aPermanences[DateLib::formatDateFromMysql($row->date4)] = $commune;
                 }
             }
@@ -314,22 +329,22 @@ class Calendar extends AbstractSbmTable
                 $aPermanences[$row->dateDebut][$commune] = $commune;
                 $aPermanences[$row->dateFin][$commune] = $commune;
                 $aPermanences[$row->echeance][$commune] = $commune;
-                if (!is_null($row->date1)) {
+                if (! is_null($row->date1)) {
                     $aPermanences[$row->date1][$commune] = $commune;
                 }
-                if (!is_null($row->date2)) {
+                if (! is_null($row->date2)) {
                     $aPermanences[$row->date2][$commune] = $commune;
                 }
-                if (!is_null($row->date3)) {
+                if (! is_null($row->date3)) {
                     $aPermanences[$row->date3][$commune] = $commune;
                 }
-                if (!is_null($row->date4)) {
+                if (! is_null($row->date4)) {
                     $aPermanences[$row->date4][$commune] = $commune;
                 }
             }
             ksort($aPermanences);
             foreach ($aPermanences as $date => $liste) {
-                $result[] = DateLib::formatDateFromMysql($date) . " : " .
+                $result[] = DateLib::formatDateComplete($date) . " : " .
                     implode(', ', $liste);
             }
         }
@@ -337,8 +352,8 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
-     * Change l'état d'une année scolaire.
-     * Une année scolaire peut être ouverte (1) ou fermée (0).
+     * Change l'état d'une année scolaire. Une année scolaire peut être ouverte (1) ou
+     * fermée (0).
      *
      * @param int $millesime
      *            millesime de l'année scolaire à traiter
