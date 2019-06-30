@@ -8,7 +8,7 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
+ * @date 30 juin 2019
  * @version 2019-2.5.0
  */
 
@@ -79,8 +79,8 @@ return [
             'moment' => 'BEFORE',
             'evenement' => 'INSERT',
             'definition' => <<<EOT
-INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(paiements)%', 'insert', 'paiementId', NEW.paiementId, NOW(), CONCAT(IFNULL(NEW.dateDepot, ''), '|', NEW.datePaiement, '|', IFNULL(NEW.dateValeur, ''), '|', NEW.responsableId, '|', NEW.anneeScolaire, '|', NEW.exercice, '|', NEW.montant, '|', NEW.codeModeDePaiement, '|', NEW.codeCaisse, '|', NEW.banque, '|', NEW.titulaire, '|', NEW.reference))
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, id_txt, dt, log)
+VALUES ('%table(paiements)%', 'insert', 'paiementId', NEW.paiementId, NEW.exercice, NOW(), CONCAT(IFNULL(NEW.dateDepot, ''), '|', NEW.datePaiement, '|', IFNULL(NEW.dateValeur, ''), '|', NEW.responsableId, '|', NEW.anneeScolaire, '|', NEW.exercice, '|', NEW.montant, '|', NEW.codeModeDePaiement, '|', NEW.codeCaisse, '|', NEW.banque, '|', NEW.titulaire, '|', NEW.reference))
 EOT
 
         ],
@@ -88,8 +88,8 @@ EOT
             'moment' => 'BEFORE',
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
-INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(paiements)%', 'update', 'paiementId', OLD.paiementId, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(NEW.note, '')))
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, id_txt, dt, log)
+VALUES ('%table(paiements)%', 'update', 'paiementId', OLD.paiementId, NEW.exercice, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(NEW.note, '')))
 EOT
 
         ],
@@ -97,8 +97,8 @@ EOT
             'moment' => 'BEFORE',
             'evenement' => 'DELETE',
             'definition' => <<<EOT
-INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(paiements)%', 'delete', 'paiementId', OLD.paiementId, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(OLD.note, '')))
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, id_txt, dt, log)
+VALUES ('%table(paiements)%', 'delete', 'paiementId', OLD.paiementId, OLD.exercice, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(OLD.note, '')))
 EOT
 
         ]
