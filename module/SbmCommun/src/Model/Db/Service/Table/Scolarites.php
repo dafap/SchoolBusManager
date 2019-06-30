@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
+ * @date 30 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -105,7 +105,9 @@ class Scolarites extends AbstractSbmTable
     public function setPaiement($millesime, $aEleveId, $paiement = true)
     {
         $where = new Where();
-        if (is_array($aEleveId)) {
+        if (empty($aEleveId)) {
+            return 0;
+        } elseif (is_array($aEleveId)) {
             $where->equalTo('millesime', $millesime)->in('eleveId', $aEleveId);
         } else {
             $where->equalTo('millesime', $millesime)->equalTo('eleveId', $aEleveId);

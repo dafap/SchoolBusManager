@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
+ * @date 30 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -206,9 +206,10 @@ class FinanceController extends AbstractActionController
             // L'appel peut provenir de la liste des responsables, de la fiche d'un
             // responsable, de la fiche d'un eleve ou de la liste des paiements.
             // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
-            $this->plugin_plateforme->majnotification([
-                'responsableId' => $responsableId
-            ]);
+            $this->plugin_plateforme->majnotification(
+                [
+                    'responsableId' => $responsableId
+                ]);
             $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
             // calcul des montants dus, payés et du solde
             $resultats = $this->db_manager->get(
@@ -548,8 +549,8 @@ class FinanceController extends AbstractActionController
             if ($form->isValid()) {
                 $data->note = $args['note'];
                 $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                $tableScolarites->setPaiement(Session::get('millesime'), $args['eleveIds'],
-                    false);
+                $tableScolarites->setPaiement(Session::get('millesime'),
+                    StdLib::getParam('eleveIds', $args, []), false);
                 $tablePaiements->saveRecord($data);
                 $tablePaiements->deleteRecord($paiementId);
                 $this->flashMessenger()->addSuccessMessage(

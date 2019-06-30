@@ -117,7 +117,10 @@ var js_paiement_ajout = (function(){
 			if ($(btn).length && $(btn).is("[name]") && $(btn).attr("name")=="cancel") {
 		    	return true;
 			}
-			var montant=$("#paiement-montant").val() | 0;
+			var montant=parseFloat($("#paiement-montant").val());
+			if (isNaN(montant)) {
+				montant = 0.0;
+			}
 			if (nbPreinscrits>0 && montant>0 && sommeDue==0) {
 		    	return confirm("Vous n'avez pas coché d'enfant ; ce paiement ne validera pas les préinscriptions. Confirmez-vous ?");
 			} 
