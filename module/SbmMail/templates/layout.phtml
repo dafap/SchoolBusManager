@@ -3,31 +3,51 @@
  * Layout des mail envoyés
  *
  * Place les logos en signature (sous le message)
- * 
+ *
  * @project sbm
  * @package SbmMail/templates
  * @filesource layout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 3 juil. 2019
  * @version 2019-2.5.0
  */
+use SbmBase\Model\StdLib;
+
 $url_img = $this->serverUrl($this->path['url'] . $this->file_name);
 $attributes = [];
 if (is_array($this->client) && array_key_exists('name', $this->client)) {
     $attributes[] = sprintf('alt="%s"', $this->client['name']);
 }
 if (is_array($this->img_attributes)) {
+    if (array_key_exists('width', $this->img_attributes) &&
+        is_numeric($this->img_attributes['width'])) {
+        $w_base = $this->img_attributes['width'];
+    }
+    if (array_key_exists('height', $this->img_attributes) &&
+        is_numeric($this->img_attributes['height'])) {
+        $h_base = $this->img_attributes['height'];
+    }
     if (array_key_exists('taille', $this->img_attributes) &&
-        $this->img_attributes['taille'] == 'fixed') {
-        if (array_key_exists('width', $this->img_attributes) &&
-            is_numeric($this->img_attributes['width'])) {
-            $attributes[] = sprintf('width="%d"', $this->img_attributes['width']);
+        $this->img_attributes['taille'] == 'fixe') {
+        if (isset($w_base)) {
+            $attributes[] = sprintf('width="%d"', $w_base);
         }
-        if (array_key_exists('height', $this->img_attributes) &&
-            is_numeric($this->img_attributes['height'])) {
-            $attributes[] = sprintf('height="%d"', $this->img_attributes['height']);
+        if (isset($h_base)) {
+            $attributes[] = sprintf('height="%d"', $h_base);
         }
+    } else {
+        $infos = getimagesize(StdLib::concatPath($this->path['system'], $this->file_name));
+        $ratio = 1;
+        if (isset($w_base) && $infos[0] > $w_base) {
+            $ratio = $w_base / $infos[0];
+        }
+        if (isset($h_base) && $infos[1] > $h_base) {
+            $ratio = min($ratio, $h_base / $infos[1]);
+        }
+        $width = floor($infos[0] * $ratio);
+        $height = floor($infos[1] * $ratio);
+        $attributes[] = sprintf('width="%d" height="%d"', $width, $height);
     }
 }
 ?>
