@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juin 2019
+ * @date 4 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -2135,11 +2135,12 @@ class EleveController extends AbstractActionController
                             ], $this->img),
                         'client' => $this->client
                     ]);
+                $to = $destinataire['alias'] ?: $destinataire['email'];
                 $params = [
                     'to' => [
                         [
                             'email' => $destinataire['email'],
-                            'name' => $destinataire['alias'] ?: $destinataire['email']
+                            'name' => $to
                         ]
                     ],
                     'bcc' => [
@@ -2159,8 +2160,10 @@ class EleveController extends AbstractActionController
                 // envoi du mail
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
                 $this->getEventManager()->trigger('sendMail', null, $params);
-                $this->flashMessenger()->addInfoMessage(
-                    'Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
+                $message = sprintf(
+                    'Le message a été envoyé à %s. Vous êtes en copie.',
+                    $to);
+                $this->flashMessenger()->addInfoMessage($message);
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (RedirectToOrigineException $e) {
