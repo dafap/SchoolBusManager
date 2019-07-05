@@ -9,7 +9,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
+ * @date 05 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmAjax\Controller;
@@ -862,6 +862,83 @@ class EleveController extends AbstractActionController
                         ]));
             }
             ;
+        }
+    }
+
+
+
+    public function quartgauchephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), 90);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
+        }
+    }
+
+    public function quartdroitephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), -90);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
+        }
+    }
+
+    public function retournephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), 180);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
         }
     }
 }

@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
+ * @date 05 juil. 2019
  * @version 2019-2.5.0
  */
 
@@ -95,8 +95,10 @@ var js_edit = (function() {
 		hasPhoto = ouinon;
 		if (hasPhoto) {
 			$("button[name=supprphoto]").show();
+			$("#btnoutilsphoto").show();
 		} else {
 			$("button[name=supprphoto]").hide();
+			$("#btnoutilsphoto").hide();
 		}
 	}
 	function montreBtnEnvoiPhoto(voir) {
@@ -503,6 +505,78 @@ var js_edit = (function() {
 					if (retour.success == 1) {
 						montrePhoto(retour.src, true);
 						setHasPhoto(false);
+					} else {
+						montrePhoto(retour.cr, false);
+					}
+				},
+				error : function(xhr,ajaxOptions,thrownError) {
+					alert(xhr.status+" "+thrownError);
+				}
+			});
+		});
+		$("button[type=button][name=quartgauchephoto]").click(function() {
+			var eleveid = $("input[type=hidden][name=eleveId]").val();
+			var fd = new FormData();
+			fd.append('eleveId', eleveid);
+			$.ajax({
+				url : '/sbmajaxeleve/quartgauchephoto',
+				data : fd,
+				processData : false,
+				contentType : false,
+				type : 'post',
+				success : function(data) {
+					var retour = $.parseJSON(data);
+					if (retour.success == 1) {
+						montrePhoto(retour.src, true);
+						setHasPhoto(true);
+					} else {
+						montrePhoto(retour.cr, false);
+					}
+				},
+				error : function(xhr,ajaxOptions,thrownError) {
+					alert(xhr.status+" "+thrownError);
+				}
+			});
+		});
+		$("button[type=button][name=quartdroitephoto]").click(function() {
+			var eleveid = $("input[type=hidden][name=eleveId]").val();
+			var fd = new FormData();
+			fd.append('eleveId', eleveid);
+			$.ajax({
+				url : '/sbmajaxeleve/quartdroitephoto',
+				data : fd,
+				processData : false,
+				contentType : false,
+				type : 'post',
+				success : function(data) {
+					var retour = $.parseJSON(data);
+					if (retour.success == 1) {
+						montrePhoto(retour.src, true);
+						setHasPhoto(true);
+					} else {
+						montrePhoto(retour.cr, false);
+					}
+				},
+				error : function(xhr,ajaxOptions,thrownError) {
+					alert(xhr.status+" "+thrownError);
+				}
+			});
+		});
+		$("button[type=button][name=retournephoto]").click(function() {
+			var eleveid = $("input[type=hidden][name=eleveId]").val();
+			var fd = new FormData();
+			fd.append('eleveId', eleveid);
+			$.ajax({
+				url : '/sbmajaxeleve/retournephoto',
+				data : fd,
+				processData : false,
+				contentType : false,
+				type : 'post',
+				success : function(data) {
+					var retour = $.parseJSON(data);
+					if (retour.success == 1) {
+						montrePhoto(retour.src, true);
+						setHasPhoto(true);
 					} else {
 						montrePhoto(retour.cr, false);
 					}
