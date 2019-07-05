@@ -51,7 +51,7 @@ class SelectionPhotos extends Form implements InputFilterProviderInterface
                             ]
                         ],
                         'selection' => [
-                            'value' => 'selection',
+                            'value' => 'ele.selection',
                             'label' => 'Fiches sélectionnées',
                             'attributes' => [
                                 'id' => 'selectionradio2'
