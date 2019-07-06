@@ -11,14 +11,6 @@
  * @date 26 mai 2019
  * @version 2019-2.5.0
  */
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 $acategories = [
     255 => 'Administrateur',
     254 => 'Administrateur',
@@ -188,7 +180,7 @@ $actions = [
 					<td class="active centre">
 						<?= $user->categorieId == 255 ? '' : ($user->active ? '' : 'Non'); ?></td>
 					<td class="selection centre">
-						<?= $user->categorieId == 255 ? '' : renderCheckbox($this, 'selection', 'chk' . $user->userId, $user->selection)?></td>
+						<?= $user->categorieId == 255 ? '' : $this->renderCheckbox('selection', 'chk' . $user->userId, $user->selection)?></td>
 					<td class="boutons">
             			<?= $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);?>
 				    </td>

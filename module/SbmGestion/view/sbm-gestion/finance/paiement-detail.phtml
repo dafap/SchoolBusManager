@@ -12,19 +12,11 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 // Les montants de la facture (avant l'initialisation du JavaScript)
 $montantDuplicatas = $this->resultats->getMontantDuplicatas('tous');
 $montantAbonnements = $this->resultats->getAbonnementsMontant('tous');
@@ -190,7 +182,7 @@ $actions = [
 						<?= $enfant['duplicata'];?></td>
 							<td>
 							<?php if (!$enfant['fa'] && !$enfant['gratuit']):?>
-							<?= renderCheckbox($this, 'paiement', "chk$eleveId", $enfant['paiement']);?>
+							<?= $this->renderCheckbox('paiement', "chk$eleveId", $enfant['paiement']);?>
 							<?php endif;?>
 							</td>
 						</tr>

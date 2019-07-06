@@ -12,17 +12,9 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $this->themeJS('gestion-transport', 'circuit-liste.js');
@@ -74,10 +66,11 @@ $url_modifhoraires = $this->url('sbmgestion/transport',
     ]);
 $url_retour = $this->url('sbmgestion/transport');
 if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-groupe',
-        'page' => $this->page
-    ]);
+    $url_sms = $this->url('sbmservicesms',
+        [
+            'action' => 'envoi-groupe',
+            'page' => $this->page
+        ]);
 }
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -233,7 +226,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=renderCheckbox($this, 'selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
 						</td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>

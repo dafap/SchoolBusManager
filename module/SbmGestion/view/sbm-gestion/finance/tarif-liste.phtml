@@ -12,18 +12,9 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
-
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $jsCallback = '';
@@ -181,7 +172,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
 
 					<td class="centre selection">
-						<?=renderCheckbox($this, 'selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>

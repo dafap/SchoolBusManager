@@ -14,19 +14,11 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
 
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $jsCallback = '';
@@ -83,6 +75,11 @@ $url_delete = $this->url('sbmgestion/finance',
 $url_detail = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-detail',
+        'page' => $this->page
+    ]);
+$url_rectifications = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-rectifications',
         'page' => $this->page
     ]);
 if ($this->h2) {
@@ -144,13 +141,20 @@ $actions = [
         'formaction' => $url_detail,
         'title' => 'Facturation'
     ],
+    'rectifications' => [
+        'class' => 'fam-bug-error',
+        'formaction' => $url_rectifications,
+        'title' => 'Journal des rectifications'
+    ],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
         'title' => 'Encaissement'
     ]
 ];
-if (!$this->h2) {
+if ($this->h2) {
+    unset($actions['rectifications']);
+} else {
     unset($actions['detail']);
 }
 ?>
@@ -271,7 +275,7 @@ if (!$this->h2) {
 					<td class="date-paiement"><?= $dp;?></td>
 					<td class="date-valeur"><?= $dv; ?></td>
 					<td class="centre selection">
-					    <?= renderCheckbox($this, 'selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
+					    <?= $this->renderCheckbox('selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
 					<td class="boutons">
 						<?= $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);?></td>
 				</tr>

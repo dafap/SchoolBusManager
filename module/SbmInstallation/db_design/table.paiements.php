@@ -8,7 +8,7 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juin 2019
+ * @date 2 juil. 2019
  * @version 2019-2.5.0
  */
 
@@ -89,7 +89,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, id_txt, dt, log)
-VALUES ('%table(paiements)%', 'update', 'paiementId', OLD.paiementId, NEW.exercice, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(NEW.note, '')))
+VALUES ('%table(paiements)%', 'update', 'paiementId', OLD.paiementId, NEW.exercice, NOW(), CONCAT(IFNULL(OLD.dateDepot, ''), '|', OLD.datePaiement, '|', IFNULL(OLD.dateValeur, ''), '|', OLD.responsableId, '|', OLD.anneeScolaire, '|', OLD.exercice, '|', OLD.montant, '|', OLD.codeModeDePaiement, '|', OLD.codeCaisse, '|', OLD.banque, '|', OLD.titulaire, '|', OLD.reference, '|', IFNULL(NEW.note, ''), '|', NEW.responsableId, '|', NEW.montant, '|', NEW.codeModeDePaiement, '|', NEW.codeCaisse, '|', NEW.banque, '|', NEW.titulaire))
 EOT
 
         ],

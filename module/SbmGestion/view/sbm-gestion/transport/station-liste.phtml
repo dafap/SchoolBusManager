@@ -10,19 +10,11 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmCartographie\Model\Point;
 
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $jsCallback = '';
@@ -246,7 +238,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=renderCheckbox($this, 'selection', 'chk' . $station->stationId, $station->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk' . $station->stationId, $station->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($station->stationId, $hiddens, $buttons);?></td>

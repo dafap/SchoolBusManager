@@ -7,10 +7,9 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
-use Zend\View\Model\ViewModel;
 
 /**
  *
@@ -21,22 +20,6 @@ function formatDate($date)
     return \DateTime::createFromFormat('YmdHis', $date)->format('d/m/Y H:i:s');
 }
 
-/**
- *
- * @param ViewModel $view
- * @param string $name
- * @param string $id
- * @param boolean $value
- *            0 ou 1
- */
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $jsCallback = '';
@@ -194,10 +177,10 @@ EOT;
 					<td class="vads_amount">
 						<?= $montant; ?></td>
 					<td class="centre selection">
-						<?= renderCheckbox($this, 'selection', 'chk' . $notification->systempayId, $notification->selection)?></td>
+						<?=$this->renderCheckbox('selection', 'chk' . $notification->systempayId, $notification->selection)?></td>
 					<td class="boutons">
             			<?= $this->listeLigneActions($notification->systempayId, $hiddens, $buttons);?></td>
-				</tr>         
+				</tr>
             <?php endforeach;?>
             </tbody>
 		</table>

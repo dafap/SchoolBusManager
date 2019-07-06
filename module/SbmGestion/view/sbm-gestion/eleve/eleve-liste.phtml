@@ -8,19 +8,10 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmBase\Model\DateLib;
-
-function renderCheckbox($view, $name, $id, $value)
-{
-    $element = new \Zend\Form\Element\Checkbox($name);
-    $element->setUseHiddenElement(false)
-        ->setAttribute('id', $id)
-        ->setValue($value);
-    return $view->formCheckbox($element);
-}
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 // gestion des checkbox selection
@@ -438,7 +429,7 @@ $actions = [
 					<td class="station">
 						<?= $this->printStations($eleve['eleveId'], 1);?></td>
 					<td <?= $rowspan;?> class="centre selection">
-					<?= renderCheckbox($this, 'selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?>
+					<?=$this->renderCheckbox('selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?>
 					</td>
 					<td <?= $rowspan;?> class="boutons">
 						<?= $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);?></td>

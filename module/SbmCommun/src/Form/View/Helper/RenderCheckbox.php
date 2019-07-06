@@ -14,7 +14,7 @@
  * @filesource RenderCheckbox.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juin 2019
+ * @date 06 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Form\View\Helper;
@@ -34,11 +34,6 @@ class RenderCheckbox extends AbstractHelper
         foreach ($attributes as $key => $attribute_value) {
             $element->setAttribute($key, $attribute_value);;
         }
-        $f = fopen('debug.html', 'a');
-        ob_start();
-        var_dump('1',$name, $id, $value, $attributes, $element);
-        fwrite($f, ob_get_clean());
-        fclose($f);
         return $this->view->formCheckbox($element);
     }
 }

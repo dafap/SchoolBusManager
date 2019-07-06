@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juin 2019
+ * @date 1 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Controller;
@@ -575,6 +575,36 @@ class FinanceController extends AbstractActionController
                 'paiementId' => $paiementId,
                 'responsable' => $args['responsable'],
                 'libelles' => $this->db_manager->get('Sbm\Libelles')
+            ]);
+    }
+
+    public function paiementRectificationsAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        $args['exercice'] = 2019;
+        $page = $this->params('page', 1);
+        if (! array_key_exists('exercice', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $page
+                ]);
+        }
+        $exercice = $args['exercice'];
+        $query = $this->db_manager->get('Sbm\Db\Query\History');
+        $historique = new \SbmCommun\Model\Paiements\Historique\Historique();
+        $historique->setTResponsables($this->db_manager->get('Sbm\Db\Table\Responsables'));
+        return new ViewModel(
+            [
+                'exercice' => $exercice,
+                'page' => $page,
+                'paginator' => $query->paginatorPaiementsChanges($exercice),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_rectifications', 15),
+                'historique' => $historique
             ]);
     }
 

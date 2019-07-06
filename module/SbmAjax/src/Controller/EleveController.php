@@ -133,7 +133,7 @@ class EleveController extends AbstractActionController
      * Cette méthode est aussi dans ParentController
      *
      * @method GET
-     * @return mixed
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function getclassesforselectAction()
     {
