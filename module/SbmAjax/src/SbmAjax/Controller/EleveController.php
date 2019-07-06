@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
- * @version 2019-2.4.7
+ * @date 6 juil. 2019
+ * @version 2019-2.4.9
  */
 namespace SbmAjax\Controller;
 
@@ -37,7 +37,7 @@ class EleveController extends AbstractActionController
      * ajax - cocher la case sélection des responsables
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function checkselectionresponsableAction()
     {
@@ -63,7 +63,7 @@ class EleveController extends AbstractActionController
      * ajax - décocher la case sélection des responsables
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function uncheckselectionresponsableAction()
     {
@@ -89,7 +89,7 @@ class EleveController extends AbstractActionController
      * ajax - cocher la case sélection des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function checkselectioneleveAction()
     {
@@ -114,7 +114,7 @@ class EleveController extends AbstractActionController
      * ajax - décocher la case sélection des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function uncheckselectioneleveAction()
     {
@@ -136,11 +136,42 @@ class EleveController extends AbstractActionController
     }
 
     /**
+     * ajax - renvoie une structure permettant d'adapter le Select de classeId en fonction
+     * du niveau de l'établissement dont l'identifiant est etablissementId passé par GET
+     * method GET
+     * Cette méthode est aussi dans ParentController
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function getclassesforselectAction()
+    {
+        try {
+            $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
+            $etablissement = $tEtablissements->getRecord($this->params('etablissementId'));
+            $queryClasses = $this->db_manager->get('Sbm\Db\Select\Classes');
+            $classes = $queryClasses->niveau($etablissement->niveau, 'in');
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => $classes,
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+					 
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
      * ajax - change responsable
      * Renvoie les données d'un responsable dont la référence est passée par GET
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function getresponsableAction()
     {
@@ -195,7 +226,7 @@ class EleveController extends AbstractActionController
      * $trajet est le numéro du responsable (1 ou 2)
      *
      * @method GET
-     * @return dataType html
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function formaffectationAction()
     {
@@ -231,7 +262,7 @@ class EleveController extends AbstractActionController
      * Traite le post du formulaire formaffectation
      *
      * @method POST
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function formaffectationvalidateAction()
     {
@@ -466,7 +497,7 @@ class EleveController extends AbstractActionController
      * L'argument passé en GET dans args contient une chaine de la forme responsableId:valeur/etablissementId:valeur
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function donnedistanceAction()
     {
@@ -591,7 +622,7 @@ class EleveController extends AbstractActionController
      * ajax - cocher la case accordR1 des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function checkaccordR1Action()
     {
@@ -617,7 +648,7 @@ class EleveController extends AbstractActionController
      * ajax - décocher la case accordR1 des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function uncheckaccordR1Action()
     {
@@ -643,7 +674,7 @@ class EleveController extends AbstractActionController
      * ajax - cocher la case accordR2 des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function checkaccordR2Action()
     {
@@ -669,7 +700,7 @@ class EleveController extends AbstractActionController
      * ajax - décocher la case accordR2 des élèves
      *
      * @method GET
-     * @return dataType json
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function uncheckaccordR2Action()
     {
@@ -691,6 +722,12 @@ class EleveController extends AbstractActionController
         }
     }
 
+    /**
+     * ajax - décrémenter duplicata dans la table scolarites
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function decrementeduplicataAction()
     {
         try {
@@ -721,6 +758,12 @@ class EleveController extends AbstractActionController
         }
     }
 
+    /**
+     * ajax - incrémenter duplicata dans la table scolarites
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function incrementeduplicataAction()
     {
         try {
@@ -758,7 +801,8 @@ class EleveController extends AbstractActionController
      * <li>success = 1 et src = la chaine src à placer dans la balise `img`</li>
      * <li>success = 10x et cr = la chaine à afficher en cas d'erreur</li></ul>
      *
-     * @return \Zend\Stdlib\mixed
+     * @method POST
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function savephotoAction()
     {
@@ -823,7 +867,8 @@ class EleveController extends AbstractActionController
      * <li>success = 1 et src = sans photo gif</li>
      * <li>success = 20x et cr = message d'erreur à afficher en cas d'erreur</li></ul>
      * 
-     * @return \Zend\Stdlib\mixed
+     * @method POST
+     * @return \Zend\Stdlib\ResponseInterface
      */
     public function supprphotoAction()
     {
@@ -857,6 +902,81 @@ class EleveController extends AbstractActionController
                         ]));
             }
             ;
+        }
+    }
+
+    public function quartgauchephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), 90);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
+        }
+    }
+    
+    public function quartdroitephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), -90);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
+        }
+    }
+    
+    public function retournephotoAction()
+    {
+        if (! $this->getRequest()->isPost()) {
+            // ce n'est pas un post : on renvoie une erreur
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => 'Action incorrecte.',
+                    'success' => 202
+                ]));
+        }
+        if ($eleveId = $this->getRequest()->getPost('eleveId', null)) {
+            $ophoto = new \SbmCommun\Model\Photo\Photo();
+            $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $odata = $tPhotos->getRecord($eleveId);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), 180);
+            $odata->photo = addslashes($blob);
+            $tPhotos->saveRecord($odata);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'src' => $ophoto->img_src($blob),
+                    'success' => 1
+                ]));
         }
     }
 }

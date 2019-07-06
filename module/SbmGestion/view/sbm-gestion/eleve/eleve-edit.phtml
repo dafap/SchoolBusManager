@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
- * @version 2019-2.4.7
+ * @date 6 juil. 2019
+ * @version 2019-2.4.9
  */
 use SbmBase\Model\DateLib;
 
@@ -362,7 +362,7 @@ echo $this->formHidden($this->form->get('csrf'));
 						<!-- Provisoirement, pour les tests -->
 						<div id="wrapper-filephoto"
 							class="float-left left-10px top-18px row-inner">
-							<div id="btnphoto" style="display: inline">
+							<div id="btnphoto" style="display: inline-block">
 				                <?php
                     $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
                     $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
@@ -372,6 +372,21 @@ echo $this->formHidden($this->form->get('csrf'));
 				                <?= $this->formButton($btnOpenDialog, '<i class="fam-camera-edit"></i> Envoyer une photo');?>
 				                <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
 							</div>
+							<p></p>
+							<div id="btnoutilsphoto" style="display:inline-block">
+							<?php
+							$btnQuartGauche = new \Zend\Form\Element\Button('quartgauchephoto');
+							$btnQuartGauche->setLabelOption('disable_html_escape', 'on');
+							$btnQuartDroite = new \Zend\Form\Element\Button('quartdroitephoto');
+							$btnQuartDroite->setLabelOption('disable_html_escape', 'on');
+							$btnRetourne = new \Zend\Form\Element\Button('retournephoto');
+							$btnRetourne->setLabelOption('disable_html_escape', 'on');
+							?>
+								<?=$this->formButton($btnQuartGauche, '<i class="fam-arrow-rotate-anticlockwise"></i> Quart de tour à gauche');?>
+								<?=$this->formButton($btnQuartDroite, '<i class="fam-arrow-rotate-clockwise"></i> Quart de tour à droite');?>
+								<?=$this->formButton($btnRetourne, '<i class="fam-arrow-switch"></i> Retourner');?>
+							</div>
+							<p class="sbm-description">Les quarts de tour dégradent la photo. Le demi-tour ne la dégrade pas.</p>
 						</div>
 					</div>
 				</div>
