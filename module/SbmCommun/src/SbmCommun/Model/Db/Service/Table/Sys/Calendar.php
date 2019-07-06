@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 avr. 2018
- * @version 2018-2.4.1
+ * @date 22 juin 2019
+ * @version 2018-2.4.8
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -207,6 +207,11 @@ class Calendar extends AbstractSbmTable
      * <li>0 : inscriptions annoncées</li>
      * <li>1 : inscriptions ouvertes</li>
      * <li>2 : inscriptions fermées</li></ul>
+	 ATTENTION !
+     * $aujourdhui est donné en jourmoisan heuresminutesecondes alors que dateDebut,
+     * dateFin et echeance sont donnés en jourmoisan donc il faut comparer au lendemain
+     * afin de prendre en compte la dernière journée. Mais ne pas modifier directement
+     * dateFin et echeance sinon les valeurs retournées ne sont pas bonnes.
      *
      * @return array Les clés du tableau sont :<ul>
      *         <li>'etat' (0, 1 ou 2)</li>
@@ -222,8 +227,8 @@ class Calendar extends AbstractSbmTable
         $resultset = $this->fetchAll($where);
         $row = $resultset->current();
         $dateDebut = DateTime::createFromFormat('Y-m-d', $row->dateDebut);
-        $dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin);
-        $echeance = DateTime::createFromFormat('Y-m-d', $row->echeance);
+		$df = clone($dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin));
+        $de = clone($echeance = DateTime::createFromFormat('Y-m-d', $row->echeance));
         $aujourdhui = new DateTime();
         //die(var_dump($aujourdhui, $dateDebut, $dateFin, $echeance));
         if ($aujourdhui < $dateDebut) {
@@ -233,7 +238,7 @@ class Calendar extends AbstractSbmTable
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > max($dateFin, $echeance)) {
+        } elseif ($aujourdhui > max($df->modify('+1 day'), $de->modify('+1 day'))) {
             return [
                 'etat' => 2,
                 'dateDebut' => $dateDebut,
