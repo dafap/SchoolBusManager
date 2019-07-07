@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juin 2019
+ * @date 7 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmCommun\Form;
@@ -185,6 +185,7 @@ return [
             'Sbm\Db\Select\DatesCartes' => Select\DatesCartes::class,
             'Sbm\Db\Select\Eleves' => Select\ElevesForSelect::class,
             'Sbm\Db\Select\Etablissements' => Select\EtablissementsForSelect::class,
+            'Sbm\Db\Select\History' => Select\HistoryForSelect::class,
             'Sbm\Db\Select\Lots' => Select\LotsForSelect::class,
             'Sbm\Db\Select\Organismes' => Select\Organismes::class,
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,

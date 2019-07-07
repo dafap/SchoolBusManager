@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 4 juil. 2019
+ * @date 7 juil. 2019
  * @version 2019-2.5.0
  */
 use SbmGestion\Controller;
@@ -26,35 +26,7 @@ return [
                     'roles' => [
                         'gestion'
                     ]
-                ],
-/*                'actions' => [
-                    'ouvrir' => [
-                        'deny' => [
-                            'roles' => [
-                                'parent'
-                            ]
-                        ],
-                        'allow' => [
-                            'roles' => [
-                                'admin'
-                            ]
-                        ],
-                        'redirect_to' => 'sbmgestion/anneescolaire'
-                    ],
-                    'circuit-dupliquer' => [
-                        'deny' => [
-                            'roles' => [
-                                'parent'
-                            ]
-                        ],
-                        'allow' => [
-                            'roles' => [
-                                'admin'
-                            ]
-                        ],
-                        'redirect_to' => 'sbmgestion/transport'
-                    ]
-                ]*/
+                ]
             ]
         ]
     ],
