@@ -1,0 +1,23 @@
+<?php
+/**
+ * Formulaire permettant le choix d'un exercice
+ *
+ * Page appelée en entrée de FinanceController::paiementRectificationsAction()
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/finance
+ * @filesource paiement-choix-exercice.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
+ */
+?>
+<h1>Historique des paiements</h1>
+<h2>Journal des rectifications</h2>
+<div id="suppr-wrapper">
+	<p>Sur quel exercice budgétaire porte votre demande ?</p>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

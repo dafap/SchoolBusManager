@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 déc. 2018
- * @version 2018-2.4.6
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
  */
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Service\CalculDroits;
@@ -172,6 +172,7 @@ return [
             'Sbm\Db\Select\Communes' => Select\CommunesForSelect::class,
             'Sbm\Db\Select\DatesCartes' => Select\DatesCartes::class,
             'Sbm\Db\Select\Etablissements' => Select\EtablissementsForSelect::class,
+            'Sbm\Db\Select\History' => Select\HistoryForSelect::class,
             'Sbm\Db\Select\Organismes' => Select\Organismes::class,
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,
             'Sbm\Db\Select\Services' => Select\Services::class,

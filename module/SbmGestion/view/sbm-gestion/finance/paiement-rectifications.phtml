@@ -1,0 +1,194 @@
+<?php
+/**
+ * Journal des rectifications
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/finance
+ * @filesource paiement-rectifications.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-liste',
+        'page' => $this->id
+    ]);
+$url_imprimer = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-rectifications-pdf',
+        'page' => $this->page,
+        'id' => $this->id
+    ]);
+$hiddens = [
+    'exercice' => $this->exercice
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/finance', [
+        'action' => 'organisme-liste'
+    ]), $url_imprimer, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content']
+];
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+?>
+<h1>Journal des rectifications</h1>
+<div id="paiement-rectifications">
+	<div id="liste-wrapper">
+		<div id="liste-header" class="clearfix">
+			<div class="menu float-left">
+			<?=$this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="flashMessenger float-right"></div>
+		</div>
+		<div id="liste-inner">
+			<table class="rectifications">
+				<tbody>
+					<tr>
+						<th>Date</th>
+						<th>Action</th>
+						<th>Date paiement</th>
+						<th>Date dépôt</th>
+						<th>Montant</th>
+						<th>Responsable</th>
+						<th>Titulaire</th>
+						<th>Mode</th>
+						<th>Caisse</th>
+						<th>Banque</th>
+						<th>Note</th>
+					</tr>
+                <?php foreach ($data as $row) : ?>
+                <?php
+                    $this->historique->setRecord($row);
+                    $modif = $this->historique->getAction() == 'Modif';
+                    $css = [
+                        $this->cycle([
+                            "even",
+                            "odd"
+                        ])->next(),
+                        $modif ? 'modif' : 'suppr'
+                    ];
+                    ?>
+                <tr class="petit <?=implode(' ',$css);?>">
+						<td class="date">
+						<?=$this->historique->getDate();?></td>
+						<td class="action">
+						<?=$this->historique->getAction();?></td>
+						<td class="date-paiement">
+						<?=$this->historique->getDatePaiement();?></td>
+						<td class="date-depot">
+						<?=$this->historique->getDateDepot();?></td>
+						<td class="montant">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getMontant();
+                        $m2 = $this->historique->getNewMontant();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getMontant();?></span>
+						<?php endif;?>
+						</td>
+						<td class="responsable">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getResponsable();
+                        $m2 = $this->historique->getNewResponsable();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getResponsable();?></span>
+						<?php endif;?>
+						</td>
+						<td class="titulaire">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getTitulaire();
+                        $m2 = $this->historique->getNewTitulaire();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getTitulaire();?></span>
+						<?php endif;?>
+						</td>
+						<td class="mode-paiement">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getModePaiement();
+                        $m2 = $this->historique->getNewModePaiement();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getModePaiement();?></span>
+						<?php endif;?>
+						</td>
+						<td class="caisse">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getCaisse();
+                        $m2 = $this->historique->getNewCaisse();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getCaisse();?></span>
+						<?php endif;?>
+						</td>
+						<td class="banque">
+						<?php if ($modif):?>
+						<?php
+                        $m1 = $this->historique->getBanque();
+                        $m2 = $this->historique->getNewBanque();
+                        ?>
+						    <?php if ($m1 == $m2):?>
+						        <?=$m1;?>
+						    <?php else :?>
+						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						    <?php endif;?>
+						<?php else :?>
+						    <?=$this->historique->getBanque();?></span>
+						<?php endif;?>
+						</td>
+						<td class="note">
+						<?=$this->historique->getNote();?></td>
+					</tr>
+                <?php endforeach; ?>
+            </tbody>
+			</table>
+		</div>
+		<div id="liste-footer">
+			<div class="pagination-wrapper clearfix">
+				<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+			</div>
+			<div class="criteres-wrapper"></div>
+		</div>
+	</div>
+</div>

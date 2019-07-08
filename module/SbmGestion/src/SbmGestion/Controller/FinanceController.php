@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
- * @version 2019-2.4.7
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
  */
 namespace SbmGestion\Controller;
 
@@ -570,6 +570,75 @@ class FinanceController extends AbstractActionController
                 'paiementId' => $paiementId,
                 'responsable' => $args['responsable'],
                 'libelles' => $this->db_manager->get('Sbm\Libelles')
+            ]);
+    }
+
+    public function paiementRectificationsAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        if (array_key_exists('cancel', (array) $prg)) {
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $form = new \SbmGestion\Form\Finances\ChoixExercice();
+        $form->setValueOptions('exercice',
+            $this->db_manager->get('Sbm\Db\Select\History')
+                ->paiementExercices());
+        $form->setData((array) $prg);
+        $exercice = null;
+        if (array_key_exists('rectifications', (array) $prg)) {
+            Session::remove('exercice', $this->getSessionNamespace());
+        } else {
+            $exercice = Session::get('exercice', null, $this->getSessionNamespace());
+            if (! $exercice) {
+                $form->setData((array) $prg);
+                if ($form->isValid()) {
+                    $exercice = $form->getData()['exercice'];
+                    Session::set('exercice', $exercice, $this->getSessionNamespace());
+                }
+            }
+        }
+        if (! $exercice) {
+            $originePage = $this->params('page', 1);
+            $form->setAttribute('action',
+                $this->url()
+                    ->fromRoute('sbmgestion/finance',
+                    [
+                        'action' => 'paiement-rectifications',
+                        'id' => $originePage
+                    ]));
+            $view = new ViewModel([
+                'form' => $form,
+                'id' => $originePage
+            ]);
+            return $view->setTemplate('sbm-gestion/finance/paiement-choix-exercice.phtml');
+        }
+        $currentPage = $this->params('page', 1);
+        $originePage = $this->params('id', 1);
+        $query = $this->db_manager->get('Sbm\Db\Query\History');
+        $historique = new \SbmCommun\Model\Paiements\Historique\Historique();
+        $historique->setTResponsables($this->db_manager->get('Sbm\Db\Table\Responsables'));
+        $historique->setCaisses(
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse());
+        $historique->setModesDePaiement(
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->modeDepaiement());
+        return new ViewModel(
+            [
+                'exercice' => $exercice,
+                'page' => $currentPage,
+                'id' => $originePage,
+                'paginator' => $query->paginatorPaiementsChanges($exercice),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_rectifications',
+                    15),
+                'historique' => $historique
             ]);
     }
 

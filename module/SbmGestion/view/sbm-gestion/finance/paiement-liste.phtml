@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév.2019
- * @version 2019-2.4.7
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
  */
 use SbmBase\Model\DateLib;
 
@@ -117,6 +117,11 @@ $url_detail = $this->url('sbmgestion/finance',
         'action' => 'paiement-detail',
         'page' => $this->page
     ]);
+$url_rectifications = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-rectifications',
+        'page' => $this->page
+    ]);
 
 $hiddens = [
     'url1_retour' => $this->url1_retour,
@@ -145,17 +150,24 @@ $actions = [
         'title' => 'Bordereaux de remise de valeurs'
     ],
     'detail' => [
-        'class' => 'fam-group-gear',
+        'class' => 'fam-coins',
         'formaction' => $url_detail,
         'title' => 'Justification des montants encaissés'
+    ],
+    'rectifications' => [
+        'class' => 'fam-bug-error',
+        'formaction' => $url_rectifications,
+        'title' => 'Journal des rectifications'
     ],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
-        'title' => 'Nouveau paiement'
+        'title' => 'Encaissement'
     ]
 ];
-if (! $this->h2) {
+if ($this->h2) {
+    unset($actions['rectifications']);
+} else {
     unset($actions['detail']);
 }
 echo $this->listeZoneActions($hiddens, $actions);

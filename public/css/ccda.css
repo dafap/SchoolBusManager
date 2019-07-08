@@ -1587,3 +1587,12 @@ table.statistiques th.border-left, table.statistiques td.border-left {
 table.statistiques th.border-bold, table.statistiques td.border-bold {
 	border-left: 1px solid #9ab3ba;
 }
+
+/*------------------- Paiements- rectifications ----------*/
+div#paiement-rectifications span.modif {
+    text-decoration: line-through red;
+}
+
+div#paiement-rectifications .suppr {
+    text-decoration: line-through;
+}

@@ -17,9 +17,9 @@ use SbmBase\Model\StdLib;
 return [
     'name' => 'elevesphotos',
     'type' => 'table',
-    'drop' => true,
-    'edit_entity' => true,
-    'add_data' => true,
+    'drop' => false,
+    'edit_entity' => false,
+    'add_data' => false,
     'structure' => [
         'fields' => [
             'eleveId' => 'int(11) NOT NULL',

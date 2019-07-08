@@ -9,13 +9,14 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2016
- * @version 2016-2.1.3
+ * @date 7 juil. 2019
+ * @version 2019-2.4.9
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
@@ -102,5 +103,69 @@ class History implements FactoryInterface
         ));
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
+    }
+
+    public function getPaiementsChanges(int $exercice, int $paiementId = null)
+    {
+        return $this->renderResult($this->selectPaiementsChanges($exercice, $paiementId));
+    }
+
+    public function paginatorPaiementsChanges(int $exercice, int $paiementId = null)
+    {
+        return new Paginator(
+            new DbSelect($this->selectPaiementsChanges($exercice, $paiementId), 
+                $this->db_manager->getDbAdapter(), new HydratingResultSet()));
+    }
+
+    /**
+     * SELECT * FROM sbm_s_history WHERE table_name='sbm_t_paiements' AND id_txt=2019 AND
+     * (action = 'delete' OR (action = 'update' AND (id_int, dt) NOT IN ( SELECT id_int,
+     * dt FROM `sbm_s_history` WHERE table_name='sbm_t_paiements' AND id_txt=2019 AND
+     * `action`='delete')))
+     *
+     * @param int $exercice            
+     * @param int $paiementId            
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectPaiementsChanges(int $exercice, int $paiementId = null)
+    {
+        // sous requête 'les delete'
+        $where1 = new Where();
+        $where1->equalTo('table_name', $this->db_manager->getCanonicName('paiements'))
+            ->equalTo('action', 'delete')
+            ->equalTo('id_txt', $exercice);
+        $select1 = $this->sql->select($this->history_name)
+            ->columns([
+            'id_int',
+            'dt'
+        ])
+            ->where($where1);
+        // requête principale
+        $where = new Where();
+        $where->equalTo('table_name', $this->db_manager->getCanonicName('paiements'))
+            ->equalTo('id_txt', $exercice)
+            ->nest()
+            ->equalTo('action', 'delete')->OR->nest()->equalTo('action', 'update')->AND->notIn(
+            [
+                'id_int',
+                'dt'
+            ], $select1)
+            ->unnest()
+            ->unnest();
+        if ($paiementId) {
+            $where->equalTo('id_int', $paiementId);
+        }
+        return $this->sql->select($this->history_name)
+            ->columns(
+            [
+                'action',
+                'id_int',
+                'dt',
+                'log'
+            ])
+            ->where($where)
+            ->order([
+            'dt'
+        ]);
     }
 }
