@@ -230,8 +230,7 @@ class IndexController extends AbstractActionController
         $prg = $this->fileprg($form);
         if ($prg instanceof Response) {
             // renvoie redirection 303 avec le contenu de post en session 'prg_post1'
-            // (Expire_Hops
-            // = 1)
+            // (Expire_Hops = 1)
             return $prg;
         } elseif (is_array($prg) && ! array_key_exists('origine', $prg)) {
             if (array_key_exists('cancel', $prg)) {

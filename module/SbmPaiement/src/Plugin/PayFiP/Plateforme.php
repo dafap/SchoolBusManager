@@ -7,7 +7,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
+ * @date 9 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Plugin\PayFiP;
@@ -724,6 +724,60 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     public function rapprochement(string $csvname, bool $firstline, string $separator,
         string $enclosure, string $escape): array
     {
+        $tPayfip = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        $tResponsables = $this->getDbManager()->get('Sbm\Db\Table\Responsables');
+        $fcsv = fopen($csvname, 'r');
+        if ($firstline) {
+            fgets($fcsv);
+        }
+        $cr = [];
+        // die(var_dump($fcsv, 0, $separator, $enclosure, $escape));
+        while (($ligne = fgets($fcsv)) !== false) {
+            $data = explode($separator, $ligne);
+            if ($data[0] != 'LIGNE') {
+                // saute les lignes commençant par EN-TETE ou par PIED-DE-PAGE
+                continue;
+            }
+            if ($firstline) {
+                // saute la ligne d'en-tête des lignes commençant par LIGNE
+                $firstline = false;
+                continue;
+            }
+            if ($enclosure) {
+                array_walk($data,
+                    function (&$value, $key) use ($enclosure) {
+                        $value = trim($value, $enclosure);
+                    });
+            }
+            $dt = $data[1];
+            $refdet = $data[2];
+            $montant = $data[3];
+            $results = $tPayfip->fetchAll([
+                'refdet' => $refdet
+            ]);
+            $absent = $results->count() == 0;
+            if ($absent) {
+                $responsableId = (int) substr($refdet, 13, 7);
+                try {
+                    $oResponsable = $tResponsables->getRecord($responsableId);
+                } catch (\Exception $e) {
+                    $oResponsable = $tResponsables->getObjData();
+                    $oResponsable->exchangeArray([
+                        'nomSA' => '',
+                        'prenomSA' => ''
+                    ]);
+                }
+                $cr[] = [
+                    $dt,
+                    $oResponsable->nomSA,
+                    $oResponsable->prenomSA,
+                    $refdet,
+                    $montant
+                ];
+            }
+        }
+        fclose($fcsv);
+        return $cr;
     }
 
     /**
@@ -735,5 +789,65 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function rapprochementCrHeader(): array
     {
+        $header = [];
+        $column = new \StdClass();
+        $column->label = 'Date';
+        $column->align = 'L';
+        $column->width = 20;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Nom';
+        $column->align = 'L';
+        $column->width = 40;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Prénom';
+        $column->align = 'L';
+        $column->width = 40;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Référence';
+        $column->align = 'L';
+        $column->width = 50;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Montant';
+        $column->align = 'R';
+        $column->width = 20;
+        $column->format = new Formatage();
+        $header[] = $column;
+        return $header;
+    }
+}
+
+class Formatage
+{
+
+    public function __construct($callback = null)
+    {
+        $this->func_format($callback);
+    }
+
+    private function func_format($callbackOrData)
+    {
+        static $f;
+        if (is_null($callbackOrData)) {
+            $f = function ($data) {
+                return $data;
+            };
+        } elseif (is_callable($callbackOrData)) {
+            $f = $callbackOrData;
+        } else {
+            return $f($callbackOrData);
+        }
+    }
+
+    public function __invoke($data)
+    {
+        return $this->func_format($data);
     }
 }

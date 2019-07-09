@@ -3,13 +3,13 @@
  * Formulaire d'upload d'un fichier de contrôle au format csv
  *
  * Les caractéristiques du fichier sont précisées dans Plugin/[nom de la plateforme]/config
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Form
  * @filesource UploadCsv.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 9 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Form;
@@ -25,7 +25,8 @@ class UploadCsv extends Form implements InputFilterProviderInterface
     public function __construct($name = null, $options = [])
     {
         parent::__construct($name, $options);
-        $this->setAttribute('method', 'post');
+        $this->setAttribute('method', 'post')
+            ->setAttribute('target', '__blank');
         $this->add(
             [
                 'name' => 'csrf',
@@ -42,9 +43,10 @@ class UploadCsv extends Form implements InputFilterProviderInterface
             'class' => 'sbm-label-140dem'
         ])
             ->setAttribute('id', 'csvfile')
-            ->setOption('error_attributes', [
-            'class' => 'sbm-error'
-        ]);
+            ->setOption('error_attributes',
+            [
+                'class' => 'sbm-error'
+            ]);
         $this->add($file_element);
         $this->add(
             [

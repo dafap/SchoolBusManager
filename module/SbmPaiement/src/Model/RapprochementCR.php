@@ -1,13 +1,13 @@
 <?php
 /**
  * Construction d'un document PDF donnant le compte-rendu d'un rapprochement
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Model
  * @filesource RapprochementCR.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
+ * @date 9 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Model;
@@ -17,6 +17,13 @@ class RapprochementCR extends \TCPDF
 
     private $cr_data;
 
+    /**
+     * Structure de type array dont les éléments sont des StandardClass avec les
+     * propriétés suivantes :<ul><li>label (string)</li><li>align ('L', 'C' ou
+     * 'R')</li><li>width (number)</li><li>format (fonction callback ou closure)</li></ul>
+     *
+     * @var array
+     */
     private $cr_header;
 
     /**
@@ -57,16 +64,10 @@ class RapprochementCR extends \TCPDF
         $this->SetFont('', 'B');
         $this->SetFontSize(10);
         // Header
-        $w = [
-            20,
-            60,
-            20,
-            20,
-            60
-        ];
         $num_headers = count($this->cr_header);
         for ($i = 0; $i < $num_headers; ++ $i) {
-            $this->Cell($w[$i], 7, $this->cr_header[$i], 1, 0, 'C', 1, '', 1);
+            $this->Cell($this->cr_header[$i]->width, 7, $this->cr_header[$i]->label, 1, 0,
+                'C', 1, '', 1);
         }
         $this->Ln();
         // Color and font restoration
@@ -76,15 +77,19 @@ class RapprochementCR extends \TCPDF
         $this->SetFontSize(10);
         // Data
         $fill = 0;
+        $nb_data = count($this->cr_data);
+        $ligne = 1;
         foreach ($this->cr_data as $row) {
-            $this->Cell($w[0], 6, number_format($row[0], 0, ',', ' '), 'LR', 0, 'R', $fill,
-                '', 1);
-            $this->Cell($w[1], 6, $row[1], 'LR', 0, 'L', $fill, '', 1);
-            $this->Cell($w[2], 6, number_format($row[2], 2, ',', ' '), 'LR', 0, 'R', $fill,
-                '', 1);
-            $this->Cell($w[3], 6, number_format($row[3], 0, ',', ' '), 'LR', 0, 'R', $fill,
-                '', 1);
-            $this->Cell($w[4], 6, $row[4], 'LR', 0, 'L', $fill, '', 1);
+            if (count($row) != $num_headers) {
+                throw new \Exception('Mauvais formatage des données.');
+            }
+            $bords = ($ligne ++ == $nb_data) ? 'BLR' : 'LR';
+            for ($i = 0; $i < $num_headers; $i ++) {
+                $fmt = $this->cr_header[$i]->format;
+                $this->Cell($this->cr_header[$i]->width, 6,
+                    $fmt($row[$i]), $bords, 0,
+                    $this->cr_header[$i]->align, $fill, '', 1);
+            }
             $this->Ln();
             $fill = ! $fill;
         }
