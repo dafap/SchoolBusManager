@@ -7,7 +7,7 @@
  * @filesource paiement-rectifications.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
+ * @date 26 juil. 2019
  * @version 2019-2.5.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -28,7 +28,7 @@ $hiddens = [
 ];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/finance', [
-        'action' => 'organisme-liste'
+        'action' => 'paiement-rectifications'
     ]), $url_imprimer, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
@@ -100,7 +100,7 @@ $data = $this->paginator->getCurrentItems();
 						        <?="<span class='modif'>$m1</span><br>$m2";?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getMontant();?></span>
+						    <?=$this->historique->getMontant();?>
 						<?php endif;?>
 						</td>
 						<td class="responsable">
@@ -115,7 +115,7 @@ $data = $this->paginator->getCurrentItems();
 						        <?="<span class='modif'>$m1</span><br>$m2";?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getResponsable();?></span>
+						    <?=$this->historique->getResponsable();?>
 						<?php endif;?>
 						</td>
 						<td class="titulaire">
