@@ -2,28 +2,29 @@
 /**
  * Plugin pour la plateforme de paiement SystemPay
  *
- * La méthode `notification($data)` vérifie la signature puis lance un évènement 'paiementNotification' 
+ * La méthode `notification($data)` vérifie la signature puis lance un évènement 'paiementNotification'
  * avec comme `argv` le tableau des vads_ contenus dans $data
- * 
- * La version 2 (2015) abandonne l'exploitation des champs `vads_nb_products` et `vads_product_refN` qui 
- * ne sont pas renvoyés dans la notification. 
+ *
+ * La version 2 (2015) abandonne l'exploitation des champs `vads_nb_products` et `vads_product_refN` qui
+ * ne sont pas renvoyés dans la notification.
  * Ajout de la méthode getUniqueId() et modification de la méthode prepareData()
- * 
- * La version 3 (2016) abandonne le contexte (target) qui contenait le service manager et devient 
+ *
+ * La version 3 (2016) abandonne le contexte (target) qui contenait le service manager et devient
  * compatible ZF3.
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Plugin/SystemPay
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 sept. 2018
+ * @date 27 juil. 2019
  * @version 2019-2.5.0
  */
 namespace SbmPaiement\Plugin\SystemPay;
 
 use SbmPaiement\Plugin\AbstractPlateforme;
 use SbmPaiement\Plugin\Exception;
+use \SbmFront\Model\Responsable\Responsable;
 use Zend\Db\Sql\Where;
 use Zend\Form\Form;
 use Zend\Stdlib\Parameters;
@@ -391,4 +392,37 @@ class Plateforme extends AbstractPlateforme
                 $params['count'], $params['period']);
         }
     }
+    public function prepare()
+    {
+    }
+
+    public function setResponsable(Responsable $responsable)
+    {
+    }
+
+    public function rapprochement(string $csvname, bool $firstline, string $separator,
+        string $enclosure, string $escape): array
+    {
+    }
+
+    public function checkPaiement()
+    {
+    }
+
+    public function majnotification(array $args)
+    {
+    }
+
+    public function initPaiement()
+    {
+    }
+
+    public function validFormAbandonner(Parameters $post)
+    {
+    }
+
+    public function rapprochementCrHeader(): array
+    {
+    }
+
 }
