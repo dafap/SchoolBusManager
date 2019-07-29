@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2019
- * @version 2019-2.5.0
+ * @date 29 juil. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmPdf\Model;
 
@@ -1844,6 +1844,7 @@ class Tcpdf extends \TCPDF
                             $ligne[] = $value = StdLib::translateData(
                                 $row->{$column['tbody']}, $column['filter']);
                         } catch (\Exception $e) {
+                            $value = "0";
                             if ($effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface) {
                                 $columntbody = trim($column['tbody'], '%');
                                 if (method_exists($effectifClass, $columntbody)) {
