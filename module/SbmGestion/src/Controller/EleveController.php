@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 juil. 2019
- * @version 2019-2.5.0
+ * @date 21 août 2019
+ * @version 2019-2.5.1
  */
 namespace SbmGestion\Controller;
 
@@ -943,6 +943,51 @@ class EleveController extends AbstractActionController
         $scolarite->inscrit = 1 - $scolarite->inscrit;
         $tScolarites->saveRecord($scolarite);
         $msg = $scolarite->inscrit ? 'La fiche de cet élève a été activée.' : 'Cet élève a été rayé.';
+        $this->flashMessenger()->addSuccessMessage($msg);
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (RedirectToOrigineException $e) {
+            return $this->redirect()->toRoute('sbmgestion/eleve');
+        }
+    }
+
+    public function eleveEnAttenteAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg == false) {
+            $prg = Session::get('post', false, $this->getSessionNamespace());
+            if ($prg == false) {
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (RedirectToOrigineException $e) {
+                    $this->flashMessenger()->addErrorMessage('Action interdite');
+                    return $this->redirect()->toRoute('sbmgestion/eleve');
+                }
+            }
+        } elseif (array_key_exists('origine', $prg)) {
+            $this->redirectToOrigin()->setBack($prg['origine']);
+            unset($prg['origine']);
+            Session::set('post', $prg, $this->getSessionNamespace());
+        }
+        if (! array_key_exists('eleveId', $prg)) {
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (RedirectToOrigineException $e) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                return $this->redirect()->toRoute('sbmgestion/eleve');
+            }
+        }
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $scolarite = $tScolarites->getRecord(
+            [
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $prg['eleveId']
+            ]);
+        $scolarite->selection = 0;
+        $tScolarites->saveRecord($scolarite);
+        $msg = 'La fiche de cet élève a été reprise.';
         $this->flashMessenger()->addSuccessMessage($msg);
         try {
             return $this->redirectToOrigin()->back();

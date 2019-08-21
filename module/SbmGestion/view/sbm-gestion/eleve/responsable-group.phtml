@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 21 août 2019
+ * @version 2019-2.5.1
  */
 use SbmBase\Model\Session;
 
@@ -43,6 +43,12 @@ $url_duplicata = $this->url('sbmgestion/gestioneleve',
 $url_edit = $this->url('sbmgestion/eleve',
     [
         'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+
+$url_reprendre = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-en-attente',
         'page' => $this->page
     ]);
 $url_raye = $this->url('sbmgestion/eleve',
@@ -222,8 +228,16 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                     $row['subventionR2'] == 1);
                 $this->pictogrammes('init')
                     ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
-                    ->addSansPhoto($row['sansphoto']);
-                if ($inscrit || $row['appelNotifieOk']) {
+                    ->addSansPhoto($row['sansphoto'])
+                    ->addEnAttente($row['enAttente']);
+                if ($row['enAttente']) {
+                    unset($buttons['majNotification'], $buttons['addphoto'], $buttons['duplicata']);
+                    $buttons['modifier'] = [
+                        'class' => 'fam-pencil-add',
+                        'formaction' => $url_reprendre,
+                        'title' => 'Reprendre cet enfant mis en attente'
+                    ];
+                } elseif ($inscrit || $row['appelNotifieOk']) {
                     unset($buttons['majNotification']);
                 }
                 $tr_css = 'noir';
@@ -260,8 +274,9 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                     $services[$affectation['service2Id']] = $affectation['service2Id'];
                 }
             }
-            // if (! empty($email)) {
-            if ($nePasRelancer) {
+            if ($row['enAttente']) {
+                $reinscription = 'En attente';
+            } elseif ($nePasRelancer) {
                 $url_change_reinscription = $this->url('sbmgestion/eleve',
                     [
                         'action' => 'eleve-reinscription-oui',
