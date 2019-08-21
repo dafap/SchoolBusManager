@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 21 août 2019
+ * @version 2019-2.5.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -107,7 +107,8 @@ class Eleves extends AbstractQuery
                 'accordR2',
                 'subventionR1',
                 'subventionR2',
-                'grilleTarif'
+                'grilleTarif',
+                'enAttente' => 'selection'
             ], Select::JOIN_LEFT)
             ->join(
             [
