@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2019
- * @version 2019-2.5.0
+ * @date 09 sept. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmAdmin\Controller;
 
@@ -1002,9 +1002,11 @@ class IndexController extends AbstractActionController
         $form->setData($user->getArrayCopy());
         $telephones = [];
         if ($user->categorieId == 1) {
-            $telephones = $this->db_manager->get('Sbm\Db\Table\Responsables')
-                ->getRecordByEmail($user->email)
-                ->telephonesPourSms();
+            $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecordByEmail(
+                $user->email);
+            if ($responsable) {
+                $telephones = $responsable->telephonesPourSms();
+            }
         }
         return new ViewModel(
             [
