@@ -1,14 +1,14 @@
 <?php
 /**
  * Liste des élèves
- * 
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 27 sept. 2019
+ * @version 2019-2.5.1
  */
 use SbmBase\Model\DateLib;
 
@@ -112,6 +112,7 @@ if ($this->categorie == 2) {
 					<th>Prénom</th>
 					<th>Né(e) le</th>
 					<th>Responsables</th>
+					<th>Téléphone</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
 					<th>Circuits</th>
@@ -143,6 +144,14 @@ if ($this->categorie == 2) {
                 "even",
                 "odd"
             ])->next();
+            // téléphones
+            $telephones = implode('<br>',
+                array_filter(
+                    [
+                        $eleve['telephoneF'],
+                        $eleve['telephoneP'],
+                        $eleve['telephoneT']
+                    ]));
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -155,7 +164,7 @@ if ($this->categorie == 2) {
             if (! empty($eleve['station2']))
                 $arret .= '<br/>' . $eleve['station2'];
             ?>
-         <tr class="<?= $tr_css;?>">
+         <tr class="petit <?= $tr_css;?>">
 					<td class="numero align-right"><?= $eleve['numero']; ?></td>
 					<td class="nom">
 						<?= $this->escapeHtml($eleve['nom']); ?></td>
@@ -164,13 +173,14 @@ if ($this->categorie == 2) {
 					<td class="dateN">
 						<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsables"><?= $itemR1; ?></td>
+					<td class="telephones"><?= $telephones;?></td>
 					<td class="etablissement">
 						<?= $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['communeEtablissement']*/);?></td>
 					<td class="classe">
 						<?= $this->escapeHtml($eleve['classe']);?></td>
 					<td><?= $circuit;?></td>
 					<td><?= $arret;?></td>
-				</tr>         
+				</tr>
         <?php endforeach;?>
     </tbody>
 		</table>

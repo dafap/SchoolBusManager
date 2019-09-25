@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
- * @version 2019-2.5.0
+ * @date 25 sept. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -493,7 +493,10 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'res.responsableId=aff.responsableId',
             [
-                'responsable' => new Expression('concat(res.nom," ",res.prenom)')
+                'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+                'telephoneF' => 'telephoneF',
+                'telephoneP' => 'telephoneP',
+                'telephoneT' => 'telephoneT'
             ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
