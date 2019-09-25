@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 août 2019
+ * @date 25 sept. 2019
  * @version 2019-2.5.1
  */
 namespace SbmGestion\Controller;
@@ -106,8 +106,7 @@ class EleveController extends AbstractActionController
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
-        // formulaire (pas
-        // de post ou invalide)
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -116,7 +115,6 @@ class EleveController extends AbstractActionController
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
                     $criteres_obj->getWhere(), [
-
                         'nom',
                         'prenom'
                     ]),
@@ -1446,6 +1444,56 @@ class EleveController extends AbstractActionController
     }
 
     /**
+     * Marque sélectionnées les fiches des responsables des élèves filtrés dans la liste
+     * des élèves en tenant compte des critères de sélection.
+     */
+    public function eleveResponsablesAction()
+    {
+        $request = $this->getRequest();
+        if (! $request->isPost() || is_null($request->getPost('responsables'))) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home'
+            ]);
+        }
+        $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
+            $criteres_form->getElementNames());
+        $criteres = Session::get('post', [],
+            str_replace('responsables', 'liste', $this->getSessionNamespace()));
+        if (! empty($criteres)) {
+            $criteres_obj->exchangeArray($criteres);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
+        $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+        // démarquer les responsables
+        $tResponsables->clearSelection();
+        // marquer les responsables
+        foreach ($this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
+            $criteres_obj->getWhere(), [
+                'nom',
+                'prenom'
+            ]) as $eleve) {
+                $tResponsables->setSelection($eleve['responsable1Id'], 1);
+                if (!empty($eleve['responsable2Id'])) {
+                    $tResponsables->setSelection($eleve['responsable2Id'], 1);
+                }
+        }
+        // liste des responsables
+        return $this->redirect()->toRoute('sbmgestion/eleve',
+            [
+                'action' => 'responsable-liste'
+            ]);
+    }
+
+    /**
      * Liste des responsables Passer nbEnfants, nbInscrits et nbPreinscrits en strict
      * parce qu'on recherche l'égalité et que l'on veut pouvoir compter les "== 0" Ici, le
      * formulaire de critères utilise des alias de champs puisque certains champs doivent
@@ -2205,8 +2253,7 @@ class EleveController extends AbstractActionController
                 // envoi du mail
                 $this->getEventManager()->addIdentifiers('SbmMail\Send');
                 $this->getEventManager()->trigger('sendMail', null, $params);
-                $message = sprintf(
-                    'Le message a été envoyé à %s. Vous êtes en copie.',
+                $message = sprintf('Le message a été envoyé à %s. Vous êtes en copie.',
                     $to);
                 $this->flashMessenger()->addInfoMessage($message);
                 try {
@@ -2396,6 +2443,58 @@ class EleveController extends AbstractActionController
                 'formphoto' => $form->prepare(),
                 'info' => $request->getPost('info', ''),
                 'url_retour' => $request->getPost('group') ?: $request->getPost('origine')
+            ]);
+    }
+
+    /**
+     * Supprime la sélection de toutes les fiches responsables
+     */
+    public function responsableSelectionAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve',
+                [
+                    'action' => 'responsable-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $form = new Form\ButtonForm([],
+            [
+                'confirmer' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer',
+                    'title' => 'Désélectionner toutes les fiches responsables.'
+                ],
+                'cancel' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ], 'Confirmation', true);
+        $tresponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+        if (array_key_exists('confirmer', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $tresponsables->clearSelection();
+                $this->flashMessenger()->addSuccessMessage(
+                    'Toutes les fiches sont désélectionnées.');
+                return $this->redirect()->toRoute('sbmgestion/eleve',
+                    [
+                        'action' => 'responsable-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        }
+        $where = new Where();
+        $where->equalTo('selection', 1);
+        return new ViewModel(
+            [
+                'form' => $form,
+                'nbSelection' => $tresponsables->fetchAll($where)->count()
             ]);
     }
 }

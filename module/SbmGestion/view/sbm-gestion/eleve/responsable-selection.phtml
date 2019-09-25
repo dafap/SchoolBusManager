@@ -1,0 +1,36 @@
+<?php
+/**
+ * Page de confirmation de remise à zéro des sélections pour les responsables
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource responsable-selection.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 sept. 2019
+ * @version 2019-2.5.1
+ */
+?>
+<h1>Démarquer les fiches sélectionnées</h1>
+<div id="suppr-wrapper">
+<?php
+if ($this->nbSelection) :
+    if ($this->nbSelection > 1) {
+        $description = sprintf('%d fiches sélectionnées', $this->nbSelection);
+    } else {
+        $description = '1 fiche sélectionnée';
+    }
+    ?>
+	<p>Il y a <?= $description; ?>.</p>
+	<p>Vous souhaitez que toutes les fiches responsables soient désélectionnées.</p>
+	<p>Confirmez ou abandonnez.</p>
+<?php else :?>
+    <p>Il n'y a pas de fiche sélectionnée.</p>
+    <?php
+    $this->form->remove('csrf')->remove('confirmer');
+    ?>
+<?php endif;?>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

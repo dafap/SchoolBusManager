@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 25 sept. 2019
+ * @version 2019-2.5.1
  */
 use SbmCartographie\Model\Point;
 
@@ -81,6 +81,11 @@ $url_ici = $this->url('sbmgestion/eleve',
 $url_mail = $this->url('sbmgestion/eleve', [
     'action' => 'responsable-mail'
 ]);
+$url_deselection = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'responsable-selection',
+        'page' => $this->page
+    ]);
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms', [
         'action' => 'envoi-sms'
@@ -113,6 +118,11 @@ $actions = [
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
+    'selection' => [
+        'class' => 'fam-basket-delete',
+        'formaction' => $url_deselection,
+        'title' => 'Démarquer toutes les sélections'
+    ],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,

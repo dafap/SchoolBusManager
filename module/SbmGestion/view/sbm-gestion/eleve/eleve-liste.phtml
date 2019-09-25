@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 09 juil. 2019
- * @version 2019-2.5.0
+ * @date 25 sept. 2019
+ * @version 2019-2.5.1
  */
 use SbmBase\Model\DateLib;
 
@@ -142,6 +142,11 @@ $url_gestioneleve = $this->url('sbmgestion/gestioneleve');
 $url_majnotification = $this->url('sbmpaiement', [
     'action' => 'majnotification'
 ]);
+$url_eleve_responsables = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-responsables',
+        'page' => $this->page
+    ]);
 
 // définition de la barre de menu du haut de page pour l'aide de vue listeZoneActions()
 if (! empty($this->groupe)) {
@@ -179,6 +184,11 @@ $actions = [
         'class' => 'fam-application-side-expand',
         'formaction' => $url_gestioneleve,
         'title' => 'Gestion des inscriptions'
+    ],
+    'responsables' => [
+        'class' => 'fam-user-female',
+        'formaction' => $url_eleve_responsables,
+        'title' => 'Sélectionner les responsables de ces élèves'
     ],
     'selection' => [
         'class' => 'fam-basket-delete',
