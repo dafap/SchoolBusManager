@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 03 oct. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmCleverSms\Controller;
 
@@ -121,7 +121,7 @@ class IndexController extends AbstractActionController
                             ' Pour consulter les réponses utiliser l\'interface de CleverSms.');
                     }
                 } else {
-                    $response->getLogger()->log(Logger::WARN, $response->getMessage());
+                    $this->curl_request->getLogger()->log(Logger::WARN, $response->getMessage());
                     return $this->retour(FlashMessenger::NAMESPACE_WARNING,
                         'Échec de l\'envoi du SMS : ' . $response->getMessage());
                 }
