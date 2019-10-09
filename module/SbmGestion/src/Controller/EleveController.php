@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
+ * @date 9 oct. 2019
  * @version 2019-2.5.1
  */
 namespace SbmGestion\Controller;
@@ -1481,10 +1481,10 @@ class EleveController extends AbstractActionController
                 'nom',
                 'prenom'
             ]) as $eleve) {
-                $tResponsables->setSelection($eleve['responsable1Id'], 1);
-                if (!empty($eleve['responsable2Id'])) {
-                    $tResponsables->setSelection($eleve['responsable2Id'], 1);
-                }
+            $tResponsables->setSelection($eleve['responsable1Id'], 1);
+            if (! empty($eleve['responsable2Id'])) {
+                $tResponsables->setSelection($eleve['responsable2Id'], 1);
+            }
         }
         // liste des responsables
         return $this->redirect()->toRoute('sbmgestion/eleve',
@@ -1504,50 +1504,81 @@ class EleveController extends AbstractActionController
      */
     public function responsableListeAction()
     {
+        $retour = false;
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $this->sbm_isPost = false;
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            $retour = StdLib::getParam('op', $args, '') == 'retour';
+            if ($retour) {
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit. Comme
+                // pour un get, on récupère ce qui est en session.
+                $this->sbm_isPost = false;
+                $args = Session::get('post', [], $this->getSessionNamespace());
+            } else {
+                if (array_key_exists('cancel', $args)) {
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                        return $args;
+                    }
+                } elseif (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                }
+                $this->sbm_isPost = true;
+                unset($args['submit']);
+                Session::set('post', $args, $this->getSessionNamespace());
+            }
+        }
         $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
-        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
+        $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmCommun\Form\CriteresForm('responsables');
+        // initialiser le form pour les select ...
+        $criteres_form->get('demenagement')->setUseHiddenElement(false);
 
-        $args = $this->initListe('responsables',
-            function ($config, $form) {
-                $form->get('demenagement')
-                    ->setUseHiddenElement(false);
-                $form->get('inscrits')
-                    ->setUseHiddenElement(false);
-                $form->get('preinscrits')
-                    ->setUseHiddenElement(false);
-                $form->get('localisation')
-                    ->setUseHiddenElement(false);
-                $form->get('selection')
-                    ->setUseHiddenElement(false);
-            }, [
-                'nbEnfants',
-                'nbInscrits',
-                'nbPreinscrits'
-            ],
-            [
-                'nomSA' => 'res.nomSA',
-                'selection' => 'res.selection',
-                'inscrits' => 'Literal:count(ins.eleveId) > 0',
-                'preinscrits' => 'Literal:count(pre.eleveId) > 0',
-                'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0],
-                    $rangeX['gestion'][1], $rangeY['gestion'][0], $rangeY['gestion'][1])
-            ]);
-        if ($args instanceof Response)
-            return $args;
+        $criteres_form->get('inscrits')->setUseHiddenElement(false);
 
+        $criteres_form->get('preinscrits')->setUseHiddenElement(false);
+
+        $criteres_form->get('localisation')->setUseHiddenElement(false);
+
+        $criteres_form->get('selection')->setUseHiddenElement(false);
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresResponsables(
+            $criteres_form->getElementNames());
+        $criteres_obj->setSansLocalisationCondition(
+
+            sprintf($nonLocalise, $rangeX['gestion'][0], $rangeX['gestion'][1],
+                $rangeY['gestion'][0], $rangeY['gestion'][1]));
+        if ($this->sbm_isPost) {
+            $criteres_form->setData($args);
+            if ($criteres_form->isValid()) {
+                $criteres_obj->exchangeArray($criteres_form->getData());
+            }
+        }
+        if (! $criteres_form->hasValidated() && ! empty($args)) {
+            $criteres_obj->exchangeArray($args);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Query\Responsables')->paginatorResponsables(
-                    $args['where'], [
-
+                    $criteres_obj->getWhere(), [
                         'nom',
                         'prenom'
                     ]),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_responsables', 10),
-                'criteres_form' => $args['form'],
+                'criteres_form' => $criteres_form,
                 'projection' => $this->cartographie_manager->get(Projection::class),
                 'oResponsable' => $this->db_manager->get('Sbm\Db\Table\Responsables')->getObjData()
             ]);
@@ -2081,24 +2112,13 @@ class EleveController extends AbstractActionController
         $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
-        $pasLocalisaton = 'Literal:Not((x Between %d And %d) And (y Between %d And %d))';
-
+        $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';
         $criteresObject = [
-            '\SbmCommun\Model\Db\ObjectData\Criteres',
             [
-                'strict' => [
-                    'nbEnfants',
-                    'nbInscrits',
-                    'nbPreinscrits',
-                    'selection'
-                ],
-                'expressions' => [
-                    'inscrits' => 'Literal:nbInscrits > 0',
-                    'preinscrits' => 'Literal: nbPreinscrits > 0',
-                    'localisation' => sprintf($pasLocalisaton, $rangeX['gestion'][0],
-                        $rangeX['gestion'][1], $rangeY['gestion'][0],
-                        $rangeY['gestion'][1])
-                ]
+                '\SbmGestion\Model\Db\ObjectData\CriteresResponsables',
+                'setSansLocalisationCondition',
+                sprintf($nonLocalise, $rangeX['gestion'][0], $rangeX['gestion'][1],
+                    $rangeY['gestion'][0], $rangeY['gestion'][1])
             ]
         ];
         $criteresForm = [

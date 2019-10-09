@@ -7,8 +7,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2019
- * @version 2019-2.5.0
+ * @date 9 oct. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -286,10 +286,20 @@ abstract class AbstractActionController extends ZendAbstractActionController
             if (! isset($criteresObject[1])) {
                 $criteresObject[1] = null;
             }
-            $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+            if (is_array($criteresObject[0])) {
+                $criteresObject[0][0] = '\\' . ltrim($criteresObject[0][0], '\\');
+            } else {
+                $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+            }
             // on crée la structure de l'objet criteres à partir des champs du formulaire
-            // et on la charge
-            $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            // on la charge et on l'initialise éventuellement
+            if (is_array($criteresObject[0])) {
+                $criteres_obj = new $criteresObject[0][0]($form->getElementNames());
+                // initialisation
+                $criteres_obj->{$criteresObject[0][1]}($criteresObject[0][2]);
+            } else {
+                $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            }
             $criteres = Session::get('post', [],
                 str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {

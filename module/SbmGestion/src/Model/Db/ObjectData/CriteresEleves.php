@@ -15,8 +15,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
- * @version 2019-2.5.0
+ * @date 9 oct. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -162,7 +162,7 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 4:
                     // Non ayants droit acceptés
-                    $where=$this->clauseNonAyantDroit($where);
+                    $where = $this->clauseNonAyantDroit($where);
                     break;
             }
         }
@@ -606,10 +606,16 @@ class CriteresEleves extends SbmCommunCriteres
     {
         if ($where instanceof Where) {
             if ($pdf) {
-                return $where->like('responsable', $this->data['responsable'] . '%');
+                return $where->nest()->like('responsable1NomSA',
+                    $this->data['responsable'] . '%')->OR->like('responsable1Nom2SA',
+                    $this->data['responsable'] . '%')->OR->like('responsable2NomSA',
+                    $this->data['responsable'] . '%')->OR->like('responsable2Nom2SA',
+                    $this->data['responsable'] . '%')->unnest();
             } else {
                 return $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->OR->like(
-                    'r2.nomSA', $this->data['responsable'] . '%')->unnest();
+                    'r1.nom2SA', $this->data['responsable'] . '%')->OR->like('r2.nomSA',
+                    $this->data['responsable'] . '%')->OR->like('r2.nom2SA',
+                    $this->data['responsable'] . '%')->unnest();
             }
         } else {
             // $where['criteres']['responsable'] = true;
@@ -626,7 +632,21 @@ class CriteresEleves extends SbmCommunCriteres
                     [
                         'operator' => 'LIKE',
                         'parts' => [
+                            'responsable1Nom2SA',
+                            '"' . $this->data['responsable'] . '%"'
+                        ]
+                    ],
+                    [
+                        'operator' => 'LIKE',
+                        'parts' => [
                             'responsable2NomSA',
+                            '"' . $this->data['responsable'] . '%"'
+                        ]
+                    ],
+                    [
+                        'operator' => 'LIKE',
+                        'parts' => [
+                            'responsable2Nom2SA',
                             '"' . $this->data['responsable'] . '%"'
                         ]
                     ]
