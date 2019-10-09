@@ -7,7 +7,7 @@
  * @filesource version.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
+ * @date 16 sept. 2019
  * @version 2019-2.4.8
  */
-return "2019-2.4.9";
+return "2019-2.4.10";

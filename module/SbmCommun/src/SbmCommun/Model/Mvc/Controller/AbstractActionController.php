@@ -9,8 +9,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2019
- * @version 2019-2.4.8
+ * @date 9 oct. 2019
+ * @version 2019-2.4.10
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -237,7 +237,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param string|array $criteresObject
      *            nom complet de la classe de l'ObjectData\Criteres
      *            si c'est un tableau : <ul>
-     *            <li>la première valeur est le nom de la classe,</li>
+     *            <li>la première valeur est le nom de la classe, ou un tableau de la
+     *            forme [nom de la classe, méthode d'initialisation, valeur]</li>
      *            <li>la deuxième est le paramètre de la méthode getWherePdf</li>
      *            <li>la troisième est une fonction appelée pour modifier éventuellement
      *            le where</li></ul>
@@ -290,35 +291,43 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form = new $criteresForm[0]($criteresForm[1]);
             // on s'assure que le nom de la classe de l'object criteres commence par \
             $criteresObject = (array) $criteresObject;
-            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du descripteur
-            // sera trouvée
+            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
+            // descripteur sera trouvée
             if (! isset($criteresObject[1])) {
                 $criteresObject[1] = null;
             }
-            $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
-            // on crée la structure de l'objet criteres à partir des champs du formulaire et on la
-            // charge
-            $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            if (is_array($criteresObject[0])) {
+                $criteresObject[0][0] = '\\' . ltrim($criteresObject[0][0], '\\');
+            } else {
+                $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+            }
+            // on crée la structure de l'objet criteres à partir des champs du formulaire,
+            // on la charge et on l'initialise éventuellement
+            if (is_array($criteresObject[0])) {
+                $criteres_obj = new $criteresObject[0][0]($form->getElementNames());
+                // initialisation
+                $criteres_obj->{$criteresObject[0][1]}($criteresObject[0][2]);
+            } else {
+                $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            }
             $criteres = Session::get('post', [], 
                 str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {
                 $criteres_obj->exchangeArray($criteres);
             }
             $where = $criteres_obj->getWherePdf($criteresObject[1]);
-            // adaptation éventuelle du where si une fonction callback (ou closure) est passée en 3e
-            // paramètre
-            // dans le tableau $criteresObject. (Utile par exemple pour modifier le format date
-            // avant le
-            // déclanchement de l'évènement ou pour prendre en compte un autre where pour les
-            // groupes).
+            // adaptation éventuelle du where si une fonction callback (ou closure) est 
+            // passée en 3e paramètre dans le tableau $criteresObject. (Utile par exemple 
+            // pour modifier le format date avant le déclanchement de l'évènement ou pour 
+            // prendre en compte un autre where pour les groupes).
             if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
                 $where = $criteresObject[2]($where, $args);
             }
             $call_pdf = $this->RenderPdfService;
             
             if ($docaffectationId = $this->params('id', false)) {
-                // $docaffectationId par get - $args['documentId'] contient le libellé du menu dans
-                // docaffectations
+                // $docaffectationId par get - $args['documentId'] contient le libellé du 
+                // menu dans docaffectations
                 $call_pdf->setParam('docaffectationId', $docaffectationId);
             }
             $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
@@ -395,21 +404,18 @@ abstract class AbstractActionController extends ZendAbstractActionController
         $retour = false;
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // renvoie redirection 303 avec le contenu de post en session 'prg_post1' (Expire_Hops =
-            // 1)
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la session (cas du
-            // paginator)
+            // ce n'était pas un post. Prendre éventuellement les paramètres en session 
+            // (cas du paginator)
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
-            // c'est le tableau qui correspond au post après redirection 303; on le met en session
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
-                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou edit. Comme
-                // pour un get, on récupère ce qui est en session.
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou 
+                // edit. Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace());
             } else {
@@ -441,8 +447,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $criteres_obj->exchangeArray($criteres_form->getData());
             }
         }
-        // récupère les données de la session si le post n'a pas été validé dans le formulaire (pas
-        // de post ou invalide)
+        // récupère les données de la session si le post n'a pas été validé dans le 
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -551,8 +557,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // on aura le droit de rentrer en get que si un args a été sauvegardé en session avec un
-            // id de la donnée à modifier
+            // on aura le droit de rentrer en get que si un args a été sauvegardé en 
+            // session avec un id de la donnée à modifier
             $args = Session::get('post', [], 'sbm_edit_' . $params['data']['table']);
             $isPost = false;
             $cancel = false;
@@ -659,8 +665,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 if ($id = StdLib::getParam($params['data']['id'], $args, false)) {
                     Session::set($params['data']['id'], $id, 'sbm_suppr');
                 } else {
-                    // ici, je controle si l'id en session est bien celui reçu par post (via prg).
-                    // On ne sait jamais !!!
+                    // ici, je controle si l'id en session est bien celui reçu par post 
+                    // (via prg). On ne sait jamais !!!
                     $id = Session::get($params['data']['id'], - 1, 'sbm_suppr');
                     $ctrl = StdLib::getParam('id', $args, - 1);
                     if ($id != $ctrl)
@@ -677,8 +683,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 "L'enregistrement n'a pas été supprimé.");
             return new EditResponse('warning', $args);
         } else {
-            // pour les primary key composées de plusieurs champs, id est une chaine où les champs
-            // sont séparés par des |
+            // pour les primary key composées de plusieurs champs, id est une chaine 
+            // dans laquelle les champs sont séparés par des |
             // id est transformé ici en tableau associatif
             // pour les primary key composées d'un seul champ, id est conservé en l'état
             $id = $table->getObjData()->getValidId($id);
