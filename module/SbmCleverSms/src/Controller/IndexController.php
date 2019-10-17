@@ -270,12 +270,17 @@ class IndexController extends AbstractActionController
                         ' Pour consulter les réponses utiliser l\'interface de CleverSms.');
                 }
             } else {
-                $response->getLogger()->log(Logger::CRIT, $response->getMessage());
+                $this->curl_request->getLogger()->log(Logger::CRIT,
+                    $response->getMessage());
                 return $this->retour(FlashMessenger::NAMESPACE_ERROR,
                     'Échec de l\'envoi des SMS : ' . $response->getMessage());
             }
+        } else {
+            $this->curl_request->getLogger()->log(Logger::NOTICE,
+                json_encode($form->getMessages()));
+            return $this->retour(FlashMessenger::NAMESPACE_WARNING,
+                'Échec de l\'envoi des SMS : Données invalides.');
         }
-        return $this->retour(FlashMessenger::NAMESPACE_INFO, 'Échec de l\'envoi des SMS : Données invalides.');
     }
 
     public function supprAction()

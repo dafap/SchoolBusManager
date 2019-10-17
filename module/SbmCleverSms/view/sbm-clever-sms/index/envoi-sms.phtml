@@ -7,8 +7,8 @@
  * @filesource envoi-sms.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('cleversms', 'envoi-sms.css');
@@ -44,7 +44,7 @@ foreach ($this->telephones as $value) {
 	</div>
 	<div id="fiche-inner">
 	<?= $this->form()->openTag($this->form);?>
-	<?= $this->formHidden($this->form->get('csrf'));?>
+	<?php //= $this->formHidden($this->form->get('csrf'));?>
 	    <fieldset class="sbm-page1">
 			<div id="body-wrapper">
 			<?=$this->formRow($this->form->get('body'));?>

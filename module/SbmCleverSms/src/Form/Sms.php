@@ -7,8 +7,8 @@
  * @filesource Sms.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCleverSms\Form;
 
@@ -26,7 +26,7 @@ class Sms extends AbstractSbmForm implements InputFilterProviderInterface
             'name' => 'userId',
             'type' => 'hidden'
         ]);
-        $this->add(
+        /*$this->add(
             [
                 'name' => 'csrf',
                 'type' => 'Zend\Form\Element\Csrf',
@@ -35,7 +35,7 @@ class Sms extends AbstractSbmForm implements InputFilterProviderInterface
                         'timeout' => 180
                     ]
                 ]
-            ]);
+            ]);*/
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Textarea',
