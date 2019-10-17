@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmInstallation\Controller\Service;
 
@@ -47,8 +47,15 @@ class IndexControllerFactory implements FactoryInterface
             'img' => StdLib::getParamR([
                 'sbm',
                 'img'
-            ], $config_application, [])
+            ], $config_application, []),
+            'hassbmservicesms' => $sm->has('sbmservicesms')
         ];
+        if ($sm->has('sbmservicesms')) {
+            $config_controller['config_sms'] = StdLib::getParamR([
+                'sbm',
+                'servicesms'
+            ], $config_application);
+        }
         return new IndexController($config_controller);
     }
 }

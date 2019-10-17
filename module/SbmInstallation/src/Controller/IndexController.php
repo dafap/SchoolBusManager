@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmInstallation\Controller;
 
@@ -60,6 +60,9 @@ class IndexController extends AbstractActionController
         $fileNamePaiement = strtolower($this->config_paiement['plateforme']) . '_error.log';
         $filePaiement = StdLib::concatPath($this->config_paiement['path_filelog'],
             $fileNamePaiement);
+        $fileNameSms = $this->hassbmservicesms ? strtolower($this->config_sms['filename']) : '';
+        $fileSms = $this->hassbmservicesms ? StdLib::concatPath(
+            $this->config_sms['path_filelog'], $fileNameSms) : '';
         if (! file_exists($filePaiement)) {
             $f = fopen($filePaiement, 'w');
             fclose($f);
@@ -75,6 +78,10 @@ class IndexController extends AbstractActionController
                     $filenameWithPath = $fileErrors;
                     $parts = explode('/', $filenameWithPath);
                     $filename = $parts[count($parts) - 1];
+                    break;
+                case 'sms':
+                    $filename = $fileNameSms;
+                    $filenameWithPath = $fileSms;
                     break;
                 default:
                     return $this->redirect()->toRoute('sbminstall');
@@ -99,6 +106,34 @@ class IndexController extends AbstractActionController
                 $response->setHeaders($headers);
                 return $response;
             }
+        }
+        if ($this->hassbmservicesms) {
+            $formSms = new ButtonForm([
+                'fichier' => 'sms'
+            ],
+                [
+                    'drop' => [
+                        'class' => 'confirm default',
+                        'value' => 'Vider le fichier'
+                    ],
+                    'download' => [
+                        'class' => 'confirm default',
+                        'value' => 'Télécharger le fichier d\'erreur'
+                    ],
+                    'voir' => [
+                        'class' => 'confirm default',
+                        'value' => 'Voir le contenu',
+                        'formaction' => '/install/fichierslog-voir'
+                    ]
+                ]);
+            $detailSms = [
+                'date' => date('d:m:Y H:i:s', filemtime($fileSms)),
+                'taille' => filesize($fileSms),
+                'lignes' => count(file($fileSms))
+            ];
+        } else {
+            $formSms = null;
+            $detailSms = [];
         }
         return new ViewModel(
             [
@@ -130,7 +165,7 @@ class IndexController extends AbstractActionController
                         ],
                         'download' => [
                             'class' => 'confirm default',
-                            'value' => 'Télécharger le fichier d\'erreurs'
+                            'value' => 'Télécharger le fichier d\'erreur'
                         ],
                         'voir' => [
                             'class' => 'confirm default',
@@ -138,6 +173,7 @@ class IndexController extends AbstractActionController
                             'formaction' => '/install/fichierslog-voir'
                         ]
                     ]),
+                'form3' => $formSms,
                 'paiement' => [
                     'date' => date('d/m/Y H:i:s', filemtime($filePaiement)),
                     'taille' => filesize($filePaiement),
@@ -147,7 +183,8 @@ class IndexController extends AbstractActionController
                     'date' => date('d/m/Y H:i:s', filemtime($fileErrors)),
                     'taille' => filesize($fileErrors),
                     'lignes' => count(file($fileErrors))
-                ]
+                ],
+                'sms' => $detailSms
             ]);
     }
 
@@ -165,9 +202,15 @@ class IndexController extends AbstractActionController
         if ($prg['fichier'] == 'paiement') {
             $title = 'Historique des transactions de la plateforme de paiement';
             $filename = strtolower($this->config_paiement['plateforme']) . '_error.log';
-            $filename = StdLib::concatPath($this->config_paiement['path_filelog'], $filename);
+            $filename = StdLib::concatPath($this->config_paiement['path_filelog'],
+                $filename);
+        } elseif ($prg['fichier'] == 'sms') {
+            $title = 'Contenu du fichier d\'erreur d\'envoi de SMS';
+            $filename = $this->config_sms['filename'];
+            $filename = StdLib::concatPath($this->config_sms['path_filelog'],
+                $filename);
         } else {
-            $title = 'Contenu du fichier d\'erreurs';
+            $title = 'Contenu du fichier d\'erreur PHP';
             $filename = $this->error_log;
         }
         $acontent = [];
@@ -384,7 +427,7 @@ class IndexController extends AbstractActionController
                     // Form is valid, save the form!
                     $source = $data['image-file']['tmp_name'];
                     $dest = StdLib::concatPath($this->img['path']['system'], $prg['fname']);
-                    //    $data['image-file']['name']);
+                    // $data['image-file']['name']);
                     // $dest = $this->img']['path']['system'] . DIRECTORY_SEPARATOR .
                     // $data['image-file']['name'];
                     copy($source, $dest);
@@ -673,7 +716,7 @@ class IndexController extends AbstractActionController
             [
                 'theme' => $this->theme->getTheme(),
                 'configcarte' => $configcartes,
-                'items'=> $items,
+                'items' => $items,
                 'points' => $points
             ]);
     }

@@ -2,15 +2,13 @@
 /**
  * Controller de l'API de Clever Sms Light
  *
- *
- *
  * @project sbm
  * @package SbmCleverSms/src/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 oct. 2019
- * @version 2019-2.5.1
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCleverSms\Controller;
 
@@ -102,26 +100,27 @@ class IndexController extends AbstractActionController
                         $tCleverSms = $this->db_manager->get('Sbm\Db\Table\CleverSms');
                         $oCleverSms = $tCleverSms->getObjData();
                         $oCleverSms->exchangeArray(
-                            array_merge($response->getResponse()['push'],
+                            array_merge($response->getResponse('push'),
                                 [
                                     'http_code' => $response->getCode()
                                 ]));
                         $tCleverSms->saveRecord($oCleverSms);
-                        $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
+                        return $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
                             'Envoi du SMS effectué.');
                     } catch (\Exception $e) {
                         $this->curl_request->getLogger()->log(Logger::ERR,
-                            $response->getMessage(), $response->getResponse()['push']);
+                            $response->getMessage(), $telephones);
                         $this->curl_request->getLogger()->log(Logger::ERR,
                             $e->getMessage());
                         $this->curl_request->getLogger()->log(Logger::ERR,
                             $e->getTraceAsString());
-                        $this->retour(FlashMessenger::NAMESPACE_ERROR,
+                        return $this->retour(FlashMessenger::NAMESPACE_ERROR,
                             'Envoi du SMS effectué mais non enregistré.' .
                             ' Pour consulter les réponses utiliser l\'interface de CleverSms.');
                     }
                 } else {
-                    $this->curl_request->getLogger()->log(Logger::WARN, $response->getMessage());
+                    $this->curl_request->getLogger()->log(Logger::WARN,
+                        $response->getMessage());
                     return $this->retour(FlashMessenger::NAMESPACE_WARNING,
                         'Échec de l\'envoi du SMS : ' . $response->getMessage());
                 }
@@ -244,30 +243,39 @@ class IndexController extends AbstractActionController
                     $tCleverSms = $this->db_manager->get('Sbm\Db\Table\CleverSms');
                     $oCleverSms = $tCleverSms->getObjData();
                     $oCleverSms->exchangeArray(
-                        array_merge($response->getResponse()['push'],
+                        array_merge($response->getResponse('push'),
                             [
                                 'http_code' => $response->getCode()
                             ]));
                     $tCleverSms->saveRecord($oCleverSms);
-                    $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
+                    return $this->retour(FlashMessenger::NAMESPACE_SUCCESS,
                         'Envoi du SMS effectué.');
-                } catch (\Exception $e) {
+                } catch (\SbmCleverSms\Model\Exception\ExceptionInterface $e) {
                     $this->curl_request->getLogger()->log(Logger::ERR,
-                        $response->getMessage(), $response->getResponse()['push']);
+                        $response->getMessage(), array_keys($aTo));
+                    $this->curl_request->getLogger()->log(Logger::ERR,
+                        $response->debug_status());
                     $this->curl_request->getLogger()->log(Logger::ERR, $e->getMessage());
                     $this->curl_request->getLogger()->log(Logger::ERR,
                         $e->getTraceAsString());
-                    $this->retour(FlashMessenger::NAMESPACE_ERROR,
+                    return $this->retour(FlashMessenger::NAMESPACE_ERROR,
+                        'Échec de l\'envoi des SMS.');
+                } catch (\Exception $e) {
+                    $this->curl_request->getLogger()->log(Logger::WARN, $e->getMessage(),
+                        array_keys($aTo));
+                    $this->curl_request->getLogger()->log(Logger::WARN,
+                        $e->getTraceAsString());
+                    return $this->retour(FlashMessenger::NAMESPACE_WARNING,
                         'Envoi du SMS effectué mais non enregistré.' .
                         ' Pour consulter les réponses utiliser l\'interface de CleverSms.');
                 }
             } else {
-                $response->getLogger()->log(Logger::WARN, $response->getMessage());
-                return $this->retour(FlashMessenger::NAMESPACE_WARNING,
-                    'Échec de l\'envoi du SMS : ' . $response->getMessage());
+                $response->getLogger()->log(Logger::CRIT, $response->getMessage());
+                return $this->retour(FlashMessenger::NAMESPACE_ERROR,
+                    'Échec de l\'envoi des SMS : ' . $response->getMessage());
             }
         }
-        return $this->retour(FlashMessenger::NAMESPACE_INFO, 'Données invalides.');
+        return $this->retour(FlashMessenger::NAMESPACE_INFO, 'Échec de l\'envoi des SMS : Données invalides.');
     }
 
     public function supprAction()

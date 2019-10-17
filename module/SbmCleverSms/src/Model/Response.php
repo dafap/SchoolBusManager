@@ -7,8 +7,8 @@
  * @filesource Response.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCleverSms\Model;
 
@@ -33,12 +33,20 @@ class Response
 
     public function isValid()
     {
-        return $this->status['http_code'] < 205;
+        return $this->status['http_code'] >= 200 && $this->status['http_code'] < 205;
     }
 
     public function getCode()
     {
         return $this->status['http_code'];
+    }
+
+    public function debug_status()
+    {
+        ob_start();
+        var_dump($this->status);
+        $result = ob_get_clean();
+        return strip_tags($result);
     }
 
     public function getMessage()
@@ -93,8 +101,25 @@ class Response
         return $value;
     }
 
-    public function getResponse()
+    /**
+     * Renvoie la valeur de l'index ou le tableau si l'index n'est pas fourni. Déclenche
+     * une exception si l'index n'existe pas.
+     *
+     * @param ?string $index
+     * @return array|mixed
+     */
+    public function getResponse($index = null)
     {
-        return $this->array_response;
+        if (is_null($index)) {
+            return $this->array_response;
+        } elseif (array_key_exists($index, $this->array_response)) {
+            return $this->array_response[$index];
+        } else {
+            ob_start();
+            var_dump($this->array_response);
+            $message = ob_get_clean();
+            throw new Exception\OutOfBoundsException(
+                "L'index $index n'est pas trouvé dans " . strip_tags($message));
+        }
     }
 }

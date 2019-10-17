@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 use SbmBase\Model\StdLib;
 use SbmCleverSms\Controller;
@@ -32,7 +32,8 @@ return [
     'sbm' => [
         'servicesms' => [
             'api_url' => 'http://webserviceslight.clever.fr/api/',
-            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs')
+            'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs'),
+            'filename' => 'cleversms_error.log'
         ]
     ],
     'service_manager' => [

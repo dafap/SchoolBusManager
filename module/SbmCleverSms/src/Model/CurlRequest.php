@@ -7,8 +7,8 @@
  * @filesource CurlRequest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCleverSms\Model;
 
@@ -52,6 +52,9 @@ class CurlRequest
     public function curlInitialize(string $url, string $method, string $data = '')
     {
         $this->ch = curl_init(rtrim($this->api_url, '/') . "/$url");
+        if ($this->ch === false) {
+            throw new Exception\OutOfBoundsException("Impossible d'initialiser une session cURL.");
+        }
         //curl_reset($this->ch);
         if (strcasecmp($method, 'post') == 0) {
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);

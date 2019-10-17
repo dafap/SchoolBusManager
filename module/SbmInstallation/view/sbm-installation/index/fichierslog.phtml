@@ -4,14 +4,14 @@
  *
  * La page affiche pour chaque fichier log la taille, le nombre de lignes et la date de dernière entrée
  * On peut les télécharger ou les vider
- * 
+ *
  * @project sbm
  * @package SbmInstallation/view
  * @filesource fichierslog.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $actions = [
@@ -47,6 +47,17 @@ $actions = [
 				<?= $this->formCollection($this->form2);?>
 				<?= $this->form()->closeTag();?>
         	</dd>
+        	<?php if ($this->layout()->hassbmservicesms):?>
+        	<dt>Fichier d'erreur d'envoi de SMS</dt>
+        	<dd>Date de dernière écriture: <?= $this->sms['date'];?></dd>
+        	<dd>Nombre de lignes: <?= $this->sms['lignes'];?></dd>
+			<dd>Taille: <?= $this->sms['taille'];?></dd>
+			<dd>
+				<?= $this->form()->openTag($this->form3);?>
+				<?= $this->formCollection($this->form3);?>
+				<?= $this->form()->closeTag();?>
+        	</dd>
+        	<?php endif;?>
 		</dl>
 	</div>
 	<div id=fichierlog-footer></div>
