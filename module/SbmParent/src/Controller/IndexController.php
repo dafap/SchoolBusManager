@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmParent\Controller;
 
@@ -27,6 +27,7 @@ use SbmParent\Model\Db\Service\Query;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
+use Zend\Log\Logger;
 
 class IndexController extends AbstractActionController
 {
@@ -997,6 +998,7 @@ class IndexController extends AbstractActionController
     public function savephotoAction()
     {
         $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $ophoto->setFileLog($this->photo_log['path_filelog'], $this->photo_log['filename']);
         $form = $ophoto->getFormWithInputFilter($this->tmpuploads);
         $prg = $this->fileprg($form);
         if ($prg instanceof Response) {
@@ -1022,7 +1024,10 @@ class IndexController extends AbstractActionController
                 } catch (\Exception $e) {
                     // problème de fichier, de format de fichier ou d'image dont le format
                     // n'est pas traité
-                    $this->flashMessenger()->addErrorMessage($e->getMessage());
+                    $ophoto->getLogger()->log(Logger::ERR, $e->getMessage());
+                    $ophoto->getLogger()->log(Logger::DEBUG, $e->getTraceAsString());
+                    $msg = explode('.', $e->getMessage());
+                    $this->flashMessenger()->addErrorMessage($msg[0]);
                 }
             } else {
                 $this->flashMessenger()->addErrorMessage(

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Image\Image;
@@ -85,6 +85,10 @@ return [
                 'system' => StdLib::findParentPath(__DIR__, 'public/img'),
                 'tmpuploads' => './data/tmpuploads',
                 'url' => '/img/'
+            ],
+            'log' => [
+                'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs'),
+                'filename' => 'photo_error.log'
             ],
             'cacher' => [ // liste des images utilisées dans SBM qu'il ne faut pas
                            // administrer

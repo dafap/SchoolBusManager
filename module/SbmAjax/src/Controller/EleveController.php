@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juil. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmAjax\Controller;
 
@@ -19,6 +19,7 @@ use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use Zend\Json\Json;
 use Zend\View\Model\ViewModel;
+use Zend\Log\Logger;
 
 class EleveController extends AbstractActionController
 {
@@ -129,8 +130,7 @@ class EleveController extends AbstractActionController
     /**
      * ajax - renvoie une structure permettant d'adapter le Select de classeId en fonction
      * du niveau de l'établissement dont l'identifiant est etablissementId passé par GET
-     * method GET
-     * Cette méthode est aussi dans ParentController
+     * method GET Cette méthode est aussi dans ParentController
      *
      * @method GET
      * @return \Zend\Stdlib\ResponseInterface
@@ -322,11 +322,13 @@ class EleveController extends AbstractActionController
                                 break;
                         }
                         $response->setContent(
-                            Json::encode([
-                                'cr' => "$messages",
-                                'nb' => $tAffectations->count($oData->millesime, $oData->eleveId),
-                                'success' => 1
-                            ]));
+                            Json::encode(
+                                [
+                                    'cr' => "$messages",
+                                    'nb' => $tAffectations->count($oData->millesime,
+                                        $oData->eleveId),
+                                    'success' => 1
+                                ]));
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
@@ -780,6 +782,8 @@ class EleveController extends AbstractActionController
         $post = array_merge_recursive($request->getPost()->toArray(),
             $request->getFiles()->toArray());
         $ophoto = new \SbmCommun\Model\Photo\Photo();
+        $ophoto->setFileLog($this->img['log']['path_filelog'],
+            $this->img['log']['filename']);
         $form = $ophoto->getFormWithInputFilter($this->img['path']['tmpuploads'])->prepare();
         $form->setData($post);
         if ($form->isValid()) {
@@ -790,11 +794,13 @@ class EleveController extends AbstractActionController
                 unlink($source);
             } catch (\Exception $e) {
                 // problème de fichier, de format de fichier ou d'image dont le format
-                // n'est pas
-                // traité
+                // n'est pastraité
+                $ophoto->getLogger()->log(Logger::ERR, $e->getMessage());
+                $ophoto->getLogger()->log(Logger::DEBUG, $e->getTraceAsString());
+                $msg = explode('.', $e->getMessage());
                 return $this->getResponse()->setContent(
                     Json::encode([
-                        'cr' => $e->getMessage(),
+                        'cr' => $msg[0],
                         'success' => 101
                     ]));
             }
@@ -865,8 +871,6 @@ class EleveController extends AbstractActionController
         }
     }
 
-
-
     public function quartgauchephotoAction()
     {
         if (! $this->getRequest()->isPost()) {
@@ -906,7 +910,7 @@ class EleveController extends AbstractActionController
             $ophoto = new \SbmCommun\Model\Photo\Photo();
             $tPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
             $odata = $tPhotos->getRecord($eleveId);
-            $blob = $ophoto->rotate(stripslashes($odata->photo), -90);
+            $blob = $ophoto->rotate(stripslashes($odata->photo), - 90);
             $odata->photo = addslashes($blob);
             $tPhotos->saveRecord($odata);
             return $this->getResponse()->setContent(

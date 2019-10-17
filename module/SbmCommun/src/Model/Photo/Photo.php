@@ -16,8 +16,8 @@
  * @filesource Photo.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2019
- * @version 2019-2.4.6
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCommun\Model\Photo;
 
@@ -25,6 +25,7 @@ use Zend\Form;
 
 class Photo
 {
+    use \SbmCommun\Model\Log\LoggerTrait;
 
     const COLOR_WHITE = 0xa0a0a0;
 
@@ -50,6 +51,20 @@ class Photo
         $this->quality = $quality;
         $this->resolution = $resolution;
         $this->rapport = 35 / 45; // largeur / hauteur en mm
+    }
+
+    public function __call($name_function_image, $params)
+    {
+        if (substr($name_function_image, 0, 5) == 'image') {
+            $result = $name_function_image(...$params);
+            if ($result === false) {
+                $msg = sprintf("Impossible de créer la photo.\nErreur dans %s(%s)",
+                    $name_function_image, json_encode($params));
+                throw new ImageException($msg, 1);
+            }
+            return $result;
+        }
+        throw new Exception('Méthode invalide.');
     }
 
     /**
@@ -203,16 +218,20 @@ class Photo
                 sprintf("Le fichier source n'est pas reconnu comme un fichier image. %s",
                     $mime_type));
         }
-        if ($mime_type == 'image/jpeg') {
-            $image = imagecreatefromjpeg($source);
-        } elseif ($mime_type == 'image/gif') {
-            $image = imagecreatefromgif($source);
-        } elseif ($mime_type == 'image/png') {
-            $image = imagecreatefrompng($source);
-        } else {
-            unlink($source);
-            throw new Exception(
-                "Ce format image n'est pas accepté (JPEG, PNG ou GIF uniquement).");
+        try {
+            if ($mime_type == 'image/jpeg') {
+                $image = $this->imagecreatefromjpeg($source);
+            } elseif ($mime_type == 'image/gif') {
+                $image = $this->imagecreatefromgif($source);
+            } elseif ($mime_type == 'image/png') {
+                $image = $this->imagecreatefrompng($source);
+            } else {
+                unlink($source);
+                throw new Exception(
+                    "Ce format image n'est pas accepté (JPEG, PNG ou GIF uniquement).");
+            }
+        } catch (ImageException $e) {
+            throw new Exception('Impossible de créer la photo à partir de cette source.');
         }
         // supprime les cadres blancs ou noirs éventuels
         $image = $this->supprimeCadre($image);
@@ -224,7 +243,7 @@ class Photo
     private function getStringFromImage($image)
     {
         ob_start();
-        imagejpeg($image, null, $this->quality);
+        $this->imagejpeg($image, null, $this->quality);
         return ob_get_clean();
     }
 
@@ -239,8 +258,8 @@ class Photo
     {
         list ($modwidth, $modheight) = $this->modele_size();
         $info = [
-            imagesx($image),
-            imagesy($image)
+            $this->imagesx($image),
+            $this->imagesy($image)
         ]; // getimagesize($source);
         $rapportSource = $info[0] / $info[1];
         if ($rapportSource > $this->rapport) {
@@ -258,9 +277,9 @@ class Photo
             $src_w = $info[0];
             $src_h = $info[1];
         }
-        $photo = imagecreatetruecolor($modwidth, $modheight);
-        imagecopyresampled($photo, $image, 0, 0, $src_x, 0, $modwidth, $modheight, $src_w,
-            $src_h);
+        $photo = $this->imagecreatetruecolor($modwidth, $modheight);
+        $this->imagecopyresampled($photo, $image, 0, 0, $src_x, 0, $modwidth, $modheight,
+            $src_w, $src_h);
         return $photo;
     }
 
@@ -278,13 +297,13 @@ class Photo
         // on va étudier l'image à l'intérieur d'un cadre en commençant par un cadre de 6
         // de largeur et en le diminuant progressivement si on n'en a pas trouvé.
         $b_top = $border - 1;
-        $b_btm = imagesy($im) - $border;
+        $b_btm = $this->imagesy($im) - $border;
         $b_lft = $border - 1;
-        $b_rt = imagesx($im) - $border;
+        $b_rt = $this->imagesx($im) - $border;
         // top
         for ($t = $b_top; $t < $b_btm; ++ $t) {
             for ($x = $b_lft; $x < $b_rt; ++ $x) {
-                $color = imagecolorat($im, $x, $t);
+                $color = $this->imagecolorat($im, $x, $t);
                 if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                     break 2; // sortie des 2 boucles
                 }
@@ -293,7 +312,7 @@ class Photo
         if ($t == $b_top) {
             for ($t1 = $t - 1; $t1 >= 0 && $t1 < $t; -- $t) {
                 for ($x = $b_lft; $x < $b_rt; ++ $x) {
-                    $color = imagecolorat($im, $x, $t1);
+                    $color = $this->imagecolorat($im, $x, $t1);
                     if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                         -- $t1;
                         break; // sortie de la seconde boucle
@@ -303,10 +322,10 @@ class Photo
             $t = $t1 + 1;
         }
         // bottom
-        $b_btm = imagesy($im) - $border;
+        $b_btm = $this->imagesy($im) - $border;
         for ($b = $b_btm; $b > $t; -- $b) {
             for ($x = $b_lft; $x < $b_rt; ++ $x) {
-                $color = imagecolorat($im, $x, $b);
+                $color = $this->imagecolorat($im, $x, $b);
                 if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                     ++ $b_btm;
                     break 2; // sortie des 2 boucles
@@ -314,9 +333,9 @@ class Photo
             }
         }
         if ($b == $b_btm) {
-            for ($b1 = $b + 1; $b1 <= imagesy($im) && $b1 > $b; ++ $b) {
+            for ($b1 = $b + 1; $b1 <= $this->imagesy($im) && $b1 > $b; ++ $b) {
                 for ($x = $b_lft; $x < $b_rt; ++ $x) {
-                    $color = imagecolorat($im, $x, $b1);
+                    $color = $this->imagecolorat($im, $x, $b1);
                     if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                         ++ $b1;
                         break; // sortie de la seconde boucle
@@ -328,7 +347,7 @@ class Photo
         // left
         for ($l = $b_lft; $l < $b_rt; ++ $l) {
             for ($y = $t; $y < $b; ++ $y) {
-                $color = imagecolorat($im, $l, $y);
+                $color = $this->imagecolorat($im, $l, $y);
                 if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                     break 2; // sortie des 2 boucles
                 }
@@ -337,7 +356,7 @@ class Photo
         if ($l == $b_lft) {
             for ($l1 = $l - 1; $l1 >= 0 && $l1 < $l; -- $l) {
                 for ($y = $t; $y < $b; ++ $y) {
-                    $color = imagecolorat($im, $l1, $y);
+                    $color = $this->imagecolorat($im, $l1, $y);
                     if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                         -- $l1;
                         break; // sortie de la seconde boucle
@@ -349,7 +368,7 @@ class Photo
         // right
         for ($r = $b_rt; $r > $l; -- $r) {
             for ($y = $t; $y < $b; ++ $y) {
-                $color = imagecolorat($im, $r, $y);
+                $color = $this->imagecolorat($im, $r, $y);
                 if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                     ++ $b_rt;
                     break 2; // sortie des 2 boucles
@@ -357,9 +376,9 @@ class Photo
             }
         }
         if ($r == $b_rt) {
-            for ($r1 = $r + 1; $r1 <= imagesx($im) && $r1 > $r; ++ $r) {
+            for ($r1 = $r + 1; $r1 <= $this->imagesx($im) && $r1 > $r; ++ $r) {
                 for ($y = $t; $y < $b; ++ $y) {
-                    $color = imagecolorat($im, $r1, $y);
+                    $color = $this->imagecolorat($im, $r1, $y);
                     if ($color <= self::COLOR_WHITE && $color >= self::COLOR_BLACK) {
                         ++ $r1;
                         break; // sortie de la seconde boucle
@@ -370,8 +389,9 @@ class Photo
         }
 
         // Renvoie la partie copiée si succès, sinon l'image d'origine
-        $newim = imagecreatetruecolor($r - $l, $b - $t);
-        if (imagecopy($newim, $im, 0, 0, $l, $t, imagesx($newim), imagesy($newim))) {
+        $newim = $this->imagecreatetruecolor($r - $l, $b - $t);
+        if ($this->imagecopy($newim, $im, 0, 0, $l, $t, $this->imagesx($newim),
+            $this->imagesy($newim))) {
             return $newim;
         }
         return $im;
@@ -400,17 +420,17 @@ class Photo
     public function getSansPhotoGifAsString()
     {
         list ($modwidth, $modheight) = $this->modele_size();
-        $image = imagecreatetruecolor($modwidth, $modheight);
-        $bgcolor = imagecolorallocate($image, 245, 245, 245);
-        $red = imagecolorallocate($image, 255, 0, 0);
-        imagefill($image, 0, 0, $bgcolor);
-        $fw = imagefontwidth(5);
-        imagestring($image, 5, $modwidth / 2 - 6 * $fw,
+        $image = $this->imagecreatetruecolor($modwidth, $modheight);
+        $bgcolor = $this->imagecolorallocate($image, 245, 245, 245);
+        $red = $this->imagecolorallocate($image, 255, 0, 0);
+        $this->imagefill($image, 0, 0, $bgcolor);
+        $fw = $this->imagefontwidth(5);
+        $this->imagestring($image, 5, $modwidth / 2 - 6 * $fw,
             $modheight / 2 - imagefontheight(5) / 2, 'Pas de photo', $red);
-        imageline($image, 5, 5, $modwidth - 5, $modheight - 5, $red);
-        imageline($image, 5, $modheight - 5, $modwidth - 5, 5, $red);
+        $this->imageline($image, 5, 5, $modwidth - 5, $modheight - 5, $red);
+        $this->imageline($image, 5, $modheight - 5, $modwidth - 5, 5, $red);
         ob_start();
-        imagegif($image);
+        $this->imagegif($image);
         return ob_get_clean();
     }
 
@@ -424,7 +444,8 @@ class Photo
      */
     public function rotate(string $photo, float $degres)
     {
-        $im = imagerotate(imagecreatefromstring($photo), $degres, 0);
+        $im = $this->imagecreatefromstring($photo);
+        $im = $this->imagerotate($im, $degres, 0);
         $im = $this->supprimeCadre($im);
         return $this->getStringFromImage($this->normaliseProportions($im));
     }

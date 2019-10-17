@@ -4,12 +4,12 @@
  * Méthodes utilisées pour gérer les élèves et les responsables
  *
  * @project sbm
- * @package module/SbmGestion/src/SbmGestion/Controller
+ * @package module/SbmGestion/src/Controller
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2019
- * @version 2019-2.5.1
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmGestion\Controller;
 
@@ -534,9 +534,9 @@ class EleveController extends AbstractActionController
             ]);
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
-            $ophoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
+            $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
                 $eleveId);
-            $dataphoto = $ophoto->image_src($ophoto->photo, 'jpeg');
+            $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
         } catch (\Exception $e) {
             $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
         }
