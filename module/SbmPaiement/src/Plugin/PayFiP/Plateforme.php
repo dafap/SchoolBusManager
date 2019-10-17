@@ -7,8 +7,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2019
- * @version 2019-2.5.0
+ * @date 17 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmPaiement\Plugin\PayFiP;
 
@@ -684,22 +684,39 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $result = $client->{$method}($arguments);
             return $result->return;
         } catch (\SoapFault $s) {
-            $msg = sprintf('[ERROR: [%s] %s - %s (%d) : %s', $s->faultcode,
-                $s->faultstring, $s->detail->FonctionnelleErreur->code,
-                $s->detail->FonctionnelleErreur->severite,
-                $s->detail->FonctionnelleErreur->libelle);
-            $origine = sprintf('ligne %d du fichier %s', $s->getLine(), $s->getFile());
-            $this->logError(\Zend\Log\Logger::WARN, $origine,
-                [
-                    $s->faultcode,
-                    $s->faultstring,
-                    $s->detail->FonctionnelleErreur->code,
+            if (property_exists($s, 'detail')) {
+                $msg = sprintf('[ERROR: [%s] %s - %s (%d) : %s', $s->faultcode,
+                    $s->faultstring, $s->detail->FonctionnelleErreur->code,
                     $s->detail->FonctionnelleErreur->severite,
-                    $s->detail->FonctionnelleErreur->libelle
-                ]);
-            $this->error_msg = sprintf('%s : %s', $s->detail->FonctionnelleErreur->code,
-                $s->detail->FonctionnelleErreur->libelle);
-            $this->error_no = 1;
+                    $s->detail->FonctionnelleErreur->libelle);
+                $origine = sprintf('ligne %d du fichier %s', $s->getLine(), $s->getFile());
+                $this->logError(\Zend\Log\Logger::WARN, $origine,
+                    [
+                        $s->faultcode,
+                        $s->faultstring,
+                        $s->detail->FonctionnelleErreur->code,
+                        $s->detail->FonctionnelleErreur->severite,
+                        $s->detail->FonctionnelleErreur->libelle
+                    ]);
+                $this->error_msg = sprintf('%s : %s',
+                    $s->detail->FonctionnelleErreur->code,
+                    $s->detail->FonctionnelleErreur->libelle);
+                $this->error_no = 1;
+            } else {
+                $msg = sprintf('[ERROR: [%s] %s - client->{%s}(%s) : %s', $s->faultcode,
+                    $s->faultstring, $method, json_encode($arguments), json_encode($s));
+                $origine = sprintf('ligne %d du fichier %s', $s->getLine(), $s->getFile());
+                $this->logError(\Zend\Log\Logger::WARN, $origine,
+                    [
+                        $s->faultcode,
+                        $s->faultstring,
+                        $method,
+                        json_encode($arguments),
+                        json_encode($s)
+                    ]);
+                $this->error_msg = sprintf('%s : %s', $s->faultcode, $s->faultstring);
+                $this->error_no = 2;
+            }
         } catch (\Exception $e) {
             $msg = sprintf('[ERROR: [%d] %s', $e->getCode(), $e->getMessage());
             $origine = sprintf('ligne %d du fichier %s', $e->getLine(), $e->getFile());
