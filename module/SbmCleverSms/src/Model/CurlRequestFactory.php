@@ -7,8 +7,8 @@
  * @filesource CurlRequestFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2019
- * @version 2019-4.5.0
+ * @date 17 oct. 2019
+ * @version 2019-4.5.2
  */
 namespace SbmCleverSms\Model;
 
@@ -40,6 +40,7 @@ class CurlRequestFactory implements FactoryInterface
         foreach ([
             'api_url',
             'path_filelog',
+            'filename',
             'username',
             'password'
         ] as $key) {

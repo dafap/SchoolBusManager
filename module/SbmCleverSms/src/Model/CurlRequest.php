@@ -31,7 +31,7 @@ class CurlRequest
 
     public function __construct($config)
     {
-        $this->setFileLog($config['path_filelog'], 'cleversms_error.log');
+        $this->setFileLog($config['path_filelog'], $config['filename']);
         $this->api_url = $config['api_url'];
         $this->username = $config['username'];
         $this->password = $config['password'];
