@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
- * @version 2019-2.4.9
+ * @date 20 oct. 2019
+ * @version 2019-2.4.11
  */
 use SbmBase\Model\DateLib;
 
@@ -198,7 +198,7 @@ echo $this->listeZoneActions($hiddens, $actions);
                 <tr
 					class="<?php echo $this->cycle(["even", "odd"])->next();?>">
 					<td class="responsable"><?php echo $r = $this->escapeHtml($paiement->responsable); ?></td>
-					<td class="montant"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
+					<td class="montant align-right"><?php echo $m = $fmt->formatCurrency($paiement->montant, 'EUR'); ?></td>
 					<td class="caisse"><?php echo $cs = $this->escapeHtml($paiement->caisse); ?></td>
 					<td class="mode-de-paiement"><?php echo $mp = $this->escapeHtml($paiement->modeDePaiement); ?></td>
 					<td class="date-paiement"><?php echo $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement); ?></td>
