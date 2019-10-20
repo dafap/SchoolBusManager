@@ -7,11 +7,12 @@
  * @filesource paiement-rectifications.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2019
- * @version 2019-2.5.0
+ * @date 20 oct. 2019
+ * @version 2019-2.5.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/finance', 'paiement-rectifications.css');
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $url_retour = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-liste',
@@ -88,11 +89,11 @@ $data = $this->paginator->getCurrentItems();
 						<?=$this->historique->getDatePaiement();?></td>
 						<td class="date-depot">
 						<?=$this->historique->getDateDepot();?></td>
-						<td class="montant">
+						<td class="montant align-right">
 						<?php if ($modif):?>
 						<?php
-                        $m1 = $this->historique->getMontant();
-                        $m2 = $this->historique->getNewMontant();
+						$m1 = $fmt->formatCurrency($this->historique->getMontant(), 'EUR');
+						$m2 = $fmt->formatCurrency($this->historique->getNewMontant(), 'EUR');
                         ?>
 						    <?php if ($m1 == $m2):?>
 						        <?=$m1;?>

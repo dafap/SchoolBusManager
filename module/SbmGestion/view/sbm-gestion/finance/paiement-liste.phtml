@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 20 oct. 2019
+ * @version 2019-2.5.2
  */
 use SbmBase\Model\DateLib;
 
@@ -269,7 +269,7 @@ if ($this->h2) {
             ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
 					<td class="responsable"><?= $r;?></td>
-					<td class="montant"><?= $m;?></td>
+					<td class="montant align-right"><?= $m;?></td>
 					<td class="caisse"><?= $cs;?></td>
 					<td class="mode-de-paiement"><?= $mp;?></td>
 					<td class="date-paiement"><?= $dp;?></td>
