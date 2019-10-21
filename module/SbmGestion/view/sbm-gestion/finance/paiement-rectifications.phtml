@@ -7,7 +7,7 @@
  * @filesource paiement-rectifications.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 oct. 2019
+ * @date 21 oct. 2019
  * @version 2019-2.4.11
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -19,16 +19,14 @@ $url_retour = $this->url('sbmgestion/finance',
     ]);
 $url_imprimer = $this->url('sbmgestion/finance', 
     [
-        'action' => 'paiement-rectifications-pdf',
-        'page' => $this->page,
-        'id' => $this->id
+        'action' => 'paiement-rectifications-pdf'
     ]);
 $hiddens = [
     'exercice' => $this->exercice
 ];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/finance', [
-        'action' => 'organisme-liste'
+        'action' => 'paiement-rectifications'
     ]), $url_imprimer, 'fam-printer', null, $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
@@ -69,8 +67,7 @@ $data = $this->paginator->getCurrentItems();
 					</tr>
                 <?php foreach ($data as $row) : ?>
                 <?php
-                    $this->historique->setRecord($row);
-                    $modif = $this->historique->getAction() == 'Modif';
+                    $modif = $row['action'] == \SbmCommun\Model\Paiements\Historique\Historique::GET_ACTION_UPDATE;
                     $css = [
                         $this->cycle(
                             [
@@ -82,106 +79,89 @@ $data = $this->paginator->getCurrentItems();
                     ?>
                 <tr class="petit <?=implode(' ',$css);?>">
 						<td class="date">
-						<?=$this->historique->getDate();?></td>
+						<?=$row['date'];?></td>
 						<td class="action">
-						<?=$this->historique->getAction();?></td>
+						<?=$row['action'];?></td>
 						<td class="date-paiement">
-						<?=$this->historique->getDatePaiement();?></td>
+						<?=$row['datePaiement'];?></td>
 						<td class="date-depot">
-						<?=$this->historique->getDateDepot();?></td>
+						<?=$row['dateDepot'];?></td>
 						<td class="montant align-right">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $fmt->formatCurrency($this->historique->getMontant(), 'EUR');
-                        $m2 = $fmt->formatCurrency($this->historique->getNewMontant(), 
-                            'EUR');
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aMontant']) == 1):?>
+						        <?=$fmt->formatCurrency($row['aMontant'][0], 'EUR');?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'>
+						        <?=$fmt->formatCurrency($row['aMontant'][0], 'EUR');?>
+						        </span><br>
+						        <?=$fmt->formatCurrency($row['aMontant'][1], 'EUR');?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getMontant();?></span>
+						    <?=$fmt->formatCurrency($row['aMontant'][0], 'EUR');?>
 						<?php endif;?>
 						</td>
 						<td class="responsable">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $this->historique->getResponsable();
-                        $m2 = $this->historique->getNewResponsable();
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aResponsable']) == 1):?>
+						        <?=$row['aResponsable'][0];?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'><?=$row['aResponsable'][0];?>
+						        </span><br><?=$row['aResponsable'][0];?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getResponsable();?></span>
+						    <?=$row['aResponsable'][0];?>
 						<?php endif;?>
 						</td>
 						<td class="titulaire">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $this->historique->getTitulaire();
-                        $m2 = $this->historique->getNewTitulaire();
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aTitulaire']) == 1):?>
+						        <?=$row['aTitulaire'][0];?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'><?=$row['aTitulaire'][0];?>
+						        </span><br><?=$row['aTitulaire'][1];?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getTitulaire();?></span>
+						    <?=$row['aTitulaire'][0];?>
 						<?php endif;?>
 						</td>
 						<td class="mode-paiement">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $this->historique->getModePaiement();
-                        $m2 = $this->historique->getNewModePaiement();
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aModePaiement']) == 1):?>
+						        <?=$row['aModePaiement'][0];?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'><?=$row['aModePaiement'][0];?>
+						        </span><br><?=$row['aModePaiement'][1];?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getModePaiement();?></span>
+						    <?=$row['aModePaiement'][0];?>
 						<?php endif;?>
 						</td>
 						<td class="caisse">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $this->historique->getCaisse();
-                        $m2 = $this->historique->getNewCaisse();
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aCaisse']) == 1):?>
+						        <?=$row['aCaisse'][0];?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'><?=$row['aCaisse'][0];?>
+						        </span><br><?=$row['aCaisse'][1];?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getCaisse();?></span>
+						    <?=$row['aCaisse'][0];?>
 						<?php endif;?>
 						</td>
 						<td class="banque">
 						<?php if ($modif):?>
-						<?php
-                        $m1 = $this->historique->getBanque();
-                        $m2 = $this->historique->getNewBanque();
-                        ?>
-						    <?php if ($m1 == $m2):?>
-						        <?=$m1;?>
+						    <?php if (count($row['aBanque']) == 1):?>
+						        <?=$row['aBanque'][0];?>
 						    <?php else :?>
-						        <?="<span class='modif'>$m1</span><br>$m2";?>
+						        <span class='modif'><?=$row['aBanque'][0];?>
+						        </span><br><?=$row['aBanque'][1];?>
 						    <?php endif;?>
 						<?php else :?>
-						    <?=$this->historique->getBanque();?></span>
+						    <?=$row['aBanque'][0];?>
 						<?php endif;?>
 						</td>
 						<td class="note">
-						<?=$this->historique->getNote();?></td>
+						<?=$row['note'];?></td>
 					</tr>
                 <?php endforeach; ?>
             </tbody>

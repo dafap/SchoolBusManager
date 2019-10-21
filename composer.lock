@@ -382,22 +382,22 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.8.1",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "1927e75f4ed19131ec9bcc3b002e07fb1173ee76"
+                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/1927e75f4ed19131ec9bcc3b002e07fb1173ee76",
-                "reference": "1927e75f4ed19131ec9bcc3b002e07fb1173ee76",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/f6811d96d97bdf400077a0cc100ae56aa32b9203",
+                "reference": "f6811d96d97bdf400077a0cc100ae56aa32b9203",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
-                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
+                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0|^5.0",
                 "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
@@ -441,7 +441,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2019-06-13T12:50:23+00:00"
+            "time": "2019-10-03T11:07:50+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1698,16 +1698,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "5a0b7c32dc3ec56fd4abae8a4a71b0cf05013686"
+                "reference": "41e16350a2a1c7383c4735aa2f9fce74cf3d1178"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/5a0b7c32dc3ec56fd4abae8a4a71b0cf05013686",
-                "reference": "5a0b7c32dc3ec56fd4abae8a4a71b0cf05013686",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/41e16350a2a1c7383c4735aa2f9fce74cf3d1178",
+                "reference": "41e16350a2a1c7383c4735aa2f9fce74cf3d1178",
                 "shasum": ""
             },
             "require": {
@@ -1753,20 +1753,20 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-08-20T14:27:59+00:00"
+            "time": "2019-09-11T15:41:19+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.2.26",
+            "version": "6.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "367241059ca166e3a76490f4448c284e0a161f15"
+                "reference": "9fde7bb9b404b945e7ea88fb7eccd23d9a4e324b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/367241059ca166e3a76490f4448c284e0a161f15",
-                "reference": "367241059ca166e3a76490f4448c284e0a161f15",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/9fde7bb9b404b945e7ea88fb7eccd23d9a4e324b",
+                "reference": "9fde7bb9b404b945e7ea88fb7eccd23d9a4e324b",
                 "shasum": ""
             },
             "require": {
@@ -1815,7 +1815,7 @@
                 "pdf417",
                 "qrcode"
             ],
-            "time": "2018-10-16T17:24:05+00:00"
+            "time": "2019-09-20T09:35:01+00:00"
         },
         {
             "name": "true/punycode",
@@ -2010,17 +2010,17 @@
         },
         {
             "name": "zendframework/zend-barcode",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-barcode.git",
-                "reference": "9f4e92a3e82d3089a38adc04ade7b22a84880b37"
+                "reference": "b6d1a516ead2c052df41a653ccce39ca8db8cdd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-barcode-2.7.0-fdfb9a.zip",
-                "reference": "9f4e92a3e82d3089a38adc04ade7b22a84880b37",
-                "shasum": "1675180f5c727c41fdd11bf8209e539e696b6825"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-barcode-2.7.1-346f24.zip",
+                "reference": "b6d1a516ead2c052df41a653ccce39ca8db8cdd3",
+                "shasum": "7347e639b6f71aaca1141839da8cf032c8a866a3"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -2070,15 +2070,12 @@
                 ],
                 "test-coverage": [
                     "phpunit --colors=always --coverage-clover clover.xml"
-                ],
-                "upload-coverage": [
-                    "coveralls -v"
                 ]
             },
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "provides a generic way to generate barcodes",
+            "description": "Programmatically create and render barcodes as images or in PDFs",
             "keywords": [
                 "barcode",
                 "zendframework",
@@ -2089,10 +2086,10 @@
                 "issues": "https://github.com/zendframework/zend-barcode/issues",
                 "source": "https://github.com/zendframework/zend-barcode",
                 "rss": "https://github.com/zendframework/zend-barcode/releases.atom",
-                "slack": "https://zendframework-slack.herokuapp.com",
+                "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2017-12-11T15:30:02+00:00"
+            "time": "2019-09-21T09:11:41+00:00"
         },
         {
             "name": "zendframework/zend-cache",
@@ -3611,24 +3608,24 @@
         },
         {
             "name": "zendframework/zend-i18n",
-            "version": "2.9.0",
+            "version": "2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-i18n.git",
-                "reference": "40842406572e10a341fc102919b242499110176f"
+                "reference": "88e7f895c8d61a96948da63456f99ce362ed702c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-i18n-2.9.0-210a62.zip",
-                "reference": "40842406572e10a341fc102919b242499110176f",
-                "shasum": "016e405fcd02622dedd85d13d90e6be92910c04e"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-i18n-2.9.2-e0f74f.zip",
+                "reference": "88e7f895c8d61a96948da63456f99ce362ed702c",
+                "shasum": "d3133d34f470c0dbe4ae02562a7625d8a5610635"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
                 "zendframework/zend-stdlib": "^2.7 || ^3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2",
+                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.16",
                 "zendframework/zend-cache": "^2.6.1",
                 "zendframework/zend-coding-standard": "~1.0.0",
                 "zendframework/zend-config": "^2.6",
@@ -3705,7 +3702,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2018-05-16T16:39:13+00:00"
+            "time": "2019-09-30T12:04:37+00:00"
         },
         {
             "name": "zendframework/zend-i18n-resources",
@@ -5340,17 +5337,17 @@
         },
         {
             "name": "zendframework/zend-session",
-            "version": "2.8.6",
+            "version": "2.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-session.git",
-                "reference": "c214f31ee818eb5dd6ccfd279ca206076c822950"
+                "reference": "52b3bc621469f27a23056acc184acdc6f24f34f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-session-2.8.6-639ce9.zip",
-                "reference": "c214f31ee818eb5dd6ccfd279ca206076c822950",
-                "shasum": "40bd006bccc266c1acccf43c28210a4a6f1469f1"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-session-2.8.7-d45519.zip",
+                "reference": "52b3bc621469f27a23056acc184acdc6f24f34f8",
+                "shasum": "5af17604f038dcab0ceea7f8cb442036b5c670bf"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -5436,7 +5433,7 @@
                 "slack": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2019-08-11T19:14:12+00:00"
+            "time": "2019-09-19T19:50:12+00:00"
         },
         {
             "name": "zendframework/zend-soap",
@@ -5813,17 +5810,17 @@
         },
         {
             "name": "zendframework/zend-uri",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-uri.git",
-                "reference": "13e7a22baa2f985a6b05cd65cea2b7d11fb2db5d"
+                "reference": "b01ac33e2038af9340c6cbcda483ecb3427a10be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-uri-2.7.0-134919.zip",
-                "reference": "13e7a22baa2f985a6b05cd65cea2b7d11fb2db5d",
-                "shasum": "8c495b282ceed95dcfdaf4505cf371969192254d"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-uri-2.7.1-bc815f.zip",
+                "reference": "b01ac33e2038af9340c6cbcda483ecb3427a10be",
+                "shasum": "23f16abd1f06d08b8c71f98156ba585fe42099c0"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -5886,7 +5883,7 @@
                 "chat": "https://zendframework-slack.herokuapp.com",
                 "forum": "https://discourse.zendframework.com/c/questions/components"
             },
-            "time": "2019-02-27T21:39:04+00:00"
+            "time": "2019-10-07T13:35:33+00:00"
         },
         {
             "name": "zendframework/zend-validator",
@@ -6040,17 +6037,17 @@
         },
         {
             "name": "zendframework/zend-view",
-            "version": "2.11.2",
+            "version": "2.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-view.git",
-                "reference": "1b29960ddf3368424839211ce247976b6d08a5ab"
+                "reference": "289fa6f8cabc0d6bd02a579048524c2140a93cbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zend-view-2.11.2-a1af08.zip",
-                "reference": "1b29960ddf3368424839211ce247976b6d08a5ab",
-                "shasum": "92896be0c86a739d0b1a6433549b206172d1face"
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-view-2.11.3-037bf8.zip",
+                "reference": "289fa6f8cabc0d6bd02a579048524c2140a93cbe",
+                "shasum": "84222f47632e5defcc1e5fa3104669f6669ea6c9"
             },
             "require": {
                 "php": "^5.6 || ^7.0",
@@ -6142,13 +6139,21 @@
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "provides a system of helpers, output filters, and variable escaping",
-            "homepage": "https://github.com/zendframework/zend-view",
+            "description": "Flexible view layer supporting and providing multiple view layers, helpers, and more",
             "keywords": [
                 "view",
-                "zf2"
+                "zendframework",
+                "zf"
             ],
-            "time": "2019-02-19T17:40:15+00:00"
+            "support": {
+                "docs": "https://docs.zendframework.com/zend-view/",
+                "issues": "https://github.com/zendframework/zend-view/issues",
+                "source": "https://github.com/zendframework/zend-view",
+                "rss": "https://github.com/zendframework/zend-view/releases.atom",
+                "chat": "https://zendframework-slack.herokuapp.com",
+                "forum": "https://discourse.zendframework.com/c/questions/components"
+            },
+            "time": "2019-10-11T21:10:04+00:00"
         },
         {
             "name": "zendframework/zend-xmlrpc",

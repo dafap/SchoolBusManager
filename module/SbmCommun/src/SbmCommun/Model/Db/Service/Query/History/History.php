@@ -9,8 +9,8 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
- * @version 2019-2.4.9
+ * @date 21 oct. 2019
+ * @version 2019-2.4.11
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
@@ -107,7 +107,9 @@ class History implements FactoryInterface
 
     public function getPaiementsChanges(int $exercice, int $paiementId = null)
     {
-        return $this->renderResult($this->selectPaiementsChanges($exercice, $paiementId));
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectPaiementsChanges($exercice, $paiementId));
+        return $statement->execute();
     }
 
     public function paginatorPaiementsChanges(int $exercice, int $paiementId = null)
