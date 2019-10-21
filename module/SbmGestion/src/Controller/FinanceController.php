@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
- * @version 2019-2.5.0
+ * @date 21 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmGestion\Controller;
 
@@ -23,6 +23,8 @@ use SbmGestion\Form\Finances;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\ArrayAdapter;
 
 class FinanceController extends AbstractActionController
 {
@@ -578,6 +580,104 @@ class FinanceController extends AbstractActionController
             ]);
     }
 
+    private function paiementRectificationData(
+        \SbmCommun\Model\Paiements\Historique\Historique $historique, int $exercice)
+    {
+        $data = [];
+        foreach ($this->db_manager->get('Sbm\Db\Query\History')->getPaiementsChanges(
+            $exercice) as $row) {
+            $historique->setRecord($row);
+            $modif = $historique->getAction() == $historique::GET_ACTION_UPDATE;
+            if ($modif) {
+                // filtrage des données utiles
+                $detail = $historique->updateDetail();
+                unset($detail['codeCaisse']);
+                if (empty($detail)) {
+                    continue;
+                }
+            }
+            $aMontant = [];
+            $aResponsable = [];
+            $aTitulaire = [];
+            $aModePaiement = [];
+            $aCaisse = [];
+            $aBanque = [];
+            if ($modif) {
+                // update
+                $item1 = $historique->getMontant();
+                $item2 = $historique->getNewMontant();
+                if ($item1 == $item2) {
+                    $aMontant[] = $item1;
+                } else {
+                    $aMontant[] = $item1;
+                    $aMontant[] = $item2;
+                }
+                $item1 = $historique->getResponsable();
+                $item2 = $historique->getNewResponsable();
+                if ($item1 == $item2) {
+                    $aResponsable[] = $item1;
+                } else {
+                    $aResponsable[] = $item1;
+                    $aResponsable[] = $item2;
+                }
+                $item1 = $historique->getTitulaire();
+                $item2 = $historique->getNewTitulaire();
+                if ($item1 == $item2) {
+                    $aTitulaire[] = $item1;
+                } else {
+                    $aTitulaire[] = $item1;
+                    $aTitulaire[] = $item2;
+                }
+                $item1 = $historique->getModePaiement();
+                $item2 = $historique->getNewModePaiement();
+                if ($item1 == $item2) {
+                    $aModePaiement[] = $item1;
+                } else {
+                    $aModePaiement[] = $item1;
+                    $aModePaiement[] = $item2;
+                }
+                $item1 = $historique->getCaisse();
+                $item2 = $historique->getNewCaisse();
+                if ($item1 == $item2) {
+                    $aCaisse[] = $item1;
+                } else {
+                    $aCaisse[] = $item1;
+                    $aCaisse[] = $item2;
+                }
+                $item1 = $historique->getBanque();
+                $item2 = $historique->getNewBanque();
+                if ($item1 == $item2) {
+                    $aBanque[] = $item1;
+                } else {
+                    $aBanque[] = $item1;
+                    $aBanque[] = $item2;
+                }
+            } else {
+                // delete
+                $aMontant[] = $historique->getMontant();
+                $aResponsable[] = $historique->getResponsable();
+                $aTitulaire[] = $historique->getTitulaire();
+                $aModePaiement[] = $historique->getModePaiement();
+                $aCaisse[] = $historique->getCaisse();
+                $aBanque[] = $historique->getBanque();
+            }
+            $data[] = [
+                'date' => $historique->getDate(),
+                'action' => $historique->getAction(),
+                'datePaiement' => $historique->getDatePaiement(),
+                'dateDepot' => $historique->getDateDepot(),
+                'aMontant' => $aMontant,
+                'aResponsable' => $aResponsable,
+                'aTitulaire' => $aTitulaire,
+                'aModePaiement' => $aModePaiement,
+                'aCaisse' => $aCaisse,
+                'aBanque' => $aBanque,
+                'note' => $historique->getNote()
+            ];
+        }
+        return $data;
+    }
+
     public function paiementRectificationsAction()
     {
         $prg = $this->prg();
@@ -598,14 +698,17 @@ class FinanceController extends AbstractActionController
         $form->setData((array) $prg);
         $exercice = null;
         if (array_key_exists('rectifications', (array) $prg)) {
-            Session::remove('exercice', $this->getSessionNamespace());
+            Session::remove('exercice',
+                $this->getSessionNamespace('paiement-rectifications'));
         } else {
-            $exercice = Session::get('exercice', null, $this->getSessionNamespace());
+            $exercice = Session::get('exercice', null,
+                $this->getSessionNamespace('paiement-rectifications'));
             if (! $exercice) {
                 $form->setData((array) $prg);
                 if ($form->isValid()) {
                     $exercice = $form->getData()['exercice'];
-                    Session::set('exercice', $exercice, $this->getSessionNamespace());
+                    Session::set('exercice', $exercice,
+                        $this->getSessionNamespace('paiement-rectifications'));
                 }
             }
         }
@@ -626,7 +729,6 @@ class FinanceController extends AbstractActionController
         }
         $currentPage = $this->params('page', 1);
         $originePage = $this->params('id', 1);
-        $query = $this->db_manager->get('Sbm\Db\Query\History');
         $historique = new \SbmCommun\Model\Paiements\Historique\Historique();
         $historique->setTResponsables($this->db_manager->get('Sbm\Db\Table\Responsables'));
         $historique->setCaisses(
@@ -635,16 +737,65 @@ class FinanceController extends AbstractActionController
         $historique->setModesDePaiement(
             $this->db_manager->get('Sbm\Db\Select\Libelles')
                 ->modeDepaiement());
+
         return new ViewModel(
             [
                 'exercice' => $exercice,
                 'page' => $currentPage,
                 'id' => $originePage,
-                'paginator' => $query->paginatorPaiementsChanges($exercice),
+                'paginator' => new Paginator(
+                    new ArrayAdapter(
+                        $this->paiementRectificationData($historique, $exercice))),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_rectifications',
                     15),
                 'historique' => $historique
             ]);
+    }
+
+    /**
+     *
+     * @todo Finir la mise au point de cette action (26 juillet 2019)
+     */
+    public function paiementRectificationsPdfAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } else {
+            $args = $prg ?: [];
+            if (! array_key_exists('documentId', $args)) {
+                $this->flashMessenger()->addErrorMessage(
+                    'Le document à imprimer n\'a pas été indiqué.');
+                return $this->redirect()->toRoute('sbmgestion/finance',
+                    [
+                        'action' => 'paiement-rectifications',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+            $documentId = $args['documentId'];
+        }
+        $exercice = Session::get('exercice', null,
+            $this->getSessionNamespace('paiement-rectifications'));
+        if (! $exercice) {
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-rectifications',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $historique = new \SbmCommun\Model\Paiements\Historique\Historique();
+        $historique->setTResponsables($this->db_manager->get('Sbm\Db\Table\Responsables'));
+        $historique->setCaisses(
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse());
+        $historique->setModesDePaiement(
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->modeDepaiement());
+
+        $this->RenderPdfService->setParam('documentId', $documentId)
+            ->setParam('docaffectationId', $this->params('id', 0))
+            ->setData($this->paiementRectificationData($historique, $exercice))
+            ->renderPdf();
     }
 
     public function paiementDepotAction()

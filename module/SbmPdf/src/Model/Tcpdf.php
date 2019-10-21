@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juil. 2019
- * @version 2019-2.5.1
+ * @date 21 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmPdf\Model;
 
@@ -267,7 +267,7 @@ class Tcpdf extends \TCPDF
      *
      * @param string|array $sections
      *            document, doctable, docfields, doccells ou [doctable, thead | tbody |
-     *            tfoot)
+     *            tfoot]
      * @param string $key
      *            clé de la valeur recherchée
      * @param mixed $default
@@ -350,10 +350,9 @@ class Tcpdf extends \TCPDF
 
     /**
      * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le
-     * script après un envoi inline ($dest = I ou FI)
-     * ATTENTION !!! la méthode Close() appelle la méthode _destroy() qui supprime les
-     * propriétés non préservées. Il faut donc préserver les propriétés de $params qui
-     * sont nécessaire pour la fin du script.
+     * script après un envoi inline ($dest = I ou FI) ATTENTION !!! la méthode Close()
+     * appelle la méthode _destroy() qui supprime les propriétés non préservées. Il faut
+     * donc préserver les propriétés de $params qui sont nécessaire pour la fin du script.
      *
      * {@inheritdoc}
      * @see TCPDF::Output()
@@ -943,7 +942,8 @@ class Tcpdf extends \TCPDF
      *
      * @see TCPDF::AddPage()
      */
-    public function AddPage($orientation = '', $format = '', $keepmargins = false, $tocpage = false)
+    public function AddPage($orientation = '', $format = '', $keepmargins = false,
+        $tocpage = false)
     {
         if ($this->inxobj) {
             // we are inside an XObject template
@@ -1467,15 +1467,14 @@ class Tcpdf extends \TCPDF
          * Identifiant du template
          */
         if (is_string($param) && $param == '?') {
-            return 'Document contenant un tableau de données';
+            return 'Document contenant un tableau de données passé par une table ou une requête';
         }
 
         /**
          * Initialisations et calculs
          */
         // lecture de la table 'doctables' pour obtenir $this->config['doctable'] =
-        // ['thead' =>
-        // ..., 'tbody' => ..., 'tfoot' => ..., 'columns' => ...)
+        // ['thead' => ..., 'tbody' => ..., 'tfoot' => ..., 'columns' => ...)
         $this->initConfigDoctable();
 
         // initialise les données
@@ -2863,5 +2862,192 @@ class Tcpdf extends \TCPDF
             $this->writeHTML($codeHtml, true, false, false, false, '');
             $saut_de_page = true;
         }
+    }
+
+    // =======================================================================================================
+    // Modèle particulier pour données passées par getData()
+    // Dérive de templateDocBodyMethod1 car utilise les méthodes
+    // templateDocBodyMethod1Thead() et templateDocBodyMethod1Tfoot()
+    //
+    public function templateDocBodyMethod8($param = null)
+    {
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Document contenant un tableau de données passé par la procédure appelante';
+        }
+        // initialisation de la table
+        $this->initConfigDoctable();
+        // initialisation des données
+        $tmp = $this->getData();
+        // die(var_dump($tmp));
+        $this->data = [];
+        $this->data[1] = $tmp;
+        unset($tmp);
+        $this->data['count'][1] = count($this->getData());
+        $this->data['index'][1] = [
+            'previous' => 0,
+            'current' => 0
+        ];
+        $this->data['calculs'][1] = [];
+        $this->sbm_columns = $this->getConfig('doctable', 'columns', []);
+        // prend en compte le titre de la colonne pour la largeur à prévoir
+        if ($this->getConfig([
+            'doctable',
+            'thead'
+        ], 'visible', false)) {
+            $this->configGraphicSectionTable('thead');
+            foreach ($this->sbm_columns as &$column) {
+                // vérifie si la largeur est suffisante pour écrire le titre
+                $value_width = $this->GetStringWidth($column['thead'],
+                    $this->getConfig('document', 'data_font_family', PDF_FONT_NAME_DATA),
+                    trim($this->getConfig([
+                        'doctable',
+                        'thead'
+                    ], 'font_style', '')),
+                    $this->getConfig('document', 'data_font_size', PDF_FONT_SIZE_DATA));
+                $value_width += $this->cell_padding['L'] + $this->cell_padding['R'];
+                foreach ($this->data[1] as $row) {
+                    $values = (array) $row[$column['tbody']];
+                    foreach ($values as $v) {
+                        $vw = $this->GetStringWidth($v,
+                            $this->getConfig('document', 'data_font_family',
+                                PDF_FONT_NAME_DATA),
+                            trim(
+                                $this->getConfig([
+                                    'doctable',
+                                    'tbody'
+                                ], 'font_style', '')),
+                            $this->getConfig('document', 'data_font_size',
+                                PDF_FONT_SIZE_DATA)) + $this->cell_padding['L'] +
+                            $this->cell_padding['R'];
+                        if ($vw > $value_width) {
+                            $value_width = $vw;
+                        }
+                    }
+                }
+                if ($value_width > $column['width']) {
+                    $column['width'] = $value_width;
+                }
+                unset($column);
+            }
+        }
+        // largeur de la zone d'écriture
+        $pagedim = $this->getPageDimensions();
+        $max_width = $pagedim['wk'] - $pagedim['lm'] - $pagedim['rm'];
+        $sum_width = 0;
+        foreach ($this->sbm_columns as $column) {
+            $sum_width += $column['width'];
+        }
+        if (($table_width = $this->getConfig([
+            'doctable',
+            'tbody'
+        ], 'width', 'auto')) == 'auto') {
+            $ratio = $sum_width > $max_width ? $max_width / $sum_width : 1;
+        } else {
+            $ratio = $max_width * $table_width / 100 / $sum_width;
+        }
+        // largeur des colonnes
+        foreach ($this->sbm_columns as &$column) {
+            if ($ratio < 1) {
+                $column['thead_stretch'] = 1;
+                $column['tbody_stretch'] = 1;
+            }
+            $column['width'] *= $ratio;
+            unset($column);
+        }
+        /**
+         * Ecriture du document
+         */
+        // thead
+        $this->templateDocBodyMethod1Thead();
+        // tbody
+        if ($this->getConfig([
+            'doctable',
+            'tbody'
+        ], 'visible', false)) {
+            $this->configGraphicSectionTable('tbody');
+            $columns = $this->sbm_columns;
+            $fill = 0;
+            // index des sauts de page
+            $idx_nl = $idx_page = [];
+            for ($i = 0; $i < count($columns); $i ++) {
+                if ($columns[$i]['nl']) {
+                    $idx_nl[] = $i;
+                }
+                $idx_page[$i] = null;
+                $this->data['index'][1]['nl']['debut'] = 0;
+            }
+            foreach ($this->data[1] as $row) {
+                $row = array_values($row);
+                // saut de page pour un changement de valeur d'une colonne
+                $nl = false;
+                foreach ($idx_nl as $i) {
+                    if (! empty($idx_page[$i]) && $idx_page[$i] != $row[$i]) {
+                        $nl = true;
+                        $idx_page[$i] = $row[$i];
+                        break;
+                    }
+                    $idx_page[$i] = $row[$i];
+                }
+                if ($nl) {
+                    $this->templateDocBodyMethod1Tfoot(
+                        $this->data['index'][1]['nl']['debut'],
+                        $this->data['index'][1]['current'] - 1);
+                    $this->data['index'][1]['nl']['debut'] = $this->data['index'][1]['current'];
+                    $this->AddPage();
+                    $this->configGraphicSectionTable('thead');
+                    $this->templateDocBodyMethod1Thead();
+                    $this->configGraphicSectionTable('tbody');
+                }
+                // tbody
+                for ($j = 0; $j < count($row); $j ++) {
+                    $value = implode("\n", (array) $row[$j]);
+                    if (is_numeric($row[$j])) {
+                        $align = $columns[$j]['tbody_align'] == 'standard' ? 'R' : $columns[$j]['tbody_align'];
+                    } else {
+                        $align = $columns[$j]['tbody_align'] == 'standard' ? 'L' : $columns[$j]['tbody_align'];
+                    }
+                    /*
+                     * $this->Cell($columns[$j]['width'], $this->getConfig([ 'doctable',
+                     * 'tbody' ], 'row_height'), StdLib::formatData($value,
+                     * $columns[$j]['tbody_precision'], $columns[$j]['tbody_completion']),
+                     * $this->getConfig([ 'doctable', 'tbody' ], 'cell_border'), 0,
+                     * $align, $fill, $this->getConfig([ 'doctable', 'tbody' ],
+                     * 'cell_link'), $columns[$j]['tbody_stretch'], $this->getConfig([
+                     * 'doctable', 'tbody' ], 'cell_ignore_min_height'),
+                     * $this->getConfig([ 'doctable', 'tbody' ], 'cell_calign'),
+                     * $this->getConfig([ 'doctable', 'tbody' ], 'cell_valign'));
+                     */
+
+                    $this->MultiCell($columns[$j]['width'],
+                        $this->getConfig([
+                            'doctable',
+                            'tbody'
+                        ], 'row_height'),
+                        StdLib::formatData($value, $columns[$j]['tbody_precision'],
+                            $columns[$j]['tbody_completion']),
+                        $this->getConfig([
+                            'doctable',
+                            'tbody'
+                        ], 'cell_border'), $align, $fill, 0, '', '', true,
+                        $columns[$j]['tbody_stretch'], false, true, 0,
+                        $this->getConfig([
+                            'doctable',
+                            'tbody'
+                        ], 'cell_valign'), true);
+                }
+                $this->data['index'][1]['current'] ++; // il faut mettre cette ligne après
+                                                       // l'appel de Cell()
+                $this->Ln();
+                $fill = ! $fill;
+            }
+        }
+
+        // tfoot
+        $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut']);
+
+        $this->Cell($sum_width * $ratio, 0, '', 'T');
     }
 }

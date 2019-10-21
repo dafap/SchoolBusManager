@@ -7,8 +7,8 @@
  * @filesource Historique.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
- * @version 2019-2.5.0
+ * @date 21 oct. 2019
+ * @version 2019-2.5.2
  */
 namespace SbmCommun\Model\Paiements\Historique;
 
@@ -60,6 +60,12 @@ class Historique
     const ACTION_INSERT = 'insert';
 
     const ACTION_UPDATE = 'update';
+
+    const GET_ACTION_DELETE = 'Suppr';
+
+    const GET_ACTION_INSERT = 'Ajout';
+
+    const GET_ACTION_UPDATE = 'Modif';
 
     /**
      *
@@ -137,9 +143,9 @@ class Historique
     private function translateAction(string $action)
     {
         return [
-            'delete' => 'Suppr',
-            'insert' => 'Ajout',
-            'update' => 'Modif'
+            'delete' => self::GET_ACTION_DELETE, // 'Suppr',
+            'insert' => self::GET_ACTION_INSERT, // 'Ajout',
+            'update' => self::GET_ACTION_UPDATE // 'Modif'
         ][$action];
     }
 
@@ -338,7 +344,7 @@ class Historique
         $detail = [];
         if ($this->action == self::ACTION_UPDATE) {
             if ($this->getMontant() != $this->getNewMontant()) {
-                $detail['action'] = [
+                $detail['montant'] = [
                     'libelle' => 'Montant modifié',
                     'ancien' => $this->getMontant(),
                     'nouveau' => $this->getNewMontant()
