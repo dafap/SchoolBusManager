@@ -10,8 +10,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -186,7 +186,8 @@ class Liste extends AbstractQuery implements FactoryInterface
             'inscrit',
             'paiement',
             'fa',
-            'gratuit'
+            'gratuit',
+            'dateCarte'
         ])
             ->join(
             [
@@ -275,7 +276,8 @@ class Liste extends AbstractQuery implements FactoryInterface
             'inscrit',
             'paiement',
             'fa',
-            'gratuit'
+            'gratuit',
+            'dateCarte'
         ])
             ->join(
             [

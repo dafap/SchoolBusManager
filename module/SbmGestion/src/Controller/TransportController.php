@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2019
- * @version 2019-2.5.0
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Controller;
 
@@ -60,7 +60,8 @@ class TransportController extends AbstractActionController
                     $config['db_manager']->get('Sbm\Db\Select\Stations')
                         ->ouvertes());
                 $form->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services')->tout());
+                    $config['db_manager']->get('Sbm\Db\Select\Services')
+                        ->tout());
             }, [
                 'serviceId',
                 'stationId'
@@ -106,7 +107,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
@@ -255,7 +257,8 @@ class TransportController extends AbstractActionController
         // $horaires = $this->db_manager->get('Sbm\Horaires');
         $form = $this->form_manager->get(Form\Circuit::class);
         $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes())
@@ -455,7 +458,9 @@ class TransportController extends AbstractActionController
                 'circuit' => $circuit,
                 'page' => $currentPage,
                 'pageRetour' => $this->params('id', 1),
-                'circuitId' => $circuitId
+                'circuitId' => $circuitId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -912,7 +917,9 @@ class TransportController extends AbstractActionController
                     $classeId),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'classeId' => $classeId
+                'classeId' => $classeId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -1220,7 +1227,9 @@ class TransportController extends AbstractActionController
                     $communeId),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'communeId' => $communeId
+                'communeId' => $communeId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -1572,7 +1581,9 @@ class TransportController extends AbstractActionController
                     $etablissementId),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'etablissementId' => $etablissementId
+                'etablissementId' => $etablissementId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -1990,10 +2001,9 @@ class TransportController extends AbstractActionController
 
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
                     $serviceId),
-                'data' => $table->fetchAll(
-                    [
-                        'serviceId' => $serviceId
-                    ]),
+                'data' => $table->fetchAll([
+                    'serviceId' => $serviceId
+                ]),
                 'effectifServicesEtablissements' => $effectifServicesEtablissements,
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
@@ -2046,7 +2056,8 @@ class TransportController extends AbstractActionController
             $etablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                 $etablissementId);
             $form->setValueOptions('serviceId',
-                $this->db_manager->get('Sbm\Db\Select\Services')->tout());
+                $this->db_manager->get('Sbm\Db\Select\Services')
+                    ->tout());
         } else {
             $etablissement = null;
             $service = $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
@@ -2235,7 +2246,9 @@ class TransportController extends AbstractActionController
                 'pageRetour' => $pageRetour,
                 'etablissementId' => $etablissementId,
                 'serviceId' => $serviceId,
-                'origine' => StdLib::getParam('origine', $args, 'etablissement-service')
+                'origine' => StdLib::getParam('origine', $args, 'etablissement-service'),
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
         return $viewModel;
     }
@@ -2496,7 +2509,9 @@ class TransportController extends AbstractActionController
                 'lot' => $this->db_manager->get('Sbm\Db\Vue\Lots')->getRecord($lotId),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'lotId' => $lotId
+                'lotId' => $lotId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
         ;
     }
@@ -2626,7 +2641,8 @@ class TransportController extends AbstractActionController
                 $form->setValueOptions('transporteurId',
                     $config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
                     ->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services')->tout());
+                    $config['db_manager']->get('Sbm\Db\Select\Services')
+                        ->tout());
             }, [
                 'transporteurId'
             ]);
@@ -2904,7 +2920,9 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'serviceId' => $serviceId,
-                'origine' => StdLib::getParam('origine', $args, 'service-liste')
+                'origine' => StdLib::getParam('origine', $args, 'service-liste'),
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -3430,7 +3448,9 @@ class TransportController extends AbstractActionController
                     $stationId),
                 'page' => $currentPage,
                 'stationId' => $stationId,
-                'origine' => StdLib::getParam('origine', $args)
+                'origine' => StdLib::getParam('origine', $args),
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -3535,7 +3555,9 @@ class TransportController extends AbstractActionController
                 'circuit' => $circuit,
                 'page' => $currentPage,
                 'circuitId' => $circuit->circuitId,
-                'origine' => StdLib::getParam('origine', $args, 'station-service')
+                'origine' => StdLib::getParam('origine', $args, 'station-service'),
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
         $view->setTemplate('sbm-gestion/transport/circuit-group.phtml');
         return $view;
@@ -4097,7 +4119,9 @@ class TransportController extends AbstractActionController
                     $transporteurId),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'transporteurId' => $transporteurId
+                'transporteurId' => $transporteurId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -4242,5 +4266,225 @@ class TransportController extends AbstractActionController
             $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
         }
         return $result;
+    }
+
+    /**
+     * ============================= ZONAGE ============================
+     */
+    public function zonageListeAction()
+    {
+        $args = $this->initListe('zonage');
+        if ($args instanceof Response) {
+            return $args;
+        }
+        return new ViewModel(
+            [
+
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Zonage')->paginator(
+                    $args['where']),
+                'communes' => $this->db_manager->get('Sbm\Db\Select\Communes')->desservies(),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_zonage', 15),
+                'criteres_form' => $args['form']
+            ]);
+    }
+
+    public function zonageAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Zonage::class);
+        $form->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies());
+        $params = [
+            'data' => [
+                'table' => 'zonage',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Zonage'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($this->db_manager, $params);
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => 'zonage-liste',
+                        'page' => $currentPage
+                    ]);
+                break;
+            default:
+                return new ViewModel([
+                    'form' => $form->prepare(),
+                    'zonageId' => null
+                ]);
+                break;
+        }
+    }
+
+    public function zonageEditAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Zonage::class);
+        $form->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies());
+        $params = [
+            'data' => [
+                'table' => 'zonage',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Zonage',
+                'id' => 'zonageId'
+            ],
+            'form' => $form
+        ];
+
+        $r = $this->editData($this->db_manager, $params);
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'zonage-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'zonageId' => $r->getResult()
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function zonageSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new Form\ButtonForm([
+            'id' => null
+        ],
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\Zonage',
+                'id' => 'zonageId'
+            ],
+            'form' => $form
+        ];
+        $tablecommunes = $this->db_manager->get('Sbm\Db\Table\Communes');
+        try {
+            $r = $this->supprData($this->db_manager, $params,
+                function ($id, $tablezonage) use ($tablecommunes) {
+                    $data = $tablezonage->getRecord($id);
+                    $commune = $tablecommunes->getRecord($data->communeId);
+                    $adata = $data->getArrayCopy();
+                    $adata['commune'] = $commune->nom;
+                    return [
+                        'id' => $id,
+                        'data' => (object) $adata
+                    ];
+                });
+        } catch (\Exception $e) {
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer cet endroit car il a des données rattachées.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'zonage-liste',
+                    'page' => $currentPage
+                ]);
+        }
+
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'zonage-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'zonageId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function zonagePdfAction()
+    {
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'zonage'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'zonage-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function zonageGroupAction()
+    {
+        ;
+    }
+
+    public function zonageGroupPdfAction()
+    {
+        ;
+    }
+
+    public function zonagePeuplementAction()
+    {
+        $sql = new \Zend\Db\Sql\Sql($this->db_manager->getDbAdapter());
+        $select = $sql->select('millau_adresses');
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
+        $nb = 0;
+        foreach ($result as $value) {
+            $value['communeId'] = '12145';
+            $odata = $tzonage->getObjData();
+            $odata->exchangeArray($value);
+            $tzonage->saveRecord($odata);
+            $nb++;
+        }
+        $msg = sprintf('Nombre de lieux ajoutés : %d',$nb);
+        $this->flashMessenger()->addInfoMessage($msg);
+        return $this->redirect()->toRoute('sbmgestion/transport', ['action'=>'zonage-liste']);
     }
 }

@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Controller;
 
@@ -120,7 +120,9 @@ class EleveController extends AbstractActionController
                     ]),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
-                'criteres_form' => $criteres_form
+                'criteres_form' => $criteres_form,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 
@@ -1868,7 +1870,9 @@ class EleveController extends AbstractActionController
                 'responsable' => $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
                     $responsableId),
                 'page' => $currentPage,
-                'responsableId' => $responsableId
+                'responsableId' => $responsableId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
             ]);
     }
 

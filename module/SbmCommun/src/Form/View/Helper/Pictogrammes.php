@@ -15,8 +15,8 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 août 2019
- * @version 2019-2.5.1
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -105,5 +105,14 @@ class Pictogrammes extends AbstractHelper
         if ($enAttente) {
             $this->pictogrammes[] = '<i class="fam-cross" title="En attente"';
         }
+        return $this;
+    }
+
+    public function addSansCarte($sansCarte)
+    {
+        if ($sansCarte) {
+            $this->pictogrammes[] = '<i class="fam-vcard-delete" title="Carte non tirée"';
+        }
+        return $this;
     }
 }

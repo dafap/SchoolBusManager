@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 août 2019
- * @version 2019-2.5.1
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\Session;
 
@@ -229,9 +229,11 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                 $this->pictogrammes('init')
                     ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
                     ->addSansPhoto($row['sansphoto'])
-                    ->addEnAttente($row['enAttente']);
+                    ->addEnAttente($row['enAttente'])
+                    ->addSansCarte($row['dateCarte'] < $this->dateDebut);
                 if ($row['enAttente']) {
-                    unset($buttons['majNotification'], $buttons['addphoto'], $buttons['duplicata']);
+                    unset($buttons['majNotification'], $buttons['addphoto'],
+                        $buttons['duplicata']);
                     $buttons['modifier'] = [
                         'class' => 'fam-pencil-add',
                         'formaction' => $url_reprendre,

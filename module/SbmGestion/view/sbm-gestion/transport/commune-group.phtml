@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/commune-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2019
- * @version 2019-2.5.0
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport',
@@ -121,7 +121,8 @@ $data = $this->paginator->getCurrentItems();
 				<?php
     $this->pictogrammes('init')
         ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
-        ->addSansPhoto($row['sansphoto']);
+        ->addSansPhoto($row['sansphoto'])
+        ->addSansCarte($row['dateCarte'] < $this->dateDebut);
     $buttons = [
         'modifier' => [
             'class' => 'fam-pencil',

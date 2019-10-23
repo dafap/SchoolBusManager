@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
- * @version 2019-2.5.1
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
 
@@ -361,6 +361,7 @@ $actions = [
                 ->addPreinscrit(! $inscrit)
                 ->addSansAffectation($eleve['affecte'])
                 ->addSansPhoto($eleve['sansphoto'])
+                ->addSansCarte($eleve['dateCarte'] < $this->dateDebut)
                 ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'],
                 $eleve['demandeR2'], $eleve['distanceR2']);
             $hiddens = [
