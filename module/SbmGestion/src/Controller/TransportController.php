@@ -3437,13 +3437,13 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
 
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), FiltreEleve::byStation($stationId),
                     [
                         'nom',
                         'prenom'
                     ]),
-                // 'paginator' => $table_eleves->paginator(),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),
                 'page' => $currentPage,
