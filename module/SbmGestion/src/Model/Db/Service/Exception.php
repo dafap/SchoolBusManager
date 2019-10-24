@@ -7,12 +7,12 @@
  * @filesource Exception.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2015
- * @version 2015-1.6.5
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Model\Db\Service;
 
-use SbmCommun\Model\Db\Exception as DbException;
+use SbmCommun\Model\Db\Exception\RuntimeException as DbException;
 
 class Exception extends DbException
 {

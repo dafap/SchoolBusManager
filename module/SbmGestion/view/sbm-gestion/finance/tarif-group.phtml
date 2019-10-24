@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/finance',
@@ -42,7 +42,8 @@ $url_add_photo = $this->url('sbmgestion/eleve',
         'id' => $this->pageRetour
     ]);
 $hiddens = [
-    'tarifId' => $this->tarifId
+    'tarifId' => $this->tarif->tarifId,
+    'grilleTarif' => $this->tarif->grille
 ];
 $menuImpression = $this->menuRapports(
     $this->url('sbmgestion/finance', [
@@ -66,13 +67,18 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $data = $this->paginator->getCurrentItems();
 ?>
-<h1>Groupe des élèves inscrits au tarif</h1>
+<h1>Groupe des élèves inscrits sur la grille tarifaire</h1>
 <div class="liste-wrapper">
-	<div class="liste-title" class="clearfix">
-		<ul class="float-left">
-			<li>Tarif : <?= $this->escapeHtml($this->tarif->nom); ?></li>
-			<li>Montant : <?= $fmt->formatCurrency($this->tarif->montant, 'EUR'); ?></li>
+	<div>
+		<ul style="list-style: none; margin-bottom: 12px;">
+			<li class="float-left" style="margin-bottom: inherit;">
+				Grille : <?= $this->escapeHtml($this->tarif->grille);?></li>
+			<li class="float-right" style="margin-bottom: inherit;"><em>Attention,
+					certains élèves sont comptés plusieurs fois lorsqu'ils ont
+					plusieurs prises en charge !</em></li>
 		</ul>
+	</div>
+	<div class="liste-title clearfix">
 		<div class="flashMessenger float-right">
             <?= $this->flashMessenger()->render('success');?>
             <?= $this->flashMessenger()->render('warning');?>
@@ -83,9 +89,6 @@ $data = $this->paginator->getCurrentItems();
 	</div>
 	<div class="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
-		<p>
-			<em>Il y a <?= $this->paginator->getAdapter()->count(); ?> élèves.</em>
-		</p>
 	</div>
 	<div id="liste-inner">
 		<table class="eleves">

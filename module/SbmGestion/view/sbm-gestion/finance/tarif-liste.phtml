@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -125,7 +125,8 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
             $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page,
                 $tarif->tarifId);
             $hiddens = [
-                'tarifId' => $tarif->tarifId
+                'tarifId' => $tarif->tarifId,
+                'grilleTarif' => $tarif->grille
             ];
             $buttons = [
                 'modifier' => [

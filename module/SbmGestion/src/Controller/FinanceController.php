@@ -1324,7 +1324,7 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * renvoie la liste des élèves inscrits pour un tarif donné
+     * renvoie la liste des élèves inscrits pour une grille de tarifs donnée
      *
      * @todo : à faire
      * @return \Zend\View\Model\ViewModel
@@ -1348,20 +1348,25 @@ class FinanceController extends AbstractActionController
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $tarifId = StdLib::getParam('tarifId', $args, - 1);
-        if ($tarifId == - 1) {
+        $grilleTarif = StdLib::getParam('grilleTarif', $args);
+        if (empty($grilleTarif) || $tarifId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/finance',
                 [
                     'action' => 'tarif-liste',
                     'page' => $pageRetour
                 ]);
+        } else {
+            $grilleTarifId = $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille')
+                ->extract($grilleTarif);
         }
         return new ViewModel(
             [
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
-                        'tarifId' => $tarifId
+                        'sco.grilleTarif' => $grilleTarifId
                     ], [
                         'nom',
                         'prenom'
@@ -1370,8 +1375,7 @@ class FinanceController extends AbstractActionController
                 'tarif' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getRecord(
                     $tarifId),
                 'page' => $currentPage,
-                'pageRetour' => $pageRetour,
-                'tarifId' => $tarifId
+                'pageRetour' => $pageRetour
             ]);
     }
 
@@ -1405,13 +1409,18 @@ class FinanceController extends AbstractActionController
 
     public function tarifGroupPdfAction()
     {
+        $strategy = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getStrategie('grille');
         $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
-            function ($where, $args) {
-                $tarifId = StdLib::getParam('tarifId', $args, - 1);
+            function ($where, $args) use ($strategy ){
+                //$tarifId = StdLib::getParam('tarifId', $args, - 1);
+                $grilleTarif = StdLib::getParam('grilleTarif', $args);
+                if ($grilleTarif) {
+                    $grilleTarifId = $strategy->extract($grilleTarif);
+                }
                 $where = new Where();
-                $where->equalTo('tarifId', $tarifId);
+                $where->equalTo('grilleTarif', $grilleTarifId);
                 return $where;
             }
         ];
