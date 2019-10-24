@@ -2,15 +2,15 @@
 /**
  * Structure de la vue `paiements`
  *
- * La requête reprend toutes les colonnes de la table `paiements` ainsi que les colonnes `responsable`, `caisse` et `modeDePaiement` 
- * 
+ * La requête reprend toutes les colonnes de la table `paiements` ainsi que les colonnes `responsable`, `caisse` et `modeDePaiement`
+ *
  * @project sbm
  * @package package_name
  * @filesource vue.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 24 oct. 2019
+ * @version 2018-2.5.3
  */
 return [
     'name' => 'paiements',
@@ -35,7 +35,11 @@ return [
                 'field' => 'datePaiement'
             ],
             [
-                'field' => 'dateValeur'
+                'expression' => [
+                    'value' => 'CASE WHEN pai.dateValeur IS NULL THEN pai.datePaiement ELSE pai.dateValeur END',
+                    'type' => 'date'
+                ],
+                'alias' => 'dateValeur'
             ],
             [
                 'field' => 'responsableId'

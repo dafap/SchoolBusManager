@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2019
- * @version 2019-2.5.2
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmPdf\Model;
 
@@ -1840,8 +1840,32 @@ class Tcpdf extends \TCPDF
                     $ligne = [];
                     foreach ($table_columns as &$column) {
                         try {
-                            $ligne[] = $value = StdLib::translateData(
-                                $row->{$column['tbody']}, $column['filter']);
+                            // var_dump($row->{$column['tbody']}, $column['filter']);
+                            $value = StdLib::translateData($row->{$column['tbody']},
+                                $column['filter']);
+                            switch ($column['nature']) {
+                                case 2:
+                                    // TODO : non vérifié pour la photo
+                                    if ($value) {
+                                        $value = '@' . stripslashes($value);
+                                    }
+                                    break;
+                                case 1:
+                                    // date : prendre en compte le format
+                                    if (! empty($column['format']) &&
+                                        stripos('h', $column['format']) !== false) {
+                                        $value = DateLib::formatDateTimeFromMysql($value);
+                                    } else {
+                                        $value = DateLib::formatDateFromMysql($value);
+                                    }
+                                    break;
+                                default:
+                                    if ($column['format']) {
+                                        $value = sprintf($column['format'], $value);
+                                    }
+                                    break;
+                            }
+                            $ligne[] = $value;
                         } catch (\Exception $e) {
                             $value = "0";
                             if ($effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface) {
@@ -1885,9 +1909,19 @@ class Tcpdf extends \TCPDF
                 $columns = [];
                 $effectifColumns = [];
                 foreach ($table_columns as &$column) {
+                    $column['filter'] = preg_replace([
+                        '/^\s+/',
+                        '/\s+$/'
+                    ], '', $column['filter']);
+                    if (! empty($column['filter']) && is_string($column['filter'])) {
+                        $column['filter'] = StdLib::getArrayFromString(
+                            stripslashes($column['filter']));
+                    } else {
+                        $column['filter'] = [];
+                    }
                     // on relève les colonnes d'effectifs et on met false à leur place
-                    // dans
-                    // $column['tbody'] pour ne pas rechercher la valeur dans la requête.
+                    // dans $column['tbody'] pour ne pas rechercher la valeur dans la
+                    // requête.
                     $matches = [];
                     if (preg_match('/^%(.*)%$/', $column['tbody'], $matches)) {
                         $effectifColumns[] = $matches[1];
@@ -1947,8 +1981,7 @@ class Tcpdf extends \TCPDF
                         \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                     if ($rowset->count()) {
                         // si la description des colonnes est vide, on configure toutes
-                        // les
-                        // colonnes de la source
+                        // les colonnes de la source
                         if (empty($table_columns)) {
                             $ordinal_position = 1;
                             foreach (array_keys($rowset->current()->getArrayCopy()) as $column_name) {
@@ -1968,6 +2001,36 @@ class Tcpdf extends \TCPDF
                                 if ($table_columns[$key]['tbody']) {
                                     // ce n'est pas une colonne d'effectif
                                     $value = $row[$table_columns[$key]['tbody']];
+                                    // var_dump($value, $table_columns[$key]['filter']);
+                                    $value = StdLib::translateData($value,
+                                        $table_columns[$key]['filter']);
+                                    switch ($table_columns[$key]['nature']) {
+                                        case 2:
+                                            // TODO : non vérifié pour la photo
+                                            if ($value) {
+                                                $value = '@' . stripslashes($value);
+                                            }
+                                            break;
+                                        case 1:
+                                            // date : prendre en compte le format
+                                            if (! empty($table_columns[$key]['format']) &&
+                                                stripos('h',
+                                                    $table_columns[$key]['format']) !==
+                                                false) {
+                                                $value = DateLib::formatDateTimeFromMysql(
+                                                    $value);
+                                            } else {
+                                                $value = DateLib::formatDateFromMysql(
+                                                    $value);
+                                            }
+                                            break;
+                                        default:
+                                            if ($table_columns[$key]['format']) {
+                                                $value = sprintf(
+                                                    $table_columns[$key]['format'], $value);
+                                            }
+                                            break;
+                                    }
                                 } elseif (array_key_exists($idEffectifColumns,
                                     $effectifColumns)) {
                                     // c'est une colonne d'effectif

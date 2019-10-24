@@ -3,14 +3,14 @@
  * Formulaire de saisie/modification d'une colonne d'un tableau d'un document pdf
  *
  * Description de la structure de la table
- * 
+ *
  * @project sbm
  * @package SbmPdf\Form
  * @filesource DocColumn.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmPdf\Form;
 
@@ -403,6 +403,53 @@ class DocColumn extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'type' => 'Zend\Form\Element\Radio',
+                'name' => 'nature',
+                'attributes' => [
+                    'id' => 'field-nature'
+                ],
+                'options' => [
+                    'label' => 'Nature du champ',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => [
+                        // '2' => [
+                        // 'label' => 'Photo',
+                        // 'value' => 2
+                        // ],
+                        '1' => [
+                            'label' => 'Date',
+                            'value' => 1
+                        ],
+                        '0' => [
+                            'label' => 'Autre texte',
+                            'value' => 0
+                        ]
+                    ],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'format',
+                'attributes' => [
+                    'id' => 'field-format',
+                    'class' => 'sbm-width-55c'
+                ],
+                'options' => [
+                    'label' => 'Description du format',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'cancel',
                 'attributes' => [
                     'type' => 'submit',
@@ -430,6 +477,15 @@ class DocColumn extends Form implements InputFilterProviderInterface
             'ordinal_position' => [
                 'name' => 'ordinal_position',
                 'required' => true
+            ],
+            'format' => [
+                'name' => 'format',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'StringTrim'
+                    ]
+                ]
             ],
             'filter' => [
                 'name' => 'filter',

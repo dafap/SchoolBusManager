@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2019
- * @version 2019-2.5.2
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Controller;
 
@@ -664,7 +664,7 @@ class FinanceController extends AbstractActionController
             $data[] = [
                 'date' => $historique->getDate(),
                 'action' => $historique->getAction(),
-                'datePaiement' => $historique->getDatePaiement(),
+                'datePaiement' => $historique->getDateValeur(),
                 'dateDepot' => $historique->getDateDepot(),
                 'aMontant' => $aMontant,
                 'aResponsable' => $aResponsable,

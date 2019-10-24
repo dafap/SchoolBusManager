@@ -6,14 +6,14 @@
  * - form
  * - page
  * - document
- * 
+ *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/document
  * @filesource colonne-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 $this->jQuery('jquery-ui');
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -65,7 +65,7 @@ $actions = [
 	</div>
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
-    		<?= $this->form()->openTag($this->form);?>             
+    		<?= $this->form()->openTag($this->form);?>
             <?= $this->formHidden($this->form->get('doccolumnId'));?>
             <?= $this->formHidden($this->form->get('documentId'));?>
             <?= $this->formHidden($this->form->get('name'));?>
@@ -80,6 +80,10 @@ $actions = [
 				<?= $this->formRow($this->form->get('truncate'));?></div>
 			<div class="sbm-document-table">
 				<?= $this->formRow($this->form->get('nl'));?></div>
+			<div class="sbm-document-table">
+				<?= $this->formRow($this->form->get('nature'));?></div>
+			<div class="sbm-document-table">
+				<?= $this->formRow($this->form->get('format'));?></div>
 			<div id="accordion">
 				<h3>Ligne d'en-tête</h3>
 				<div>

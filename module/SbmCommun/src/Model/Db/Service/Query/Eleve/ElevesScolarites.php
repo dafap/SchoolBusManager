@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
+ * @date 24 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -132,8 +132,8 @@ class ElevesScolarites extends AbstractQuery
     private function jointureElevesResponsables(int $responsableId)
     {
         $jointure = new Predicate(null, Predicate::COMBINED_BY_OR);
-        return $jointure->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
-            $responsableId);
+        return $jointure->equalTo('responsable1Id', $responsableId)->equalTo(
+            'responsable2Id', $responsableId);
     }
 
     public function getEleve($eleveId)
@@ -558,14 +558,16 @@ class ElevesScolarites extends AbstractQuery
             [
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
-            ->columns([
-            'millesime',
-            'eleveid',
-            'inscrit',
-            'fa',
-            'paiement',
-            'gratuit'
-        ])
+            ->columns(
+            [
+                'millesime',
+                'eleveid',
+                'inscrit',
+                'fa',
+                'paiement',
+                'gratuit',
+                'dateCarte'
+            ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -609,10 +611,10 @@ class ElevesScolarites extends AbstractQuery
                 'adresseR1L2' => 'adresseL2'
             ], Select::JOIN_LEFT)
             ->join([
-                'comr1' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'res1.communeId = comr1.communeId', [
-                'communeR1' => 'nom'
-            ], Select::JOIN_LEFT)
+            'comr1' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res1.communeId = comr1.communeId', [
+            'communeR1' => 'nom'
+        ], Select::JOIN_LEFT)
             ->join(
             [
                 'affr1' => $this->db_manager->getCanonicName('affectations', 'table')
@@ -706,10 +708,10 @@ class ElevesScolarites extends AbstractQuery
                 'adresseR2L2' => 'adresseL2'
             ], Select::JOIN_LEFT)
             ->join([
-                'comr2' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'res2.communeId = comr2.communeId', [
-                'communeR2' => 'nom'
-            ], Select::JOIN_LEFT)
+            'comr2' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res2.communeId = comr2.communeId', [
+            'communeR2' => 'nom'
+        ], Select::JOIN_LEFT)
             ->join(
             [
                 'affr2' => $this->db_manager->getCanonicName('affectations', 'table')

@@ -1,14 +1,14 @@
 <?php
 /**
  * Description des champs utilisés dans les tables (table `doccolumns`)
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource system.doccolumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\StdLib;
 
@@ -58,8 +58,12 @@ return [
                                                         // valeur nécessaire
             'truncate' => 'tinyint(1) NOT NULL DEFAULT "0"', // couper à la taille de la colonne
                                                               // (oui 1/non 0)
-            'nl' => 'tinyint(1) NOT NULL DEFAULT "0"'
-        ], // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
+            'nl' => 'tinyint(1) NOT NULL DEFAULT "0"', // saut de page après un changement de valeur dans cette colonne (oui 1/non 0)
+            'nature' => 'tinyint(1) NOT NULL DEFAULT "0"', // 0 ou 1 pour date ou 2 pour photo
+            // pour format : pour date on vérifie s'il y a un h (date J/M/A H:m:s);
+            //               pour les autres natures c'est le format de sprintf
+            'format' => 'varchar(255) NULL'
+        ],
         'primary_key' => [
             'doccolumnId'
         ],

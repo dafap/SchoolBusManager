@@ -7,8 +7,8 @@
  * @filesource Historique.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2019
- * @version 2019-2.5.2
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Paiements\Historique;
 
@@ -176,7 +176,11 @@ class Historique
 
     public function getDateValeur()
     {
-        return DateLib::formatDateFromMysql($this->log[self::IDX_DATE_VALEUR]);
+        if (empty($this->log[self::IDX_DATE_VALEUR])) {
+            return $this->getDatePaiement();
+        } else {
+            return DateLib::formatDateFromMysql($this->log[self::IDX_DATE_VALEUR]);
+        }
     }
 
     public function getResponsableId()

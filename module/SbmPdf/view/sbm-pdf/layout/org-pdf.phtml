@@ -1,20 +1,20 @@
 <?php
 /**
  * Modèle servant à définir le corps de document de la liste des élèves pour le portail organisateur
- * 
+ *
  * Utilisation dans Tcpdf::templateDocBodyMethod6() comme layout recevant la propriété `eleves`
  *
- * Attention, ne pas utiliser HeadStyle pour placer les styles horaires 
+ * Attention, ne pas utiliser HeadStyle pour placer les styles horaires
  * car ils seraient dans la section head du document Html et ne seraient
  * pas interprétés dans Tcpdf.
- * 
+ *
  * @project sbm
  * @package SbmPdf/view/sbm-pdf/layout
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 24 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
 
@@ -25,6 +25,7 @@ table.eleves {
 	padding: 1px;
 	border-collapse: collapse;
 	border: 1px solid black;
+	font-size: 10px;
 }
 
 table.eleves th {
@@ -44,19 +45,23 @@ table.eleves td.centre {
 </style>
 
 <table class="eleves">
-	<tbody>
+	<thead>
 		<tr>
-			<th>N° carte</th>
-			<th>Nom</th>
-			<th>Prénom</th>
-			<th>Né(e) le</th>
-			<th>Responsables</th>
-			<th>Etablissement scolaire</th>
-			<th>Classe</th>
-			<th>Circuits</th>
-			<th>Arrêts</th>
-			<th>État</th>
+			<th style="width:'4%';">N° carte</th>
+			<th style="width:'10%';">Nom</th>
+			<th style="width:'10%';">Prénom</th>
+			<th style="width:'6%';">Né(e) le</th>
+			<th style="width:'10%';">Responsables</th>
+			<th style="width:'10%';">Adresse</th>
+			<th style="width:'10%';">Commune</th>
+			<th style="width:'10%';">Etablissement scolaire</th>
+			<th style="width:'5%';">Classe</th>
+			<th style="width:'10%';">Circuits</th>
+			<th style="width:'10%';">Arrêts</th>
+			<th style="width:'5%';">État</th>
 		</tr>
+	<thead>
+	<tbody>
         <?php foreach($this->eleves as $eleve): ?>
         <?php
             $r = [];
@@ -66,6 +71,13 @@ table.eleves td.centre {
                 $r[] = htmlspecialchars(
                     str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES,
                     'utf-8', false);
+                $adresseR1 = implode('<br>',
+                    array_filter(
+                        array_unique([
+                            $eleve['adresseR1L1'],
+                            $eleve['adresseR1L2']
+                        ])));
+                $communeR1 = $eleve['communeR1'];
                 $circuitR1 = $eleve['service1IdR1'];
                 if ($eleve['service2IdR1']) {
                     $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
@@ -81,6 +93,13 @@ table.eleves td.centre {
                 $r[] = htmlspecialchars(
                     str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES,
                     'utf-8', false);
+                $adresseR2 = implode('<br>',
+                    array_filter(
+                        array_unique([
+                            $eleve['adresseR2L1'],
+                            $eleve['adresseR2L2']
+                        ])));
+                $communeR2 = $eleve['communeR2'];
                 $circuitR2 = $eleve['service1IdR2'];
                 if ($eleve['service2IdR2']) {
                     $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
@@ -117,14 +136,17 @@ table.eleves td.centre {
 					<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 			<td class="responsables">
 					<?= $r[0]; ?></td>
+			<td class="adresse"><?=$adresseR1;?></td>
+			<td class="commune">
+			        <?=$communeR1;?></td>
 			<td class="etablissement">
 					<?= $this->escapeHtml($eleve['etablissement']);?></td>
-			<td class="classe">
+			<td class="classe centre">
 					<?= $this->escapeHtml($eleve['classe']);?></td>
 			<td><?= $circuits[0];?></td>
 			<td><?= $arrets[0];?></td>
 			<td class="centre"><?= $message;?></td>
-					<?php if ($nbResponsables == 2) :?>
+		<?php if ($nbResponsables == 2) :?>
 		</tr>
 		<tr class="<?= $tr_css;?>">
 			<td class="numero align-right">
@@ -132,14 +154,19 @@ table.eleves td.centre {
 			<td class="nom"></td>
 			<td class="prenom"></td>
 			<td class="dateN"></td>
-			<td class="responsables"><?= $r[1]; ?></td>
+			<td class="responsables">
+			        <?= $r[1]; ?></td>
+			<td class="adresse">
+			        <?=$adresseR2;?></td>
+			<td class="commune">
+			        <?=$communeR2;?></td>
 			<td class="etablissement"></td>
 			<td class="classe"></td>
 			<td><?= $circuits[1];?></td>
 			<td><?= $arrets[1];?></td>
 			<td class="centre"></td>
-					<?php endif;?>
-		</tr>         
+		<?php endif;?>
+		</tr>
         <?php endforeach;?>
 			</tbody>
 </table>
