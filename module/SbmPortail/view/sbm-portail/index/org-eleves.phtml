@@ -1,16 +1,16 @@
 <?php
 /**
  * Liste des élèves pour le protail de l'organisateur (secrétariat)
- * 
+ *
  * La requête est basée sur SbmCommun\Model\Db\Service\Query\Eleve\ElevesSolarites::selectScolaritesR()
- * 
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
 
@@ -92,7 +92,7 @@ $actions = [
 					<th>N° carte</th>
 					<th>Nom</th>
 					<th>Prénom</th>
-					<th>Né(e) le</th>
+					<th>Adresse</th>
 					<th>Responsables</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
@@ -140,6 +140,23 @@ $actions = [
                 "even",
                 "odd"
             ])->next();
+            // adresses
+            $adresseR1 = implode('<br>',
+                array_filter(
+                    array_unique(
+                        [
+                            $eleve['adresseR1L1'],
+                            $eleve['adresseR1L2'],
+                            $eleve['communeR1']
+                        ])));
+            $adresseR2 = implode('<br>',
+                array_filter(
+                    array_unique(
+                        [
+                            $eleve['adresseR2L1'],
+                            $eleve['adresseR2L2'],
+                            $eleve['communeR2']
+                        ])));
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
@@ -149,19 +166,18 @@ $actions = [
                 $message = 'Préinscrit';
             }
             ?>
-                <tr class="<?= $tr_css;?>">
+                <tr class="petit <?= $tr_css;?>">
 					<td class="numero align-right"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $eleve['numero']; ?></td>
 					<td class="nom"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['nom']); ?></td>
-					<td class="nom"
+					<td class="prenom"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN"
-						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+					<td class="adresse">
+					<?= $adresseR1; ?></td>
 					<td class="responsables">
 					<?= $r[0]; ?></td>
 					<td class="etablissement"
@@ -175,12 +191,13 @@ $actions = [
 					<td class="centre"><?= $message;?></td>
 					<?php if ($nbResponsables == 2) :?>
 				</tr>
-				<tr class="<?= $tr_css;?>">
+				<tr class="petit <?= $tr_css;?>">
+					<td class="adresse"><?= $adresseR2; ?></td>
 					<td><?= $r[1]; ?></td>
 					<td><?= $circuits[1];?></td>
-					<td><?= $arrets[1];?></td>	
+					<td><?= $arrets[1];?></td>
 					<?php endif;?>
-				</tr>         
+				</tr>
         <?php endforeach;?>
 			</tbody>
 		</table>
@@ -191,9 +208,9 @@ $actions = [
 		</div>
 		<div class="criteres-wrapper">
 		<?php if (! is_null($this->criteres_form)) :?>
-    		<?= $this->form()->openTag($this->criteres_form);?>    
-    		<?= $this->formCollection($this->criteres_form, true);?>    
-    		<?= $this->form()->closeTag();?>		
+    		<?= $this->form()->openTag($this->criteres_form);?>
+    		<?= $this->formCollection($this->criteres_form, true);?>
+    		<?= $this->form()->closeTag();?>
     	<?php endif;?>
 	    </div>
 	</div>

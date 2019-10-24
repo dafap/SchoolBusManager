@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
- * @version 2019-2.5.0
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -604,7 +604,14 @@ class ElevesScolarites extends AbstractQuery
                 'ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
             [
                 'responsable1' => new Expression(
-                    '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)')
+                    '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)'),
+                'adresseR1L1' => 'adresseL1',
+                'adresseR1L2' => 'adresseL2'
+            ], Select::JOIN_LEFT)
+            ->join([
+                'comr1' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'res1.communeId = comr1.communeId', [
+                'communeR1' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [
@@ -694,7 +701,14 @@ class ElevesScolarites extends AbstractQuery
                 'ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
             [
                 'responsable2' => new Expression(
-                    '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)')
+                    '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)'),
+                'adresseR2L1' => 'adresseL1',
+                'adresseR2L2' => 'adresseL2'
+            ], Select::JOIN_LEFT)
+            ->join([
+                'comr2' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'res2.communeId = comr2.communeId', [
+                'communeR2' => 'nom'
             ], Select::JOIN_LEFT)
             ->join(
             [

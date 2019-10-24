@@ -7,8 +7,8 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 sept. 2019
- * @version 2019-2.5.1
+ * @date 23 oct. 2019
+ * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
 
@@ -110,7 +110,7 @@ if ($this->categorie == 2) {
 					<th>N° carte</th>
 					<th>Nom</th>
 					<th>Prénom</th>
-					<th>Né(e) le</th>
+					<th>Adresse</th>
 					<th>Responsables</th>
 					<th>Téléphone</th>
 					<th>Etablissement scolaire</th>
@@ -138,12 +138,20 @@ if ($this->categorie == 2) {
                 ], [
                     'style' => 'display: inline;'
                 ]);
-            $itemR1 = $r; // $itemR1 .= $r;
-                          // tr css
+            $itemR1 = $r;
             $tr_css = $this->cycle([
                 "even",
                 "odd"
             ])->next();
+            // adresse
+            $adresse = implode('<br>',
+                array_filter(
+                    array_unique(
+                        [
+                            $eleve['adresseL1'],
+                            $eleve['adresseL2'],
+                            $eleve['commune']
+                        ])));
             // téléphones
             $telephones = implode('<br>',
                 array_filter(
@@ -170,8 +178,8 @@ if ($this->categorie == 2) {
 						<?= $this->escapeHtml($eleve['nom']); ?></td>
 					<td class="nom">
 						<?= $this->escapeHtml($eleve['prenom']); ?></td>
-					<td class="dateN">
-						<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
+					<td class="adresse">
+						<?= $adresse; ?></td>
 					<td class="responsables"><?= $itemR1; ?></td>
 					<td class="telephones"><?= $telephones;?></td>
 					<td class="etablissement">
