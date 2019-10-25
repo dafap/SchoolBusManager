@@ -8,8 +8,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 26 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -252,6 +252,9 @@ class ElevesResponsables extends AbstractQuery
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
                 'codePostalR2' => 'codePostal',
+                'telephoneFR2' => 'telephoneF',
+                'telephonePR2' => 'telephoneP',
+                'telephoneTR2' => 'telephoneT',
                 'emailR2' => 'email',
                 'x2' => 'x',
                 'y2' => 'y'

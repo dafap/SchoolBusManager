@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
@@ -128,6 +128,9 @@ $url_cartes = $this->url('sbmgestion/gestioneleve',
         'action' => 'cartes',
         'page' => $this->page
     ]);
+$url_download = $this->url('sbmgestion/eleve', [
+    'action' => 'eleve-download'
+]);
 $url_duplicata = $this->url('sbmgestion/gestioneleve',
     [
         'action' => 'duplicata-carte',
@@ -179,6 +182,12 @@ $actions = [
         'class' => 'fam-photos',
         'formaction' => $url_photos,
         'title' => 'Extraction d\un fichier de photos'
+    ],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Extraction de la liste dans un fichier'
     ],
     'gestion' => [
         'class' => 'fam-application-side-expand',

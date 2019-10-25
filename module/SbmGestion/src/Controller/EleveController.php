@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmGestion\Controller;
@@ -1111,6 +1111,64 @@ class EleveController extends AbstractActionController
             'action' => 'eleve-groupe'
         ];
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function eleveDownloadAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $columns = [
+            'Nom' => 'nom',
+            'Prénom' => 'prenom',
+            'R1 Identité' => 'responsable1NomPrenom',
+            'R1 Adresse ligne 1' => 'adresseL1R1',
+            'R1 Adresse ligne 2' => 'adresseL2R1',
+            'R1 Commune' => 'communeR1',
+            'R1 Téléphone 1' => 'telephoneFR1',
+            'R1 Téléphone 2' => 'telephonePR1',
+            'R1 Téléphone 3' => 'telephoneTR1',
+            'R2 Identité' => 'responsable2NomPrenom',
+            'R2 Adresse ligne 1' => 'adresseL1R2',
+            'R2 Adresse ligne 2' => 'adresseL2R2',
+            'R2 Commune' => 'communeR2',
+            'R2 Téléphone 1' => 'telephoneFR2',
+            'R2 Téléphone 2' => 'telephonePR2',
+            'R2 Téléphone 3' => 'telephoneTR2',
+            'Établissement' => 'etablissement',
+            'Commune de l\'établissement' => 'communeEtablissement',
+            'Classe' => 'classe'
+        ];
+        $criteres = Session::get('post', [],
+            str_replace('download', 'liste', $this->getSessionNamespace()));
+        $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
+        $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
+            $criteres_form->getElementNames());
+        $criteres_form->setData($criteres);
+        if ($criteres_form->isValid()) {
+            $criteres_obj->exchangeArray($criteres_form->getData());
+        }
+        $data = [];
+        foreach ($this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
+            $criteres_obj->getWhere(), [
+                'nom',
+                'prenom'
+            ]) as $eleve) {
+            $aEleve = $eleve->getArrayCopy();
+            $ligne = [];
+            foreach ($columns as $value) {
+                $ligne[] = $aEleve[$value];
+            }
+            $data[] = $ligne;
+        }
+        return $this->csvExport('eleves.csv', array_keys($columns), $data);
     }
 
     public function eleveSupprAction()
