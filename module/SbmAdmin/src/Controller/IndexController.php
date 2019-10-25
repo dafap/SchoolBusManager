@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 09 sept. 2019
- * @version 2019-2.5.1
+ * @date 25 sept. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmAdmin\Controller;
 
@@ -1491,8 +1491,12 @@ class IndexController extends AbstractActionController
                     }
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
-                        $fields = array_keys(current($data));
-                        return $this->csvExport('eleves.csv', $fields, $data);
+                        $fields = array_keys(
+                            is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        return $this->csvExport('eleves.csv', $fields, $data,
+                            function ($item) {
+                                return is_array($item) ? $item : $item->getArrayCopy();
+                            });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
                             'Il n\'y a pas de données correspondant aux critères indiqués.');
@@ -1530,8 +1534,12 @@ class IndexController extends AbstractActionController
                         ]);
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
-                        $fields = array_keys(current($data));
-                        return $this->csvExport('etablissements.csv', $fields, $data);
+                        $fields = array_keys(
+                            is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        return $this->csvExport('etablissements.csv', $fields, $data,
+                            function ($item) {
+                                return is_array($item) ? $item : $item->getArrayCopy();
+                            });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
                             'Il n\'y a pas de données correspondant aux critères indiqués.');
@@ -1568,8 +1576,12 @@ class IndexController extends AbstractActionController
                         ]);
                     $data = $resultset->toArray();
                     if (! empty($data)) {
-                        $fields = array_keys(current($data));
-                        return $this->csvExport('responsables.csv', $fields, $data);
+                        $fields = array_keys(
+                            is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        return $this->csvExport('responsables.csv', $fields, $data,
+                            function ($item) {
+                                return is_array($item) ? $item : $item->getArrayCopy();
+                            });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
                             'Il n\'y a pas de données correspondant aux critères indiqués.');
@@ -1606,8 +1618,12 @@ class IndexController extends AbstractActionController
                         ]);
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
-                        $fields = array_keys(current($data));
-                        return $this->csvExport('stations.csv', $fields, $data);
+                        $fields = array_keys(
+                            is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        return $this->csvExport('stations.csv', $fields, $data,
+                            function ($item) {
+                                return is_array($item) ? $item : $item->getArrayCopy();
+                            });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
                             'Il n\'y a pas de données correspondant aux critères indiqués.');

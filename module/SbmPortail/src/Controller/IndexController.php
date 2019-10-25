@@ -13,8 +13,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 25 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmPortail\Controller;
 
@@ -186,7 +186,8 @@ class IndexController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
             ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
@@ -434,7 +435,8 @@ class IndexController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
             ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
@@ -718,13 +720,12 @@ class IndexController extends AbstractActionController
             $where);
         $data = iterator_to_array($resultset);
         if (! empty($data)) {
-            $fields = array_keys(current($data));
-            // s'il faut utiliser l'enclosure pour telephone, rajouter une callback en 4e
-            // parametre
-            // de csvExport()
-            // (voir
-            // https://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields)
-            return $this->csvExport('telephones.csv', $fields, $data);
+            $fields = array_keys(
+                is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+            return $this->csvExport('telephones.csv', $fields, $data,
+                function ($item) {
+                    return is_array($item) ? $item : $item->getArrayCopy();
+                });
         } else {
             $this->flashMessenger()->addInfoMessage(
                 'Il n\'y a pas de données correspondant aux critères indiqués.');

@@ -2,30 +2,35 @@
 /**
  * Export par fichier csv téléchargeable
  * (Service déclaré dans module.config.php)
- * 
- * Usage simple dans un controller : 
- *   return $this->csvExport('foo.csv', $header, $records); 
+ *
+ * Usage simple dans un controller :
+ *   return $this->csvExport('foo.csv', $header, $records);
  *   - nom du fichier produit: foo.csv
  *   - ligne d'en-tête (ex: ['Nom', 'Prénom', 'Date de naissance'] )
  *   - données sous forme de tableau (ex: iterator_to_array($resultset))
  *   - pas de fonction callback
  *   - le délimiteur par défaut est ';'
  *   - le caractère d'encadrement par défaut est '"'
- * 
+ *
  * Usage plus complexe :
- *   - définir une fonction de rappel qui préparera la ligne de donnée pour la mettre sous forme d'un tableau simple de colonnes
+ *   - définir une fonction de rappel qui préparera la ligne de donnée pour la mettre sous forme d'un tableau
+ *   simple de colonnes
  *   - définir le délimiteur
  *   - définir le caractère d'encadrement
- * 
+ *
+ * Attention, le caractère d'encadrement n'est pas utilisé lorsque la valeur est numérique. Si nécessaire,
+ * par exemple, pour des numéros de téléphone, utiliser la fonction callback.
+ * @see https://stackoverflow.com/questions/2489553/forcing-fputcsv-to-use-enclosure-for-all-fields
+ *
  * Classe inspirée du module publié sur https://ghithub.com/radnan/rdn-csv
- * 
+ *
  * @project sbm
  * @package SbmCommun\Model\Mvc\Controller\Plugin\Service
  * @filesource CsvExport.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 25 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -58,9 +63,8 @@ class CsvExport extends AbstractPlugin
     private $content;
 
     /**
-     * Fonction de rappel permettant de préparer la ligne de données afin qu'elle soit un tableau
-     * de valeurs
-     * (le résultat est un tableau, second paramètre de fputcsv() )
+     * Fonction de rappel permettant de préparer la ligne de données afin qu'elle soit un
+     * tableau de valeurs (le résultat est un tableau, second paramètre de fputcsv() )
      *
      * @var callable
      */
@@ -84,16 +88,17 @@ class CsvExport extends AbstractPlugin
      * Attention, le délimiteur par défaut est ';'
      *
      * @param string $filename
-     * @param string $header
-     * @param string $records
+     * @param array $header
+     * @param array $records
      * @param callable $callback
      * @param string $delimiter
      * @param string $enclosure
      *
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport|\Zend\Http\PhpEnvironment\Response
      */
-    public function __invoke($filename = null, $header = null, $records = null,
-        callable $callback = null, $delimiter = ';', $enclosure = '"')
+    public function __invoke(string $filename = null, array $header = null,
+        array $records = null, callable $callback = null, string $delimiter = ';',
+        string $enclosure = '"')
     {
         if (func_num_args() == 0) {
             return $this;
@@ -108,12 +113,10 @@ class CsvExport extends AbstractPlugin
     }
 
     /**
-     * Supprime l'extension .
-     * csv du fichier si elle est donnée dans le nom
+     * Supprime l'extension . csv du fichier si elle est donnée dans le nom
      *
      * @param string $name
      *            le nom du fichier à produire
-     *            
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport
      */
     public function setName($name)
@@ -130,7 +133,6 @@ class CsvExport extends AbstractPlugin
      *
      * @param array $record
      *            le tableau décrivant la ligne d'en-tête
-     *            
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport
      */
     public function setHeader($record)
@@ -162,7 +164,6 @@ class CsvExport extends AbstractPlugin
      *            délimiteur
      * @param string $enclosure
      *            enclosure
-     *            
      * @return \SbmCommun\Model\Mvc\Controller\Plugin\Service\CsvExport
      */
     public function setControls($delimiter, $enclosure)
@@ -175,9 +176,8 @@ class CsvExport extends AbstractPlugin
     /**
      * Préparation de la réponse Http contenant le fichier CSV en attaché
      *
-     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\UnexpectedValueException ou
-     *         exception provoquée par la fonction de rappel
-     *        
+     * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\UnexpectedValueException
+     *         ou exception provoquée par la fonction de rappel
      * @return \Zend\Http\PhpEnvironment\Response
      */
     public function getResponse()

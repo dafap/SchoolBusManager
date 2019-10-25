@@ -7,8 +7,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2019
- * @version 2019-2.5.1
+ * @date 25 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -24,9 +24,11 @@ use Zend\Mvc\Controller\AbstractActionController as ZendAbstractActionController
 use Zend\View\Model\ViewModel;
 
 /**
- * Quelques méthodes utiles
  *
- * @author admin
+ * @method \SbmCommun\Model\Mvc\Controller\Plugin\Service\RedirectBack redirectToOrigin()
+ * @method \Zend\Http\PhpEnvironment\Response csvExport(string $filename = null, array
+ *         $header = null, array $records = null, callable $callback = null, string
+ *         $delimiter = ';', string $enclosure = '"')
  */
 abstract class AbstractActionController extends ZendAbstractActionController
 {
