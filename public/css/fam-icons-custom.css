@@ -1,6 +1,8 @@
-/* icon prefix for famfamfam icons */
-/* modifié par A. Pomirol (DAFAP Informatique - 2015) pour l'utilisation des <input type="submit" value=""> */
-/* <input type="submit" class="default"> pour retrouver les caractéristiques d'origine du navigateur.       */
+/**
+ * icon prefix for famfamfam icons
+ * modifié par A. Pomirol (DAFAP Informatique - 2015, 2019) pour l'utilisation des <input type="submit" value="">
+ * <input type="submit" class="default"> pour retrouver les caractéristiques d'origine du navigateur.
+ */      
 [type="submit"].default {
 			border: 2px outset buttonface;
 			background: buttonface;
@@ -16,7 +18,7 @@
 	height:16px;
 	line-height:14px;
 	vertical-align:text-top;
-	background-image:url("../img/famfamfam-icons.png");
+	background-image:url("../img/famfamfam-icons-custom.png");
 	background-position:14px 14px;
 	background-repeat:no-repeat;
 }
@@ -90,8 +92,8 @@
 .fam-asterisk-orange{background-position:-1200px 0}
 .fam-asterisk-yellow{background-position:-1220px 0}
 .fam-attach{background-position:-1240px 0}
-.fam-award-star-add{background-position:-1260px 0}
-.fam-award-star-bronze-1{background-position:-1280px 0}
+.fam-cloud-download{background-position:-1260px 0}
+.fam-cloud-upload{background-position:-1280px 0}
 .fam-award-star-bronze-2{background-position:-1300px 0}
 .fam-award-star-bronze-3{background-position:-1320px 0}
 .fam-award-star-delete{background-position:-1340px 0}
