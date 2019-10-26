@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -608,7 +608,11 @@ class ElevesScolarites extends AbstractQuery
                 'responsable1' => new Expression(
                     '(CASE WHEN isnull(res1.responsableId) THEN NULL ELSE concat(res1.nomSA," ",res1.prenomSA) END)'),
                 'adresseR1L1' => 'adresseL1',
-                'adresseR1L2' => 'adresseL2'
+                'adresseR1L2' => 'adresseL2',
+                'telephoneFR1' => 'telephoneF',
+                'telephonePR1' => 'telephoneP',
+                'telephoneTR1' => 'telephoneT',
+                'emailR1' => 'email'
             ], Select::JOIN_LEFT)
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -628,12 +632,24 @@ class ElevesScolarites extends AbstractQuery
                 'station1r1' => 'nom',
                 'station1IdR1' => 'stationId'
             ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'sta1r1com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta1r1.communeId=sta1r1com.communeId', [
+                'communeStation1r1' => 'nom'
+            ], Select::JOIN_LEFT)
             ->join([
             'sta2r1' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'affr1.station2Id = sta2r1.stationId',
             [
                 'station2r1' => 'nom',
                 'station2IdR1' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'sta2r1com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta2r1.communeId=sta2r1com.communeId', [
+                'communeStation2r1' => 'nom'
             ], Select::JOIN_LEFT)
             ->join([
             'ser1r1' => $this->db_manager->getCanonicName('services', 'table')
@@ -705,7 +721,11 @@ class ElevesScolarites extends AbstractQuery
                 'responsable2' => new Expression(
                     '(CASE WHEN isnull(res2.responsableId) THEN NULL ELSE concat(res2.nomSA," ",res2.prenomSA) END)'),
                 'adresseR2L1' => 'adresseL1',
-                'adresseR2L2' => 'adresseL2'
+                'adresseR2L2' => 'adresseL2',
+                'telephoneFR2' => 'telephoneF',
+                'telephonePR2' => 'telephoneP',
+                'telephoneTR2' => 'telephoneT',
+                'emailR2' => 'email'
             ], Select::JOIN_LEFT)
             ->join([
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
@@ -725,12 +745,24 @@ class ElevesScolarites extends AbstractQuery
                 'station1r2' => 'nom',
                 'station1IdR2' => 'stationId'
             ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'sta1r2com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta1r2.communeId=sta1r2com.communeId', [
+                'communeStation1r2' => 'nom'
+            ], Select::JOIN_LEFT)
             ->join([
             'sta2r2' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'affr2.station2Id = sta2r2.stationId',
             [
                 'station2r2' => 'nom',
                 'station2IdR2' => 'stationId'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'sta2r2com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta2r2.communeId=sta2r2com.communeId', [
+                'communeStation2r2' => 'nom'
             ], Select::JOIN_LEFT)
             ->join([
             'ser1r2' => $this->db_manager->getCanonicName('services', 'table')

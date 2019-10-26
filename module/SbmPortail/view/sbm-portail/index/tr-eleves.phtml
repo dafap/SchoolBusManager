@@ -7,7 +7,7 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 use SbmBase\Model\DateLib;
@@ -67,7 +67,11 @@ $url_telephones = $this->url('sbmportail',
         'action' => 'tr-extraction-telephones',
         'page' => $this->page
     ]);
-
+$url_download=$this->url('sbmportail',
+    [
+        'action' => 'tr-eleves-download',
+        'page' => $this->page
+    ]);
 // le formulaire des actions du haut de page - aide de vue listeZoneActions()
 $hiddens = [];
 $actions = [
@@ -81,6 +85,12 @@ $actions = [
         'formaction' => $url_rapports,
         'title' => 'Liste à imprimer',
         'formtarget' => '_blank'
+    ],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Extraction de la liste dans un fichier'
     ]
 ];
 if ($this->categorie == 2) {

@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -451,6 +451,20 @@ class AffectationsServicesStations extends AbstractQuery
     }
 
     /**
+     * Requête renvoyant tous les résultats du selectScolaritesR
+     *
+     * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
+     * @param string|array $order
+     * @param int $millesime
+     *            inutilisé mais gardé pour la compatibilité des appels
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getScolaritesR(Where $where, $order = null, $millesime = null)
+    {
+        return $this->renderResult($this->selectScolaritesR($where, $order));
+    }
+
+    /**
      *
      * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
      * @param string|array $order
@@ -524,6 +538,11 @@ class AffectationsServicesStations extends AbstractQuery
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END')
             ])
             ->join([
+            'etacom' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'eta.communeId = etacom.communeId', [
+            'communeEtablissement' => 'nom'
+        ])
+            ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'sco.classeId=cla.classeId', [
             'classe' => 'nom'
@@ -533,11 +552,23 @@ class AffectationsServicesStations extends AbstractQuery
         ], 'sta1.stationId=aff.station1Id', [
             'station1' => 'nom'
         ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'sta1com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta1.communeId=sta1com.communeId', [
+                'communeStation1' => 'nom'
+            ], $select::JOIN_LEFT)
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'sta2.stationId=aff.station2Id', [
             'station2' => 'nom'
         ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'sta2com' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'sta2.communeId=sta2com.communeId', [
+                'communeStation2' => 'nom'
+            ], $select::JOIN_LEFT)
             ->join([
             'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ], 'ser1.serviceId=aff.service1Id',

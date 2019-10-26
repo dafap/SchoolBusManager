@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 oct. 2019
+ * @date 26 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmPortail\Controller;
@@ -143,8 +143,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la
-            // session (login
-            // ou cas du paginator ou de F5 )
+            // session (login ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
         } else {
@@ -203,8 +202,7 @@ class IndexController extends AbstractActionController
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
-        // formulaire (pas
-        // de post ou invalide)
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -262,6 +260,120 @@ class IndexController extends AbstractActionController
                     ->addSuccessMessage("Création d'un pdf.");
             })
             ->renderPdf();
+    }
+
+    public function orgElevesDownloadAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $columns = [
+            'Nom' => 'nom',
+            'Prénom' => 'prenom',
+            'Établissement' => 'etablissement',
+            'Commune de l\'établissement' => 'communeEtablissement',
+            'Classe' => 'classe',
+            'R1 Identité' => 'responsable1',
+            'R1 Adresse ligne 1' => 'adresseR1L1',
+            'R1 Adresse ligne 2' => 'adresseR1L2',
+            'R1 Commune' => 'communeR1',
+            'R1 Téléphone 1' => 'telephoneFR1',
+            'R1 Téléphone 2' => 'telephonePR1',
+            'R1 Téléphone 3' => 'telephoneTR1',
+            'R1 email' => 'emailR1',
+            'R1 Service' => 'service1IdR1',
+            'R1 Station Montée' => 'station1r1',
+            'R1 Commune station montée' => 'communeStation1r1',
+            'R1 Station Descente' => 'station2r1',
+            'R1 Commune station descente' => 'communeStation2r1',
+            'R1 Correspondance' => 'service2IdR1',
+            'R2 Identité' => 'responsable2',
+            'R2 Adresse ligne 1' => 'adresseR2L1',
+            'R2 Adresse ligne 2' => 'adresseR2L2',
+            'R2 Commune' => 'communeR2',
+            'R2 Téléphone 1' => 'telephoneFR2',
+            'R2 Téléphone 2' => 'telephonePR2',
+            'R2 Téléphone 3' => 'telephoneTR2',
+            'R2 email' => 'emailR2',
+            'R2 Service' => 'service1IdR2',
+            'R2 Station Montée' => 'station1r2',
+            'R2 Commune station montée' => 'communeStation1r2',
+            'R2 Station Descente' => 'station2r2',
+            'R2 Commune station descente' => 'communeStation2r2',
+            'R2 Correspondance' => 'service2IdR2',
+        ];
+        // index du tableau $columns correspondant à des n° de téléphones
+        $aTelephoneIndexes = [];
+        $idx = 0;
+        foreach ($columns as $column_field) {
+            if (substr($column_field, 0, 9) == 'telephone') {
+                $aTelephoneIndexes[] = $idx;
+            }
+            $idx ++;
+        }
+        // contrôle de l'identité de l'utilisateur
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        // reprise des critères
+        $criteres = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
+            ->setValueOptions('serviceId',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->toutes());
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+            $criteres_form->getElementNames(), false);
+        $criteres_form->setData($criteres);
+        if ($criteres_form->isValid()) {
+            $criteres_obj->exchangeArray($criteres_form->getData());
+        }
+        // lancement de la requête selon la catégorie de l'utilisateur
+        $where = $criteres_obj->getWhereForEleves();
+        try {
+            $result = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritesR(
+                $where, [
+                    'nom',
+                    'prenom'
+                ]);
+        } catch (\Exception $e) {
+            die('Erreur dans ' . __METHOD__);
+        }
+        // et construction d'un tabeau des datas
+        $data = [];
+        foreach ($result as $eleve) {
+            $aEleve = $eleve->getArrayCopy();//var_dump($aEleve);
+            $ligne = [];
+            foreach ($columns as $value) {
+                $ligne[] = $aEleve[$value];
+            }
+            $data[] = $ligne;
+        }
+        // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
+        // le caractère d'enclosure
+        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        return $this->csvExport('eleves.csv', array_keys($columns), $data,
+            function ($item) use ($aTelephoneIndexes, $viewhelper) {
+                foreach ($aTelephoneIndexes as $idx) {
+                    $item[$idx] = $viewhelper($item[$idx]);
+                }
+                return $item;
+            });
     }
 
     public function orgCircuitsAction()
@@ -366,8 +478,6 @@ class IndexController extends AbstractActionController
             $services = [];
             $effectifTransporteursServices = null;
         }
-
-        // die(var_dump($stats));
         return new ViewModel(
             [
                 'transporteur' => $transporteur,
@@ -392,8 +502,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la
-            // session (login
-            // ou cas du paginator ou de F5 )
+            // session (login ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         } else {
@@ -458,8 +567,7 @@ class IndexController extends AbstractActionController
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
-        // formulaire (pas
-        // de post ou invalide)
+        // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
@@ -735,6 +843,142 @@ class IndexController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
+    }
+
+    public function trElevesDownloadAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $columns = [
+            'Nom' => 'nom',
+            'Prénom' => 'prenom',
+            'R Identité' => 'responsable',
+            'R Adresse ligne 1' => 'adresseL1',
+            'R Adresse ligne 2' => 'adresseL2',
+            'R Commune' => 'commune',
+            'R Téléphone 1' => 'telephoneF',
+            'R Téléphone 2' => 'telephoneP',
+            'R Téléphone 3' => 'telephoneT',
+            'Établissement' => 'etablissement',
+            'Commune de l\'établissement' => 'communeEtablissement',
+            'Classe' => 'classe',
+            'Service' => 'service1Id',
+            'Station Montée' => 'station1',
+            'Commune station montée' => 'communeStation1',
+            'Station Descente' => 'station2',
+            'Commune station descente' => 'communeStation2',
+            'Correspondance' => 'service2Id'
+        ];
+        // index du tableau $columns correspondant à des n° de téléphones
+        $aTelephoneIndexes = [];
+        $idx = 0;
+        foreach ($columns as $column_field) {
+            if (substr($column_field, 0, 9) == 'telephone') {
+                $aTelephoneIndexes[] = $idx;
+            }
+            $idx ++;
+        }
+        // contrôle de l'identité de l'utilisateur
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity()) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $userId = $auth->getUserId();
+        // reprise des critères
+        $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
+            ->setValueOptions('serviceId',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->toutes());
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $categorie = $auth->getCategorieId();
+        if ($categorie == 2) {
+            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        } else {
+            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+        }
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+            $criteres_form->getElementNames(), $sanspreinscrits);
+
+        $criteres_form->setData($criteres);
+        if ($criteres_form->isValid()) {
+            $criteres_obj->exchangeArray($criteres_form->getData());
+        }
+        // lancement de la requête selon la catégorie de l'utilisateur
+        try {
+            switch ($categorie) {
+                case 2:
+                    // Filtre les résultats pour n'afficher que ce qui concerne ce
+                    // transporteur
+                    $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
+                        $userId);
+                    $where = $criteres_obj->getWhere()
+                        ->nest()
+                        ->equalTo('ser1.transporteurId', $right)->or->equalTo(
+                        'ser2.transporteurId', $right)->unnest();
+                    $result = $this->db_manager->get(
+                        'Sbm\Db\Query\AffectationsServicesStations')->getScolaritesR(
+                        $where, [
+                            'nom',
+                            'prenom'
+                        ]);
+                    break;
+                case 3:
+                    // Filtre les résultats pour n'afficher que ce qui concerne cet
+                    // établissement
+                    $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
+                        $userId);
+                    $where = $criteres_obj->getWhere()->equalTo('sco.etablissementId',
+                        $right);
+                    $result = $this->db_manager->get(
+                        'Sbm\Db\Query\AffectationsServicesStations')->getScolaritesR(
+                        $where, [
+                            'nom',
+                            'prenom'
+                        ]);
+                    break;
+                default:
+                    throw new \Exception('');
+                    break;
+            }
+        } catch (\Exception $e) {
+            die('Erreur dans ' . __METHOD__);
+        }
+        // et construction d'un tabeau des datas
+        $data = [];
+        foreach ($result as $eleve) {
+            $aEleve = $eleve->getArrayCopy();
+            $ligne = [];
+            foreach ($columns as $value) {
+                $ligne[] = $aEleve[$value];
+            }
+            $data[] = $ligne;
+        }
+        // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
+        // le caractère d'enclosure
+        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        return $this->csvExport('eleves.csv', array_keys($columns), $data,
+            function ($item) use ($aTelephoneIndexes, $viewhelper) {
+                foreach ($aTelephoneIndexes as $idx) {
+                    $item[$idx] = $viewhelper($item[$idx]);
+                }
+                return $item;
+            });
     }
 
     // ===========================================================================================================
