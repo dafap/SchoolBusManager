@@ -1140,6 +1140,16 @@ class EleveController extends AbstractActionController
             'Commune de l\'établissement' => 'communeEtablissement',
             'Classe' => 'classe'
         ];
+        // index du tableau $columns correspondant à des n° de téléphones
+        $aTelephoneIndexes = [];
+        $idx = 0;
+        foreach ($columns as $column_field) {
+            if (substr($column_field, 0, 9) == 'telephone') {
+                $aTelephoneIndexes[] = $idx;
+            }
+            $idx ++;
+        }
+        // reprise des critères
         $criteres = Session::get('post', [],
             str_replace('download', 'liste', $this->getSessionNamespace()));
         $criteres_form = new \SbmGestion\Form\Eleve\CriteresForm();
@@ -1155,6 +1165,7 @@ class EleveController extends AbstractActionController
         if ($criteres_form->isValid()) {
             $criteres_obj->exchangeArray($criteres_form->getData());
         }
+        // lancement de la requête et construction d'un tabeau des datas
         $data = [];
         foreach ($this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
             $criteres_obj->getWhere(), [
@@ -1168,7 +1179,16 @@ class EleveController extends AbstractActionController
             }
             $data[] = $ligne;
         }
-        return $this->csvExport('eleves.csv', array_keys($columns), $data);
+        // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
+        // le caractère d'enclosure
+        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        return $this->csvExport('eleves.csv', array_keys($columns), $data,
+            function ($item) use ($aTelephoneIndexes, $viewhelper) {
+                foreach ($aTelephoneIndexes as $idx) {
+                    $item[$idx] = $viewhelper($item[$idx]);
+                }
+                return $item;
+            });
     }
 
     public function eleveSupprAction()
