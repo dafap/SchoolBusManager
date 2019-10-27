@@ -4,14 +4,14 @@
  *
  * Le select a pour clé une chaine construite par concaténation de la dateBordereau et du codeModeDePaiement, séparés par |
  * (voir SbmCommun\Model\Db\Service\Select\BordereauxForSelect et sa méthode decode() pour retrouver les deux paramètres)
- * 
+ *
  * @project sbm
  * @package SbmGestion/Form/Finances
  * @filesource BordereauRemiseValeurChoix.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 27 oct. 2019
+ * @version 2019-2.5.3
  */
 namespace SbmGestion\Form\Finances;
 
@@ -58,8 +58,19 @@ class BordereauRemiseValeurChoix extends AbstractSbmForm
                 'name' => 'editer',
                 'attributes' => [
                     'type' => 'submit',
-                    'value' => 'Editer le bordereau',
+                    'value' => 'Éditer le bordereau',
                     'id' => 'editer-submit',
+                    'class' => 'button default submit',
+                    'formtarget' => '_blank'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'exporter',
+                'attributes' => [
+                    'type' => 'submit',
+                    'value' => 'Exporter le bordereau',
+                    'id' => 'exporter-submit',
                     'class' => 'button default submit',
                     'formtarget' => '_blank'
                 ]

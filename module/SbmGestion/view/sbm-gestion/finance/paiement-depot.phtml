@@ -7,8 +7,8 @@
  * @filesource paiement-depot.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 27 oct. 2018
+ * @version 2019-2.5.3
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -24,7 +24,7 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 			<?= $this->flashMessenger()->render('default');?>
         </div>
 	</div>
-	<div id="fiche-inner">	  
+	<div id="fiche-inner">
 	<?php if ($this->voirForm1) : ?>
 		<?= $this->form()->openTag($this->form1); ?>
 	    <fieldset class="sbm-page1">
@@ -35,13 +35,14 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 				<?= $this->formRow($this->form1->get('bordereau'));?></div>
 			<div class="row-inner">
 				<?= $this->formSubmit($this->form1->get('editer'));?>
+				<?= $this->formSubmit($this->form1->get('exporter'));?>
 				<?= $this->formSubmit($this->form1->get('supprimer'));?>
 				<?= $this->formSubmit($this->form1->get('cloturer'));?>
 				<?= $this->formSubmit($this->form1->get('cancel')); ?></div>
 			<p class="sbm-description">Il ne peut y avoir qu'un seul bordereau en
 				cours par mode de paiement.</p>
 		</fieldset>
-	    <?= $this->form()->closeTag(); ?>  
+	    <?= $this->form()->closeTag(); ?>
 	    <p></p>
 	<?php endif;?>
 	<?php if ($this->voirForm2) : ?>
@@ -68,11 +69,11 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 				créer un nouveau bordereau.<br>Par contre, vous pouvez créer un
 				bordereau en cours pour chaque mode de paiement.
 			</p>
-		</fieldset> 		
+		</fieldset>
 	    <?= $this->form()->closeTag(); ?>
 	    <p></p>
 	<?php endif;?>
-	<?php if ($this->voirForm3) : ?>	   
+	<?php if ($this->voirForm3) : ?>
 	    <?= $this->form()->openTag($this->form3); ?>
 		<fieldset class="sbm-page1">
 			<legend>Editer un bordereau clôturé</legend>
@@ -80,6 +81,7 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 				<?= $this->formRow($this->form3->get('bordereau'));?></div>
 			<div class="row-inner">
 				<?= $this->formSubmit($this->form3->get('editer'));?>
+				<?= $this->formSubmit($this->form3->get('exporter'));?>
 				<?= $this->formSubmit($this->form3->get('cancel'));?></div>
 		</fieldset>
 		<?= $this->form()->closeTag(); ?>

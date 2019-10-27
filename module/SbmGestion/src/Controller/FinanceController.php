@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
+ * @date 27 oct. 2019
  * @version 2019-2.5.3
  */
 namespace SbmGestion\Controller;
@@ -753,8 +753,9 @@ class FinanceController extends AbstractActionController
     }
 
     /**
+     * Edition d'un pdf reprenant la liste des rectifications pour l'exercice précisé
      *
-     * @todo Finir la mise au point de cette action (26 juillet 2019)
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function paiementRectificationsPdfAction()
     {
@@ -837,13 +838,20 @@ class FinanceController extends AbstractActionController
                     'page' => $page,
                     'id' => 1
                 ]));
-
+        $exporterSubmit = $form1->get('exporter');
+        $exporterSubmit->setAttribute('formaction',
+            $this->url()
+                ->fromRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-exporter',
+                    'page' => $page,
+                    'id' => 1
+                ]));
         $form2 = new \SbmGestion\Form\Finances\BordereauRemiseValeurCreer();
         $form2->setAttribute('id', 'bordereau-preparer');
         $form2->setValueOptions('codeModeDePaiement', $nouveauxPossibles)->setValueOptions(
             'codeCaisse', $this->db_manager->get('Sbm\Db\Select\Libelles')
                 ->caisse());
-
         $form3 = new \SbmGestion\Form\Finances\BordereauRemiseValeurChoix();
         $form3->setAttribute('id', 'bordereau-cloture');
         $form3->setValueOptions('bordereau', $bordereauxClotures);
@@ -856,7 +864,15 @@ class FinanceController extends AbstractActionController
                     'page' => $page,
                     'id' => 3
                 ]));
-
+        $exporterSubmit = $form3->get('exporter');
+        $exporterSubmit->setAttribute('formaction',
+            $this->url()
+                ->fromRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-exporter',
+                    'page' => $page,
+                    'id' => 3
+                ]));
         if (array_key_exists('preparer', $args)) {
             $form2->setData($args);
             if ($form2->isValid()) {
@@ -971,6 +987,88 @@ class FinanceController extends AbstractActionController
                 'voirForm2' => ! empty($nouveauxPossibles),
                 'form3' => $form3, // bordereaux clôturés
                 'voirForm3' => ! empty($bordereauxClotures)
+            ]);
+    }
+
+    /**
+     * Choix d'un bordereau (par formulaire) puis exportation
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function paiementExporterAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        $page = $this->params('page', 1);
+        $id = $this->params('id', 1);
+        if (! array_key_exists('exporter', $args)) {
+            $this->flashMessenger()->addWarningMessage('Action abandonnée.');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $page
+                ]);
+        }
+        $sBordereaux = $this->db_manager->get('Sbm\Db\Select\Bordereaux');
+        $bordereauxClotures = $sBordereaux->clotures();
+        $bordereauxEnCours = $sBordereaux->encours();
+        $nouveauxPossibles = $this->db_manager->get('Sbm\Db\Select\Libelles')->modeDePaiement();
+        foreach ($bordereauxEnCours as $key => $libelle) {
+            $aKey = $sBordereaux->decode($key);
+            unset($nouveauxPossibles[$aKey['codeModeDePaiement']]);
+        }
+        unset($libelle);
+        $form = $this->form_manager->get(Finances\BordereauRemiseValeurChoix::class);
+        if ($id == 1) {
+            $form->setValueOptions('bordereau', $bordereauxEnCours);
+        } else {
+            $form->setValueOptions('bordereau', $bordereauxClotures);
+        }
+        $form->setData($args);
+        if ($form->isValid()) {
+            $args = $form->getData();
+            $columns = [
+                'Mode de paiement' => 'modeDePaiement',
+                'Date' => 'dateValeur',
+                'Titulaire' => 'titulaire',
+                'Banque' => 'banque',
+                'Référence' => 'reference',
+                'Montant' => 'montant',
+                'Responsable' => 'responsable'
+            ];
+            // $aKey est un tableau de la forme :
+            // ['dateBordereau' => date, 'codeModeDePaiement' => code]
+            $aKey = $sBordereaux->decode($args['bordereau']);
+            $where = new Where();
+            $where->equalTo('dateBordereau', $aKey['dateBordereau'])->equalTo(
+                'codeModeDePaiement', $aKey['codeModeDePaiement']);
+            // lancement de la requête et construction d'un tabeau des datas
+            $data = [];
+            foreach ($this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll($where,
+                [
+                    'dateValeur',
+                    'titulaire'
+                ]) as $paiement) {
+                $aPaiement = $paiement->getArrayCopy();
+                $ligne = [];
+                foreach ($columns as $value) {
+                    $ligne[] = $aPaiement[$value];
+                }
+                $data[] = $ligne;
+            }
+            // exportation du résultat de la requête selon la composition du tableau
+            // $columns
+            return $this->csvExport('bordereau-de-paiement.csv', array_keys($columns), $data);
+        }
+        // le formulaire ne valide pas. Il s'agit du select qui est vide.
+        return $this->redirect()->toRoute('sbmgestion/finance',
+            [
+                'action' => 'paiement-depot',
+                'page' => $page,
+                'id' => $id . 'error'
             ]);
     }
 
@@ -1201,7 +1299,6 @@ class FinanceController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
-     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifSupprAction()
@@ -1324,9 +1421,8 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * renvoie la liste des élèves inscrits pour une grille de tarifs donnée
+     * renvoie la liste des élèves inscrits pour une grille tarifaire donnée
      *
-     * @todo : à faire
      * @return \Zend\View\Model\ViewModel
      */
     public function tarifGroupAction()
@@ -1413,8 +1509,8 @@ class FinanceController extends AbstractActionController
         $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
-            function ($where, $args) use ($strategy ){
-                //$tarifId = StdLib::getParam('tarifId', $args, - 1);
+            function ($where, $args) use ($strategy) {
+                // $tarifId = StdLib::getParam('tarifId', $args, - 1);
                 $grilleTarif = StdLib::getParam('grilleTarif', $args);
                 if ($grilleTarif) {
                     $grilleTarifId = $strategy->extract($grilleTarif);
