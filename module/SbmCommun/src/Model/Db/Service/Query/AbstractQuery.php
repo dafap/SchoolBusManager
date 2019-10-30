@@ -2,15 +2,15 @@
 /**
  * Quelques méthodes communes à toutes les classes
  *
- * 
+ *
  *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Service/Query
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2019
- * @version 2019-4.5.0
+ * @date 30 oct. 2019
+ * @version 2019-4.5.4
  */
 namespace SbmCommun\Model\Db\Service\Query;
 
@@ -111,6 +111,7 @@ abstract class AbstractQuery implements FactoryInterface
     /**
      * Exécute le select passé et rend le résultat après mise en place des strategies
      * paramétrée. Le résultat se comporte comme un iterator de tableaux.
+     * Chaque valeur de l'iterator est un objet de type getResultSetPrototype() ou ArrayObject()
      *
      * @param \Zend\Db\Sql\Select $select
      *
