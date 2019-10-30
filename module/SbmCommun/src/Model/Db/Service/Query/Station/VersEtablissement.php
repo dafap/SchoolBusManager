@@ -7,14 +7,15 @@
  * @filesource VersEtablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
- * @version 2019-2.5.0
+ * @date 29 oct. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Select;
 
 class VersEtablissement extends AbstractQuery
 {
@@ -30,25 +31,54 @@ class VersEtablissement extends AbstractQuery
      * @param string $etablissementId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectStationsVers(string $etablissementId)
+    private function selectStationsVers(string $etablissementId): Select
     {
         return $this->sql->select()
             ->from([
             's' => $this->db_manager->getCanonicName('stations')
         ])
             ->join([
+            'l' => $this->db_manager->getCanonicName('communes')
+        ], 'l.communeId=s.communeId', [
+            'commune' => 'nom',
+            'codePostal'
+        ])
+            ->join([
             'c' => $this->db_manager->getCanonicName('circuits')
-        ], 's.stationId = c.stationId')
+        ], 's.stationId = c.stationId', [])
             ->join(
             [
                 'e' => $this->db_manager->getCanonicName('etablissements-services')
-            ], 'c.serviceId = e.serviceId')
+            ], 'c.serviceId = e.serviceId', [])
             ->where(
             [
+                's.visible' => 1,
+                's.ouverte' => 1,
                 'c.millesime' => $this->millesime,
                 'c.montee' => 1,
                 'e.etablissementId' => $etablissementId
             ]);
+    }
+
+    /**
+     * Renvoie les stations de montee, ouvertes et visibles, desservant l'établissement
+     * donné pour le millesime courant
+     *
+     * @param string $etablissementId
+     */
+    public function getStations(string $etablissementId)
+    {
+        $select = $this->selectStationsVers($etablissementId)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns(
+            [
+                'stationId' => 'stationId',
+                'nom' => 'nom',
+                'x' => 'x',
+                'y' => 'y',
+                'ouverte'
+            ]);
+        return $this->renderResult($select);
     }
 
     /**
@@ -75,7 +105,7 @@ class VersEtablissement extends AbstractQuery
                 "Coordonnées incorrectes : $message");
         }
         // calcul arrondi par excès à 5m près
-        $sqlExpressionDistance = sprintf('ceil(sqrt(pow(x-%f)+pow(y-%f))/5)*5',
+        $sqlExpressionDistance = sprintf('ceil(sqrt(pow(x - %f, 2)+pow(y - %f, 2))/5)*5',
             $pointDomicile->getX(), $pointDomicile->getY());
         $where = new Where();
         $where->lessThanOrEqualTo($sqlExpressionDistance, $limit);
@@ -86,11 +116,6 @@ class VersEtablissement extends AbstractQuery
                 'station' => 'nom',
                 'd' => new \Zend\Db\Sql\Expression($sqlExpressionDistance)
             ])
-            ->join([
-            'l' => $this->db_manager->getCanonicName('communes')
-        ], 'l.communeId=s.communeId', [
-            'commune' => 'nom'
-        ])
             ->where($where)
             ->order('d');
         return $this->renderResult($select);
