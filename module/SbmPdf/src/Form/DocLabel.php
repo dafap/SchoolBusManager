@@ -2,14 +2,14 @@
 /**
  * Formulaire de saisie/modification d'un format d'étiquettes
  *
- * 
+ *
  * @project sbm
  * @package SbmPdf/Form
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
- * @version 2019-2.5.0
+ * @date 30 oct. 2018
+ * @version 2019-2.5.4
  */
 namespace SbmPdf\Form;
 
@@ -577,7 +577,7 @@ class DocLabel extends Form implements InputFilterProviderInterface
         $strategieColor = new Color();
         foreach ($data as $key => &$value) {
             if (substr($key, - 6) == '_color') {
-                $value = $strategieColor->hydrate($value);
+                $value = $strategieColor->hydrate($strategieColor->extract($value));
             }
         }
         parent::setData($data);

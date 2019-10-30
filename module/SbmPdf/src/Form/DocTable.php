@@ -4,9 +4,9 @@
  *
  * Un document structuré en tableaux contient pour chaque tableau 3 sections ('thead', 'tbody' et 'tfoot')
  * Chaque section est identifiée par doctableId, mais aussi par (documentId, ordinal_table, section) qui est unique.
- * 
+ *
  * Description de la structure de la table
- * 
+ *
  * 'doctableId' : identifiant unique auto increment,
  * 'documentId' : foreign key sur la table documents, mise à jour et suppression en cascade,
  * 'ordinal_table' : rang du tableau dans le document. S'il n'y a qu'un tableau, on mettra 1
@@ -15,15 +15,15 @@
  * 'visible' : mettre 1 si la section est visible ou 0 si elle n'est pas présente dans le pdf,
  * 'width' : largeur du tableau qui prend la valeur auto ou un nombre de 1 à 100 (en % de la largeur de la zone d'écriture)
  * 'row_height' : hauteur de ligne en unité de mesure configurée dans config/autoload/tcpdf-confif.global.php (en mm pour SBM config de base),
- * 'cell_border' : prend les valeurs 0 (pas de bordure), 1 (encadrement), L (bordure à gauche), R (bordure à droite), T (bordue en haut), 
- *                                   B (bordure en bas) ou une combinaison de ces valeurs. 
- *                 Restriction: TCPDF permet de configurer en même temps l'épaisseur, la couleur... de la ligne. Ce n'est pas implémenté dans ce module.                  
+ * 'cell_border' : prend les valeurs 0 (pas de bordure), 1 (encadrement), L (bordure à gauche), R (bordure à droite), T (bordue en haut),
+ *                                   B (bordure en bas) ou une combinaison de ces valeurs.
+ *                 Restriction: TCPDF permet de configurer en même temps l'épaisseur, la couleur... de la ligne. Ce n'est pas implémenté dans ce module.
  * 'cell_align'  : alignement horizontal du texte dans la cellule (L : à gauche, C : centré, R : à droite, J : justifié)
  * 'cell_link'   : URL ou identifiant retourné par addLink() et appliqué à l'ensemble de la section,
  * 'cell_stretch' : de 0 à 4 (voir ci-dessosu 'value_options' dans le code définissant de l'élément de même nom)
  * 'cell_ignore_min_height' : la hauteur indiquée dans row_height peut être ignorée si la ligne est vide
- * 'cell_calign' : alignement de la cellule par rapport à l'ordonnée Y courante qui définit la ligne de base 
- *                (T : cellule au dessus, C : cellule centrée, B : cellule en dessous, 
+ * 'cell_calign' : alignement de la cellule par rapport à l'ordonnée Y courante qui définit la ligne de base
+ *                (T : cellule au dessus, C : cellule centrée, B : cellule en dessous,
  *                 A : ligne de texte au dessus de la ligne de base, L : centrée sur la ligne de base, D : en dessous de la ligne de base)
  * 'cell_valign' : alignement vertical du texte à l'intérieur de la cellule (M :au milieu, T : en haut, B : en bas)
  * 'draw_color'  : couleur des traits,
@@ -32,14 +32,14 @@
  * 'text_color'  : couleur du texte,
  * 'font_style' => 'char(2) NOT NULL DEFAULT ""' // '', B, I, U, D, O ou combinaison de 2 d'entre elles
 
- * 
+ *
  * @project sbm
  * @package SbmPdf\Form
  * @filesource DocTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2019-2.5.0
+ * @date 30 oct. 2018
+ * @version 2019-2.5.4
  */
 namespace SbmPdf\Form;
 
@@ -221,6 +221,7 @@ class DocTable extends Form implements InputFilterProviderInterface
                     'label' => 'Alignement horizontal du texte dans les cellules',
                     'label_attributes' => [],
                     'value_options' => [
+                        's' => 'Standard',
                         'L' => 'Aligné à gauche',
                         'C' => 'Centré',
                         'R' => 'Aligné à droite',
@@ -540,7 +541,7 @@ class DocTable extends Form implements InputFilterProviderInterface
         $strategieFontStyle = new FontStyle();
         foreach ($data as $key => &$value) {
             if (substr($key, - 6) == '_color') {
-                $value = $strategieColor->hydrate($value);
+                $value = $strategieColor->hydrate($strategieColor->extract($value));
             } elseif ($key == 'cell_border') {
                 $value = $strategieCellBorder->hydrate($value);
             } elseif (($key == 'font_style')) {
