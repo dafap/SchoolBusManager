@@ -9,8 +9,8 @@
  * @filesource DumpTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
- * @version 2019-2.5.0
+ * @date 4 nov. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmInstallation\Model;
 
@@ -65,13 +65,12 @@ EOT;
     }
 
     /**
-     * Initialisation :
-     * On lui passe un tableau d'alias de tables dans le ServiceManager
+     * Initialisation : On lui passe un tableau d'alias de tables dans le ServiceManager
      *
      * @param array $tables
      * @param bool $onScreen
-     *            si true, la méthode copy renverra une chaine au format html pour affichage du
-     *            résultat sur l'écran
+     *            si true, la méthode copy renverra une chaine au format html pour
+     *            affichage du résultat sur l'écran
      */
     public function init($tables, $onScreen = false)
     {
@@ -80,8 +79,8 @@ EOT;
     }
 
     /**
-     * Effectue la copy dans les fichiers et renvoie le buffer d'écran si la propriété onScreen est
-     * vraie (sinon, une chaine vide)
+     * Effectue la copy dans les fichiers et renvoie le buffer d'écran si la propriété
+     * onScreen est vraie (sinon, une chaine vide)
      *
      * @return string
      */
@@ -117,7 +116,6 @@ EOT;
                 continue;
             }
             $columns = $this->db_manager->getColumnTypes($table_name, $table_type);
-
             // ouverture du fichier
             $fp = fopen($file_name, 'w');
             $this->fputs($fp,
@@ -131,8 +129,9 @@ EOT;
                         $val = "addslashes(base64_decode('" .
                             base64_encode(stripslashes($column)) . "'))";
                     } elseif (is_numeric($column)) {
-                        if (substr($column, 0, 1) == 0 && strlen(trim($column)) > 1) {
-                            $val = "'$column'"; // 0 à gauche
+                        //if (substr($column, 0, 1) == 0 && strlen(trim($column)) > 1) {
+                        if ($this->is_quoted_column($columns[$key])) {
+                            $val = "'$column'"; // 0 à gauche ou risque d'écriture scientifique
                         } else {
                             $val = $column;
                         }
@@ -164,7 +163,9 @@ EOT;
                         if (substr($key, - 5) == 'color' && substr($column, 0, 1) == '#') {
                             $column = substr($column, 1);
                         }
-                        $val = "stripslashes('" . addslashes($column) . "')";
+                        $val = addslashes($column);
+                        $val = "stripslashes('" . str_replace('\\\\', '\\\\\\\\', $val) .
+                            "')";
                     }
 
                     $ligne .= "\n        '$key' => $val, ";
@@ -180,6 +181,20 @@ EOT;
         if ($this->onScreen)
             $this->screen .= '</pre>';
         return $this->screen;
+    }
+
+    private function is_quoted_column($key)
+    {
+        return in_array($key,
+            [
+                'char',
+                'varchar',
+                'text',
+                'date',
+                'datetime',
+                'time',
+                'timestamp'
+            ]);
     }
 
     private function fputs($fp, $txt)
