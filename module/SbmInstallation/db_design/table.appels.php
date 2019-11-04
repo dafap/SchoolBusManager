@@ -13,8 +13,8 @@
  * @filesource table.appels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2019
- * @version 2019-2.5.0
+ * @date 3 nov. 2019
+ * @version 2019-2.5.4
  */
 use SbmBase\Model\StdLib;
 
@@ -82,6 +82,17 @@ return [
         'engine' => 'InnoDb',
         'charset' => 'utf8',
         'collate' => 'utf8_unicode_ci'
+    ],
+    'triggers' => [
+        'appels_bd_history' => [
+            'moment' => 'BEFORE',
+            'evenement' => 'DELETE',
+            'definition' => <<<EOT
+INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
+VALUES ('%table(appels)%', 'delete', 'appelId', OLD.appelId, NOW(), CONCAT_WS('|', OLD.notified, OLD.idOp, OLD.refdet, OLD.responsableId, OLD.eleveId))
+EOT
+
+        ]
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.appels.php')
