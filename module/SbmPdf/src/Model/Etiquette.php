@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
- * @version 2019-2.5.0
+ * @date 5 nov. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmPdf\Model;
 
@@ -69,9 +69,8 @@ class Etiquette
     protected $y_space;
 
     /**
-     * Initialise la structure.
-     * Doit être suivi par : $label->setCurrentColumn($j); // optionnel
-     * $label->setCurrentRow($k); // optionnel list($this->x, $this->y) =
+     * Initialise la structure. Doit être suivi par : $label->setCurrentColumn($j); //
+     * optionnel $label->setCurrentRow($k); // optionnel list($this->x, $this->y) =
      * $label->xyStart(); // nécessaire
      *
      * @param ServiceLocatorInterface $db_manager
@@ -230,11 +229,10 @@ class Etiquette
     /**
      * Renvoie la position (X, Y) d'origine de l'étiquette courante. Si la première ligne
      * est décalée (pas de label mais un label_width) alors X en tient compte et est
-     * décalé d'autant que nécessaire.
-     * L'affectation dans la classe Tcpdf se fera de la façon suivante : list($this->x,
+     * décalé d'autant que nécessaire. L'affectation dans la classe Tcpdf se fera de la
+     * façon suivante : list($this->x, $this->y) = $label->xyStart(); Pour un changement
+     * d'étiquette on fera : $label = new Etiquette($sm, $documentId); list($this->x,
      * $this->y) = $label->xyStart();
-     * Pour un changement d'étiquette on fera : $label = new Etiquette($sm, $documentId);
-     * list($this->x, $this->y) = $label->xyStart();
      *
      * @return array of float (x, y) en coordonnées absolue (page)
      */
@@ -253,8 +251,8 @@ class Etiquette
     }
 
     /**
-     * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans l'étiquette.
-     * On fera : list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la
+     * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans l'étiquette. On
+     * fera : list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la
      * ligne qu'on vient d'écrire
      *
      * @param int $rang
@@ -279,8 +277,8 @@ class Etiquette
 
     /**
      * Renvoie la position (X, Y) de la prochaine ligne d'écriture dans une étiquette.
-     * Changement d'étiquette si nécessaire. Si la page est pleine, renvoie false.
-     * Usage dans Tcpdf:<code> if (($xy = $label->NextPosition($i)) == false) {
+     * Changement d'étiquette si nécessaire. Si la page est pleine, renvoie false. Usage
+     * dans Tcpdf:<code> if (($xy = $label->NextPosition($i)) == false) {
      * $this->AddPage(); list($this->x, $this->y) = $label->NewPage(); } else {
      * list($this->x, $this->y) = $xy; }</code>
      *
@@ -345,9 +343,30 @@ class Etiquette
         return (float) $this->config['doclabel']['label_width'];
     }
 
-    public function txtLab($rang)
+    public function borderStyle(callable $convertColor): array
     {
-        return (float) $this->config['doclabel']['label'];
+        switch ($this->config['doclabel']['border_dash']) {
+            case 2:
+                $dash = '1,3';
+                break;
+            case 1:
+                $dash = '3,3';
+                break;
+            default:
+                $dash = 0;
+        }
+        return [
+            'all' => [
+                'width' => $this->config['doclabel']['border_width'],
+                'dash' => $dash,
+                'color' => $convertColor($this->config['doclabel']['border_color'])
+            ]
+        ];
+    }
+
+    public function hasBorder(): bool
+    {
+        return $this->config['doclabel']['border'];
     }
 
     public function alignLab($rang)

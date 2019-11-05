@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 5 nov. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmPdf\Model;
 
@@ -2246,11 +2246,20 @@ class Tcpdf extends \TCPDF
             $lignes = $etiquetteData['lignes'];
             $photos = $etiquetteData['photos'];
             $page_vide = false;
-            // partie graphique : photos
+            // partie graphique
             $origine = [
                 $this->x,
                 $this->y
             ];
+            // partie graphique : rectangle si besoin
+            if ($label->hasBorder()) {
+                $this->Rect($this->x, $this->y, $label->wLab(0), $label->labelHeight(), '',
+                    $label->borderStyle(
+                        function ($colorHtml) {
+                            return $this->convertColor($colorHtml);
+                        }));
+            }
+            // partie graphique : photos
             foreach ($photos as $rang => $img) {
                 list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
                     $label->parametresPhoto($rang));
@@ -2601,6 +2610,14 @@ class Tcpdf extends \TCPDF
                 $this->x,
                 $this->y
             ];
+            // partie graphique : rectangle si besoin
+            if ($label->hasBorder()) {
+                $this->Rect($this->x, $this->y, $label->wLab(0), $label->labelHeight(), '',
+                    $label->borderStyle(
+                        function ($colorHtml) {
+                            return $this->convertColor($colorHtml);
+                        }));
+            }
             // $this->templateDocBodyMethod3Picture();
             // filigrane
             if ($duplicata) {

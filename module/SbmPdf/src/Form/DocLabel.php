@@ -8,7 +8,7 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 oct. 2018
+ * @date 5 nov. 2018
  * @version 2019-2.5.4
  */
 namespace SbmPdf\Form;
@@ -244,7 +244,7 @@ class DocLabel extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'type' => 'text',
+                'type' => 'Zend\Form\Element\Radio',
                 'name' => 'border',
                 'attributes' => [
                     'id' => 'label-border',
@@ -253,6 +253,10 @@ class DocLabel extends Form implements InputFilterProviderInterface
                 'options' => [
                     'label' => 'Bordure',
                     'label_attributes' => [],
+                    'value_options' => [
+                        '1' => 'Oui',
+                        '0' => 'Non'
+                    ],
                     'error_options' => [
                         'class' => 'sbm-error'
                     ]
@@ -260,15 +264,20 @@ class DocLabel extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'type' => 'text',
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'border_dash',
                 'attributes' => [
                     'id' => 'label-border_dash',
                     'class' => ''
                 ],
                 'options' => [
-                    'label' => 'Trait (plein, tirets ou pointillé)',
+                    'label' => 'Trait',
                     'label_attributes' => [],
+                    'value_options' => [
+                        0 => 'plein',
+                        1 => 'tirets',
+                        2 => 'pointillés'
+                    ],
                     'error_options' => [
                         'class' => 'sbm-error'
                     ]
