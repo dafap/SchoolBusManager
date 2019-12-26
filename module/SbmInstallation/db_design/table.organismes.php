@@ -8,8 +8,8 @@
  * @filesource table.organismes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
- * @version 2019-2.5.0
+ * @date 21 déc. 2019
+ * @version 2019-2.5.4
  */
 use SbmBase\Model\StdLib;
 
@@ -54,8 +54,8 @@ return [
             ]
         ],
         'engine' => 'InnoDB',
-        'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci'
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_unicode_ci'
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.organismes.php')

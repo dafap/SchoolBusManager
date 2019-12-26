@@ -13,7 +13,7 @@
  * @filesource table.appels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 nov. 2019
+ * @date 21 déc. 2019
  * @version 2019-2.5.4
  */
 use SbmBase\Model\StdLib;
@@ -80,8 +80,8 @@ return [
             ]
         ],
         'engine' => 'InnoDb',
-        'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci'
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_unicode_ci'
     ],
     'triggers' => [
         'appels_bd_history' => [

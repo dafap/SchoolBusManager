@@ -3,14 +3,14 @@
  * Description de la table d'historique de l'application
  *
  * Cette table sera remplie par des triggers
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource system.history.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 21 déc. 2018
+ * @version 2019-2.5.4
  */
 return [
     'name' => 'history',
@@ -56,7 +56,7 @@ return [
             ]
         ],
         'engine' => 'MyISAM',
-        'charset' => 'utf8',
-        'collate' => 'utf8_unicode_ci'
+        'charset' => 'utf8mb4',
+        'collate' => 'utf8mb4_unicode_ci'
     ]
 ];
