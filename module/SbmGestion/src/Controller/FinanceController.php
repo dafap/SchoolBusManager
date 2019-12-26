@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 oct. 2019
- * @version 2019-2.5.3
+ * @date 22 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmGestion\Controller;
 
@@ -45,58 +45,56 @@ class FinanceController extends AbstractActionController
         $millesime = Session::get('millesime');
         $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
-        $codeCheques = $tLibelles->getCode('ModeDePaiement', 'chèque');
-        $codeEspeces = $tLibelles->getCode('ModeDePaiement', 'espèces');
-        $codeCB = $tLibelles->getCode('ModeDePaiement', 'CB');
-        $codeTitres = $tLibelles->getCode('ModeDePaiement', 'Titre individuel');
-        $codeRegisseur = $tLibelles->getCode('Caisse', 'régisseur');
-        $codeComptable = $tLibelles->getCode('Caisse', 'comptable');
-        $codeDft = $tLibelles->getCode('Caisse', 'dft');
+        $codesCaisse = $tLibelles->getCodes('Caisse');
+        $codesModeDePaiement = $tLibelles->getCodes('ModeDePaiement');
+        $resultats = [
+            'encoursTotal' => $tPaiements->sommeBordereau(null),
+            1 => [
+                'as' => $tPaiements->totalAnneeScolaire($millesime),
+                'exercice1' => $tPaiements->totalExercice($millesime),
+                'exercice2' => $tPaiements->totalExercice($millesime + 1)
+            ]
+        ];
+        foreach ($codesCaisse as $caisse => $codeC) {
+            $resultats[2]['as'][$caisse] = $tPaiements->totalAnneeScolaire($millesime, $codeC);
+            $resultats[2]['exercice1'][$caisse] =  $tPaiements->totalExercice($millesime, $codeC);
+            $resultats[2]['exercice2'][$caisse] =  $tPaiements->totalExercice($millesime + 1, $codeC);
+        }
+        foreach ($codesModeDePaiement as $modeDePaiement => $codeModeDeP) {
+            $resultats['dateBordereau'][$modeDePaiement] = $tPaiements->dateDernierBordereau(
+                $codeModeDeP);
+            $resultats['dateDernierPaiement'][$modeDePaiement] = $tPaiements->dateDernierPaiement(
+                $codeModeDeP); // date('Y-m-d')
+            $resultats['encours'][$modeDePaiement] = $tPaiements->sommeBordereau(
+                $codeModeDeP);
+            // année scolaire
+            $resultats[2]['as'][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
+                $millesime,null, $codeModeDeP);
+            foreach ($codesCaisse as $caisse => $codeC) {
+                $resultats[3]['as'][$caisse][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
+                    $millesime, $codeC, $codeModeDeP);
+            }
+            // exercice 1
+            $resultats[2]['exercice1'][$modeDePaiement] = $tPaiements->totalExercice(
+                $millesime, null, $codeModeDeP);
+            foreach ($codesCaisse as $caisse => $codeC) {
+                $resultats[3]['exercice1'][$caisse][$modeDePaiement] = $tPaiements->totalExercice(
+                    $millesime, $codeC, $codeModeDeP);
+            }
+            // exercice 2
+            $resultats[2]['exercice2'][$modeDePaiement] = $tPaiements->totalExercice(
+                $millesime + 1, null, $codeModeDeP);
+            foreach ($codesCaisse as $caisse => $codeC) {
+                $resultats[3]['exercice2'][$caisse][$modeDePaiement] = $tPaiements->totalExercice(
+                    $millesime + 1, $codeC, $codeModeDeP);
+            }
+        }
         return new ViewModel(
             [
                 'millesime' => $millesime,
-                'dateBordereauCheques' => $tPaiements->dateDernierBordereau($codeCheques),
-                'datePaiementCheques' => $tPaiements->dateDernierPaiement($codeCheques), // date('Y-m-d'),
-                'dateBordereauEspeces' => $tPaiements->dateDernierBordereau($codeEspeces),
-                'datePaiementEspeces' => $tPaiements->dateDernierPaiement($codeEspeces),
-                'dateBordereauCB' => $tPaiements->dateDernierBordereau($codeCB),
-                'datePaiementCB' => $tPaiements->dateDernierPaiement($codeCB),
-                'encoursCheques' => $tPaiements->sommeBordereau($codeCheques),
-                'encoursEspeces' => $tPaiements->sommeBordereau($codeEspeces),
-                'encoursCB' => $tPaiements->sommeBordereau($codeCB),
-                'encoursTotal' => $tPaiements->sommeBordereau(null),
-                'asCheques' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur,
-                    $codeCheques),
-                'asEspeces' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur,
-                    $codeEspeces),
-                'asRegie' => $tPaiements->totalAnneeScolaire($millesime, $codeRegisseur),
-                'asDft' => $tPaiements->totalAnneeScolaire($millesime, $codeDft),
-                'asComptable' => $tPaiements->totalAnneeScolaire($millesime,
-                    $codeComptable),
-                'asTotal' => $tPaiements->totalAnneeScolaire($millesime),
-                'montantCheques1' => $tPaiements->totalExercice($millesime, $codeRegisseur,
-                    $codeCheques),
-                'montantEspeces1' => $tPaiements->totalExercice($millesime, $codeRegisseur,
-                    $codeEspeces),
-                'totaRegie1' => $tPaiements->totalExercice($millesime, $codeRegisseur),
-                'totalDft1' => $tPaiements->totalExercice($millesime, $codeDft),
-                'totalComptable1' => $tPaiements->totalExercice($millesime, $codeComptable),
-                'total1' => $tPaiements->totalExercice($millesime),
-                'montantCheques2' => $tPaiements->totalExercice($millesime + 1,
-                    $codeRegisseur, $codeCheques),
-                'montantEspeces2' => $tPaiements->totalExercice($millesime + 1,
-                    $codeRegisseur, $codeEspeces),
-                'totaRegie2' => $tPaiements->totalExercice($millesime + 1, $codeRegisseur),
-                'totalDft2' => $tPaiements->totalExercice($millesime + 1, $codeDft),
-                'totalComptable2' => $tPaiements->totalExercice($millesime + 1,
-                    $codeComptable),
-                'total2' => $tPaiements->totalExercice($millesime + 1),
-                'titresAs' => $tPaiements->totalAnneeScolaire($millesime + 1, null,
-                    $codeTitres),
-                'titresExercice1' => $tPaiements->totalExercice($millesime, null,
-                    $codeTitres),
-                'titresExercice2' => $tPaiements->totalExercice($millesime + 1, null,
-                    $codeTitres)
+                'codesCaisse' => $codesCaisse,
+                'codesModeDePaiement' => $codesModeDePaiement,
+                'resultats' =>$resultats
             ]);
     }
 
@@ -1061,7 +1059,8 @@ class FinanceController extends AbstractActionController
             }
             // exportation du résultat de la requête selon la composition du tableau
             // $columns
-            return $this->csvExport('bordereau-de-paiement.csv', array_keys($columns), $data);
+            return $this->csvExport('bordereau-de-paiement.csv', array_keys($columns),
+                $data);
         }
         // le formulaire ne valide pas. Il s'agit du select qui est vide.
         return $this->redirect()->toRoute('sbmgestion/finance',

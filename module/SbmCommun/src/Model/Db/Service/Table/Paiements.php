@@ -8,8 +8,8 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 juin 2019
- * @version 2019-2.5.0
+ * @date 23 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -276,9 +276,19 @@ class Paiements extends AbstractSbmTable
         return $this->total($where);
     }
 
+    /**
+     *
+     * @param int $millesime
+     * @param int $codeCaisse
+     * @param int $codeModeDePaiement
+     * @return number|false
+     */
     public function totalAnneeScolaire($millesime, $codeCaisse = null,
         $codeModeDePaiement = null)
     {
+        if ($codeCaisse === false || $codeModeDePaiement === false) {
+            return false;
+        }
         $as = sprintf('%d-%d', $millesime, $millesime + 1);
         $where = new Where();
         $where->equalTo('anneeScolaire', $as);
@@ -291,8 +301,18 @@ class Paiements extends AbstractSbmTable
         return $this->total($where);
     }
 
+    /**
+     *
+     * @param int $exercice
+     * @param int $codeCaisse
+     * @param int $codeModeDePaiement
+     * @return number|false
+     */
     public function totalExercice($exercice, $codeCaisse = null, $codeModeDePaiement = null)
     {
+        if ($codeCaisse === false || $codeModeDePaiement === false) {
+            return false;
+        }
         $where = new Where();
         $where->equalTo('exercice', $exercice);
         if (! is_null($codeCaisse)) {
@@ -304,6 +324,11 @@ class Paiements extends AbstractSbmTable
         return $this->total($where);
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return number|false
+     */
     public function total(Where $where)
     {
         $select = $this->table_gateway->getSql()->select();

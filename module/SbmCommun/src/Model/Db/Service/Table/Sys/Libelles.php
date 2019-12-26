@@ -9,8 +9,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2019-2.5.0
+ * @date 22 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -130,11 +130,29 @@ class Libelles extends AbstractSbmTable
         $rowset = $this->fetchAll(
             $where->equalTo('nature', $nature)
                 ->equalTo('libelle', $libelle));
-        if (! $rowset) {
-            throw new Exception\RuntimeException('Ce libellé n\'existe pas.');
+        if ($rowset->count() == 0) {
+            throw new Exception\RuntimeException("Le libellé '$libelle' n'existe pas.");
         } else {
             return $rowset->current()->code;
         }
+    }
+
+    /**
+     * Renvoie un tableau indexé donnant les codes de la nature demandée à partir de leur libellé
+     *
+     * @param string $nature
+     *
+     * @return array;
+     */
+    public function getCodes(string $nature)
+    {
+        $where = new Where();
+        $rowset = $this->fetchAll($where->equalTo('nature', $nature));
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row->libelle] = $row->code;
+        };
+        return $array;
     }
 
     /**

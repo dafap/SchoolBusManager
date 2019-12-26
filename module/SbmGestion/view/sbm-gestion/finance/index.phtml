@@ -8,10 +8,17 @@
  * @filesource view/finance/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 23 déc. 2019
+ * @version 2019-2.5.4
  */
 use SbmBase\Model\DateLib;
+
+define('CAISSE1', 'Régisseur');
+define('LABEL_CAISSE1', 'Total de la caisse de régie');
+define('CAISSE2', 'DFT');
+define('LABEL_CAISSE2', 'Total de la caisse DFT');
+define('CAISSE3', 'Comptable');
+define('LABEL_CAISSE3', 'Total des encaissements déposés');
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -35,17 +42,23 @@ $url_gestion = $this->url('sbmgestion');
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 $anneeScolaire = sprintf("%d-%d", $this->millesime, $this->millesime + 1);
 
-$nouveauBordereauCheques = (empty($this->dateBordereauCheques) &&
-    ! empty($this->datePaiementCheques)) ||
-    (! empty($this->dateBordereauCheques) && ! empty($this->datePaiementCheques) &&
-    $this->dateBordereauCheques < $this->datePaiementCheques);
-$nouveauBordereauEspeces = (empty($this->dateBordereauEspeces) &&
-    ! empty($this->datePaiementEspeces)) ||
-    (! empty($this->dateBordereauEspeces) && ! empty($this->datePaiementEspeces) &&
-    $this->dateBordereauEspeces < $this->datePaiementEspeces);
-$nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiementCB)) ||
-    (! empty($this->dateBordereauCB) && ! empty($this->datePaiementCB) &&
-    $this->dateBordereauCB < $this->datePaiementCB);
+$nouveauBordereauCheques = (empty($this->resultats['dateBordereau']['chèque']) &&
+    ! empty($this->resultats['datePaiement']['chèque'])) ||
+    (! empty($this->resultats['dateBordereau']['chèque']) &&
+    ! empty($this->resultats['datePaiement']['chèque']) &&
+    $this->resultats['dateBordereau']['chèque'] <
+    $this->resultats['datePaiement']['chèque']);
+$nouveauBordereauEspeces = (empty($this->resultats['dateBordereau']['espèces']) &&
+    ! empty($this->resultats['datePaiement']['espèces'])) ||
+    (! empty($this->resultats['dateBordereau']['espèces']) &&
+    ! empty($this->resultats['datePaiement']['espèces']) &&
+    $this->resultats['dateBordereau']['espèces'] <
+    $this->resultats['datePaiement']['espèces']);
+$nouveauBordereauCB = (empty($this->resultats['dateBordereau']['CB']) &&
+    ! empty($this->resultats['datePaiement']['CB'])) ||
+    (! empty($this->resultats['dateBordereau']['CB']) &&
+    ! empty($this->resultats['datePaiement']['CB']) &&
+    $this->resultats['dateBordereau']['CB'] < $this->resultats['datePaiement']['CB']);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
@@ -62,9 +75,9 @@ $nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiem
 				<legend>Derniers paiements</legend>
 				<dl class="statistiques">
 					<dt>Date du dernier bordereau de chèques</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauCheques);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateBordereau']['chèque']);?></dd>
 					<dt>Date du dernier paiement par chèque</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementCheques);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateDernierPaiement']['chèque']);?></dd>
 					<?php if ($nouveauBordereauCheques) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau de
 						chèques.</dd>
@@ -72,9 +85,9 @@ $nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiem
 				</dl>
 				<dl class="statistiques separateur">
 					<dt>Date du dernier bordereau d'espèces</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauEspeces);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateBordereau']['espèces']);?></dd>
 					<dt>Date du dernier paiement en espèces</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementEspeces);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateDernierPaiement']['espèces']);?></dd>
 					<?php if ($nouveauBordereauEspeces) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau
 						d'espèces.</dd>
@@ -82,9 +95,9 @@ $nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiem
 				</dl>
 				<dl class="statistiques separateur">
 					<dt>Date du dernier bordereau de CB</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->dateBordereauCB);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateBordereau']['CB']);?></dd>
 					<dt>Date du dernier paiement par CB</dt>
-					<dd><?= DateLib::formatDateTimeFromMysql($this->datePaiementCB);?></dd>
+					<dd><?= DateLib::formatDateTimeFromMysql($this->resultats['dateDernierPaiement']['CB']);?></dd>
 					<?php if ($nouveauBordereauCB) : ?>
 					<dd class="alert">Il faudra préparer un nouveau bordereau de CB.</dd>
 					<?php endif;?>
@@ -95,28 +108,36 @@ $nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiem
 					<legend>Bordereaux en cours</legend>
 					<dl class="statistiques">
 						<dt>Bordereau de chèques</dt>
-						<dd><?= $fmt->formatCurrency($this->encoursCheques ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->resultats['encours']['chèque'] ?:0, 'EUR');?></dd>
 						<dt>Bordereau d'espèces</dt>
-						<dd><?= $fmt->formatCurrency($this->encoursEspeces ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->resultats['encours']['espèces'] ?:0, 'EUR');?></dd>
 						<dt>Bordereau de CB</dt>
-						<dd><?= $fmt->formatCurrency($this->encoursCB ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->resultats['encours']['CB'] ?:0, 'EUR');?></dd>
 					</dl>
 					<dl class="statistiques separateur">
 						<dt>Total des bordereaux en cours</dt>
-						<dd><?= $fmt->formatCurrency($this->encoursTotal ?:0, 'EUR');?></dd>
+						<dd><?= $fmt->formatCurrency($this->resultats['encoursTotal'] ?:0, 'EUR');?></dd>
 					</dl>
 				</fieldset>
+				<?php if (array_key_exists('Titre individuel', $this->codesModeDePaiement)):?>
 				<fieldset class="bleu">
 					<legend>Titres individuels émis</legend>
 					<dl class="statistiques">
 						<dt>Pour l'année scolaire</dt>
-						<dd><?= $fmt->formatCurrency($this->titresAs ?:0, 'EUR');?></dd>
+						<dd>
+						<?= $fmt->formatCurrency($this->resultats[2]['as']['Titre individuel'] ?:0, 'EUR');?>
+						</dd>
 						<dt>Pour l'exercice <?= $this->millesime;?></dt>
-						<dd><?= $fmt->formatCurrency($this->titresExercice1 ?:0, 'EUR');?></dd>
+						<dd>
+						<?= $fmt->formatCurrency($this->resultats[2]['exercice1']['Titre individuel'] ?:0, 'EUR');?>
+						</dd>
 						<dt>Pour l'exercice <?= $this->millesime + 1;?></dt>
-						<dd><?= $fmt->formatCurrency($this->titresExercice2 ?:0, 'EUR');?></dd>
+						<dd>
+						<?= $fmt->formatCurrency($this->resultats[2]['exercice2']['Titre individuel'] ?:0, 'EUR');?>
+						</dd>
 					</dl>
 				</fieldset>
+				<?php endif;?>
 			</div>
 		</div>
 	</div>
@@ -148,63 +169,82 @@ $nouveauBordereauCB = (empty($this->dateBordereauCB) && ! empty($this->datePaiem
 		<legend>Année scolaire <?= $anneeScolaire;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->asCheques ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['as']['chèque'] ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd class="statistiques"><?= $fmt->formatCurrency($this->asEspeces ?:0, 'EUR');?></dd>
+			<dd class="statistiques">
+			<?= $fmt->formatCurrency($this->resultats[2]['as']['espèces'] ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
-			<dt>Total de la caisse de régie</dt>
-			<dd><?= $fmt->formatCurrency($this->asRegie ?:0, 'EUR');?></dd>
-			<dt>Total de la caisse DFT</dt>
-			<dd><?= $fmt->formatCurrency($this->asDft ?:0, 'EUR');?></dd>
-			<dt>Total des encaissements déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->asComptable ?:0, 'EUR');?></dd>
+		    <?php if (array_key_exists(CAISSE1, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE1;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['as'][CAISSE1] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE2, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE2;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['as'][CAISSE2] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE3, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE3;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['as'][CAISSE3] ?:0, 'EUR');?></dd>
+			<?php endif;?>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?= $fmt->formatCurrency($this->asTotal ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[1]['as'] ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 	<fieldset class="rose float-left">
 		<legend>Exercice budgétaire <?= $this->millesime;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->montantCheques1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice1']['chèque'] ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->montantEspeces1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice1']['espèces'] ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
-			<dt>Total de la caisse de régie</dt>
-			<dd><?= $fmt->formatCurrency($this->totalRegie1 ?:0, 'EUR');?></dd>
-			<dt>Total de la caisse DFT</dt>
-			<dd><?= $fmt->formatCurrency($this->totalDft1 ?:0, 'EUR');?></dd>
-			<dt>Total des encaissements déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->totalComptable1 ?:0, 'EUR');?></dd>
+		    <?php if (array_key_exists(CAISSE1, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE1;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice1'][CAISSE1] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE2, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE2;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice1'][CAISSE2] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE3, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE3;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice1'][CAISSE3] ?:0, 'EUR');?></dd>
+			<?php endif;?>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?= $fmt->formatCurrency($this->total1 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[1]['exercice1'] ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 	<fieldset class="jaune float-left">
 		<legend>Exercice budgétaire <?= $this->millesime + 1;?></legend>
 		<dl class="statistiques">
 			<dt>Paiements par chèques non déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->montantCheques2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice2']['chèque'] ?:0, 'EUR');?></dd>
 			<dt>Paiements en espèces non déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->montantEspeces2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice2']['espèces']  ?:0, 'EUR');?></dd>
 		</dl>
 		<dl class="statistiques separateur">
-			<dt>Total de la caisse de régie</dt>
-			<dd class=""><?= $fmt->formatCurrency($this->totalRegie2 ?:0, 'EUR');?></dd>
-			<dt>Total de la caisse DFT</dt>
-			<dd><?= $fmt->formatCurrency($this->totalDft2 ?:0, 'EUR');?></dd>
-			<dt>Total des encaissements déposés</dt>
-			<dd><?= $fmt->formatCurrency($this->totalComptable2 ?:0, 'EUR');?></dd>
+		    <?php if (array_key_exists(CAISSE1, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE1;?></dt>
+			<dd class=""><?= $fmt->formatCurrency($this->resultats[2]['exercice2'][CAISSE1] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE2, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE2;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice2'][CAISSE2] ?:0, 'EUR');?></dd>
+			<?php endif;?>
+			<?php if (array_key_exists(CAISSE3, $this->codesCaisse)):?>
+			<dt><?=LABEL_CAISSE3;?></dt>
+			<dd><?= $fmt->formatCurrency($this->resultats[2]['exercice2'][CAISSE3] ?:0, 'EUR');?></dd>
+			<?php endif;?>
 		</dl>
 		<dl class="statistiques separateur">
 			<dt>Total des encaissements</dt>
-			<dd><?= $fmt->formatCurrency($this->total2 ?:0, 'EUR');?></dd>
+			<dd><?= $fmt->formatCurrency($this->resultats[1]['exercice2'] ?:0, 'EUR');?></dd>
 		</dl>
 	</fieldset>
 </div>
