@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2019
- * @version 2019-2.5.0
+ * @date 27 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -256,7 +256,7 @@ class Calendar extends AbstractSbmTable
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > $de->modify('+1 day')) {
+        } elseif ($aujourdhui > $df->modify('+1 day')) {
             return [
                 'etat' => self::ETAT_FERME,
                 'inscription' => false,
@@ -264,7 +264,7 @@ class Calendar extends AbstractSbmTable
                 'dateFin' => $dateFin,
                 'echeance' => $echeance
             ];
-        } elseif ($aujourdhui > $df->modify('+1 day')) {
+        } elseif ($aujourdhui > $de->modify('+1 day')) {
             return [
                 'etat' => self::ETAT_APRES,
                 'inscription' => true,
