@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 28 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmParent\Controller;
 
@@ -157,11 +157,12 @@ class IndexController extends AbstractActionController
                         $responsable->adresseL2,
                         $responsable->codePostal . ' ' . $responsable->commune,
                         implode(' ; ',
-                            [
-                                $format_telephone($responsable->telephoneF),
-                                $format_telephone($responsable->telephoneP),
-                                $format_telephone($responsable->telephoneT)
-                            ])
+                            array_filter(
+                                [
+                                    $format_telephone($responsable->telephoneF),
+                                    $format_telephone($responsable->telephoneP),
+                                    $format_telephone($responsable->telephoneT)
+                                ]))
                     ]),
                 'sadmin' => $this->authenticate->by()->getCategorieId() == 255
             ]);
