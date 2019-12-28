@@ -62,10 +62,6 @@ i.fam-help:hover {
 	text-align: center;
 }
 
-.clearfix {
-	zoom: 1;
-}
-
 .clearfix:after {
 	content: "";
 	display: block;
@@ -488,7 +484,7 @@ div.menu ul.menubar ul li input {
 .flashMessenger ul.default {
 	color: #333;
 	background-color: #fcf8e3;
-	dorder-color: #333;
+	border-color: #333;
 }
 /*--------------- Pagination ----------------------------*/
 /* la pagination est dans un clearfix pour que ça marche */
