@@ -27,14 +27,26 @@ class Wgs84 extends AbstractProjection implements ProjectionInterface
         $this->name = 'Wgs84';
         $this->unit = 'degré';
     }
+    /**
+     * Utiliser la méthode transforme pour conserver les attributs de $p
+     *
+     * {@inheritDoc}
+     * @see \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface::xyzVersgRGF93()
+     */
     public function xyzVersgRGF93(Point $p)
     {
-        return new Point($p->getX(), $p->getY(), $p->getZ(), $this->unit);
+        return $p->transforme(new Point($p->getX(), $p->getY(), $p->getZ(), $this->unit));
     }
 
+    /**
+     * Utiliser la méthode transforme pour conserver les attributs de $p
+     *
+     * {@inheritDoc}
+     * @see \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface::gRGF93versXYZ()
+     */
     public function gRGF93versXYZ(Point $p)
     {
-        return new Point($p->getX(), $p->getY(), $p->getZ());
+        return $p->transforme(new Point($p->getX(), $p->getY(), $p->getZ()));
     }
 
 }
