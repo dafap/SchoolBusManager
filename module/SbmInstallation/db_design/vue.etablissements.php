@@ -8,8 +8,8 @@
  * @filesource vue.etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2019
- * @version 2019-2.5.0
+ * @date 31 déc. 2019
+ * @version 2019-2.6.0
  */
 return [
     'name' => 'etablissements',
@@ -135,6 +135,10 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommune'
                     ]
                 ]
             ]

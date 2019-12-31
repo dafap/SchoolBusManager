@@ -11,8 +11,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 31 déc. 2019
+ * @version 2019-2.6.0
  */
 use SbmCartographie\Model\Point;
 
@@ -236,7 +236,7 @@ $actions = [
 					<td class="nom">
 						<?=$this->escapeHtml($etablissement->nom);?></td>
 					<td class="commune">
-						<?=$this->escapeHtml($etablissement->commune);?></td>
+						<?=$this->escapeHtml($etablissement->lacommune);?></td>
 					<td class="codepostal">
 						<?=$this->escapeHtml($etablissement->codePostal);?></td>
 					<td class="telephone">
