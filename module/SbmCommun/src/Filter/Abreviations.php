@@ -8,8 +8,8 @@
  * @filesource Abreviations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
- * @version 2019-2.5.0
+ * @date 17 déc. 2019
+ * @version 2019-2.5.4
  */
 namespace SbmCommun\Filter;
 
@@ -20,7 +20,8 @@ class Abreviations extends AbstractUnicode implements FilterInterface
 {
 
     /**
-     * Le filtre se déclanchera si la chaine à filtrer est de longueur supérieure au seuil.
+     * Le filtre se déclanchera si la chaine à filtrer est de longueur supérieure au
+     * seuil.
      *
      * @var array
      */
@@ -30,23 +31,17 @@ class Abreviations extends AbstractUnicode implements FilterInterface
     ];
 
     /**
-     * Liste des mots et des abréviations correspondantes
-     * Syntaxe :
-     * Le mot est inscrit en minuscule et est accentué.
-     * Lorsqu'il y a une variante, il est suivi d'une parenthèse qui contient les parties
-     * changeantes.
-     * Pour un pluriel comme allée, allées, la racine commune (avant la parenthèse) est allée et la
-     * variante est (,s) qui veut dire
-     * - ne rajoute rien ou rajoute un s
-     * Pour un pluriel comme hôpital, hôpitaux, la racine commune (avant la parenthèse) est hôpit
-     * et les variantes sont (al,aux) qui veut dire
-     * - rajoute al ou rajoute aux
-     * Il peut y avoir plus de 2 variantes. Il suffit de les séparer par une virgule dans la
-     * parenthèse.
-     *
-     * Pour les mots composés, il peut y avoir 2 blocs de variantes - exemple : 'chemin(,s)
-     * vicin(al,aux)'. Dans ce cas, il faut respecter
-     * l'ordre des variantes sur les 2 mots : 'chemin vicinal' ou 'chemins vicinaux'.
+     * Liste des mots et des abréviations correspondantes Syntaxe : Le mot est inscrit en
+     * minuscule et est accentué. Lorsqu'il y a une variante, il est suivi d'une
+     * parenthèse qui contient les parties changeantes. Pour un pluriel comme allée,
+     * allées, la racine commune (avant la parenthèse) est allée et la variante est (,s)
+     * qui veut dire - ne rajoute rien ou rajoute un s Pour un pluriel comme hôpital,
+     * hôpitaux, la racine commune (avant la parenthèse) est hôpit et les variantes sont
+     * (al,aux) qui veut dire - rajoute al ou rajoute aux Il peut y avoir plus de 2
+     * variantes. Il suffit de les séparer par une virgule dans la parenthèse. Pour les
+     * mots composés, il peut y avoir 2 blocs de variantes - exemple : 'chemin(,s)
+     * vicin(al,aux)'. Dans ce cas, il faut respecter l'ordre des variantes sur les 2 mots
+     * : 'chemin vicinal' ou 'chemins vicinaux'.
      *
      * @var array
      */
@@ -204,12 +199,13 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'infanterie' => 'INF',
         'inspecteur' => 'INSP',
         'institut' => 'INST',
+        'intendant' => 'ITD',
         'internation(al,ale,aux,ales)' => 'INT',
         'jardin(,s)' => 'JARD',
         'jetée(,s)' => 'JTE',
         'laboratoire' => 'LABO',
         'levée' => 'LEVE',
-        'lieu-dit' => 'LD',
+        'lieu-dit' => 'LDT',
         'lieutenant' => 'LT',
         'lieutenant de vaisseau' => 'LTDV',
         'lycée' => 'LYC',
@@ -279,7 +275,7 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'professionnel(,le,les,s)' => 'PROF',
         'promenade' => 'PROM',
         'quai' => 'QU',
-        'quartier' => 'QUA',
+        'quartier' => 'QRT',
         'quater' => 'Q',
         'quinquies' => 'C',
         'raccourci' => 'RAC',
@@ -337,6 +333,8 @@ class Abreviations extends AbstractUnicode implements FilterInterface
         'zone industrielle' => 'ZI'
     ];
 
+    private $inverse = [];
+
     private $abreviations = [];
 
     /**
@@ -363,12 +361,16 @@ class Abreviations extends AbstractUnicode implements FilterInterface
             if ($nparts == 0) {
                 $this->abreviations[$mots] = $abrev;
                 $this->abreviations[$sa->filter($mots)] = $abrev;
+                $this->inverse[$abrev] = $mots;
             } elseif ($nparts == 1) {
                 preg_match('#' . $pattern . '#', $mots, $matches);
                 foreach (explode(',', $matches[2]) as $suffixe) {
                     $idx = $matches[1] . $suffixe;
                     $this->abreviations[$idx] = $abrev;
                     $this->abreviations[$sa->filter($idx)] = $abrev;
+                    if (! array_key_exists($abrev, $this->inverse)) {
+                        $this->inverse[$abrev] = $idx;
+                    }
                 }
             } else { // mot composé de 2 parties seulement
                 preg_match('#' . $pattern . $pattern . '#', $mots, $matches);
@@ -385,6 +387,11 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                     $this->abreviations[$idx] = $abrev;
                     $this->abreviations[$sa->filter($idx)] = $abrev;
                 }
+                if (! array_key_exists($abrev, $this->inverse)) {
+                    $this->inverse[$abrev] = $matches[1] . $suffixes1[0] . ' ' .
+                        $matches[3] . $suffixes2[0];
+                    ;
+                }
             }
         }
         if (! uksort($this->abreviations,
@@ -396,7 +403,8 @@ class Abreviations extends AbstractUnicode implements FilterInterface
                 } elseif ($l1 > $l2) {
                     return - 1; // les plus long avant les plus courts
                 } else {
-                    return strcasecmp($k1, $k2); // ordre alphabétique pour des mots de même
+                    return strcasecmp($k1, $k2); // ordre alphabétique pour des mots de
+                                                 // même
                                                  // longueur
                 }
             })) {
@@ -419,5 +427,178 @@ class Abreviations extends AbstractUnicode implements FilterInterface
             }
         }
         return $val;
+    }
+
+    /**
+     * 2 étapes, l'une pour corriger les fautes d'orthographe et les abréviations l'autre
+     * pour corriger les majuscules avec Saint ou Sainte
+     *
+     * @param string $val
+     *            valeur à adapter si nécessaire
+     * @return string valeur rectifiée
+     */
+    public function unfilter($val)
+    {
+        if (is_string($val)) {
+            $array = explode(' ', $val);
+            foreach ($array as &$mot) {
+                $mot = $this->correction($mot);
+                $amot = explode('\'', $mot);
+                if (count($amot) > 1 && ! $this->isMaj($mot)) {
+                    if (strcmp($amot[0], 'D') == 0) {
+                        $amot[0] = 'd';
+                        $amot[1] = $this->toUlower($amot[1]);
+                    } elseif (strcmp($amot[0], 'L') == 0) {
+                        $amot[0] = 'l';
+                        $amot[1] = $this->toUlower($amot[1]);
+                    }
+                    $mot = implode('\'', $amot);
+                }
+            }
+            $val = str_replace('\' ', '\'', implode(' ', $array));
+            // à faire ici afin que soient traités les remplacements de St et Ste dans
+            // la méthode correction()
+            if (stripos($val, 'saint') !== false) {
+                $tmp = preg_replace('/(.*)?(sainte?)[ -](.*)/i', '$1$2-$3', $val);
+                if (! empty($tmp)) {
+                    $val = $tmp;
+                }
+                $array = explode(' ', $val);
+                foreach ($array as &$mot) {
+                    $mot = $this->saint($mot);
+                }
+                $val = str_replace('\' ', '\'', implode(' ', $array));
+            }
+        }
+        return $this->toMaj($val);
+    }
+
+    public function correction($mot)
+    {
+        $uppercase = mb_strtoupper($mot, $this->options['encoding']);
+        $lowercase = mb_strtolower($uppercase, $this->options['encoding']);
+        if (array_key_exists($uppercase, $this->inverse)) {
+            $lowercase2 = mb_strtolower($this->inverse[$uppercase],
+                $this->options['encoding']);
+        } else {
+            $lowercase2 = $lowercase;
+        }
+        if ($this->isMin($mot)) {
+            return $this->toMin($this->orthographe($lowercase2));
+        } elseif ($this->isMaj($mot)) {
+            return $this->toMaj($this->orthographe($lowercase2));
+        } else {
+            $tmp = $this->toUlower($this->orthographe($lowercase2));
+            $tmp = str_replace([
+                'Jean-jacques',
+                'Beau-soleil'
+            ], [
+                'Jean-Jacques',
+                'Beau-Soleil'
+            ], $tmp);
+            return $tmp;
+        }
+    }
+
+    public function orthographe($mot)
+    {
+        $dic = [
+            'residence' => 'résidence',
+            'residences' => 'résidences',
+            'allee' => 'allée',
+            'serenite' => 'sérénité',
+            'carratieres' => 'carratières',
+            'cite' => 'cité',
+            'imp.' => 'impasse',
+            'cap d ase' => 'cap d\'ase',
+            'rozieres' => 'rozières',
+            'general' => 'général',
+            'mal' => 'maréchal',
+            'marechal' => 'maréchal',
+            'edouard' => 'édouard',
+            'elise' => 'élise',
+            'emile' => 'émile',
+            'etienne' => 'étienne',
+            'leopold' => 'léopold',
+            'leomard' => 'léonard',
+            'aime' => 'aimé',
+            'andre' => 'andré',
+            'cesaire' => 'césaire',
+            'creve' => 'crève',
+            'abbe' => 'abbé',
+            'cle' => 'clé',
+            'etroite' => 'étroite',
+            'liberte' => 'liberté',
+            'egalite' => 'égalité',
+            'fraternite' => 'fraternité',
+            'laitiere' => 'laitière',
+            'negre' => 'nègre',
+            'republique' => 'république',
+            'cantiniere' => 'cantinière',
+            'resistance' => 'résistance',
+            'comedie' => 'comédie',
+            'eglise' => 'église',
+            'pomarede' => 'pomarède',
+            'dandan' => 'd\'andan',
+            'poumiere(la)' => 'poumiere (la)',
+            'aumieres' => 'aumières',
+            'mere' => 'mère',
+            'pere' => 'père',
+            'l\'egalité' => 'l\'égalité',
+            'l\'hot' => 'l\'hôtel',
+            'thalweg' => 'talweg',
+            'cres' => 'crès',
+            'lescalopier' => 'l\'escalopier',
+            'constant' => 'constans',
+            'moliere' => 'molière',
+            'megisserie' => 'mégisserie',
+            'aimê' => 'aimé',
+            'd' => 'd\'',
+            'l' => 'l\''
+        ];
+        if (array_key_exists($mot, $dic)) {
+            return $dic[$mot];
+        }
+        return $mot;
+    }
+
+    private function saint($mot)
+    {
+        if (stripos($mot, 'saint') !== false) {
+            if (! $this->isMaj($mot) && ! $this->isMin($mot)) {
+                $array = explode('-', $mot);
+                foreach ($array as &$value) {
+                    $value = $this->toUlower($value);
+                }
+                return implode('-', $array);
+            }
+        }
+        return $mot;
+    }
+
+    private function isMaj($mot)
+    {
+        return strcmp($mot, $this->toMaj($mot)) == 0;
+    }
+
+    private function isMin($mot)
+    {
+        return strcmp($mot, $this->toMin($mot)) == 0;
+    }
+
+    private function toMaj($mot)
+    {
+        return mb_strtoupper($mot, $this->options['encoding']);
+    }
+
+    private function toMin($mot)
+    {
+        return mb_strtolower($mot, $this->options['encoding']);
+    }
+
+    private function toUlower($mot)
+    {
+        return $this->toMaj(mb_substr($mot, 0, 1, $this->options['encoding'])) .
+            $this->toMin(mb_substr($mot, 1, null, $this->options['encoding']));
     }
 }

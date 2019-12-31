@@ -1,0 +1,185 @@
+<?php
+/**
+ * Liste des endroits du zonage
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource zonage-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 août 2019
+ * @version 2019-2.5.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$jsCallback = '';
+$jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%s%d").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'%szonage/zonageId:%d',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$rows = $this->paginator->getCurrentItems();
+
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport');
+$url_edit = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-group',
+        'id' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'zonage-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvel endroit'
+    ]
+];
+?>
+<h1>Liste des rues, quartiers et lieux-dits</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+			<?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="zonage">
+			<tbody>
+				<tr>
+					<th>Commune</th>
+					<th>Nom</th>
+					<th>Nom sans accent</th>
+					<th>Inscription<br>en ligne
+					</th>
+					<th>Paiement<br>en ligne
+					</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
+            <?php
+
+            foreach ($rows as $lieu) :
+                ?>
+            <?php
+                // construction des JS pour selection, inscriptionenligne, paiementenligne
+                foreach ([
+                    'selection',
+                    'inscriptionenligne',
+                    'paiementenligne'
+                ] as $action) {
+                    $jsTrigger .= sprintf("$('#chk%s%d').trigger('change');\n", $action,
+                        $lieu->zonageId);
+                    $jsCallback .= sprintf("$modele\n", $action, $lieu->zonageId, $action,
+                        $lieu->zonageId);
+                }
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                $hiddens = [
+                    'zonageId' => $lieu->zonageId
+                ];
+                $buttons = [
+                    'modifier' => [
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ],
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ]
+                ];
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="commune">
+						<?=$this->escapeHtml($this->communes[$lieu->communeId]);?></td>
+					<td class="nom">
+						<?=$this->escapeHtml($lieu->nom);?></td>
+					<td class="nomSA">
+						<?=$this->escapeHtml($lieu->nomSA);?></td>
+					<td class="centre inscriptionenligne">
+						<?=$this->renderCheckbox('inscriptionenligne', 'chkinscriptionenligne' . $lieu->zonageId, $lieu->inscriptionenligne);?>
+					<td class="centre paiementenligne">
+						<?=$this->renderCheckbox('paiementenligne', 'chkpaiementenligne' . $lieu->zonageId, $lieu->paiementenligne);?>
+					<td class="centre selection">
+						<?=$this->renderCheckbox('selection', 'chkselection' . $lieu->zonageId, $lieu->selection);?>
+					</td>
+					<td class="boutons">
+						<?=$this->listeLigneActions($lieu->zonageId, $hiddens, $buttons);?>
+					</td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

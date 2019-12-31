@@ -10,8 +10,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 27 juil. 2019
+ * @version 2019-2.5.1
  */
 namespace SbmAjax\Controller;
 
@@ -493,6 +493,150 @@ class TransportController extends AbstractActionController
             $transporteurId = $this->params('transporteurId');
             $this->db_manager->get('Sbm\Db\Table\Transporteurs')->setSelection(
                 $transporteurId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - cocher la case sélection de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function checkselectionzonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection(
+                $zonageId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - décocher la case sélection de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function uncheckselectionzonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection(
+                $zonageId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - cocher la case inscriptionenligne de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function checkinscriptionenlignezonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setInscriptionEnLigne(
+                $zonageId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - décocher la case inscriptionenligne de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function uncheckinscriptionenlignezonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setInscriptionEnLigne(
+                $zonageId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - cocher la case paiementenligne de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function checkpaiementenlignezonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne(
+                $zonageId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - décocher la case paiementenligne de la table `zonage`
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function uncheckpaiementenlignezonageAction()
+    {
+        try {
+            $zonageId = $this->params('zonageId');
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne(
+                $zonageId, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));

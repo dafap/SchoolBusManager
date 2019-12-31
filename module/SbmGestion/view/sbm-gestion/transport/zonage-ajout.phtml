@@ -1,0 +1,59 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ *
+ * @project project_name
+ * @package package_name
+ * @filesource zonage-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 août 2019
+ * @version 2019-2.5.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'zonage-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Création d'un nouveau lieu</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('zonageId'));?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
+    	<fieldset class="sbm-page1">
+			<div id="wrapper-communeId" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('communeId')); ?></div>
+			<div id="wrapper-nom" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('nom')); ?></div>
+			<div id="wrapper-inscriptionenligne" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('inscriptionenligne')); ?></div>
+			<div id="wrapper-paiementenligne" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('paiementenligne')); ?></div>
+			<div id="wrapper-buttons" class="row-inner ajout">
+        		<?= $this->formSubmit($this->form->get('submit'));?>
+        		<?= $this->formSubmit($this->form->get('cancel'));?></div>
+		</fieldset>
+		<?= $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>
