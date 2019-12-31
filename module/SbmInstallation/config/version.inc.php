@@ -1,6 +1,7 @@
 <?php
 /**
  * Défini le dernier numéro de version
+ * Versions 2.6 pour TRANSDEV ALBERTVILLE (Arlysère)
  *
  * @project sbm
  * @package Sbminstallation/config
@@ -10,4 +11,4 @@
  * @date 11 fév. 2018
  * @version 2019-2.5.0
  */
-return "2019-2.5.3";
+return "2019-2.6.0";
