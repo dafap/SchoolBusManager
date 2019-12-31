@@ -1,0 +1,75 @@
+/**
+ * Feuille de style des pages du module
+ * 
+ * @project sbm
+ * @package public/css/ccmgc
+ * @filesource sbm.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 8 mai 2019
+ * @version 2019-2.5.0
+ **/
+
+
+#menugeneral-inner form {
+	display: inline-block;
+}
+/*--------- TOP-SITE -----------------*/
+#top-site {
+	height: 20px;
+	margin: 0;
+	text-align: center;
+	font-size: 0.75em;
+	color: #999;
+	width: 100%;
+	padding: 0;
+}
+
+#top-site a {
+	color: #666;
+	padding: 1px 4px;
+	text-decoration: none;
+}
+
+#top-site a:hover {
+	color: black;
+	font-weight: bold;
+}
+
+#top-site div.float-left {
+	position: initial;
+	top: initial;
+}
+/*--------- Header -----------------*/
+#bandeau {
+	height: 195px;
+	margin: 0;
+	width: 100%;
+}
+
+.page1 #header #bandeau {
+	background-image: url("/img/bandeau-sbm.png");
+	background-size: 100% 195px;
+	background-repeat: no-repeat;
+}
+/*-------- Footer -----------------*/
+#footer {
+	color: #666;
+	font-size: 0.75em;
+	height: 23px;
+	margin: 0;
+	padding: 0;
+	padding-top: 15px;
+	clear: both;
+	overflow: hidden;
+}
+
+#footer a {
+	color: #666;
+	text-decoration: none;
+}
+
+#footer a:hover {
+	color: black;
+	font-weight: bold;
+}

@@ -1,0 +1,18 @@
+/**
+ * Feuille de style de la page sbm-gestion/finance/paiement-rectifications.phtml
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-gestion/finance
+ * @filesource paiement-rectifications.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 7 juil. 2019
+ * @version 2019-2.5.0
+ **/
+span.modif {
+	text-decoration: line-through red;
+}
+
+.suppr {
+	text-decoration: line-through;
+}

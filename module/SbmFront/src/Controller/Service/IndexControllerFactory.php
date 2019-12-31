@@ -19,6 +19,7 @@ use SbmFront\Controller\IndexController;
 use SbmFront\Form\Login;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 
 class IndexControllerFactory implements FactoryInterface
 {
@@ -27,6 +28,13 @@ class IndexControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
+        $cm = $sm->get('Sbm\CartographieManager');
+        $cartographie = $cm->get('cartographie');
+        $projection = str_replace('ProjectionInterface',
+            StdLib::getParam('system', $cartographie), ProjectionInterface::class);
+        $nzone = StdLib::getParam('nzone', $cartographie, 0);
+        $config_cartes = $cm->get('cartes');
+        $google_api = $cm->get('google_api_browser');
         $config_controller = [
             'theme' => $sm->get(\SbmInstallation\Model\Theme::class),
             'db_manager' => $sm->get('Sbm\DbManager'),
@@ -47,7 +55,10 @@ class IndexControllerFactory implements FactoryInterface
             'url_ts_region' => StdLib::getParamR([
                 'sbm',
                 'ts-region'
-            ], $config_application)
+            ], $config_application),
+            'projection' => new $projection($nzone),
+            'config_cartes' => $config_cartes,
+            'url_api' => $google_api['js'],
         ];
         return new IndexController($config_controller);
     }

@@ -1,0 +1,16 @@
+/**
+ * Feuille de style de la page sbm-gestion/finance/paiement-suppr.phtml
+ *
+ * (edit.phtml)
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-gestion/finance
+ * @filesource paiement-suppr.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 31 mai 2019
+ * @version 2019-2.5.0
+ **/
+#paiement-suppr-liste label {
+	display: block;
+}

@@ -1,3 +1,14 @@
-#!/usr/bin/env sh SRC_DIR="`pwd`" cd "`dirname "$0"`" cd
-"../zendframework/zftool" BIN_TARGET="`pwd`/zf.php" cd "$SRC_DIR"
-"$BIN_TARGET" "$@"
+#!/usr/bin/env sh
+
+dir=$(cd "${0%[/\\]*}" > /dev/null; cd "../zendframework/zftool" && pwd)
+
+if [ -d /proc/cygdrive ]; then
+    case $(which php) in
+        $(readlink -n /proc/cygdrive)/*)
+            # We are in Cygwin using Windows php, so the path must be translated
+            dir=$(cygpath -m "$dir");
+            ;;
+    esac
+fi
+
+"${dir}/zf.php" "$@"

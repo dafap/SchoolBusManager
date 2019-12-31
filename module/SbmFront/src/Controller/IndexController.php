@@ -83,11 +83,49 @@ class IndexController extends AbstractActionController
 
     public function testAction()
     {
-        $array = [];
+        // requête sur la table Millau-nom_des_voies
+        $adapter = $this->db_manager->getDbAdapter();
+        $sql = new \Zend\Db\Sql\Sql($adapter);
+        $select = $sql->select()
+            ->from('Creissels-nom_des_voies')
+            ->columns([
+            'communeId',
+            'Nom'
+        ]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $tZonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
+        // $tz = new \SbmCommun\Model\Db\Service\Table\Zonage(); // à supprimer
+        $oZonage = $tZonage->getObjData();
+        // $sa = new \SbmCommun\Filter\SansAccent();
+        $abr = new \SbmCommun\Filter\Abreviations([
+            'encoding' => "UTF-8",
+            'seuil' => 6
+        ]);
+        // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
+        foreach ($rowset as $row) {
+            $nom = $abr->unfilter($row['Nom']);
+            $oZonage->exchangeArray(
+                [
+                    'zonageId' => null,
+                    'communeId' => $row['communeId'],
+                    'nom' => $nom,
+                    // 'nomSA' => $sa->filter($nom),
+                    'inscriptionenligne' => 0,
+                    'paiementenligne' => 0,
+                    'selection' => 0
+                ]);
+            try {
+                $tZonage->saveRecord($oZonage);
+            } catch (\Exception $e) {
+            }
+        }
+        $array = [
+            'Terminé'
+        ];
         // dump de l'objet 'obj'
-        return new ViewModel(
-            [
-                'obj' =>  $array
-            ]);
+        return new ViewModel([
+            'obj' => $array
+        ]);
     }
 }

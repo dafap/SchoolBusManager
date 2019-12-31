@@ -1,0 +1,142 @@
+<?php
+/**
+ * Liste des paiements pour la table `paybox`
+ *
+ * @TODO : A mettre au point pour PayBox
+ *
+ * @project sbm
+ * @package SbmPaiement/Plugin/PayBox/view
+ * @filesource liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 28 déc. 2019
+ * @version 2019-2.5.4
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$datas = $this->paginator->getCurrentItems();
+$url_rapports = $this->url('sbmpaiement', [
+    'action' => 'pdf',
+    'page' => $this->page
+]);
+$url_rapprochement = $this->url('sbmpaiement',
+    [
+        'action' => 'rapprochement',
+        'page' => $this->page
+    ]);
+$url_voir = $this->url('sbmpaiement', [
+    'action' => 'voir',
+    'page' => $this->page
+]);
+
+$url_retour = $this->url('sbmgestion/finance');
+$hiddens = [
+    'origine' => 'liste'
+];
+$menuImpression = $this->menuRapports('/paiement/liste', $url_rapports, 'fam-printer',
+    null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'rapprochement' => [
+        'class' => 'fam-plugin-error',
+        'formaction' => $url_rapprochement,
+        'title' => 'Rapprochement avec les encaissements de PayBox'
+    ]
+];
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<h1>Liste des notifications de paiement</h1>
+<div class="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="notifications">
+			<tbody>
+				<tr>
+					<th>Mode</th>
+					<th>Exercice</th>
+					<th>Nom Prénom</th>
+					<th>Email</th>
+					<th>Montant</th>
+					<th>Réf. dette</th>
+					<th>Date</th>
+					<th>Résultat</th>
+					<th>N° autorisation</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
+            <?php foreach($datas as $notification): ?>
+            <?php
+                $montant = $fmt->formatCurrency($notification->montant / 100, 'EUR');
+                $date_trans = \DateTime::createFromFormat('dmYHi',
+                    $notification->dattrans . $notification->heurtrans)->format(
+                    'd/m/Y H:i:s');
+                $title_voir = sprintf(
+                    "%s\nIdentifiant de l'opération %s\nNuméro de client PayBox %s",
+                    $notification->objet, $notification->idOp, $notification->numcli);
+                $hiddens = [
+                    'notificationId' => $notification->payboxId
+                ];
+                $buttons = [
+                    'voir' => [
+                        'class' => 'fam-zoom',
+                        'formaction' => $url_voir,
+                        'title' => $title_voir
+                    ]
+                ];
+                ?>
+                <tr
+					class="petit <?= $this->cycle(["even", "odd"])->next();?>">
+					<td class="saisie">
+                		<?= $this->escapeHtml($notification->saisie); ?></td>
+					<td class="numcli">
+                		<?= $this->escapeHtml($notification->exer); ?></td>
+					<td class="identite">
+                		<?= $this->escapeHtml($notification->titulaire); ?></td>
+					<td class="mel">
+						<?= $this->escapeHtml($notification->mel); ?></td>
+					<td class="montant align-right">
+						<?= $montant; ?></td>
+					<td class="refdet">
+						<?= $this->escapeHtml($notification->refdet); ?></td>
+					<td class="date">
+						<?= $date_trans; ?></td>
+					<td class="resultrans centre">
+						<?= $this->escapeHtml($notification->resultrans); ?></td>
+					<td class="numauto">
+						<?= $this->escapeHtml($notification->numauto); ?></td>
+					<td class="centre selection">
+						<?= $this->renderCheckbox('selection', 'chk' . $notification->payboxId, $notification->selection)?></td>
+					<td class="boutons">
+            			<?= $this->listeLigneActions($notification->payboxId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="criteres-wrapper">
+	    <?= $this->form()->openTag($this->criteres_form);?>
+	    <?= $this->formCollection($this->criteres_form, true);?>
+	    <?= $this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

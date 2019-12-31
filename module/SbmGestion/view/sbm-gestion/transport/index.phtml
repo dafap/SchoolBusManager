@@ -8,8 +8,8 @@
  * @filesource view/transport/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2019
- * @version 2019-2.5.0
+ * @date 31 déc. 2019
+ * @version 2019-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -56,7 +56,8 @@ $url_transport_transporteurs = $this->url('sbmgestion/transport',
 $url_gestion = $this->url('sbmgestion');
 $url_users = $this->url('sbmadmin', [
     'action' => 'user-liste'
-]);$url_secteurs_scolaires_liste = $this->url('sbmadmin',
+]);
+$url_secteurs_scolaires_liste = $this->url('sbmadmin',
     [
         'action' => 'secteur-scolaire-liste'
     ]);
@@ -66,6 +67,9 @@ $url_simulation_etablissement_liste = $this->url('sbmadmin',
     ]);
 $url_rpi_liste = $this->url('sbmadmin', [
     'action' => 'rpi-liste'
+]);
+$url_transport_zonage = $this->url('sbmgestion/transport', [
+    'action' => 'zonage-liste'
 ]);
 $action = [
     'retour' => [

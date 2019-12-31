@@ -1,0 +1,47 @@
+/**
+ * Feuille de style des pages index.phtml et reinscription-eleve-phase1.phtml du module SbmParent
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-parent/index
+ * @filesource index.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 29 avr. 2019
+ * @version 2019-2.5.0
+ **/ 
+div#parent-wrapper {
+	min-height: 400px;
+	position: relative;
+	z-index: 10;
+}
+
+#parent-wrapper div.bouton-inscrire {
+	margin-top: 3px;
+	margin-bottom: 10px;
+	position: relative;
+	width: 95%;
+}
+
+#parent-wrapper input[type="submit"] {
+	font-size: 10px;
+	color: black;
+	background-color: #a1cbe5;
+	border-top-width: 0;
+	border-bottom-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	border: 1px solid #31708f;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #31708f;
+	margin-right: 10px;
+}
+
+#parent-wrapper input.accueil {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 1em;
+	border: 1px solid #3489bc;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px 1px 5px #d9eaf4;
+}

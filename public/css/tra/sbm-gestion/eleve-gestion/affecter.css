@@ -1,0 +1,37 @@
+/**
+ * Feuille de style du formulaire d'affectation d'un élève
+ *
+ * (affecter.phtml)
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/sbm-gestion/eleve-gestion
+ * @filesource affecter.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 04 juin 2019
+ * @version 2019-2.5.0
+ **/
+h3 {
+	font-size: 1em;
+	margin: 0.5em;
+}
+form#affectation-form {
+	margin-left: 0.5em;
+}
+#decision-form label.sbm-label {
+	display: inline-block;
+	width: 155px;
+}
+#affectation-form label.sbm-form-auto {
+	display: block;
+}
+#affectation-form label.sbm-form-auto:before {
+    content: "";
+}
+#affectation-form select {
+	display: block;
+	margin-bottom: 0.5em;
+}
+#affectation-form input[type=submit] {
+	margin-left:20px;
+}
