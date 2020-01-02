@@ -5,10 +5,28 @@
  * @filesource parent/index.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 fév. 2019
- * @version 2019-2.4.7
+ * @date 02 jan. 2020
+ * @version 2020-2.5.4
  */
 $(document).ready(function($) {
+	$("*[id^='help-'").on("click", function() {
+		var id = $(this).attr('id');
+		id = id.replace('help', 'content');
+		$(this).hide();
+		$("#"+id).show();
+	});
+	$("div[id^='content-'].retour").on("click", function() {
+		var id = $(this).attr('id');
+		id = id.replace('content', 'help');
+		$(this).hide();
+		$("#"+id).show();
+	});
+	$("div[id^='content-'] .retour").on("click", function() {
+		var id = $(this).parents("div").attr('id');
+		$("#"+id).hide();
+		id = id.replace('content', 'help');
+		$("#"+id).show();
+	});
 	$("#help-preinscrits").trigger("click");
 	$("#help-preinscrits").on("click", function() {
 		var content = $("#help-preinscrits-content").html();

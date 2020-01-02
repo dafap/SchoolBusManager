@@ -26,8 +26,8 @@
  * @filesource index-apres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 02 jan. 2020
+ * @version 2020-2.5.4
  */
 use SbmBase\Model\Session;
 
@@ -36,7 +36,7 @@ $etat = $this->calendar->getEtatDuSite();
 $organisateur = implode('<br>',
     [
         sprintf('<a href="%s">%s</a>', $this->accueil, $this->client['name']),
-        implode('<br>', $this->client['adresse']),
+        implode('<br>', array_filter($this->client['adresse'])),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
         $this->telephone($this->client['telephone']),
         $this->client['email']
@@ -72,7 +72,15 @@ $menu = $this->listeZoneActions([],
             'value' => 'Inscrire un enfant'
         ]
     ]);
-return sprintf($format, Session::get('as')['libelle'], $etat['dateDebut']->format('d/m/Y'),
-    $etat['dateFin']->format('d/m/Y'), $etat['echeance']->format('d/m/Y'),
-    implode('<br>', $this->adresse), $this->client['name'], $menu, $permanences,
-    $organisateur, $this->url_ts_region, $this->accueil);
+return sprintf($format,
+    Session::get('as')['libelle'],
+    $etat['dateDebut']->format('d/m/Y'),
+    $etat['dateFin']->format('d/m/Y'),
+    $etat['echeance']->format('d/m/Y'),
+    implode('<br>', array_filter($this->adresse)),
+    $this->client['name'],
+    $menu,
+    $permanences,
+    $organisateur,
+    $this->url_ts_region,
+    $this->accueil);
