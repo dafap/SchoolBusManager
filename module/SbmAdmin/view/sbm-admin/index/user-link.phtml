@@ -3,14 +3,14 @@
  * Fiche du responsable associé à un user
  *
  * Pas de modification ni d'action sur cette page
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource user-link.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -37,7 +37,7 @@ $actions = [
 			<ul style="margin-top: 0;" class="gras">
 				<li><?= $this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?></li>
 				<li>Identifiant: <?= $this->user->email;?></li>
-				<li>Créé le: <?= $this->user->dateCreation;?> 
+				<li>Créé le: <?= $this->user->dateCreation;?>
 					- Modifié le: <?= $this->user->dateModification;?></li>
 			</ul>
 		</div>
@@ -63,6 +63,9 @@ $actions = [
 			<div>
 				<div class="label">Adresse</div>
 				<?= $this->responsable->adresseL2; ?></div>
+			<div>
+				<div class="label">Adresse</div>
+				<?= $this->responsable->adresseL3; ?></div>
 			<div>
 				<div class="label">Localité</div>
 				<?= $this->responsable->codePostal . ' ' . $this->responsable->commune; ?></div>

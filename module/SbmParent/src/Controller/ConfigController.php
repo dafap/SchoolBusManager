@@ -7,8 +7,8 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
 
@@ -54,7 +54,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
         } else {
             $args = $prg;
@@ -116,7 +117,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
         } else {
             $args = $prg;
@@ -183,11 +185,10 @@ class ConfigController extends AbstractActionController
     }
 
     /**
-     * Le retour se fait par un redirectToOrigin()->back()
-     * ce qui veut dire qu'il faut avoir défini le redirectToOrigin() avant l'appel.
-     *
-     * Si un responsable de même nom et prénom existe déjà, présenter son identité et proposer
-     * de s'identifier à cette personne ou de créer un nouveau
+     * Le retour se fait par un redirectToOrigin()->back() ce qui veut dire qu'il faut
+     * avoir défini le redirectToOrigin() avant l'appel. Si un responsable de même nom et
+     * prénom existe déjà, présenter son identité et proposer de s'identifier à cette
+     * personne ou de créer un nouveau
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
@@ -198,7 +199,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $identity;
             // vérification d'existence de ce responsable
             $filterSA = new SansAccent();
@@ -260,6 +262,10 @@ class ConfigController extends AbstractActionController
     {
         try {
             $responsable = $this->responsable->get();
+            // préparer le nom de la commune selon les règes de la méthode
+            // GoogleMaps\Geocoder::geocode
+            $sa = new \SbmCommun\Filter\SansAccent();
+            $responsable->lacommune = $sa->filter($responsable->lacommune);
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'logout'
@@ -274,7 +280,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
             $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
@@ -284,13 +291,27 @@ class ConfigController extends AbstractActionController
                 // essayer de localiser par l'adresse avant de présenter la carte
                 $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                     $responsable->adresseL1, $responsable->codePostal,
-                    $responsable->commune);
+                    $responsable->lacommune);
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
                 $pt->setLatLngRange($configCarte['valide']['lat'],
                     $configCarte['valide']['lng']);
-                if (! $pt->isValid()) {
-                    $pt->setLatitude($configCarte['centre']['lat']);
-                    $pt->setLongitude($configCarte['centre']['lng']);
+                if (! $pt->isValid() && ! empty($responsable->adresseL2)) {
+                    $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                        $responsable->adresseL2, $responsable->codePostal,
+                        $responsable->lacommune);
+                    $pt->setLatitude($array['lat']);
+                    $pt->setLongitude($array['lng']);
+                    if (! $pt->isValid() && ! empty($responsable->adresseL3)) {
+                        $array = $this->cartographie_manager->get(
+                            GoogleMaps\Geocoder::class)->geocode($responsable->adresseL3,
+                            $responsable->codePostal, $responsable->lacommune);
+                        $pt->setLatitude($array['lat']);
+                        $pt->setLongitude($array['lng']);
+                        if (! $pt->isValid()) {
+                            $pt->setLatitude($configCarte['centre']['lat']);
+                            $pt->setLongitude($configCarte['centre']['lng']);
+                        }
+                    }
                 }
             }
         } else {
@@ -369,7 +390,9 @@ class ConfigController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'responsable' => $responsable,
                 'form' => $form->prepare(),
                 'config' => $configCarte,

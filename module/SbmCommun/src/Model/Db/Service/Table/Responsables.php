@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -39,16 +39,12 @@ class Responsables extends AbstractSbmTable
     }
 
     /**
-     * Reçoit un objectData à enregistrer.
-     *
-     * Si c'est un nouveau, regarde si l'email est déjà connu dans la table. Si c'est le cas,
-     * identifie l'objectData à cet enregistrement et sort sans enregistrer en metttant à jour
-     * la propriété lastResponsableId.
-     *
-     * Renvoie true si la commune a changée ou si c'est un nouveau.
-     * Mets à jour le propriété lastResponsableId quelque soit le cas : insert, update ou inchangé
-     *
-     * (non-PHPdoc)
+     * Reçoit un objectData à enregistrer. Si c'est un nouveau, regarde si l'email est
+     * déjà connu dans la table. Si c'est le cas, identifie l'objectData à cet
+     * enregistrement et sort sans enregistrer en metttant à jour la propriété
+     * lastResponsableId. Renvoie true si la commune a changée ou si c'est un nouveau.
+     * Mets à jour le propriété lastResponsableId quelque soit le cas : insert, update ou
+     * inchangé (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
      */
@@ -63,13 +59,11 @@ class Responsables extends AbstractSbmTable
      *
      * @param ObjectDataInterface $obj_data
      * @param boolean $checkDemenagement
-     *            false par défaut.
-     *            Si true alors on vérifie si l'adresse a changé et on met à jour les
-     *            éléments concernant le déménagement si nécessaire.
-     *
+     *            false par défaut. Si true alors on vérifie si l'adresse a changé et on
+     *            met à jour les éléments concernant le déménagement si nécessaire.
      * @return boolean Si checkDemenagement alors on renvoie vrai si l'adresse a changé
-     *         (adresseL1 ou adresseL2 ou codePostal ou commune).
-     *         Si non on renvoie vrai si la commune a changé.
+     *         (adresseL1 ou adresseL2 ou adresseL3 ou codePostal ou commune). Si non on
+     *         renvoie vrai si la commune a changé.
      */
     public function saveResponsable(ObjectDataInterface $obj_data,
         $checkDemenagement = false)
@@ -84,6 +78,7 @@ class Responsables extends AbstractSbmTable
                 $prenom = $this->filtre_sa->filter($obj_data->prenom);
                 $adresseL1 = $obj_data->adresseL1;
                 $adresseL2 = $obj_data->adresseL2;
+                $adresseL3 = $obj_data->adresseL3;
                 $communeId = $obj_data->communeId;
                 $telephones = [
                     isset($obj_data->telephoneF) ? $obj_data->telephoneF : null,
@@ -100,8 +95,12 @@ class Responsables extends AbstractSbmTable
                         $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom,
                             $adresseL2, $communeId);
                         if (! $old_data) {
-                            $old_data = $this->getRecordByNomPrenomTelephone($nom, $prenom,
-                                $telephones);
+                            $old_data = $this->getRecordByNomPrenomAdresse($nom, $prenom,
+                                $adresseL3, $communeId);
+                            if (! $old_data) {
+                                $old_data = $this->getRecordByNomPrenomTelephone($nom,
+                                    $prenom, $telephones);
+                            }
                         }
                     }
                 }
@@ -109,10 +108,9 @@ class Responsables extends AbstractSbmTable
                 if (! $is_new) {
                     // dans ce cas, c'est le responsable. On le met à jour.
                     $obj_data_array = $obj_data->getArrayCopy();
-                    // Les clés sont responsableId, userId, nature, titre, nom, prenom, titre2,
-                    // nom2, prenom2,
-                    // adresseL1, adresseL2, codePostal, communeId, telephoneF, telephoneP,
-                    // telephoneT, email
+                    // Les clés sont responsableId, userId, nature, titre, nom, prenom,
+                    // titre2, nom2, prenom2, adresseL1, adresseL2, adresseL3, codePostal,
+                    // communeId, telephoneF, telephoneP, telephoneT, email
                     unset($obj_data_array['responsableId']);
                     $obj_data->exchangeArray(
                         array_merge($old_data->getArrayCopy(), $obj_data_array));
@@ -141,26 +139,31 @@ class Responsables extends AbstractSbmTable
                 if ($old_data->nom != $obj_data->nom) {
                     $obj_data->addCalculateField('nomSA');
                 }
-            } catch (ExceptionObjectData\ExceptionInterface $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
+            }
             try {
                 if ($old_data->prenom != $obj_data->prenom) {
                     $obj_data->addCalculateField('prenomSA');
                 }
-            } catch (ExceptionObjectData\ExceptionInterface $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
+            }
             try {
                 if ($old_data->nom2 != $obj_data->nom2) {
                     $obj_data->addCalculateField('nom2SA');
                 }
-            } catch (ExceptionObjectData\ExceptionInterface $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
+            }
             try {
                 if ($old_data->prenom2 != $obj_data->prenom2) {
                     $obj_data->addCalculateField('prenom2SA');
                 }
-            } catch (ExceptionObjectData\ExceptionInterface $e) {}
+            } catch (ExceptionObjectData\ExceptionInterface $e) {
+            }
             if ($checkDemenagement) {
                 try {
                     $demenagement = $old_data->adresseL1 != $obj_data->adresseL1;
                     $demenagement |= $old_data->adresseL2 != $obj_data->adresseL2;
+                    $demenagement |= $old_data->adresseL3 != $obj_data->adresseL3;
                     $demenagement |= $old_data->codePostal != $obj_data->codePostal;
                     $demenagement |= $old_data->communeId != $obj_data->communeId;
                     if ($demenagement) {
@@ -169,6 +172,7 @@ class Responsables extends AbstractSbmTable
                             'dateDemenagement' => DateLib::todayToMysql(),
                             'ancienAdresseL1' => $old_data->adresseL1,
                             'ancienAdresseL2' => $old_data->adresseL2,
+                            'ancienAdresseL3' => $old_data->adresseL3,
                             'ancienCodePostal' => $old_data->codePostal,
                             'ancienCommuneId' => $old_data->communeId
                         ];
@@ -219,8 +223,8 @@ class Responsables extends AbstractSbmTable
     }
 
     /**
-     * Change les emails.
-     * Attention, cette méthode ne met pas à jour la propriété lastResponsableId.
+     * Change les emails. Attention, cette méthode ne met pas à jour la propriété
+     * lastResponsableId.
      *
      * @param string $email_old
      * @param string $email_new
@@ -243,7 +247,6 @@ class Responsables extends AbstractSbmTable
      *            référence du respondable
      * @param bool $with_titre
      *            indique si le titre doit être mis ou non
-     *
      * @return string
      */
     public function getNomPrenom($responsableId, $with_titre = false)
@@ -281,7 +284,6 @@ class Responsables extends AbstractSbmTable
      * @param string $telephone
      *            On cherche s'il y a une correspondance avec telephoneF ou telephoneP ou
      *            telephoneT
-     *
      * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
      */
     private function getRecordByNomPrenomTelephone($nom, $prenom, $telephones)
@@ -365,7 +367,7 @@ class Responsables extends AbstractSbmTable
      * @param string $nom
      * @param string $prenom
      * @param string $adresse
-     *            On cherche s'il y a une correspondance avec adresseL1 ou avec adresseL2
+     *            On cherche s'il y a une correspondance avec adresseL1, adresseL2 ou adresseL3
      * @param string $communeId
      *
      * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
@@ -394,6 +396,15 @@ class Responsables extends AbstractSbmTable
         if (! $resultset->count()) {
             $resultset = $this->fetchAll(
                 [
+                    'nomSA' => $nom,
+                    'prenomSA' => $prenom,
+                    'adresseL3' => $adresse,
+                    'communeId' => $communeId
+                ]);
+        }
+        if (! $resultset->count()) {
+            $resultset = $this->fetchAll(
+                [
                     'nom2SA' => $nom,
                     'prenom2SA' => $prenom,
                     'adresseL1' => $adresse,
@@ -406,6 +417,15 @@ class Responsables extends AbstractSbmTable
                     'nom2SA' => $nom,
                     'prenom2SA' => $prenom,
                     'adresseL2' => $adresse,
+                    'communeId' => $communeId
+                ]);
+        }
+        if (! $resultset->count()) {
+            $resultset = $this->fetchAll(
+                [
+                    'nom2SA' => $nom,
+                    'prenom2SA' => $prenom,
+                    'adresseL3' => $adresse,
                     'communeId' => $communeId
                 ]);
         }

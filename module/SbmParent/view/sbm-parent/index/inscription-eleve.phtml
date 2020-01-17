@@ -12,8 +12,8 @@
  * @filesource inscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->themeCss('sbm-parent/index', 'edit.css');
 $this->jQuery('jquery-ui');
@@ -72,6 +72,9 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 							<div>
 								<div class="label-enfant">Adresse</div>
                     				<?=$this->responsable->adresseL2;?></div>
+							<div>
+								<div class="label-enfant">Adresse</div>
+                    				<?=$this->responsable->adresseL3;?></div>
 							<div>
 								<div class="label-enfant">Commune</div>
                     				<?=$this->responsable->codePostal;?>
@@ -133,6 +136,8 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 			<?=$this->formRow($this->formga->get('r2adresseL1'));?></div>
 		<div id="_adresseL2" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2adresseL2'));?></div>
+		<div id="_adresseL3" class="row-inner">
+			<?=$this->formRow($this->formga->get('r2adresseL3'));?></div>
 		<div id="_codePostal" class="row-inner">
 			<?=$this->formRow($this->formga->get('r2codePostal'));?></div>
 		<div id="_communeId" class="row-inner">

@@ -10,8 +10,8 @@
  * @filesource affecter-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 juin 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -108,7 +108,8 @@ $actions = [
             array_filter(
                 [
                     $this->escapeHtml($row['adresseL1']),
-                    $this->escapeHtml($row['adresseL2'])
+                    $this->escapeHtml($row['adresseL2']),
+                    $this->escapeHtml($row['adresseL3'])
                 ]));
         ?>
             	<tr

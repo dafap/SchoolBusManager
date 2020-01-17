@@ -31,9 +31,9 @@ class Eleves extends AbstractSbmTable
     public function getRecordByGid($gid)
     {
         $array_where = [
-            'id_mgc = ?' => $gid
+            'id_tra = ?' => $gid
         ];
-        $condition_msg = "id_mgc = $gid";
+        $condition_msg = "id_tra = $gid";
 
         $rowset = $this->table_gateway->select($array_where);
         $row = $rowset->current();

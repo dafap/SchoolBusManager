@@ -8,8 +8,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -54,6 +54,7 @@ class ElevesResponsables extends AbstractQuery
                 'responsable1NomPrenom' => new Expression('concat(r1.nom," ",r1.prenom)'),
                 'adresseL1R1' => 'adresseL1',
                 'adresseL2R1' => 'adresseL2',
+                'adresseL3R1' => 'adresseL3',
                 'codePostalR1' => 'codePostal',
                 'telephoneFR1' => 'telephoneF',
                 'telephonePR1' => 'telephoneP',
@@ -65,7 +66,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'r1c' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'r1.communeId=r1c.communeId', [
-            'communeR1' => 'nom'
+            'communeR1' => 'nom',
+            'lacommuneR1' => 'alias',
+            'laposteR1' => 'alias_laposte'
         ]);
     }
 
@@ -117,6 +120,7 @@ class ElevesResponsables extends AbstractQuery
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
+                'adresseL3R2' => 'adresseL3',
                 'codePostalR2' => 'codePostal',
                 'telephoneFR2' => 'telephoneF',
                 'telephonePR2' => 'telephoneP',
@@ -128,7 +132,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom'
+            'communeR2' => 'nom',
+            'lacommuneR2' => 'alias',
+            'laposteR2' => 'alias_laposte'
         ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
@@ -235,7 +241,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom'
+            'communeEtablissement' => 'nom',
+            'lacommuneEtablissement' => 'alias',
+            'laposteEtablissement' => 'alias_laposte'
         ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
@@ -251,6 +259,7 @@ class ElevesResponsables extends AbstractQuery
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
+                'adresseL3R2' => 'adresseL3',
                 'codePostalR2' => 'codePostal',
                 'telephoneFR2' => 'telephoneF',
                 'telephonePR2' => 'telephoneP',
@@ -262,7 +271,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom'
+            'communeR2' => 'nom',
+            'lacommuneR2' => 'alias',
+            'laposteR2' => 'alias_laposte'
         ], $select::JOIN_LEFT)
             ->join(
             [
@@ -421,7 +432,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom'
+            'communeEtablissement' => 'nom',
+            'lacommuneEtablissement' => 'alias',
+            'laposteEtablissement' => 'alias_laposte'
         ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
@@ -437,6 +450,7 @@ class ElevesResponsables extends AbstractQuery
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
+                'adresseL3R2' => 'adresseL3',
                 'codePostalR2' => 'codePostal',
                 'emailR2' => 'email',
                 'x2' => 'x',
@@ -445,7 +459,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom'
+            'communeR2' => 'nom',
+            'lacommuneR2' => 'alias',
+            'laposteR2' => 'alias_laposte'
         ], $select::JOIN_LEFT)
             ->join([
             's' => $select2
@@ -494,7 +510,7 @@ class ElevesResponsables extends AbstractQuery
         ])
             ->columns(
             [
-                'id_mgc',
+                'id_tra',
                 'numero',
                 'nom_eleve' => 'nomSA',
                 'prenom_eleve' => 'prenomSA',
@@ -521,7 +537,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'sco.communeId=comsco.communeId', [
-            'commune_chez' => 'nom'
+            'commune_chez' => 'nom',
+            'lacommune_chez' => 'alias',
+            'laposte_chez' => 'alias_laposte'
         ], $select::JOIN_LEFT)
             ->join(
             [
@@ -536,7 +554,9 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'cometa' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'cometa.communeId=eta.communeId', [
-            'commune_etablissement' => 'nom'
+            'commune_etablissement' => 'nom',
+            'lacommune_etablissement' => 'alias',
+            'laposte_etablissement' => 'alias_laposte'
         ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
@@ -556,12 +576,15 @@ class ElevesResponsables extends AbstractQuery
                 'email_responsable1' => 'email',
                 'adresseL1_responsable1' => 'adresseL1',
                 'adresseL2_responsable1' => 'adresseL2',
+                'adresseL3_responsable1' => 'adresseL3',
                 'codePostal_responsable1' => 'codePostal'
             ])
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'comr1.communeId=r1.communeId', [
-            'commune_responsable1' => 'nom'
+            'commune_responsable1' => 'nom',
+            'lacommune_responsable1' => 'alias',
+            'laposte_responsable1' => 'alias_laposte'
         ])
             ->join([
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
@@ -577,12 +600,15 @@ class ElevesResponsables extends AbstractQuery
                 'email_responsable2' => 'email',
                 'adresseL1_responsable2' => 'adresseL1',
                 'adresseL2_responsable2' => 'adresseL2',
+                'adresseL3_responsable2' => 'adresseL3',
                 'codePostal_responsable2' => 'codePostal'
             ], $select::JOIN_LEFT)
             ->join([
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'comr2.communeId=r2.communeId', [
-            'commune_responsable2' => 'nom'
+            'commune_responsable2' => 'nom',
+            'lacommune_responsable2' => 'alias',
+            'laposte_responsable2' => 'alias_laposte'
         ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);

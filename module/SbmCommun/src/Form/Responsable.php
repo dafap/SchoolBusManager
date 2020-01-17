@@ -10,8 +10,8 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
@@ -247,6 +247,24 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             ]);
         $this->add(
             [
+                'name' => 'adresseL3',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-adresseL3',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Complément d\'adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'codePostal',
                 'type' => 'SbmCommun\Form\Element\CodePostal',
                 'attributes' => [
@@ -446,6 +464,25 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                     ]
                 ]
             ]);
+
+        $this->add(
+            [
+                'name' => 'ancienAdresseL3',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'responsable-ancienAdresseL3',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Ancienne adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         $this->add(
             [
                 'name' => 'ancienCodePostal',
@@ -595,6 +632,14 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'name' => 'adresseL1',
                 'required' => true
             ],
+            'adresseL2' => [
+                'name' => 'adresseL2',
+                'required' => false
+            ],
+            'adresseL3' => [
+                'name' => 'adresseL3',
+                'required' => false
+            ],
             'codePostal' => [
                 'name' => 'codePostal',
                 'required' => true
@@ -605,6 +650,10 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
             ],
             'ancienAdresseL2' => [
                 'name' => 'ancienAdresseL2',
+                'required' => false
+            ],
+            'ancienAdresseL3' => [
+                'name' => 'ancienAdresseL3',
                 'required' => false
             ],
             'ancienCommuneId' => [

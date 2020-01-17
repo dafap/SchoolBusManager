@@ -11,8 +11,8 @@
  * @filesource facture.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -61,7 +61,7 @@ table.entete td {
 		<td style="height: 34mm;"></td>
 		<td>
 			<?=$acheteur->nom?> <?=$acheteur->prenom;?><br>
-			<?=implode('<br>',array_filter([$acheteur->adresseL1, $acheteur->adresseL2]));?><br>
+			<?=implode('<br>',array_filter([$acheteur->adresseL1, $acheteur->adresseL2, $acheteur->adresseL3]));?><br>
 			<?=$acheteur->codePostal;?> <?=$acheteur->commune;?>
 		</td>
 	</tr>

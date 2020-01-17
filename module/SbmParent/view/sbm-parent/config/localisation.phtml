@@ -9,31 +9,34 @@
  * @filesource localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 // calcul du contenu de l'infobulle et du libellé du domicile
 $description = [];
-$description[] = '<b>' .
+$description[] = $domicile = '<b>' .
     implode(' ',
         [
             $this->responsable->titre,
             $this->responsable->nom,
             $this->responsable->prenom
         ]) . '</b>';
-$description[] = $this->responsable->adresseL1;
-$domicile = $this->responsable->adresseL1;
-$tmp = $this->responsable->adresseL2;
-if (! empty($tmp)) {
-    $description[] = $this->responsable->adresseL2;
-    $domicile .= ' ' . $this->responsable->adresseL2;
+$adresse = array_filter(
+    [
+        $this->responsable->adresseL1,
+        $this->responsable->adresseL2,
+        $this->responsable->adresseL3
+    ]);
+foreach ($adresse as $ligne) {
+    $description[] = $ligne;
 }
+$domicile .= ', ' . implode(', ', $adresse);
 $cp_commune = implode(' ', [
     $this->responsable->codePostal,
     $this->responsable->commune
 ]);
 $description[] = $cp_commune;
-$domicile .= ' ' . $cp_commune;
+$domicile .= ', ' . $cp_commune;
 $telephones = array_filter(
     [
         $this->telephone($this->responsable->telephoneF),

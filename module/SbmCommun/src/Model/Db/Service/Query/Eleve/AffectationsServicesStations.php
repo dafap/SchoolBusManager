@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -301,7 +301,7 @@ class AffectationsServicesStations extends AbstractQuery
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ], 'ele.eleveId=aff.eleveId',
             [
-                'id_mgc',
+                'id_tra',
                 'numero',
                 'nom_eleve' => 'nomSA',
                 'prenom_eleve' => 'prenomSA',
@@ -361,6 +361,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'email_responsable' => 'email',
                 'adresseL1_responsable' => 'adresseL1',
                 'adresseL2_responsable' => 'adresseL2',
+                'adresseL3_responsable' => 'adresseL3',
                 'codePostal_responsable' => 'codePostal'
             ])
             ->join([
@@ -510,6 +511,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
                 'adresseL1' => 'adresseL1',
                 'adresseL2' => 'adresseL2',
+                'adresseL3' => 'adresseL3',
                 'telephoneF' => 'telephoneF',
                 'telephoneP' => 'telephoneP',
                 'telephoneT' => 'telephoneT',
@@ -518,7 +520,9 @@ class AffectationsServicesStations extends AbstractQuery
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'res.communeId = com.communeId', [
-            'commune' => 'nom'
+            'commune' => 'nom',
+            'lacommune' => 'alias',
+            'laposte' => 'alias_laposte'
         ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')

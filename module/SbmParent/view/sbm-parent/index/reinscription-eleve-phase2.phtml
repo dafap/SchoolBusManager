@@ -15,8 +15,8 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'edit.css');
@@ -49,10 +49,11 @@ if ($this->hasGa) {
     }
     $r2adresseL1 = $this->responsable2['adresseL1'];
     $r2adresseL2 = $this->responsable2['adresseL2'];
+    $r2adresseL3 = $this->responsable2['adresseL3'];
     $r2cp = $this->responsable2['codePostal'];
     $r2commune = $this->responsable2['commune'];
 } else {
-    $r2identite = $r2adresseL1 = $r2adresseL2 = $r2cp = $r2commune = '';
+    $r2identite = $r2adresseL1 = $r2adresseL2 = $r2adresseL3 = $r2cp = $r2commune = '';
 }
 // $label_attributes = $this->form->get('commentaire')->getLabelAttributes();
 // $label_attributes['style'] = 'width:100%';
@@ -236,6 +237,9 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 				<div class="label-enfant">Adresse</div>
                     <?=$this->responsable->adresseL2;?></div>
 			<div>
+				<div class="label-enfant">Adresse</div>
+                    <?=$this->responsable->adresseL3;?></div>
+			<div>
 				<div class="label-enfant">Commune</div>
                     <?=$this->responsable->codePostal . ' ' . $this->responsable->commune;?>
                     </div>
@@ -249,6 +253,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 						<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="?adresseEleveL2" class="row-inner">
 						<?=$this->formRow($this->form->get('adresseL2'));?></div>
+			<div id="?adresseEleveL2" class="row-inner">
+						<?=$this->formRow($this->form->get('adresseL3'));?></div>
 			<div id="?codePostalEleve" class="row-inner">
 						<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="?communeEleveId" class="row-inner">
@@ -270,6 +276,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 		      <?=$this->formRow($this->formga->get('r2adresseL1'));?></div>
 			<div id="_adresseL2" class="row-inner">
 		      <?=$this->formRow($this->formga->get('r2adresseL2'));?></div>
+			<div id="_adresseL3" class="row-inner">
+		      <?=$this->formRow($this->formga->get('r2adresseL3'));?></div>
 			<div id="_codePostal" class="row-inner">
 		      <?=$this->formRow($this->formga->get('r2codePostal'));?></div>
 			<div id="_communeId" class="row-inner">
@@ -296,6 +304,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 				<div class="label-enfant">Adresse</div><?=$r2adresseL1;?></div>
 			<div>
 				<div class="label-enfant">Adresse</div><?=$r2adresseL2;?></div>
+			<div>
+				<div class="label-enfant">Adresse</div><?=$r2adresseL3;?></div>
 			<div>
 				<div class="label-enfant">Commune</div><?=$r2cp . ' ' . $r2commune;?></div>
 			<div id="enfant_demandeR2" class="row-inner">

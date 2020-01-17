@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -1736,13 +1736,29 @@ class TransportController extends AbstractActionController
         }
         $etablissement = $tEtablissements->getRecord($etablissementId);
         $description = '<b>' . $etablissement->nom . "</b>\n";
+        // préparer le nom de la commune selon les règes de la méthode
+        // GoogleMaps\Geocoder::geocode
         $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord(
             $etablissement->communeId);
+        $sa = new \SbmCommun\Filter\SansAccent();
+        $lacommune = $sa->filter($commune->alias);
         if ($etablissement->x == 0.0 && $etablissement->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
-                $etablissement->adresse1, $etablissement->codePostal, $commune->nom);
+                $etablissement->adresse1, $etablissement->codePostal, $lacommune);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $pt->setLatLngRange($configCarte['valide']['lat'],
+                $configCarte['valide']['lng']);
+            if (! $pt->isValid() && ! empty($etablissement->adresse2)) {
+                $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                    $etablissement->adresse2, $etablissement->codePostal, $lacommune);
+                $pt->setLatitude($array['lat']);
+                $pt->setLongitude($array['lng']);
+                if (! $pt->isValid()) {
+                    $pt->setLatitude($configCarte['centre']['lat']);
+                    $pt->setLongitude($configCarte['centre']['lng']);
+                }
+            }
             $description .= $array['adresse'];
         } else {
             $point = new Point($etablissement->x, $etablissement->y);
@@ -1752,7 +1768,7 @@ class TransportController extends AbstractActionController
                     $etablissement->adresse1,
                     $etablissement->adresse2
                 ]), "\n");
-            $description .= "\n" . $etablissement->codePostal . ' ' . $commune->nom;
+            $description .= "\n" . $etablissement->codePostal . ' ' . $commune->alias;
         }
         $description = str_replace("\n", "", nl2br($description));
         $form->setData(
@@ -3783,15 +3799,25 @@ class TransportController extends AbstractActionController
             }
         }
         $station = $tStations->getRecord($stationId);
+        // préparer le nom de la commune selon les règes de la méthode
+        // GoogleMaps\Geocoder::geocode
         $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord(
             $station->communeId);
+        $sa = new \SbmCommun\Filter\SansAccent();
+        $lacommune = $sa->filter($commune->alias);
         $description = '<b>' . $station->nom . '</b></br>' . $commune->codePostal . ' ' .
-            $commune->nom;
+            $lacommune;
         if ($station->x == 0.0 && $station->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
-                $station->nom, $commune->codePostal, $commune->nom);
+                $station->nom, $commune->codePostal, $lacommune);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $pt->setLatLngRange($configCarte['valide']['lat'],
+                $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
+                $pt->setLatitude($configCarte['centre']['lat']);
+                $pt->setLongitude($configCarte['centre']['lng']);
+            }
         } else {
             $point = new Point($station->x, $station->y);
             $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);

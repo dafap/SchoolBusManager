@@ -3,11 +3,11 @@
  * Service fournissant une liste des communes visibles sous la forme d'un tableau
  *   'communeId' => 'nom (département)'
  * Le département est codé sur 2 chiffres.
- * La liste est ordonnées en plaçant les communes du département 12 en premier (ordre alphabétique) 
+ * La liste est ordonnées en plaçant les communes du département 12 en premier (ordre alphabétique)
  * puis la liste des autres communes dans l'ordre alphabétique.
- * 
+ *
  *   Attention !
- * L'utilisation de ces listes par ajax nécessite, avant d'encoder le tableau au format JSON, d'inverser 
+ * L'utilisation de ces listes par ajax nécessite, avant d'encoder le tableau au format JSON, d'inverser
  * les clés et les valeurs afin de ne pas perdre l'ordre du tableau. En effet, les clés étant numériques,
  * la plupart des navigateurs (sauf Firefox) ordonnent le tableau dans l'ordre croissant des clés. En
  * passant par l'inversion, on donne des clés alphabétiques qui ne sont pas réorganisées par le navigateur.
@@ -18,8 +18,8 @@
  * @filesource CommunesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 15 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -52,7 +52,7 @@ class CommunesForSelect implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->table_name = $this->db_manager->getCanonicName('communes', 'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
-        $this->myDep = new Expression('CASE departement WHEN 12 THEN 0 ELSE 1 END');
+        $this->myDep = new Expression('CASE departement WHEN 73 THEN 0 ELSE 1 END');
         return $this;
     }
 
@@ -68,12 +68,13 @@ class CommunesForSelect implements FactoryInterface
         $where->like('nom', $like . '%');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns([
-            'communeId',
-            'nom',
-            'departement',
-            'myDep' => $this->myDep
-        ]);
+        $select->columns(
+            [
+                'communeId',
+                'alias',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
         $select->order([
             'myDep',
             'nom',
@@ -83,7 +84,7 @@ class CommunesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
+            $array[$row['communeId']] = $row['alias'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
@@ -97,7 +98,8 @@ class CommunesForSelect implements FactoryInterface
     public function codePostal($cp)
     {
         if (! is_string($cp) && is_int($cp)) {
-            // ça c'est pour les départements de AIN (01) à ARIEGE (09) qui pourraient perdre le
+            // ça c'est pour les départements de AIN (01) à ARIEGE (09) qui pourraient
+            // perdre le
             // zéro non sigificatif
             $cp = sprintf('%05d', $cp);
         }
@@ -105,12 +107,13 @@ class CommunesForSelect implements FactoryInterface
         $where->equalTo('codePostal', $cp);
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns([
-            'communeId',
-            'nom',
-            'departement',
-            'myDep' => $this->myDep
-        ]);
+        $select->columns(
+            [
+                'communeId',
+                'alias',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
         $select->order([
             'myDep',
             'nom',
@@ -120,7 +123,7 @@ class CommunesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
+            $array[$row['communeId']] = $row['alias'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
@@ -136,12 +139,13 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('visible = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns([
-            'communeId',
-            'nom',
-            'departement',
-            'myDep' => $this->myDep
-        ]);
+        $select->columns(
+            [
+                'communeId',
+                'alias',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
         $select->order([
             'myDep',
             'nom',
@@ -151,7 +155,7 @@ class CommunesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
+            $array[$row['communeId']] = $row['alias'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
@@ -167,12 +171,13 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('desservie = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns([
-            'communeId',
-            'nom',
-            'departement',
-            'myDep' => $this->myDep
-        ]);
+        $select->columns(
+            [
+                'communeId',
+                'alias',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
         $select->order([
             'myDep',
             'nom',
@@ -182,7 +187,7 @@ class CommunesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
+            $array[$row['communeId']] = $row['alias'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }
@@ -198,12 +203,13 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('membre = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns([
-            'communeId',
-            'nom',
-            'departement',
-            'myDep' => $this->myDep
-        ]);
+        $select->columns(
+            [
+                'communeId',
+                'alias',
+                'departement',
+                'myDep' => $this->myDep
+            ]);
         $select->order([
             'myDep',
             'nom',
@@ -213,7 +219,7 @@ class CommunesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['communeId']] = $row['nom'] . ' (' . $row['departement'] . ')';
+            $array[$row['communeId']] = $row['alias'] . ' (' . $row['departement'] . ')';
         }
         return $array;
     }

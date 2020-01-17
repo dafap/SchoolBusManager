@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport',
@@ -113,7 +113,6 @@ $actions = [
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Adresse</th>
-					<th>Adresse</th>
 					<th>Code postal</th>
 					<th>Commune</th>
 					<th>Etablissement</th>
@@ -153,13 +152,21 @@ $actions = [
         ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto'])
         ->addSansCarte($row['dateCarte'] < $this->dateDebut);
+    $array_adresse = array_filter(
+        [
+            $row['adresseL1'],
+            $row['adresseL2'],
+            $row['adresseL3']
+        ]);
+    foreach ($array_adresse as &$ligne) {
+        $ligne = $this->escapeHtml($ligne);
+    }
     ?>
 			    <tr class="petit <?= $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>
-					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
-					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= implode('<br>',$array_adresse);?></td>
 					<td><?= $this->escapeHtml($row['codePostal']);?></td>
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>

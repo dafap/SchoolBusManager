@@ -9,8 +9,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2019
- * @version 2019-2.5.0
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Model\Db\Service\Query;
 
@@ -176,7 +176,9 @@ class Eleves implements FactoryInterface
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom'
+            'communeEtablissement' => 'nom',
+            'lacommuneEtablissement' => 'alias',
+            'laposteEtablissement' => 'alias_laposte'
         ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);

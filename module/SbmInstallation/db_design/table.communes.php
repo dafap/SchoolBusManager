@@ -8,8 +8,8 @@
  * @filesource table.communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -28,9 +28,10 @@ return [
             'communeId' => 'varchar(6) NOT NULL',
             'nom' => 'varchar(45) NOT NULL',
             'nom_min' => 'varchar(45) NOT NULL',
-            'alias' => 'varchar(30) DEFAULT NULL',
-            'alias_min' => 'varchar(30) DEFAULT NULL',
+            'alias' => 'varchar(45) DEFAULT NULL', // commune en maj avec LE, LA ou LES, apostrophes et tirets
+            'alias_min' => 'varchar(45) DEFAULT NULL',
             'aliasCG' => 'varchar(45) DEFAULT NULL',
+            'alias_laposte' => 'varchar(38) DEFAULT NULL', // ST STE pas d'apostrophe pas ni de tiret
             'codePostal' => 'varchar(5) NOT NULL',
             'departement' => 'varchar(3) NOT NULL',
             'canton' => 'varchar(5) NOT NULL',

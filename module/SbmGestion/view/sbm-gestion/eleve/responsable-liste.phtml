@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
- * @version 2019-2.5.1
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
 
@@ -178,7 +178,7 @@ $actions = [
             $ttr = $this->escapeHtml($responsable['titre']);
             $nm = $this->escapeHtml($responsable['nom']);
             $prn = $this->escapeHtml($responsable['prenom']);
-            $cmn = $this->escapehtml($responsable['commune']);
+            $cmn = $this->escapehtml($responsable['lacommune']);
             $identite = $ttr . ' ' . $nm . ' ' . $prn . ' de ' . $cmn;
             $hiddens = [
                 'responsableId' => $responsable['responsableId'],
@@ -267,14 +267,17 @@ $actions = [
 					<td class="nom"><?=$nm;?></td>
 					<td class="prenom"><?=$prn;?></td>
 					<td class="adresse">
-						<?=$this->escapehtml($responsable['adresseL1']);?>
 					<?php
-
-            if (! empty($responsable['adresseL2'])) :
-                ?>
-					   <br /><?=$this->escapehtml($responsable['adresseL2']);?>
-					<?php endif;
-
+            $array_adresse = array_filter(
+                [
+                    $responsable['adresseL1'],
+                    $responsable['adresseL2'],
+                    $responsable['adresseL3']
+                ]);
+            foreach ($array_adresse as &$ligne) {
+                $ligne = $this->escapehtml($ligne);
+            }
+            echo implode('<br>', $array_adresse);
             ?>
 					</td>
 					<td class="centre codePostal">

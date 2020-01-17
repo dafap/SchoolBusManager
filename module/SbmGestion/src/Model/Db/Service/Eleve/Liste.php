@@ -10,8 +10,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -236,9 +236,10 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'prenom',
                 'sexe',
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
-                'adresseL2' => new Literal('IFNULL(sco.adresseL2, res.adresseL2)'),
+                'adresseL2' => new Literal('CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2'),
+                'adresseL3' => new Literal('CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE ""'),
                 'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
-                'commune' => new Literal('IFNULL(comsco.nom, comres.nom)')
+                'commune' => new Literal('IFNULL(comsco.alias, comres.alias)')
             ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($this->arrayToWhere($where, $filtre));
@@ -339,9 +340,10 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'prenom',
                 'sexe',
                 'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-                'adresseL2' => new Literal('IFNULL(s.adresseL2, r.adresseL2)'),
+                'adresseL2' => new Literal('CASE WHEN s.adresseL1 IS NULL THEN r.adresseL2 ELSE s.adresseL2'),
+                'adresseL3' => new Literal('CASE WHEN s.adresseL1 IS NULL THEN r.adresseL3 ELSE ""'),
                 'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
-                'commune' => new Literal('IFNULL(d.nom, c.nom)')
+                'commune' => new Literal('IFNULL(d.alias, c.alias)')
             ]);
 
         if (! empty($order)) {

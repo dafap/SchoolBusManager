@@ -8,8 +8,8 @@
  * @filesource Communes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2019
- * @version 2019-2.5.0
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -28,7 +28,8 @@ class Communes extends AbstractSbmTable implements EffectifInterface
     }
 
     /**
-     * Renvoie l'identifiant d'une commune desservie dont on donne le nom
+     * Renvoie l'identifiant d'une commune desservie dont on donne le nom ou l'alias ou
+     * l'alias_laposte
      *
      * @param string $nom
      *
@@ -43,7 +44,23 @@ class Communes extends AbstractSbmTable implements EffectifInterface
         if (! is_null($result)) {
             return $result->current()->communeId;
         } else {
-            return null;
+            $result = $this->fetchAll([
+                'alias' => $nom,
+                'desservie' => 1
+            ]);
+            if (! is_null($result)) {
+                return $result->current()->communeId;
+            } else {
+                $result = $this->fetchAll([
+                    'alias_laposte' => $nom,
+                    'desservie' => 1
+                ]);
+                if (! is_null($result)) {
+                    return $result->current()->communeId;
+                } else {
+                    return null;
+                }
+            }
         }
     }
 
@@ -90,10 +107,10 @@ class Communes extends AbstractSbmTable implements EffectifInterface
     public function getListeMembre()
     {
         $liste = [];
-        foreach( $this->fetchAll([
+        foreach ($this->fetchAll([
             'membre' => 1
         ], 'nom') as $commune) {
-            $liste[] = $commune->nom;
+            $liste[] = $commune->alias;
         }
         return $liste;
     }
@@ -106,42 +123,60 @@ class Communes extends AbstractSbmTable implements EffectifInterface
     public function getListeDesservie()
     {
         $liste = [];
-        foreach( $this->fetchAll([
+        foreach ($this->fetchAll([
             'desservie' => 1
         ], 'nom') as $commune) {
-            $liste[] = $commune->nom;
+            $liste[] = $commune->alias;
         }
         return $liste;
     }
 
     /**
-     * Renvoie la liste des communes avec inscription en ligne autorisée dans l'ordre alphabétique
+     * Renvoie la liste des communes visibles dans l'ordre alphabétique
+     *
+     * @return array
+     */
+    public function getListeVisible()
+    {
+        $liste = [];
+        foreach ($this->fetchAll([
+            'visible' => 1
+        ], 'nom') as $commune) {
+            $liste[] = $commune->alias;
+        }
+        return $liste;
+    }
+
+    /**
+     * Renvoie la liste des communes avec inscription en ligne autorisée dans l'ordre
+     * alphabétique
      *
      * @return array
      */
     public function getListeInscriptionEnLigne()
     {
         $liste = [];
-        foreach( $this->fetchAll([
+        foreach ($this->fetchAll([
             'inscriptionenligne' => 1
         ], 'nom') as $commune) {
-            $liste[] = $commune->nom;
+            $liste[] = $commune->alias;
         }
         return $liste;
     }
 
     /**
-     * Renvoie la liste des communes avec paiement en ligne autorisé dans l'ordre alphabétique
+     * Renvoie la liste des communes avec paiement en ligne autorisé dans l'ordre
+     * alphabétique
      *
      * @return array
      */
     public function getListePaiementEnLigne()
     {
         $liste = [];
-        foreach( $this->fetchAll([
+        foreach ($this->fetchAll([
             'paiementenligne' => 1
         ], 'nom') as $commune) {
-            $liste[] = $commune->nom;
+            $liste[] = $commune->alias;
         }
         return $liste;
     }

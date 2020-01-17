@@ -857,6 +857,7 @@ class IndexController extends AbstractActionController
             'R Identité' => 'responsable',
             'R Adresse ligne 1' => 'adresseL1',
             'R Adresse ligne 2' => 'adresseL2',
+            'R Adresse ligne 3' => 'adresseL3',
             'R Commune' => 'commune',
             'R Téléphone 1' => 'telephoneF',
             'R Téléphone 2' => 'telephoneP',

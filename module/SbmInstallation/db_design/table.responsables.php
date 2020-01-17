@@ -9,8 +9,8 @@
  * @filesource table.responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 03 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -39,10 +39,12 @@ return [
             'prenom2SA' => 'varchar(30) NOT NULL DEFAULT ""',
             'adresseL1' => 'varchar(38) NOT NULL',
             'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
+            'adresseL3' => 'varchar(38) NOT NULL DEFAULT ""',
             'codePostal' => 'varchar(5) NOT NULL',
             'communeId' => 'varchar(6) NOT NULL',
-            'ancienAdresseL1' => 'varchar(30) NOT NULL DEFAULT ""',
-            'ancienAdresseL2' => 'varchar(30) NOT NULL DEFAULT ""',
+            'ancienAdresseL1' => 'varchar(38) NOT NULL DEFAULT ""',
+            'ancienAdresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
+            'ancienAdresseL3' => 'varchar(38) NOT NULL DEFAULT ""',
             'ancienCodePostal' => 'varchar(5) NOT NULL DEFAULT ""',
             'ancienCommuneId' => 'varchar(6) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) DEFAULT NULL',
@@ -64,7 +66,7 @@ return [
             'x' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'y' => 'decimal(18,10) NOT NULL DEFAULT "0"',
             'userId' => 'int(11) DEFAULT "3"',
-            'id_mgc' => 'int(11) DEFAULT NULL', // inutilisé
+            'id_tra' => 'varchar(15) DEFAULT NULL', // pour récupération des données
             'note' => 'text NULL'
         ],
         'primary_key' => [
@@ -103,7 +105,7 @@ return [
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(responsables)%', 'insert', 'responsableId', NEW.responsableId, NOW(), CONCAT_WS('|', NEW.selection, NEW.dateCreation, NEW.dateModification, NEW.nature, NEW.titre, NEW.nom, NEW.nomSA, NEW.prenom, NEW.prenomSA, NEW.adresseL1, NEW.adresseL2, NEW.codePostal, NEW.communeId, NEW.ancienAdresseL1, NEW.ancienAdresseL2, NEW.ancienCodePostal, NEW.ancienCommuneId, NEW.email, NEW.telephoneF, NEW.telephoneP, NEW.telephoneT, NEW.etiquette, NEW.demenagement, NEW.dateDemenagement, NEW.facture, NEW.grilleTarif, NEW.ribTit, NEW.ribDom, NEW.iban, NEW.bic, NEW.x, NEW.y, NEW.userId, NEW.note))
+VALUES ('%table(responsables)%', 'insert', 'responsableId', NEW.responsableId, NOW(), CONCAT_WS('|', NEW.selection, NEW.dateCreation, NEW.dateModification, NEW.nature, NEW.titre, NEW.nom, NEW.nomSA, NEW.prenom, NEW.prenomSA, NEW.adresseL1, NEW.adresseL2, NEW.adresseL3, NEW.codePostal, NEW.communeId, NEW.ancienAdresseL1, NEW.ancienAdresseL2, NEW.ancienAdresseL3, NEW.ancienCodePostal, NEW.ancienCommuneId, NEW.email, NEW.telephoneF, NEW.telephoneP, NEW.telephoneT, NEW.etiquette, NEW.demenagement, NEW.dateDemenagement, NEW.facture, NEW.grilleTarif, NEW.ribTit, NEW.ribDom, NEW.iban, NEW.bic, NEW.x, NEW.y, NEW.userId, NEW.note))
 EOT
 
         ],
@@ -112,7 +114,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(responsables)%', 'update', 'responsableId', OLD.responsableId, NOW(), CONCAT_WS('|', OLD.selection, OLD.dateCreation, OLD.dateModification, OLD.nature, OLD.titre, OLD.nom, OLD.nomSA, OLD.prenom, OLD.prenomSA, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.ancienAdresseL1, OLD.ancienAdresseL2, OLD.ancienCodePostal, OLD.ancienCommuneId, OLD.email, OLD.telephoneF, OLD.telephoneP, OLD.telephoneT, OLD.etiquette, OLD.demenagement, OLD.dateDemenagement, OLD.facture, OLD.grilleTarif, OLD.ribTit, OLD.ribDom, OLD.iban, OLD.bic, OLD.x, OLD.y, OLD.userId, OLD.note))
+VALUES ('%table(responsables)%', 'update', 'responsableId', OLD.responsableId, NOW(), CONCAT_WS('|', OLD.selection, OLD.dateCreation, OLD.dateModification, OLD.nature, OLD.titre, OLD.nom, OLD.nomSA, OLD.prenom, OLD.prenomSA, OLD.adresseL1, OLD.adresseL2, OLD.adresseL3, OLD.codePostal, OLD.communeId, OLD.ancienAdresseL1, OLD.ancienAdresseL2, OLD.ancienAdresseL3, OLD.ancienCodePostal, OLD.ancienCommuneId, OLD.email, OLD.telephoneF, OLD.telephoneP, OLD.telephoneT, OLD.etiquette, OLD.demenagement, OLD.dateDemenagement, OLD.facture, OLD.grilleTarif, OLD.ribTit, OLD.ribDom, OLD.iban, OLD.bic, OLD.x, OLD.y, OLD.userId, OLD.note))
 EOT
 
         ],
@@ -121,7 +123,7 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_int, dt, log)
-VALUES ('%table(responsables)%', 'delete', 'responsableId', OLD.responsableId, NOW(), CONCAT_WS('|', OLD.selection, OLD.dateCreation, OLD.dateModification, OLD.nature, OLD.titre, OLD.nom, OLD.nomSA, OLD.prenom, OLD.prenomSA, OLD.adresseL1, OLD.adresseL2, OLD.codePostal, OLD.communeId, OLD.ancienAdresseL1, OLD.ancienAdresseL2, OLD.ancienCodePostal, OLD.ancienCommuneId, OLD.email, OLD.telephoneF, OLD.telephoneP, OLD.telephoneT, OLD.etiquette, OLD.demenagement, OLD.dateDemenagement, OLD.facture, OLD.grilleTarif, OLD.ribTit, OLD.ribDom, OLD.iban, OLD.bic, OLD.x, OLD.y, OLD.userId, OLD.note))
+VALUES ('%table(responsables)%', 'delete', 'responsableId', OLD.responsableId, NOW(), CONCAT_WS('|', OLD.selection, OLD.dateCreation, OLD.dateModification, OLD.nature, OLD.titre, OLD.nom, OLD.nomSA, OLD.prenom, OLD.prenomSA, OLD.adresseL1, OLD.adresseL2, OLD.adresseL3, OLD.codePostal, OLD.communeId, OLD.ancienAdresseL1, OLD.ancienAdresseL2, OLD.ancienAdresseL3, OLD.ancienCodePostal, OLD.ancienCommuneId, OLD.email, OLD.telephoneF, OLD.telephoneP, OLD.telephoneT, OLD.etiquette, OLD.demenagement, OLD.dateDemenagement, OLD.facture, OLD.grilleTarif, OLD.ribTit, OLD.ribDom, OLD.iban, OLD.bic, OLD.x, OLD.y, OLD.userId, OLD.note))
 EOT
 
         ]

@@ -8,9 +8,19 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
+$adresse = array_filter(
+    [
+        $this->data->adresseL1,
+        $this->data->adresseL2,
+        $this->data->adresseL3,
+        $this->data->codePostal . ' ' . $this->data->commune
+    ]);
+foreach ($adresse as &$ligne) {
+    $ligne = $this->escapehtml($ligne);
+}
 ?>
 <h1>Suppression d'un responsable</h1>
 <div id="suppr-wrapper">
@@ -19,9 +29,8 @@
 		<ul>
 			<li><?= $this->escapeHtml($this->data->nom); ?></li>
 			<li><?= $this->escapeHtml($this->data->prenom); ?></li>
-			<li>
-				habitant <?= $this->escapehtml($this->data->adresseL1); ?> 
-				à <?= $this->escapehtml($this->data->commune); ?></li>
+			<li>Adresse :<br>&nbsp;&nbsp;&nbsp;&nbsp;
+			    <?= implode('<br>&nbsp;&nbsp;&nbsp;&nbsp;', $adresse); ?></li>
 		</ul>
 		<?php if ($this->data_dependantes->count()) : ?>
 		    <?php if ($this->data_dependantes->count() == 1) : ?>

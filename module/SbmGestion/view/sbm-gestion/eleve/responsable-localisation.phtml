@@ -9,8 +9,8 @@
  * @filesource responsable-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 // calcul du contenu de l'infobulle
 $description = [];
@@ -21,19 +21,22 @@ $description[] = $domicile = '<b>' .
             $this->responsable->nom,
             $this->responsable->prenom
         ]) . '</b>';
-$description[] = $this->responsable->adresseL1;
-$domicile .= ' ' . $this->responsable->adresseL1;
-$tmp = $this->responsable->adresseL2;
-if (! empty($tmp)) {
-    $description[] = $this->responsable->adresseL2;
-    $domicile .= ' ' . $this->responsable->adresseL2;
+$adresse = array_filter(
+    [
+        $this->responsable->adresseL1,
+        $this->responsable->adresseL2,
+        $this->responsable->adresseL3
+    ]);
+foreach ($adresse as $ligne) {
+    $description[] = $ligne;
 }
+$domicile .= ', ' . implode(', ', $adresse);
 $cp_ville = implode(' ', [
     $this->responsable->codePostal,
-    $this->responsable->commune
+    $this->responsable->lacommune
 ]);
 $description[] = $cp_ville;
-$domicile .= ' ' . $cp_ville;
+$domicile .= ', ' . $cp_ville;
 $telephones = array_filter(
     [
         $this->telephone($this->responsable->telephoneF),
@@ -46,8 +49,8 @@ if (! empty($telephones)) {
 $description[] = $this->responsable->email;
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->themeJS('commun','localisation.js');
-$this->themeJS('commun','StyledMarker.js');
+$this->themeJS('commun', 'localisation.js');
+$this->themeJS('commun', 'StyledMarker.js');
 // lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart();
 ?>

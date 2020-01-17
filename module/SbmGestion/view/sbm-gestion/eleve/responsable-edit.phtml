@@ -8,8 +8,8 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
@@ -146,6 +146,8 @@ if ($this->responsableId) {
 				<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="wrapper-adresseL2" class="row-inner edit">
 				<?=$this->formRow($this->form->get('adresseL2'));?></div>
+			<div id="wrapper-adresseL3" class="row-inner edit">
+				<?=$this->formRow($this->form->get('adresseL3'));?></div>
 			<div id="wrapper-codePostal" class="row-inner edit">
 				<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="wrapper-communeId" class="row-inner edit">
@@ -160,6 +162,8 @@ if ($this->responsableId) {
 					<?=$this->formRow($this->form->get('ancienAdresseL1'));?></div>
 				<div id="wrapper-ancienAdresseL2" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienAdresseL2'));?></div>
+				<div id="wrapper-ancienAdresseL3" class="row-inner edit">
+					<?=$this->formRow($this->form->get('ancienAdresseL3'));?></div>
 				<div id="wrapper-ancienCodePostal" class="row-inner edit">
 					<?=$this->formRow($this->form->get('ancienCodePostal'));?></div>
 				<div id="wrapper-ancienCommuneId" class="row-inner edit">

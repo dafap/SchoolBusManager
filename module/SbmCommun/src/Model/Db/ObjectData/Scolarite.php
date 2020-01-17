@@ -27,7 +27,7 @@ class Scolarite extends AbstractObjectData
 
     /**
      * Renvoie vrai si l'élève a une adresse perso notée dans sa fiche scolarité. Pour
-     * cela, il doit avoir une addresseL1, un codePostal et une communeId. Il suffit donc
+     * cela, il doit avoir une adresseL1, un codePostal et une communeId. Il suffit donc
      * que la référence à ces propriétés ne provoque pas une exception.
      *
      * @return bool

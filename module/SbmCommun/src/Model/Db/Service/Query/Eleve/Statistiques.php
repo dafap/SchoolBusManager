@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -286,7 +286,7 @@ class Statistiques extends AbstractQuery
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = eta.communeId',
             [
-                'etablissement' => new Expression('concat(com.nom, " - ", eta.nom)')
+                'etablissement' => new Expression('concat(com.alias, " - ", eta.nom)')
             ])
             ->where($where)
             ->group([

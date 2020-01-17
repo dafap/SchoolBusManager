@@ -9,8 +9,8 @@
  * @filesource table.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -43,12 +43,12 @@ return [
             'y2' => 'decimal(18,10) DEFAULT NULL',
             'responsableFId' => 'int(11) DEFAULT NULL',
             'note' => 'text NULL',
-            'id_mgc' => 'int(11)'
-        ], // gid CCDA
+            'id_tra' => 'varchar(15) DEFAULT NULL', // pour récupération des données
+        ],
         'primary_key' => [
             'eleveId'
         ],
-        // 'keys' => ['responsable1Id' => ['fields' => ['responsable1Id'))),
+        // 'keys' => ['responsable1Id' => ['fields' => ['responsable1Id']]],
         'foreign key' => [
             [
                 'key' => 'responsable1Id',

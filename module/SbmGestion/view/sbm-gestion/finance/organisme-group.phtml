@@ -1,14 +1,14 @@
 <?php
 /**
  * Page de consultation des élèves pris en charge par un organisme payeur
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/finance
  * @filesource organisme-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 fév. 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/finance',
@@ -93,7 +93,6 @@ $data = $this->paginator->getCurrentItems();
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Adresse</th>
-					<th>Adresse</th>
 					<th>Code postal</th>
 					<th>Commune</th>
 					<th>Etablissement</th>
@@ -135,13 +134,21 @@ $data = $this->paginator->getCurrentItems();
     $this->pictogrammes('init')
         ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto']);
+    $array_adresse = array_filter(
+        [
+            $row['adresseL1'],
+            $row['adresseL2'],
+            $row['adresseL3']
+        ]);
+    foreach ($array_adresse as &$ligne) {
+        $ligne = $this->escapeHtml($ligne);
+    }
     ?>
 			    <tr class="<?= $this->cycle(["even", "odd"]);?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>
-					<td><?= $this->escapeHtml($row['adresseL1']);?></td>
-					<td><?= $this->escapeHtml($row['adresseL2']);?></td>
+					<td><?= implode('<br>', $array_adresse);?></td>
 					<td><?= $this->escapeHtml($row['codePostal']);?></td>
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>

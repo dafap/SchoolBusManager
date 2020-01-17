@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
 
@@ -155,6 +155,7 @@ class IndexController extends AbstractActionController
                     [
                         $responsable->adresseL1,
                         $responsable->adresseL2,
+                        $responsable->adresseL3,
                         $responsable->codePostal . ' ' . $responsable->commune,
                         implode(' ; ',
                             array_filter(

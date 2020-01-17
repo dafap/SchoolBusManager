@@ -7,8 +7,8 @@
  * @filesource existe.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $url_create = $this->url('sbmparentconfig', [
     'action' => 'create'
@@ -54,6 +54,7 @@ $autre = [
                 'prenom2' => $responsable->prenom2,
                 'adresseL1' => $responsable->adresseL1,
                 'adresseL2' => $responsable->adresseL2,
+                'adresseL3' => $responsable->adresseL3,
                 'codePostal' => $responsable->codePostal,
                 'communeId' => $responsable->communeId,
                 'telephoneF' => $responsable->telephoneF,
@@ -62,12 +63,17 @@ $autre = [
                 'email' => $this->identity['email']
             ];
             ?>
-	            <tr
-					class='<?= $this->cycle(['even', 'odd'])->next();?>'>
+	            <tr class='<?= $this->cycle(['even', 'odd'])->next();?>'>
 					<td>
 	                <?= sprintf('%s %s %s', $responsable->titre, $responsable->nom, $responsable->prenom);?>
 	                <br>
-	                <?php $adresse = implode(' ', [$responsable->adresseL1, $responsable->adresseL2]);?>
+	                <?php
+            $adresse = implode(' ', [
+                $responsable->adresseL1,
+                $responsable->adresseL2,
+                $responsable->adresseL3
+            ]);
+            ?>
 	                <?= sprintf('%s %s %s', $adresse, $responsable->codePostal, $responsable->commune);?>
 	                </td>
 					<td><?= $this->listeLigneActions($id_ligne++, $hiddens, $boutons_ligne);?></td>

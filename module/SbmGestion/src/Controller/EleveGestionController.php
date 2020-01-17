@@ -9,8 +9,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -353,24 +353,49 @@ class EleveGestionController extends AbstractActionController
             }
         }
         $responsable = $tResponsables->getRecord($responsableId);
+        // préparer le nom de la commune selon les règes de la méthode
+        // GoogleMaps\Geocoder::geocode
         $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord(
             $responsable->communeId);
+        $sa = new \SbmCommun\Filter\SansAccent();
+        $lacommune = $sa->filter($commune->alias);
         if ($responsable->x == 0.0 && $responsable->y == 0.0) {
             // essayer de localiser par l'adresse avant de présenter la carte
             $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
-                $responsable->adresseL2 ?: $responsable->adresseL1,
-                $responsable->codePostal, $commune->nom);
+                $responsable->adresseL1, $responsable->codePostal, $lacommune);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+            $pt->setLatLngRange($configCarte['valide']['lat'],
+                $configCarte['valide']['lng']);
+            if (! $pt->isValid() && ! empty($responsable->adresseL2)) {
+                $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                    $responsable->adresseL2, $responsable->codePostal, $lacommune);
+                $pt->setLatitude($array['lat']);
+                $pt->setLongitude($array['lng']);
+                if (! $pt->isValid() && ! empty($responsable->adresseL3)) {
+                    $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                        $responsable->adresseL3, $responsable->codePostal, $lacommune);
+                    $pt->setLatitude($array['lat']);
+                    $pt->setLongitude($array['lng']);
+                    if (! $pt->isValid()) {
+                        $pt->setLatitude($configCarte['centre']['lat']);
+                        $pt->setLongitude($configCarte['centre']['lng']);
+                    }
+                }
+            }
             $description = $array['adresse'];
         } else {
             $point = new Point($responsable->x, $responsable->y);
             $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
             $description = nl2br(
-                trim(implode("\n", [
-                    $responsable->adresseL1,
-                    $responsable->adresseL2
-                ])));
-            $description .= '<br>' . $responsable->codePostal . ' ' . $commune->nom;
+                trim(
+                    implode("\n",
+                        array_filter(
+                            [
+                                $responsable->adresseL1,
+                                $responsable->adresseL2,
+                                $responsable->adresseL3
+                            ]))));
+            $description .= '<br>' . $responsable->codePostal . ' ' . $commune->alias;
         }
         $form->setData(
             [
@@ -401,10 +426,12 @@ class EleveGestionController extends AbstractActionController
                     nl2br(
                         trim(
                             implode("\n",
-                                [
-                                    $responsable->adresseL1,
-                                    $responsable->adresseL2
-                                ]))),
+                                array_filter(
+                                    [
+                                        $responsable->adresseL1,
+                                        $responsable->adresseL2,
+                                        $responsable->adresseL3
+                                    ])))),
                     $responsable->codePostal . ' ' . $commune->nom
                 ],
                 'config' => $configCarte,

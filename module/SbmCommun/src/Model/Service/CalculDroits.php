@@ -23,8 +23,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Service;
 
@@ -201,11 +201,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             $r2HorsSecteur = ! $this->validCommune($resp->communeId);
         }
         // résidence de l'élève. Cette résidence remplace la résidence du 1er responsable
-        $tmp1 = $scolarite->chez;
-        $tmp2 = $scolarite->adresseL1;
-        $tmp3 = $scolarite->codePostal;
-        $tmp4 = $scolarite->communeId;
-        if (! empty($tmp1) && ! empty($tmp2) && ! empty($tmp3) && ! empty($tmp4)) {
+        if (! empty(
+            array_filter(
+                [
+                    $scolarite->chez,
+                    $scolarite->adresseL1,
+                    $scolarite->adresseL2,
+                    $scolarite->codePostal,
+                    $scolarite->communeId
+                ]))) {
             $domiciles[0] = new Point($scolarite->x, $scolarite->y);
             $domiciles[0]->setAttribute('communeId', $scolarite->communeId);
             // la distance à cette résidence est indiquée dans $scolarite->distanceR1
@@ -696,7 +700,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                     return [
                         'droit' => $droit,
                         'distances' => $distances,
-                        'etablissementsAyantDroit' => array_filter($aEtablissementsAyantDroit)
+                        'etablissementsAyantDroit' => array_filter(
+                            $aEtablissementsAyantDroit)
                     ];
                 } else {
                     throw new GoogleMaps\Exception\Exception(

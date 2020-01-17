@@ -9,8 +9,8 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
@@ -84,12 +84,14 @@ $actions = [];
             <?=$this->formHidden($this->form->get('email'));?>
             <?=$this->formHidden($this->form->get('adresseL1'));?>
             <?=$this->formHidden($this->form->get('adresseL2'));?>
+            <?=$this->formHidden($this->form->get('adresseL3'));?>
             <?=$this->formHidden($this->form->get('codePostal'));?>
             <?=$this->formHidden($this->form->get('communeId'));?>
             <?=$this->formHidden($this->form->get('demenagement'));?>
             <div id="responsable-edit-email" class="row-inner edit"><?='<div class="enfant-label">Email</div>' .$this->responsable['email'];?></div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit"><?='<div class="enfant-label">Adresse</div>' .$this->responsable['adresseL1'];?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit"><?='<div class="enfant-label">Complément d\'adresse</div>' .$this->responsable['adresseL2'];?></div>
+			<div id="responsable-edit-adresseL3" class="row-inner edit"><?='<div class="enfant-label">Complément d\'adresse</div>' .$this->responsable['adresseL3'];?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?='<div class="enfant-label">Code postal</div>' .$this->responsable['codePostal'];?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit"><?='<div class="enfant-label">Commune</div>' .$this->responsable['commune'];?></div>
     <?php
@@ -99,6 +101,7 @@ $actions = [];
             <div id="responsable-edit-email" class="row-inner edit"><?='<div class="enfant-label">Email</div>' .$this->responsable['email'];?></div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL2'));?></div>
+			<div id="responsable-edit-adresseL3" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL3'));?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit"><?=$this->formRow($this->form->get('communeId'));?></div>
 			<div id="responsable-edit-demenagement" class="row-inner edit"><?=$this->formRow($this->form->get('demenagement'));?></div>
@@ -111,6 +114,7 @@ $actions = [];
 				<div id="responsable-edit-dateDemenagement" class="row-inner edit"><?=$this->formRow($this->form->get('dateDemenagement'));?></div>
 				<div id="responsable-edit-ancienAdresseL1" class="row-inner edit"><?=$this->formRow($this->form->get('ancienAdresseL1'));?></div>
 				<div id="responsable-edit-ancienAdresseL2" class="row-inner edit"><?=$this->formRow($this->form->get('ancienAdresseL2'));?></div>
+				<div id="responsable-edit-ancienAdresseL3" class="row-inner edit"><?=$this->formRow($this->form->get('ancienAdresseL3'));?></div>
 				<div id="responsable-edit-ancienCodePostal" class="row-inner edit"><?=$this->formRow($this->form->get('ancienCodePostal'));?></div>
 				<div id="responsable-edit-ancienCommuneId" class="row-inner edit"><?=$this->formRow($this->form->get('ancienCommuneId'));?></div>
 			</div>

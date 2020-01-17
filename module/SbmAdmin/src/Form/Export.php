@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAdmin\Form;
 
@@ -93,9 +93,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'text',
-                'name' => 'id_mgc',
+                'name' => 'id_tra',
                 'attributes' => [
-                    'id' => 'id_mgc'
+                    'id' => 'id_tra'
                 ],
                 'options' => [
                     'label' => 'Code organisateur'
@@ -272,8 +272,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
     private function formEleveSpecification()
     {
         return [
-            'id_mgc' => [
-                'name' => 'id_mgc',
+            'id_tra' => [
+                'name' => 'id_tra',
                 'required' => false,
                 'filters' => [
                     [
@@ -391,8 +391,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             ->literal('accordR1 = 1')->or->literal('accordR2 = 1')->unnest();
         $data = $this->getData();
 
-        if (! empty($data['id_mgc'])) {
-            $where->equalTo('ele.id_mgc', $data['id_mgc']);
+        if (! empty($data['id_tra'])) {
+            $where->equalTo('ele.id_tra', $data['id_tra']);
         }
         if (! empty($data['numero'])) {
             $where->equalTo('numero', $data['numero']);

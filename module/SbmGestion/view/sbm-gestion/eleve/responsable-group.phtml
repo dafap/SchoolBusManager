@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
 
@@ -127,7 +127,17 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
 			<li>
 				<?= $this->escapehtml($this->responsable->nom); ?>
 				<?= $this->escapehtml($this->responsable->prenom); ?>
-				habitant <?= $this->escapehtml($this->responsable->adresseL1); ?>
+				habitant
+				<?php
+    echo $this->escapehtml(
+        implode(', ',
+            array_filter(
+                [
+                    $this->responsable->adresseL1,
+                    $this->responsable->adresseL2,
+                    $this->responsable->adresseL3
+                ])));
+    ?>
 				à <?= $this->escapehtml($this->responsable->commune); ?></li>
 		</ul>
 	</div>

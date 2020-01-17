@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -1125,6 +1125,7 @@ class EleveController extends AbstractActionController
             'R1 Identité' => 'responsable1NomPrenom',
             'R1 Adresse ligne 1' => 'adresseL1R1',
             'R1 Adresse ligne 2' => 'adresseL2R1',
+            'R1 Adresse ligne 3' => 'adresseL3R1',
             'R1 Commune' => 'communeR1',
             'R1 Téléphone 1' => 'telephoneFR1',
             'R1 Téléphone 2' => 'telephonePR1',
@@ -1132,6 +1133,7 @@ class EleveController extends AbstractActionController
             'R2 Identité' => 'responsable2NomPrenom',
             'R2 Adresse ligne 1' => 'adresseL1R2',
             'R2 Adresse ligne 2' => 'adresseL2R2',
+            'R2 Adresse ligne 3' => 'adresseL3R2',
             'R2 Commune' => 'communeR2',
             'R2 Téléphone 1' => 'telephoneFR2',
             'R2 Téléphone 2' => 'telephonePR2',
@@ -2148,6 +2150,9 @@ class EleveController extends AbstractActionController
         // chercher le responsable dans la table
         $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
             $args['responsableId']);
+        // préparer le nom de la commune selon les règes de la méthode GoogleMaps\Geocoder::geocode
+        $sa = new \SbmCommun\Filter\SansAccent();
+        $responsable->lacommune = $sa->filter($responsable->lacommune);
         // préparer le Point dans le système gRGF93
         $point = new Point($responsable->x, $responsable->y);
         $pt = $oDistanceMatrix->getProjection()->XYZversgRGF93($point);
@@ -2159,15 +2164,29 @@ class EleveController extends AbstractActionController
                 'lng' => $pt->getLongitude()
             ]);
         if (! $form->isValid()) {
-            // essaie de positionner la marker à partir de l'adresse
+            // essaie de positionner la marker à partir de l'adresse (L1 ou L2 ou L3)
             $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
-                $responsable->adresseL1, $responsable->codePostal, $responsable->commune);
+                $responsable->adresseL1, $responsable->codePostal, $responsable->lacommune);
             $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
             $pt->setLatLngRange($configCarte['valide']['lat'],
                 $configCarte['valide']['lng']);
-            if (! $pt->isValid()) {
-                $pt->setLatitude($configCarte['centre']['lat']);
-                $pt->setLongitude($configCarte['centre']['lng']);
+            if (! $pt->isValid() && ! empty($responsable->adresseL2)) {
+                $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                    $responsable->adresseL2, $responsable->codePostal,
+                    $responsable->lacommune);
+                $pt->setLatitude($array['lat']);
+                $pt->setLongitude($array['lng']);
+                if (! $pt->isValid() && ! empty($responsable->adresseL3)) {
+                    $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                        $responsable->adresseL3, $responsable->codePostal,
+                        $responsable->lacommune);
+                    $pt->setLatitude($array['lat']);
+                    $pt->setLongitude($array['lng']);
+                    if (! $pt->isValid()) {
+                        $pt->setLatitude($configCarte['centre']['lat']);
+                        $pt->setLongitude($configCarte['centre']['lng']);
+                    }
+                }
             }
             $form->setData(
                 [

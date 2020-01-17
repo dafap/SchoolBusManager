@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -48,10 +48,12 @@ class Responsables extends AbstractQuery
                 'prenom2SA' => 'prenom2SA',
                 'adresseL1' => 'adresseL1',
                 'adresseL2' => 'adresseL2',
+                'adresseL3' => 'adresseL3',
                 'codePostal' => 'codePostal',
                 'communeId' => 'communeId',
                 'ancienAdresseL1' => 'ancienAdresseL1',
                 'ancienAdresseL2' => 'ancienAdresseL2',
+                'ancienAdresseL3' => 'ancienAdresseL3',
                 'ancienCodePostal' => 'ancienCodePostal',
                 'ancienCommuneId' => 'ancienCommuneId',
                 'email' => 'email',
@@ -73,13 +75,15 @@ class Responsables extends AbstractQuery
                 'x' => 'x',
                 'y' => 'y',
                 'userId' => 'userId',
-                'id_mgc' => 'id_mgc', // inutilisé
+                'id_tra' => 'id_tra', // inutilisé
                 'note' => 'note'
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId=res.communeId', [
-            'commune' => 'nom'
+            'commune' => 'nom',
+            'lacommune' => 'alias',
+            'laposte' => 'alias_laposte'
         ]);
     }
 

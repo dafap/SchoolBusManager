@@ -15,8 +15,8 @@
  * @filesource Responsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
 
@@ -171,6 +171,24 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]);
             $this->add(
                 [
+                    'name' => 'r2adresseL3',
+                    'type' => 'SbmCommun\Form\Element\Adresse',
+                    'attributes' => [
+                        'id' => 'adresseL3',
+                        'class' => 'sbm-width-40c'
+                    ],
+                    'options' => [
+                        'label' => 'Adresse',
+                        'label_attributes' => [
+                            'class' => 'sbm-label'
+                        ],
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
+            $this->add(
+                [
                     'name' => 'r2codePostal',
                     'type' => 'SbmCommun\Form\Element\CodePostal',
                     'attributes' => [
@@ -301,6 +319,10 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                 ],
                 'r2adresseL2' => [
                     'name' => 'r2adresseL2',
+                    'required' => false
+                ],
+                'r2adresseL3' => [
+                    'name' => 'r2adresseL3',
                     'required' => false
                 ],
                 'r2codePostal' => [

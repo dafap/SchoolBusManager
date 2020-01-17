@@ -10,8 +10,8 @@
  * @filesource ModifAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
 
@@ -78,6 +78,24 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'SbmCommun\Form\Element\Adresse',
                 'attributes' => [
                     'id' => 'adresseL2',
+                    'class' => 'sbm-width-40c'
+                ],
+                'options' => [
+                    'label' => 'Adresse',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'adresseL3',
+                'type' => 'SbmCommun\Form\Element\Adresse',
+                'attributes' => [
+                    'id' => 'adresseL3',
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
@@ -272,6 +290,10 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'adresseL2' => [
                 'name' => 'adresseL2',
+                'required' => false
+            ],
+            'adresseL3' => [
+                'name' => 'adresseL3',
                 'required' => false
             ],
             'codePostal' => [

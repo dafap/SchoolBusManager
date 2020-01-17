@@ -8,8 +8,8 @@
  * @filesource vue.eleve.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'responsables',
@@ -70,6 +70,9 @@ return [
                 'field' => 'adresseL2'
             ],
             [
+                'field' => 'adresseL3'
+            ],
+            [
                 'field' => 'codePostal'
             ],
             [
@@ -80,6 +83,9 @@ return [
             ],
             [
                 'field' => 'ancienAdresseL2'
+            ],
+            [
+                'field' => 'ancienAdresseL3'
             ],
             [
                 'field' => 'ancienCodePostal'
@@ -145,6 +151,9 @@ return [
                 'field' => 'userId'
             ],
             [
+                'field' => 'id_tra'
+            ],
+            [
                 'field' => 'note'
             ]
         ],
@@ -163,6 +172,14 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommune' // commune en maj avec LE, LA ou LES, apostrophes et tirets
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposte'
                     ],
                     [
                         'field' => 'inscriptionenligne'

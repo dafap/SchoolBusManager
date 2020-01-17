@@ -20,15 +20,15 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-ajout.css');
 $this->jQuery();
-$this->themeJS('gestion-eleve','ajout31.js');
+$this->themeJS('gestion-eleve', 'ajout31.js');
 $this->themeJS('commun', 'checkallbox.js');
 $this->inlineScript()->captureStart();
 ?>
@@ -159,8 +159,16 @@ $actions = [
 							<?= $this->data['titreR1'];?>
 							<?= $this->data['responsable1NomPrenom'];?></div>
 						<div id="r1-ligne2">
-							<?= $this->data['adresseL1R1'];?>
-							<?= $this->data['adresseL2R1'];?></div>
+						<?php
+    echo implode(' ',
+        array_filter(
+            [
+                $this->data['adresseL1R1'],
+                $this->data['adresseL2R1'],
+                $this->data['adresseL3R1']
+            ]));
+    ?>
+						</div>
 						<div id="r1-ligne3">
 							<?= $this->data['codePostalR1'];?>
 							<?= $this->data['communeR1'];?></div>
@@ -184,8 +192,16 @@ $actions = [
 							<?= $this->data['titreR2'];?>
 							<?= $this->data['responsable2NomPrenom'];?></div>
 						<div id="r2-ligne2">
-							<?=$this->data['adresseL1R2'];?>
-							<?= $this->data['adresseL2R2'];?></div>
+						<?php
+    echo implode(' ',
+        array_filter(
+            [
+                $this->data['adresseL1R2'],
+                $this->data['adresseL2R2'],
+                $this->data['adresseL3R2']
+            ]));
+    ?>
+						</div>
 						<div id="r2-ligne3">
 							<?= $this->data['codePostalR2'];?>
 							<?= $this->data['communeR2'];?></div>

@@ -8,8 +8,8 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 05 jan. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
@@ -93,6 +93,8 @@ $elementTitre->setValue($this->identity['titre'])
 				<?= $this->formRow($this->form->get('adresseL1')); ?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit">
 				<?= $this->formRow($this->form->get('adresseL2')); ?></div>
+			<div id="responsable-edit-adresseL3" class="row-inner edit">
+				<?= $this->formRow($this->form->get('adresseL3')); ?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit">

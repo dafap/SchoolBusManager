@@ -7,8 +7,8 @@
  * @filesource Geocoder.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
- * @version 2019-2.5.0
+ * @date 06 jan. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCartographie\GoogleMaps;
 
@@ -60,19 +60,20 @@ class Geocoder
     }
 
     /**
-     * Demande la longitude et la latitude d'une adresse postale.
-     * Renvoie un tableau contenant
-     * la longitude, la latitude et l'adresse formatée trouvée (pour contrôle visuel).
-     * Si l'adresse n'est pas trouvée, longitude et latitude sont zéro et l'adresse est : 'pas
-     * trouvé'
+     * Demande la longitude et la latitude d'une adresse postale. Renvoie un tableau
+     * contenant la longitude, la latitude et l'adresse formatée trouvée (pour contrôle
+     * visuel). Si l'adresse n'est pas trouvée, longitude et latitude sont zéro et
+     * l'adresse est : 'pas trouvé'
      *
      * @param string $adresse
      * @param string $codePostal
      * @param string $commune
-     *
+     *            La commune doit être passée sans accent, avec tiret et avec LE, LA ou
+     *            LES si besoin. Peu importe la casse.
      * @throws \SbmCartographie\GoogleMaps\Exception\ExceptionNoAnswer
      *
-     * @return array Les clés du tableau résultat sont <b>lat</b>, <b>lng</b> et <b>adresse</b>
+     * @return array Les clés du tableau résultat sont <b>lat</b>, <b>lng</b> et
+     *         <b>adresse</b>
      */
     public function geocode($adresse, $codePostal, $commune)
     {
@@ -81,7 +82,7 @@ class Geocoder
         $reponse = json_decode(@file_get_contents($url, false, $this->context));
         $lat = 0;
         $lng = 0;
-        $formatted_address = "pas trouvé";
+        $formatted_address = "Placez le marqueur au bon endroit sur la carte";
         $commune = strtoupper($commune);
         if ($reponse) {
             if ($reponse->status == 'OK') {
@@ -117,8 +118,9 @@ class Geocoder
      * @throws \SbmCartographie\GoogleMaps\Exception\Exception
      * @throws \SbmCartographie\GoogleMaps\Exception\ExceptionNoAnswer
      *
-     * @return array Tableau associatif de la forme ['numero' => , 'rue' => , 'lieu-dit' =>
-     *         ,'code_postal' => , 'commune' => , 'departement' => , 'region' => , 'pays' => ]
+     * @return array Tableau associatif de la forme ['numero' => , 'rue' => , 'lieu-dit'
+     *         => ,'code_postal' => , 'commune' => , 'departement' => , 'region' => ,
+     *         'pays' => ]
      */
     public function reverseGeocoding($lat, $lng)
     {
