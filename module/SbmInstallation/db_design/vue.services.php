@@ -2,15 +2,18 @@
 /**
  * Structure de la vue `services`
  *
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
+use Zend\Db\Sql\Join;
+
 return [
     'name' => 'services',
     'type' => 'vue',
@@ -19,55 +22,49 @@ return [
     'structure' => [
         'fields' => [
             [
-                'field' => 'serviceId'
+                'field' => 'millesime'
             ],
             [
-                'field' => 'alias'
+                'field' => 'ligneId'
             ],
             [
-                'field' => 'aliasTr'
+                'field' => 'sens'
             ],
             [
-                'field' => 'aliasCG'
+                'field' => 'moment'
             ],
             [
-                'field' => 'lotId'
-            ],
-            [
-                'field' => 'selection'
-            ],
-            [
-                'field' => 'nom'
-            ],
-            [
-                'field' => 'horaire1'
-            ],
-            [
-                'field' => 'horaire2'
-            ],
-            [
-                'field' => 'horaire3'
+                'field' => 'ordre'
             ],
             [
                 'field' => 'transporteurId'
             ],
             [
+                'field' => 'selection'
+            ],
+            [
+                'field' => 'actif'
+            ],
+            [
+                'field' => 'visible'
+            ],
+            [
+                'field' => 'semaine'
+            ],
+            [
+                'field' => 'rang'
+            ],
+            [
+                'field' => 'type'
+            ],
+            [
                 'field' => 'nbPlaces'
             ],
             [
-                'field' => 'surEtatCG'
+                'field' => 'alias'
             ],
             [
-                'field' => 'operateur'
-            ],
-            [
-                'field' => 'kmAVide'
-            ],
-            [
-                'field' => 'kmEnCharge'
-            ],
-            [
-                'field' => 'natureCarte'
+                'field' => 'commentaire'
             ]
         ],
         'from' => [
@@ -76,63 +73,6 @@ return [
             'alias' => 'ser'
         ],
         'join' => [
-            [
-                'table' => 'lots',
-                'type' => 'table',
-                'alias' => 'lots',
-                'relation' => 'lots.lotId=ser.lotId',
-                'fields' => [
-                    [
-                        'field' => 'marche'
-                    ],
-                    [
-                        'field' => 'lot'
-                    ],
-                    [
-                        'field' => 'libelle'
-                    ],
-                    [
-                        'field' => 'complement'
-                    ],
-                    [
-                        'field' => 'dateDebut'
-                    ],
-                    [
-                        'field' => 'dateFin'
-                    ],
-                    [
-                        'field' => 'transporteurId',
-                        'alias' => 'titulaireId'
-                    ],
-                    [
-                        'field' => 'commentaire'
-                    ]
-                ]
-            ],
-            [
-                'table' => 'transporteurs', // obligatoire mais peut être une vue
-                'type' => 'table', // optionnel, 'table' par défaut
-                'alias' => 'tit', // optionnel
-                'relation' => 'tit.transporteurId = lots.transporteurId', // obligatoire
-                'fields' => [
-                    [
-                        'field' => 'nom',
-                        'alias' => 'titulaire'
-                    ]
-                ]
-            ],
-            [
-                'table' => 'communes', // obligatoire mais peut être une vue
-                'type' => 'table', // optionnel, 'table' par défaut
-                'alias' => 'ctit', // optionnel
-                'relation' => 'ctit.communeId = tit.communeId', // obligatoire
-                'fields' => [
-                    [
-                        'field' => 'nom',
-                        'alias' => 'communeTitulaire'
-                    ]
-                ]
-            ],
             [
                 'table' => 'transporteurs', // obligatoire mais peut être une vue
                 'type' => 'table', // optionnel, 'table' par défaut
@@ -154,12 +94,136 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'communeTransporteur'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneTransporteur'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteTransporteur'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'lignes',
+                'type' => 'table',
+                'alias' => 'lig',
+                'relation' => 'lig.ligneId=ser.ligneId',
+                'fields' => [
+                    [
+                        'field' => 'operateur'
+                    ],
+                    [
+                        'field' => 'lotId'
+                    ],
+                    [
+                        'field' => 'extremite1'
+                    ],
+                    [
+                        'field' => 'extremite2'
+                    ],
+                    [
+                        'field' => 'via'
+                    ],
+                    [
+                        'field' => 'internes',
+                        'alias' => 'ligneInternes'
+                    ],
+                    [
+                        'field' => 'actif',
+                        'alias' => 'ligneOuverte'
+                    ],
+                    [
+                        'field' => 'selection',
+                        'alias' => 'ligneSelectionnee'
+                    ],
+                    [
+                        'field' => 'commentaire',
+                        'alias' => 'ligneCommentaire'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'lots', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'lots', // optionnel
+                'relation' => 'lig.lotId = lots.lotId', // obligatoire
+                'jointure' => Join::JOIN_LEFT,
+                'fields' => [
+                    [
+                        'field' => 'marche'
+                    ],
+                    [
+                        'field' => 'lot'
+                    ],
+                    [
+                        'field' => 'libelle'
+                    ],
+                    [
+                        'field' => 'complement'
+                    ],
+                    [
+                        'field' => 'dateDebut'
+                    ],
+                    [
+                        'field' => 'dateFin'
+                    ],
+                    [
+                        'field' => 'commentaire',
+                        'alias' => 'lotCommentaire'
+                    ],
+                    [
+                        'field' => 'actif',
+                        'alias' => 'lotActif'
+                    ],
+                    [
+                        'field' => 'selection',
+                        'alias' => 'lotSelectionne'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'transporteurs', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'tit', // optionnel
+                'relation' => 'tit.transporteurId = lots.transporteurId', // obligatoire
+                'jointure' => Join::JOIN_LEFT,
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'titulaire'
+                    ]
+                ]
+            ],
+            [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'ctit', // optionnel
+                'relation' => 'ctit.communeId = tit.communeId', // obligatoire
+                'jointure' => Join::JOIN_LEFT,
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeTitulaire'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneTitulaire'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteTitulaire'
                     ]
                 ]
             ]
         ],
         'order' => [
-            'serviceId'
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
         ]
     ]
 ];

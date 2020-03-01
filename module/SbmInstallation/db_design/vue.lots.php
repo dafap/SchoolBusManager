@@ -2,13 +2,15 @@
 /**
  * Structure de la vue `lots`
  *
+ * Version pour TRANSDEV ALBERTVILLE
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource vue.lots.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'lots',
@@ -68,10 +70,30 @@ return [
                         'field' => 'nom',
                         'alias' => 'titulaire'
                     ]
+                ]
+            ],
+            [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'com', // optionnel
+                'relation' => 'com.communeId = tra.communeId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeTitulaire'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneTitulaire'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteTitulaire'
+                    ]
                 ],
                 'jointure' => \Zend\Db\Sql\Select::JOIN_LEFT
             ]
         ],
-        'order' => 'nom'
+        'order' => 'actif DESC, dateDebut'
     ]
 ];

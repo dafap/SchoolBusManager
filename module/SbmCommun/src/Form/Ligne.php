@@ -1,31 +1,27 @@
 <?php
 /**
- * Formulaire de saisie et modification d'une station
- *
+ * Formulaire de saisie et modification d'une ligne
  *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Form
- * @filesource Station.php
+ * @package SbmCommun/src/Form
+ * @filesource Ligne.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2020
+ * @date 27 fév. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
 use Zend\InputFilter\InputFilterProviderInterface;
+use SbmBase\Model\Session;
 
-class Station extends AbstractSbmForm implements InputFilterProviderInterface
+class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct()
     {
-        parent::__construct('station');
+        parent::__construct('ligne');
         $this->setAttribute('method', 'post');
-        $this->add([
-            'name' => 'stationId',
-            'type' => 'hidden'
-        ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -36,90 +32,84 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
+        $this->add([
+            'name' => 'id',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'millesime',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
-                'name' => 'communeId',
+                'name' => 'ligneId',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'ligne-ligneid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code de la ligne',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'operateur',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
-                    'id' => 'station-communeId',
-                    'autofocus' => 'autofocus',
-                    'class' => 'sbm-width-45c'
-                ],
-                'options' => [
-                    'label' => 'Commune',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Choisissez une commune',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'nom',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'station-nom',
-                    'class' => 'sbm-width-45c'
-                ],
-                'options' => [
-                    'label' => 'Nom de la station',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'alias',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'station-alias',
-                    'class' => 'sbm-width-45c'
-                ],
-                'options' => [
-                    'label' => 'Complément',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'code',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'station-code',
-                    'class' => 'sbm-width-15c'
-                ],
-                'options' => [
-                    'label' => 'Code',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'x',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'station-x',
+                    'id' => 'ligne-operateur',
                     'class' => 'sbm-width-20c'
                 ],
                 'options' => [
-                    'label' => 'X',
+                    'label' => 'Opérateur',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un opérateur',
+                    'value_options' => [],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'lotId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'ligne-lotid',
+                    'class' => 'sbm-width-25c'
+                ],
+                'options' => [
+                    'label' => 'Lot du marché',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un lot de marché',
+                    'allow_empty' => true,
+                    'disable_inarray_validator' => false,
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'extremite1',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'ligne-extremite1',
+                    'class' => 'designation'
+                ],
+                'options' => [
+                    'label' => 'Désignation du point de départ',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -130,14 +120,32 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'y',
+                'name' => 'extremite2',
                 'type' => 'text',
                 'attributes' => [
-                    'id' => 'station-y',
-                    'class' => 'sbm-width-20c'
+                    'id' => 'ligne-extremite2',
+                    'class' => 'libelle'
                 ],
                 'options' => [
-                    'label' => 'Y',
+                    'label' => 'Désignation du terminus',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'via',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'ligne-via',
+                    'class' => 'complement'
+                ],
+                'options' => [
+                    'label' => 'Point de passage caractéristique',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -149,13 +157,13 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'visible',
+                'name' => 'internes',
                 'attributes' => [
-                    'id' => 'station-visible',
-                    'class' => 'sbm-checkbox'
+                    'id' => 'ligne-internes',
+                    'class' => 'internes'
                 ],
                 'options' => [
-                    'label' => 'Visible',
+                    'label' => 'Ligne réservée aux internes ?',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -167,13 +175,13 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'ouverte',
+                'name' => 'actif',
                 'attributes' => [
-                    'id' => 'station-ouverte',
-                    'class' => 'sbm-checkbox'
+                    'id' => 'ligne-actif',
+                    'class' => 'actif'
                 ],
                 'options' => [
-                    'label' => 'Ouverte',
+                    'label' => 'Ligne ouverte ?',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -184,37 +192,19 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'equipement',
-                'type' => 'textarea',
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'commentaire',
                 'attributes' => [
-                    'id' => 'station-equipement',
-                    'class' => 'sbm-width-40c'
+                    'id' => 'ligne-commentaire',
+                    'class' => 'commentaire'
                 ],
                 'options' => [
-                    'label' => 'Équipement',
+                    'label' => 'Notes',
                     'label_attributes' => [
-                        'class' => 'sbm-label-top'
+                        'class' => 'sbm-label commentaire'
                     ],
                     'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'id_tra',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'station-id_tra',
-                    'class' => 'sbm-width-15c'
-                ],
-                'options' => [
-                    'label' => 'Identifiant TRA',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-top'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
+                        'class' => 'sbm_error'
                     ]
                 ]
             ]);
@@ -224,7 +214,7 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Enregistrer',
-                    'id' => 'station-submit',
+                    'id' => 'ligne-submit',
                     'class' => 'button default submit'
                 ]
             ]);
@@ -234,21 +224,25 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'station-cancel',
+                    'id' => 'ligne-cancel',
                     'class' => 'button default cancel'
                 ]
             ]);
+
+        $this->getInputFilter()
+            ->get('lotId')
+            ->setRequired(false);
     }
 
     public function getInputFilterSpecification()
     {
         return [
-            'communeId' => [
-                'name' => 'communeId',
-                'required' => true
+            'lotId' => [
+                'name' => 'lotId',
+                'required' => false
             ],
-            'nom' => [
-                'name' => 'nom',
+            'extremite1' => [
+                'name' => 'extremite1',
                 'required' => true,
                 'filters' => [
                     [
@@ -256,11 +250,37 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     ],
                     [
                         'name' => 'StringTrim'
+                    ],
+                    // met en majuscules, y compris les lettres accentuées et ligatures
+                    [
+                        'name' => 'Zend\Filter\StringToUpper',
+                        'options' => [
+                            'encoding' => 'utf-8'
+                        ]
                     ]
                 ]
             ],
-            'aliasCG' => [
-                'name' => 'aliasCG',
+            'extremite2' => [
+                'name' => 'extremite2',
+                'required' => true,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
+                    ],
+                    [
+                        'name' => 'Zend\Filter\StringToUpper',
+                        'options' => [
+                            'encoding' => 'utf-8'
+                        ]
+                    ]
+                ]
+            ],
+
+            'via' => [
+                'name' => 'via',
                 'required' => false,
                 'filters' => [
                     [
@@ -268,57 +288,31 @@ class Station extends AbstractSbmForm implements InputFilterProviderInterface
                     ],
                     [
                         'name' => 'StringTrim'
-                    ]
-                ]
-            ],
-            'codeCG' => [
-                'name' => 'codeCG',
-                'required' => false,
-                'filters' => [
-                    [
-                        'name' => 'StripTags'
                     ],
                     [
-                        'name' => 'StringTrim'
+                        'name' => 'Zend\Filter\StringToUpper',
+                        'options' => [
+                            'encoding' => 'utf-8'
+                        ]
                     ]
                 ]
             ],
-            'x' => [
-                'name' => 'x',
-                'required' => false,
-                'filters' => [
-                    [
-                        'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => [
-                            'separateur' => '.',
-                            'car2sep' => ','
-                        ]
-                    ]
-                ],
-                'validators' => [
-                    [
-                        'name' => 'SbmCommun\Model\Validator\Decimal'
-                    ]
-                ]
+            'actif' => [
+                'name' => 'actif',
+                'required' => false
             ],
-            'y' => [
-                'name' => 'y',
-                'required' => false,
-                'filters' => [
-                    [
-                        'name' => 'SbmCommun\Filter\Decimal',
-                        'options' => [
-                            'separateur' => '.',
-                            'car2sep' => ','
-                        ]
-                    ]
-                ],
-                'validators' => [
-                    [
-                        'name' => 'SbmCommun\Model\Validator\Decimal'
-                    ]
-                ]
+            'commentaire' => [
+                'name' => 'commentaire',
+                'required' => false
             ]
         ];
+    }
+
+    public function setData($data)
+    {
+        if (! array_key_exists('millesime', $data)) {
+            $data['millesime'] = Session::get('millesime');
+        }
+        return parent::setData($data);
     }
 }

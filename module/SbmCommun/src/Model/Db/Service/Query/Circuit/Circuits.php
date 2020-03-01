@@ -7,8 +7,8 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
@@ -36,52 +36,38 @@ class Circuits extends AbstractQuery
 
     /**
      * Renvoie un tableau des horaires du circuit indiqué. Si le paramètre est un entier
-     * c'est le `circuitId` Sinon, c'est un tableau de la forme ['serviceId' => xxx,
-     * 'stationId' => yyy] Dans ce dernier cas, la condition sur le millesime est rajoutée
-     * dans la méthode. Il n'y a pas de contrôle pour savoir si le tableau est bien formé.
+     * c'est le `circuitId` Sinon, c'est un tableau de la forme ['ligneId' => xxx, 'sens'
+     * => ..., 'moment' => ..., 'ordre' => ..., 'stationId' => yyy]. Dans ce dernier cas,
+     * la condition sur le millesime est rajoutée dans la méthode. Il n'y a pas de
+     * contrôle pour savoir si le tableau est bien formé.
      *
-     * @param int|array $circuitIdOuServiceIdStationId
+     * @param int|array $circuitIdOuArrayLigneIdSensMomentOrdreStationId
      *
      * @return array
      */
-    public function getHoraires($circuitIdOuServiceIdStationId)
+    public function getHoraires($circuitIdOuArrayLigneIdSensMomentOrdreStationId)
     {
         /*
-         * SELECT ser.horaire1, cir.m1, cir.s1, cir.z1, ser.horaires, cir.m2, cir.s2,
-         * cir.z2, ser.horaire3, cir.m3, cir.s3, cir.z3 FROM sbm_t_circuits AS cir JOIN
-         * sbm_t_services AS ser ON cir.serviceId=ser.serviceId WHERE cir.circuitId =
-         * $circuitId
+         * SELECT semaine, horaireA, horaireD FROM sbm_t_circuits AS cir WHERE
+         * cir.circuitId = $circuitId
          */
-        if (is_integer($circuitIdOuServiceIdStationId)) {
+        if (is_integer($circuitIdOuArrayLigneIdSensMomentOrdreStationId)) {
             $conditions = [
-                'circuitId' => $circuitIdOuServiceIdStationId
+                'circuitId' => $circuitIdOuArrayLigneIdSensMomentOrdreStationId
             ];
         } else {
             $conditions = array_merge([
                 'millesime' => $this->millesime
-            ], $circuitIdOuServiceIdStationId);
+            ], $circuitIdOuArrayLigneIdSensMomentOrdreStationId);
         }
         $select = $this->sql->select(
             [
                 'cir' => $this->db_manager->getCanonicName('circuits')
             ])
             ->columns([
-            'm1',
-            's1',
-            'z1',
-            'm2',
-            's2',
-            'z2',
-            'm3',
-            's3',
-            'z3'
-        ])
-            ->join([
-            'ser' => $this->db_manager->getCanonicName('services')
-        ], 'cir.serviceId=ser.serviceId', [
-            'horaire1',
-            'horaire2',
-            'horaire3'
+            'semaine',
+            'horaireA',
+            'horaireD'
         ])
             ->where($conditions);
         return current(iterator_to_array($this->renderResult($select)));
@@ -100,7 +86,8 @@ class Circuits extends AbstractQuery
     public function complet($serviceId, $horaire, $callback = null)
     {
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId', $serviceId);
+        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId',
+            $serviceId);
         switch ($horaire) {
             case 'matin':
                 $order = 'm1';
@@ -159,7 +146,7 @@ class Circuits extends AbstractQuery
             ->columns($columns)
             ->where($where)
             ->order($order);
-        //$result = ;
+        // $result = ;
         $result = iterator_to_array($this->renderResult($select));
         if (is_callable($callback)) {
             foreach ($result as &$arret) {

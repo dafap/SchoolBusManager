@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 5 mai 2018
- * @version 2018-2.4.1
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmCartographie\Controller;
 use SbmCartographie\GoogleMaps\DistanceMatrix;
@@ -83,9 +83,10 @@ return [
             'sbmcarte' => [
                 'type' => 'segment',
                 'options' => [
-                    'route' => '/carte[/:action]',
+                    'route' => '/carte[/:action][/:filtre]',
                     'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'filtre' => '[01]'
                     ],
                     'defaults' => [
                         'module' => 'SbmCartographie',

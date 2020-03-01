@@ -7,8 +7,8 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmBase\Model;
 
@@ -205,5 +205,11 @@ class DateLib
         );
         list ($num_jour, $jour, $mois, $annee) = explode('/', $d->format('w/j/n/Y'));
         return $nom_jour_fr[$num_jour] . ' ' . $jour . ' ' . $mois_fr[$mois] . ' ' . $annee;
+    }
+
+    public static function formatHoraire(string $t)
+    {
+        $h = DateTime::createFromFormat('H:i:s', $t);
+        return $h->format('H:i');
     }
 }

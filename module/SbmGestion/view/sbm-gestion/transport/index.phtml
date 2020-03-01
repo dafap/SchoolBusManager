@@ -8,8 +8,8 @@
  * @filesource view/transport/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2019
- * @version 2019-2.6.0
+ * @date 16 fév.2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -31,6 +31,11 @@ $url_transport_communes = $this->url('sbmgestion/transport',
 $url_transport_etablissements = $this->url('sbmgestion/transport',
     [
         'action' => 'etablissement-liste',
+        'page' => $this->page
+    ]);
+$url_transport_lignes = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-liste',
         'page' => $this->page
     ]);
 $url_transport_lots = $this->url('sbmgestion/transport',
@@ -103,6 +108,7 @@ $action = [
 			<li><a href="<?= $url_simulation_etablissement_liste; ?>"><i
 					class="fam-bullet-go"></i>Règles de correspondance pour le passage
 					dans un établissement de niveau supérieur</a></li>
+			<li><a href="<?=$url_transport_lignes;?>"><i class="fam-bullet-go"></i>Lignes</a></li>
 			<li><a href="<?=$url_transport_lots;?>"><i class="fam-bullet-go"></i>Lots
 					de marché</a></li>
 			<li><a href="<?= $url_rpi_liste; ?>"><i class="fam-bullet-go"></i>RPI</a></li>

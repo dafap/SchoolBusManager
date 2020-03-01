@@ -12,8 +12,8 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 // mise en place des JS de googleMaps
@@ -94,10 +94,7 @@ $actions = [
 		<?= $this->listeZoneActions($hiddens, $actions);?>
 		</div>
 		<div class="float-right right-10px">
-			<span style="background-color: #ff0000; font-weight: bold;">En rouge</span>
-			les écoles et les établissements non desservis. <span
-				style="background-color: #00ff00; font-weight: bold;">En vert</span>
-			les écoles et les établissements desservis.
+			Zoomez puis cliquez sur une marque pour obtenir des renseignements.
 		</div>
 	</div>
 	<div id="carte-inner"

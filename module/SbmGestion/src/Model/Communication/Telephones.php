@@ -8,8 +8,8 @@
  * @filesource Telephones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Communication;
 
@@ -26,6 +26,7 @@ class Telephones extends AbstractObject
             'classe' => 'getResponsablesClasse',
             'commune' => 'getResponsablesCommune',
             'etablissement' => 'getResponsablesEtablissement',
+            'ligne' => 'getResponsablesLigne',
             'lot' => 'getResponsablesLot',
             'organisme' => 'getResponsablesOrganisme',
             'responsable' => 'getResponsablesSelectionnes',

@@ -1,14 +1,16 @@
 <?php
 /**
  * Formulaire de confirmation de la suppression d'une relation etablissement - service.
- * 
+ *
+ * version pour TRANSDEV ALBERTVILLE
+ *
  * @project sbm
  * @package SbmGestion/Form
  * @filesource EtablissementServiceSuppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 sept. 2018
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
 
@@ -37,7 +39,19 @@ class EtablissementServiceSuppr extends Form
             'type' => 'hidden'
         ]);
         $this->add([
-            'name' => 'serviceId',
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'sens',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'moment',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'ordre',
             'type' => 'hidden'
         ]);
         $this->add([

@@ -3,17 +3,19 @@
  * Gestion de la table `services`
  * (à déclarer dans module.config.php)
  *
+ * Version pour TRANSDEV ALBERTVILLE
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mars 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use SbmCommun\Model\Strategy\NatureCarte as NatureCarteStrategy;
+// use SbmCommun\Model\Strategy\NatureCarte as NatureCarteStrategy;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 
 class Services extends AbstractSbmTable implements EffectifInterface
@@ -27,49 +29,80 @@ class Services extends AbstractSbmTable implements EffectifInterface
         $this->table_name = 'services';
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Services';
-        $this->id_name = 'serviceId';
-        $this->strategies['horaire1'] = new SemaineStrategy();
-        $this->strategies['horaire2'] = new SemaineStrategy();
-        $this->strategies['horaire3'] = new SemaineStrategy();
-        $this->strategies['natureCarte'] = new NatureCarteStrategy();
-        $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
-        $resultset = $tLibelles->fetchAll([
-            'nature' => 'NatureCartes'
-        ]);
-        foreach ($resultset as $row) {
-            $this->strategies['natureCarte']->addNatureCarte($row->libelle);
-        }
+        $this->id_name = [
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
+        ];
+        $this->strategies['semaine'] = new SemaineStrategy();
+        // $this->strategies['natureCarte'] = new NatureCarteStrategy();
+        // $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
+        // $resultset = $tLibelles->fetchAll([
+        // 'nature' => 'NatureCartes'
+        // ]);
+        // foreach ($resultset as $row) {
+        // $this->strategies['natureCarte']->addNatureCarte($row->libelle);
+        // }
     }
 
     public function getNatureCartes()
     {
-        return $this->strategies['natureCarte']->getNatureCartes();
+        //return $this->strategies['natureCarte']->getNatureCartes();
+        return [];
     }
 
-    public function setSelection($serviceId, $selection)
+    /**
+     * Change l'état de la colonne selection pour le service indiqué.
+     *
+     * @param int $millesime
+     * @param string $ligneId
+     * @param int $sens
+     * @param int $moment
+     * @param int $ordre
+     * @param int $selection
+     */
+    public function setSelection(int $millesime, string $ligneId, int $sens, int $moment,
+        int $ordre, int $selection)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray([
-            'serviceId' => $serviceId,
-            'selection' => $selection
-        ]);
+        $oData->exchangeArray(
+            [
+                'millesime' => $millesime,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
+                'selection' => $selection
+            ]);
         parent::saveRecord($oData);
     }
 
     /**
-     * Renvoi un tableau des 3 horaires
+     * Renvoi un tableau des 2 horaires
      *
-     * @param string $serviceId
-     *
+     * @param int $millesime
+     * @param string $ligneId
+     * @param int $sens
+     * @param int $moment
+     * @param int $ordre
      * @return array
      */
-    public function getHoraires(string $serviceId)
+    public function getHoraires(int $millesime, string $ligneId, int $sens, int $moment,
+        int $ordre)
     {
-        $oservice = $this->getRecord($serviceId);
+        $oservice = $this->getRecord(
+            [
+                'millesime' => $millesime,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre
+            ]);
         return [
-            'horaire1' => $oservice->horaire1,
-            'horaire2' => $oservice->horaire2,
-            'horaire3' => $oservice->horaire3
+            'horaireA' => $oservice->horaireA,
+            'horaireD' => $oservice->horaireD
         ];
     }
 }

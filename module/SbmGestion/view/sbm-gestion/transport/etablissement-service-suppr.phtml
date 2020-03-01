@@ -2,14 +2,14 @@
 /**
  * Page de suppression d'une relation etablissement - service
  *
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/transport/
  * @filesource etablissement-service-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -18,7 +18,7 @@ if (empty($this->etablissementId)) {
         "Suppression d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s",
         $this->serviceId, $this->service->nom, $this->service->transporteur);
     $msg = <<<EOT
-Vous avez demandé la suppression de l'établissement %s - %s dans la liste des établissements 
+Vous avez demandé la suppression de l'établissement %s - %s dans la liste des établissements
 desservis par le circuit %s.
 EOT;
     $msg = sprintf($msg, $this->etablissement->nom, $this->etablissement->commune,
@@ -27,10 +27,10 @@ EOT;
     $h1 = sprintf("Suppression d'un service desservant l'établissement\n%s %s - %s",
         $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
     $msg = <<<EOT
-Vous avez demandé la suppression du circuit %s dans la liste des circuits desservant 
-l'établissement %s - %s.
+Vous avez demandé la suppression du service <br><b>%s</b> <br>dans la liste des circuits desservant
+l'établissement <b>%s - %s</b>.
 EOT;
-    $msg = sprintf($msg, $this->serviceId, $this->etablissement->nom,
+    $msg = sprintf($msg, $this->service->designation(), $this->etablissement->nom,
         $this->etablissement->commune);
 }
 ?>

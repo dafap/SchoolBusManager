@@ -9,7 +9,7 @@
  * @filesource vue.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 28 fév. 2020
  * @version 2020-2.6.0
  */
 use Zend\Db\Sql\Select;
@@ -146,6 +146,26 @@ return [
                 ]
             ],
             [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'com', // optionnel
+                'relation' => 'com.communeId = sco.communeId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeElv'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneElv'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteElv'
+                    ]
+                ]
+            ],
+            [
                 'table' => 'etablissements',
                 'type' => 'table',
                 'alias' => 'eta',
@@ -163,12 +183,20 @@ return [
             [
                 'table' => 'communes',
                 'type' => 'table',
-                'alias' => 'com',
-                'relation' => 'com.communeId = eta.communeId',
+                'alias' => 'cet',
+                'relation' => 'cet.communeId = eta.communeId',
                 'fields' => [
                     [
                         'field' => 'nom',
                         'alias' => 'communeEtablissement'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneEtablissement'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteEtablissement'
                     ]
                 ]
             ],
@@ -192,17 +220,30 @@ return [
                 ]
             ],
             [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'cr1', // optionnel
+                'relation' => 'cr1.communeId = r1.communeId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeR1'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneR1'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteR1'
+                    ]
+                ]
+            ],
+            [
                 'table' => 'responsables',
                 'type' => 'table',
                 'alias' => 'r2',
                 'relation' => 'ele.responsable2Id = r2.responsableId', // obligatoire
-                                                                        // case when
-                                                                        // r2.responsableId
-                                                                        // IS NULL then ''
-                                                                        // else
-                                                                        // concat(r2.nom,
-                                                                        // ' ', r2.prenom)
-                                                                        // end
                 'fields' => [
                     [
                         'expression' => [
@@ -210,6 +251,27 @@ return [
                             'type' => 'varchar(61)'
                         ],
                         'alias' => 'responsable2NomPrenom'
+                    ]
+                ],
+                'jointure' => Select::JOIN_LEFT
+            ],
+            [
+                'table' => 'communes', // obligatoire mais peut être une vue
+                'type' => 'table', // optionnel, 'table' par défaut
+                'alias' => 'cr2', // optionnel
+                'relation' => 'cr2.communeId = r2.communeId', // obligatoire
+                'fields' => [
+                    [
+                        'field' => 'nom',
+                        'alias' => 'communeR2'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommuneR2'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposteR2'
                     ]
                 ],
                 'jointure' => Select::JOIN_LEFT

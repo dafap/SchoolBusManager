@@ -4,14 +4,15 @@
  * circuits, classes, communes, etablissements, services, stations, transporteurs
  *
  * Le layout est désactivé dans ce module
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
@@ -360,8 +361,13 @@ class TransportController extends AbstractActionController
     public function checkselectionserviceAction()
     {
         try {
-            $serviceId = $this->params('serviceId');
-            $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($serviceId, 1);
+            $millesime = Session::get('millesime');
+            $ligneId = $this->params('ligneId');
+            $sens = $this->params('sens');
+            $moment = $this->params('moment');
+            $ordre = $this->params('ordre');
+            $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($millesime,
+                $ligneId, $sens, $moment, $ordre, 1);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
@@ -383,8 +389,13 @@ class TransportController extends AbstractActionController
     public function uncheckselectionserviceAction()
     {
         try {
-            $serviceId = $this->params('serviceId');
-            $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($serviceId, 0);
+            $millesime = Session::get('millesime');
+            $ligneId = $this->params('ligneId');
+            $sens = $this->params('sens');
+            $moment = $this->params('moment');
+            $ordre = $this->params('ordre');
+            $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($millesime,
+                $ligneId, $sens, $moment, $ordre, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
@@ -443,11 +454,16 @@ class TransportController extends AbstractActionController
         }
     }
 
+    /**
+     * Ici on passe serviceId, à décoder par les méthodes du trait ServiceTrait
+     *
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function getcircuitstationsAction()
     {
-        $millesime = Session::get('millesime');
+        $serviceId = $this->params('serviceId');
         $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
-        $stations = $queryStations->surcircuit($this->params('serviceId'), $millesime);
+        $stations = $queryStations->byServiceId($serviceId);
         return $this->getResponse()->setContent(
             Json::encode(
                 [
@@ -506,6 +522,7 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * @ TODO : POUR LA VERSION DE TRANSDEV ALBERTVILLE CETTE METHODE EST INUTILE OU COMPLETEMENT A REVOIR
      *
      * @formatter:off
      * Cette méthode doit recevoir en GET, au choix :<ul>
@@ -525,7 +542,7 @@ class TransportController extends AbstractActionController
      *
      * @return \Zend\Stdlib\ResponseInterface
      */
-    public function tablehorairescircuitAction()
+    /*public function tablehorairescircuitAction()
     {
         try {
             $horaires = $this->db_manager->get('Sbm\Horaires');
@@ -539,8 +556,12 @@ class TransportController extends AbstractActionController
                     ]));
             } else {
                 $serviceId = $this->params('serviceId', false);
+                $ligneId=$this->params('ligneId', false);
+                $sens = $this->params('sens', 0);
+                $moment = $this->params('moment', 0);
+                $ordre = $this->params('ordre', 0);
                 $stationId = $this->params('stationId', false);
-                if ($serviceId && $stationId) {
+                if ($ligneId && $sens && $moment && $ordre && $stationId) {
                     $result = $horaires->getTableHoraires(
                         [
                             'serviceId' => $serviceId,
@@ -575,5 +596,5 @@ class TransportController extends AbstractActionController
                     'success' => 0
                 ]));
         }
-    }
+    }*/
 }

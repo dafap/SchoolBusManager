@@ -33,8 +33,8 @@
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
- * @version 2019-2.5.0
+ * @date 15 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -132,7 +132,7 @@ class ListeLigneActions extends AbstractListeAction
     {
         $result = '';
         foreach ($buttons as $name => $attributes) {
-            $result .= $this->getButton($name, $attributes, $id);
+            $result .= $this->getButton($name, $attributes, $name . $id);
         }
         return $result;
     }

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmCommun\Form;
 use SbmCommun\Form\View\Helper as ViewHelper;
@@ -52,6 +52,7 @@ return [
             'Sbm\Db\ObjectData\Etablissement' => ObjectData\Etablissement::class,
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
             'Sbm\Db\ObjectData\Facture' => ObjectData\Facture::class,
+            'Sbm\Db\ObjectData\Ligne' => ObjectData\Ligne::class,
             'Sbm\Db\ObjectData\Lot' => ObjectData\Lot::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
             'Sbm\Db\ObjectData\Paiement' => ObjectData\Paiement::class,
@@ -91,6 +92,7 @@ return [
             'Sbm\Db\Table\Etablissements' => Table\Etablissements::class,
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
             'Sbm\Db\Table\Factures' => Table\Factures::class,
+            'Sbm\Db\Table\Lignes' => Table\Lignes::class,
             'Sbm\Db\Table\Lots' => Table\Lots::class,
             'Sbm\Db\Table\Organismes' => Table\Organismes::class,
             'Sbm\Db\Table\Paiements' => Table\Paiements::class,
@@ -128,6 +130,7 @@ return [
             'Sbm\Db\TableGateway\Etablissements' => TableGateway\TableGatewayEtablissements::class,
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
             'Sbm\Db\TableGateway\Factures' => TableGateway\TableGatewayFactures::class,
+            'Sbm\Db\TableGateway\Lignes' => TableGateway\TableGatewayLignes::class,
             'Sbm\Db\TableGateway\Lots' => TableGateway\TableGatewayLots::class,
             'Sbm\Db\TableGateway\Organismes' => TableGateway\TableGatewayOrganismes::class,
             'Sbm\Db\TableGateway\Paiements' => TableGateway\TableGatewayPaiements::class,
@@ -186,6 +189,7 @@ return [
             'Sbm\Db\Select\Eleves' => Select\ElevesForSelect::class,
             'Sbm\Db\Select\Etablissements' => Select\EtablissementsForSelect::class,
             'Sbm\Db\Select\History' => Select\HistoryForSelect::class,
+            'Sbm\Db\Select\Lignes' => Select\LignesForSelect::class,
             'Sbm\Db\Select\Lots' => Select\LotsForSelect::class,
             'Sbm\Db\Select\Organismes' => Select\Organismes::class,
             'Sbm\Db\Select\Responsables' => Select\Responsables::class,
@@ -228,6 +232,7 @@ return [
             Form\Classe::class => Form\Classe::class,
             Form\Commune::class => Form\Commune::class,
             Form\Etablissement::class => Form\Etablissement::class,
+            Form\Ligne::class => Form\Ligne::class,
             Form\Lot::class => Form\Lot::class,
             Form\Organisme::class => Form\Organisme::class,
             Form\Rpi::class => Form\Rpi::class,

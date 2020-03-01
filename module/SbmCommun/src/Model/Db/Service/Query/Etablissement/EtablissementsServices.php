@@ -3,18 +3,20 @@
  * Requêtes concernant la table `etablissements-sservices`
  * (déclarée dans module.config.php sous l'alias 'Sbm\Db\Query\EtablissementsServices')
  *
+ * Version pour TRANSDEV ALBERTVILLE
+ *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Service/Query/Etablissement
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 
 class EtablissementsServices extends AbstractQuery
 {
@@ -26,11 +28,16 @@ class EtablissementsServices extends AbstractQuery
                 'rel' => $this->db_manager->getCanonicName('etablissements-services',
                     'table')
             ])
-            ->columns([
-            'etablissementId',
-            'serviceId',
-            'stationId'
-        ])
+            ->columns(
+            [
+                'etablissementId',
+                'millesime',
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'stationId'
+            ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -66,33 +73,46 @@ class EtablissementsServices extends AbstractQuery
             ])
             ->join([
             'com1' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'com1.communeId = eta.communeId', [
-            'etab_commune' => 'nom'
-        ])
+        ], 'com1.communeId = eta.communeId',
+            [
+                'etab_commune' => 'nom',
+                'etab_lacommune' => 'alias',
+                'etab_laposte' => 'alias_laposte'
+            ])
             ->join([
             'ser' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'rel.serviceId = ser.serviceId',
+        ],
+            'rel.millesime = ser.millesime AND  rel.ligneId = ser.ligneId AND rel.sens = ser.sens AND rel.moment = ser.moment AND rel.ordre = ser.ordre',
             [
-                'serv_alias' => 'alias',
-                'serv_aliasTr' => 'aliasTr',
-                'serv_aliasCG' => 'aliasCG',
-                'serv_nom' => 'nom',
-                'horaire1',
-                'horaire2',
-                'horaire3',
                 'serv_transporteurId' => 'transporteurId',
+                'serv_selection' => 'selection',
+                'serv_actif' => 'actif',
+                'serv_visible' => 'visible',
+                'serv_semaine' => 'semaine',
+                'serv_rang' => 'rang',
+                'serv_type' => 'type',
                 'serv_nbPlaces' => 'nbPlaces',
-                'serv_surEtatCG' => 'surEtatCG',
-                'serv_operateur' => 'operateur',
-                'serv_kmAVide' => 'kmAVide',
-                'serv_kmEnCharge' => 'kmEnCharge',
-                'serv_natureCarte' => 'natureCarte',
-                'serv_selection' => 'selection'
+                'serv_alias' => 'alias',
+                'serv_commentaire' => 'commentaire'
+            ])
+            ->join([
+            'lig' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], 'lig.millesime = ser.millesime AND lig.ligneId = ser.ligneId',
+            [
+                'ligne_operateur' => 'operateur',
+                'ligne_extremite1' => 'extremite1',
+                'ligne_extremite2' => 'extremite2',
+                'ligne_via' => 'via',
+                'ligne_internes' => 'internes',
+                'ligne_actif' => 'actif',
+                'ligne_selection' => 'selection',
+                'ligne_commentaire' => 'commentaire'
             ])
             ->join([
             'lot' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser.lotId = lot.lotId',
+        ], 'lig.lotId = lot.lotId',
             [
+                'lotId' => 'lotId',
                 'lot_marche' => 'marche',
                 'lot_lot' => 'lot',
                 'lot_libelle' => 'libelle',
@@ -101,13 +121,13 @@ class EtablissementsServices extends AbstractQuery
                 'lot_dateFin' => 'dateFin',
                 'lot_actif' => 'actif',
                 'lot_selection' => 'selection'
-            ])
+            ], Select::JOIN_LEFT)
             ->join(
             [
                 'tit' => $this->db_manager->getCanonicName('transporteurs', 'table')
             ], 'tit.transporteurId = lot.transporteurId', [
-                'lot_transporteur' => 'nom'
-            ])
+                'lot_titulaire' => 'nom'
+            ], Select::JOIN_LEFT)
             ->join(
             [
                 'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')
@@ -137,39 +157,28 @@ class EtablissementsServices extends AbstractQuery
         ])
             ->join([
             'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], '(cir.serviceId = rel.serviceId) and (cir.stationId = rel.stationId)',
+        ],
+            'cir.millesime = rel.millesime AND cir.ligneId = rel.ligneId ' .
+            'AND cir.sens = rel.sens AND cir.moment = rel.moment AND cir.ordre = rel.ordre AND cir.stationId = rel.stationId',
             [
                 'circuitId',
+                'cir_passage' => 'passage',
                 'cir_selection' => 'selection',
-                'cir_millesime' => 'millesime',
+                'cir_visible' => 'visible',
+                'cir_ouvert' => 'ouvert',
                 'cir_semaine' => 'semaine',
-                'cir_m1' => new Expression('max(`cir`.`m1`)'),
-                'cir_s1' => new Expression('min(`cir`.`s1`)'),
-                'cir_z1' => new expression('min(`cir`.`z1`)'),
-                'cir_m2' => new Expression('max(`cir`.`m2`)'),
-                'cir_s2' => new Expression('min(`cir`.`s2`)'),
-                'cir_z2' => new expression('min(`cir`.`z2`)'),
-                'cir_m3' => new Expression('max(`cir`.`m3`)'),
-                'cir_s3' => new Expression('min(`cir`.`s3`)'),
-                'cir_z3' => new expression('min(`cir`.`z3`)'),
+                'cir_horaireA' => 'horaireA',
                 'cir_distance' => 'distance',
                 'cir_montee' => 'montee',
                 'cir_descente' => 'descente',
+                'cir_correspondance' => 'correspondance',
                 'cir_emplacement' => 'emplacement',
                 'cir_typeArret' => 'typeArret',
                 'cir_commentaire1' => 'commentaire1',
                 'cir_commentaire2' => 'commentaire2'
-            ])
+            ], Select::JOIN_LEFT)
             ->where([
             'cir.millesime' => $this->millesime
-        ])
-            ->group([
-            'rel.etablissementId',
-            'rel.serviceId'
-        ])
-            ->order([
-            'rel.etablissementId',
-            'rel.serviceId'
         ]);
     }
 
@@ -186,7 +195,7 @@ class EtablissementsServices extends AbstractQuery
         if ($order) {
             $this->select->order($order);
         }
-        return $this->paginator($this->select->having($where));
+        return $this->paginator($this->select->where($where));
     }
 
     public function fetchAll($where, $order = [])
@@ -194,6 +203,6 @@ class EtablissementsServices extends AbstractQuery
         if ($order) {
             $this->select->order($order);
         }
-        return $this->renderResult($this->select->having($where));
+        return $this->renderResult($this->select->where($where));
     }
 }

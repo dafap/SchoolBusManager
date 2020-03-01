@@ -2,14 +2,15 @@
 /**
  * Structure de la vue `transporteurs`
  *
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource vue.transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2018
- * @version 2018-2.4.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'transporteurs',
@@ -82,6 +83,14 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommune'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposte'
                     ]
                 ]
             ]

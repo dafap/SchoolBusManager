@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/station-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
- * @version 2019-2.5.0
+ * @date 16 fév. 2020
+ * @version 2020-2.6.0
  */
 ?>
 <h1>Suppression d'une station</h1>
@@ -19,6 +19,9 @@
 		<ul>
 			<li><?= $this->escapeHtml($this->data->commune); ?></li>
 			<li><?= $this->escapeHtml($this->data->nom); ?></li>
+			<?php if ($this->data->alias):?>
+			<li><?= $this->escapeHtml($this->data->alias); ?></li>
+			<?php endif;?>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

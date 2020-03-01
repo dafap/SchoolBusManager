@@ -8,9 +8,11 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
+use SbmBase\Model\DateLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
     [
@@ -45,7 +47,7 @@ $url_group = $this->url('sbmgestion/transport',
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 
 $hiddens = [
-    'serviceId' => null,
+    'ligneId' => null,
     'etablissementId' => $this->etablissement->etablissementId,
     'origine' => 'etablissement-service'
 ];
@@ -94,26 +96,28 @@ $data = $this->paginator->getCurrentItems();
 			<tbody>
 				<tr>
 					<th>Code</th>
-					<th>Nom</th>
-					<th>Alias</th>
+					<th>Ligne</th>
 					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th>Descente</th>
-					<th>H1</th>
-					<th>H2</th>
-					<th>H3</th>
+					<th>Horaire</th>
 					<th></th>
 				</tr>
             <?php
-
             foreach ($data as $entity) :
                 ?>
             	<?php
             	$entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
-                $nbInscrits = $this->effectifEtablissementsServices->transportes(
-                    $entity->serviceId);
+                $code = sprintf('%d|%s|%d|%d|%d', $entity->millesime, $entity->ligneId,
+                    $entity->sens, $entity->moment, $entity->ordre);
+                if ($this->effectifEtablissementsServices) {
+                    $nbInscrits = $this->effectifEtablissementsServices->transportes(
+                        $code);
+                } else {
+                    $nbInscrits = 0;
+                }
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -121,57 +125,34 @@ $data = $this->paginator->getCurrentItems();
                 if ($entity->serv_nbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }
-                $horaires = [
-                    'h1' => [
-                        $entity->cir_m1,
-                        $entity->cir_s1,
-                        $entity->cir_z1
-                    ],
-                    'h2' => [
-                        $entity->cir_m2,
-                        $entity->cir_s2,
-                        $entity->cir_z2
-                    ],
-                    'h3' => [
-                        $entity->cir_m3,
-                        $entity->cir_s3,
-                        $entity->cir_z3
-                    ]
-                ];
-                for ($i = 1; $i <= 3; $i ++) {
-                    $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
-                        return $v != '00:00:00';
-                    });
-                }
+                $codeService = sprintf('%s-%d%d%d', $entity->ligneId, $entity->sens,
+                    $entity->moment, $entity->ordre);
                 ?>
                 <tr class="petit <?=$css;?>">
 					<td class="serviceid">
-						<?=$this->escapeHtml($entity->serviceId);?></td>
-					<td class="nom">
-						<?=$this->escapeHtml($entity->serv_nom);?></td>
-					<td class="aliascg">
-						<?=$this->escapeHtml($entity->serv_aliasCG);?></td>
+						<?=$this->escapeHtml($codeService);?></td>
+					<td class="ligne">
+						<?=$this->escapeHtml($entity->ligne_extremite1) . ' - ' .$this->escapeHtml($entity->ligne_extremite2);?></td>
 					<td class="transporteur">
 						<?=$this->escapeHtml($entity->serv_transporteur);?></td>
 					<td class="operateur">
-						<?=$this->escapeHtml($entity->serv_operateur);?></td>
+						<?=$this->escapeHtml($entity->ligne_operateur);?></td>
 					<td class="nbplaces">
 						<?=$this->escapeHtml($entity->serv_nbPlaces);?></td>
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="station">
 						<?=$this->escapeHtml($entity->sta_nom);?></td>
-					<td class="matin">
-						<?=implode('<br>', $horaires['h1']);?></td>
-					<td class="midi">
-						<?=implode('<br>', $horaires['h2']);?></td>
-					<td class="soir">
-						<?=implode('<br>', $horaires['h3']);?></td>
+					<td class="horaire centre">
+						<?=DateLib::formatHoraire($entity->cir_horaireA);?></td>
 					<td class="boutons">
             <?php
                 $hiddens = [
                     'etablissementId' => $this->etablissement->etablissementId,
-                    'serviceId' => $entity->serviceId,
+                    'ligneId' => $entity->ligneId,
+                    'sens' => $entity->sens,
+                    'moment' => $entity->moment,
+                    'ordre' => $entity->ordre,
                     'origine' => 'etablissement-service'
                 ];
                 $buttons = [
@@ -184,12 +165,14 @@ $data = $this->paginator->getCurrentItems();
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves de %s inscrits sur le service %s',
-                            $this->etablissement->nom, $entity->serviceId)
+                            $this->etablissement->nom, $codeService)
                     ]
                 ];
-                echo $this->listeLigneActions(
-                    $this->etablissement->etablissementId . '|' . $entity->serviceId,
-                    $hiddens, $buttons);
+                // etablissementId|millesime|ligneId|sens|moment|ordre
+                $id = sprintf('%s|%d|%s|%d|%d|%d', $this->etablissement->etablissementId,
+                    $entity->millesime, $entity->ligneId, $entity->sens, $entity->moment,
+                    $entity->ordre);
+                echo $this->listeLigneActions($id, $hiddens, $buttons);
                 ?>
 			        </td>
 				</tr>

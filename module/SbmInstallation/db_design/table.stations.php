@@ -8,8 +8,8 @@
  * @filesource table.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 15 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -25,13 +25,14 @@ return [
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'communeId' => 'varchar(6) NOT NULL',
             'nom' => 'varchar(45) NOT NULL',
-            'aliasCG' => 'varchar(45) NOT NULL DEFAULT ""',
-            'codeCG' => 'int(11) NOT NULL DEFAULT "0"',
+            'alias' => 'varchar(45) NOT NULL DEFAULT ""',
+            'code' => 'int(11) NOT NULL DEFAULT "0"',
             'x' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
             'y' => 'decimal(18,10) NOT NULL DEFAULT "0.0"',
             'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'ouverte' => 'tinyint(1) NOT NULL DEFAULT  "1"',
-            'equipement' => 'text NULL'
+            'equipement' => 'text NULL',
+            'id_tra' =>'varchar(14) NULL DEFAULT NULL'
         ],
         'primary_key' => [
             'stationId'

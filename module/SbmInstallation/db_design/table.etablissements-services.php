@@ -8,8 +8,8 @@
  * @filesource table.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -22,12 +22,20 @@ return [
     'structure' => [
         'fields' => [
             'etablissementId' => 'char(8) NOT NULL',
-            'serviceId' => 'varchar(11) NOT NULL',
+            'millesime' => 'int(11) NOT NULL',
+            'ligneId' => 'varchar(5) NOT NULL',
+            'sens' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'ordre' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
             'stationId' => 'int(11) NOT NULL'
         ],
         'primary_key' => [
             'etablissementId',
-            'serviceId'
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
         ],
         'foreign key' => [
             [
@@ -44,11 +52,21 @@ return [
                 ]
             ],
             [
-                'key' => 'serviceId',
+                'key' => [
+                    'millesime',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ],
                 'references' => [
                     'table' => 'services',
                     'fields' => [
-                        'serviceId'
+                        'millesime',
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
                     ],
                     'on' => [
                         'update' => 'CASCADE',

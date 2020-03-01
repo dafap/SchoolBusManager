@@ -81,12 +81,15 @@ class Horaires implements FactoryInterface
     {
         $result = [];
         if (is_array($id)) {
-            // cela devrait être ['serviceId' => serviceId, 'stationId' => stationId]
-            // sinon, c'est pas bon et on lance une exception.
-            if (! array_key_exists('serviceId', $id) ||
+            // cela devrait être ['ligneId' => ligneId, 'sens' => sens, 'moment' =>
+            // moment, 'ordre' => ordre,'stationId' => stationId] (avec éventuellement
+            // 'passage') sinon, c'est pas bon et on lance une exception.
+            if (! array_key_exists('ligneId', $id) || ! array_key_exists('sens', $id) ||
+                ! array_key_exists('moment', $id) || ! array_key_exists('ordre', $id) ||
                 ! array_key_exists('stationId', $id)) {
-                $msg = 'Le tableau de paramètres reçu n\'est pas de la forme' .
-                    ' [\'serviceId\' => serviceId, \'stationId\' => stationId]';
+                $msg = 'Le tableau de paramètres reçu n\'est pas de la forme ' .
+                    '[\'ligneId\' => ligneId, \'sens\' => sens, \'moment\' => moment, ' .
+                    '\'ordre\' => ordre, \'stationId\' => stationId]';
                 throw new \Exception($msg);
             }
             $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
@@ -95,7 +98,7 @@ class Horaires implements FactoryInterface
                 $circuit = $resultset->current();
                 $id = $circuit->circuitId;
             } else {
-                $id = $id['serviceId'];
+                unset($id['stationId']);
             }
         }
         if ($id == (string) ((int) $id)) {
@@ -107,8 +110,8 @@ class Horaires implements FactoryInterface
                     $result["horaire$i"] = $this->ligneTableHoraires($aHoraires, $i);
                 }
             }
-        } elseif (is_string($id)) {
-            // $id est un serviceId
+        } elseif (is_array($id)) {
+            // $id est un tableau identifiant un service
             $aHoraires = $this->db_manager->get('Sbm\Db\Table\Services')->getHoraires($id);
             foreach ($aHoraires as $key => $codejours) {
                 if (! empty($codejours)) {

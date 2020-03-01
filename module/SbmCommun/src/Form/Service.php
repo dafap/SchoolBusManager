@@ -8,11 +8,12 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
+use SbmBase\Model\Session;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class Service extends AbstractSbmForm implements InputFilterProviderInterface
@@ -32,6 +33,10 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
+        $this->add([
+            'name' => 'millesime',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
                 'name' => 'serviceId',
@@ -486,6 +491,9 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function setData($data)
     {
+        if (! array_key_exists('millesime', $data)) {
+            $data['millesime'] = Session::get('millesime');
+        }
         parent::setData($data);
         if ($this->has('codeService')) {
             $e = $this->get('codeService');

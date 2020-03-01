@@ -3,14 +3,15 @@
  * Actions destinées aux réponses à des demandes ajax pour les élèves et les responsables
  *
  * Le layout est désactivé dans ce module
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
@@ -585,9 +586,13 @@ class EleveController extends AbstractActionController
 
     public function getstationsforselectAction()
     {
-        $serviceId = $this->params('serviceId');
+        $ligneId = $this->params('ligneId');
+        $sens = $this->params('sens');
+        $moment = $this->params('moment');
+        $ordre = $this->params('ordre');
         $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
-        $stations = $queryStations->surcircuit($serviceId, Session::get('millesime'));
+        $stations = $queryStations->surcircuit(Session::get('millesime'), $ligneId, $sens,
+            $moment, $ordre);
         return $this->getResponse()->setContent(
             Json::encode([
                 'data' => $stations,

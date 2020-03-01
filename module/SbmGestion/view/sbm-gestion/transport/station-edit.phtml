@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/station-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2019
- * @version 2019-2.5.0
+ * @date 16 fév. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -45,10 +45,10 @@ $actions = [
 				<?= $this->formRow($this->form->get('communeId')); ?></div>
 			<div id="wrapper-nom" class="row-inner edit">
 				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="wrapper-aliasCG" class="row-inner edit">
-				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
-			<div id="wrapper-codeCG" class="row-inner edit">
-				<?= $this->formRow($this->form->get('codeCG')); ?></div>
+			<div id="wrapper-alias" class="row-inner edit">
+				<?= $this->formRow($this->form->get('alias')); ?></div>
+			<div id="wrapper-code" class="row-inner edit">
+				<?= $this->formRow($this->form->get('code')); ?></div>
 			<div id="wrapper-longitude" class="row-inner edit">
 				<?= $this->formRow($this->form->get('x')); ?></div>
 			<div id="wrapper-latitude" class="row-inner edit">
@@ -59,6 +59,8 @@ $actions = [
 				<?= $this->formRow($this->form->get('ouverte')); ?></div>
 			<div id="wrapper-equipement" class="row-inner edit">
 				<?= $this->formRow($this->form->get('equipement')); ?></div>
+			<div id="wrapper-id_tra" class="row-inner edit">
+				<?= $this->formRow($this->form->get('id_tra')); ?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>

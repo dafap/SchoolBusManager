@@ -8,8 +8,8 @@
  * @filesource table.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -21,35 +21,40 @@ return [
     'add_data' => false,
     'structure' => [
         'fields' => [
-            'serviceId' => 'varchar(11) NOT NULL',
-            'alias' => 'varchar(15) NOT NULL DEFAULT ""',
-            'aliasTr' => 'varchar(15) NOT NULL DEFAULT ""',
-            'aliasCG' => 'varchar(15) NOT NULL DEFAULT ""',
-            'lotId' => 'int(11) NOT NULL DEFAULT "0"',
-            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'nom' => 'varchar(45) NOT NULL',
-            'horaire1'=>'tinyint(4) UNSIGNED NOT NULL DEFAULT "0"',
-            'horaire2'=>'tinyint(4) UNSIGNED NOT NULL DEFAULT "0"',
-            'horaire3'=>'tinyint(4) UNSIGNED NOT NULL DEFAULT "0"',
+            'millesime' => 'int(11) NOT NULL DEFAULT "0"',
+            'ligneId' => 'varchar(5) NOT NULL',
+            'sens' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'ordre' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
             'transporteurId' => 'int(11) NOT NULL DEFAULT "0"',
-            'nbPlaces' => 'tinyint(3) unsigned NOT NULL DEFAULT "0"',
-            'surEtatCG' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'operateur' => 'varchar(5) NOT NULL DEFAULT "CCMGC"',
-            'kmAVide' => 'decimal(7,3) NOT NULL DEFAULT "0"',
-            'kmEnCharge' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
-            'natureCarte' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'geotrajet' => 'POLYGON'
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'actif' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'semaine' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "31"',
+            'rang' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'type' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT  "0"',
+            'nbPlaces' => 'int(11) unsigned NOT NULL DEFAULT "0"',
+            'alias' => 'varchar(45) NOT NULL DEFAULT ""',
+            'commentaire' => 'text NULL DEFAULT NULL'
         ],
         'primary_key' => [
-            'serviceId'
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
         ],
         'foreign key' => [
             [
-                'key' => 'lotId',
+                'key' => [
+                    'millesime',
+                    'ligneId'
+                ],
                 'references' => [
-                    'table' => 'lots',
+                    'table' => 'lignes',
                     'fields' => [
-                        'lotId'
+                        'millesime',
+                        'ligneId'
                     ],
                     'on' => [
                         'update' => 'CASCADE',

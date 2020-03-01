@@ -2,14 +2,15 @@
 /**
  * Structure de la vue `stations`
  *
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource vue.stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2019
- * @version 2019-2.5.0
+ * @date 15 fév. 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'stations',
@@ -31,10 +32,10 @@ return [
                 'field' => 'nom'
             ],
             [
-                'field' => 'aliasCG'
+                'field' => 'alias'
             ],
             [
-                'field' => 'codeCG'
+                'field' => 'code'
             ],
             [
                 'field' => 'x'
@@ -50,6 +51,9 @@ return [
             ],
             [
                 'field' => 'equipement'
+            ],
+            [
+                'field' => 'id_tra'
             ]
         ],
         'from' => [
@@ -67,6 +71,14 @@ return [
                     [
                         'field' => 'nom',
                         'alias' => 'commune'
+                    ],
+                    [
+                        'field' => 'alias',
+                        'alias' => 'lacommune' // commune en maj avec LE, LA ou LES, apostrophes et tirets
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposte'
                     ],
                     [
                         'field' => 'codePostal'

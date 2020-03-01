@@ -8,8 +8,8 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -22,29 +22,27 @@ return [
     'structure' => [
         'fields' => [
             'circuitId' => 'int(11) NOT NULL AUTO_INCREMENT',
-            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'millesime' => 'int(11) NOT NULL',
-            'serviceId' => 'varchar(11) NOT NULL',
+            'ligneId' => 'varchar(5) NOT NULL',
+            'sens' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'ordre' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
             'stationId' => 'int(11) NOT NULL',
-            'passage' => 'int(11) NOT NULL DEFAULT "1"',
-            'semaine' => 'tinyint(4) UNSIGNED NOT NULL DEFAULT "31"',
-            'm1' => 'time NOT NULL DEFAULT "00:00:00"',
-            's1' => 'time NOT NULL DEFAULT "23:59:59"',
-            'z1' => 'time NOT NULL DEFAULT "00:00:00"',
-            'm2' => 'time NOT NULL DEFAULT "00:00:00"',
-            's2' => 'time NOT NULL DEFAULT "00:00:00"',
-            'z2' => 'time NOT NULL DEFAULT "00:00:00"',
-            'm3' => 'time NOT NULL DEFAULT "00:00:00"',
-            's3' => 'time NOT NULL DEFAULT "00:00:00"',
-            'z3' => 'time NOT NULL DEFAULT "00:00:00"',
+            'passage' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'visible' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'ouvert' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'semaine' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "31"',
+            'horaireA' => 'time NOT NULL DEFAULT "00:00:00"',
+            'horaireD' => 'time NOT NULL DEFAULT "00:00:00"',
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
-            'montee' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"',
-            'descente' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "0"',
-            'emplacement' => 'varchar(45) NOT NULL',
+            'montee' => 'tinyint(1) NOT NULL DEFAULT "1"',
+            'descente' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'correspondance' => 'tinyint(1) DEFAULT "0"',
+            'emplacement' => 'varchar(45) NOT NULL DEFAULT ""',
             'typeArret' => 'text NULL',
-            'commentaire1' => 'text NULL', // aller
-            'commentaire2' => 'text NULL', // retour
-            'geopt' => 'GEOMETRY'
+            'commentaire1' => 'text NULL',
+            'commentaire2' => 'text NULL'
         ],
         'primary_key' => [
             'circuitId'
@@ -54,7 +52,10 @@ return [
                 'unique' => true,
                 'fields' => [
                     'millesime',
-                    'serviceId',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre',
                     'stationId',
                     'passage'
                 ]
@@ -62,11 +63,21 @@ return [
         ],
         'foreign key' => [
             [
-                'key' => 'serviceId',
+                'key' => [
+                    'millesime',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ],
                 'references' => [
                     'table' => 'services',
                     'fields' => [
-                        'serviceId'
+                        'millesime',
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
                     ],
                     'on' => [
                         'update' => 'CASCADE',

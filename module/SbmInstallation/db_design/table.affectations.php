@@ -9,8 +9,8 @@
  * @filesource table.staffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -24,28 +24,29 @@ return [
         'fields' => [
             'millesime' => 'int(4) NOT NULL DEFAULT "0"',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
-            'trajet' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 pour le responsable 1, 2 pour le
-                                                            // responsable 2
-            'jours' => 'tinyint(2) NOT NULL DEFAULT "31"', // 27 semaine, 4 mercredi, 32 samedi -
-                                                            // indiquer 63 pour semaine complète ou
-                                                            // 59 pour semaine + samedi
-            'sens' => 'tinyint(1) NOT NULL DEFAULT "3"', // 1 pour aller / 2 pour retour / 3 pour
-                                                          // aller-retour
-            'correspondance' => 'tinyint(1) NOT NULL DEFAULT "1"', // de 1 à n à partir du
-                                                                    // domicile
+            'trajet' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"', // 1 pour responsable 1,
+                                                            // 2 pour responsable 2
+            'jours' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "31"', // 4 me, 15 lmj, 16 v,
+                                                            // 27 lmjv, 31 lmmjv, 64 di
+            'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"', // 1 matin, 2 midi, 3 soir
+            'correspondance' => 'tinyint(1) NOT NULL DEFAULT "1"', // de 1 à n dans l'ordre chronologique
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'responsableId' => 'int(11) NOT NULL',
             'station1Id' => 'int(11) NOT NULL',
-            'service1Id' => 'varchar(11) NOT NULL',
+            'ligne1Id' => 'varchar(5) NOT NULL',
+            'sensligne1' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'ordreligne1' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
             'station2Id' => 'int(11) DEFAULT NULL', // point de correspondance
-            'service2Id' => 'varchar(11) DEFAULT NULL'
+            'ligne2Id' => 'varchar(5) DEFAULT NULL',
+            'sensligne2' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
+            'ordreligne2' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"'
         ], // service suivant
         'primary_key' => [
             'millesime',
             'eleveId',
             'trajet',
             'jours',
-            'sens',
+            'moment',
             'correspondance'
         ],
         'foreign key' => [
@@ -93,11 +94,21 @@ return [
                 ]
             ],
             [
-                'key' => 'service1Id',
+                'key' => [
+                    'millesime',
+                    'ligne1Id',
+                    'sensligne1',
+                    'moment',
+                    'ordreligne1'
+                ],
                 'references' => [
                     'table' => 'services',
                     'fields' => [
-                        'serviceId'
+                        'millesime',
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
                     ],
                     'on' => [
                         'update' => 'CASCADE',
@@ -116,7 +127,7 @@ return [
             'evenement' => 'INSERT',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(affectations)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', NEW.millesime, NEW.eleveId, NEW.trajet, NEW.jours, NEW.sens, NEW.correspondance), NOW(), CONCAT_WS('|', NEW.selection, NEW.responsableId, NEW.station1Id, NEW.service1Id, NEW.station2Id, NEW.service2Id))
+VALUES ('%table(affectations)%', 'insert', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'moment', 'correspondance'), CONCAT_WS('|', NEW.millesime, NEW.eleveId, NEW.trajet, NEW.jours, NEW.moment, NEW.correspondance), NOW(), CONCAT_WS('|', NEW.selection, NEW.responsableId, NEW.station1Id, NEW.ligne1Id, NEW.sensligne1, NEW.ordreligne1, NEW.station2Id, NEW.ligne2Id, NEW.sensligne2, NEW.ordreligne2))
 EOT
 
         ],
@@ -125,7 +136,7 @@ EOT
             'evenement' => 'UPDATE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(affectations)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.sens, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.service1Id, OLD.station2Id, OLD.service2Id))
+VALUES ('%table(affectations)%', 'update', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'moment', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.moment, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.ligne1Id, OLD.sensligne1, OLD.ordreligne1, OLD.station2Id, OLD.ligne2Id, OLD.sensligne2, OLD.ordreligne2))
 EOT
 
         ],
@@ -134,7 +145,7 @@ EOT
             'evenement' => 'DELETE',
             'definition' => <<<EOT
 INSERT INTO %system(history)% (table_name, action, id_name, id_txt, dt, log)
-VALUES ('%table(affectations)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'sens', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.sens, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.service1Id, OLD.station2Id, OLD.service2Id))
+VALUES ('%table(affectations)%', 'delete', CONCAT_WS('|', 'millesime', 'eleveId', 'trajet', 'jours', 'moment', 'correspondance'), CONCAT_WS('|', OLD.millesime, OLD.eleveId, OLD.trajet, OLD.jours, OLD.moment, OLD.correspondance), NOW(), CONCAT_WS('|', OLD.selection, OLD.responsableId, OLD.station1Id, OLD.ligne1Id, OLD.sensligne1, OLD.ordreligne1, OLD.station2Id, OLD.ligne2Id, OLD.sensligne2, OLD.ordreligne2))
 EOT
 
         ]

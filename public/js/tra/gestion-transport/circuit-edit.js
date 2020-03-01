@@ -6,8 +6,8 @@
  * @filesource gestion-transport/circuit-edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2019
- * @version 2019-2.4.7
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
  */
 var js_actions = (function() {
 	var serviceId;
@@ -85,7 +85,7 @@ var js_actions = (function() {
 		$("#wrapper-semaine").empty();
 		$("#wrapper-semaine").append(creerFieldsetSemaine(jours));
 	}
-	function majSemaine(serviceId, stationId) {
+	/*function majSemaine(serviceId, stationId) {
 		var args;
 		if (serviceId == null || serviceId.length == 0)
 			return setSemaine([]);
@@ -118,17 +118,17 @@ var js_actions = (function() {
 				alert(xhr.status + ' ' + thrownError);
 			}
 		});
-	}
+	}*/
 	$(document).ready(
 			function() {
 				$("#circuit-serviceId").on('change', function() {
 					serviceId = this.value;
-					majSemaine(serviceId, stationId);
+					//majSemaine(serviceId, stationId);
 
 				});
 				$("#circuit-stationId").on('change', function() {
 					stationId = this.value;
-					majSemaine(serviceId, stationId);
+					//majSemaine(serviceId, stationId);
 				});
 				$(document).on("change",
 						"input[name=checkall_box_wrapper-semaine]", function() {

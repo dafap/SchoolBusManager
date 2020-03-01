@@ -8,11 +8,12 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
+use SbmBase\Model\Session;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
@@ -48,19 +49,106 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'serviceId',
+                'name' => 'ligneId',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
-                    'id' => 'circuit-serviceId',
+                    'id' => 'circuit-ligneId',
                     'autofocus' => 'autofocus',
                     'class' => 'sbm-width-55c'
                 ],
                 'options' => [
-                    'label' => 'Service',
+                    'label' => 'Ligne',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Quel service ?',
+                    'empty_option' => 'Quelle ligne ?',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'sens',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-sens',
+                    'class' => 'sbm-width-10c',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Sens',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Quel sens ?',
+                    'value_options' => [
+                        '1' => 'Aller',
+                        '2' => 'Retour'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'moment',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-moment',
+                    'class' => 'sbm-cidth-10c',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Moment',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'A quel moment ?',
+                    'value_options' => [
+                        '1' => 'Mation',
+                        '2' => 'Midi',
+                        '3' => 'Soir'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ordre',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'circuit-ordre',
+                    'class' => 'sbm-width-10c',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Ordre',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Numéro ?',
+                    'value_options' => [
+                        '1' => '1',
+                        '2' => '2',
+                        '3' => '3',
+                        '4' => '4',
+                        '5' => '5',
+                        '6' => '6',
+                        '7' => '7',
+                        '8' => '8',
+                        '9' => '9',
+                        '10' => '10',
+                        '11' => '11',
+                        '12' => '12',
+                        '13' => '13',
+                        '14' => '14',
+                        '15' => '15',
+                        '16' => '16'
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -111,6 +199,42 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
+                'name' => 'ouvert',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'circuit-ouvert',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Station ouverte',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'visible',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'circuit-visible',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Visible par les parents',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'semaine',
                 'type' => 'Zend\Form\Element\MultiCheckbox',
                 'attributes' => [
@@ -129,12 +253,12 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'm1',
+                'name' => 'horaireA',
                 'type' => 'SbmCommun\Form\Element\Time',
                 'attributes' => [
-                    'id' => 'circuit-m1',
+                    'id' => 'circuit-horaireA',
                     'title' => 'Format hh:mm',
-                    'class' => 'horaire m1',
+                    'class' => 'horaire horaireA',
                     'min' => '00:00',
                     'max' => '29:59',
                     'step' => '60'
@@ -152,173 +276,12 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 's1',
+                'name' => 'horaireD',
                 'type' => 'SbmCommun\Form\Element\Time',
                 'attributes' => [
-                    'id' => 'circuit-s1',
+                    'id' => 'circuit-horaireD',
                     'title' => 'Format hh:mm',
-                    'class' => 'horaire s1',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'z1',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-z1',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire z1',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'm2',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-m2',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire m2',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 's2',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-s2',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire s2',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'z2',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-z2',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire z2',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'm3',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-m3',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire m3',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 's3',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-s3',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire s3',
-                    'min' => '00:00',
-                    'max' => '29:59',
-                    'step' => '60'
-                ],
-                'options' => [
-                    'format' => 'H:i',
-                    'label' => '',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'z3',
-                'type' => 'SbmCommun\Form\Element\Time',
-                'attributes' => [
-                    'id' => 'circuit-z3',
-                    'title' => 'Format hh:mm',
-                    'class' => 'horaire z3',
+                    'class' => 'horaire horaireD',
                     'min' => '00:00',
                     'max' => '29:59',
                     'step' => '60'
@@ -352,6 +315,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
+
         $this->add(
             [
                 'name' => 'montee',
@@ -388,7 +352,24 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-
+        $this->add(
+            [
+                'name' => 'correspondance',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'circuit-correspondance',
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Point de correspondance',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
         $this->add(
             [
                 'name' => 'emplacement',
@@ -486,8 +467,20 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
-            'serviceId' => [
-                'name' => 'serviceId',
+            'ligneId' => [
+                'name' => 'ligneId',
+                'required' => true
+            ],
+            'sens' => [
+                'name' => 'sens',
+                'required' => true
+            ],
+            'moment' => [
+                'name' => 'moment',
+                'required' => true
+            ],
+            'ordre' => [
+                'name' => 'ordre',
                 'required' => true
             ],
             'stationId' => [
@@ -498,40 +491,12 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'semaine',
                 'required' => true
             ],
-            'm1' => [
-                'name' => 'm1',
+            'horaireA' => [
+                'name' => 'horaireA',
                 'required' => false
             ],
-            's1' => [
-                'name' => 's1',
-                'required' => false
-            ],
-            'z1' => [
-                'name' => 'z1',
-                'required' => false
-            ],
-            'm2' => [
-                'name' => 'm2',
-                'required' => false
-            ],
-            's2' => [
-                'name' => 's2',
-                'required' => false
-            ],
-            'z2' => [
-                'name' => 'z2',
-                'required' => false
-            ],
-            'm3' => [
-                'name' => 'm3',
-                'required' => false
-            ],
-            's3' => [
-                'name' => 's3',
-                'required' => false
-            ],
-            'z3' => [
-                'name' => 'z3',
+            'horaireD' => [
+                'name' => 'horaireD',
                 'required' => false
             ],
             'distance' => [
@@ -549,6 +514,18 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 'validators' => [
                     [
                         'name' => 'SbmCommun\Model\Validator\Decimal'
+                    ]
+                ]
+            ],
+            'emplacement' => [
+                'name' => 'emplacement',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
                     ]
                 ]
             ],
@@ -583,21 +560,17 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
     {
         // adapte le format des time pour les éléments Time du formulaire
         $elementsTime = [
-            'm1',
-            'm2',
-            'm3',
-            's1',
-            's2',
-            's3',
-            'z1',
-            'z2',
-            'z3'
+            'horaireA',
+            'horaireD'
         ];
         for ($i = 0; $i < count($elementsTime); $i ++) {
             if (! empty($data[$elementsTime[$i]])) {
                 $dte = new \DateTime($data[$elementsTime[$i]]);
                 $data[$elementsTime[$i]] = $dte->format('H:i');
             }
+        }
+        if (! array_key_exists('millesime', $data)) {
+            $data['millesime'] = Session::get('millesime');
         }
         // appelle la méthode de ZF2
         parent::setData($data);

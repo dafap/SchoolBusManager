@@ -3,13 +3,15 @@
  * Gestion de la table `etablissements-services`
  * (à déclarer dans module.config.php)
  *
+ * Version pour TRANSDEV ALBERTVILLE
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -26,7 +28,11 @@ class EtablissementsServices extends AbstractSbmTable implements EffectifInterfa
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\EtablissementsServices';
         $this->id_name = [
             'etablissementId',
-            'serviceId'
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
         ];
     }
 }

@@ -7,8 +7,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 oct. 2019
- * @version 2019-2.5.3
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -467,8 +467,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
 
     /**
      * Partie commune de traitement de l'ajout d'un enregistrement. Le formulaire, le nom
-     * de la table, son type et son alias sont passés dans le paramètre $params Le
-     * paramètre $renvoyer permet de retourner des données de POST
+     * de la table, son type et son alias sont passés dans le paramètre $params. Le
+     * paramètre $renvoyer permet de retourner des données de POST. Les champs 'millesime'
+     * des formulaires sont initialisés de manière automatique par la méthode setData() en
+     * prenant la valeur en session.
      *
      * @param
      *            $db_manager
@@ -579,8 +581,12 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $id = [];
             $interdit = false;
             foreach ($params['data']['id'] as $item) {
-                $id[$item] = StdLib::getParam($item, $args, - 1);
-                $interdit |= $id[$item] == - 1;
+                if ($item == 'millesime') {
+                    $id[$item] = Session::get('millesime');
+                } else {
+                    $id[$item] = StdLib::getParam($item, $args, - 1);
+                    $interdit |= $id[$item] == - 1;
+                }
             }
         } else {
             $id = StdLib::getParam($params['data']['id'], $args, - 1);

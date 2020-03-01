@@ -7,8 +7,8 @@
  * @filesource QueryTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 29 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -132,21 +132,30 @@ trait QueryTrait
      * Ne prend que les responsables d'enfants transportés cette année, y compris les
      * rayés
      *
-     * @param array $arrayId
-     *            ['serviceId' => string, 'stationId' => int]
+     * @param array $circuitKeys
+     *            ['ligneId' => string, 'sens' => int, 'moment' => int, 'ordre' => int,
+     *            'stationId' => int]
      * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getResponsablesPointCircuit($arrayId)
+    public function getResponsablesPointCircuit($circuitKeys)
     {
         $where = new Predicate();
         $where->equalTo('millesime', $this->millesime)
+            ->equalTo('moment', $circuitKeys['moment'])
             ->nest()
-            ->equalTo('service1Id', $arrayId['serviceId'])->or->equalTo('service2Id',
-            $arrayId['serviceId'])
+            ->nest()
+            ->equalTo('ligne1Id', $circuitKeys['ligneId'])
+            ->equalTo('sensligne1', $circuitKeys['sens'])
+            ->equalTo('ordreligne1', $circuitKeys['ordre'])
+            ->unnest()->or->nest()
+            ->equalTo('ligne2Id', $circuitKeys['ligneId'])
+            ->equalTo('sensligne2', $circuitKeys['sens'])
+            ->equalTo('ordreligne2', $circuitKeys['ordre'])
+            ->unnest()
             ->unnest()
             ->nest()
-            ->equalTo('station1Id', $arrayId['stationId'])->or->equalTo('station2Id',
-            $arrayId['stationId'])->unnest();
+            ->equalTo('station1Id', $circuitKeys['stationId'])->or->equalTo('station2Id',
+            $circuitKeys['stationId'])->unnest();
         return $this->renderResult($this->joinAffectations()
             ->where($where));
     }
@@ -155,18 +164,46 @@ trait QueryTrait
      * Ne prend que les responsables d'enfants transportés cette année, y compris les
      * rayés
      *
-     * @param string $serviceId
-     *
+     * @param array $serviceKeys
+     *            ['ligneId' => string, 'sens' => int, 'moment' => int, 'ordre' => int]
      * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getResponsablesService($serviceId)
+    public function getResponsablesService($serviceKeys)
     {
         $where = new Predicate();
         $where->equalTo('millesime', $this->millesime)
+            ->equalTo('moment', $serviceKeys['moment'])
             ->nest()
-            ->equalTo('service1Id', $serviceId)->or->equalTo('service2Id', $serviceId)->unnest();
+            ->nest()
+            ->equalTo('ligne1Id', $serviceKeys['ligneId'])
+            ->equalTo('sensligne1', $serviceKeys['sens'])
+            ->equalTo('ordreligne1', $serviceKeys['ordre'])
+            ->unnest()->or->nest()
+            ->equalTo('ligne2Id', $serviceKeys['ligneId'])
+            ->equalTo('sensligne2', $serviceKeys['sens'])
+            ->equalTo('ordreligne2', $serviceKeys['ordre'])
+            ->unnest()
+            ->unnest();
         return $this->renderResult($this->joinAffectations()
             ->where($where));
+    }
+
+    /**
+     * Ne prend que les responsables d'enfants transportés cette année, y compris les
+     * rayés
+     *
+     * @param string $ligneId
+     *
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getResponsablesLigne($ligneId)
+    {
+        return $this->renderResult(
+            $this->joinServices()
+                ->where([
+                'millesime' => $this->millesime,
+                'ligneId' => $ligneId
+            ]));
     }
 
     /**
@@ -247,9 +284,12 @@ trait QueryTrait
 
     private function joinServices()
     {
+        $format = '(ser.millesime = aff.millesime AND ser.ligneId = aff.ligne%1$dId AND ' .
+            'ser.sens = aff.sensligne%1$d AND ser.moment = aff.moment AND ser.ordre = aff.ordreligne%1$d)';
+        $jointure = sprintf($format, 1) . ' OR ' . sprintf($format, 2);
         return $this->joinAffectations()->join(
             [
                 'ser' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'ser.serviceId = aff.service1Id OR ser.serviceId = aff.service2Id', []);
+            ], $jointure, []);
     }
 }

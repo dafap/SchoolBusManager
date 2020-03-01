@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCartographie\Controller;
 
@@ -34,7 +34,10 @@ class CarteController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = $prg ?: [];
+        // un appel par GET conduit à filtrer les établissements desservis
+        $args = $prg ?: [
+            'filtre' => 1
+        ];
         if (array_key_exists('back', $args)) {
             $this->redirectToOrigin()->setBack($args['back']);
         }
@@ -45,9 +48,14 @@ class CarteController extends AbstractActionController
                 return $this->redirect()->toRoute('home');
             }
         }
+        if ((int) StdLib::getParam('filtre', $args, 0) == 1) {
+            $filtre = 'desservie = 1' ;
+        } else {
+            $filtre = null;
+        }
         $tEtablissements = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         $ptEtablissements = [];
-        foreach ($tEtablissements->fetchAll() as $etablissement) {
+        foreach ($tEtablissements->fetchAll($filtre) as $etablissement) {
             $pt = new Point($etablissement->x, $etablissement->y);
             $pt->setAttribute('etablissement', $etablissement);
             $ptEtablissements[] = $this->projection->xyzVersgRGF93($pt);
@@ -55,7 +63,9 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' => $this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'ptEtablissements' => $ptEtablissements,
                 'config' => StdLib::getParam('etablissement', $this->config_cartes),
                 'url_api' => $this->url_api
@@ -89,9 +99,12 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' => $this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'ptStations' => $ptStations,
-                // on utilise la même configuration (centre, zoom) que pour les établissements
+                // on utilise la même configuration (centre, zoom) que pour les
+                // établissements
                 'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);

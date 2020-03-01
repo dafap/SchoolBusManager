@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 jan. 2020
+ * @date 1 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -59,19 +59,22 @@ class TransportController extends AbstractActionController
                 $form->setValueOptions('stationId',
                     $config['db_manager']->get('Sbm\Db\Select\Stations')
                         ->ouvertes());
-                $form->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services')
+                $form->setValueOptions('ligneId',
+                    $config['db_manager']->get('Sbm\Db\Select\Lignes')
                         ->tout());
             }, [
-                'serviceId',
-                'stationId'
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'horaireA'
             ]);
         if ($args instanceof Response) {
             return $args;
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
-        $args['where']->equalTo('millesime', Session::get('millesime'));
+        $args['where']->equalTo('millesime', $millesime);
         $auth = $this->authenticate->by('email');
         // on cherche si ce millesime a déjà des circuits enregistrés
         $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
@@ -106,8 +109,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Circuit::class);
-        $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')
+        $form->setValueOptions('ligneId',
+            $this->db_manager->get('Sbm\Db\Select\Lignes')
                 ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
@@ -256,8 +259,8 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         // $horaires = $this->db_manager->get('Sbm\Horaires');
         $form = $this->form_manager->get(Form\Circuit::class);
-        $form->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')
+        $form->setValueOptions('ligneId',
+            $this->db_manager->get('Sbm\Db\Select\Lignes')
                 ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
@@ -450,7 +453,8 @@ class TransportController extends AbstractActionController
 
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId, false),
+                    FiltreEleve::byCircuit($circuit->ligneId, $circuit->sens,
+                        $circuit->moment, $circuit->ordre, $circuit->stationId, false),
                     [
                         'nom',
                         'prenom'
@@ -590,7 +594,10 @@ class TransportController extends AbstractActionController
             'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => [
-                    'serviceId',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre',
                     'stationId'
                 ]
             ]
@@ -623,16 +630,25 @@ class TransportController extends AbstractActionController
                 $circuitId = StdLib::getParam('circuitId', $args, - 1);
                 $ocircuit = $db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
                     $circuitId);
-                $serviceId = $ocircuit->serviceId;
+                $ligneId = $ocircuit->ligneId;
+                $sens = $ocircuit->sens;
+                $moment = $ocircuit->moment;
+                $ordre = $ocircuit->ordre;
                 $stationId = $ocircuit->stationId;
                 $where = new Where();
                 $where->nest()
                     ->nest()
+                    ->equalTo('ligne1Id', $ligneId)
+                    ->equalTo('sens1', $sens)
+                    ->equalTo('moment1', $moment)
+                    ->equalTo('ordre1', $ordre)
                     ->equalTo('station1Id', $stationId)
-                    ->equalTo('service1Id', $serviceId)
                     ->unnest()->OR->nest()
+                    ->equalTo('ligne2Id', $ligneId)
+                    ->equalTo('sens2', $sens)
+                    ->equalTo('moment2', $moment)
+                    ->equalTo('ordre2', $ordre)
                     ->equalTo('station2Id', $stationId)
-                    ->equalTo('service2Id', $serviceId)
                     ->unnest()
                     ->unnest();
                 return $where;
@@ -652,13 +668,14 @@ class TransportController extends AbstractActionController
         $query = 'queryGroup';
         $filtre = 'byCircuit';
         $idFields = [
-            'serviceId',
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre',
             'stationId'
         ];
-        $hiddens = [
-            'serviceId',
-            'stationId'
-        ];
+        $hiddens = $idFields;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-group'
@@ -1876,10 +1893,12 @@ class TransportController extends AbstractActionController
         }
         $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
         $where = new Where();
-        $where->equalTo('etablissementId', $etablissementId);
-        $effectifEtablissementsServices = $this->db_manager->get(
-            'Sbm\Db\Eleve\EffectifEtablissementsServices');
-        $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
+        $where->equalTo('rel.etablissementId', $etablissementId);
+        // $effectifEtablissementsServices = $this->db_manager->get(
+        // 'Sbm\Db\Eleve\EffectifEtablissementsServices');
+        // $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
+
+        $effectifEtablissementsServices = null;
         return new ViewModel(
             [
 
@@ -1921,8 +1940,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * lance la création d'une liste d'élève avec comme filtre le couple (etablissementId,
-     * serviceId) reçu en post
+     * lance la création d'une liste d'élève avec comme filtre le n-uplet
+     * (etablissementId, , millesime, ligneId, sens, moment, ordre) reçu en post
      */
     public function etablissementServiceGroupPdfAction()
     {
@@ -1931,11 +1950,17 @@ class TransportController extends AbstractActionController
             null,
             function ($where, $args) {
                 $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
-                $serviceId = StdLib::getParam('serviceId', $args, - 1);
+                $ligneId = StdLib::getParam('ligneId', $args, false);
+                $sens = StdLib::getParam('sens', $args, false);
+                $moment = StdLib::getParam('moment', $args, false);
+                $ordre = StdLib::getParam('ordre', $args, false);
                 $where = new Where();
-                $where->equalTo('millesime', Session::get('millesime'))
-                    ->equalTo('etablissementId', $etablissementId)
-                    ->equalTo('serviceId', $serviceId);
+                $where->equalTo('etablissementId', $etablissementId)
+                    ->equalTo('millesime', Session::get('millesime'))
+                    ->equalTo('ligneId', $ligneId)
+                    ->equalTo('sens', $sens)
+                    ->equalTo('moment', $moment)
+                    ->equalTo('ordre', $ordre);
                 return $where;
             }
         ];
@@ -1954,7 +1979,11 @@ class TransportController extends AbstractActionController
         $filtre = 'byEtablissementService';
         $idFields = [
             'etablissementId',
-            'serviceId'
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
         ];
         $retour = [
             'route' => 'sbmgestion/transport',
@@ -1979,15 +2008,24 @@ class TransportController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            $serviceId = Session::get('serviceId', false, $this->getSessionNamespace());
+            $ligneId = Session::get('ligneId', false, $this->getSessionNamespace());
+            $sens = Session::get('sens', false, $this->getSessionNamespace());
+            $moment = Session::get('moment', false, $this->getSessionNamespace());
+            $ordre = Session::get('ordre', false, $this->getSessionNamespace());
         } else {
             $args = $prg;
             if (StdLib::getParam('op', $args, '') == 'retour') {
-                $serviceId = null;
+                $ligneId = $sens = $moment = $ordre = null;
                 $cancel = true;
             } else {
-                $serviceId = StdLib::getParam('serviceId', $args, - 1);
-                Session::set('serviceId', $serviceId, $this->getSessionNamespace());
+                $ligneId = StdLib::getParam('ligneId', $args, - 1);
+                $sens = StdLib::getParam('sens', $args, - 1);
+                $moment = StdLib::getParam('moment', $args, - 1);
+                $ordre = StdLib::getParam('ordre', $args, - 1);
+                Session::set('ligneId', $ligneId, $this->getSessionNamespace());
+                Session::set('sens', $sens, $this->getSessionNamespace());
+                Session::set('moment', $moment, $this->getSessionNamespace());
+                Session::set('ordre', $ordre, $this->getSessionNamespace());
             }
         }
         $currentPage = $this->params('page', 1);
@@ -1997,7 +2035,7 @@ class TransportController extends AbstractActionController
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
-        if ($serviceId == - 1) {
+        if ($ligneId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             $cancel = true;
         }
@@ -2009,21 +2047,37 @@ class TransportController extends AbstractActionController
                 ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
-        $effectifServicesEtablissements = $this->db_manager->get(
-            'Sbm\Db\Eleve\EffectifServicesEtablissements');
-        $effectifServicesEtablissements->setCaractereConditionnel($serviceId)->init();
+        // $effectifServicesEtablissements = $this->db_manager->get(
+        // 'Sbm\Db\Eleve\EffectifServicesEtablissements');
+        // $effectifServicesEtablissements->setCaractereConditionnel(
+        // [
+        // 'ligneId' => $ligneId,
+        // 'sens' => $sens,
+        // 'moment' => $moment,
+        // 'ordre' => $ordre
+        // ])->init();
+
+        $effectifServicesEtablissements = null;
         return new ViewModel(
             [
-
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
-                    $serviceId),
-                'data' => $table->fetchAll([
-                    'serviceId' => $serviceId
-                ]),
+                    [
+                        'millesime' => Session::get('millesime'),
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
+                    ]),
+                'data' => $table->fetchAll(
+                    [
+                        'rel.ligneId' => $ligneId,
+                        'rel.sens' => $sens,
+                        'rel.moment' => $moment,
+                        'rel.ordre' => $ordre
+                    ]),
                 'effectifServicesEtablissements' => $effectifServicesEtablissements,
                 'page' => $currentPage,
-                'pageRetour' => $pageRetour,
-                'serviceId' => $serviceId
+                'pageRetour' => $pageRetour
             ]);
     }
 
@@ -2041,11 +2095,8 @@ class TransportController extends AbstractActionController
             $args = Session::get('post', [], $this->getSessionNamespace());
             if (StdLib::getParam('origine', $args, false) === false) {
                 $this->flashMessenger()->addErrorMessage('Action interdite');
-                return $this->redirect()->toRoute('sbmgestion/transport'); // on n'est pas
-                                                                           // capable
-                                                                           // de savoir
-                                                                           // d'où l'on
-                                                                           // vient
+                // on n'est pas capable de savoir d'où l'on vient
+                return $this->redirect()->toRoute('sbmgestion/transport');
             }
         } else {
             $args = $prg;
@@ -2062,34 +2113,66 @@ class TransportController extends AbstractActionController
                     'page' => $currentPage
                 ]);
         }
-        $etablissementId = StdLib::getParam('etablissementId', $args, null);
-        $serviceId = StdLib::getParam('serviceId', $args, null);
+        $millesime = Session::get('millesime');
         $isPost = ! is_null(StdLib::getParam('submit', $args));
         $form = new Form\EtablissementService(
             $origine == 'etablissement-service' ? 'service' : 'etablissement');
+        $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices');
         if ($origine == 'etablissement-service') {
             $service = null;
+            $etablissementId = StdLib::getParam('etablissementId', $args, null);
             $etablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                 $etablissementId);
             $form->setValueOptions('serviceId',
                 $this->db_manager->get('Sbm\Db\Select\Services')
                     ->tout());
+            $serviceId = StdLib::getParam('serviceId', $args);
+            if ($serviceId) {
+                $form->setValueOptions('stationId',
+                    $this->db_manager->get('Sbm\Db\Select\Stations')
+                        ->byServiceId($serviceId));
+            }
+            // pas de $form->bind() pour la gestion particulière de 'serviceId' dans le
+            // formulaire ; le résultat de getData() sera un array
         } else {
             $etablissement = null;
+            $ligneId = StdLib::getParam('ligneId', $args, false);
+            $sens = StdLib::getParam('sens', $args, 0);
+            $moment = StdLib::getParam('moment', $args, 0);
+            $ordre = StdLib::getParam('ordre', $args, 0);
             $service = $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
-                $serviceId);
+                [
+                    'millesime' => $millesime,
+                    'ligneId' => $ligneId,
+                    'sens' => $sens,
+                    'moment' => $moment,
+                    'ordre' => $ordre
+                ]);
             $form->setValueOptions('etablissementId',
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                    ->desservis());
+                    ->desservis())
+                ->setValueOptions('stationId',
+                $this->db_manager->get('Sbm\Db\Select\Stations')
+                    ->surcircuit($millesime, $ligneId, $sens, $moment, $ordre));
         }
-        $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices');
-        $form->bind($table->getObjData());
         if ($isPost) {
             $form->setData($args);
             if ($form->isValid()) {
-                $table->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage(
-                    "Une relation entre un service et un établissement a été crée.");
+                $valid_data = $form->getData();
+                // traitement particulier au cas où on aurait laissé trainé un bind (mais
+                // il ne faut pas !)
+                if ($valid_data instanceof \SbmCommun\Model\Db\ObjectData\ObjectDataInterface) {
+                    $valid_data = $valid_data->getArrayCopy();
+                }
+                $valid_data['millesime'] = $millesime;
+                $obj = $table->getObjData()->exchangeArray($valid_data);
+                if ($table->is_newRecord($obj->getId())) {
+                    $table->saveRecord($obj);
+                    $this->flashMessenger()->addSuccessMessage(
+                        "Une relation entre un service et un établissement a été crée.");
+                } else {
+                    $this->flashMessenger()->addWarningMessage("Cette relation existait déjà !");
+                }
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
                         'action' => $origine,
@@ -2097,17 +2180,27 @@ class TransportController extends AbstractActionController
                     ]);
             }
         } else {
-            $form->setData(
-                [
-                    'etablissementId' => $etablissementId,
-                    'serviceId' => $serviceId,
-                    'origine' => $origine
-                ]);
-        }
-        if (! empty($serviceId)) {
-            $form->setValueOptions('stationId',
-                $this->db_manager->get('Sbm\Db\Select\Stations')
-                    ->surcircuit($serviceId, Session::get('millesime')));
+            if ($origine == 'etablissement-service') {
+                $form->setData(
+                    [
+                        'etablissementId' => $etablissementId,
+                        'serviceId' => StdLib::getParam('serviceId', $args, ''),
+                        'stationId' => StdLib::getParam('stationId', $args, 0),
+                        'origine' => $origine
+                    ]);
+            } else {
+                $form->setData(
+                    [
+                        'etablissementId' => StdLib::getParam('etablissementId', $args, 0),
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre,
+                        'stationId' => StdLib::getParam('stationId', $args, 0),
+                        'origine' => $origine
+                    ]);
+            }
         }
         return new ViewModel(
             [
@@ -2115,8 +2208,6 @@ class TransportController extends AbstractActionController
                 'origine' => $origine,
                 'form' => $form->prepare(),
                 'page' => $currentPage,
-                'etablissementId' => $etablissementId,
-                'serviceId' => $serviceId,
                 'etablissement' => $etablissement,
                 'service' => $service
             ]);
@@ -2124,10 +2215,10 @@ class TransportController extends AbstractActionController
 
     /**
      * Suppression d'une relation établissement-service avec confirmation A l'appel, les
-     * variables suivantes sont récupérées : $etablissementId, $serviceId, $origine, $op,
-     * $supprimer Lors de l'annulation, on a : $etablissementId, $serviceId, $origine,
-     * $op, $supprnon Lors de la validation on a : $etablissementId, $serviceId, $origine,
-     * $op, $supproui
+     * variables suivantes sont récupérées : $etablissementId, $ligneId, $sens, $moment,
+     * $ordre, $origine, $op, $supprimer. Lors de l'annulation, on a : $etablissementId,
+     * $ligneId, $sens, $moment, $ordre, $origine, $op, $supprnon. Lors de la validation
+     * on a : $etablissementId, $ligneId, $sens, $moment, $ordre, $origine, $op, $supproui
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2143,9 +2234,13 @@ class TransportController extends AbstractActionController
         }
         $origine = StdLib::getParam('origine', $args, 'index');
         $etablissementId = StdLib::getParam('etablissementId', $args, false);
-        $serviceId = StdLib::getParam('serviceId', $args, false);
+        $millesime = Session::get('millesime');
+        $ligneId = StdLib::getParam('ligneId', $args, false);
+        $sens = StdLib::getParam('sens', $args, 0);
+        $moment = StdLib::getParam('moment', $args, 0);
+        $ordre = StdLib::getParam('ordre', $args, 0);
         $cancel = StdLib::getParam('cancel', $args, false);
-        if ($origine == 'index' || $etablissementId === false || $serviceId == false) {
+        if ($origine == 'index' || $etablissementId === false || $ligneId == false) {
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
@@ -2176,7 +2271,11 @@ class TransportController extends AbstractActionController
                 $table->deleteRecord(
                     [
                         'etablissementId' => $etablissementId,
-                        'serviceId' => $serviceId
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
                     ]);
                 $this->flashMessenger()->addSuccessMessage(
                     "L'enregistrement a été supprimé.");
@@ -2190,7 +2289,10 @@ class TransportController extends AbstractActionController
             $form->setData(
                 [
                     'etablissementId' => $etablissementId,
-                    'serviceId' => $serviceId,
+                    'ligneId' => $ligneId,
+                    'sens' => $sens,
+                    'moment' => $moment,
+                    'ordre' => $ordre,
                     'origine' => $origine
                 ]);
         }
@@ -2198,12 +2300,21 @@ class TransportController extends AbstractActionController
             [
 
                 'etablissementId' => $etablissementId,
-                'serviceId' => $serviceId,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
                 'origine' => $origine,
                 'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                     $etablissementId),
-                'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
-                    $serviceId),
+                'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord(
+                    [
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
+                    ]),
                 'form' => $form->prepare()
             ]);
     }
@@ -2233,8 +2344,12 @@ class TransportController extends AbstractActionController
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
-        $serviceId = StdLib::getParam('serviceId', $args, - 1);
-        if ($etablissementId == - 1 || $serviceId == - 1) {
+        $millesime = Session::get('millesime');
+        $ligneId = StdLib::getParam('ligneId', $args, false);
+        $sens = StdLib::getParam('sens', $args, 0);
+        $moment = StdLib::getParam('moment', $args, 0);
+        $ordre = StdLib::getParam('ordre', $args, 0);
+        if ($etablissementId == - 1 || ! $ligneId) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
@@ -2248,8 +2363,8 @@ class TransportController extends AbstractActionController
                 'h1' => 'Groupe des élèves d\'un établissement inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'),
-                    FiltreEleve::byEtablissementService($etablissementId, $serviceId),
-                    [
+                    FiltreEleve::byEtablissementService($etablissementId, $ligneId, $sens,
+                        $moment, $ordre), [
                         'nom',
                         'prenom'
                     ]),
@@ -2257,16 +2372,426 @@ class TransportController extends AbstractActionController
                 'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
                     $etablissementId),
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
-                    $serviceId),
+                    [
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
+                    ]),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'etablissementId' => $etablissementId,
-                'serviceId' => $serviceId,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
                 'origine' => StdLib::getParam('origine', $args, 'etablissement-service'),
                 'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
                     'Y-m-d')
             ]);
         return $viewModel;
+    }
+
+    /**
+     * =============================== LIGNES =========================
+     */
+    public function ligneListeAction()
+    {
+        $args = $this->initListe('lignes',
+            function ($config, $form) {
+                $selectLots = $config['db_manager']->get('Sbm\Db\Select\Lots');
+                $form->setValueOptions('lotId', $selectLots->lotId());
+            });
+        if ($args instanceof Response) {
+            return $args;
+        }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
+        $args['where']->equalTo('millesime', $millesime);
+        $auth = $this->authenticate->by('email');
+        // on cherche si ce millesime a déjà des circuits enregistrés
+        $tLignes = $this->db_manager->get('Sbm\Db\Table\Circuits');
+        $resultset = $tLignes->fetchAll([
+            'millesime' => $millesime
+        ]);
+        $lignesVides = $resultset->count() == 0;
+        // mise en place du calcul d'effectif
+        try {
+            $effectifLignes = $this->db_manager->get('Sbm\Db\Eleve\EffectifLignes');
+            $effectifLignes->init();
+        } catch (\Exception $e) {
+            $effectifLignes = null;
+        }
+        try {
+            $effectifLignesServices = $this->db_manager->get(
+                'Sbm\Db\Service\EffectifLignes');
+            $effectifLignesServices->init();
+        } catch (\Exception $e) {
+            $effectifLignesServices = null;
+        }
+        return new ViewModel(
+            [
+
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Lignes')->paginator(
+                    $args['where'], [
+                        'actif DESC',
+                        'ligneId'
+                    ]),
+                'effectifLignesServices' => $effectifLignesServices,
+                'effectifLignes' => $effectifLignes,
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_lignes', 15),
+                'criteres_form' => $args['form'],
+                'admin' => $auth->getCategorieId() > 253,
+                'as' => $as,
+                'circuitsVides' => $lignesVides
+            ]);
+    }
+
+    public function ligneAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Ligne::class);
+        $form->setValueOptions('lotId',
+            $this->db_manager->get('Sbm\Db\Select\Lots')
+                ->lotId())
+            ->setValueOptions('operateur',
+            [
+                'TRA' => 'Arlysère',
+                'CR' => 'Conseil régional'
+            ]);
+        $params = [
+            'data' => [
+                'table' => 'lignes',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Lignes'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($this->db_manager, $params, null, function () {
+        });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => 'ligne-liste',
+                        'page' => $currentPage
+                    ]);
+                break;
+            default:
+                return new ViewModel(
+                    [
+
+                        'form' => $form->prepare(),
+                        'page' => $currentPage
+                    ]);
+                break;
+        }
+    }
+
+    public function ligneEditAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = $this->form_manager->get(Form\Ligne::class);
+        $form->setValueOptions('lotId',
+            $this->db_manager->get('Sbm\Db\Select\Lots')
+                ->lotId())
+            ->setValueOptions('operateur',
+            [
+                'TRA' => 'Arlysère',
+                'CR' => 'Conseil régional'
+            ]);
+        $params = [
+            'data' => [
+                'table' => 'lignes',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Lignes',
+                'id' => 'id'
+            ],
+            'form' => $form
+        ];
+        $r = $this->editData($this->db_manager, $params);
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'ligne-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'ligneId' => $r->getResult()
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function ligneSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new Form\ButtonForm([
+            'id' => null,
+            'origine' => null
+        ],
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\Lignes',
+                'id' => 'id'
+            ],
+            'form' => $form
+        ];
+        try {
+            $r = $this->supprData($this->db_manager, $params,
+                function ($id, $tableLignes) {
+                    return [
+                        'id' => implode('|', $id),
+                        'data' => $tableLignes->getRecord($id)
+                    ];
+                });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer ce lot de marché car il existe un service lié.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'ligne-liste',
+                    'page' => $currentPage
+                ]);
+        }
+
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'ligne-liste',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'ligneId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function lignePdfAction()
+    {
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'lots'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-liste'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifLots'
+            ]);
+    }
+
+    public function ligneGroupAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $lotId = StdLib::getParam('lotId', $args, - 1);
+        if ($lotId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'lot-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+
+        return new ViewModel(
+            [
+
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
+                    Session::get('millesime'), FiltreEleve::byLot($lotId),
+                    [
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre',
+                        'nom',
+                        'prenom'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'lot' => $this->db_manager->get('Sbm\Db\Vue\Lots')->getRecord($lotId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'lotId' => $lotId,
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
+            ]);
+        ;
+    }
+
+    public function ligneGroupPdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            null,
+            function ($where, $args) {
+                $lotId = StdLib::getParam('lotId', $args, - 1);
+                $where = new Where();
+                $where->equalTo('lotId', $lotId);
+                return $where;
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-group'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+    }
+
+    public function ligneGroupSelectionAction()
+    {
+        $query = 'queryGroupParAffectations';
+        $filtre = 'byLot';
+        $idField = 'lotId';
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-group'
+        ];
+        $result = $this->markSelectionEleves($query, $filtre, $idField, $retour);
+        if ($result instanceof ViewModel) {
+            $result->setTemplate('sbm-gestion/transport/group-selection.phtml');
+        }
+        return $result;
+    }
+
+    public function ligneServiceAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $lotId = StdLib::getParam('lotId', $args, - 1);
+        if ($lotId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'lot-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+        $where = new Where();
+        $where->equalTo('lotId', $lotId);
+        $effectifLotsServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifLotsServices');
+        $effectifLotsServices->setCaractereConditionnel($lotId)->init();
+        return new ViewModel(
+            [
+
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
+                    $where, [
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
+                    ]),
+                'count_per_page' => 15,
+                'effectifLotsServices' => $effectifLotsServices,
+                'lot' => $this->db_manager->get('Sbm\Db\Table\Lots')->getRecord($lotId),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'lotId' => $lotId
+            ]);
+    }
+
+    public function ligneServicePdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            [],
+            function ($where, $args) {
+                $lotId = StdLib::getParam('lotId', $args);
+                $where = new Where();
+                return $where->equalTo('lotId', $lotId);
+            }
+        ];
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'lot-service'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'caractereConditionnel' => 'lotId',
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifLotsServices'
+            ]);
     }
 
     /**
@@ -2517,7 +3042,10 @@ class TransportController extends AbstractActionController
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroupParAffectations(
                     Session::get('millesime'), FiltreEleve::byLot($lotId),
                     [
-                        'serviceId',
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre',
                         'nom',
                         'prenom'
                     ]),
@@ -2606,7 +3134,10 @@ class TransportController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
                     $where, [
-                        'serviceId'
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
                     ]),
                 'count_per_page' => 15,
                 'effectifLotsServices' => $effectifLotsServices,
@@ -2656,16 +3187,18 @@ class TransportController extends AbstractActionController
             function ($config, $form) {
                 $form->setValueOptions('transporteurId',
                     $config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
-                    ->setValueOptions('serviceId',
-                    $config['db_manager']->get('Sbm\Db\Select\Services')
+                    ->setValueOptions('ligneId',
+                    $config['db_manager']->get('Sbm\Db\Select\Lignes')
                         ->tout());
             }, [
                 'transporteurId'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
-        $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
-        $effectifServices->init();
+        }
+        // $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
+        // $effectifServices->init();
+        $effectifServices = null;
         return new ViewModel(
             [
 
@@ -2695,18 +3228,19 @@ class TransportController extends AbstractActionController
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
             ->setValueOptions('operateur', $this->operateurs)
-            ->setValueOptions('horaire1', Strategy\Semaine::getJours())
-            ->setValueOptions('horaire2', Strategy\Semaine::getJours())
-            ->setValueOptions('horaire3', Strategy\Semaine::getJours())
-            ->setValueOptions('natureCarte',
-            $this->db_manager->get('Sbm\Db\Table\Services')
-                ->getNatureCartes());
+            ->setValueOptions('semaine', Strategy\Semaine::getJours());
         $params = [
             'data' => [
                 'table' => 'services',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Services',
-                'id' => 'serviceId'
+                'id' => [
+                    'millesime',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ]
             ],
             'form' => $form
         ];
@@ -2717,21 +3251,14 @@ class TransportController extends AbstractActionController
         } else {
             switch ($r->getStatus()) {
                 case 'success':
-                    // en cas de succès, il faut éventuellement vider les horaires des
-                    // circuits
+                    // en cas de succès, il faut éventuellement mettre à jour le champ
+                    // semaine des fiches du circuit correspondant
                     $args = $r->getPost();
-                    $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
-                    if (! $args['horaire1']) {
-                        $tCircuits->viderHoraire(Session::get('millesime'),
-                            $args['serviceId'], 1);
-                    }
-                    if (! $args['horaire2']) {
-                        $tCircuits->viderHoraire(Session::get('millesime'),
-                            $args['serviceId'], 2);
-                    }
-                    if (! $args['horaire3']) {
-                        $tCircuits->viderHoraire(Session::get('millesime'),
-                            $args['serviceId'], 3);
+                    $semaine = $args['semaine'];
+                    if ($semaine) {
+                        $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+                        $tCircuits->majSemaine(Session::get('millesime'), $args['ligneId'],
+                            $args['sens'], $args['moment'], $args['ordre'], $semaine);
                     }
                 case 'error':
                 case 'warning':
@@ -2742,12 +3269,16 @@ class TransportController extends AbstractActionController
                         ]);
                     break;
                 default:
+                    $service_keys = $r->getResult();
                     return new ViewModel(
                         [
 
                             'form' => $form->prepare(),
                             'page' => $currentPage,
-                            'serviceId' => $r->getResult()
+                            'ligneId' => StdLib::getParam('ligneId', $service_keys),
+                            'sens' => StdLib::getParam('sens', $service_keys),
+                            'moment' => StdLib::getParam('moment', $service_keys),
+                            'ordre' => StdLib::getParam('ordre', $service_keys)
                         ]);
                     break;
             }
@@ -2780,7 +3311,13 @@ class TransportController extends AbstractActionController
         $params = [
             'data' => [
                 'alias' => 'Sbm\Db\Table\Services',
-                'id' => 'serviceId'
+                'id' => [
+                    'millesime',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ]
             ],
             'form' => $form
         ];
@@ -2817,13 +3354,16 @@ class TransportController extends AbstractActionController
                         ]);
                     break;
                 default:
+                    $service_keys = StdLib::getParam('id', $r->getResult());
                     return new ViewModel(
                         [
-
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'data' => StdLib::getParam('data', $r->getResult()),
-                            'serviceId' => StdLib::getParam('id', $r->getResult())
+                            'ligneId' => StdLib::getParam('ligneId', $service_keys),
+                            'sens' => StdLib::getParam('sens', $service_keys),
+                            'moment' => StdLib::getParam('moment', $service_keys),
+                            'ordre' => StdLib::getParam('ordre', $service_keys)
                         ]);
                     break;
             }
@@ -2879,7 +3419,10 @@ class TransportController extends AbstractActionController
 
                         'form' => $form->prepare(),
                         'page' => $currentPage,
-                        'serviceId' => null
+                        'ligneId' => null,
+                        'sens' => 0,
+                        'moment' => 0,
+                        'ordre' => 0
                     ]);
                 break;
         }
@@ -2887,8 +3430,8 @@ class TransportController extends AbstractActionController
 
     /**
      * renvoie la liste des élèves inscrits pour un service donné Reçoit en get : - id :
-     * pageRetour - page : page du paginateur interne Reçoit en post : - serviceId -
-     * origine
+     * pageRetour - page : page du paginateur interne Reçoit en post : - listeId - sens -
+     * moment - ordre - origine
      *
      * @return \Zend\View\Model\ViewModel
      */
@@ -2910,8 +3453,12 @@ class TransportController extends AbstractActionController
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
-        $serviceId = StdLib::getParam('serviceId', $args, - 1);
-        if ($serviceId == - 1) {
+        $millesime = Session::get('millesime');
+        $ligneId = StdLib::getParam('ligneId', $args, false);
+        $sens = StdLib::getParam('sens', $args, 0);
+        $moment = StdLib::getParam('moment', $args, 0);
+        $ordre = StdLib::getParam('ordre', $args, 0);
+        if (! $ligneId) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
@@ -2925,17 +3472,27 @@ class TransportController extends AbstractActionController
 
                 'h1' => 'Groupe des élèves inscrits sur un service',
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
-                    Session::get('millesime'), FiltreEleve::byService($serviceId),
+                    Session::get('millesime'),
+                    FiltreEleve::byService($ligneId, $sens, $moment, $ordre),
                     [
                         'nom',
                         'prenom'
                     ]),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
-                    $serviceId),
+                    [
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
+                    ]),
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
-                'serviceId' => $serviceId,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
                 'origine' => StdLib::getParam('origine', $args, 'service-liste'),
                 'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
                     'Y-m-d')
@@ -2966,16 +3523,20 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * lance la création d'une liste d'établissements desservis le serviceId reçu en post
+     * lance la création d'une liste d'établissements desservis le service dont les
+     * références sont reçues en post
      */
     public function serviceEtablissementPdfAction()
     {
         $criteresObject = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
-            function ($where, $args) {
-                $where->equalTo('serviceId', StdLib::getParam('serviceId', $args, - 1))->equalTo(
-                    'cir_millesime', Session::get('millesime'));
+            function (Where $where, array $args) {
+                $where->equalTo('cir_millesime', Session::get('millesime'))
+                    ->equalTo('ligneId', StdLib::getParam('ligneId', $args, false))
+                    ->equalTo('sens', StdLib::getParam('sens', $args, 0))
+                    ->equalTo('moment', StdLib::getParam('moment', $args, 0))
+                    ->equalTo('ordre', StdLib::getParam('ordre', $args, 0));
                 return $where;
             }
         ];
@@ -2988,12 +3549,19 @@ class TransportController extends AbstractActionController
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifServicesEtablissements',
-                'caractereConditionnel' => 'serviceId'
+                'caractereConditionnel' => [
+                    'millesime',
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ]
             ]);
     }
 
     /**
-     * lance la création d'une liste d'élève avec comme filtre le serviceId reçu en post
+     * lance la création d'une liste d'élève avec comme filtre le service dont les
+     * références sont reçues en post
      */
     public function serviceGroupPdfAction()
     {
@@ -3001,10 +3569,12 @@ class TransportController extends AbstractActionController
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
-                $serviceId = StdLib::getParam('serviceId', $args, - 1);
                 $where = new Where();
-                $where->equalTo('millesime', Session::get('millesime'))->equalTo(
-                    'serviceId', $serviceId);
+                $where->equalTo('millesime', Session::get('millesime'))
+                    ->equalTo('ligneId', StdLib::getParam('ligneId', $args, false))
+                    ->equalTo('sens', StdLib::getParam('sens', $args, 0))
+                    ->equalTo('moment', StdLib::getParam('moment', $args, 0))
+                    ->equalTo('ordre', StdLib::getParam('ordre', $args, 0));
                 return $where;
             }
         ];
@@ -3021,7 +3591,13 @@ class TransportController extends AbstractActionController
     {
         $query = 'queryGroup';
         $filtre = 'byService';
-        $idField = 'serviceId';
+        $idField = [
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
+        ];
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-group'
@@ -3520,7 +4096,12 @@ class TransportController extends AbstractActionController
                     [
                         'millesime' => Session::get('millesime'),
                         'stationId' => $stationId
-                    ], 'serviceId'),
+                    ], [
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
+                    ]),
                 'effectifStationsServices' => $effectifStationsServices,
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),
@@ -3543,9 +4124,12 @@ class TransportController extends AbstractActionController
             Session::set('post', $args, $this->getSessionNamespace());
         }
         $stationId = StdLib::getParam('stationId', $args, - 1);
-        $serviceId = StdLib::getParam('serviceId', $args, false);
         $millesime = Session::get('millesime');
-        if ($stationId == - 1 || ! $serviceId) {
+        $ligneId = StdLib::getParam('ligneId', $args, false);
+        $sens = StdLib::getParam('sens', $args, false);
+        $moment = StdLib::getParam('moment', $args, false);
+        $ordre = StdLib::getParam('ordre', $args, false);
+        if ($stationId == - 1 || ! $ligneId) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
@@ -3555,16 +4139,20 @@ class TransportController extends AbstractActionController
         }
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord(
             [
-                'stationId' => $stationId,
-                'serviceId' => $serviceId,
-                'millesime' => $millesime
+                'millesime' => $millesime,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
+                'stationId' => $stationId
             ]);
         $view = new ViewModel(
             [
 
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
-                    $millesime, FiltreEleve::byCircuit($serviceId, $stationId, false),
-                    [
+                    $millesime,
+                    FiltreEleve::byCircuit($ligneId, $sens, $moment, $ordre, $stationId,
+                        false), [
                         'nom',
                         'prenom'
                     ]),
@@ -3584,7 +4172,11 @@ class TransportController extends AbstractActionController
         $query = 'queryGroup';
         $filtre = 'byCircuit';
         $idFields = [
-            'serviceId',
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre',
             'stationId'
         ];
         $retour = [
@@ -4136,7 +4728,10 @@ class TransportController extends AbstractActionController
                     Session::get('millesime'),
                     FiltreEleve::byTransporteur($transporteurId),
                     [
-                        'serviceId',
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre',
                         'nom',
                         'prenom'
                     ]),
@@ -4193,7 +4788,10 @@ class TransportController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
                     $where, [
-                        'serviceId'
+                        'ligneId',
+                        'sens',
+                        'moment',
+                        'ordre'
                     ]),
                 'count_per_page' => 15,
                 'effectifTransporteursServices' => $effectifTransporteursServices,

@@ -8,17 +8,15 @@
  * @filesource service-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2019
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
+use SbmBase\Model\DateLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-
-// à faire en premier
-// et faire l'action du controller
-
 $url_ajouter = $this->url('sbmgestion/transport',
     [
-        'action' => 'etablissement-service-ajout', // voir si on peut faire une seule
+        'action' => 'etablissement-service-ajout', // voir si on peut faire une seule //
                                                     // action
         'page' => $this->page,
         'id' => $this->pageRetour
@@ -49,8 +47,16 @@ $url_group = $this->url('sbmgestion/transport',
 // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 
+$codeId = sprintf('%d|%s|%d|%d|%d', $this->service->millesime, $this->service->ligneId,
+    $this->service->sens, $this->service->moment, $this->service->ordre);
+//$codeService = sprintf('%s-%d%d%d', $this->service->ligneId, $this->service->sens,
+//    $this->service->moment, $this->service->ordre);
+$codeService = $service->designation();
 $hiddens = [
-    'serviceId' => $this->service->serviceId,
+    'ligneId' => $this->service->ligneId,
+    'sens' => $this->service->sens,
+    'moment' => $this->service->moment,
+    'ordre' => $this->service->ordre,
     'etablissementId' => null,
     'origine' => 'service-etablissement'
 ];
@@ -76,7 +82,7 @@ $actions = [
 
 ?>
 <h1>Liste des établissements desservis par
-<?=$this->service->serviceId . ' - ' . $this->service->nom;?>
+<?=$codeService . '<br>' . $this->service->extremite1 . ' - ' . $this->service->extremite2;?>
 
 </h1>
 <div id="liste-wrapper">
@@ -102,18 +108,20 @@ $actions = [
 					<th>Email</th>
 					<th>Inscrits</th>
 					<th>Station</th>
-					<th>H1</th>
-					<th>H2</th>
-					<th>H3</th>
+					<th>Horaire</th>
 				</tr>
             <?php
 
             foreach ($this->data as $etablissement) :
                 ?>
             	<?php
-            	$etablissement->setFlags(ArrayObject::ARRAY_AS_PROPS);
-                $nbInscrits = $this->effectifServicesEtablissements->transportes(
-                    $etablissement->etablissementId);
+                $etablissement->setFlags(ArrayObject::ARRAY_AS_PROPS);
+                if ($effectifServicesEtablissements) {
+                    $nbInscrits = $this->effectifServicesEtablissements->transportes(
+                        $etablissement->etablissementId);
+                } else {
+                    $nbInscrits = 0;
+                }
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -121,11 +129,7 @@ $actions = [
                 if ($etablissement->serv_nbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }
-                $hiddens = [
-                    'etablissementId' => $etablissement->etablissementId,
-                    'serviceId' => $this->service->serviceId,
-                    'origine' => 'service-etablissement'
-                ];
+                $hiddens['etablissementId'] = $etablissement->etablissementId;
                 $buttons = [
                     'supprimer' => [
                         'class' => 'fam-delete',
@@ -136,32 +140,11 @@ $actions = [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves du service %s inscrits dans %s',
-                            $this->service->serviceId, $etablissement->etab_nom)
+                            $codeService, $etablissement->etab_nom)
                     ]
                 ];
-                $id = $etablissement->etablissementId . '|' . $this->service->serviceId;
-                $horaires = [
-                    'h1' => [
-                        $etablissement->cir_m1,
-                        $etablissement->cir_s1,
-                        $etablissement->cir_z1
-                    ],
-                    'h2' => [
-                        $etablissement->cir_m2,
-                        $etablissement->cir_s2,
-                        $etablissement->cir_z2
-                    ],
-                    'h3' => [
-                        $etablissement->cir_m3,
-                        $etablissement->cir_s3,
-                        $etablissement->cir_z3
-                    ]
-                ];
-                for ($i = 1; $i <= 3; $i ++) {
-                    $horaires["h$i"] = array_filter($horaires["h$i"], function ($v) {
-                        return $v != '00:00:00';
-                    });
-                }
+                $id = $etablissement->etablissementId . '|' . $codeId;
+
                 ?>
                 <tr class="petit <?php $css;?>">
 					<td class="etablissementid">
@@ -180,12 +163,8 @@ $actions = [
 						<?=$nbInscrits;?></td>
 					<td class="station">
 						<?=$this->escapeHtml($etablissement->sta_nom);?></td>
-					<td class="matin">
-						<?=implode('<br>', $horaires['h1']);?></td>
-					<td class="midi">
-						<?=implode('<br>', $horaires['h2']);?></td>
-					<td class="soir">
-						<?=implode('<br>', $horaires['h3']);?></td>
+					<td class="horaire centre">
+						<?=DateLib::formatHoraire($etablissement->cir_horaireA);?></td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($id, $hiddens, $buttons);?>
 			        </td>

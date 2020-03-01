@@ -2,14 +2,15 @@
 /**
  * Structure de la vue `etablissements`
  *
+ * Version pour TRANSDEV ALBERTVILLE
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource vue.etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2019
- * @version 2019-2.6.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'etablissements',
@@ -139,6 +140,10 @@ return [
                     [
                         'field' => 'alias',
                         'alias' => 'lacommune'
+                    ],
+                    [
+                        'field' => 'alias_laposte',
+                        'alias' => 'laposte'
                     ]
                 ]
             ]

@@ -11,8 +11,8 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 déc. 2019
- * @version 2019-2.6.0
+ * @date 28 fév. 2020
+ * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
 
@@ -69,7 +69,8 @@ $url_rapports = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_carte = $this->url('sbmcarte', [
-    'action' => 'etablissements'
+    'action' => 'etablissements',
+    'filtre' => 0
 ]);
 $url_edit = $this->url('sbmgestion/transport',
     [

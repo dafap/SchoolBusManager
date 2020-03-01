@@ -7,15 +7,15 @@
  * Les méthodes de la classe permettent de filtrer la table selon quelques critères :
  * - visibles : pour les select destinés aux parents
  * - ouvertes : pour les select destinés au service
- * - surcircuit : pour un serviceId donné
+ * - surcircuit : pour un service donné (millesime, ligneId, sens, moment [, ordre])
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Select
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2019
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -26,9 +26,11 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmBase\Model\Session;
 
 class StationsForSelect implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     private $columns;
 
@@ -109,10 +111,17 @@ class StationsForSelect implements FactoryInterface
         return $array;
     }
 
-    public function surcircuit($serviceId, $millesime)
+    public function surcircuit(int $millesime, string $ligneId, int $sens, int $moment,
+        int $ordre = 0)
     {
         $where = new Where();
-        $where->equalTo('serviceId', $serviceId)->equalTo('millesime', $millesime);
+        $where->equalTo('millesime', $millesime)
+            ->equalTo('ligneId', $ligneId)
+            ->equalTo('sens', $sens)
+            ->equalTo('moment', $moment);
+        if ($ordre) {
+            $where->equalTo('ordre', $ordre);
+        }
         $select = $this->sql->select();
         $select->from([
             'sta' => $this->table_name
@@ -130,6 +139,13 @@ class StationsForSelect implements FactoryInterface
             $array[$row['stationId']] = $row['libelle'];
         }
         return $array;
+    }
+
+    public function byServiceId(string $serviceId)
+    {
+        $serviceKeys = $this->decodeServiceId($serviceId);
+        return $this->surcircuit(Session::get('millesime'), $serviceKeys['ligneId'],
+            $serviceKeys['sens'], $serviceKeys['moment'], $serviceKeys['ordre']);
     }
 
     /**

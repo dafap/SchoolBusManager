@@ -18,8 +18,8 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 1 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -30,11 +30,6 @@ $url_retour = $this->url('sbmgestion/transport',
         'action' => $this->origine,
         'page' => $this->page
     ]);
-$hiddens = [
-    'etablissementId' => $this->etablissementId,
-    'serviceId' => $this->serviceId,
-    'origine' => $this->origine
-];
 $actions = [
     'retour' => [
         'class' => 'fam-door-out',
@@ -44,13 +39,23 @@ $actions = [
     ]
 ];
 if ($this->origine == 'service-etablissement') {
-    $h1 = sprintf(
-        "Ajout d'un établissement desservi par le circuit %s (%s)\nTransporteur : %s",
-        $this->serviceId, $this->service->nom, $this->service->transporteur);
+    $hiddens = [
+        'ligneId' => $this->service->ligneId,
+        'sens' => $this->service->sens,
+        'moment' => $this->service->moment,
+        'ordre' => $this->service->ordre,
+        'origine' => $this->origine
+    ];
+    $h1 = sprintf("Ajout d'un établissement desservi par le circuit <b>%s</b>",
+        $this->service->designation());
     $description1 = "l'établissement";
 } else {
+    $hiddens = [
+        'etablissementId' => $this->etablissement->etablissementId,
+        'origine' => $this->origine
+    ];
     $h1 = sprintf("Ajout d'un service desservant l'établissement\n%s %s - %s",
-        $this->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
+        $this->etablissement->etablissementId, $this->etablissement->nom, $this->etablissement->commune);
     $description1 = 'le service';
 }
 ?>
@@ -65,13 +70,17 @@ if ($this->origine == 'service-etablissement') {
         <?= $this->formHidden($this->form->get('origine'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
         <?php if ($this->origine == 'service-etablissement') :?>
-            <?= $this->formHidden($this->form->get('serviceId'));?>
+            <?= $this->formHidden($this->form->get('ligneId'));?>
+            <?= $this->formHidden($this->form->get('sens'));?>
+            <?= $this->formHidden($this->form->get('moment'));?>
+            <?= $this->formHidden($this->form->get('ordre'));?>
             <div id="wrapper-etablissementId" class="row-inner ajout">
             	<?= $this->formRow($this->form->get('etablissementId'));?>
             </div>
         <?php else :?>
             <?= $this->formHidden($this->form->get('etablissementId'));?>
             <div id="wrapper-serviceId" class="row-inner ajout">
+                <?php // ici on garde serviceId qui est traité par le formulaire ?>
             	<?= $this->formRow($this->form->get('serviceId'));?>
             </div>
         <?php endif;?>
