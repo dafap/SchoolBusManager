@@ -10,8 +10,8 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -75,8 +75,15 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
         $where->equalTo('c.millesime', $this->millesime);
 
         $on = sprintf(
-            'c.millesime=a.millesime AND c.serviceId=a.service%sId AND c.stationId=a.station%sId',
-            $rang, $rang);
+            implode(' AND ',
+                [
+                    'c.millesime = a.millesime',
+                    'c.ligneId = a.ligne%1$dId',
+                    'c.sens = a.sensligne%1$d',
+                    'c.moment = a.moment',
+                    'c.ordre = a.ordreligne%1$d',
+                    'c.stationId = a.station%1$dId'
+                ]), $rang);
 
         $select = $this->sql->select()
             ->from([
@@ -121,9 +128,8 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
         // compris sur les correspondances
         $conditions = $this->getFiltreDemandes($sanspreinscrits);
         // On ne prend que sur la correspondance 1 pour utiliser les couples
-        // (a.service1Id,
-        // a.station1Id) et éventuellement (a.service2Id, a.station2Id)
-        $conditions['correspondance'] = 1;
+        // (a.service1Id, a.station1Id) et éventuellement (a.service2Id, a.station2Id)
+        $conditions['a.correspondance'] = 1;
         return $conditions;
     }
 }

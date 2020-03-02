@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -111,7 +111,6 @@ $actions = [
 		<table class="circuits">
 			<tbody>
 				<tr>
-					<th class="serviceid">Code</th>
 					<th>Service</th>
 					<th>Arrêt</th>
 					<th>Emplacement</th>
@@ -166,7 +165,7 @@ $actions = [
                     'class' => 'fam-group',
                     'formaction' => $url_group,
                     'title' => sprintf('élèves du circuit %s à l\'arrêt %s',
-                        $circuit->serviceId, $circuit->station)
+                        $circuit->designationService(), $circuit->station)
                 ]
             ];
             if ($this->layout()->hassbmservicesms) {
@@ -182,19 +181,12 @@ $actions = [
             ])->next();
             $horaires = [
                 'h1' => [
-                    $circuit->m1,
-                    $circuit->s1,
-                    $circuit->z1
+                    $circuit->horaireA,
+                    $circuit->horaireD
                 ],
                 'h2' => [
-                    $circuit->m2,
-                    $circuit->s2,
-                    $circuit->z2
                 ],
                 'h3' => [
-                    $circuit->m3,
-                    $circuit->s3,
-                    $circuit->z3
                 ]
             ];
             for ($i = 1; $i <= 3; $i ++) {
@@ -205,10 +197,8 @@ $actions = [
             }
             ?>
             	<tr class="petit <?=$css;?>">
-					<td class="serviceid">
-						<?=$this->escapeHtml($circuit->serviceId);?></td>
 					<td class="service">
-						<?=$this->escapeHtml($circuit->service);?></td>
+						<?=$this->escapeHtml($circuit->designationService());?></td>
 					<td class="station">
 						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="emplacement">

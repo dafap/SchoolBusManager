@@ -87,45 +87,49 @@ class IndexController extends AbstractActionController
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
-            ->from('Creissels-nom_des_voies')
-            ->columns([
-            'communeId',
-            'Nom'
-        ]);
+            ->from('eleves')
+            ->columns(
+            [
+                'nom',
+                'nomSA',
+                'prenom',
+                'prenomSA',
+                'dateN',
+                'sexe',
+                'responsable1Id'
+            ])
+            ->order('responsable1Id')
+            ->limit(20);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
-        $tZonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
-        // $tz = new \SbmCommun\Model\Db\Service\Table\Zonage(); // à supprimer
-        $oZonage = $tZonage->getObjData();
-        // $sa = new \SbmCommun\Filter\SansAccent();
-        $abr = new \SbmCommun\Filter\Abreviations([
-            'encoding' => "UTF-8",
-            'seuil' => 6
-        ]);
+        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $oEleve = $tEleves->getObjData();
         // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
+        $error_msg = [];
         foreach ($rowset as $row) {
-            $nom = $abr->unfilter($row['Nom']);
-            $oZonage->exchangeArray(
+            $oEleve->exchangeArray(
                 [
-                    'zonageId' => null,
-                    'communeId' => $row['communeId'],
-                    'nom' => $nom,
-                    // 'nomSA' => $sa->filter($nom),
-                    'inscriptionenligne' => 0,
-                    'paiementenligne' => 0,
-                    'selection' => 0
+                    'nom' => $row['nom'],
+                    'nomSA' => $row['nomSA'],
+                    'prenom' => $row['prenom'],
+                    'prenomSA' => $row['prenomSA'],
+                    'dateN' => $row['dateN'],
+                    'sexe' => $row['sexe'],
+                    'responsable1Id' => $row['responsable1Id']
                 ]);
             try {
-                $tZonage->saveRecord($oZonage);
+                $tEleves->saveRecord($oEleve);
             } catch (\Exception $e) {
+                $error_msg[] = [
+                    $row['nomSA'],
+                    $e->getMessage()
+                ];
             }
         }
-        $array = [
-            'Terminé'
-        ];
+        $error_msg[] = 'Terminé';
         // dump de l'objet 'obj'
         return new ViewModel([
-            'obj' => $array
+            'obj' => $error_msg
         ]);
     }
 }

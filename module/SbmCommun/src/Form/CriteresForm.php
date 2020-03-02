@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 2 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -225,7 +225,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'options' => [
                     'label' => 'Station',
                     'label_attributes' => [
-                        'class' => ''
+                        'class' => 'sbm-new-line'
                     ],
                     'empty_option' => 'Toutes',
                     'error_attributes' => [
@@ -249,7 +249,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
-                        'class' => 'sbm-new-line'
+                        'class' => ''
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'

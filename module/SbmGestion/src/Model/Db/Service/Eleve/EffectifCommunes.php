@@ -10,8 +10,8 @@
  * @filesource EffectifCommunes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -47,6 +47,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
         }
         $filtre = array_merge($filtre, [
             'a.trajet' => 1,
+            'a.moment' => 1,
             'a.correspondance' => 1
         ]);
         $rowset = $this->requete(4, $filtre, 'r.communeId');
@@ -68,6 +69,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
         }
         $filtre = array_merge($filtre, [
             'a.trajet' => 2,
+            'a.moment' => 1,
             'a.correspondance' => 1
         ]);
         $rowset = $this->requete(5, $filtre, 'r.communeId');
@@ -93,6 +95,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
         }
         $filtre = array_merge($filtre, [
             'a.trajet' => 1,
+            'a.moment' => 1,
             'a.correspondance' => 1
         ]);
         $rowset = $this->requete(6, $filtre, 'communeId');
