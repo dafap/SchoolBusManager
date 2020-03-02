@@ -3,14 +3,14 @@
  * Aide de vue permettant d'afficher les services d'un élève dans la liste des élèves
  *
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/View/Helper
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\View\Helper;
 
@@ -19,9 +19,11 @@ use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Helper\AbstractHelper;
+use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 
 class Services extends AbstractHelper implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     protected $db_manager;
 
@@ -53,13 +55,25 @@ class Services extends AbstractHelper implements FactoryInterface
         $resultset = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll($where);
         $content = [];
         foreach ($resultset as $affectation) {
-            $service1Id = $affectation->service1Id;
+            $service1Id = $this->getDesignation($affectation, 1);
             $content[$service1Id] = $service1Id;
-            $service2Id = $affectation->service2Id;
-            if (! empty($service2Id)) {
+            $ligne2Id = $affectation->ligne2Id;
+            if (! empty($ligne2Id)) {
+                $service2Id = $this->getDesignation($affectation, 2);
                 $content[$service2Id] = $service2Id;
             }
         }
         return implode('<br>', $content);
+    }
+
+    private function getDesignation(ObjectDataInterface $objectdata, int $n)
+    {
+        $data = [
+            'ligneId' => $objectdata->{'ligne' . $n . 'Id'},
+            'sens' => $objectdata->{'sensligne' . $n},
+            'moment' => $objectdata->moment,
+            'ordre' => $objectdata->{'ordreligne' . $n}
+        ];
+        return $this->identifiantService($data);
     }
 }
