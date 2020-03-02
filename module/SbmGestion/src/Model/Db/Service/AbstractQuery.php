@@ -7,8 +7,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service;
 
@@ -145,10 +145,12 @@ abstract class AbstractQuery
                         }
                         break;
                     case 'isNull':
+                    case 'IsNull':
                     case 'is null':
                         $where->isNull($value[0]);
                         break;
                     case 'isNotNull':
+                    case 'IsNotNull':
                     case 'is not null':
                         $where->isNotNull($value[0]);
                         break;

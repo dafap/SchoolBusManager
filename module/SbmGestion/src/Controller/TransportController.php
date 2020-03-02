@@ -3196,9 +3196,9 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response) {
             return $args;
         }
-        // $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
-        // $effectifServices->init();
-        $effectifServices = null;
+        $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
+        $effectifServices->init();
+        //$effectifServices = null;
         return new ViewModel(
             [
 

@@ -9,8 +9,8 @@
  * @filesource EffectifStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2019-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -23,14 +23,14 @@ class EffectifStations extends AbstractEffectifType2 implements EffectifInterfac
     public function init(bool $sanspreinscrits = false)
     {
         $this->structure = [];
-        $rowset = $this->requete('station1Id', $this->getConditions($sanspreinscrits),
-            'station1Id');
+        $filtre = $this->getConditions($sanspreinscrits);
+        $filtre['a.moment'] = 1;
+        $rowset = $this->requete('station1Id', $filtre, 'station1Id');
         foreach ($rowset as $row) {
             $this->structure[$row['column']][1] = $row['effectif'];
         }
-        $filtre = $this->getConditions($sanspreinscrits);
         $filtre['isNotNull'] = [
-            'a.service2Id'
+            'a.ligne2Id'
         ];
         $rowset = $this->requetePourCorrespondance('station', $filtre, 'station2Id');
         foreach ($rowset as $row) {

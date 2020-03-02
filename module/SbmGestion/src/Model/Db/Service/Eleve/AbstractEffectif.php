@@ -9,8 +9,8 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -84,7 +84,6 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
         }
         return $this;
     }
-
 
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
@@ -178,5 +177,24 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 ]
             ];
         }
+    }
+
+    /**
+     * Renvoie la condition de jointure pour le service 1 ou le service 2
+     *
+     * @param int $n
+     *            numéro du service dans affectation
+     * @return string
+     */
+    protected function getJointureAffectationsServices(int $n)
+    {
+        return sprintf(
+            implode(' AND ',
+                [
+                    'a.ligne%1$dId = ser.ligneId',
+                    'a.sensligne%1$d = ser.sens',
+                    'a.moment = ser.moment',
+                    'a.ordreligne%1$d = ser.ordre'
+                ]), $n);
     }
 }

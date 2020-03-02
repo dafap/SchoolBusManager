@@ -9,8 +9,8 @@
  * @filesource AbstractEffectifType4.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -43,7 +43,7 @@ abstract class AbstractEffectifType4 extends AbstractEffectif
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
             ->join([
             'ser' => $this->tableNames['services']
-        ], 'a.service1Id=ser.serviceId',
+        ], $this->getJointureAffectationsServices(1),
             [
                 $this->getIdColumn(),
                 'effectif' => new Expression('count(*)')
@@ -76,26 +76,31 @@ abstract class AbstractEffectifType4 extends AbstractEffectif
         // pour la jointure, on a besoin de nombreuses colonnes ; je les prends toutes.
         $select1 = $this->sql->select()
             ->from($this->tableNames['affectations'])
-            ->columns([
-            'millesime',
-            'eleveId',
-            'trajet',
-            'jours',
-            'sens',
-            'service1Id'
-        ])
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1'
+            ])
             ->where([
             'millesime' => $this->millesime,
             'correspondance' => 2
         ]);
 
         $jointure = [
-            'a.millesime=correspondances.millesime',
-            'a.eleveId=correspondances.eleveId',
-            'a.trajet=correspondances.trajet',
-            'a.jours=correspondances.jours',
-            'a.sens=correspondances.sens',
-            'a.service2Id=correspondances.service1Id'
+            'a.millesime = correspondances.millesime',
+            'a.eleveId = correspondances.eleveId',
+            'a.trajet = correspondances.trajet',
+            'a.jours = correspondances.jours',
+            'a.moment = correspondances.moment',
+            'a.ligne2Id = correspondances.ligne1Id',
+            'a.sensligne2 = correspondances.sensligne1',
+            'a.ordreligne2 = correspondances.ordreligne1'
         ];
         $where = new Where();
         $where->equalTo('a.millesime', $this->millesime)->isNull(
@@ -111,7 +116,7 @@ abstract class AbstractEffectifType4 extends AbstractEffectif
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
             ->join([
             'ser' => $this->tableNames['services']
-        ], 'a.service2Id=ser.serviceId',
+        ], $this->getJointureAffectationsServices(2),
             [
                 $this->getIdColumn(),
                 'effectif' => new Expression('count(*)')

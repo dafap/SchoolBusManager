@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 2 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -127,7 +127,8 @@ echo $this->flashMessenger()->render('default');
                 $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
                     $service->ligneId, $service->sens, $service->moment, $service->ordre);
                 if ($this->effectifServices) {
-                    $nbInscrits = $this->effectifServices->transportes($serviceId);
+                    $nbInscrits = $this->effectifServices->transportes($service->ligneId,
+                        $service->sens, $service->moment, $service->ordre);
                 } else {
                     $nbInscrits = 0;
                 }
@@ -148,8 +149,8 @@ echo $this->flashMessenger()->render('default');
                     'ordre' => $service->ordre,
                     'origine' => 'service-liste'
                 ];
-                //$designationService = sprintf('%s-%d%d%d', $service->ligneId,
-                //    $service->sens, $service->moment, $service->ordre);
+                // $designationService = sprintf('%s-%d%d%d', $service->ligneId,
+                // $service->sens, $service->moment, $service->ordre);
                 $designationService = $service->designation();
                 $buttons = [
                     'modifier' => [

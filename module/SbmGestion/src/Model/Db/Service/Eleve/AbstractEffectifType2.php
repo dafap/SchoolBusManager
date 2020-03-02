@@ -9,8 +9,8 @@
  * @filesource AbstractEffectifType2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
- * @version 2019-2.5.0
+ * @date 2 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -24,7 +24,7 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     /**
      * On compte toutes les affectations pour un millesime correspondant à index1Id
      *
-     * @param string $indexId
+     * @param string|array $indexId
      * @param Where|\Closure|string|array $conditions
      * @param string|array $group
      *
@@ -39,18 +39,39 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
             ->from([
             'a' => $this->tableNames['affectations']
         ])
+            ->columns($this->getColumns($indexId))
             ->join([
             's' => $this->tableNames['scolarites']
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
-            ->columns([
-            'column' => $indexId,
-            'effectif' => new Expression('count(*)')
-        ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
 
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
+    }
+
+    /**
+     *
+     * @param mixed $keys
+     * @return \Zend\Db\Sql\Expression[]|string[]
+     */
+    private function getColumns($keys)
+    {
+        if (is_array($keys)) {
+            $array = [
+                'effectif' => new Expression('count(*)')
+            ];
+            $n = 1;
+            foreach ($keys as $k) {
+                $array['column' . $n ++] = $k;
+            }
+            return $array;
+        } else {
+            return [
+                'column' => $keys,
+                'effectif' => new Expression('count(*)')
+            ];
+        }
     }
 
     /**
@@ -83,17 +104,6 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
             'millesime' => $this->millesime,
             'correspondance' => 2
         ]);
-
-        $index2Id = $index . '2Id';
-        $index1Id = $index . '1Id';
-        $jointure = [
-            'a.millesime=correspondances.millesime',
-            'a.eleveId=correspondances.eleveId',
-            'a.trajet=correspondances.trajet',
-            'a.jours=correspondances.jours',
-            'a.sens=correspondances.sens',
-            "a.$index2Id=correspondances.$index1Id"
-        ];
         $where = new Where();
         $where->equalTo('a.millesime', $this->millesime)->isNull(
             'correspondances.millesime');
@@ -102,20 +112,64 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
             ->from([
             'a' => $this->tableNames['affectations']
         ])
+            ->columns($this->getColumns($this->getKeys($index)))
             ->join([
             'correspondances' => $select1
-        ], implode(' And ', $jointure), [], Select::JOIN_LEFT)
+        ], implode(' And ', $this->getJointureAffectationsCorrespondances($index)), [],
+            Select::JOIN_LEFT)
             ->join([
             's' => $this->tableNames['scolarites']
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
-            ->columns([
-            'column' => $index2Id,
-            'effectif' => new Expression('count(*)')
-        ])
             ->where($this->arrayToWhere($where, $conditions))
-            ->group("a.$group");
+            ->group($this->getGroup($group));
 
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
+    }
+
+    /**
+     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine. Il doit
+     * être surchargé si $index est un tableau
+     *
+     * @param string $index
+     *            méthode à surcharger si c'est un array
+     * @return string[]
+     */
+    protected function getJointureAffectationsCorrespondances($index)
+    {
+        return [
+            'a.millesime = correspondances.millesime',
+            'a.eleveId = correspondances.eleveId',
+            'a.trajet = correspondances.trajet',
+            'a.jours = correspondances.jours',
+            'a.moment = correspondances.moment',
+            'a.' . $index . '2Id = correspondances.' . $index . '1Id'
+        ];
+    }
+
+    /**
+     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine. Il doit
+     * être surchargé si $index est un tableau
+     *
+     * @param string $index
+     *            méthode à surcharger si c'est un array
+     * @return string|array
+     */
+    protected function getKeys($index)
+    {
+        return $index . '2Id';
+    }
+
+    protected function getGroup($group)
+    {
+        if (is_array($group)) {
+            foreach ($group as &$k) {
+                $k = "a.$k";
+            }
+            return $group;
+        } else {
+            $k = "a.$group";
+            return $k;
+        }
     }
 }
