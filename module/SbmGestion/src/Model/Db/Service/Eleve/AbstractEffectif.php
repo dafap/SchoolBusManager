@@ -124,6 +124,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
     {
         if ($sanspreinscrits) {
             return [
+                'a.moment' => 1,
                 'inscrit' => 1,
                 [
                     'paiement' => 1,
@@ -156,6 +157,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
             ];
         } else {
             return [
+                'a.moment' => 1,
                 'inscrit' => 1,
                 'correspondance' => 1,
                 [
