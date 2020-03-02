@@ -2047,17 +2047,17 @@ class TransportController extends AbstractActionController
                 ]);
         }
         $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
-        // $effectifServicesEtablissements = $this->db_manager->get(
-        // 'Sbm\Db\Eleve\EffectifServicesEtablissements');
-        // $effectifServicesEtablissements->setCaractereConditionnel(
-        // [
-        // 'ligneId' => $ligneId,
-        // 'sens' => $sens,
-        // 'moment' => $moment,
-        // 'ordre' => $ordre
-        // ])->init();
+        $effectifServicesEtablissements = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifServicesEtablissements');
+        $effectifServicesEtablissements->setCaractereConditionnel(
+            [
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre
+            ])->init();
 
-        $effectifServicesEtablissements = null;
+        //$effectifServicesEtablissements = null;
         return new ViewModel(
             [
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
@@ -2171,7 +2171,8 @@ class TransportController extends AbstractActionController
                     $this->flashMessenger()->addSuccessMessage(
                         "Une relation entre un service et un établissement a été crée.");
                 } else {
-                    $this->flashMessenger()->addWarningMessage("Cette relation existait déjà !");
+                    $this->flashMessenger()->addWarningMessage(
+                        "Cette relation existait déjà !");
                 }
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
@@ -3198,7 +3199,7 @@ class TransportController extends AbstractActionController
         }
         $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
         $effectifServices->init();
-        //$effectifServices = null;
+        // $effectifServices = null;
         return new ViewModel(
             [
 

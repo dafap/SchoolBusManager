@@ -3,15 +3,16 @@
  * Calcul des effectifs des élèves transportés par établissement pour un service donné.
  *
  * L'initialisation doit nécessairement se faire par :
- *   $objet->setCaractereConditionnel($serviceId)->init($sanspreinscrits);
+ *   $objet->setCaractereConditionnel(['ligneId' => $ligneId, 'sens'=>$sens, 'moment'=>$moment,
+ *   'ordre'=>$ordre])->init($sanspreinscrits);
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource EffectifServicesEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 3 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -35,18 +36,12 @@ class EffectifServicesEtablissements extends AbstractEffectif implements
     public function init(bool $sanspreinscrits = false)
     {
         $this->structure = [];
-
-        $conditions = $this->getConditions($sanspreinscrits);
-        $conditions['service1Id'] = $this->caractere;
-        $rowset = $this->requete('service1Id', $conditions, 'etablissementId');
+        $rowset = $this->requete($sanspreinscrits);
         foreach ($rowset as $row) {
             $this->structure[$row['etablissementId']][1] = $row['effectif'];
         }
 
-        $conditions = $this->getConditions($sanspreinscrits);
-        $conditions['a.service2Id'] = $this->caractere;
-        $rowset = $this->requetePourCorrespondance('service', $conditions,
-            'etablissementId');
+        $rowset = $this->requetePourCorrespondance($sanspreinscrits);
         foreach ($rowset as $row) {
             $this->structure[$row['etablissementId']][2] = $row['effectif'];
         }
@@ -82,16 +77,21 @@ class EffectifServicesEtablissements extends AbstractEffectif implements
 
     /**
      *
-     * @param string $indexId
+     * @param string $index
      * @param array $conditions
      * @param string|array $group
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    protected function requete($indexId, $conditions, $group)
+    protected function requete($sanspreinscrits)
     {
         $where = new Where();
         $where->equalTo('s.millesime', $this->millesime);
+        $conditions = $this->getConditions($sanspreinscrits);
+        $conditions['ligne1Id'] = $this->caractere['ligneId'];
+        $conditions['sensligne1'] = $this->caractere['sens'];
+        $conditions['moment'] = $this->caractere['moment'];
+        $conditions['ordreligne1'] = $this->caractere['ordre'];
 
         $select = $this->sql->select()
             ->from([
@@ -100,26 +100,32 @@ class EffectifServicesEtablissements extends AbstractEffectif implements
             ->join([
             'a' => $this->tableNames['affectations']
         ], 'a.millesime=s.millesime AND a.eleveId=s.eleveId',
-            [
-                $indexId,
-                'effectif' => new Expression('count(*)')
-            ])
+            $this->getColumnsAffectations())
             ->where($this->arrayToWhere($where, $conditions))
-            ->group($group);
+            ->group('etablissementId');
 
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
+    private function getColumnsAffectations()
+    {
+        return [
+            'ligne1Id',
+            'sensligne1',
+            'moment',
+            'ordreligne1',
+            'effectif' => new Expression('count(*)')
+        ];
+    }
+
     /**
      *
-     * @param string $index
-     * @param array $conditions
-     * @param string|array $group
+     * @param bool $sanspreinscrits
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    protected function requetePourCorrespondance($index, $conditions, $group)
+    protected function requetePourCorrespondance($sanspreinscrits)
     {
         $select1 = $this->sql->select()
             ->from($this->tableNames['affectations'])
@@ -128,19 +134,15 @@ class EffectifServicesEtablissements extends AbstractEffectif implements
             'correspondance' => 2
         ]);
 
-        $index2Id = $index . '2Id';
-        $index1Id = $index . '1Id';
-        $jointure = [
-            'a.millesime=correspondances.millesime',
-            'a.eleveId=correspondances.eleveId',
-            'a.trajet=correspondances.trajet',
-            'a.jours=correspondances.jours',
-            'a.sens=correspondances.sens',
-            "a.$index2Id=correspondances.$index1Id"
-        ];
         $where = new Where();
         $where->equalTo('s.millesime', $this->millesime)->isNull(
             'correspondances.millesime');
+
+        $conditions = $this->getConditions($sanspreinscrits);
+        $conditions['a.ligne2Id'] = $this->caractere['ligneId'];
+        $conditions['a.sensligne2'] = $this->caractere['sens'];
+        $conditions['a.moment'] = $this->caractere['moment'];
+        $conditions['a.ordreligne2'] = $this->caractere['ordre'];
 
         $select = $this->sql->select()
             ->from([
@@ -155,12 +157,27 @@ class EffectifServicesEtablissements extends AbstractEffectif implements
         ])
             ->join([
             'correspondances' => $select1
-        ], implode(' AND ', $jointure), [], Select::JOIN_LEFT)
+        ], $this->getJointureAffectationsCorrespondances(), [], Select::JOIN_LEFT)
             ->where($this->arrayToWhere($where, $conditions))
-            ->group($group);
+            ->group('etablissementId');
 
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
+    }
+
+    protected function getJointureAffectationsCorrespondances()
+    {
+        return implode(' AND ',
+            [
+                'a.millesime = correspondances.millesime',
+                'a.eleveId = correspondances.eleveId',
+                'a.trajet = correspondances.trajet',
+                'a.jours = correspondances.jours',
+                'a.moment = correspondances.moment',
+                'a.ligne2Id = correspondances.ligne1Id',
+                'a.sensligne2 = correspondances.sensligne1',
+                'a.ordreligne2 = correspondances.ordreligne1'
+            ]);
     }
 
     /**
