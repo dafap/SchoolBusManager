@@ -837,16 +837,6 @@ class EleveController extends AbstractActionController
             $historique['responsable2']['dateDemenagement'] = $r->dateDemenagement;
             $historique['responsable2']['demenagement'] = $r->demenagement;
         }
-        $affectations = [
-            'annee_courante' => [],
-            'annee_precedente' => []
-        ];
-        foreach ($qAffectations->getAffectations($eleveId) as $row) {
-            $affectations['annee_courante'][] = $row;
-        }
-        foreach ($qAffectations->getAffectations($eleveId, null, true) as $row) {
-            $affectations['annee_precedente'][] = $row;
-        }
         $ophoto = new \SbmCommun\Model\Photo\Photo();
         try {
             $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
@@ -868,7 +858,20 @@ class EleveController extends AbstractActionController
                 'data' => $invariants,
                 'historique' => $historique,
                 'args_paiement' => $args_paiement,
-                'affectations' => $affectations,
+                'structAffectations' => [
+                    1 => [
+                        'annee_courante' => \SbmCommun\Model\View\StructureAffectations::get(
+                            $qAffectations->getAffectations($eleveId, 1, false)),
+                        'annee_precedente' => \SbmCommun\Model\View\StructureAffectations::get(
+                            $qAffectations->getAffectations($eleveId, 1, true))
+                    ],
+                    2 => [
+                        'annee_courante' => \SbmCommun\Model\View\StructureAffectations::get(
+                            $qAffectations->getAffectations($eleveId, 2, false)),
+                        'annee_precedente' => \SbmCommun\Model\View\StructureAffectations::get(
+                            $qAffectations->getAffectations($eleveId, 2, true))
+                    ]
+                ],
                 'subventions' => $subventions,
                 'scolarite_precedente' => $this->db_manager->get(
                     'Sbm\Db\Query\ElevesScolarites')->getScolaritePrecedente($eleveId),
@@ -2150,7 +2153,8 @@ class EleveController extends AbstractActionController
         // chercher le responsable dans la table
         $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
             $args['responsableId']);
-        // préparer le nom de la commune selon les règes de la méthode GoogleMaps\Geocoder::geocode
+        // préparer le nom de la commune selon les règes de la méthode
+        // GoogleMaps\Geocoder::geocode
         $sa = new \SbmCommun\Filter\SansAccent();
         $responsable->lacommune = $sa->filter($responsable->lacommune);
         // préparer le Point dans le système gRGF93

@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -19,8 +19,8 @@ use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use Zend\Json\Json;
-use Zend\View\Model\ViewModel;
 use Zend\Log\Logger;
+use Zend\View\Model\ViewModel;
 
 class EleveController extends AbstractActionController
 {
@@ -227,14 +227,18 @@ class EleveController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'eleveId' => $this->params('eleveId', 0),
             'trajet' => $trajet,
-            'jours' => '31', // Lu Ma Me Je Ve
-            'sens' => '3', // aller-retour
+            'jours' => '31', // Lu Ma Me Je Ve non traité
+            'moment' => '1', // matin
             'correspondance' => $this->params('correspondance', 1),
             'responsableId' => $this->params('responsableId', 0),
             'station1Id' => $station1Id,
             'station2Id' => $station2Id,
-            'service1Id' => $this->params('service1Id', null),
-            'service2Id' => $this->params('service2Id', null),
+            'ligne1Id' => $this->params('ligne1Id', null),
+            'sensligne1' => $this->params('sensligne1'),
+            'ordreligne1' => $this->params('ordreligne1'),
+            'ligne2Id' => $this->params('ligne2Id', null),
+            'sensligne2' => $this->params('sensligne2'),
+            'ordreligne2' => $this->params('ordreligne2'),
             'op' => $this->params('op', null)
         ];
 
@@ -525,47 +529,26 @@ class EleveController extends AbstractActionController
         return $response;
     }
 
+    /**
+     * Recrée la même structure que celle générée dans
+     * SbmGestion/view/sbm-gestion/eleve/eleve-edit.phtml
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function blockaffectationsAction()
     {
         $query = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations');
-        $structure = [
-            'annee_courante' => null,
-            'annee_precedente' => null
-        ];
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
-        $resultset = $query->getAffectations($eleveId, $trajet, false);
-        if ($resultset->count()) {
-            $structure['annee_courante'] = [];
-            foreach ($resultset as $affectation) {
-                $structure['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
-                    'service1Id' => $affectation['service1Id'],
-                    'station1Id' => $affectation['station1Id'],
-                    'station1' => $affectation['station1'],
-                    'service2Id' => $affectation['service2Id'],
-                    'station2Id' => $affectation['station2Id'],
-                    'station2' => $affectation['station2']
-                ];
-            }
-        }
-        $resultset = $query->getAffectations($eleveId, $trajet, true);
-        if ($resultset->count()) {
-            $structure['annee_precedente'] = [];
-            foreach ($resultset as $affectation) {
-                $structure['annee_precedente'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
-                    'service1Id' => $affectation['service1Id'],
-                    'station1Id' => $affectation['station1Id'],
-                    'station1' => $affectation['station1'],
-                    'service2Id' => $affectation['service2Id'],
-                    'station2Id' => $affectation['station2Id'],
-                    'station2' => $affectation['station2']
-                ];
-            }
-        }
         return new ViewModel(
             [
                 'identite' => $this->params('identite'),
-                'structure' => $structure,
+                'structure' => [
+                    'annee_courante' => \SbmCommun\Model\View\StructureAffectations::get(
+                        $query->getAffectations($eleveId, $trajet, false)),
+                    'annee_precedente' => \SbmCommun\Model\View\StructureAffectations::get(
+                        $query->getAffectations($eleveId, $trajet, true))
+                ],
                 'trajet' => $trajet
             ]);
     }

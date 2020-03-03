@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -34,14 +34,20 @@ class AffectationsServicesStations extends AbstractQuery
                 'eleveId' => 'eleveId',
                 'trajet' => 'trajet',
                 'jours' => 'jours',
-                'sens' => 'sens',
+                'moment' => 'moment',
                 'correspondance' => 'correspondance',
                 'selection' => 'selection',
                 'responsableId' => 'responsableId',
                 'station1Id' => 'station1Id',
-                'service1Id' => 'service1Id',
+                'ligne1Id' => 'ligne1Id',
+                'sensligne1' => 'sensligne1',
+                'ordreligne1' => 'ordreligne1',
+                // 'service1Id' => 'service1Id',
                 'station2Id' => 'station2Id',
-                'service2Id' => 'service2Id'
+                // 'service2Id' => 'service2Id',
+                'ligne2Id' => 'ligne2Id',
+                'sensligne2' => 'sensligne2',
+                'ordreligne2' => 'ordreligne2'
             ]);
     }
 
@@ -53,15 +59,18 @@ class AffectationsServicesStations extends AbstractQuery
      * @param int $responsableId
      * @param int $trajet
      *            1 ou 2 selon que c'est le responsable n°1 ou n°2
+     * @param int $moment
+     *            1 Matin, 2 Midi, 3 Soir
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getServices($eleveId, $responsableId, $trajet = null)
+    public function getServices(int $eleveId, int $responsableId, int $trajet = null,
+        int $moment = null)
     {
         $select = clone $this->select;
         $select->order([
             'trajet',
             'jours',
-            'sens',
+            'moment',
             'correspondance'
         ]);
         $where = new Where();
@@ -84,36 +93,33 @@ class AffectationsServicesStations extends AbstractQuery
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getAffectations($eleveId, $trajet = null, $annee_precedente = false)
+    public function getAffectations(int $eleveId, int $trajet = null,
+        bool $annee_precedente = false)
     {
         $millesime = $this->millesime;
         if ($annee_precedente) {
             $millesime --;
         }
         $select = clone $this->select;
-        $select->join(
+        $select->join([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureStationsCircuits(1), [
+            'horaire1' => 'horaireA'
+        ])
+            ->join([
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureStationsServices(1, 'ser1'),
             [
-                'ser1' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'aff.service1Id = ser1.serviceId',
-            [
-                'service1' => 'nom',
+                'service1_nbPlaces' => 'nbPlaces',
                 'service1_alias' => 'alias',
-                'service1_aliasTr' => 'aliasTr',
-                'operateur1' => 'operateur'
+                'semaine' => 'semaine'
             ])
             ->join([
-            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser1.lotId = lot1.lotId',
+            'lign1' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser1', 'lign1'),
             [
-                'service1_marche' => 'marche',
-                'service1_lot' => 'lot'
-            ])
-            ->join(
-            [
-                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot1.transporteurId = tit1.transporteurId',
-            [
-                'service1_titulaire' => 'nom'
+                'ligne1_operateur' => 'operateur',
+                'ligne1_internes' => 'internes'
             ])
             ->join(
             [
@@ -141,14 +147,30 @@ class AffectationsServicesStations extends AbstractQuery
         ], 'sta2.communeId = com2.communeId', [
             'commune2' => 'nom'
         ], $select::JOIN_LEFT)
-            ->order([
-            'trajet',
-            'jours',
-            'sens',
-            'correspondance'
-        ]);
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'lign1.lotId = lot1.lotId',
+            [
+                'service1_marche' => 'marche',
+                'service1_lot' => 'lot'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId',
+            [
+                'service1_titulaire' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->order(
+            [
+                'trajet',
+                // semaine (de Services), remplace jours (Affectations) non traité
+                'semaine DESC',
+                'moment',
+                'correspondance',
+            ]);
         $where = new Where();
-        $where->equalTo('millesime', $millesime)->and->equalTo('eleveId', $eleveId);
+        $where->equalTo('aff.millesime', $millesime)->and->equalTo('aff.eleveId', $eleveId);
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
@@ -519,11 +541,12 @@ class AffectationsServicesStations extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'res.communeId = com.communeId', [
-            'commune' => 'nom',
-            'lacommune' => 'alias',
-            'laposte' => 'alias_laposte'
-        ])
+        ], 'res.communeId = com.communeId',
+            [
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
+            ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId=aff.eleveId AND sco.millesime=aff.millesime',
@@ -750,5 +773,42 @@ class AffectationsServicesStations extends AbstractQuery
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->order('responsable');
         return $select;
+    }
+
+    private function jointureStationsCircuits(int $n)
+    {
+        return sprintf(
+            implode(' AND ',
+                [
+                    'aff.millesime = cir.millesime',
+                    'aff.ligne%1$dId = cir.ligneId',
+                    'aff.sensligne%1$d = cir.sens',
+                    'aff.moment = cir.moment',
+                    'aff.ordreligne%1$d = cir.ordre',
+                    'aff.station1Id = cir.stationId'
+                ]), $n);
+    }
+
+    private function jointureStationsServices(int $n, string $ser)
+    {
+        return sprintf(
+            implode(' AND ',
+                [
+                    'aff.millesime = %2$s.millesime',
+                    'aff.ligne%1$dId = %2$s.ligneId',
+                    'aff.sensligne%1$d = %2$s.sens',
+                    'aff.moment = %2$s.moment',
+                    'aff.ordreligne%1$d = %2$s.ordre'
+                ]), $n, $ser);
+    }
+
+    private function jointureServicesLignes(string $ser, string $ligne)
+    {
+        return sprintf(
+            implode(' AND ',
+                [
+                    '%1$s.millesime = %2$s.millesime',
+                    '%1$s.ligneId = %2$s.ligneId'
+                ]), $ser, $ligne);
     }
 }

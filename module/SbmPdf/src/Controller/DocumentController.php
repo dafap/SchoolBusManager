@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 3 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
 
@@ -43,9 +43,10 @@ class DocumentController extends AbstractActionController
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // factureset est un objet Iterator
         $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
-            $responsableId, $this->db_manager->get(
+            $responsableId,
+            $this->db_manager->get(
                 \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
-                    $responsableId));
+                $responsableId));
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
                 ->setParams(
@@ -103,17 +104,29 @@ class DocumentController extends AbstractActionController
 
     /**
      * Action pour générer les horaires au format pdf Reçoit éventuellement en post un
-     * 'serviceId'
+     * 'ligneId', 'sens', 'moment', 'ordre'
      *
+     * @todo : à refaire en entier
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function horairesAction()
     {
+        $this->flashMessenger()->addErrorMessage('Procédure ' . __METHOD__ . 'à écrire.');
+        return $this->redirect()->toRoute('login', [
+            'action' => 'home-page'
+        ]);
+        // ANCIENNE PROCEDURE
+        /*
+         * Ce qui a changé : chaque enregistrement de circuit ne présente qu'un horaire.
+         * Une fiche horaire devrait présenter les horaires du matin, du midi, du soir et
+         * les jours de circulation.
+         */
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         }
         $args = $prg ?: [];
+        $table = null;
         $millesime = Session::get('millesime');
         // on doit être authentifié
         $auth = $this->authenticate->by('email');
@@ -135,7 +148,8 @@ class DocumentController extends AbstractActionController
                     ]);
                 }
                 try {
-                    $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
+                    $table = $this->db_manager->get('Sbm\Db\Table\Affectations');
+                    $affectations = $table->fetchAll(
                         [
                             'responsableId' => $responsable->responsableId,
                             'millesime' => $millesime
@@ -143,9 +157,11 @@ class DocumentController extends AbstractActionController
                     $services = [];
                     // construction d'une table sans doublons
                     foreach ($affectations as $affectation) {
-                        $services[$affectation->service1Id] = $affectation->service1Id;
-                        if (! empty($affectation->service2Id)) {
-                            $services[$affectation->service2Id] = $affectation->service2Id;
+                        $tmp = $affectation->getEncodeServiceId(1);
+                        $services[tmp] = $tmp;
+                        if (! empty($affectation->ligne2Id)) {
+                            $tmp = getEncodeServiceId(2);
+                            $services[tmp] = $tmp;
                         }
                     }
                     if (! empty($services)) {
@@ -163,13 +179,13 @@ class DocumentController extends AbstractActionController
                 try {
                     $transporteurId = $this->db_manager->get(
                         'Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
-                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll(
-                        [
-                            'transporteurId' => $transporteurId
-                        ]);
+                    $table = $this->db_manager->get('Sbm\Db\Table\Services');
+                    $oservices = $table->fetchAll([
+                        'transporteurId' => $transporteurId
+                    ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->getEncodeServiceId();
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -183,14 +199,14 @@ class DocumentController extends AbstractActionController
                 try {
                     $etablissementId = $this->db_manager->get(
                         'Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
-                    $oservices = $this->db_manager->get(
-                        'Sbm\Db\Table\EtablissementsServices')->fetchAll(
+                    $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices');
+                    $oservices = $table->fetchAll(
                         [
                             'etablissementId' => $etablissementId
                         ]);
                     $services = [];
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->getEncodeServiceId();
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -206,9 +222,10 @@ class DocumentController extends AbstractActionController
             case 255: // sadmin
                 try {
                     $services = [];
-                    $oservices = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll();
+                    $table = $this->db_manager->get('Sbm\Db\Table\Services');
+                    $oservices = $table->fetchAll();
                     foreach ($oservices as $objectService) {
-                        $services[] = $objectService->serviceId;
+                        $services[] = $objectService->getEncodeServiceId();
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
@@ -226,7 +243,21 @@ class DocumentController extends AbstractActionController
                 ]);
                 break;
         }
-        if (array_key_exists('serviceId', $args)) {
+        if (array_key_exists('ligneId', $args) && array_key_exists('sens', $args) &&
+            array_key_exists('moment', $args) && array_key_exists('ordre', $args)) {
+            $tmp = $table->getEncodeServiceId(
+                [
+                    'ligneId' => $args['ligneId'],
+                    'sens' => $args['sens'],
+                    'moment' => $args['moment'],
+                    'ordre' => $args['ordre']
+                ]);
+            if (in_array($tmp, $services)) {
+                $services = (array) $tmp;
+            } else {
+                $services = [];
+            }
+        } elseif (array_key_exists('serviceId', $args)) {
             if (in_array($args['serviceId'], $services)) {
                 $services = (array) $args['serviceId'];
             } else {
@@ -236,19 +267,19 @@ class DocumentController extends AbstractActionController
         if (! empty($services)) {
             asort($services);
         }
+        // CODE VERIFIE JUSQU'ICI
         // ici, $services contient les 'serviceId' dont on veut obtenir les horaires
-        // (tableau
-        // indexé ordonné)
+        // (tableau indexé ordonné)
         $qCircuits = $this->db_manager->get('Sbm\Db\Query\Circuits');
         $qListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
         $ahoraires = []; // c'est un tableau
-        foreach ($services as $serviceId) {
-            $ahoraires[$serviceId] = [
-                'aller' => $qCircuits->complet($serviceId, 'matin',
+        foreach ($services as $idServiceAsString) {
+            $ahoraires[$idServiceAsString] = [
+                'aller' => $qCircuits->complet($idServiceAsString, 'matin',
                     function ($arret) use ($qListe, $millesime) {
                         return $this->detailHoraireArret($arret, $qListe, $millesime);
                     }),
-                'retour' => $qCircuits->complet($serviceId, 'soir',
+                'retour' => $qCircuits->complet($idServiceAsString, 'soir',
                     function ($arret) use ($qListe, $millesime) {
                         return $this->detailHoraireArret($arret, $qListe, $millesime);
                     })
@@ -322,7 +353,8 @@ class DocumentController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
             ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());

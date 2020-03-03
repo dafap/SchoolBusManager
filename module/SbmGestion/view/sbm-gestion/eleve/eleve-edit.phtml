@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2019
- * @version 2019-2.5.0
+ * @date 3 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -32,35 +32,8 @@ function formatDate($date, $withTime = true)
     }
 }
 
-$structAffectations = [];
-if (count($this->affectations['annee_courante'])) {
-    foreach ($this->affectations['annee_courante'] as $affectation) {
-        $structAffectations[$affectation['trajet']]['annee_courante'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
-            'service1Id' => $affectation['service1Id'],
-            'station1Id' => $affectation['station1Id'],
-            'station1' => $affectation['station1'],
-            'service2Id' => $affectation['service2Id'],
-            'station2Id' => $affectation['station2Id'],
-            'station2' => $affectation['station2']
-        ];
-    }
-    unset($affectation);
-}
-if (count($this->affectations['annee_precedente'])) {
-    foreach ($this->affectations['annee_precedente'] as $affectation) {
-        $structAffectations[$affectation['trajet']]['annee_precedente'][$affectation['jours']][$affectation['sens']][$affectation['correspondance']] = [
-            'service1Id' => $affectation['service1Id'],
-            'station1Id' => $affectation['station1Id'],
-            'station1' => $affectation['station1'],
-            'service2Id' => $affectation['service2Id'],
-            'station2Id' => $affectation['station2Id'],
-            'station2' => $affectation['station2']
-        ];
-    }
-    unset($affectation);
-}
-$disableAccordR1 = isset($structAffectations[1]['annee_courante']) ? 'true' : 'false';
-$disableAccordR2 = isset($structAffectations[2]['annee_courante']) ? 'true' : 'false';
+$disableAccordR1 = isset($this->structAffectations[1]['annee_courante']) ? 'true' : 'false';
+$disableAccordR2 = isset($this->structAffectations[2]['annee_courante']) ? 'true' : 'false';
 // urls utilisées
 $url_ici = $this->url('sbmgestion/eleve',
     [
@@ -269,8 +242,8 @@ $actions = [
 										data-button="btnaffectation" data-trajet="1"
 										data-href="/op:add"></i>
 								</h3>
-								<?php if (isset($structAffectations[1])) : ?>
-									<?= $this->affectations(1, $structAffectations[1]);?>
+								<?php if (isset($this->structAffectations[1])) : ?>
+									<?= $this->affectations(1, $this->structAffectations[1]);?>
 								<?php endif;?>
                             </div>
 						</div>
@@ -315,8 +288,8 @@ $actions = [
 										data-button="btnaffectation" data-trajet="2"
 										data-href="/op:add" id="i-affectationsr2"></i>
 								</h3>
-								<?php if (isset($structAffectations[2])) :?>
-									<?= $this->affectations(2, $structAffectations[2]);?>
+								<?php if (isset($this->structAffectations[2])) :?>
+									<?= $this->affectations(2, $this->structAffectations[2]);?>
 								<?php endif;?>
                             </div>
 						</div>

@@ -7,18 +7,17 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
-use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 
 class Circuits extends AbstractQuery
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     protected function init()
     {
@@ -75,54 +74,39 @@ class Circuits extends AbstractQuery
 
     /**
      * Renvoie la description d'un circuit complet de la première station desservie à la
-     * dernière. L'ordre des stations dépend de l'horaire demandé : ordre croissant selon
-     * m1 le matin, ordre croissant selon s2 le midi ou ordre croissant selon s1 le soir.
+     * dernière. Les stations sont classées dans l'ordre des horaires croissant.
      *
      * @param string $serviceId
-     * @param string $horaire
-     *            'matin', 'midi' ou 'soir'
+     * @param callable $callback
+     *
      * @return array
      */
-    public function complet($serviceId, $horaire, $callback = null)
+    public function complet(string $serviceId, $callback = null)
     {
+        $service = $this->decodeServiceId($serviceId);
+
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId',
-            $serviceId);
-        switch ($horaire) {
-            case 'matin':
-                $order = 'm1';
-                $columns = [
-                    'serviceId',
-                    'horaire' => 'm1',
-                    'emplacement',
-                    'typeArret',
-                    'commentaire1'
-                ];
-                break;
-            case 'midi':
-                $order = 's2';
-                $columns = [
-                    'serviceId',
-                    'horaire' => new Expression(
-                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
-                    'emplacement',
-                    'typeArret',
-                    'commentaire2'
-                ];
-                break;
-            case 'soir':
-                $order = 's1';
-                $columns = [
-                    'horaire' => new Expression(
-                        'CONCAT(IFNULL(s2, ""), " ", IFNULL(s1, ""))'),
-                    'emplacement',
-                    'typeArret',
-                    'commentaire1'
-                ];
-                break;
-            default:
-                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
-        }
+        $where->equalTo('millesime', $this->millesime)
+            ->equalTo('ser.ligneId', $service['ligneId'])
+            ->equalTo('ser.sens', $service['sens'])->equalTo('ser.moment', $service['moment'])
+            ->equalTo('ser.ordre', $service['ordre']);
+        $order = 'horaireA';
+        $columns = [
+            'ligneId',
+            'sens',
+            'moment',
+            'sens',
+            'passage',
+            'semaine',
+            'montee',
+            'descente',
+            'correspondance',
+            'horaire' => 'horaireA',
+            'emplacement',
+            'typeArret',
+            'commentaire1',
+            'commentaire2'
+        ];
         $select = $this->sql->select();
         $select->from([
             'cir' => $this->db_manager->getCanonicName('circuits')
@@ -135,18 +119,16 @@ class Circuits extends AbstractQuery
                 'station' => 'nom'
             ])
             ->join([
-            'ser' => $this->db_manager->getCanonicName('services')
-        ], 'cir.serviceId = ser. serviceId',
+            'com' => $this->db_manager->getCanonicName('communes')
+        ], 'cir.serviceId = com. serviceId',
             [
-                'serviceId' => 'serviceId',
-                'alias' => 'alias',
-                'aliasTr' => 'aliasTr',
-                'service' => 'nom'
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
             ])
             ->columns($columns)
             ->where($where)
             ->order($order);
-        // $result = ;
         $result = iterator_to_array($this->renderResult($select));
         if (is_callable($callback)) {
             foreach ($result as &$arret) {
@@ -154,139 +136,5 @@ class Circuits extends AbstractQuery
             }
         }
         return $result;
-    }
-
-    /**
-     * Renvoie la description d'un circuit de son point de départ jusqu'à l'établissement
-     * (matin) ou de l'établissement au point terminus (midi, soir). Le point de départ
-     * correspond à l'horaire m1 le plus petit Le point terminus correspond à l'horaire s2
-     * ou s1 le plus grand (midi, soir) Le matin, la section est composée des stations
-     * dont l'horaire est compris entre celui du point de départ et celui de la station
-     * desservant l'établissement. Le midi et le soir, la section est composée des
-     * stations dont l'horaire est compris entre celui de l'établissement et celui du
-     * point terminus.
-     *
-     * @param string $serviceId
-     * @param string $etablissementId
-     * @param string $horaire
-     *            'matin', 'midi' ou 'soir'
-     * @return array
-     */
-    public function section($serviceId, $etablissementId, $horaire)
-    {
-        $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('serviceId', $serviceId);
-        switch ($horaire) {
-            case 'matin':
-                $where->lessThanOrEqualTo('m1',
-                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
-                $order = 'm1 ASC';
-                $columns = [
-                    'horaire' => 'm1',
-                    'emplacement',
-                    'typeArret',
-                    'commentaire1'
-                ];
-                break;
-            case 'midi':
-                $where->greaterThanOrEqualTo('s2',
-                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
-                $order = 's2 DESC';
-                $columns = [
-                    'horaire' => new Expression(
-                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
-                    'emplacement',
-                    'typeArret',
-                    'commentaire2'
-                ];
-                break;
-            case 'soir':
-                $where->greaterThanOrEqualTo('s1',
-                    $this->passageEtablissement($serviceId, $etablissementId, $horaire));
-                $order = 's1 DESC';
-                $columns = [
-                    'horaire' => new Expression(
-                        'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
-                    'emplacement',
-                    'typeArret',
-                    'commentaire1'
-                ];
-                break;
-            default:
-                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
-        }
-        $select = $this->sql->select();
-        $select->from([
-            'cir' => $this->db_manager->getCanonicName('circuits')
-        ])
-            ->join([
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ], 'cir.stationId = sta.stationId', [
-            'station' => 'nom'
-        ])
-            ->columns($columns)
-            ->where($where)
-            ->order($order);
-        return $this->renderResult($select);
-    }
-
-    /**
-     * Donne le stationId du point d'arrêt à l'établissement de ce circuit
-     *
-     * @param string $serviceId
-     * @param string $etablissementId
-     *
-     * @return int stationId
-     */
-    public function arretEtablissement($serviceId, $etablissementId)
-    {
-        try {
-            $oetablissementservice = $this->db_manager->get(
-                'Sbm\Db\Table\EtablissementsServices')->getRecord(
-                [
-                    'etablissementId' => $etablissementId,
-                    'serviceId' => $serviceId
-                ]);
-            return $oetablissementservice->stationId;
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            $code = $e->getCode();
-            if (! is_numeric($code)) {
-                $code = 0;
-            }
-            throw new Exception\OutOfBoundsException(
-                "L'établissement $etablissementId n'est pas desservi par le circuit $serviceId.",
-                $code, $e);
-        }
-    }
-
-    /**
-     * Renvoie l'heure de passage à l'arrêt desservant l'établissement
-     *
-     * @param string $serviceId
-     * @param string $etablissementId
-     * @param string $horaire
-     *            'matin', 'midi' ou 'soir'
-     * @return string heure
-     */
-    public function passageEtablissement($serviceId, $etablissementId, $horaire)
-    {
-        $ocircuit = $this->db_manager->get('Sbm\Db\Table\Circuits')->getRecord(
-            [
-                'millesime' => $this->millesime,
-                'serviceId' => $serviceId,
-                'stationId' => $this->arretEtablissement($serviceId, $etablissementId)->stationId
-            ]);
-        switch ($horaire) {
-            case 'matin':
-                return $ocircuit->m1;
-                break;
-            case 'midi':
-                return $ocircuit->s2;
-                break;
-            case 'soir':
-                return $ocircuit->s1;
-            default:
-                throw new Exception\DomainException('L\'horaire demandé est inconnu.');
-        }
     }
 }
