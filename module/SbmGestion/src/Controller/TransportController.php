@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1894,11 +1894,9 @@ class TransportController extends AbstractActionController
         $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsServices');
         $where = new Where();
         $where->equalTo('rel.etablissementId', $etablissementId);
-        // $effectifEtablissementsServices = $this->db_manager->get(
-        // 'Sbm\Db\Eleve\EffectifEtablissementsServices');
-        // $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
-
-        $effectifEtablissementsServices = null;
+        $effectifEtablissementsServices = $this->db_manager->get(
+            'Sbm\Db\Eleve\EffectifEtablissementsServices');
+        $effectifEtablissementsServices->setCaractereConditionnel($etablissementId)->init();
         return new ViewModel(
             [
 
@@ -2057,7 +2055,7 @@ class TransportController extends AbstractActionController
                 'ordre' => $ordre
             ])->init();
 
-        //$effectifServicesEtablissements = null;
+        // $effectifServicesEtablissements = null;
         return new ViewModel(
             [
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
@@ -4787,7 +4785,7 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
 
-                'paginator' => $this->db_manager->get('Sbm\Db\Table\Services')->paginator(
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
                     $where, [
                         'ligneId',
                         'sens',

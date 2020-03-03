@@ -75,7 +75,7 @@ abstract class AbstractEffectifType3 extends AbstractEffectif
      * @param mixed $keys
      * @return \Zend\Db\Sql\Expression[]|string[]
      */
-    private function getColumns($keys)
+    protected function getColumns($keys)
     {
         if (is_array($keys)) {
             $array = [

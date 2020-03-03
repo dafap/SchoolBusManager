@@ -7,8 +7,8 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
- * @version 2019-2.5.0
+ * @date 3 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_rapports = $this->url('sbmgestion/transport',
@@ -80,8 +80,7 @@ echo $this->escapeHtml($this->transporteur->nom);
 		<table class="liste-inner services">
 			<tbody>
 				<tr>
-					<th>Code</th>
-					<th>Nom</th>
+					<th>Service</th>
 					<th>Alias</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
@@ -93,8 +92,11 @@ echo $this->escapeHtml($this->transporteur->nom);
             foreach ($data as $service) :
                 ?>
             	<?php
+                $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
+                    $service->ligneId, $service->sens, $service->moment, $service->ordre);
+            	$designation = $service->designation();
                 $nbInscrits = $this->effectifTransporteursServices->transportes(
-                    $service->serviceId);
+                    $service->ligneId, $service->sens, $service->moment, $service->ordre);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -104,7 +106,10 @@ echo $this->escapeHtml($this->transporteur->nom);
                 }
                 $hiddens = [
                     'transporteurId' => $this->transporteurId,
-                    'serviceId' => $service->serviceId,
+                    'ligneId' => $service->ligneId,
+                    'sens' => $service->sens,
+                    'moment' => $service->moment,
+                    'ordre' => $service->ordre,
                     'origine' => 'transporteur-service'
                 ];
                 $buttons = [
@@ -116,12 +121,10 @@ echo $this->escapeHtml($this->transporteur->nom);
                 ];
                 ?>
                 <tr class="<?=$css;?>">
-					<td class="serviceid">
-						<?=$this->escapeHtml($service->serviceId);?></td>
-					<td class="nom">
-						<?=$this->escapeHtml($service->nom);?></td>
+					<td class="designation">
+						<?=$this->escapeHtml($designation);?></td>
 					<td class="aliascg">
-						<?=$this->escapeHtml($service->aliasCG);?></td>
+						<?=$this->escapeHtml($service->alias);?></td>
 					<td class="operateur">
 						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
