@@ -7,8 +7,8 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
- * @version 2019-2.5.0
+ * @date 3 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_rapports = $this->url('sbmgestion/transport',
@@ -67,8 +67,7 @@ $actions = [
 		<table class="liste-inner services">
 			<tbody>
 				<tr>
-					<th>Code</th>
-					<th>Nom</th>
+					<th>Service</th>
 					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
@@ -80,19 +79,24 @@ $actions = [
             foreach ($this->data as $service) :
                 ?>
             <?php
-
+                $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
+                    $service->ligneId, $service->sens, $service->moment, $service->ordre);
+                $designation = $service->designationService();
                 $nbInscrits = $this->effectifStationsServices->transportes(
-                    $service->serviceId);
+                    $service->ligneId, $service->sens, $service->moment, $service->ordre);
                 $css = $this->cycle([
                     "even",
                     "odd"
                 ])->next();
-                if ($service->nbPlaces < $nbInscrits) {
+                if ($service->serviceNbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }
                 $hiddens = [
                     'stationId' => $this->stationId,
-                    'serviceId' => $service->serviceId,
+                    'ligneId' => $service->ligneId,
+                    'sens' => $service->sens,
+                    'moment' => $service->moment,
+                    'ordre' => $service->ordre,
                     'origine' => 'station-service'
                 ];
                 $buttons = [
@@ -100,21 +104,19 @@ $actions = [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves du service %s montant à %s',
-                            $service->serviceId, $this->station->nom)
+                            $designation, $this->station->nom)
                     ]
                 ];
-                $id = $this->stationId . '|' . $service->serviceId?>
+                $id = $this->stationId . '|' . $serviceId?>
                 <tr class="<?=$css;?>">
-					<td class="serviceid">
-						<?=$this->escapeHtml($service->serviceId);?></td>
-					<td class="nom">
-						<?=$this->escapeHtml($service->service);?></td>
+					<td class="designation">
+						<?=$this->escapeHtml($designation);?></td>
 					<td class="aliascg">
 						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="operateur">
 						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
-						<?=$service->nbPlaces;?></td>
+						<?=$service->serviceNbPlaces;?></td>
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="boutons">
