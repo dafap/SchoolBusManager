@@ -9,7 +9,7 @@
  * @filesource EffectifServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -51,15 +51,9 @@ class EffectifServices extends AbstractEffectifType2 implements EffectifInterfac
                 'ordreligne2'
             ]);
         foreach ($rowset as $row) {
-            echo '<p>' . $row['column1'] . '<br>' . $row['column2'] . '<br>' .
-                $row['column3'] . '<br>' . $row['column4'] . '<br>' . $row['effectif'] .
-                '</p>';
             $this->structure[$row['column1']][$row['column2']][$row['column3']][$row['column4']][2] = $row['effectif'];
         }
         // remplace les colonnes 1 et 2 de niveau 5 par leur total
-        //echo '<pre>';
-        //print_r($this->structure);
-        //echo '</pre>';
         foreach ($this->structure as &$niveau1) {
             foreach ($niveau1 as &$niveau2) {
                 foreach ($niveau2 as &$niveau3) {
@@ -110,11 +104,6 @@ class EffectifServices extends AbstractEffectifType2 implements EffectifInterfac
             'ordreligne2'
         ];
     }
-
-    /**
-     *
-     * @param string $serviceId
-     */
 
     /**
      *
