@@ -8,7 +8,7 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 3 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -109,12 +109,10 @@ $data = $this->paginator->getCurrentItems();
             foreach ($data as $entity) :
                 ?>
             	<?php
-            	$entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
-                $code = sprintf('%d|%s|%d|%d|%d', $entity->millesime, $entity->ligneId,
-                    $entity->sens, $entity->moment, $entity->ordre);
+                $entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
                 if ($this->effectifEtablissementsServices) {
                     $nbInscrits = $this->effectifEtablissementsServices->transportes(
-                        $code);
+                        $entity->ligneId, $entity->sens, $entity->moment, $entity->ordre);
                 } else {
                     $nbInscrits = 0;
                 }
