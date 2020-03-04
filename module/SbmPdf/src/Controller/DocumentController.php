@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 4 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -377,7 +377,7 @@ class DocumentController extends AbstractActionController
         }
 
         $where = $criteres_obj->getWhereForEleves();
-        $data = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritesR(
+        $data = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getScolaritesR(
             $where, [
                 'nom',
                 'prenom'

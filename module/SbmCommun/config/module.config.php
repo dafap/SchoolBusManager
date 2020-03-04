@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 4 mars 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Form;
@@ -205,6 +205,7 @@ return [
             'Sbm\Db\Query\Eleves' => Query\Eleve\Eleves::class,
             'Sbm\Db\Query\ElevesResponsables' => Query\Eleve\ElevesResponsables::class,
             'Sbm\Db\Query\ElevesScolarites' => Query\Eleve\ElevesScolarites::class,
+            'Sbm\Db\Query\ElevesDivers' => SbmCommun\Model\Db\Service\Query\Eleve\Divers::class,
             'Sbm\Db\Query\AffectationsServicesStations' => Query\Eleve\AffectationsServicesStations::class,
             'Sbm\Db\Query\Responsables' => Query\Responsable\Responsables::class,
             'Sbm\Db\Query\Responsable\Montants' => Query\Responsable\CalculMontant::class,

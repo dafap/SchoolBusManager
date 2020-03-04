@@ -210,7 +210,7 @@ class IndexController extends AbstractActionController
 
         $categorie = 200;
         $where = $criteres_obj->getWhereForEleves();
-        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->paginatorScolaritesR(
+        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->paginatorScolaritesR(
             $where, [
                 'nom',
                 'prenom'
@@ -249,7 +249,7 @@ class IndexController extends AbstractActionController
             ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
             ->setParam('where', $where)
             ->setData(
-            $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')
+                $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
                 ->getScolaritesR($where, [
                 'nom',
                 'prenom'
@@ -282,12 +282,12 @@ class IndexController extends AbstractActionController
             'R1 Téléphone 2' => 'telephonePR1',
             'R1 Téléphone 3' => 'telephoneTR1',
             'R1 email' => 'emailR1',
-            'R1 Service' => 'service1IdR1',
+            'R1 Service' => 'service1R1',
             'R1 Station Montée' => 'station1r1',
             'R1 Commune station montée' => 'communeStation1r1',
             'R1 Station Descente' => 'station2r1',
             'R1 Commune station descente' => 'communeStation2r1',
-            'R1 Correspondance' => 'service2IdR1',
+            'R1 Correspondance' => 'service2R1',
             'R2 Identité' => 'responsable2',
             'R2 Adresse ligne 1' => 'adresseR2L1',
             'R2 Adresse ligne 2' => 'adresseR2L2',
@@ -296,12 +296,12 @@ class IndexController extends AbstractActionController
             'R2 Téléphone 2' => 'telephonePR2',
             'R2 Téléphone 3' => 'telephoneTR2',
             'R2 email' => 'emailR2',
-            'R2 Service' => 'service1IdR2',
+            'R2 Service' => 'service1R2',
             'R2 Station Montée' => 'station1r2',
             'R2 Commune station montée' => 'communeStation1r2',
             'R2 Station Descente' => 'station2r2',
             'R2 Commune station descente' => 'communeStation2r2',
-            'R2 Correspondance' => 'service2IdR2',
+            'R2 Correspondance' => 'service2R2',
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -346,7 +346,7 @@ class IndexController extends AbstractActionController
         // lancement de la requête selon la catégorie de l'utilisateur
         $where = $criteres_obj->getWhereForEleves();
         try {
-            $result = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getScolaritesR(
+            $result = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getScolaritesR(
                 $where, [
                     'nom',
                     'prenom'

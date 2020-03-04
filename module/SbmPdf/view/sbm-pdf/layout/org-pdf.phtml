@@ -13,8 +13,8 @@
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 4 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -77,10 +77,10 @@ table.eleves td.centre {
                             $eleve['adresseR1L1'],
                             $eleve['adresseR1L2']
                         ])));
-                $communeR1 = $eleve['communeR1'];
-                $circuitR1 = $eleve['service1IdR1'];
-                if ($eleve['service2IdR1']) {
-                    $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
+                $communeR1 = $eleve['lacommuneR1'];
+                $circuitR1 = $eleve['service1R1'];
+                if ($eleve['service2R1']) {
+                    $circuitR1 .= '<br/>' . $eleve['service2R1'];
                 }
                 $arretR1 = $eleve['station1r1'];
                 if ($eleve['station2r1']) {
@@ -99,10 +99,10 @@ table.eleves td.centre {
                             $eleve['adresseR2L1'],
                             $eleve['adresseR2L2']
                         ])));
-                $communeR2 = $eleve['communeR2'];
-                $circuitR2 = $eleve['service1IdR2'];
-                if ($eleve['service2IdR2']) {
-                    $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
+                $communeR2 = $eleve['lacommuneR2'];
+                $circuitR2 = $eleve['service1R2'];
+                if ($eleve['service2R2']) {
+                    $circuitR2 .= '<br/>' . $eleve['service2R2'];
                 }
                 $arretR2 = $eleve['station1r2'];
                 if ($eleve['station2r2']) {

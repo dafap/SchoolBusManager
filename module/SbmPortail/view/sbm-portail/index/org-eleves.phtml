@@ -119,9 +119,9 @@ $actions = [
                 $r[] = htmlspecialchars(
                     str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES,
                     'utf-8', false);
-                $circuitR1 = $eleve['service1IdR1'];
-                if ($eleve['service2IdR1']) {
-                    $circuitR1 .= '<br/>' . $eleve['service2IdR1'];
+                $circuitR1 = $eleve['service1R1'];
+                if ($eleve['service2R1']) {
+                    $circuitR1 .= '<br/>' . $eleve['service2R1'];
                 }
                 $arretR1 = $eleve['station1r1'];
                 if ($eleve['station2r1']) {
