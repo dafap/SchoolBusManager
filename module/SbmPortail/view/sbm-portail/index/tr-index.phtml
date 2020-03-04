@@ -12,8 +12,8 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
- * @version 2019-2.5.0
+ * @date 4 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -76,12 +76,15 @@ if ($this->services) :
 		<?php
         if (method_exists($this->effectifTransporteursServices, 'transportes')) {
             $effectif = $this->effectifTransporteursServices->transportes(
-                $service->serviceId);
+                $service->ligneId, $service->sens, $service->moment, $service->ordre);
         } else {
             $effectif = 0;
         }
         $hiddens = [
-            'serviceId' => $service->serviceId
+            'ligneId' => $service->ligneId,
+            'sens' => $service->sens,
+            'moment' => $service->moment,
+            'ordre' => $service->ordre
         ];
         $buttons = [
             'horaires' => [
@@ -92,11 +95,10 @@ if ($this->services) :
         ];
         ?>
 				<tr>
-					<td><?=$service->serviceId;?></td>
-					<td><?=$service->nom;?></td>
+					<td><?=$service->designation();?></td>
 					<td class="effectif"><?=$effectif;?></td>
 					<td>
-						<?=$this->listeLigneActions($service->serviceId, $hiddens, $buttons);?>
+						<?=$this->listeLigneActions($service->getEncodeServiceId(), $hiddens, $buttons);?>
 					</td>
 				</tr>
 				<?php

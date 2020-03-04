@@ -21,10 +21,12 @@ use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Sql;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use \SbmCommun\Model\Traits\ServiceTrait;
+use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
 class ServicesForSelect implements FactoryInterface
 {
-    use \SbmCommun\Model\Traits\ServiceTrait;
+    use ServiceTrait, ExpressionSqlTrait;
 
     /**
      *
@@ -70,10 +72,7 @@ class ServicesForSelect implements FactoryInterface
             'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         $this->columns = $this->getServiceKeys(); // à faire en premier
-        $sens = "CASE sens WHEN 1 THEN 'Aller' ELSE 'Retour' END";
-        $moment = "CASE moment WHEN 1 THEN 'Matin' WHEN 2 THEN 'Midi' ELSE 'Soir' END";
-        $this->columns['libelle'] = new Literal(
-            "CONCAT(ligneId, ' - ', $sens, ' - ', $moment, ' - Numéro ', ordre)");
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
         return $this;
     }
 

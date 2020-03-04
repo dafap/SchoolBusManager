@@ -13,8 +13,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 4 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
 
@@ -858,19 +858,19 @@ class IndexController extends AbstractActionController
             'R Adresse ligne 1' => 'adresseL1',
             'R Adresse ligne 2' => 'adresseL2',
             'R Adresse ligne 3' => 'adresseL3',
-            'R Commune' => 'commune',
+            'R Commune' => 'laposte',
             'R Téléphone 1' => 'telephoneF',
             'R Téléphone 2' => 'telephoneP',
             'R Téléphone 3' => 'telephoneT',
             'Établissement' => 'etablissement',
             'Commune de l\'établissement' => 'communeEtablissement',
             'Classe' => 'classe',
-            'Service' => 'service1Id',
+            'Service' => 'service1',
             'Station Montée' => 'station1',
             'Commune station montée' => 'communeStation1',
             'Station Descente' => 'station2',
             'Commune station descente' => 'communeStation2',
-            'Correspondance' => 'service2Id'
+            'Correspondance' => 'ligne2Id'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];

@@ -8,18 +8,20 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 4 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use SbmCommun\Model\Traits\ExpressionSqlTrait;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class AffectationsServicesStations extends AbstractQuery
 {
+    use ExpressionSqlTrait;
 
     protected function init()
     {
@@ -101,14 +103,16 @@ class AffectationsServicesStations extends AbstractQuery
             $millesime --;
         }
         $select = clone $this->select;
-        $select->join([
-            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], $this->jointureStationsCircuits(1), [
-            'horaire1' => 'horaireA'
-        ])
+        $select->join(
+            [
+                'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
+            ], $this->jointureAffectationsCircuits(1, 'cir1'),
+            [
+                'horaire1' => 'horaireA'
+            ])
             ->join([
             'ser1' => $this->db_manager->getCanonicName('services', 'table')
-        ], $this->jointureStationsServices(1, 'ser1'),
+        ], $this->jointureAffectationsServices(1, 'ser1'),
             [
                 'service1_nbPlaces' => 'nbPlaces',
                 'service1_alias' => 'alias',
@@ -149,17 +153,15 @@ class AffectationsServicesStations extends AbstractQuery
         ], $select::JOIN_LEFT)
             ->join([
             'lot1' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'lign1.lotId = lot1.lotId',
-            [
-                'service1_marche' => 'marche',
-                'service1_lot' => 'lot'
-            ], Select::JOIN_LEFT)
+        ], 'lign1.lotId = lot1.lotId', [
+            'lot1_marche' => 'marche',
+            'lot1_lot' => 'lot'
+        ], Select::JOIN_LEFT)
             ->join(
             [
                 'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot1.transporteurId = tit1.transporteurId',
-            [
-                'service1_titulaire' => 'nom'
+            ], 'lot1.transporteurId = tit1.transporteurId', [
+                'lot1_titulaire' => 'nom'
             ], Select::JOIN_LEFT)
             ->order(
             [
@@ -167,7 +169,7 @@ class AffectationsServicesStations extends AbstractQuery
                 // semaine (de Services), remplace jours (Affectations) non traité
                 'semaine DESC',
                 'moment',
-                'correspondance',
+                'correspondance'
             ]);
         $where = new Where();
         $where->equalTo('aff.millesime', $millesime)->and->equalTo('aff.eleveId', $eleveId);
@@ -190,26 +192,18 @@ class AffectationsServicesStations extends AbstractQuery
         $select->join(
             [
                 'ser1' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'aff.service1Id = ser1.serviceId',
+            ], $this->jointureAffectationsServices(1, 'ser1'),
             [
-                'service1' => 'nom',
+                'service1_nbPlaces' => 'nbPlaces',
                 'service1_alias' => 'alias',
-                'service1_aliasTr' => 'aliasTr',
-                'operateur1' => 'operateur'
+                'semaine' => 'semaine'
             ])
             ->join([
-            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser1.lotId = lot1.lotId',
+            'lign1' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser1', 'lign1'),
             [
-                'service1_marche' => 'marche',
-                'service1_lot' => 'lot'
-            ])
-            ->join(
-            [
-                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot1.transporteurId = tit1.transporteurId',
-            [
-                'service1_titulaire' => 'nom'
+                'ligne1_operateur' => 'operateur',
+                'ligne1_internes' => 'internes'
             ])
             ->join(
             [
@@ -229,32 +223,49 @@ class AffectationsServicesStations extends AbstractQuery
         ])
             ->join([
             'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], 'ser1.serviceId = cir1.serviceId AND cir1.stationId = sta1.stationId',
+        ], $this->jointureAffectationsCircuits(1, 'cir1'),
             [
+                'horaire' => 'horaireA',
                 'circuit1Id' => 'circuitId'
             ], $select::JOIN_LEFT)
             ->join([
-            'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'aff.service2Id = ser2.serviceId',
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'lign1.lotId = lot1.lotId', [
+            'lot1_marche' => 'marche',
+            'lot1_lot' => 'lot'
+        ], $select::JOIN_LEFT)
+            ->join(
             [
-                'service2' => 'nom',
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId', [
+                'lot1_titulaire' => 'nom'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureAffectationsServices(2, 'ser2'),
+            [
+                'service2_nbPlaces' => 'nbPlaces',
                 'service2_alias' => 'alias',
-                'service2_aliasTr' => 'aliasTr',
-                'operateur2' => 'operateur'
+                'service2_semaine' => 'semaine'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'lign2' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser2', 'lign2'),
+            [
+                'ligne2_operateur' => 'operateur',
+                'ligne2_internes' => 'internes'
             ], $select::JOIN_LEFT)
             ->join([
             'lot2' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser2.lotId = lot2.lotId',
-            [
-                'service2_marche' => 'marche',
-                'service2_lot' => 'lot'
-            ], $select::JOIN_LEFT)
+        ], 'lign2.lotId = lot2.lotId', [
+            'lot2_marche' => 'marche',
+            'lot2_lot' => 'lot'
+        ], $select::JOIN_LEFT)
             ->join(
             [
                 'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot2.transporteurId = tit2.transporteurId',
-            [
-                'service2_titulaire' => 'nom'
+            ], 'lot2.transporteurId = tit2.transporteurId', [
+                'lot2_titulaire' => 'nom'
             ], $select::JOIN_LEFT)
             ->join(
             [
@@ -274,15 +285,14 @@ class AffectationsServicesStations extends AbstractQuery
         ], $select::JOIN_LEFT)
             ->join([
             'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], 'ser2.serviceId = cir2.serviceId AND cir2.stationId = sta2.stationId',
+        ], $this->jointureAffectationsCircuits(2, 'cir2'),
             [
+                'horaire2' => 'horaireA',
                 'circuit2Id' => 'circuitId'
             ], $select::JOIN_LEFT);
         $where = new Where();
-        $where->equalTo('cir1.millesime', $this->millesime)->equalTo('aff.millesime',
-            $this->millesime)->and->equalTo('eleveId', $eleveId)
-            ->nest()
-            ->isNull('cir2.millesime')->or->equalTo('cir2.millesime', $this->millesime)->unnest();
+        $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.millesime',
+            $this->millesime)->and->equalTo('aff.eleveId', $eleveId);
         return $this->renderResult($select->where($where));
     }
 
@@ -392,34 +402,6 @@ class AffectationsServicesStations extends AbstractQuery
             'commune_responsable' => 'nom'
         ])
             ->join([
-            'ser1' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser1.serviceId=aff.service1Id',
-            [
-                'service1' => 'serviceId',
-                'service1_alias' => 'alias',
-                'service1_aliasTr' => 'aliasTr'
-            ])
-            ->join([
-            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser1.lotId = lot1.lotId',
-            [
-                'service1_marche' => 'marche',
-                'service1_lot' => 'lot'
-            ])
-            ->join(
-            [
-                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot1.transporteurId = tit1.transporteurId',
-            [
-                'service1_titulaire' => 'nom'
-            ])
-            ->join(
-            [
-                'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'ser1.transporteurId=tra1.transporteurId', [
-                'transporteur1' => 'nom'
-            ])
-            ->join([
             'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'aff.station1Id = sta1.stationId', [
             'station1' => 'nom'
@@ -430,26 +412,64 @@ class AffectationsServicesStations extends AbstractQuery
             'commune1' => 'nom'
         ])
             ->join([
-            'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser2.serviceId=aff.service2Id',
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureAffectationsServices(1, 'ser1'),
             [
-                'service2' => 'serviceId',
+                'semaine' => 'semaine',
+                'service1_alias' => 'alias',
+                'service1_nbPlaces' => 'nbPlaces'
+            ])
+            ->join(
+            [
+                'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser1.transporteurId=tra1.transporteurId', [
+                'transporteur1' => 'nom'
+            ])
+            ->join([
+            'lign1' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser1', 'lign1'),
+            [
+                'ligne1_operateur' => 'operateur',
+                'ligne1_internes' => 'internes'
+            ])
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'lign1.lotId = lot1.lotId', [
+            'lot1_marche' => 'marche',
+            'lot1_lot' => 'lot'
+        ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId', [
+                'lot1_titulaire' => 'nom'
+            ], Select::JOIN_LEFT)
+            ->join([
+            'ser2' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureAffectationsServices(2, 'ser2'),
+            [
+                'service2_semaine' => 'semaine',
                 'service2_alias' => 'alias',
-                'service2_aliasTr' => 'aliasTr'
+                'service2_nbPlaces' => 'nbPlaces'
             ], $select::JOIN_LEFT)
             ->join([
-            'lot2' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser2.lotId = lot2.lotId',
+            'lign2' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser2', 'lign2'),
             [
-                'service2_marche' => 'marche',
-                'service2_lot' => 'lot'
-            ], $select::JOIN_LEFT)
+                'ligne2_operateur' => 'operateur',
+                'ligne2_internes' => 'internes'
+            ])
+            ->join([
+            'lot2' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'lign2.lotId = lot2.lotId', [
+            'lot2_marche' => 'marche',
+            'lot2_lot' => 'lot'
+        ], $select::JOIN_LEFT)
             ->join(
             [
                 'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot2.transporteurId = tit2.transporteurId',
-            [
-                'service2_titulaire' => 'nom'
+            ], 'lot2.transporteurId = tit2.transporteurId', [
+                'lot2_titulaire' => 'nom'
             ], $select::JOIN_LEFT)
             ->join(
             [
@@ -513,7 +533,13 @@ class AffectationsServicesStations extends AbstractQuery
     private function selectScolaritesR($where, $order = null)
     {
         $select = clone $this->select;
-        $select->join([
+        $columns = $select->getRawState(Select::COLUMNS);
+        $columns['service1'] = new Expression(
+            $this->getSqlSemaineLigneHoraireSens('ser1.semaine', 'aff.ligne1Id',
+                'cir1.horaireA', 'aff.sensligne1'));
+        // $columns['service2Id'] = new Expression('');
+        $select->columns($columns)
+            ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ], 'ele.eleveId=aff.eleveId',
             [
@@ -575,6 +601,39 @@ class AffectationsServicesStations extends AbstractQuery
             'classe' => 'nom'
         ])
             ->join([
+            'ser1' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureAffectationsServices(1, 'ser1'),
+            [
+                'semaine' => 'semaine',
+                'service1_alias' => 'alias',
+                'service1_nbPlaces' => 'nbPlaces'
+            ])
+            ->join(
+            [
+                'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'ser1.transporteurId=tra1.transporteurId', [
+                'transporteur1' => 'nom'
+            ])
+            ->join([
+            'lign1' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser1', 'lign1'),
+            [
+                'ligne1_operateur' => 'operateur',
+                'ligne1_internes' => 'internes'
+            ])
+            ->join([
+            'lot1' => $this->db_manager->getCanonicName('lots', 'table')
+        ], 'lign1.lotId = lot1.lotId', [
+            'lot1_marche' => 'marche',
+            'lot1_lot' => 'lot'
+        ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'tit1' => $this->db_manager->getCanonicName('transporteurs', 'table')
+            ], 'lot1.transporteurId = tit1.transporteurId', [
+                'lot1_titulaire' => 'nom'
+            ], $select::JOIN_LEFT)
+            ->join([
             'sta1' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'sta1.stationId=aff.station1Id', [
             'station1' => 'nom'
@@ -584,6 +643,13 @@ class AffectationsServicesStations extends AbstractQuery
                 'sta1com' => $this->db_manager->getCanonicName('communes', 'table')
             ], 'sta1.communeId=sta1com.communeId', [
                 'communeStation1' => 'nom'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir1'),
+            [
+                'horaire' => 'horaireA',
+                'circuit1Id' => 'circuitId'
             ], $select::JOIN_LEFT)
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
@@ -597,40 +663,31 @@ class AffectationsServicesStations extends AbstractQuery
                 'communeStation2' => 'nom'
             ], $select::JOIN_LEFT)
             ->join([
-            'ser1' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser1.serviceId=aff.service1Id',
-            [
-                'service1' => 'nom',
-                'service1_alias' => 'alias',
-                'service1_aliasTr' => 'aliasTr'
-            ])
-            ->join(
-            [
-                'tra1' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'ser1.transporteurId=tra1.transporteurId', [
-                'transporteur1' => 'nom'
-            ])
-            ->join([
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser2.serviceId=aff.service2Id',
+        ], $this->jointureAffectationsServices(2, 'ser2'),
             [
-                'service2' => 'nom',
+                'service2_semaine' => 'semaine',
                 'service2_alias' => 'alias',
-                'service2_aliasTr' => 'aliasTr'
+                'service2_nbPlaces' => 'nbPlaces'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'lign2' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], $this->jointureServicesLignes('ser2', 'lign2'),
+            [
+                'ligne2_operateur' => 'operateur',
+                'ligne2_internes' => 'internes'
             ], $select::JOIN_LEFT)
             ->join([
             'lot2' => $this->db_manager->getCanonicName('lots', 'table')
-        ], 'ser2.lotId = lot2.lotId',
-            [
-                'service2_marche' => 'marche',
-                'service2_lot' => 'lot'
-            ], $select::JOIN_LEFT)
+        ], 'lign2.lotId = lot2.lotId', [
+            'lot2_marche' => 'marche',
+            'lot2_lot' => 'lot'
+        ], $select::JOIN_LEFT)
             ->join(
             [
                 'tit2' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'lot2.transporteurId = tit2.transporteurId',
-            [
-                'service2_titulaire' => 'nom'
+            ], 'lot2.transporteurId = tit2.transporteurId', [
+                'lot2_titulaire' => 'nom'
             ], $select::JOIN_LEFT)
             ->join(
             [
@@ -674,10 +731,10 @@ class AffectationsServicesStations extends AbstractQuery
         $selectBase->join(
             [
                 'ser1' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'ser1.serviceId = aff.service1Id', [])
+            ], $this->jointureAffectationsServices(1, 'ser1'), [])
             ->join([
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser2.serviceId = aff.service2Id', [], Select::JOIN_LEFT)
+        ], $this->jointureAffectationsServices(2, 'ser2'), [], Select::JOIN_LEFT)
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [
@@ -714,15 +771,7 @@ class AffectationsServicesStations extends AbstractQuery
         $selectF->from([
             'telF' => $selectBase
         ])
-            ->columns(
-            [
-                'responsable',
-                'telephone' => 'telephoneF',
-                'eleve' => 'eleve',
-                'service1' => 'service1Id',
-                'service2' => 'service2Id',
-                'etablissement' => 'etablissement'
-            ])
+            ->columns($this->getColumnsForTelephones('telephoneF'))
             ->where($whereF);
         // dans le champ des téléphones portables
         $whereP = new Where();
@@ -731,15 +780,7 @@ class AffectationsServicesStations extends AbstractQuery
         $selectP->from([
             'telP' => $selectBase
         ])
-            ->columns(
-            [
-                'responsable',
-                'telephone' => 'telephoneP',
-                'eleve' => 'eleve',
-                'service1' => 'service1Id',
-                'service2' => 'service2Id',
-                'etablissement' => 'etablissement'
-            ])
+            ->columns($this->getColumnsForTelephones('telephoneP'))
             ->where($whereP);
         // dans le champ des téléphones du travail
         $whereT = new Where();
@@ -748,15 +789,7 @@ class AffectationsServicesStations extends AbstractQuery
         $selectT->from([
             'telT' => $selectBase
         ])
-            ->columns(
-            [
-                'responsable',
-                'telephone' => 'telephoneT',
-                'eleve' => 'eleve',
-                'service1' => 'service1Id',
-                'service2' => 'service2Id',
-                'etablissement' => 'etablissement'
-            ])
+            ->columns($this->getColumnsForTelephones('telephoneT'))
             ->where($whereT);
 
         $selectT->combine($selectP);
@@ -775,21 +808,35 @@ class AffectationsServicesStations extends AbstractQuery
         return $select;
     }
 
-    private function jointureStationsCircuits(int $n)
+    private function getColumnsForTelephones(string $telephone)
+    {
+        return [
+            'responsable',
+            'telephone' => $telephone,
+            'eleve' => 'eleve',
+            'service1' => new Expression(
+                $this->getSqlDesignationService('ligne1Id', 'sensligne1',
+                    'moment', 'ordreligne1')),
+            'service2' => 'ligne2Id',
+            'etablissement' => 'etablissement'
+        ];
+    }
+
+    private function jointureAffectationsCircuits(int $n, string $cir)
     {
         return sprintf(
             implode(' AND ',
                 [
-                    'aff.millesime = cir.millesime',
-                    'aff.ligne%1$dId = cir.ligneId',
-                    'aff.sensligne%1$d = cir.sens',
-                    'aff.moment = cir.moment',
-                    'aff.ordreligne%1$d = cir.ordre',
-                    'aff.station1Id = cir.stationId'
-                ]), $n);
+                    'aff.millesime = %2$s.millesime',
+                    'aff.ligne%1$dId = %2$s.ligneId',
+                    'aff.sensligne%1$d = %2$s.sens',
+                    'aff.moment = %2$s.moment',
+                    'aff.ordreligne%1$d = %2$s.ordre',
+                    'aff.station1Id = %2$s.stationId'
+                ]), $n, $cir);
     }
 
-    private function jointureStationsServices(int $n, string $ser)
+    private function jointureAffectationsServices(int $n, string $ser)
     {
         return sprintf(
             implode(' AND ',

@@ -8,8 +8,8 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 4 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -19,6 +19,7 @@ use Zend\Db\Sql\Where;
 
 class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifInterface
 {
+
     private $modes = [
         self::DEGRESSIF => 'dégressif',
         self::LINEAIRE => 'à l\'unité'
@@ -39,7 +40,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     private $rythme_inconnu = "Le type demandé est inconnu";
 
     private $grilles = [
-        self::DP_PLEIN_TARIF=> 'DP ayants droit',
+        self::DP_PLEIN_TARIF => 'DP ayants droit',
         self::DP_DEMI_TARIF => 'DP en GA demi tarif',
         self::INTERNE => 'Interne',
         self::NON_AYANT_DROIT => 'Non ayant droit',
@@ -109,17 +110,18 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
             $where = new Where();
             $where->equalTo('grille', $grille)->lessThanOrEqualTo('seuil', $quantite);
             $resultset = $this->fetchAll($where, 'seuil DESC');
-            $row = $resultset->current();
-            // selon que la strategy est appliquée ou non
-            if ($row->mode == self::DEGRESSIF ||
-                $row->mode == $this->modes[self::DEGRESSIF]) {
-                return $row->montant;
-            } else {
-                return $row->montant * $quantite;
+            if ($resultset->count()) {
+                $row = $resultset->current();
+                // selon que la strategy est appliquée ou non
+                if ($row->mode == self::DEGRESSIF ||
+                    $row->mode == $this->modes[self::DEGRESSIF]) {
+                    return $row->montant;
+                } else {
+                    return $row->montant * $quantite;
+                }
             }
-        } else {
-            return 0.0;
         }
+        return 0.0;
     }
 
     /**

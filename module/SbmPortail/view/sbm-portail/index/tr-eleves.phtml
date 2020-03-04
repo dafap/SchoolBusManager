@@ -7,8 +7,8 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 4 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -175,9 +175,9 @@ if ($this->categorie == 2) {
                 $tr_css .= ' barre';
             }
             // circuit
-            $circuit = $eleve['service1Id'];
-            if (! empty($eleve['service2Id']))
-                $circuit .= '<br/>' . $eleve['service2Id'];
+            $circuit = $eleve['service1'];
+            if (! empty($eleve['ligne2Id']))
+                $circuit .= '<br/>' . $eleve['ligne2Id'];
             // arrêt
             $arret = $eleve['station1'];
             if (! empty($eleve['station2']))
