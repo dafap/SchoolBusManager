@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 5 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -366,7 +366,7 @@ class IndexController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {
@@ -972,7 +972,7 @@ class IndexController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {

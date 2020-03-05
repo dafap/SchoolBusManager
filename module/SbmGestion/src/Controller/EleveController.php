@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 5 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1186,7 +1186,7 @@ class EleveController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {

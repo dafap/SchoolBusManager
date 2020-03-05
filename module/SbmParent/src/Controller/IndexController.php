@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 5 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -56,7 +56,7 @@ class IndexController extends AbstractActionController
             $message1 = sprintf($format, implode(' ou ', $listeEtab));
         }
         $this->flashMessenger()->addWarningMessage($message1);
-        $viewhelperTelephone = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelperTelephone = new \SbmCommun\Model\View\Helper\Telephone();
         $message2 = 'Pour obtenir une dérogation, prenez contact avec le service de transport';
         $message2 .= sprintf(' par téléphone au %s ou par mail à %s.',
             $viewhelperTelephone($this->client['telephone']), $this->client['email']);
@@ -124,7 +124,7 @@ class IndexController extends AbstractActionController
         // fin du contrôle de paiement en ligne
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $format_telephone = new \SbmCommun\Form\View\Helper\Telephone();
+        $format_telephone = new \SbmCommun\Model\View\Helper\Telephone();
         return new ViewModel(
             [
                 'theme' => $this->theme,

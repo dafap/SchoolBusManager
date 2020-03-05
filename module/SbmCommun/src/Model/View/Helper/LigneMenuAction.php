@@ -1,104 +1,76 @@
 <?php
 /**
- * Description courte du fichier
+ * Renvoie une ligne de menu dans lequel le lien est un formulaire POST
  *
- * Description longue du fichier s'il y en a une
- *
- * @project project_name
- * @package package_name
- * @filesource AbstractListeAction.php
+ * @project sbm
+ * @package SbmCommun/src/Form/View/Helper
+ * @filesource LigneMenuAction.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
- * @version 2019-2.5.0
+ * @date 5 mars 2020
+ * @version 2020-2.6.0
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
+use SbmBase\Model\StdLib;
 use Zend\View\Helper\AbstractHelper;
 
-abstract class AbstractListeAction extends AbstractHelper
+class LigneMenuAction extends AbstractHelper
 {
 
-    protected $form_name;
+    private $form_name;
+
+    public function __invoke($bullet, $hiddens = [], $button_attributes = [], $form_attributes = [])
+    {
+        $result = '<li class="ligne-menu">';
+        $result .= $this->getBullet($bullet);
+        $result .= $this->openForm($form_attributes);
+        if (! array_key_exists('op', $hiddens)) {
+            $hiddens['op'] = null;
+        }
+        $result .= $this->getHiddens($hiddens);
+        $result .= $this->getButton($button_attributes);
+        return $result . $this->closeForm() . "</li>\n";
+    }
 
     /**
-     * Renvoie dans une chaine les balises &lt;input type="hidden" name="quelque_chose"
-     * id= &gt; indiqués dans le tableau $hiddens. Chaque input a un id qui est la
-     * concaténation du name avec l'id de la ligne.
      *
-     * @param array $hiddens
-     * @param int|string $id
-     *            id de la ligne de données pour ListeLigneAction et vide pour
-     *            ListeZoneAction
+     * @param null|string $bullet
+     *            une classe css
      * @return string
      */
-    protected function getHiddens($hiddens, $id = '')
+    private function getBullet($bullet)
     {
-        if (! is_array($hiddens)) {
-            return '';
+        if ($bullet) {
+            return "<i class=\"$bullet\"></i>";
         }
-        $result = '';
-        foreach ($hiddens as $name => $value) {
-            $base = rtrim(rtrim($name, ']'), '[');
-            if (is_array($value)) {
-                foreach ($value as $key => $item) {
-                    $hidden_name = $base . '[]';
-                    $hidden_id = "$base$id-$key";
-                    $result .= $this->renderHidden($hidden_name, $hidden_id, $item);
-                }
-            } else {
-                $hidden_name = $base;
-                $hidden_id = "$base$id";
-                $result .= $this->renderHidden($hidden_name, $hidden_id, $value);
-            }
-        }
-        return $result;
+        return '';
     }
 
-    protected function renderHidden($hidden_name, $hidden_id, $value)
+    private function getButton($attributes)
     {
-        $result = '<input type="hidden" name="' . $hidden_name . '" value';
-        if (! is_null($value)) {
-            $result .= '="' . $value . '"';
+        $name = StdLib::getParam('name', $attributes, 'run');
+        $id = StdLib::getParam('id', $attributes, false);
+        $result = '<input type="submit" name="' . $name . '"';
+        if ($id) {
+            $result .= ' id="' . $id . '"';
         }
-        $result .= ' id="' . $hidden_id . '"';
-        $result .= ">\n";
-        return $result;
-    }
-
-    protected function getButton($name, $attributes, $id = null)
-    {
-        if (! $id) {
-            if (array_key_exists('id', $attributes)) {
-                $id = $attributes['id'];
-            } else {
-                $id = $name;
-            }
-        }
-        $result = '<input type="submit" name="' . $name . '" id="' . $id . '"';
         if (array_key_exists('class', $attributes)) {
             if (strpos($attributes['class'], 'fam-') !== false) {
                 $result .= ' class="' . $attributes['class'] . '" value';
-            } elseif (strpos($attributes['class'], 'default') != false) {
+            } else {
                 if (array_key_exists('value', $attributes)) {
                     $result .= ' class="' . $attributes['class'] . '" value="' .
                         $attributes['value'] . '"';
                 } else {
                     $result .= ' class="' . $attributes['class'] . '" value';
                 }
-            } else {
-                if (array_key_exists('value', $attributes)) {
-                    $result .= ' class="default ' . $attributes['class'] . '" value="' .
-                        $attributes['value'] . '"';
-                } else {
-                    $result .= ' class="default ' . $attributes['class'] . '" value';
-                }
             }
         } else {
             if (array_key_exists('value', $attributes)) {
-                $result .= ' class="default" value="' . $attributes['value'] . '"';
+                $result .= ' value="' . $attributes['value'] . '"';
             } else {
-                $result .= ' class="default" value';
+                $result .= ' value';
             }
         }
         if (array_key_exists('accesskey', $attributes)) {
@@ -142,23 +114,42 @@ abstract class AbstractListeAction extends AbstractHelper
     }
 
     /**
-     * Renvoie la balise <form . ..>
+     * Renvoie dans une chaine les balises &lt;input type="hidden"&gt; indiqués dans le
+     * tableau $hiddens. Ces input n'ont pas de id.
      *
-     * @param int|string $id
+     * @param array $hiddens
+     *
+     * @return string
+     */
+    private function getHiddens($hiddens)
+    {
+        if (! is_array($hiddens)) {
+            return '';
+        }
+        $format = "<input type=\"hidden\" name=\"%s\" value%s>\n";
+        $result = '';
+        foreach ($hiddens as $name => $value) {
+            $result .= sprintf($format, $name, $value ? "=\"$value\"" : "");
+        }
+        return $result;
+    }
+
+    /**
+     * Renvoie la balise <form>
+     *
      * @param array $attributes
      * @return string
      */
-    protected function openForm($attributes, $form_name_default, $id = '')
+    private function openForm($attributes)
     {
         // pour la compatibilité aves HTML 4, un attribut 'id' est toujours placé en même
-        // temps que
-        // l'attribut 'name' et prend la même valeur.
+        // temps que l'attribut 'name' et prend la même valeur.
         if (array_key_exists('name', $attributes)) {
-            $this->form_name = $attributes['name'] . $id;
+            $this->form_name = $attributes['name'];
         } elseif (array_key_exists('id', $attributes)) {
-            $this->form_name = $attributes['id'] . $id;
+            $this->form_name = $attributes['id'];
         } else {
-            $this->form_name = $form_name_default . $id;
+            $this->form_name = 'lignemenuactions';
         }
         $result = '<form id="' . $this->form_name . '" name="' . $this->form_name .
             '" method="post"';
@@ -205,7 +196,7 @@ abstract class AbstractListeAction extends AbstractHelper
      *
      * @return string
      */
-    protected function closeForm()
+    private function closeForm()
     {
         return "</form>\n";
     }

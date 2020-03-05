@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 5 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Image\Image;
@@ -111,7 +111,7 @@ return [
                     'label' => 'Bandeau de haut de page du site',
                     'taille' => Image::FIXED_SIZE,
                     'width' => 1170,
-                    'height' => 195
+                    'height' => 105
                 ],
                 'bas-de-mail-service-gestion.png' => [
                     // utilisé dans

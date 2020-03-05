@@ -2,15 +2,31 @@
  * Feuille de style des pages du module
  * 
  * @project sbm
- * @package public/css/ccmgc
+ * @package public/css/tra
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
- * @version 2019-2.5.0
+ * @date 5 mars 2020
+ * @version 2020-2.6.0
  **/
 
-
+/*--------- GENERAL ------------------*/
+h1 {
+	font-size: 1.5em;
+	margin-top: 5px;
+	margin-bottom: 8px;
+}
+h2 {
+	font-size: 1.2em;
+	margin-top: 3px;
+	margin-bottom: 5px;
+}
+}
+h3 {
+	font-size: 1em;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
 #menugeneral-inner form {
 	display: inline-block;
 }
@@ -42,14 +58,14 @@
 }
 /*--------- Header -----------------*/
 #bandeau {
-	height: 195px;
+	height: 105px;
 	margin: 0;
 	width: 100%;
 }
 
 .page1 #header #bandeau {
 	background-image: url("/img/bandeau-sbm.png");
-	background-size: 100% 195px;
+	background-size: 100% 105px;
 	background-repeat: no-repeat;
 }
 /*-------- Footer -----------------*/
