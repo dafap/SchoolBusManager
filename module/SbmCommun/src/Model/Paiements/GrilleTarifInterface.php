@@ -7,21 +7,27 @@
  * @filesource GrilleTarifInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
- * @version 2019-2.5.0
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Paiements;
 
 interface GrilleTarifInterface
 {
 
-    const DP_PLEIN_TARIF = 1;
+    const NORMAL = 0;
 
-    const DP_DEMI_TARIF = 2;
+    const REDUIT = 1;
 
-    const INTERNE = 3;
+    const TARIF_ARLYSERE = 1;
 
-    const NON_AYANT_DROIT = 4;
+    const HORS_ARLYSERE = 2;
+
+    const RPI = 3;
+
+    const CARTE_R2 = 4;
+
+    const ABONNEMENT = 0;
 
     const DUPLICATA = 5;
 

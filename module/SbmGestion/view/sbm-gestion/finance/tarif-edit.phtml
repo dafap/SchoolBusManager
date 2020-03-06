@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
- * @version 2019-2.5.0
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -44,12 +44,16 @@ $actions = [
 				<?= $this->formRow($this->form->get('nom'));?></div>
 			<div id="wrapper-montant" class="row-inner edit">
 				<?= $this->formRow($this->form->get('montant')); ?></div>
-			<div id="wrapper-rythme" class="row-inner edit">
-				<?= $this->formRow($this->form->get('rythme')); ?></div>
+			<div id="wrapper-duplicata" class="row-inner edit">
+				<?= $this->formRow($this->form->get('duplicata')); ?></div>
 			<div id="wrapper-grille" class="row-inner edit">
 				<?= $this->formRow($this->form->get('grille')); ?></div>
+			<div id="wrapper-grille" class="row-inner edit">
+				<?= $this->formRow($this->form->get('reduit')); ?></div>
 			<div id="wrapper-mode" class="row-inner edit">
 				<?= $this->formRow($this->form->get('mode')); ?></div>
+			<div id="wrapper-grille" class="row-inner edit">
+				<?= $this->formRow($this->form->get('seuil')); ?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel')); ?></div>

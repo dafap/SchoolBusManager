@@ -8,8 +8,8 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -44,19 +44,23 @@ return [
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'montant' => 'decimal(10,2) NOT NULL DEFAULT "0.00"',
             'nom' => 'varchar(48) NOT NULL',
-            'rythme' => 'int(4) NOT NULL DEFAULT "1"',
-            'grille' => 'int(4) NOT NULL DEFAULT "1"',
-            'mode' => 'int(4) NOT NULL DEFAULT "3"',
-            'seuil' => 'int(4) NOT NULL DEFAULT "1"'
+            'duplicata' => 'int(1) NOT NULL DEFAULT "0"',
+            'grille' => 'int(3) NOT NULL DEFAULT "1"',
+            'reduit' => 'int(1) NOT NULL DEFAULT "0"',
+            'mode' => 'int(3) NOT NULL DEFAULT "1"',
+            'seuil' => 'int(3) NOT NULL DEFAULT "1"'
         ],
         'primary_key' => [
             'tarifId'
         ],
         'keys' => [
             'idx_grille' => [
-                'unique' => false,
+                'unique' => true,
                 'fields' => [
-                    'grille'
+                    'duplicata',
+                    'grille',
+                    'reduit',
+                    'seuil'
                 ]
             ]
         ],

@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 déc. 2019
- * @version 2019-2.5.4
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -56,9 +56,12 @@ class FinanceController extends AbstractActionController
             ]
         ];
         foreach ($codesCaisse as $caisse => $codeC) {
-            $resultats[2]['as'][$caisse] = $tPaiements->totalAnneeScolaire($millesime, $codeC);
-            $resultats[2]['exercice1'][$caisse] =  $tPaiements->totalExercice($millesime, $codeC);
-            $resultats[2]['exercice2'][$caisse] =  $tPaiements->totalExercice($millesime + 1, $codeC);
+            $resultats[2]['as'][$caisse] = $tPaiements->totalAnneeScolaire($millesime,
+                $codeC);
+            $resultats[2]['exercice1'][$caisse] = $tPaiements->totalExercice($millesime,
+                $codeC);
+            $resultats[2]['exercice2'][$caisse] = $tPaiements->totalExercice(
+                $millesime + 1, $codeC);
         }
         foreach ($codesModeDePaiement as $modeDePaiement => $codeModeDeP) {
             $resultats['dateBordereau'][$modeDePaiement] = $tPaiements->dateDernierBordereau(
@@ -69,7 +72,7 @@ class FinanceController extends AbstractActionController
                 $codeModeDeP);
             // année scolaire
             $resultats[2]['as'][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
-                $millesime,null, $codeModeDeP);
+                $millesime, null, $codeModeDeP);
             foreach ($codesCaisse as $caisse => $codeC) {
                 $resultats[3]['as'][$caisse][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
                     $millesime, $codeC, $codeModeDeP);
@@ -94,7 +97,7 @@ class FinanceController extends AbstractActionController
                 'millesime' => $millesime,
                 'codesCaisse' => $codesCaisse,
                 'codesModeDePaiement' => $codesModeDePaiement,
-                'resultats' =>$resultats
+                'resultats' => $resultats
             ]);
     }
 
@@ -1215,12 +1218,12 @@ class FinanceController extends AbstractActionController
         $args = $this->initListe('tarifs',
             function ($config, $form) {
                 $table = $config['db_manager']->get('Sbm\Db\Table\Tarifs');
-                $form->setValueOptions('rythme', $table->getRythmes());
                 $form->setValueOptions('grille', $table->getGrilles());
                 $form->setValueOptions('mode', $table->getModes());
             }, [
-                'rythme',
+                'duplicata',
                 'grille',
+                'reduit',
                 'mode'
             ]);
         if ($args instanceof Response)
@@ -1232,8 +1235,10 @@ class FinanceController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Tarifs')->paginator(
                     $args['where'], [
+                        'duplicata',
                         'grille',
-                        'nom'
+                        'reduit',
+                        'seuil'
                     ]),
                 'effectifTarifs' => $effectifTarifs,
                 'page' => $this->params('page', 1),
@@ -1252,9 +1257,7 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $form = $this->form_manager->get(Form\Tarif::class);
-        $form->setValueOptions('rythme',
-            array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
-            ->setValueOptions('grille',
+        $form->setValueOptions('grille',
             array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
             ->setValueOptions('mode',
             array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));
@@ -1378,9 +1381,7 @@ class FinanceController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $tableTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $form = $this->form_manager->get(Form\Tarif::class);
-        $form->setValueOptions('rythme',
-            array_combine($tableTarifs->getRythmes(), $tableTarifs->getRythmes()))
-            ->setValueOptions('grille',
+        $form->setValueOptions('grille',
             array_combine($tableTarifs->getGrilles(), $tableTarifs->getGrilles()))
             ->setValueOptions('mode',
             array_combine($tableTarifs->getModes(), $tableTarifs->getModes()));

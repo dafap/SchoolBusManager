@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
- * @version 2019-2.5.0
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
@@ -20,9 +20,11 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 		<ul>
 			<li><?= $this->escapeHtml($this->data->nom); ?></li>
 			<li><?= $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
-			<li><?= $this->escapeHtml($this->data->rythme); ?></li>
+			<li><?= $this->escapeHtml($this->data->duplicata); ?></li>
 			<li><?= $this->escapeHtml($this->data->grille); ?></li>
+			<li><?= $this->escapeHtml($this->data->redui); ?></li>
 			<li><?= $this->escapeHtml($this->data->mode); ?></li>
+			<li><?= $this->data->seuil; ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

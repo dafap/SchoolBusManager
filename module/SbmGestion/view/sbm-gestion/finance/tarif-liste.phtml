@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -107,9 +107,11 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 				<tr>
 					<th>Nom</th>
 					<th>Montant</th>
-					<th>Type</th>
+					<th>Nature</th>
 					<th>Grille</th>
+					<th>Tarif</th>
 					<th>Mode</th>
+					<th>Seuil</th>
 					<th>Transportés</th>
 					<th>Demandes</th>
 					<th>Sélect.</th>
@@ -159,11 +161,15 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="montant align-right">
 						<?=$fmt->formatCurrency($tarif->montant, 'EUR');?></td>
 					<td class="attributs">
-						<?=$this->escapeHtml($tarif->rythme);?></td>
+						<?=$this->natureGrilleTarif($tarif->duplicata);?></td>
 					<td class="attributs">
 						<?=$this->escapeHtml($tarif->grille);?></td>
 					<td class="attributs">
+						<?=$this->reductionTarif($tarif->reduit);?></td>
+					<td class="attributs">
 						<?=$this->escapeHtml($tarif->mode);?></td>
+					<td class="attributs">
+						<?=$this->escapeHtml($tarif->seuil);?></td>
 					<td class="effectif align-right">
 						<?=$this->effectifTarifs->transportes($tarif->grilleTarif);?>
 

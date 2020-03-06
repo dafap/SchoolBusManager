@@ -7,8 +7,8 @@
  * @filesource vue.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 6 mars 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'tarifs',
@@ -30,7 +30,7 @@ return [
                 'field' => 'nom'
             ],
             [
-                'field' => 'rythme'
+                'field' => 'duplicata'
             ],
             [
                 'field' => 'grille'
@@ -38,6 +38,9 @@ return [
             [
                 'field' => 'grille',
                 'alias' => 'grilleTarif'
+            ],
+            [
+                'field' => 'reduit'
             ],
             [
                 'field' => 'mode'
@@ -48,8 +51,8 @@ return [
         ],
         'from' => [
             'table' => 'tarifs', // obligatoire mais peut être une vue
-            'type' => 'table', // optionnel, 'table' par défaut
+            'type' => 'table' // optionnel, 'table' par défaut
         ],
-        'order' => 'grilleTarif, montant'
+        'order' => 'duplicata, grilleTarif, reduit, seuil'
     ]
 ];

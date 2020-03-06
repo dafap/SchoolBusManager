@@ -7,7 +7,7 @@
  * Usage dans une vue : echo $this->telephone($data);
  *
  * @project sbm
- * @package module/SbmCommun/src/SbmCommun/Form/View/Helper
+ * @package module/SbmCommun/src/SbmCommun/Model/View/Helper
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)

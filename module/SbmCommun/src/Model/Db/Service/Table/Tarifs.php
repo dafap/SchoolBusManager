@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 6 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -27,23 +27,25 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $mode_inconnu = "Le mode demandé est inconnu";
 
-    /**
-     * Dans cette version, le rythme est remplacé par le type de grille
-     *
-     * @var array
-     */
-    private $rythmes = [
-        1 => 'abonnement',
-        2 => 'duplicatas'
+    private $reduits = [
+        self::NORMAL => 'Normal',
+        self::REDUIT => 'Réduit'
     ];
 
-    private $rythme_inconnu = "Le type demandé est inconnu";
+    private $reduit_inconnu = "L'application de la réduction est indéterminée";
+
+    private $duplicatas = [
+        self::ABONNEMENT => 'Abonnement',
+        self::DUPLICATA => 'Duplicata'
+    ];
+
+    private $duplicata_inconnu = "La nature de ce tarif est inconnue";
 
     private $grilles = [
-        self::DP_PLEIN_TARIF => 'DP ayants droit',
-        self::DP_DEMI_TARIF => 'DP en GA demi tarif',
-        self::INTERNE => 'Interne',
-        self::NON_AYANT_DROIT => 'Non ayant droit',
+        self::TARIF_ARLYSERE => 'Résidents Arlysère',
+        self::HORS_ARLYSERE => 'Résidents et point de montée hors Arlysère',
+        self::RPI => 'RPI École à École',
+        self::CARTE_R2 => 'Double Domiciliation',
         self::DUPLICATA => 'Duplicata'
     ];
 
@@ -59,8 +61,10 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Tarifs';
         $this->id_name = 'tarifId';
         $this->strategies = [
-            'rythme' => new TarifAttributsStrategy($this->rythmes, $this->rythme_inconnu),
+            //'duplicata' => new TarifAttributsStrategy($this->duplicatas,
+            //    $this->duplicata_inconnu),
             'grille' => new TarifAttributsStrategy($this->grilles, $this->grille_inconnu),
+            //'reduit' => new TarifAttributsStrategy($this->reduits, $this->reduit_inconnu),
             'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
         ];
     }
@@ -71,14 +75,19 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
         return $this->modes;
     }
 
-    public function getRythmes()
+    public function getDuplicatas()
     {
-        return $this->rythmes;
+        return $this->duplicatas;
     }
 
     public function getGrilles()
     {
         return $this->grilles;
+    }
+
+    public function getReduits()
+    {
+        return $this->reduits;
     }
 
     public function getGrille(int $grille)

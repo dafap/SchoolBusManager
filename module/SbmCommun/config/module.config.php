@@ -273,6 +273,10 @@ return [
             'pictogrammes' => ViewHelper\Pictogrammes::class,
             'renderCheckbox' => ViewHelper\RenderCheckbox::class,
             'telephone' => ViewHelper\Telephone::class,
+        ],
+        'factories' => [
+            'natureGrilleTarif' => ViewHelper\NatureGrilleTarif::class,
+            'reductionTarif'=>ViewHelper\ReductionTarif::class
         ]
     ],
     'view_manager' => [
