@@ -8,7 +8,7 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 7 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -23,9 +23,9 @@ use SbmBase\Model\StdLib;
  * - selection est un drapeau (boolean)
  * - montant est le montant du tarif en euros
  * - nom est le libellé de ce tarif
- * - rythme, inutilisé à Millau Grands Causses, indique le rythme de paiement selon la
- *   règle suivante 1 annuel 2 semestriel 4 trimestriel 8 mensuel
+ * - duplicata, indique la nature de la grille tarifaire
  * - grille est le numéro de la grille tarifaire. Une stratégie permet de décoder.
+ * - reduit indique la nature du tarif
  * - mode est le code du mode de calcul : 1 dégressif, 2 linéaire à l'unité
  * - seuil est le seuil de déclanchement du tarif lorsqu'il est dégressif
  * Un index est posé sur le champ 'grille'

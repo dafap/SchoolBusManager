@@ -1,15 +1,15 @@
 <?php
 /**
  * Service fournissant une liste de tarifs sous la forme d'un tableau
- *   'tarifId' => 'montant' + 'nom' 
+ *   'tarifId' => 'montant' + 'nom'
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Select
  * @filesource TarifsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 7 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -34,15 +34,15 @@ class TarifsForSelect implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->table_name = $this->db_manager->getCanonicName('tarifs', 'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
-        $libelle = new Literal('concat(nom, " (", montant, ")")');
+        $libelle = new Literal('concat(nom, " ", grille, " (", montant, ")")');
         $this->columns = [
             'tarifId',
             'libelle' => $libelle
         ];
         $this->order = [
             'grille',
-            'rythme',
-            'mode'
+            'reduction',
+            'seuil'
         ];
         return $this;
     }

@@ -1218,8 +1218,10 @@ class FinanceController extends AbstractActionController
         $args = $this->initListe('tarifs',
             function ($config, $form) {
                 $table = $config['db_manager']->get('Sbm\Db\Table\Tarifs');
-                $form->setValueOptions('grille', $table->getGrilles());
-                $form->setValueOptions('mode', $table->getModes());
+                $form->setValueOptions('grille', $table->getGrilles())
+                    ->setValueOptions('mode', $table->getModes())
+                    ->setValueOptions('duplicata', $table->getDuplicatas())
+                    ->setValueOptions('reduit', $table->getReduits());
             }, [
                 'duplicata',
                 'grille',

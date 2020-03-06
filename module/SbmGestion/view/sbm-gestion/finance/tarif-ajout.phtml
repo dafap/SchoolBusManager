@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 7 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -44,15 +44,15 @@ $actions = [
 				<?= $this->formRow($this->form->get('nom')); ?></div>
 			<div id="wrapper-montant" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('montant')); ?></div>
-			<div id="wrapper-rythme" class="row-inner ajout">
+			<div id="wrapper-duplicata" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('duplicata')); ?></div>
 			<div id="wrapper-grille" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('grille')); ?></div>
-			<div id="wrapper-grille" class="row-inner edit">
+			<div id="wrapper-reduit" class="row-inner edit">
 				<?= $this->formRow($this->form->get('reduit')); ?></div>
 			<div id="wrapper-mode" class="row-inner ajout">
 				<?= $this->formRow($this->form->get('mode')); ?></div>
-			<div id="wrapper-grille" class="row-inner edit">
+			<div id="wrapper-seuil" class="row-inner edit">
 				<?= $this->formRow($this->form->get('seuil')); ?></div>
 			<div id="wrapper-buttons" class="row-inner ajout">
         		<?= $this->formSubmit($this->form->get('submit'));?>

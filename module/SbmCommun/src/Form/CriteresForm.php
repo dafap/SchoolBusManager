@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 7 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -2448,14 +2448,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
-                'name' => 'rythme',
+                'name' => 'duplicata',
                 'attributes' => [
-                    'id' => 'critere-rytme',
+                    'id' => 'critere-duplicata',
                     'class' => 'sbm-select2'
                 ],
                 'options' => [
-                    'label' => 'Type de grille',
-                    'empty_option' => 'Tous',
+                    'label' => 'Nature de grille',
+                    'empty_option' => 'Toutes',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -2482,6 +2482,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
+                'name' => 'reduit',
+                'attributes' => [
+                    'id' => 'critere-reduit',
+                    'class' => 'sbm-select2'
+                ],
+                'options' => [
+                    'label' => 'Nature du tarif',
+                    'empty_option' => 'Toutes',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
                 'name' => 'mode',
                 'attributes' => [
                     'id' => 'critere-mode',
@@ -2489,6 +2506,9 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ],
                 'options' => [
                     'label' => 'Mode de calcul',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
                     'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2536,12 +2556,16 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'selection',
                 'required' => false
             ],
-            'rythme' => [
-                'name' => 'rythme',
+            'duplicata' => [
+                'name' => 'duplicata',
                 'required' => false
             ],
             'grille' => [
                 'name' => 'grille',
+                'required' => false
+            ],
+            'reduit' => [
+                'name' => 'reduit',
                 'required' => false
             ],
             'mode' => [

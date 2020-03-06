@@ -43,7 +43,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $grilles = [
         self::TARIF_ARLYSERE => 'Résidents Arlysère',
-        self::HORS_ARLYSERE => 'Résidents et point de montée hors Arlysère',
+        self::HORS_ARLYSERE => 'Résidents ou point de montée hors Arlysère',
         self::RPI => 'RPI École à École',
         self::CARTE_R2 => 'Double Domiciliation',
         self::DUPLICATA => 'Duplicata'
