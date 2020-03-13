@@ -8,8 +8,8 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2019
- * @version 2019-2.4.8
+ * @date 13 mars 2020
+ * @version 2020-2.4.12
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -75,7 +75,7 @@ class Eleves extends AbstractSbmTable
                 $responsable1Id = $obj_data->responsable1Id;
                 $responsable2Id = $obj_data->responsable2Id;
                 $old_data = $this->getByIdentite($nom, $prenom, $dateN, $responsable1Id);
-                if (! $old_data) {
+                if ($responsable2Id && ! $old_data) {
                     $old_data = $this->getByIdentite($nom, $prenom, $dateN, 
                         $responsable2Id);
                 }
