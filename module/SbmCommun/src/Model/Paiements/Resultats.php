@@ -9,8 +9,8 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
- * @version 2019-4.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Paiements;
 
@@ -61,8 +61,9 @@ class Resultats
     private const LISTE_ELEVES_KEYS = [
         'nom',
         'prenom',
-        'grilleCode',
-        'grilleTarif',
+        'grilleTarifR1',
+        'grilleCodeR1',
+        'reductionR1',
         'duplicata',
         'paiement'
     ];
@@ -253,8 +254,9 @@ class Resultats
 
     /**
      * Cette liste est composée d'enregistrements indexés par 'eleveId' et présentant les
-     * clés suivantes : <ul><li>nom</li> <li>prenom</li> <li>grilleCode</li>
-     * <li>grilleTarif</li> <li>duplicata</li> <li>paiement</li></ul>
+     * clés suivantes : <ul><li>nom</li> <li>prenom</li> <li>grilleTarifR1</li>
+     * <li>grilleCodeR1</li> <li>reductionR1</li> <li>grilleCodeR2</li>
+     * <li>reductionR2</li> <li>duplicata</li> <li>paiement</li></ul>
      *
      * @param string $nature
      *            'tous' ou 'liste'
@@ -511,7 +513,7 @@ class Resultats
                 $value['duplicata'], $value['fa'], $value['gratuit']);
         }
         foreach ($this->getAbonnementsDetail() as $key => $value) {
-            $tmp .= sprintf("%02d%02d%.2f", $key,$value['quantite'], $value['montant']);
+            $tmp .= sprintf("%02d%02d%.2f", $key, $value['quantite'], $value['montant']);
         }
         return md5($tmp);
     }

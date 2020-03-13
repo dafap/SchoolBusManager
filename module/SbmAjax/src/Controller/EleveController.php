@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 13 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -18,12 +18,14 @@ namespace SbmAjax\Controller;
 use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
+use SbmCommun\Model\Traits\ServiceTrait;
 use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
 
 class EleveController extends AbstractActionController
 {
+    use ServiceTrait;
 
     const ROUTE = 'sbmajaxeleve';
 
@@ -194,7 +196,7 @@ class EleveController extends AbstractActionController
     private function getFormAffectationDecision(string $etablissementId, $trajet)
     {
         $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->to(
+        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->desservent(
             $etablissementId);
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
@@ -241,7 +243,6 @@ class EleveController extends AbstractActionController
             'ordreligne2' => $this->params('ordreligne2'),
             'op' => $this->params('op', null)
         ];
-
         return new ViewModel(
             [
                 'trajet' => $trajet,
@@ -569,13 +570,12 @@ class EleveController extends AbstractActionController
 
     public function getstationsforselectAction()
     {
-        $ligneId = $this->params('ligneId');
-        $sens = $this->params('sens');
-        $moment = $this->params('moment');
-        $ordre = $this->params('ordre');
+        $serviceId = $this->params('serviceId');
+        $arrayServiceId = $this->decodeServiceId($serviceId);
         $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
-        $stations = $queryStations->surcircuit(Session::get('millesime'), $ligneId, $sens,
-            $moment, $ordre);
+        $stations = $queryStations->surcircuit(Session::get('millesime'),
+            $arrayServiceId['ligneId'], $arrayServiceId['sens'], $arrayServiceId['moment'],
+            $arrayServiceId['ordre']);
         return $this->getResponse()->setContent(
             Json::encode([
                 'data' => $stations,

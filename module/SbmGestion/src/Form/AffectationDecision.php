@@ -2,21 +2,32 @@
 /**
  * Formulaire d'affectation et de décision d'une demande de transport
  *
+ * Le trajet 1 correspond à la première adresse (R1 ou adresse perso)
+ * Le trajet 2 correspond au R2
+ *
+ * Pour TRANSDEV ALBERTVILLE, les circuits sont déterminés par :
+ * millesime, ligneId, sens, moment, ordre
+ * ServiceId est le codage de ces données (sauf millesime) par la méthode encodeServiceId du
+ * trait SbmCommun\Model\Traits\ServiceTrait
+ *
  * @project sbm
  * @package SbmGestion/Form
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 13 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
 
 use SbmCommun\Form\AbstractSbmForm as Form;
+use SbmCommun\Model\Traits\ServiceTrait;
+use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class AffectationDecision extends Form implements InputFilterProviderInterface
 {
+    use ServiceTrait;
 
     /**
      * Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1
@@ -66,7 +77,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'millesime',
             'trajet',
             'jours',
-            'sens',
+            'moment',
             'correspondance',
             'responsableId',
             'demandeR' . $trajet,
@@ -338,8 +349,7 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
      * En phase 1, pour afficher un checkbox disabled avec la valeur de district, car
      * l'élément district ne fait pas partie du formulaire Dans tous les cas, la sortie du
      * formulaire doit se faire avec un demandeR1 ou un demandeR2 (selon trajet) égal à 2
-     * (demandé et traité)
-     * (non-PHPdoc)
+     * (demandé et traité) (non-PHPdoc)
      *
      * @see \Zend\Form\Form::setData()
      */
@@ -353,6 +363,29 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
         $demande = $this->get('demandeR' . $this->trajet);
         $demande->setValue(2);
         return $this;
+    }
+
+    public function getData($flag = FormInterface::VALUES_NORMALIZED)
+    {
+        $data = parent::getData($flag);
+        $arrayService1Id = $this->getServiceId(1, $data['service1Id']);
+        $arrayService2Id = $this->getServiceId(2, $data['service2Id']);
+        return array_merge($data, $arrayService1Id, $arrayService2Id);
+    }
+
+    private function getServiceId(int $n, string $serviceId)
+    {
+        $array = $this->decodeServiceId($serviceId);
+        if ($array) {
+            return [
+                sprintf('ligne%dId', $n) => $array['ligneId'],
+                sprintf('sensligne%d', $n) => $array['sens'],
+                'moment' => $array['moment'],
+                sprintf('ordreligne%d', $n) => $array['ordre']
+            ];
+        } else {
+            return [];
+        }
     }
 
     public function getInputFilterSpecification()

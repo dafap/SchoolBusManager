@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
- * @version 2019-2.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -310,14 +310,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
         ])
             ->join([
             'sco' => $this->tableName['scolarites']
-        ], 'ele.eleveid = sco.eleveid', [
+        ], 'ele.eleveId = sco.eleveId', [
             'internet',
             'demandeR1',
             'demandeR2'
         ])
             ->join([
             'aff' => $select_affectations
-        ], 'sco.millesime = aff.millesime AND sco.eleveid = aff.eleveId',
+        ], 'sco.millesime = aff.millesime AND sco.eleveId = aff.eleveId',
             [
                 'affectation' => 'eleveId'
             ], Select::JOIN_LEFT)

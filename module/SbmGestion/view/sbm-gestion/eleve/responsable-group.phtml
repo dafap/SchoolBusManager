@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -325,7 +325,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
 					<td><?= $row['millesime']?></td>
 					<td><?= $row['etablissement'];?> - <?= $row['communeEtablissement'];?></td>
 					<td class="centre"><?= $row['classe'];?></td>
-					<td><?= $row['grilleTarif'];?></td>
+					<td><?= $row['grilleTarifR1'];?> <?= $this->reductionTarif($row['reductionR1']);?></td>
 					<td><?= implode(' / ', $services);?></td>
 					<td><?= $this->data['fnc_ga']($key == 'resp1' ? $row['responsable2Id'] : $row['responsable1Id']);?></td>
 				<?php endif;?>

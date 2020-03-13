@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
- * @version 2019-2.5.0
+ * @date 13 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -28,7 +28,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'type' => 'text',
                 'name' => 'numero',
                 'attributes' => [
-                    'id' => 'critere-nom',
+                    'id' => 'critere-numero',
                     'maxlength' => '11',
                     'class' => 'sbm-width-10c'
                 ],
@@ -47,7 +47,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'type' => 'text',
                 'name' => 'nomSA',
                 'attributes' => [
-                    'id' => 'critere-nom',
+                    'id' => 'critere-nomSA',
                     'maxlength' => '45',
                     'class' => 'sbm-width-45c'
                 ],
@@ -63,7 +63,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'type' => 'text',
                 'name' => 'prenomSA',
                 'attributes' => [
-                    'id' => 'critere-prenom',
+                    'id' => 'critere-prenomSA',
                     'maxlength' => '45',
                     'class' => 'sbm-width-45c'
                 ],

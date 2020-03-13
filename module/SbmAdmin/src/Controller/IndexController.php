@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
- * @version 2019-2.5.3
+ * @date 10 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
 
@@ -356,6 +356,9 @@ class IndexController extends AbstractActionController
     public function rpiAjoutAction()
     {
         $form = $this->form_manager->get(Form\Rpi::class);
+        $form->setValueOptions('grille',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getGrilles());
         $params = [
             'data' => [
                 'table' => 'rpi',
@@ -392,6 +395,9 @@ class IndexController extends AbstractActionController
     public function rpiEditAction()
     {
         $form = $this->form_manager->get(Form\Rpi::class);
+        $form->setValueOptions('grille',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+            ->getGrilles());
         $params = [
             'data' => [
                 'table' => 'rpi',

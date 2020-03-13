@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1464,7 +1464,7 @@ class FinanceController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
-                        'sco.grilleTarif' => $grilleTarifId
+                        'sco.grilleTarifR1' => $grilleTarifId
                     ], [
                         'nom',
                         'prenom'

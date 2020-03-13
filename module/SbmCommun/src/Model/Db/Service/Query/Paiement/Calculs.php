@@ -9,8 +9,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-4.5.0
+ * @date 12 mars 2020
+ * @version 2020-4.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
@@ -144,7 +144,10 @@ class Calculs extends AbstractQuery
         foreach ($effectifsParGrilleTarif as $row) {
             $montantGrille = $tTarifs->getMontant($row['grilleCode'], $row['quantite']);
             $detailAbonnements[$row['grilleCode']] = [
-                'grille' => $row['grilleTarif'],
+                'grilleR1' => $row['grilleTarifR1'],
+                'reductionR1' => $row['reductionR1'],
+                'grilleR2' => $row['grilleTarifR2'],
+                'reductionR2' => $row['reductionR2'],
                 'quantite' => $row['quantite'],
                 'montant' => $montantGrille
             ];
@@ -195,8 +198,11 @@ class Calculs extends AbstractQuery
             $listeEleves[$row['eleveId']] = [
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
-                'grilleCode' => $row['grilleCode'],
-                'grilleTarif' => $row['grilleTarif'],
+                'grilleTarifR1' => $row['grilleTarifR1'],
+                'grilleCodeR1' => $row['grilleCodeR1'],
+                'reductionR1' => $row['reductionR1'],
+                'grilleCodeR2' => $row['grilleCodeR2'],
+                'reductionR2' => $row['reductionR2'],
                 'duplicata' => $row['duplicata'],
                 'paiement' => $row['paiement'],
                 'fa' => $row['fa'],
@@ -264,7 +270,7 @@ class Calculs extends AbstractQuery
      */
     private function selectAbonnements(Where $where)
     {
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         return $this->sql->select(
@@ -275,8 +281,11 @@ class Calculs extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId',
             [
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif' => 'grilleTarif'
+                'grilleTarifR1' => 'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1' => 'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2' => 'reductionR2'
             ])
             ->columns([
             'quantite' => new Literal('count(*)')
@@ -300,7 +309,7 @@ class Calculs extends AbstractQuery
             new Literal('sco.selection = 0')
         ], Where::COMBINED_BY_AND);
         $predicate->equalTo('millesime', $this->millesime);
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         return $this->sql->select(
@@ -309,7 +318,7 @@ class Calculs extends AbstractQuery
             ])
             ->columns(
             [
-                'eleveId' => 'eleveid',
+                'eleveId' => 'eleveId',
                 'nom' => 'nomSA',
                 'prenom' => 'prenomSA'
             ])
@@ -318,8 +327,11 @@ class Calculs extends AbstractQuery
         ], 'ele.eleveId = sco.eleveId',
             [
                 'duplicata',
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif',
+                'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2',
                 'paiement',
                 'fa',
                 'gratuit'

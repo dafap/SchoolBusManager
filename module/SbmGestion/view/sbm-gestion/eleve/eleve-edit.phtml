@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -366,8 +366,11 @@ $actions = [
 							<h3>Participation familiale</h3>
 							<div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
-								<span id="tabs-3-grilleTarif">
-									<?=$this->historique['scolarite']['grilleTarif'];?></span>
+								<span id="tabs-3-grilleTarifR1">
+									<?=$this->historique['scolarite']['grilleTarifR1'];?></span>
+							    <span id="tabs-3-reduction">
+							    <?=$this->historique['scolarite']['reductionR1'] ? 'Tarif réduit' : 'Tarif normal'?>
+							    </span>
 							</div>
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>

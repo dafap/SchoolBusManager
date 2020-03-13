@@ -7,11 +7,11 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 10 mars 2020
  * @version 2020-2.6.0
  */
+use SbmCommun\Arlysere;
 use SbmCommun\Form;
-use SbmCommun\Model\View\Helper as ViewHelper;
 use SbmCommun\Model\Db\ObjectData;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Service\Horaires;
@@ -24,6 +24,7 @@ use SbmCommun\Model\Mvc\Controller\Plugin\Service as PluginController;
 use SbmCommun\Model\Service\CalculDroits;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Service\MajDistances;
+use SbmCommun\Model\View\Helper as ViewHelper;
 
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -81,6 +82,8 @@ return [
         ],
         'factories' => [
             'Sbm\Db\ObjectData\Responsable' => ObjectData\ResponsableFactory::class,
+            'Sbm\ChercheTrajet' => Arlysere\ChercheTrajet::class,
+            'Sbm\AbonnementsFratrie' => Arlysere\Tarification\Facture\AbonnementsFratrie::class,
 
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,
@@ -251,7 +254,7 @@ return [
     ],
     'cartographie_manager' => [
         'factories' => [
-            'Sbm\CalculDroitsTransport' => CalculDroits::class,
+            'Sbm\CalculDroitsTransport' => \SbmCommun\Arlysere\CalculDroits::class,
             'Sbm\MajDistances' => MajDistances::class
         ]
     ],
@@ -266,17 +269,17 @@ return [
             'affectations' => ViewHelper\Affectations::class,
             'formRowDate' => ViewHelper\FormRowDate::class,
             'formRowDateTime' => ViewHelper\FormRowDateTime::class,
-            'iconBarres' =>ViewHelper\Iconbarres::class,
+            'iconBarres' => ViewHelper\Iconbarres::class,
             'listeLigneActions' => ViewHelper\ListeLigneActions::class,
             'ligneMenuAction' => ViewHelper\LigneMenuAction::class,
             'listeZoneActions' => ViewHelper\ListeZoneActions::class,
             'pictogrammes' => ViewHelper\Pictogrammes::class,
             'renderCheckbox' => ViewHelper\RenderCheckbox::class,
-            'telephone' => ViewHelper\Telephone::class,
+            'telephone' => ViewHelper\Telephone::class
         ],
         'factories' => [
             'natureGrilleTarif' => ViewHelper\NatureGrilleTarif::class,
-            'reductionTarif'=>ViewHelper\ReductionTarif::class
+            'reductionTarif' => ViewHelper\ReductionTarif::class
         ]
     ],
     'view_manager' => [

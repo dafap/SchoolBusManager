@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -65,11 +65,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'r1c' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r1.communeId=r1c.communeId', [
-            'communeR1' => 'nom',
-            'lacommuneR1' => 'alias',
-            'laposteR1' => 'alias_laposte'
-        ]);
+        ], 'r1.communeId=r1c.communeId',
+            [
+                'communeR1' => 'nom',
+                'lacommuneR1' => 'alias',
+                'laposteR1' => 'alias_laposte'
+            ]);
     }
 
     /**
@@ -131,11 +132,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom',
-            'lacommuneR2' => 'alias',
-            'laposteR2' => 'alias_laposte'
-        ], $select::JOIN_LEFT);
+        ], 'r2.communeId=r2c.communeId',
+            [
+                'communeR2' => 'nom',
+                'lacommuneR2' => 'alias',
+                'laposteR2' => 'alias_laposte'
+            ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
         }
@@ -219,8 +221,11 @@ class ElevesResponsables extends AbstractQuery
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif' => 'grilleTarif',
+                'grilleTarifR1' => 'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1' => 'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2' => 'reductionR2',
                 'tarifId' => 'tarifId',
                 'regimeId' => 'regimeId',
                 'motifDerogation' => 'motifDerogation',
@@ -240,11 +245,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'alias',
-            'laposteEtablissement' => 'alias_laposte'
-        ])
+        ], 'eta.communeId = com.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'alias',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'cla.classeId = sco.classeId', [
@@ -270,11 +276,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom',
-            'lacommuneR2' => 'alias',
-            'laposteR2' => 'alias_laposte'
-        ], $select::JOIN_LEFT)
+        ], 'r2.communeId=r2c.communeId',
+            [
+                'communeR2' => 'nom',
+                'lacommuneR2' => 'alias',
+                'laposteR2' => 'alias_laposte'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
@@ -301,9 +308,10 @@ class ElevesResponsables extends AbstractQuery
         if (! is_null($order)) {
             $select->order($order);
         }
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
+        ;
         return $select->where($where);
     }
 
@@ -315,7 +323,8 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function withScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    public function withScolaritesEleveGroup(Where $where, $order = null,
+        $millesime = null)
     {
         return $this->renderResult(
             $this->selectScolaritesEleveGroup($where, $order, $millesime));
@@ -343,7 +352,8 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    private function selectScolaritesEleveGroup(Where $where, $order = null,
+        $millesime = null)
     {
         // table de recherche du plus grand millesime pour chaque élève
         $select1 = $this->sql->select();
@@ -410,8 +420,11 @@ class ElevesResponsables extends AbstractQuery
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif' => 'grilleTarif',
+                'grilleTarifR1' => 'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1' => 'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2' => 'reductionR2',
                 'tarifId' => 'tarifId',
                 'regimeId' => 'regimeId',
                 'motifDerogation' => 'motifDerogation',
@@ -431,11 +444,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'alias',
-            'laposteEtablissement' => 'alias_laposte'
-        ])
+        ], 'eta.communeId = com.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'alias',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'cla.classeId = sco.classeId', [
@@ -458,11 +472,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'r2c' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r2.communeId=r2c.communeId', [
-            'communeR2' => 'nom',
-            'lacommuneR2' => 'alias',
-            'laposteR2' => 'alias_laposte'
-        ], $select::JOIN_LEFT)
+        ], 'r2.communeId=r2c.communeId',
+            [
+                'communeR2' => 'nom',
+                'lacommuneR2' => 'alias',
+                'laposteR2' => 'alias_laposte'
+            ], $select::JOIN_LEFT)
             ->join([
             's' => $select2
         ], 'ele.eleveId = s.eleveId',
@@ -480,10 +495,9 @@ class ElevesResponsables extends AbstractQuery
         if (! is_null($order)) {
             $select->order($order);
         }
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
-        return $select->where($where);
     }
 
     /**
@@ -536,11 +550,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'sco.communeId=comsco.communeId', [
-            'commune_chez' => 'nom',
-            'lacommune_chez' => 'alias',
-            'laposte_chez' => 'alias_laposte'
-        ], $select::JOIN_LEFT)
+        ], 'sco.communeId=comsco.communeId',
+            [
+                'commune_chez' => 'nom',
+                'lacommune_chez' => 'alias',
+                'laposte_chez' => 'alias_laposte'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -553,11 +568,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'cometa' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'cometa.communeId=eta.communeId', [
-            'commune_etablissement' => 'nom',
-            'lacommune_etablissement' => 'alias',
-            'laposte_etablissement' => 'alias_laposte'
-        ])
+        ], 'cometa.communeId=eta.communeId',
+            [
+                'commune_etablissement' => 'nom',
+                'lacommune_etablissement' => 'alias',
+                'laposte_etablissement' => 'alias_laposte'
+            ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'sco.classeId=cla.classeId', [
@@ -581,11 +597,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comr1.communeId=r1.communeId', [
-            'commune_responsable1' => 'nom',
-            'lacommune_responsable1' => 'alias',
-            'laposte_responsable1' => 'alias_laposte'
-        ])
+        ], 'comr1.communeId=r1.communeId',
+            [
+                'commune_responsable1' => 'nom',
+                'lacommune_responsable1' => 'alias',
+                'laposte_responsable1' => 'alias_laposte'
+            ])
             ->join([
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'r2.responsableId=ele.responsable2Id',
@@ -605,11 +622,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comr2.communeId=r2.communeId', [
-            'commune_responsable2' => 'nom',
-            'lacommune_responsable2' => 'alias',
-            'laposte_responsable2' => 'alias_laposte'
-        ], $select::JOIN_LEFT);
+        ], 'comr2.communeId=r2.communeId',
+            [
+                'commune_responsable2' => 'nom',
+                'lacommune_responsable2' => 'alias',
+                'laposte_responsable2' => 'alias_laposte'
+            ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
         }

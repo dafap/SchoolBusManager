@@ -8,8 +8,8 @@
  * @filesource ElevesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -65,7 +65,8 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
             ->join([
             'sco' => $this->table_name['scolarites']
         ], 'ele.eleveId = sco.eleveId', [
-            'grilleTarif',
+            'grilleTarifR1',
+            'reductionR1',
             'duplicata'
         ])
             ->where($conditions())
@@ -73,13 +74,14 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
             'nom',
             'prenom'
         ]);
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         $result = [];
         foreach ($this->renderResult($select) as $row) {
-            $result[$row['eleveId']] = sprintf('%s - %s (%d duplicatas)',
-                $row['nomprenom'], $row['grilleTarif'], $row['duplicata']);
+            $result[$row['eleveId']] = sprintf('%s - %s %s (%d duplicatas)',
+                $row['nomprenom'], $row['grilleTarifR1'],
+                $row['reductionR1'] ? 'Réduit' : 'Normal', $row['duplicata']);
         }
         return $result;
     }

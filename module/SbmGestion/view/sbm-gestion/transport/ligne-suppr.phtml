@@ -1,0 +1,35 @@
+<?php
+/**
+ * Page de suppression d'un lot de marché
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource ligne-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 fév. 2020
+ * @version 2020-2.6.0
+ */
+?>
+<h1>Suppression d'une ligne de l'année scolaire en cours</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression de la ligne :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li>Ligne : <?=$this->escapeHtml($this->data->ligneId);?></li>
+			<?php if (! empty($this->data->lotId)) : ?>
+			    <li>Lot : <?=$this->escapeHtml($this->data->lotId);?></li>
+			<?php endif;?>
+			<li>Départ : <?=$this->escapeHtml($this->data->extremite1);?></li>
+			<li>Terminus : <?=$this->escapeHtml($this->data->extremite2);?></li>
+			<?php if (! empty($this->data->via)) : ?>
+			    <li><?=$this->escapeHtml($this->data->via);?></li>
+			<?php endif;?>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?=$this->form()->openTag($form);?>
+	<?=$this->formCollection($form);?>
+	<?=$this->form()->closeTag();?>
+</div>

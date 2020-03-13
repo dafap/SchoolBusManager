@@ -8,12 +8,12 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 10 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use SbmCommun\Model\Paiements\GrilleTarifInterface;
+use SbmCommun\Arlysere\Tarification\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
 use Zend\Db\Sql\Where;
 
@@ -82,7 +82,9 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     public function getGrilles()
     {
-        return $this->grilles;
+        $array= $this->grilles;
+        unset($array[self::DUPLICATA]);
+        return $array;
     }
 
     public function getReduits()

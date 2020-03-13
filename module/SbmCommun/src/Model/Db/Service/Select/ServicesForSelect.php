@@ -10,7 +10,7 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 13 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -26,7 +26,7 @@ use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
 class ServicesForSelect implements FactoryInterface
 {
-    use ServiceTrait, ExpressionSqlTrait;
+    use ServiceTrait, ExpressionSqlTrait, SelectTrait;
 
     /**
      *
@@ -72,7 +72,6 @@ class ServicesForSelect implements FactoryInterface
             'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         $this->columns = $this->getServiceKeys(); // à faire en premier
-        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
         return $this;
     }
 
@@ -85,6 +84,7 @@ class ServicesForSelect implements FactoryInterface
     public function tout()
     {
         $select = $this->sql->select($this->table_name);
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
         $select->columns($this->columns)->order($this->getServiceKeys());
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
@@ -111,13 +111,14 @@ class ServicesForSelect implements FactoryInterface
         if ($moment) {
             $conditions['moment'] = $moment;
         }
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService('s.ligneId', 's.sens', 's.moment', 's.ordre'));
         $select = $this->sql->select([
             's' => $this->table_name
         ])
             ->columns($this->columns)
             ->join([
             'es' => $this->table_lien
-        ], 's.serviceId = es.serviceId', [])
+        ], $this->jointureService('s', 'es'), [])
             ->where($conditions)
             ->order($this->getServiceKeys());
         $statement = $this->sql->prepareStatementForSqlObject($select);

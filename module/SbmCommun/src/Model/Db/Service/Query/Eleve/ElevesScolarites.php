@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -92,8 +92,11 @@ class ElevesScolarites extends AbstractQuery
                 'dateFin' => 'dateFin',
                 'joursTransport' => 'joursTransport',
                 'subventionTaux' => 'subventionTaux',
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif' => 'grilleTarif',
+                'grilleTarifR1' => 'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1' => 'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2' => 'reductionR2',
                 'tarifId' => 'tarifId',
                 'organismeId' => 'organismeId',
                 'regimeId' => 'regimeId',
@@ -113,11 +116,12 @@ class ElevesScolarites extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'alias',
-            'laposteEtablissement' => 'alias_laposte'
-        ])
+        ], 'eta.communeId = com.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'alias',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
@@ -126,7 +130,7 @@ class ElevesScolarites extends AbstractQuery
                 'hasphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
             ], Select::JOIN_LEFT);
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
     }
@@ -167,7 +171,8 @@ class ElevesScolarites extends AbstractQuery
             ->join(
             [
                 'comresp' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'r.communeId = comresp.communeId', [
+            ], 'r.communeId = comresp.communeId',
+            [
                 'commune' => 'nom',
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
@@ -347,7 +352,8 @@ class ElevesScolarites extends AbstractQuery
             ->join(
             [
                 'comresp' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'r.communeId = comresp.communeId', [
+            ], 'r.communeId = comresp.communeId',
+            [
                 'commune' => 'nom',
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
@@ -402,7 +408,8 @@ class ElevesScolarites extends AbstractQuery
             ->join(
             [
                 'comresp' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'r.communeId = comresp.communeId', [
+            ], 'r.communeId = comresp.communeId',
+            [
                 'commune' => 'nom',
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
@@ -473,11 +480,12 @@ class ElevesScolarites extends AbstractQuery
             ])
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r1.communeId = comr1.communeId', [
-            'communeR1' => 'nom',
-            'lacommuneR1' => 'alias',
-            'laposteR1' => 'alias_laposte'
-        ])
+        ], 'r1.communeId = comr1.communeId',
+            [
+                'communeR1' => 'nom',
+                'lacommuneR1' => 'alias',
+                'laposteR1' => 'alias_laposte'
+            ])
             ->join([
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable2Id = r2.responsableId',
@@ -490,11 +498,12 @@ class ElevesScolarites extends AbstractQuery
             ], Select::JOIN_LEFT)
             ->join([
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r2.communeId = comr2.communeId', [
-            'communeR2' => 'nom',
-            'lacommuneR2' => 'alias',
-            'laposteR2' => 'alias_laposte'
-        ], Select::JOIN_LEFT);
+        ], 'r2.communeId = comr2.communeId',
+            [
+                'communeR2' => 'nom',
+                'lacommuneR2' => 'alias',
+                'laposteR2' => 'alias_laposte'
+            ], Select::JOIN_LEFT);
         $predicate = new Predicate();
         $predicate->literal('demandeR2 = 1')->literal('distanceR2 = 0');
         $demandeEnGA_distance0 = new PredicateEleve\ElevesEnGA($this->millesime, 'sco',
@@ -524,7 +533,7 @@ class ElevesScolarites extends AbstractQuery
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
             ->columns([
-            'eleveid'
+            'eleveId'
         ])
             ->join(
             [

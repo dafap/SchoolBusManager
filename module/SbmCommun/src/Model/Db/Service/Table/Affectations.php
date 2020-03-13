@@ -8,8 +8,8 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
- * @version 2019-2.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -31,7 +31,7 @@ class Affectations extends AbstractSbmTable
             'eleveId',
             'trajet',
             'jours',
-            'sens',
+            'moment',
             'correspondance'
         ];
     }

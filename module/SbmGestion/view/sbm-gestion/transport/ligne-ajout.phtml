@@ -1,0 +1,67 @@
+<?php
+/**
+ * Page de création d'un ligne
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource ligne-ajout.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/transport', 'ligne-fiche.css');
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-liste',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Création d'une nouvelle ligne pour cette année scolaire</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?=$this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner" class="row-inner">
+        <?=$this->form()->openTag($this->form);?>
+        <?=$this->formHidden($this->form->get('csrf'));?>
+    	<fieldset class="sbm-page1">
+			<div id="wrapper-ligneid" class="ligneId">
+			<?=$this->formRow($this->form->get('ligneId'));?></div>
+			<div id="wrapper-lotid" class="lotId">
+			<?=$this->formRow($this->form->get('lotId'));?></div>
+			<div id="wrapper-operateur" class="operateur">
+			<?=$this->formRow($this->form->get('operateur'));?></div>
+			<div id="wrapper-extremite1" class="extremite1">
+			<?=$this->formRow($this->form->get('extremite1'));?></div>
+			<div id="wrapper-extremite2" class="extremite2">
+			<?=$this->formRow($this->form->get('extremite2'));?></div>
+			<div id="wrapper-via" class="via">
+			<?=$this->formRow($this->form->get('via'));?></div>
+			<div id="wrapper-internes" class="internes">
+			<?=$this->formRow($this->form->get('internes'));?></div>
+			<div id="wrapper-actif" class="actif">
+			<?=$this->formRow($this->form->get('actif'));?></div>
+			<div id="wrapper-commentaire" class="commentaire">
+			<?=$this->formRow($this->form->get('commentaire'));?></div>
+			<div id="wrapper-buttons" class="boutons">
+        		<?=$this->formSubmit($this->form->get('submit'));?>
+                <?=$this->formSubmit($this->form->get('cancel'));?></div>
+		</fieldset>
+		<?=$this->form()->closeTag();?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

@@ -8,7 +8,7 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 13 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -122,19 +122,23 @@ trait ServiceTrait
      * @throws \SbmCommun\Model\Exception\InvalidArgumentException
      * @return array
      */
-    public function decodeServiceId(string $serviceId)
+    public function decodeServiceId(string $serviceId = '')
     {
-        $ref = self::getServiceKeys();
-        $array = explode('|', $serviceId);
-        $nbref = count($ref);
-        $nbarray = count($array);
-        if ($nbarray == $nbref + 1) {
-            unset($array[0]);
-        } elseif ($nbarray != $nbref) {
-            $msg = sprintf('Argument invalide : %s', $serviceId);
-            throw new \SbmCommun\Model\Exception\InvalidArgumentException($msg);
+        if ($serviceId) {
+            $ref = self::getServiceKeys();
+            $array = explode('|', $serviceId);
+            $nbref = count($ref);
+            $nbarray = count($array);
+            if ($nbarray == $nbref + 1) {
+                unset($array[0]);
+            } elseif ($nbarray != $nbref) {
+                $msg = sprintf('Argument invalide : %s', $serviceId);
+                throw new \SbmCommun\Model\Exception\InvalidArgumentException($msg);
+            }
+            return array_combine($ref, $array);
+        } else {
+            return [];
         }
-        return array_combine($ref, $array);
     }
 
     /**
@@ -146,6 +150,24 @@ trait ServiceTrait
     {
         return sprintf('%s - %s - %s - Numéro %d', $data['ligneId'], self::getSens($data),
             self::getMoment($data), $data['ordre']);
+    }
+
+    /**
+     * Renvoi une condition de jointure entre les table1 et table2 sur des services
+     *
+     * @param string $table1
+     * @param string $table2
+     * @return string
+     */
+    public function jointureService(string $table1, string $table2)
+    {
+        $items = $this->getServiceKeys();
+        $items[] = 'millesime';
+        $cond = [];
+        foreach ($items as $item) {
+            $cond[] = sprintf('%1$s.%3$s=%2$s.%3$s', $table1, $table2, $item);
+        }
+        return implode(' AND ', $cond);
     }
 }
 

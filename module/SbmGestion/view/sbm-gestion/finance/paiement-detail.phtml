@@ -12,8 +12,8 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -177,7 +177,8 @@ $actions = [
 							<td><?= $this->escapeHtml($enfant['nom']);?></td>
 							<td><?= $this->escapeHtml($enfant['prenom']);?></td>
 							<td>
-						<?= $enfant['grilleTarif'];?></td>
+								<?= $enfant['grilleTarifR1'];?>
+								<?= $this->reductionTarif($enfant['reductionR1']);?></td>
 							<td>
 						<?= $enfant['duplicata'];?></td>
 							<td>

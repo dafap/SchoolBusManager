@@ -7,8 +7,8 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
- * @version 2019-2.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -50,7 +50,7 @@ class CalculMontant extends AbstractQuery
      *            tableau d'identifiants d'élèves
      * @return array
      */
-    public function getAbonnementsResponsable(int $responsableId, array $aEleveId = null)
+    public function getAbonnementsResponsable1(int $responsableId, array $aEleveId = null)
     {
         if (empty($this->abonnements)) {
             $effectifsParGrilleTarif = $this->renderResult(
@@ -59,9 +59,10 @@ class CalculMontant extends AbstractQuery
             $detailAbonnements = [];
             $montantAbonnements = 0;
             foreach ($effectifsParGrilleTarif as $row) {
-                $montantGrille = $tTarifs->getMontant($row['grilleCode'], $row['quantite']);
-                $detailAbonnements[$row['grilleCode']] = [
-                    'grille' => $row['grilleTarif'],
+                $montantGrille = $tTarifs->getMontant($row['grilleCodeR1'], $row['quantite']);
+                $detailAbonnements[$row['grilleCodeR1']] = [
+                    'grille' => $row['grilleTarifR1'],
+                    'reduction'=>$row['reductionR1'],
                     'quantite' => $row['quantite'],
                     'montant' => $montantGrille
                 ];
@@ -98,7 +99,7 @@ class CalculMontant extends AbstractQuery
             [
                 $where
             ], Where::COMBINED_BY_AND);
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         return $this->sql->select(
@@ -109,30 +110,37 @@ class CalculMontant extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId',
             [
-                'grilleCode' => 'grilleTarif',
-                'grilleTarif' => 'grilleTarif'
+                'grilleTarifR1' => 'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1' => 'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2' => 'reductionR2'
             ])
             ->columns([
             'quantite' => new Expression('count(*)')
         ])
             ->where($predicate())
-            ->group('grilleCode');
+            ->group('grilleCodeR1');
     }
 
-    public function getDuplicatasResponsable(int $responsableId)
+    public function getDuplicatasResponsable1(int $responsableId)
     {
         if (empty($this->duplicatas)) {
-            $duplicatasPaEleve = $this->renderResult(
+            $duplicatasParEleve = $this->renderResult(
                 $this->selectDuplicatasParEleve($responsableId));
             $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
             $detailDuplicatas = [];
             $nbDuplicatas = 0;
-            foreach ($duplicatasPaEleve as $row) {
+            foreach ($duplicatasParEleve as $row) {
                 $nbDuplicatas += $row['duplicata'];
                 $detailDuplicatas[$row['eleveId']] = [
                     'nom' => $row['nom'],
                     'prenom' => $row['prenom'],
-                    'grilleTarif' => $row['grilleTarif'],
+                    'grilleTarifR1' => $row['grilleTarifR1'],
+                    'grilleCodeR1' => $row['grilleCodeR1'],
+                    'reductionR1' => $row['reductionR1'],
+                    'grilleCodeR2' => $row['grilleCodeR2'],
+                    'reductionR2' => $row['reductionR2'],
                     'duplicata' => $row['duplicata']
                 ];
             }
@@ -162,7 +170,7 @@ class CalculMontant extends AbstractQuery
             $where
         ], Where::COMBINED_BY_AND);
         $predicate->equalTo('millesime', $this->millesime);
-        $this->addStrategy('grilleTarif',
+        $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         return $this->sql->select(
@@ -170,16 +178,21 @@ class CalculMontant extends AbstractQuery
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
             ])
             ->columns([
-            'eleveId' => 'eleveid',
+            'eleveId' => 'eleveId',
             'nom',
             'prenom'
         ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId = sco.eleveId', [
-            'duplicata',
-            'grilleTarif'
-        ])
+        ], 'ele.eleveId = sco.eleveId',
+            [
+                'duplicata',
+                'grilleTarifR1',
+                'grilleCodeR1' => 'grilleTarifR1',
+                'reductionR1',
+                'grilleCodeR2' => 'grilleTarifR2',
+                'reductionR2'
+            ])
             ->where($predicate);
     }
 
@@ -200,8 +213,8 @@ class CalculMontant extends AbstractQuery
                 - 1
             ]; // pour compatibilité de la clause IN de MySql
         }
-        $montant = $this->getAbonnementsResponsable($responsableId, $aEleveId)['montantAbonnements'];
-        $montant += $this->getDuplicatasResponsable($responsableId)['montantDuplicatas'];
+        $montant = $this->getAbonnementsResponsable1($responsableId, $aEleveId)['montantAbonnements'];
+        $montant += $this->getDuplicatasResponsable1($responsableId)['montantDuplicatas'];
         return $montant;
     }
 }

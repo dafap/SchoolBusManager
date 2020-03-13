@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -698,8 +698,11 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
         $historique['scolarite']['dateCarte'] = $odata1->dateCarte;
-        $historique['scolarite']['grilleTarif'] = $tTarifs->getGrille(
-            $odata1->grilleTarif);
+        $historique['scolarite']['grilleTarifR1'] = $tTarifs->getGrille(
+            $odata1->grilleTarifR1);
+        $historique['scolarite']['reductionR1'] = $odata1->reductionR1;
+        $historique['scolarite']['grilleCodeR2'] = $odata1->grilleTarifR2;
+        $historique['scolarite']['reductionR2']= $odata1->reductionR2;
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
 

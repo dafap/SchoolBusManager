@@ -17,6 +17,7 @@ namespace SbmFront\Controller;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\Db\Sql\Where;
 
 /**
  * Dispose des propriétés provenant de IndexControllerFactory : - theme (objet
@@ -81,9 +82,73 @@ class IndexController extends AbstractActionController
             ]);
     }
 
+    public function testAffectationAction()
+    {
+        $cr = [];
+        $chercheTrajets = $this->db_manager->get('Sbm\ChercheTrajet');
+        $televes = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $taffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        $rowset = $tscolarites->fetchAll((new Where())->notEqualTo('stationIdR1', 0));
+        foreach ($rowset as $row) {
+            $responsableId = $televes->getRecord($row->eleveId)->responsable1Id;
+            for ($moment = 1; $moment <= 3; $moment ++) {
+
+                $chercheTrajets->setEtablissementId($row->etablissementId);
+                $chercheTrajets->setStationId($row->stationIdR1);
+                for ($i = 1, $trajetsPossibles = []; ! count($trajetsPossibles) && $i <= 4; $i ++) {
+                    $trajetsPossibles = $chercheTrajets->getTrajets($moment, $i);
+                }
+                $i --;
+                // DEBUG
+                $cr[$row->eleveId][$moment]['nb_circuits'] = $i;
+                $cr[$row->eleveId][$moment]['nb_trajets'] = count($trajetsPossibles);
+
+                if (count($trajetsPossibles)) {
+                    // @TODO: contrôle des places disponibles
+                    $trajet = current($trajetsPossibles);
+                    // DEBUG
+                    $cr[$row->eleveId][$moment]['trajet'] = $trajet;
+                    $oAffectation = $taffectations->getObjData();
+                    $oAffectation->millesime = $row->millesime;
+                    $oAffectation->eleveId = $row->eleveId;
+                    $oAffectation->trajet = 1;
+                    $oAffectation->moment = $moment;
+                    $oAffectation->responsableId = $responsableId;
+                    for ($j = 1; $j <= $i; $j ++) {
+                        $oAffectation->jours = $trajet["semaine_$j"];
+                        $oAffectation->correspondance = $j;
+                        $oAffectation->station1Id = $trajet["station1Id_$j"];
+                        $oAffectation->ligne1Id = $trajet["ligne1Id_$j"];
+                        $oAffectation->sensligne1 = $trajet["sensligne1_$j"];
+                        $oAffectation->ordreligne1 = $trajet["ordreligne1_$j"];
+                        $oAffectation->station2Id = $trajet["station2Id_$j"];
+                        // DEBUG
+                        $cr[$row->eleveId][$moment]['affectation'][$j] = $oAffectation->getArrayCopy();
+                        // @TODO: enregistre l'affectation
+                        $taffectations->saveRecord($oAffectation);
+                    }
+                }
+            }
+        }
+
+        $cr[] = 'Terminé';
+        // dump de l'objet 'obj'
+        return new ViewModel([
+            'obj' => $cr
+        ]);
+    }
+
+    /**
+     * Méthode prête pour donner un numéro aux élèves. La renommer testAction pour qu'elle
+     * fonctionne. Si elle est trop longue, rajouter des ->limit(xxx) au select. Au
+     * préalable, vider la table sbm_t_eleves et ré-initialiser AUTO_INCREMENT par : ALTER
+     * TABLE `sbm_t_responsables` AUTO_INCREMENT = 1;
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function testAction()
     {
-        // requête sur la table Millau-nom_des_voies
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
@@ -96,10 +161,12 @@ class IndexController extends AbstractActionController
                 'prenomSA',
                 'dateN',
                 'sexe',
-                'responsable1Id'
+                'responsable1Id',
+                'responsable2Id',
+                'id_tra'
             ])
-            ->order('responsable1Id')
-            ->limit(20);
+            ->where((new Where())->equalTo('responsable1Id', 2070) )
+            ->order('responsable1Id');
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
@@ -115,7 +182,9 @@ class IndexController extends AbstractActionController
                     'prenomSA' => $row['prenomSA'],
                     'dateN' => $row['dateN'],
                     'sexe' => $row['sexe'],
-                    'responsable1Id' => $row['responsable1Id']
+                    'responsable1Id' => $row['responsable1Id'],
+                    'responsable2Id' => $row['responsable2Id'],
+                    'id_tra' => $row['id_tra']
                 ]);
             try {
                 $tEleves->saveRecord($oEleve);

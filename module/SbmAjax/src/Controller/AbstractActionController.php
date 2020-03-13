@@ -9,8 +9,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 13 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
@@ -87,7 +87,7 @@ class AbstractActionController extends ZendAbstractActionController
 
     protected function debugTrace($args)
     {
-        $fp = fopen('debug-ajax.txt', 'a');
+        $fp = fopen('/debug/debug-ajax.txt', 'a');
         fputs($fp, print_r($args, true));
         fputs($fp, "\n");
         fclose($fp);

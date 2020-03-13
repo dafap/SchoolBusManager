@@ -1,0 +1,225 @@
+<?php
+
+/**
+ * Liste des lignes
+ *
+ * Cette vue reçoit un objet effectifLignes qui présente la méthode transportes($ligneId)
+ * donnant les effectifs des élèves transportés pour chaque identifiant $ligneId.
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource ligne-liste.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 27 fév. 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$jsCallback = '';
+$jsTrigger = '';
+// modèle de jsCallback pour selection
+$modele = <<<EOT
+$("#chk%s").change(function() {
+    var action = ($(this).is(':checked'))?'check':'uncheck';
+    $.ajax({
+				url : '/sbmajaxtransport/'+action+'selectionligne/ligneId:%s',
+				success : function(data) {},
+				error : function(xhr, ajaxOptions, thrownError) {
+					alert(xhr.status + " " + thrownError);
+				}
+			});
+  });
+EOT;
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$lignes = $this->paginator->getCurrentItems();
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-ajout',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-pdf',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmgestion/transport');
+
+$url_edit = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-suppr',
+        'page' => $this->page
+    ]);
+$url_relation = $this->url('sbmgestion/transport',
+    [
+        'action' => 'ligne-group',
+        'id' => $this->page
+    ]);
+if ($this->layout()->hassbmservicesms) {
+    $url_sms = $this->url('sbmservicesms', [
+        'action' => 'envoi-groupe',
+        'page' => $this->page
+    ]);
+}
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'ligne-liste'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvelle ligne'
+    ]
+];
+?>
+<h1>Liste des lignes de l'année scolaire en cours</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Ligne</th>
+					<th>Opérateur</th>
+					<th>Lot</th>
+					<th>Départ</th>
+					<th>Terminus</th>
+					<th>Via</th>
+					<th>Nb<br>services</th>
+					<th>Nb élèves<br>transportés</th>
+					<th>Réservée<br>Internes</th>
+					<th>Ouverte</th>
+					<th>Sélect.</th>
+					<th></th>
+				</tr>
+            <?php foreach ($lignes as $ligne) :?>
+            <?php
+                if (! is_null($this->effectifLignesServices)) {
+                    $nbServices = $this->effectifLignesServices->nbservices($ligne->ligneId);
+                } else {
+                    $nbServices = 0;
+                }
+                if (! is_null($this->effectifLignes)) {
+                    $nbInscrits = $this->effectifLignes->transportes($ligne->ligneId);
+                } else {
+                    $nbInscrits = 0;
+                }
+                // construction des JS pour selection
+                $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $ligne->ligneId);
+                $jsCallback .= sprintf("$modele\n", $ligne->ligneId, $ligne->ligneId);
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                /*
+                 * if ($ligne->nbPlaces < $nbInscrits) { $css .= ' exces'; }
+                 */
+                $hiddens = [
+                    'id' => $ligne->millesime . '|' . $ligne->ligneId,
+                    'origine' => 'ligne-liste'
+                ];
+                $buttons = [
+                    'modifier' => [
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ],
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ],
+                    'services' => [
+                        'class' => 'fam-table-relationship',
+                        'formaction' => $url_relation,
+                        'title' => 'services de cette ligne'
+                    ]
+                ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="ligneid">
+						<?=$this->escapeHtml($ligne->ligneId);?></td>
+					<td class="operateur">
+						<?=$this->escapeHtml($ligne->operateur);?></td>
+					<td class="lot">
+						<?=$this->escapeHtml($ligne->lotId);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($ligne->extremite1);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($ligne->extremite2);?></td>
+					<td class="via">
+						<?=$this->escapeHtml($ligne->via);?></td>
+					<td class="nbservices align-right">
+						<?=$nbServices;?></td>
+					<td class="nbinscrits align-right">
+						<?=$nbInscrits;?></td>
+					<td class="centre internes">
+						<?=$ligne->internes ? 'Oui' : 'Non';?>
+						</td>
+					<td class="centre actif">
+						<?=$ligne->actif ? 'Oui' : 'Non';?>
+						</td>
+					<td class="centre selection">
+						<?=$this->renderCheckbox('selection', 'chk' . $ligne->ligneId, $ligne->selection);?>
+						</td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($ligne->ligneId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>
+<?php
+$this->headScript()->captureStart();
+?>
+$(function() {
+function triggerChange() {
+<?=$jsTrigger;?>}
+<?=$jsCallback;?>
+});
+<?php
+$this->headScript()->captureEnd();

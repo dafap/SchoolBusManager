@@ -22,8 +22,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2019
- * @version 2019-2.5.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
@@ -354,12 +354,12 @@ $url_facture = $this->url('sbmdocument', [
                     ' Respectez les délais.">en attente</span>';
                 $enAttente = true;
             } elseif ($peutPayer) {
-                $grilleTarif = $row['grilleTarif'];
+                $grilleTarif = sprintf('%s %s',$row['grilleTarifR1'], $row['reductionR1']);
             } else {
                 $msgalerte = 'Pour obtenir une éventuelle dérogation, prenez contact avec le service des transports de : ';
                 $msgalerte .= $this->client['name'];
                 $grilleTarif = '<span class="exces" title="' . $msgalerte . '">' .
-                    $row['grilleTarif'] . '</span>';
+                    $row['grilleTarifR1'] . '</span>';
                 $msgalerte .= ' (' . $this->telephone($this->client['telephone']) . ') ou ';
                 $msgalerte .= '<a href="' .
                     $this->url('sbmparentconfig', [

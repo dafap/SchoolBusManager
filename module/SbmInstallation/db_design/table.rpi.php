@@ -8,8 +8,8 @@
  * @filesource table.rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 10 mars 2020
+ * @version 2020-2.6.0
  */
 
 /**
@@ -41,6 +41,7 @@ return [
             'nom' => 'varchar(30) NOT NULL',
             'libelle' => 'varchar(50) NULL DEFAULT NULL',
             'niveau' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "3"',
+            'grille' => 'tinyint(3) NOT NULL DEFAULT "1"',
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"'
         ],
         'primary_key' => [

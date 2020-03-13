@@ -75,9 +75,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      * et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
      *
      * @var array of float
-     * @throws \SbmCartographie\Model\Exception\ExceptionNoCartographieManager
-     *
-     * @return CalculDroits
      */
     private $distance = [];
 

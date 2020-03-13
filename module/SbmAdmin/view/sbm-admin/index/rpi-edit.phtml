@@ -1,17 +1,16 @@
 <?php
-
 /**
  * Page de modification d'un rpi
  *
- * Réservé à l'administrateur
+ * Proposé au gestionnaire
  *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource rpi-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 10 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
@@ -66,6 +65,8 @@ $actions = [
 				<?= $this->formRow($this->form->get('libelle'));?></div>
 			<div id="wrapper-niveau" class="row-inner edit">
 				<?= $this->formRow($this->form->get('niveau')); ?></div>
+			<div id="wrapper-grille" class="row-inner edit">
+				<?= $this->formRow($this->form->get('grille')); ?></div>
 			<div class="row-inner">
 				<table>
 					<tr>

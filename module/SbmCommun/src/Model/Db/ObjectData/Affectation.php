@@ -8,8 +8,8 @@
  * @filesource Affectation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -26,7 +26,7 @@ class Affectation extends AbstractObjectData
                 'eleveId',
                 'trajet',
                 'jours',
-                'sens',
+                'moment',
                 'correspondance'
             ]);
     }

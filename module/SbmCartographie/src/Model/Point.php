@@ -3,14 +3,14 @@
  * Définition d'un point et des opérations qui s'appliquent à un point
  *
  * version 2 : ajout des méthodes setLatLngRange(), setXYRange() et isValid()
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model
  * @filesource Point.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2018
- * @version 2019-2.5.0
+ * @date 9 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCartographie\Model;
 
@@ -81,16 +81,14 @@ class Point
     private $plat = [];
 
     /**
-     * Intervalle de validité des latitudes
-     * (en degrés)
+     * Intervalle de validité des latitudes (en degrés)
      *
      * @var array index 0 et 1
      */
     private $latRange = [];
 
     /**
-     * Intervalle de validité des longitudes
-     * (en degrés)
+     * Intervalle de validité des longitudes (en degrés)
      *
      * @var array index 0 et 1
      */
@@ -118,7 +116,6 @@ class Point
      * @param number $z
      * @param string $unite
      *            vide (par défaut), 'degré', 'grade' ou 'radian'
-     *            
      * @throws \SbmCartographie\Model\Exception\DomainException
      */
     public function __construct($x = 0, $y = 0, $z = 0, $unite = '')
@@ -210,10 +207,12 @@ class Point
      *
      * @param string $attribut
      * @param mixed $value
+     * @return \SbmCartographie\Model\Point
      */
     public function setAttribute($attribut, $value)
     {
         $this->attributes[$attribut] = $value;
+        return $this;
     }
 
     /**
@@ -233,9 +232,8 @@ class Point
 
     /**
      * Selon que le point est cartésien (XY ou XYZ) ou géographique (longitude, latitude)
-     * - pour un point cartésien, unite est vide ''
-     * - pour un point géographique, unité est une unité d'angle au singulier (degré, grade,
-     * radian)
+     * - pour un point cartésien, unite est vide '' - pour un point géographique, unité
+     * est une unité d'angle au singulier (degré, grade, radian)
      *
      * @return string
      */
@@ -266,7 +264,6 @@ class Point
      *
      * @param
      *            float k;
-     *            
      * @return \SbmCartographie\Model\Point
      */
     public function dilate($k)
@@ -328,7 +325,6 @@ class Point
      *
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     *            
      * @throws \SbmCartographie\Model\Exception\DomainException
      * @throws \SbmCartographie\Model\Exception\Exception
      *
@@ -359,7 +355,6 @@ class Point
      *
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     *            
      * @throws \SbmCartographie\Model\Exception\DomainException
      * @throws \SbmCartographie\Model\Exception\Exception
      *
@@ -391,7 +386,6 @@ class Point
      * @param number $longitude
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     *            
      * @throws \SbmCartographie\Model\Exception\DomainException
      */
     public function setLongitude($longitude, $unite = 'degré')
@@ -413,8 +407,7 @@ class Point
      * @param number $latitude
      * @param string $unite
      *            'degré' (par défaut), 'grade' ou 'radian'
-     *            
-     * @throws \SbmCartographie\Model\Exception\DomainException           
+     * @throws \SbmCartographie\Model\Exception\DomainException
      */
     public function setLatitude($latitude, $unite = 'degré')
     {
@@ -430,8 +423,8 @@ class Point
     }
 
     /**
-     * Renvoie le point transformé aux coordonnées et unité de $p
-     * mais garde tous ses paramètres et attributs.
+     * Renvoie le point transformé aux coordonnées et unité de $p mais garde tous ses
+     * paramètres et attributs.
      *
      * @param Point $p
      */
@@ -473,12 +466,12 @@ class Point
     }
 
     /**
-     * Vérifie si le point est dans la zone indiquée par latRange et lngRange
-     * L'intérieur d'un rectangle est caractérisé par (x-x1)(x-x2) <=0 et (y-y1)(y-y2) <= 0
-     * où x1 et x2 sont les bornes de l'une des coordonnées et y1 et y2 sont les bornes de l'autre.
+     * Vérifie si le point est dans la zone indiquée par latRange et lngRange L'intérieur
+     * d'un rectangle est caractérisé par (x-x1)(x-x2) <=0 et (y-y1)(y-y2) <= 0 où x1 et
+     * x2 sont les bornes de l'une des coordonnées et y1 et y2 sont les bornes de l'autre.
      *
      * @throws \SbmCartographie\Model\Exception\RangeException
-     * 
+     *
      * @return boolean
      */
     public function isValid()
@@ -503,4 +496,3 @@ class Point
         return $ok;
     }
 }
- 

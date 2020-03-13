@@ -12,8 +12,8 @@
  * @filesource formulaire.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 12 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-paiement', 'formulaire.css');
@@ -123,7 +123,8 @@ $dejaPaye = $resultats->getPaiementsMontant();
 	            		<tr>
 						<td><?=$this->escapeHtml($enfant['nom']);?></td>
 						<td><?=$this->escapeHtml($enfant['prenom']);?></td>
-						<td><?=$enfant['grilleTarif'];?></td>
+						<td><?=$enfant['grilleTarifR1'];?>
+						    <?=$this->reductionTarif($enfant['reductionR1']);?></td>
 						<td><?=$enfant['duplicata'];?></td>
 					</tr>
 	            <?php endforeach;?>

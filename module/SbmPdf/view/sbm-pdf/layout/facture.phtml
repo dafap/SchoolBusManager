@@ -103,10 +103,18 @@ table.entete td {
 					<th style="width: 52;">Duplicatas</th>
 				</tr>
 				<?php foreach ($facture->getResultats()->getListeEleves() as $row) :?>
+				<?php
+        if (! $row['fa'] && ! $row['gratuit']) {
+            $elementTarif = sprintf('%s %s', $row['grilleTarifR1'],
+                $row['reductionR1'] ? 'Réduit' : 'Normal');
+        } else {
+            $elementTarif = '';
+        }
+        ?>
 				<tr>
 					<td><?=$row['nom'];?></td>
 					<td><?=$row['prenom'];?></td>
-					<td><?=(!$row['fa'] && !$row['gratuit']) ? $row['grilleTarif']: '';?></td>
+					<td><?=$elementTarif;?></td>
 					<td style="text-align: right"><?=$row['duplicata'];?></td>
 				</tr>
 				<?php endforeach;?>

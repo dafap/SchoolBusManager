@@ -8,12 +8,13 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 13 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/eleve', 'eleve-liste.css');
 // gestion des checkbox selection
 $this->jQuery();
 $js_chkCallback = '';
@@ -228,13 +229,13 @@ $actions = [
 			<tbody>
 				<tr>
 					<th></th>
-					<th>Numéro</th>
+					<th>N°</th>
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Né(e) le</th>
 					<th>Responsables</th>
 					<th>Commune</th>
-					<th>Etablissement scolaire</th>
+					<th>Établissement</th>
 					<th>Classe</th>
 					<th>Services</th>
 					<th>Arrêts</th>
@@ -244,9 +245,11 @@ $actions = [
         		<?php foreach($eleves as $eleve): ?>
         		<?php
             // responsable 1
-            $r = htmlspecialchars(
-                str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES,
-                'utf-8', false);
+            // $r = htmlspecialchars(
+            // str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES,
+            // 'utf-8', false);
+            $r = htmlspecialchars($eleve['responsable1NomPrenom'], ENT_QUOTES, 'utf-8',
+                false);
             $hiddensR1 = [
                 'responsableId' => $eleve['responsable1Id'],
                 'info' => $r,

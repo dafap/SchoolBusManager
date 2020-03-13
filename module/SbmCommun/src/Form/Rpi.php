@@ -1,14 +1,14 @@
 <?php
 /**
  * Formulaire de gestion des rpi
- * 
+ *
  * @project sbm
  * @package SbmCommun/Form
  * @filesource Rpi.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2018
- * @version 2018-2.4.1
+ * @date 10 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
@@ -67,6 +67,25 @@ class Rpi extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'grille',
+                'attributes' => [
+                    'id' => 'rpi-grille',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Grille tarifaire',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez la grille',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]

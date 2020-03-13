@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 jan. 2020
+ * @date 12 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -681,7 +681,7 @@ class EleveGestionController extends AbstractActionController
             return new ViewModel(
                 [
                     'form' => $form,
-                    'eleveid' => $args['eleveId'],
+                    'eleveId' => $args['eleveId'],
                     'origine' => $args['origine']
                 ]);
         } else {
