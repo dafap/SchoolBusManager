@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
- * @version 2019-2.5.0
+ * @date 16 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -234,7 +234,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Textarea',
                 'name' => 'motifDerogation',
                 'attributes' => [
-                    'id' => 'eleve-motifDerogation',
+                    'id' => 'eleve-motifDerogation'
                 ],
                 'options' => [
                     /*
@@ -282,13 +282,6 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     'unchecked_value' => '0'
                 ]
             ]);
-        /*
-         * $this->add([ 'type' => 'Zend\Form\Element\Checkbox', 'name' => 'gratuit',
-         * 'attributes' => [ 'id' => 'eleve-gratuit' ], 'options' => [ 'label' =>
-         * 'Gratuité', 'label_attributes' => [ 'class' => 'sbm-label checkbox' ],
-         * 'use_hidden_element' => true, 'checked_value' => '1', 'unchecked_value' => '0'
-         * ] ]);
-         */
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Button',
@@ -695,11 +688,84 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'button default cancel'
                 ]
             ]);
+        // Grille tarifaire
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'grilleTarifR1',
+                'attributes' => [
+                    'id' => 'eleve-grilletarifR1',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Tarif',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez le tarif à appliquer',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'grilleTarifR2',
+                'attributes' => [
+                    'id' => 'eleve-grilletarifR2',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Tarif',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez le tarif à appliquer',
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
+                    ]
+                ]
+            ]);
+        // Réductions
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'reductionR1',
+                'attributes' => [
+                    'id' => 'eleve-reductionR1'
+                ],
+                'options' => [
+                    'label' => 'Réduction',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => '1',
+                    'unchecked_value' => '0'
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'reductionR2',
+                'attributes' => [
+                    'id' => 'eleve-reductionR2'
+                ],
+                'options' => [
+                    'label' => 'Réduction',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => '1',
+                    'unchecked_value' => '0'
+                ]
+            ]);
     }
 
     /**
-     * Description des contraintes, filtres et validateurs
-     * (non-PHPdoc)
+     * Description des contraintes, filtres et validateurs (non-PHPdoc)
      *
      * @see \Zend\InputFilter\InputFilterProviderInterface::getInputFilterSpecification()
      */
@@ -716,6 +782,14 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'demandeR2' => [
                 'name' => 'demandeR2',
+                'required' => false
+            ],
+            'grilleTarifR2' => [
+                'name' => 'grilleTarifR2',
+                'required' => false
+            ],
+            'reductionR2' => [
+                'name' => 'reductionR2',
                 'required' => false
             ]
         ];

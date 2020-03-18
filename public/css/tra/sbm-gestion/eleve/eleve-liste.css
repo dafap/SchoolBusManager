@@ -1,0 +1,26 @@
+/**
+ * Feuille de style de la liste des élèves
+ *
+ * (eleve-liste.phtml)
+ * 
+ * @project sbm
+ * @package public/css/tra/sbm-gestion/eleve
+ * @filesource eleve-ajout.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 mars 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+td.service {
+	width: 167px;
+}
+td.station {
+	width: 145px;
+}
+td.responsables {
+	max-width: 150px;
+}
+td.etablissement {
+	max-wdth: 135px;
+}

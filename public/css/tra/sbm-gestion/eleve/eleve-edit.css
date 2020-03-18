@@ -8,7 +8,7 @@
  * @filesource eleve-edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 14 mars 2020
  * @version 2020-2.6.0
  **/
 .table-cell div {
@@ -20,6 +20,11 @@
 	color: gray;
 	border-color: gray;
 	font-size: 80%;
+}
+
+.attendre {
+	background-image: url("/img/attendre-2.gif");
+	background-repeat: no-repeat;
 }
 
 #eleve {
@@ -231,7 +236,7 @@ textarea[name="motifDerogation"] {
 }
 
 textarea.demande-motifRefus {
-	width: 267px;;
+	width: 320px;;
 }
 
 .wrapper-responsable {
@@ -260,7 +265,7 @@ textarea.demande-motifRefus {
 }
 
 #tabs div.edit-tab-col2 {
-	max-width: 669px;
+	width: 669px;
 }
 
 .block-affectations h3 {

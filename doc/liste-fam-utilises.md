@@ -21,11 +21,12 @@
 * fam-car
 * fam-car-add
 * fam-car-delete
+* fam-car-key (ajout dans  _famfamfam-icons-custom_  à la place de _fam-award-star-bronze-2_)
 * fam-chart-line-error
 * fam-clock-edit
 * fam-clock-red
-* fam-cloud-download (ajout dans _famfamfam-icons-custom_ à la place de _fam-award-star-add_)
-* fam-cloud-upload (ajout dans _famfamfam-icons-custom_ à la place de _fam-award-star-bronze-1_)
+* fam-cloud-download (ajout dans  _famfamfam-icons-custom_  à la place de _fam-award-star-add_)
+* fam-cloud-upload (ajout dans  _famfamfam-icons-custom_  à la place de _fam-award-star-bronze-1_)
 * fam-cog-add
 * fam-cog-error
 * fam-coins

@@ -1,0 +1,96 @@
+<?php
+/**
+ * Formulaire de choix d'une station de départ du domicile
+ *
+ * Ce formulaire s'ouvre en popup par le jQuery dialog dans la fiche d'un élève
+ *
+ * @project sbm
+ * @package SbmAjax/view/sbm-ajax/eleve
+ * @filesource formchercheraffectations.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 mars 2020
+ * @version 2020-2.6.0
+ */
+
+/**
+ * Pour DEBUG décommenter les lignes suivantes
+ *
+ * @formatter off
+ *
+ * $msg_alert = '"etablissementId:"+$("#station-depart input[name=etablissementId]").val()';
+ * $msg_alert .= '+"\neleveId:"+$("#station-depart input[name=eleveId]").val()';
+ * $msg_alert .= '+"\nmillesime: "+$("#station-depart input[name=millesime]").val()';
+ * $msg_alert .= '+"\ntrajet: "+$("#station-depart input[name=trajet]").val()';
+ * $msg_alert .= '+"\njours: "+$("#station-depart input[name=jours]").val()';
+ * $msg_alert .= '+"\nresponsableId: "+$("#station-depart input[name=responsableId]").val()';
+ * $msg_alert .= '+"\nop: "+$("#station-depart input[name=op]").val()';
+ *
+ *
+ * et ajouter la ligne qui suit dans inlineScript()->captureStart()
+ * alert(<?=$msg_alert;?>);
+ *
+ * @formatter off
+ */
+?>
+<?php $this->headStyle()->captureStart(); ?>
+#stationdepart-form label.sbm-form-auto {
+    display: inline-block;
+    width: 150px;
+    margin-right: 5px;
+}
+#stationdepart-form label.sbm-form-auto:before {
+	content: "\A";
+	white-space: pre;
+	line-height: 1.5em;
+}
+#stationdepart-form input.button {
+    margin-top: 1.5rem;
+}
+#stationdepart-form input.button.cancel {
+    margin-left: 100px;
+}
+#stationdepart-form input.button.submit {
+	margin-left: 15px;
+}
+<?php $this->headStyle()->captureEnd(); ?>
+<?= $this->headStyle();?>
+<?php $this->inlineScript()->captureStart();?>
+var is_xmlhttprequest = <?= $this->is_xmlhttprequest; ?>;
+var formstationdepart = "#stationdepart-form";
+var urlform = '<?= $this->form->getAttribute('action'); ?>';
+var trajet = <?= $this->trajet;?>;
+stationdepart().init(is_xmlhttprequest, formstationdepart, urlform);
+<?php $this->inlineScript()->captureEnd();?>
+<?= $this->inlineScript();?>
+<div id="wrapper-formchercheraffectations"
+	style="background-position-y: bottom;">
+	<div id="formchercheraffectations<?= $this->trajet;?>">
+	<?= $this->form($this->form);?>
+	</div>
+	<div id="errors"></div>
+	<p>
+		Besoin d'aide <i class="fam-help"></i>
+	</p>
+	<div id="formchercheraffectations-help" style="display: none;">
+		<p class="sbm-description">Si vous ne trouvez pas de solution depuis
+			la station demandée, vérifiez que cette station est bien sur un
+			service qui dessert l'établissement de l'élève. Pour cela :</p>
+		<ul class="sbm-description">
+			<li>allez dans Gestion du réseau de transport</li>
+			<li>cherchez la station dans Stations</li>
+			<li>cliquez sur le bouton <i class="fam-table-relationship"></i>
+				Ciruits desservant cette station
+			</li>
+			<li>notez quels sont les services qui desservent cette station</li>
+			<li>revenez à la Gestion du réseau de transport</li>
+			<li>cherchez l'établissement dans Etablissements</li>
+			<li>cliquez sur le bouton <i class="fam-table-relationship"></i>
+				Services desservant cet établissement
+			</li>
+			<li>ajoutez <i class="fam-add"></i> le service manquant
+			</li>
+			<li>essayez de trouver une solution manuellement</li>
+		</ul>
+	</div>
+</div>

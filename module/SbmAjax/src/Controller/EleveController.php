@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 16 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -18,10 +18,10 @@ namespace SbmAjax\Controller;
 use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
-use SbmCommun\Model\Traits\ServiceTrait;
 use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
+use SbmCommun\Model\Traits\ServiceTrait;
 
 class EleveController extends AbstractActionController
 {
@@ -229,8 +229,8 @@ class EleveController extends AbstractActionController
             'etablissementId' => $etablissementId,
             'eleveId' => $this->params('eleveId', 0),
             'trajet' => $trajet,
-            'jours' => '31', // Lu Ma Me Je Ve non traité
-            'moment' => '1', // matin
+            'jours' => $this->params('jours', 31),
+            'moment' => $this->params('moment', '1'),
             'correspondance' => $this->params('correspondance', 1),
             'responsableId' => $this->params('responsableId', 0),
             'station1Id' => $station1Id,
@@ -314,8 +314,7 @@ class EleveController extends AbstractActionController
                                 break;
                             case 'delete':
                                 // ré-écrire deleteRecord pour mettre à jour les
-                                // correspondances
-                                // qui restent
+                                // correspondances qui restent
                                 $tAffectations->deleteRecord($oData);
                                 $messages = 'Affectation supprimée.';
                                 $this->flashMessenger()->addSuccessMessage(
@@ -338,6 +337,145 @@ class EleveController extends AbstractActionController
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
+                        $response->setContent(
+                            Json::encode([
+                                'cr' => $e->getMessage(),
+                                'success' => 0
+                            ]));
+                    }
+                }
+            }
+        } else {
+            $response->setContent(
+                Json::encode([
+                    'cr' => 'Pas de post !',
+                    'success' => 0
+                ]));
+        }
+
+        return $response;
+    }
+
+    private function getFormStationDepart()
+    {
+        $form = new \SbmGestion\Form\StationDepart();
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute(self::ROUTE,
+                [
+                    'action' => 'formchercheraffectationsvalidate'
+                ]))
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes());
+        return $form;
+    }
+
+    public function formchercheraffectationsAction()
+    {
+        $etablissementId = $this->params('etablissementId', '');
+        $trajet = $this->params('trajet', 1);
+        $millesime = Session::get('millesime');
+        $eleveId = $this->params('eleveId', 0);
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $oscolarite = $tScolarites->getRecord(['millesime'=>$millesime,'eleveId'=>$eleveId]);
+        $stationId = $oscolarite->{'stationIdR' . $trajet};
+        $aData = [
+            'millesime' => $millesime,
+            'etablissementId' => $etablissementId,
+            'eleveId' => $eleveId,
+            'trajet' => $trajet,
+            'jours' => $this->params('jours', 31), // 31:LMMJV
+            'responsableId' => $this->params('responsableId', 0),
+            'op' => $this->params('op', null),
+            'stationId' => $stationId
+        ];
+        return new ViewModel(
+            [
+                'trajet' => $trajet,
+                'stationId' => $stationId,
+                'form' => $this->getFormStationDepart()->setData($aData),
+                'is_xmlhttprequest' => 1
+            ]);
+    }
+
+    public function formchercheraffectationsvalidateAction()
+    {
+        $request = $this->getRequest();
+        $response = $this->getResponse();
+        if ($request->isPost()) {
+            if (($request->getPost('cancel') || $request->getPost('submit') == 'cancel')) {
+                $messages = 'Opération abandonnée.';
+                $this->flashMessenger()->addInfoMessage($messages);
+                $response->setContent(Json::encode([
+                    'cr' => $messages,
+                    'success' => 1
+                ]));
+            } else {
+                $form = $this->getFormStationDepart()->setData($request->getPost());
+                if (! $form->isValid()) {
+                    $errors = $form->getMessages();
+                    $messages = '';
+                    foreach ($errors as $key => $row) {
+                        if (! empty($row) && $key != 'submit') {
+                            foreach ($row as $rower) {
+                                // save error(s) per-element that needed by Javascript
+                                $messages .= $key . ' : ' . _($rower) . "\n";
+                            }
+                        }
+                    }
+                    $response->setContent(
+                        Json::encode([
+                            'cr' => $messages,
+                            'success' => 0
+                        ]));
+                } else {
+                    try {
+                        $data = $form->getData();
+                        switch ($data['op']) {
+                            case 'auto':
+                                $tScolarites = $this->db_manager->get(
+                                    'Sbm\Db\Table\Scolarites');
+                                $oScolarite = $tScolarites->getObjData();
+                                $oScolarite->exchangeArray(
+                                    [
+                                        'millesime' => Session::get('millesime'),
+                                        'eleveId' => $data['eleveId'],
+                                        'stationIdR' . $data['trajet'] => $data['stationId']
+                                    ]);
+                                $tScolarites->saveRecord($oScolarite);
+                                $this->db_manager->get('Sbm\ChercheTrajet')
+                                    ->setEtablissementId($data['etablissementId'])
+                                    ->setStationId($data['stationId'])
+                                    ->setEleveId($oScolarite->eleveId)
+                                    ->setJours($data['jours'])
+                                    ->setTrajet($data['trajet'])
+                                    ->setResponsableId($data['responsableId'])
+                                    ->run();
+                                $messages = 'Nouvelles affectations enregistrées.';
+                                $this->flashMessenger()->addSuccessMessage($messages);
+                                $tAffectations = $this->db_manager->get(
+                                    'Sbm\Db\Table\Affectations');
+                                $response->setContent(
+                                    Json::encode(
+                                        [
+                                            'cr' => "$messages",
+                                            'nb' => $tAffectations->count(
+                                                $oScolarite->millesime,
+                                                $oScolarite->eleveId,
+                                                $data['responsableId']),
+                                            'success' => 1
+                                        ]));
+                                break;
+                            default:
+                                $messages = 'Demande incorrecte.';
+                                $this->flashMessenger()->addWarningMessage($messages);
+                                break;
+                        }
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Une erreur s\'est produite pendant le traitement de la demande.');
+                        //$this->debugTrace($e->getTraceAsString());
                         $response->setContent(
                             Json::encode([
                                 'cr' => $e->getMessage(),

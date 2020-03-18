@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 16 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -650,7 +650,8 @@ class EleveController extends AbstractActionController
         $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
-        // ATTENTION Pour la version de Millau on n'a besoin que des grilles tarifaires
+        // ATTENTION Pour la version d'ALBERTVILLE on n'a besoin que des grilles
+        // tarifaires
         $qAffectations = $this->db_manager->get(
             'Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
@@ -702,13 +703,14 @@ class EleveController extends AbstractActionController
             $odata1->grilleTarifR1);
         $historique['scolarite']['reductionR1'] = $odata1->reductionR1;
         $historique['scolarite']['grilleCodeR2'] = $odata1->grilleTarifR2;
-        $historique['scolarite']['reductionR2']= $odata1->reductionR2;
+        $historique['scolarite']['reductionR2'] = $odata1->reductionR2;
         $historique['scolarite']['duplicata'] = $odata1->duplicata;
         $historique['scolarite']['internet'] = $odata1->internet;
 
         $respSelect = $this->db_manager->get('Sbm\Db\Select\Responsables');
         $etabSelect = $this->db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
         $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes')->tout();
+        $grilleTarifSelect = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getGrilles();
         $form = $this->form_manager->get(FormEleve\EditForm::class);
         $form->setAttribute('action',
             $this->url()
@@ -722,6 +724,8 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
             ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('grilleTarifR1', $grilleTarifSelect)
+            ->setValueOptions('grilleTarifR2', $grilleTarifSelect)
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'));
         if (array_key_exists('submit', $args)) {
             if (array_key_exists('etablissementId', $args) && $args['etablissementId']) {
@@ -748,7 +752,6 @@ class EleveController extends AbstractActionController
                         $dataValid['responsable2Id'] != $odata0->responsable2Id;
                 }
                 // enregistrement dans la table eleves
-
                 $tEleves->saveRecord($tEleves->getObjData()
                     ->exchangeArray($dataValid));
                 // maj en cascade dans la table affectations

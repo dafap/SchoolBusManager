@@ -9,8 +9,8 @@
  * @filesource formaffectation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 16 mars 2020
+ * @version 2020-2.6.0
  */
 
 /**
@@ -69,24 +69,27 @@ affectation().init(station1Id, station2Id, is_xmlhttprequest, formaffectation, u
 
 <?php $this->inlineScript()->captureEnd();?>
 <?= $this->inlineScript();?>
-<div id="formaffectation<?= $this->trajet;?>">
-<?= $this->form($this->form);?>
-</div>
-<div id="errors"></div>
-<p>
-	Besoin d'aide <i class="fam-help"></i>
-</p>
-<div id="formaffectation-help" style="display: none;">
-	<p class="sbm-description">Si vous ne trouvez pas un service dans les
-		listes déroulantes, vérifiez que ce service dessert l'établissement de
-		l'élève. Pour cela :</p>
-	<ul class="sbm-description">
-		<li>allez dans Gestion du réseau de transport</li>
-		<li>cherchez l'établissement dans Etablissements</li>
-		<li>cliquez sur le bouton <i class="fam-table-relationship"></i>
-			Services desservant cet établissement
-		</li>
-		<li>ajoutez <i class="fam-add"></i> le service manquant
-		</li>
-	</ul>
+<div id="wrapper-formchercheraffectations"
+	style="background-position-y: bottom;">
+	<div id="formaffectation<?= $this->trajet;?>">
+	<?= $this->form($this->form);?>
+	</div>
+	<div id="errors"></div>
+	<p>
+		Besoin d'aide <i class="fam-help"></i>
+	</p>
+	<div id="formaffectation-help" style="display: none;">
+		<p class="sbm-description">Si vous ne trouvez pas un service dans les
+			listes déroulantes, vérifiez que ce service dessert l'établissement
+			de l'élève. Pour cela :</p>
+		<ul class="sbm-description">
+			<li>allez dans Gestion du réseau de transport</li>
+			<li>cherchez l'établissement dans Etablissements</li>
+			<li>cliquez sur le bouton <i class="fam-table-relationship"></i>
+				Services desservant cet établissement
+			</li>
+			<li>ajoutez <i class="fam-add"></i> le service manquant
+			</li>
+		</ul>
+	</div>
 </div>

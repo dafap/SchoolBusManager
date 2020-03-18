@@ -6,14 +6,14 @@
  * - identite (nom et prénom de l'élève concerné)
  * - structure (description de son affectation pour un domicile)
  * - trajet (numéro du trajet)
- * 
+ *
  * @project sbm
  * @package SbmAjax/view/sbm-ajax/eleve
  * @filesource blockaffectations.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 mars 2020
+ * @version 2020-2.6.0
  */
 
 // on cache le chexkbox accordRi si une affectation est présente dans la structure
@@ -27,13 +27,15 @@ js_edit.setDisableAccordR2(<?php echo $disableAccord; ?>);
 <?php endif;?>
 <?php $this->inlineScript()->captureEnd(); ?>
 <h3>
-	Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
-		title="Ajouter une affectation pour <?php echo $this->identite;?>"
-		data-button="btnaffectation" data-trajet="<?php echo $this->trajet?>"
-		data-href="/op:add"></i>
+	Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+		title="Recherche automatique des circuits pour <?= $this->identite;?>"
+		data-button="btnchercheraffectations" data-trajet="<?= $this->trajet; ?>"
+		data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+		title="Ajouter un circuit pour <?= $this->identite;?>"
+		data-button="btnaffectation" data-trajet="<?= $this->trajet; ?>" data-href="/op:add"></i>
 </h3>
 <?php
 if (isset($this->structure)) {
     echo $this->affectations($this->trajet, $this->structure);
 }
-?> 
+?>

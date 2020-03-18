@@ -15,19 +15,20 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 15 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
 
 use SbmCommun\Form\AbstractSbmForm as Form;
 use SbmCommun\Model\Traits\ServiceTrait;
+use SbmCommun\Model\Traits\DebugTrait;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class AffectationDecision extends Form implements InputFilterProviderInterface
 {
-    use ServiceTrait;
+    use ServiceTrait, DebugTrait;
 
     /**
      * Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1
@@ -56,6 +57,9 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
      */
     public function __construct($trajet, $phase)
     {
+        // DEBUG
+        //$this->debugInitLog('/debug', 'ajax-formaffectationdecision');
+        //----------------------
         $this->trajet = $trajet;
         $this->phase = $phase;
         parent::__construct($phase == 1 ? 'decision-form' : 'affectation-form');
@@ -358,11 +362,29 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
         if ($this->phase == 1 && array_key_exists('district', $data)) {
             $fictif = $this->get('fictif');
             $fictif->setValue($data['district']);
+        } else {
+            if (! isset($data['service1Id'])) {
+                $data['service1Id'] = $this->createServiceId(1, $data);
+            }
+            if (! isset($data['service2Id']) && isset($data['ligne2Id'])) {
+                $data['service2Id'] = $this->createServiceId(2, $data);
+            }
         }
         parent::setData($data);
         $demande = $this->get('demandeR' . $this->trajet);
         $demande->setValue(2);
         return $this;
+    }
+
+    private function createServiceId(int $n, array $data)
+    {
+        return $this->encodeServiceId(
+            [
+                'ligneId' => $data[sprintf('ligne%dId', $n)],
+                'sens' => $data[sprintf('sensligne%d', $n)],
+                'moment' => $data['moment'],
+                'ordre' => $data[sprintf('ordreligne%d', $n)]
+            ]);
     }
 
     public function getData($flag = FormInterface::VALUES_NORMALIZED)

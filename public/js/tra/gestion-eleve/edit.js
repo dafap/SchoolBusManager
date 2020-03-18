@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 15 mars 2020
  * @version 2020-2.6.0
  */
 
@@ -236,6 +236,11 @@ var js_edit = (function() {
 			part_html.push(oresponsable.telephoneT);
 		}
 		$("#"+r+"-ligne5").html(part_html.join(' '));
+		if (r=='r1') {
+			$("#wrapper-responsable1").removeClass('attendre');
+		} else {
+			$("#wrapper-responsable2").removeClass('attendre');
+		}
 	}
 	$(document).ready(function($) {
 		var lastEtablissementSel = $("#eleve-etablissementId option:selected");
@@ -399,6 +404,7 @@ var js_edit = (function() {
 		});
 		$("#eleve-responsable1Id").change(function() {
 			var responsableid = $(this).val();
+			$("#wrapper-responsable1").addClass("attendre");
 			$.ajax({
 				url : '/sbmajaxeleve/getresponsable/responsableId:'+responsableid,
 				success : function(data) {
@@ -411,6 +417,7 @@ var js_edit = (function() {
 		});
 		$("#eleve-responsable2Id").change(function() {
 			var responsableid = $(this).val();
+			$("#wrapper-responsable1").addClass("attendre");
 			$.ajax({
 				url : '/sbmajaxeleve/getresponsable/responsableId:'+ responsableid,
 				success : function(data) {
@@ -612,6 +619,33 @@ var js_edit = (function() {
 			$("#winpopup").dialog("open");
 			return false;
 		});
+		$("#tabs").on('click',"i[data-button=btnchercheraffectations]",function() {
+			var etablissementId = $("#eleve-etablissementId").val();
+			var trajet = $(this).attr('data-trajet');
+			var respid = '#eleve-responsable'+trajet+'Id';
+			var stationid = '#stationIdR' + trajet;
+			var href = '/sbmajaxeleve/formchercheraffectations/etablissementId:'
+				+ etablissementId
+				+ '/eleveId:'
+				+ ELEVE_ID
+				+ '/trajet:'
+				+ trajet
+				+ $(this).attr('data-href')
+				+ '/responsableId:';
+			href = href.concat($(respid).val());
+			$("#winpopup").dialog({
+				draggable : true,
+				modal : true,
+				autoOpen : false,
+				height : 400,
+				width : 600,
+				resizable : false,
+				title : $(this).attr('title')
+			});
+			$("#winpopup").load(href);
+			$("#winpopup").dialog("open");
+			return false;
+		});
 		$("#eleve-btnpaiement").click(function() {
 			var href = '/sbmajaxeleve/formpaiement/eleveId:'+ELEVE_ID;
 			$("#winpopup").dialog({
@@ -647,6 +681,7 @@ var js_edit = (function() {
 			montreDemande('r2');
 			montreBtnEnvoiPhoto(false);
 			initAccord();
+			$("#wrapper-responsable1").addClass("attendre");
 			$.ajax({
 				url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable1Id").val(),
 				success : function(data) {
@@ -657,6 +692,7 @@ var js_edit = (function() {
 				}
 			});
 			if ($("#eleve-responsable2Id").val()) {
+				$("#wrapper-responsable2").addClass("attendre");
 				$.ajax({
 					url : '/sbmajaxeleve/getresponsable/responsableId:'+$("#eleve-responsable2Id").val(),
 					success : function(data) {
@@ -805,6 +841,7 @@ function affectation() {
 				'op' : $(formaffectation+' input[name=op]').val(),
 				'submit' : btnclick
 		};
+		$("#wrapper-formchercheraffectations").addClass('attendre');
 		$.post(urlform, data, function(itemJson) {
 			$("#winpopup").dialog('close');
 			js_edit.majBlockAffectations(trajet);
@@ -884,6 +921,59 @@ function priseenchargepaiement() {
 				$("#formpaiement-organismeId").show();
 			}
 			is_xmlhttprequest = x;
+			urlform = url;
+			btnclick = '';
+		}
+	}
+}
+
+/**
+ * POUR LE DIALOG 'stationdepart'
+ */
+function stationdepart() {
+	var is_xmlhttprequest;
+	var formstationdepart;
+	var urlform;
+	var btnclick;
+	$('i[class="fam-help"').click(function() {
+		$("#formchercheraffectations-help").show();
+	});
+	$('#stationdepart-cancel').click(function() {
+		btnclick = 'cancel';
+	});
+	$('#stationdepart-submit').click(function() {
+		btnclick = 'submit';
+	});
+	$("#stationdepart-form").submit(function() {
+		if (is_xmlhttprequest == 0) {
+			return true;
+		}
+		var trajet = $(formstationdepart+' input[name=trajet]').val();
+		var data = {
+				//'csrf' : $(formstationdepart+' input[name=csrf]').val(),
+				'etablissementId' : $(formstationdepart+' input[name=etablissementId]').val(),
+				'eleveId' : $(formstationdepart+' input[name=eleveId]').val(),
+				'millesime' : $(formstationdepart+' input[name=millesime]').val(),
+				'trajet' : trajet,
+				'jours' : $(formstationdepart+' input[name=jours]').val(),
+				'responsableId' : $(formstationdepart+' input[name=responsableId]').val(),
+				//'demandeR1' : $(formstationdepart+' input[name=demandeR1]').val(),
+				//'demandeR2' : $(formstationdepart+' input[name=demandeR2]').val(),
+				'stationId' : $(formstationdepart+' select[name=stationId]').val(),
+				'op' : $(formstationdepart+' input[name=op]').val(),
+				'submit' : btnclick
+		};
+		$("#wrapper-formchercheraffectations").addClass('attendre');
+		$.post(urlform, data, function(itemJson) {
+			$("#winpopup").dialog('close');
+			js_edit.majBlockAffectations(trajet);
+		}, 'json').done(function(data){js_edit.majDisableAccordRi(trajet,data.nb);});
+		return false;
+	});
+	return {
+		"init" : function(x, f, url) {
+			is_xmlhttprequest = x;
+			formstationdepart = f;
 			urlform = url;
 			btnclick = '';
 		}

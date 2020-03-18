@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 16 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -51,8 +51,8 @@ $url_euro = $this->url('sbmgestion/finance', [
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-edit.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('gestion-eleve','edit.js');
-$this->themeJS('commun','checkallbox.js');
+$this->themeJS('gestion-eleve', 'edit.js');
+$this->themeJS('commun', 'checkallbox.js');
 $this->headScript()->captureStart();
 ?>
 multicheckbox_actions.init("wrapper-joursTransport");
@@ -214,31 +214,39 @@ $actions = [
 								<div id="r1-ligne4"></div>
 								<div id="r1-ligne5"></div>
 							</div>
-							<div class="clearfix">
-								<div id="wrapper-distanceR1" class="float-left top-18px">
+							<div id="wrapper-tarifR1">
+								<div id="wrapper-grilletarifR1" class="top-18px">
+									<?= $this->formRow($this->form->get('grilleTarifR1'));?></div>
+								<div id="wrapper-reductionR1">
+									<?= $this->formRow($this->form->get('reductionR1'));?></div>
+							</div>
+							<div id="wrapper-distanceR1">
 									<?= $this->formRow($this->form->get('distanceR1'));?></div>
-								<div id="wrapper-demandeR1" class="row-inner edit float-left">
-									<?= $this->formRow($this->form->get('demandeR1'));?></div>
-							</div>
-							<div id="block-demander1">
-								<div class="clearfix">
-									<div class="float-left">
-										<div id="wrapper-accordR1">
-											<?= $this->formRow($this->form->get('accordR1'));?></div>
-										<div id="wrapper-subventionr1">
-											<?= $this->formRow($this->form->get('subventionR1'));?></div>
-									</div>
-									<div id="wrapper-motifRefusr1" class="float-right">
-									<?= $this->formRow($this->form->get('motifRefusR1'));?></div>
-								</div>
-
-							</div>
 						</div>
 						<div class="float-left left-10px edit-tab-col2">
+							<div class="clearfix">
+								<div id="wrapper-demandeR1" class="row-inner edit float-left">
+									<?= $this->formRow($this->form->get('demandeR1'));?></div>
+								<div id="block-demander1">
+									<div class="clearfix">
+										<div class="float-left">
+											<div id="wrapper-accordR1">
+											<?= $this->formRow($this->form->get('accordR1'));?></div>
+											<div id="wrapper-subventionr1">
+											<?= $this->formRow($this->form->get('subventionR1'));?></div>
+										</div>
+										<div id="wrapper-motifRefusr1" class="float-right">
+									<?= $this->formRow($this->form->get('motifRefusR1'));?></div>
+									</div>
+								</div>
+							</div>
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3 id="h3-affectationsr1">
-									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
-										title="Ajouter une affectation pour <?= $this->identite;?>"
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+										title="Recherche automatique des circuits pour <?= $this->identite;?>"
+										data-button="btnchercheraffectations" data-trajet="1"
+										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+										title="Ajouter un circuit pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="1"
 										data-href="/op:add"></i>
 								</h3>
@@ -261,32 +269,41 @@ $actions = [
 								<div id="r2-ligne4"></div>
 								<div id="r2-ligne5"></div>
 							</div>
-							<div class="clearfix">
-								<div id="wrapper-distanceR2" class="float-left top-18px">
+							<div id="wrapper-tarifR2">
+								<div id="wrapper-grilletarifR2" class="top-18px">
+									<?= $this->formRow($this->form->get('grilleTarifR2'));?></div>
+								<div id="wrapper-reductionR2">
+									<?= $this->formRow($this->form->get('reductionR2'));?></div>
+							</div>
+							<div id="wrapper-distanceR2">
 									<?= $this->formRow($this->form->get('distanceR2'));?></div>
-								<div id="wrapper-demandeR2" class="row-inner edit float-left">
-									<?= $this->formRow($this->form->get('demandeR2'));?></div>
-							</div>
-							<div id="block-demander2">
-								<div class="clearfix">
-									<div class="float-left">
-										<div id="wrapper-accordR2">
-											<?= $this->formRow($this->form->get('accordR2'));?></div>
-										<div id="wrapper-subventionr2">
-											<?= $this->formRow($this->form->get('subventionR2'));?></div>
-									</div>
-									<div id="wrapper-motifRefusr2" class="float-left">
-										<?= $this->formRow($this->form->get('motifRefusR2'));?></div>
-								</div>
-							</div>
 						</div>
 						<div class="float-left left-10px edit-tab-col2">
+							<div class="clearfix">
+								<div id="wrapper-demandeR2" class="row-inner edit float-left">
+									<?= $this->formRow($this->form->get('demandeR2'));?></div>
+								<div id="block-demander2">
+									<div class="clearfix">
+										<div class="float-left">
+											<div id="wrapper-accordR2">
+											<?= $this->formRow($this->form->get('accordR2'));?></div>
+											<div id="wrapper-subventionr2">
+											<?= $this->formRow($this->form->get('subventionR2'));?></div>
+										</div>
+										<div id="wrapper-motifRefusr2" class="float-right">
+									<?= $this->formRow($this->form->get('motifRefusR2'));?></div>
+									</div>
+								</div>
+							</div>
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3 id="h3-affectationsr2">
-									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-add"
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+										title="Recherche automatique des circuits pour <?= $this->identite;?>"
+										data-button="btnchercheraffectations" data-trajet="2"
+										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
 										title="Ajouter une affectation pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="2"
-										data-href="/op:add" id="i-affectationsr2"></i>
+										data-href="/op:add"></i>
 								</h3>
 								<?php if (isset($this->structAffectations[2])) :?>
 									<?= $this->affectations(2, $this->structAffectations[2]);?>
@@ -367,8 +384,8 @@ $actions = [
 							<div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
 								<span id="tabs-3-grilleTarifR1">
-									<?=$this->historique['scolarite']['grilleTarifR1'];?></span>
-							    <span id="tabs-3-reduction">
+									<?=$this->historique['scolarite']['grilleTarifR1'];?></span> <span
+									id="tabs-3-reduction">
 							    <?=$this->historique['scolarite']['reductionR1'] ? 'Tarif réduit' : 'Tarif normal'?>
 							    </span>
 							</div>
@@ -397,29 +414,30 @@ $actions = [
 							class="float-left left-10px top-18px row-inner">
 							<div id="btnphoto" style="display: inline-block">
 				            <?php
-                            $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
-                            $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
-                            $btnSupprPhoto = new \Zend\Form\Element\Button('supprphoto');
-                            $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
-                            ?>
+                $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
+                $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
+                $btnSupprPhoto = new \Zend\Form\Element\Button('supprphoto');
+                $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
+                ?>
 				                <?= $this->formButton($btnOpenDialog, '<i class="fam-camera-edit"></i> Envoyer une photo');?>
 				                <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
 							</div>
 							<p></p>
-							<div id="btnoutilsphoto" style="display:inline-block">
+							<div id="btnoutilsphoto" style="display: inline-block">
 							<?php
-							$btnQuartGauche = new \Zend\Form\Element\Button('quartgauchephoto');
-							$btnQuartGauche->setLabelOption('disable_html_escape', 'on');
-							$btnQuartDroite = new \Zend\Form\Element\Button('quartdroitephoto');
-							$btnQuartDroite->setLabelOption('disable_html_escape', 'on');
-							$btnRetourne = new \Zend\Form\Element\Button('retournephoto');
-							$btnRetourne->setLabelOption('disable_html_escape', 'on');
-							?>
+    $btnQuartGauche = new \Zend\Form\Element\Button('quartgauchephoto');
+    $btnQuartGauche->setLabelOption('disable_html_escape', 'on');
+    $btnQuartDroite = new \Zend\Form\Element\Button('quartdroitephoto');
+    $btnQuartDroite->setLabelOption('disable_html_escape', 'on');
+    $btnRetourne = new \Zend\Form\Element\Button('retournephoto');
+    $btnRetourne->setLabelOption('disable_html_escape', 'on');
+    ?>
 								<?=$this->formButton($btnQuartGauche, '<i class="fam-arrow-rotate-anticlockwise"></i> Quart de tour à gauche');?>
 								<?=$this->formButton($btnQuartDroite, '<i class="fam-arrow-rotate-clockwise"></i> Quart de tour à droite');?>
 								<?=$this->formButton($btnRetourne, '<i class="fam-arrow-switch"></i> Retourner');?>
 							</div>
-							<p class="sbm-description">Les quarts de tour dégradent la photo. Le demi-tour ne la dégrade pas.</p>
+							<p class="sbm-description">Les quarts de tour dégradent la photo.
+								Le demi-tour ne la dégrade pas.</p>
 						</div>
 					</div>
 				</div>

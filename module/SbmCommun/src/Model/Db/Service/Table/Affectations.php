@@ -36,12 +36,24 @@ class Affectations extends AbstractSbmTable
         ];
     }
 
-    public function count(int $millesime, int $eleveId): int
+    /**
+     * Compte les affectations pour les conditions indiquées.
+     *
+     * @param int $millesime
+     * @param int $eleveId
+     * @param int $responsableId
+     * @return int
+     */
+    public function count(int $millesime, int $eleveId, int $responsableId = 0): int
     {
-        return $this->fetchAll([
+        $conditions = [
             'millesime' => $millesime,
             'eleveId' => $eleveId
-        ])->count();
+        ];
+        if ($responsableId) {
+            $conditions['responsableId'] = $responsableId;
+        }
+        return $this->fetchAll($conditions)->count();
     }
 
     public function insertRecord(ObjectDataInterface $obj_data)
