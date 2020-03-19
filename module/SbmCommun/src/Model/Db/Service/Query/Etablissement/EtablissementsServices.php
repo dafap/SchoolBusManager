@@ -10,13 +10,14 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 18 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 
 class EtablissementsServices extends AbstractQuery
 {
@@ -176,10 +177,7 @@ class EtablissementsServices extends AbstractQuery
                 'cir_typeArret' => 'typeArret',
                 'cir_commentaire1' => 'commentaire1',
                 'cir_commentaire2' => 'commentaire2'
-            ], Select::JOIN_LEFT)
-            ->where([
-            'cir.millesime' => $this->millesime
-        ]);
+            ], Select::JOIN_LEFT);
     }
 
     /**
@@ -192,6 +190,10 @@ class EtablissementsServices extends AbstractQuery
      */
     public function paginatorES($where, $order = [])
     {
+        if (! $where instanceof Where) {
+            $where = new Where($where);
+        }
+        $where->equalTo('rel.millesime', $this->millesime);
         if ($order) {
             $this->select->order($order);
         }
@@ -200,6 +202,10 @@ class EtablissementsServices extends AbstractQuery
 
     public function fetchAll($where, $order = [])
     {
+        if (! $where instanceof Where) {
+            $where = new Where($where);
+        }
+        $where->equalTo('millesime', $this->millesime);
         if ($order) {
             $this->select->order($order);
         }
