@@ -4,13 +4,9 @@
  * - distanceR1
  * - distanceR2
  * - district
- * - grilleTarifR1
- * - reductionR1
- * - grilleTarifR2
- * - reductionR2
  *
  * Cette classe présente 3 méthodes publiques
- * - setMillesime()
+ * - setMillesime() : sans paramètre elle met le millesime en session. Avec un paramètre sert à la simulation.
  * - majDistanceDistrict()
  * - majDistanceDistrictSansPerte()
  *
@@ -20,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 21 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -69,33 +65,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     /**
      *
-     * @var float
+     * @var int
      */
     private $district;
-
-    /**
-     *
-     * @var int
-     */
-    private $grilleTarifR1;
-
-    /**
-     *
-     * @var int
-     */
-    private $grilleTarifR2;
-
-    /**
-     *
-     * @var bool
-     */
-    private $reductionR1;
-
-    /**
-     *
-     * @var int
-     */
-    private $reductionR2;
 
     /**
      *
@@ -108,12 +80,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      * @var \SbmCommun\Model\Db\ObjectData\Scolarite
      */
     private $scolarite;
-
-    /**
-     *
-     * @var bool
-     */
-    private $periode_reduction;
 
     /**
      *
@@ -132,12 +98,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      * @var GoogleMaps\DistanceMatrix
      */
     private $oDistanceMatrix;
-
-    /**
-     *
-     * @var array
-     */
-    private $etat_du_site;
 
     /**
      *
@@ -163,9 +123,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->lngRange = $config_carte['valide']['lng'];
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
-        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $this->etat_du_site = $tCalendar->getEtatDuSite();
-        $this->periode_reduction = $this->etat_du_site['etat'] == $tCalendar::ETAT_PENDANT;
         $this->setMillesime();
         $this->resetData();
         return $this;
@@ -182,7 +139,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     private function getTable(string $nom_table)
     {
         $nom_table = ucfirst($nom_table);
-        return $this->db_manager->get("Sbm\\Db\\Table\\Scolarites\\" . $nom_table);
+        return $this->db_manager->get("Sbm\\Db\\Table\\" . $nom_table);
     }
 
     private function resetData()
@@ -191,10 +148,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->distanceR1 = 0.0;
         $this->distanceR2 = 0.0;
         $this->district = 0;
-        $this->grilleTarifR1 = 0; // self::HORS_ARLYSERE;
-        $this->reductionR1 = 0;
-        $this->grilleTarifR2 = 0;
-        $this->reductionR2 = 0;
     }
 
     private function setDataFromScolarite()
@@ -202,10 +155,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->distanceR1 = $this->scolarite->distanceR1;
         $this->distanceR2 = $this->scolarite->distanceR2;
         $this->district = $this->scolarite->district;
-        $this->grilleTarifR1 = $this->scolarite->grilleTarifR1;
-        $this->grilleTarifR2 = $this->scolarite->grilleTarifR2;
-        $this->reductionR1 = $this->scolarite->reductionR1;
-        $this->reductionR2 = $this->scolarite->reductionR2;
     }
 
     /**
@@ -219,11 +168,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             'eleveId' => $this->eleveId,
             'distanceR1' => $this->distanceR1,
             'distanceR2' => $this->distanceR2,
-            'district' => $this->district,
-            'grilleTarifR1' => $this->grilleTarifR1,
-            'reductionR1' => $this->reductionR1,
-            'grilleTarifR2' => $this->grilleTarifR2,
-            'reductionR2' => $this->reductionR2
+            'district' => $this->district
         ];
     }
 
@@ -254,9 +199,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     {
         $this->eleveId = $eleveId;
         $this->gardeDistance = $gardeDistance;
+        $this->calculs();
+        $oData = $this->getTable('Scolarites')->getObjData();
+        $oData->exchangeArray($this->getData());
+        $this->tScolarites->saveRecord($oData);
     }
 
     /**
+     * Pour cette version de Arlysère, c'est la même chose
+     *
      * Lance la mise à jour les tables scolarites et affectations pour cet élève : -
      * distanceR1 (sauf si gardeDistance) - distanceR2 (sauf si gardeDistance) - district
      * (s'il est à 0, sinon on garde 1 quoi qu'il en soit) - grille tarifaire -
@@ -268,53 +219,50 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      */
     public function majDistancesDistrictSansPerte(int $eleveId, bool $gardeDistance = true)
     {
-        $this->eleveId = $eleveId;
-        $this->gardeDistance = $gardeDistance;
+        $this->majDistancesDistrict($eleveId, $gardeDistance);
     }
 
     private function calculs()
     {
-        // charge la fiche élève pour disposer de la date de creation et des responsableId
+        // charge la fiche élève pour disposer des responsableId
         $this->eleve = $this->getTable('eleves')->getRecord($this->eleveId);
-        // charge la fiche scolarite pour disposer de l'établissement et de la station
-        // demandée
-        $this->scolarite = $this->getTable('scolarites')->getRecord(
+        // charge la fiche scolarite pour disposer de l'établissement et de(s) la
+        // station(s) demandée(s)
+        $this->scolarite = $this->getTable('Scolarites')->getRecord(
             [
                 'millesime' => $this->millesime,
                 'eleveId' => $this->eleveId
             ]);
         $this->setDataFromScolarite();
-        // détermine le droit au tarif réduit
-        if ($this->periode_reduction || $this->estPremiereInscription()) {
-            $this->reduction = true;
-        } else {
-            $this->reduction = false;
-        }
-        // initialise l'établissement et indique quelle grille appliquer pour Arlysere
-        $ptEtablissement = $this->getPtEtablissement($this->scolarite->etablissementId);
-        // initialise le domicile du responsable 1 en vérifiant s'il est dans Arlysere
-        // si l'élève a une adresse perso (localisation valide) elle remplace celle du R1
-        $ptDomicileR1 = $this->getPtDomicilePerso();
-        if (! $ptDomicileR1) {
-            $ptDomicileR1 = $this->getPtDomicileResponsable($this->eleve->responsable1Id);
-        }
-        // initialise éventuellement le domicile du responsable 2 (pareil)
-        try {
-            $ptDomicileR2 = $this->getPtDomicileResponsable($this->eleve->responsable2Id);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            $ptDomicileR2 = null;
-        }
         // calcul des distances si on ne les garde pas ou si elles ne sont pas connues
         if (! $this->gardeDistance ||
             ($this->scolarite->demandeR1 && $this->scolarite->distanceR1 == 0) ||
             ($this->scolarite->demandeR1 && $this->scolarite->distanceR1 == 99) ||
             ($this->scolarite->demandeR2 && $this->scolarite->distanceR2 == 0) ||
             ($this->scolarite->demandeR2 && $this->scolarite->distanceR2 == 99)) {
+            // initialise l'établissement
+            $ptEtablissement = $this->getPtEtablissement(
+                $this->scolarite->etablissementId);
+            // initialise le domicile du responsable 1
+            // si l'élève a une adresse perso (localisation valide) elle remplace celle du
+            // R1
+            $ptDomicileR1 = $this->getPtDomicilePerso();
+            if (! $ptDomicileR1) {
+                $ptDomicileR1 = $this->getPtDomicileResponsable(
+                    $this->eleve->responsable1Id);
+            }
+            // initialise éventuellement le domicile du responsable 2 (pareil)
+            try {
+                $ptDomicileR2 = $this->getPtDomicileResponsable(
+                    $this->eleve->responsable2Id);
+            } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+                $ptDomicileR2 = null;
+            }
+
             $this->setDistances($ptEtablissement, $ptDomicileR1, $ptDomicileR2);
         }
-        // recherche un trajet
-
-
+        // ici le district est toujours 1
+        $this->district = 1;
     }
 
     /**
@@ -335,7 +283,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                 ]), $ptEtablissement);
             $this->distanceR1 = round((current($result) ?: 0) / 1000, 1);
             if ($ptDomicileR2) {
-                $this->distanceR1 = round((next($result) ?: 0) / 1000, 1);
+                $this->distanceR2 = round((next($result) ?: 0) / 1000, 1);
             }
         } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
             // GoogleMaps ne répond pas
@@ -358,72 +306,31 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         }
     }
 
-    /**
-     * Renvoie le numéro de la grille tarifaire à appliquer pour les résidents d'Arlysère
-     *
-     * @param string $etablissementId
-     * @return number
-     */
-    private function getTarifRpi(string $etablissementId)
-    {
-        try {
-            $oRpiEtablissement = $this->getTable('rpiEtablissements')->getRecord(
-                $etablissementId);
-            $oRpi = $this->getTable('rpi')->getRecord($oRpiEtablissement->rpiId);
-            return $oRpi->grille;
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            return self::TARIF_ARLYSERE;
-        }
-    }
-
     private function getPtEtablissement(string $etablissementId)
     {
-        $etablissement = $this->getTable('etablissement')->getRecord($etablissementId);
+        $etablissement = $this->getTable('Etablissements')->getRecord($etablissementId);
         return (new Point($etablissement->x, $etablissement->y))->setAttribute(
             'etablissementId', $etablissement->etablissementId)
             ->setAttribute('classeId', $this->scolarite->classeId)
             ->setAttribute('regimeId', $this->scolarite->regimeId)
             ->setAttribute('communeId', $etablissement->communeId)
-            ->setAttribute('statut', $etablissement->statut)
-            ->setAttribute('grille', $this->getTarifRpi($etablissementId));
+            ->setAttribute('statut', $etablissement->statut);
     }
 
     private function getPtDomicileResponsable($responsableId)
     {
-        $responsable = $this->getTable('responsables')->getRecord($responsableId);
+        $responsable = $this->getTable('Responsables')->getRecord($responsableId);
         return (new Point($responsable->x, $responsable->y))->setAttribute('communeId',
-            $responsable->communeId)
-            ->setAttribute('demenagement', $responsable->demenagement)
-            ->setAttribute('dansArlysere', $this->dansArlysere($responsable->communeId));
+            $responsable->communeId);
     }
 
     private function getPtDomicilePerso()
     {
         $pt = new Point($this->scolarite->x, $this->scolarite->y);
         if ($pt->isValid()) {
-            $pt->setAttribute('communeId', $this->scolarite->communeId)
-                ->setAttribute('demenagement', false)
-                ->setAttribute('dansArlysere',
-                $this->dansArlysere($this->scolarite->communeId));
+            $pt->setAttribute('communeId', $this->scolarite->communeId);
             return $pt;
         }
         return false;
-    }
-
-    private function estPremiereInscription()
-    {
-        $dateCreation = \DateTime::createFromFormat('Y-m-d', $this->eleve->dateCreation);
-        return $dateCreation > $this->etat_du_site['echeance'];
-    }
-
-    /**
-     * Indique si la commune est dans Arlysere
-     *
-     * @param string $communeId
-     * @return bool
-     */
-    private function dansArlysere(string $communeId)
-    {
-        return $this->getTable('communes')->getRecord($communeId)->membre;
     }
 }

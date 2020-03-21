@@ -452,30 +452,30 @@ div.menu ul.menubar ul li input {
 	background: none;
 }
 /*------------ FlashMessenger ----------------*/
-.flashMessenger ul {
+.flashMessenger ul, div.flashMessenger {
 	margin: 0;
 	border-radius: 4px 4px 4px 4px;
 }
 
-.flashMessenger ul.success {
+.flashMessenger ul.success, div.flashMessenger.success {
 	color: #3c763d;
 	background-color: #dff0d8;
 	border-color: #3c763d;
 }
 
-.flashMessenger ul.warning {
+.flashMessenger ul.warning, div.flashMessenger.warning {
 	color: #836738;
 	background-color: #f7d09d;
 	border-color: #836738;
 }
 
-.flashMessenger ul.error {
+.flashMessenger ul.error,div.flashMessenger.error {
 	color: #a94442;
 	background-color: #f2dede;
 	border-color: #a94442;
 }
 
-.flashMessenger ul.info, .info {
+.flashMessenger ul.info, .info, div.flashMessenger.info {
 	color: #31708f;
 	background-color: #d9edf7;
 	border-color: #31708f;

@@ -8,7 +8,7 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 20 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 
 class Affectations extends AbstractSbmTable
 {
+    use OutilsMillesimeTrait;
 
     /**
      * Initialisation du circuit
@@ -138,34 +139,5 @@ class Affectations extends AbstractSbmTable
                 'eleveId' => $eleveId,
                 'responsableId' => $ancienResponsableId
             ]);
-    }
-
-    /**
-     * Renvoie vrai si la table ne contient pas de données pour ce millésime.
-     *
-     * @param int $millesime
-     *
-     * @return boolean
-     */
-    public function isEmptyMillesime($millesime)
-    {
-        $resultset = $this->fetchAll([
-            'millesime' => $millesime
-        ]);
-        return $resultset->count() == 0;
-    }
-
-    /**
-     * Supprime tous les enregistrements concernant le millesime indiqué.
-     *
-     * @param int $millesime
-     *
-     * @return int
-     */
-    public function viderMillesime($millesime)
-    {
-        return $this->table_gateway->delete([
-            'millesime' => $millesime
-        ]);
     }
 }

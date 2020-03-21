@@ -1,0 +1,40 @@
+<?php
+/**
+ * Formulaire de choix du millesime d'origine et du millesime à créer pour une nouvelle année scolaire.
+ *
+ * Les enregistrements des tables lignes, services, services-etablissements et circuits pour la nouvelle
+ * année scolaire vont être générés en dupliquant les enregistrements du millesime origine.
+ *
+ * @project sbm
+ * @package SbmGestion/vien/sbm-gestion/annee-scolaire
+ * @filesource dupliquer-reseau.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/annee-scolaire', 'dupliquer-reseau.css');
+$this->jQuery('jquery-ui');
+$this->themeJS('gestion-annee-scolaire', 'dupliquer-reseau.js');
+?>
+<div class="top-18px">
+	<h1>Génération du réseau de transport pour une nouvelle année scolaire</h1>
+	<div class="fiche-wrapper">
+		<div id="fiche-inner">
+		<?= $this->form()->openTag($form);?>
+		<?=$this->formHidden($this->form->get('millesime_nouveau')); ?>
+        <fieldset class="sbm-page1">
+				<div class="row-inner">
+				Vous voulez créer le réseau de transport de l'année scolaire
+				<?=$this->millesime_nouveau;?>-<?=$this->millesime_nouveau + 1;?></div>
+				<div class="row-inner"><?=$this->formRow($this->form->get('millesime_source'));?></div>
+				<div class="row-inner top-18px">
+				<?=$this->formRow($this->form->get('submit'))?>
+				<?=$this->formRow($this->form->get('cancel'));?>
+			</div>
+			</fieldset>
+		<?= $this->form()->closeTag();?>
+		</div>
+	</div>
+</div>

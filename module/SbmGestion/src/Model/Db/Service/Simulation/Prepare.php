@@ -3,21 +3,21 @@
  * Classe contenant les méthodes servant à préparer une simulation
  *
  * (doit être déclarée dans db_manager parmi les factories)
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Simulation
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1ç fév. 2019
- * @version 2019-2.5.0
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception as DbException;
 use SbmCommun\Model\Db\Service\Table\Exception as DbTableException;
-use SbmCommun\Model\Service\CalculDroits;
+use SbmCommun\Arlysere\CalculDroits;
 use SbmCommun\Model\Strategy\Niveau;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -110,7 +110,7 @@ class Prepare implements FactoryInterface
 
     /**
      * Cette méthode duplique les circuits du millesime source dans le millésime cible à
-     * condition que le millésime cible soit vide.
+     * condition que le millésime cible soit vide. Agit sur chaque table.
      *
      *
      * @param int $source
@@ -121,17 +121,10 @@ class Prepare implements FactoryInterface
      */
     public function duplicateCircuits($source, $cible)
     {
-        $table = $this->db_manager->get('Sbm\Db\Table\Circuits');
-        if ($table->isEmptyMillesime($cible)) {
-            $resultset = $table->fetchAll([
-                'millesime' => $source
-            ]);
-            foreach ($resultset as $circuit) {
-                $circuit->circuitId = null;
-                $circuit->millesime = $cible;
-                $table->saveRecord($circuit);
-            }
-        }
+        $this->db_manager->get('Sbm\Db\Table\Lignes')->dupliquer($source, $cible);
+        $this->db_manager->get('Sbm\Db\Table\Services')->dupliquer($source, $cible);
+        $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->dupliquer($source, $cible);
+        $this->db_manager->get('Sbm\Db\Table\Circuits')->dupliquer($source, $cible);
         return $this;
     }
 

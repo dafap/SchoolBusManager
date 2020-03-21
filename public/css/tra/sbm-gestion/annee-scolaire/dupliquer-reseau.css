@@ -1,0 +1,37 @@
+/**
+ * Feuille de style pour formulaire
+ *
+ * 
+ * 
+ * @project sbm
+ * @package public/css/tra
+ * @filesource dupliquer-reseau.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+div.row-inner {
+	margin-bottom: 8px;
+}
+#dupliquer_reseau label.sbm-label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 240px;
+}
+#dupliquer_reseau select.sbm-select {
+	width: 10em;
+}
+#dupliquer_reseau input[type=submit] {
+	margin-left: 20px;
+	margin-top: 6px;
+}
+#dupliquer_reseau input.submit {
+	margin-left: 120px;
+}
+.attendre {
+	background-image: url("/img/attendre-3.gif");
+	background-repeat: no-repeat;
+	background-position: bottom;
+}

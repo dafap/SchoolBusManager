@@ -8,8 +8,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juin 2019
- * @version 2019-2.5.0
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -21,6 +21,7 @@ use Zend\Db\Sql\Where;
 
 class Scolarites extends AbstractSbmTable
 {
+    use OutilsMillesimeTrait;
 
     /**
      * Initialisation du transporteur
@@ -85,8 +86,7 @@ class Scolarites extends AbstractSbmTable
     private function recalculerLesDroits(ObjectDataInterface $obj_data,
         ObjectDataInterface $old_data)
     {
-        return ! $old_data->avoirDroits() ||
-            $obj_data->regimeId != $old_data->regimeId ||
+        return ! $old_data->avoirDroits() || $obj_data->regimeId != $old_data->regimeId ||
             $obj_data->etablissementId != $old_data->etablissementId;
     }
 
@@ -218,34 +218,5 @@ class Scolarites extends AbstractSbmTable
             $oData->duplicata ++;
         }
         return parent::saveRecord($oData);
-    }
-
-    /**
-     * Renvoie vrai si la table ne contient pas de données pour ce millésime.
-     *
-     * @param int $millesime
-     *
-     * @return boolean
-     */
-    public function isEmptyMillesime($millesime)
-    {
-        $resultset = $this->fetchAll([
-            'millesime' => $millesime
-        ]);
-        return $resultset->count() == 0;
-    }
-
-    /**
-     * Supprime tous les enregistrements concernant le millesime indiqué.
-     *
-     * @param int $millesime
-     *
-     * @return int
-     */
-    public function viderMillesime($millesime)
-    {
-        return $this->table_gateway->delete([
-            'millesime' => $millesime
-        ]);
     }
 }

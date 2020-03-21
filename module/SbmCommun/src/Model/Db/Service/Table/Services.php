@@ -10,7 +10,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 19 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -20,6 +20,7 @@ use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 
 class Services extends AbstractSbmTable implements EffectifInterface
 {
+    use OutilsMillesimeTrait;
 
     /**
      * Initialisation du service
@@ -49,7 +50,7 @@ class Services extends AbstractSbmTable implements EffectifInterface
 
     public function getNatureCartes()
     {
-        //return $this->strategies['natureCarte']->getNatureCartes();
+        // return $this->strategies['natureCarte']->getNatureCartes();
         return [];
     }
 

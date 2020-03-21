@@ -10,13 +10,14 @@
  * @filesource Lignes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2020
+ * @date 19 mars. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 class Lignes extends AbstractSbmTable implements EffectifInterface
 {
+    use OutilsMillesimeTrait;
 
     /**
      * Initialisation du service
@@ -52,9 +53,8 @@ class Lignes extends AbstractSbmTable implements EffectifInterface
     }
 
     /**
-     * Soit on passe un tableau des valeurs correspondant à la propriété id_name (millesime, ligneId),
-     * soit on passe une chaine contenant ces valeurs séparées par |
-     *
+     * Soit on passe un tableau des valeurs correspondant à la propriété id_name
+     * (millesime, ligneId), soit on passe une chaine contenant ces valeurs séparées par |
      * (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()

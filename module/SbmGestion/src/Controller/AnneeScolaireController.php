@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
- * @version 2019-2.5.0
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -18,14 +18,13 @@ use SbmBase\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Form\Simulation;
+use SbmGestion\Form\DupliquerReseau;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
 class AnneeScolaireController extends AbstractActionController
 {
-
-    const SIMULATION = 2000;
 
     public function indexAction()
     {
@@ -34,15 +33,15 @@ class AnneeScolaireController extends AbstractActionController
             return $prg;
         }
         $simulation_vide = $this->db_manager->get('Sbm\Db\Table\Scolarites')->isEmptyMillesime(
-            self::SIMULATION) &&
+            $this->db_manager->get('simulation')) &&
             $this->db_manager->get('Sbm\Db\Table\Circuits')->isEmptyMillesime(
-                self::SIMULATION);
+                $this->db_manager->get('simulation'));
 
         return new ViewModel(
             [
                 'anneesScolaires' => $this->db_manager->get('Sbm\Db\System\Calendar')->getAnneesScolaires(),
                 'millesimeActif' => Session::get('millesime', false),
-                'simulation_millesime' => self::SIMULATION,
+                'simulation_millesime' => $this->db_manager->get('simulation'),
                 'simulation_vide' => $simulation_vide
             ]);
     }
@@ -235,6 +234,156 @@ class AnneeScolaireController extends AbstractActionController
         return $viewmodel;
     }
 
+    /**
+     * Assure que les années scolaires sont cohérentes avec les tables lignes, services,
+     * etablissements-services et circuits. Il faut que les millesimes utilisés soient les
+     * mêmes dans les 4 tables et correspondent à une année scolaire ou à la simulation.
+     */
+    public function repareAction()
+    {
+        // @TODO : à écrire;
+    }
+
+    public function viderReseauAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        if ($prg) {
+            $origine = StdLib::getParam('origine', $prg, false);
+            if ($origine) {
+                $this->redirectToOrigin()->setBack($origine);
+            }
+            $millesime = StdLib::getParam('millesime', $prg, false);
+            $form = new Form\ButtonForm([
+                'id' => null,
+                'millesime' => $millesime
+            ],
+                [
+                    'supproui' => [
+                        'class' => 'default confirm',
+                        'value' => 'Confirmer'
+                    ],
+                    'supprnon' => [
+                        'class' => 'default confirm',
+                        'value' => 'Abandonner'
+                    ]
+                ]);
+            $confirme = StdLib::getParam('supproui', $prg, false);
+            $cancel = StdLib::getParam('supprnon', $prg, false);
+            if (! $cancel && ! $confirme) {
+                return new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'as' => $millesime . '-' . ($millesime + 1)
+                    ]);
+            } elseif ($confirme) {
+                $form->setData($prg);
+                if ($form->isValid()) {
+                    $millesime = $form->getData()['millesime'];
+                    try {
+                        $cr = [];
+                        $cr['circuits'] = $this->db_manager->get('Sbm\Db\Table\Circuits')->viderMillesime(
+                            $millesime);
+                        $cr['etablissements-services'] = $this->db_manager->get(
+                            'Sbm\Db\Table\EtablissementsServices')->viderMillesime(
+                            $millesime);
+                        $cr['services'] = $this->db_manager->get('Sbm\Db\Table\Services')->viderMillesime(
+                            $millesime);
+                        $cr['lignes'] = $this->db_manager->get('Sbm\Db\Table\Lignes')->viderMillesime(
+                            $millesime);
+                        $message = '';
+                        foreach ($cr as $key => $value) {
+                            $message .= sprintf(
+                                "%d enregistrements supprimés dans la table %s \n", $value,
+                                $key);
+                        }
+                        $this->flashMessenger()->addSuccessMessage(
+                            'Suppression terminée.');
+                        $this->flashMessenger()->addInfoMessage($message);
+                    } catch (\Zend\Db\TableGateway\Exception\RuntimeException $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Suppression impossible. Erreur de table.');
+                    } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Suppression impossible. Requête invalide.');
+                    }
+                } else {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Suppression impossible. Données invalides.');
+                }
+            }
+        }
+        try {
+            return $this->redirectToOrigin()->back();
+        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+            return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+        }
+    }
+
+    public function dupliquerReseauAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = (array) $prg;
+        $ok_millesime = (array_key_exists('millesime_nouveau', $args) &&
+            array_key_exists('millesime_source', $args)) ||
+            (array_key_exists('millesime', $args) && array_key_exists('origine', $args));
+        if (! $ok_millesime || array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addInfoMessage('Action abandonnée');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+            }
+        } elseif (array_key_exists('origine', $args)) {
+            $this->redirectToOrigin()->setBack($args['origine']);
+            $args['millesime_nouveau'] = $args['millesime']; // ctrl déjà fait
+        }
+        $anciens_millesimes = $this->db_manager->get('Sbm\Db\Table\Lignes')->getMillesimes();
+        foreach ($anciens_millesimes as &$value) {
+            if (is_numeric($value)) {
+                $value = sprintf('%d-%d', $value, $value + 1);
+            }
+        }
+        $form = new DupliquerReseau();
+        $form->setValueOptions('millesime_source', $anciens_millesimes);
+        $form->setData($args);
+        if (array_key_exists('submit', $args)) {
+            if ($form->isValid()) {
+                $data = $form->getData();
+                if ($this->db_manager->get('Sbm\Db\Table\Lignes')->dupliquer(
+                    $args['millesime_source'], $data['millesime_nouveau']) &&
+                    $this->db_manager->get('Sbm\Db\Table\Services')->dupliquer(
+                        $args['millesime_source'], $data['millesime_nouveau']) &&
+                    $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->dupliquer(
+                        $args['millesime_source'], $data['millesime_nouveau']) &&
+                    $this->db_manager->get('Sbm\Db\Table\Circuits')->dupliquer(
+                        $args['millesime_source'], $data['millesime_nouveau'])) {
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Les circuits de l\'année scolaire ont été créés.');
+                } else {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Impossible car les circuits de l\'année scolaire existent déjà.' .
+                        ' Si nécessaire, les vider et recommencer.');
+                }
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                    return $this->redirect()->toRoute('sbmgestion/anneescolaire');
+                }
+            }
+        }
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'millesime_nouveau' => $args['millesime_nouveau']
+            ]);
+    }
+
     public function simulationPreparerAction()
     {
         $prg = $this->prg();
@@ -254,8 +403,9 @@ class AnneeScolaireController extends AbstractActionController
                     $this->db_manager->get('Sbm\Db\Simulation\Prepare')
                         ->setMajDistances(
                         $this->cartographie_manager->get('Sbm\CalculDroitsTransport'))
-                        ->duplicateCircuits($millesime, self::SIMULATION)
-                        ->duplicateEleves($millesime, self::SIMULATION);
+                        ->duplicateCircuits($millesime,
+                        $this->db_manager->get('simulation'))
+                        ->duplicateEleves($millesime, $this->db_manager->get('simulation'));
                     $this->flashMessenger()->addSuccessMessage(
                         "La simulation a été préparée à partir de l'année $millesime.");
                     return $this->redirect()->toRoute('sbmgestion/anneescolaire');
@@ -303,13 +453,37 @@ class AnneeScolaireController extends AbstractActionController
             ]);
         if ($prg !== false) {
             if (array_key_exists('supproui', $prg)) {
-                $this->db_manager->get('Sbm\Db\Table\Affectations')->viderMillesime(
-                    self::SIMULATION);
-                $this->db_manager->get('Sbm\Db\Table\Scolarites')->viderMillesime(
-                    self::SIMULATION);
-                $this->db_manager->get('Sbm\Db\Table\Circuits')->viderMillesime(
-                    self::SIMULATION);
-                $this->flashMessenger()->addSuccessMessage('La simulation a été effacée.');
+                try {
+                    $cr = [];
+                    $cr['affectations'] = $this->db_manager->get(
+                        'Sbm\Db\Table\Affectations')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $cr['scolarites'] = $this->db_manager->get('Sbm\Db\Table\Scolarites')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $cr['circuits'] = $this->db_manager->get('Sbm\Db\Table\Circuits')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $cr['etablissements-services'] = $this->db_manager->get(
+                        'Sbm\Db\Table\EtablissementsServices')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $cr['services'] = $this->db_manager->get('Sbm\Db\Table\Services')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $cr['lignes'] = $this->db_manager->get('Sbm\Db\Table\Lignes')->viderMillesime(
+                        $this->db_manager->get('simulation'));
+                    $message = '';
+                    foreach ($cr as $key => $value) {
+                        $message .= sprintf(
+                            "%d enregistrements supprimés dans la table %s \n", $value,
+                            $key);
+                    }
+                    $this->flashMessenger()->addSuccessMessage('La simulation a été effacée.');
+                    $this->flashMessenger()->addInfoMessage($message);
+                } catch (\Zend\Db\TableGateway\Exception\RuntimeException $e) {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Suppression impossible. Erreur de table.');
+                } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Suppression impossible. Requête invalide.');
+                }
             }
             return $this->redirect()->toRoute('sbmgestion/anneescolaire');
         }

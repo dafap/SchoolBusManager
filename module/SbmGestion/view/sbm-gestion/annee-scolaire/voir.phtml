@@ -9,8 +9,8 @@
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2019
- * @version 2019-2.5.0
+ * @date 19 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ici = $this->url('sbmgestion/anneescolaire', [
@@ -21,11 +21,11 @@ $url_retour = $this->url('sbmgestion/anneescolaire');
 $url_ouvrir = $this->url('sbmgestion/anneescolaire', [
     'action' => 'ouvrir'
 ]);
-$url_dupliquer = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-dupliquer'
+$url_dupliquer = $this->url('sbmgestion/anneescolaire', [
+    'action' => 'dupliquer-reseau'
 ]);
-$url_vider = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-vider'
+$url_vider = $this->url('sbmgestion/anneescolaire', [
+    'action' => 'vider-reseau'
 ]);
 $hiddens = [
     'millesime' => $this->millesime
@@ -58,7 +58,7 @@ if ($etat) {
             $msg = 'L\'année scolaire est fermée.';
             $hiddens['origine'] = $url_ici;
             if ($this->circuitsVides) {
-                $msg .= ' Avant de l\'ouvrir, créez les circuits ou dupliquez les.';
+                $msg .= ' Avant de l\'ouvrir, créez le réseau de transport ou dupliquez le.';
                 $actions['dupliquer'] = [
                     'class' => 'fam-plugin-add',
                     'formaction' => $url_dupliquer,
@@ -69,7 +69,7 @@ if ($etat) {
                 $actions['dupliquer'] = [
                     'class' => 'fam-plugin-delete',
                     'formaction' => $url_vider,
-                    'title' => 'Supprimer les circuits de cette année scolaire ' .
+                    'title' => 'Supprimer le réseau de transport de cette année scolaire ' .
                     $this->as
                 ];
                 $hiddens['ouvert'] = 1;
@@ -108,7 +108,7 @@ if ($etat) {
 		</div>
 	</div>
 	<div id="liste-inner">
-	<?= $msg;?>
+	<div class="flashMessenger warning"><?= $msg;?></div>
     <?php include 'calendar.inc.phtml';?>
     </div>
 </div>

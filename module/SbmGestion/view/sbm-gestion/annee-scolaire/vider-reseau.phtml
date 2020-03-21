@@ -1,6 +1,6 @@
 <?php
 /**
- * Page de confirmation avant de vider une simulation
+ * Page de confirmation avant de vider le réseau pour une année scolaire
  *
  *
  * @project sbm
@@ -12,9 +12,9 @@
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->themeCss('sbm-gestion/annee-scolaire', 'simulation-vider.css');
+$this->themeCss('sbm-gestion/annee-scolaire', 'vider-reseau.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('gestion-annee-scolaire', 'simulation-vider.js');
+$this->themeJS('gestion-annee-scolaire', 'vider-reseau.js');
 $url_retour = $this->url('sbmgestion/anneescolaire');
 $hiddens = [];
 $actions = [
@@ -25,21 +25,23 @@ $actions = [
     ]
 ];
 ?>
-<h1>Effacer la simulation</h1>
-<div id="liste-wrapper">
-	<div id="liste-header" class="clearfix">
-		<div class="zone-actions">
-			<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+<div class="top-18px">
+	<h1>Supprimer le réseau de transport d'une année scolaire</h1>
+	<div id="liste-wrapper">
+		<div id="liste-header" class="clearfix">
+			<div class="zone-actions">
+				<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+			</div>
 		</div>
-	</div>
-	<div id="simulation-vider">
-		<p>Vous souhaitez effacer la simulation :</p>
-		<p>Cette action va détruire de façon irréversible tout ce qui a été
-			préparé dans la composition des circuits et dans l'inscription des
-			élèves.</p>
-		<p>Confirmez-vous ?</p>
+		<div id="vider-reseau">
+			<p>
+				Si vous confirmez, les tables décrivant le réseau de transport pour
+				l'année scolaire <b><?= $this->as;?></b> seront vidées.
+			</p>
+			<p>Confirmez-vous ?</p>
 		<?= $this->form()->openTag($form);?>
 		<?= $this->formCollection($form);?>
 		<?= $this->form()->closeTag();?>
-    </div>
+	</div>
+	</div>
 </div>

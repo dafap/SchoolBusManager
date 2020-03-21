@@ -8,8 +8,8 @@
  * @filesource edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2019
- * @version 2019-2.5.0
+ * @date 20 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 /*
@@ -75,7 +75,7 @@ switch ($this->data['nature']) {
 		<?= $this->formHidden($this->form->get('calendarId'));?>
 		<?= $this->formHidden($this->form->get('millesime'));?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
-        <fieldset class="page1">
+        <fieldset class="sbm-page1">
 			<div id="wrapper-nature">
 				<div class="label">Nature</div><?= $this->data['nature'];?></div>
 			<div id="wrapper-libelle">
@@ -99,7 +99,8 @@ switch ($this->data['nature']) {
 			<div id="wrapper-exercice" class="row-inner edit">
 			    <?= $this->formRow($this->form->get('exercice'));?></div>
 			<div id="wrapper-buttons" class="row-inner edit">
-                <?= $this->formSubmit($this->form->get('submit')) . $this->formSubmit($this->form->get('cancel'));?>
+                <?= $this->formSubmit($this->form->get('submit'));?>
+                <?= $this->formSubmit($this->form->get('cancel'));?>
             </div>
 		</fieldset>
 		<?= $this->form()->closeTag();?>
