@@ -1,0 +1,495 @@
+<?php
+/**
+ * Page de modification d'un eleve
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource eleve-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 mars 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+function formatDate($date, $withTime = true)
+{
+    if ($withTime) {
+        $d = DateLib::formatDateTimeFromMysql($date);
+        if ($d == '01/01/1900 00:00:00') {
+            return '';
+        } else {
+            return $d;
+        }
+    } else {
+        $d = DateLib::formatDateFromMysql($date);
+        if ($d == '01/01/1900') {
+            return '';
+        } else {
+            return $d;
+        }
+    }
+}
+
+$disableAccordR1 = isset($this->structAffectations[1]['annee_courante']) ? 'true' : 'false';
+$disableAccordR2 = isset($this->structAffectations[2]['annee_courante']) ? 'true' : 'false';
+// urls utilisées
+$url_ici = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page
+    ]);
+$url_map = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-localisation',
+        'page' => $this->page
+    ]);
+$url_euro = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-liste'
+]);
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/eleve', 'eleve-edit.css');
+$this->jQuery('jquery-ui');
+$this->themeJS('gestion-eleve', 'edit.js');
+$this->themeJS('commun', 'checkallbox.js');
+$this->headScript()->captureStart();
+?>
+multicheckbox_actions.init("wrapper-joursTransport");
+<?php
+$this->headScript()->captureEnd();
+$this->inlineScript()->captureStart();
+?>
+const ELEVE_ID = <?= $this->eleveId;?>;
+const IDENTITE = "<?= urlencode($this->identite)?>";
+const URL_ICI = "<?= $url_ici;?>";
+
+js_edit.init(<?= $disableAccordR1;?>,
+    <?= $disableAccordR2;?>,
+    <?= $this->subventions['R1'];?>,
+    <?= $this->subventions['R2'];?>,
+    <?= $this->flashMessage ? 0 : 1;?>);
+<?php
+$this->inlineScript()->captureEnd();
+$js = 'window.document.getElementById(\'op\').value=%s;';
+// ============= fin du Javascript et JQuery =================================
+
+$hiddens = [
+    'eleveId' => $this->eleveId,
+    'eleveName' => $this->identite,
+    'origine' => $url_ici,
+    'responsableId' => $this->args_paiement['responsableId']
+];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici, // traitement de cancel pour un
+                                   // redirectToOrigin()->back()
+                                   // proprement
+        'title' => 'Retour'
+    ],
+    'localiser' => [
+        'class' => 'fam-map-magnify',
+        'formaction' => $url_map,
+        'title' => 'localiser cet élève sur la carte',
+        'onclick' => sprintf($js, "'localiser'")
+    ],
+    'payer' => [
+        'class' => 'fam-money-euro',
+        'formaction' => $url_euro,
+        'title' => 'paiements de ' . $this->args_paiement['responsable'],
+        'onclick' => sprintf($js, "'eleve-edit'")
+    ]
+];
+?>
+<div id="winpopup"></div>
+<h1>Modification d'un élève</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="menu flaot-left">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+		<div class="flashMessenger float-right orange">
+        <?php if ($this->flashMessage) :?>
+            <ul class="warning">
+				<li><?= $this->flashMessage; ?></li>
+			</ul>
+        <?php endif;?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('eleveId'));?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
+        <fieldset class="sbm-page1">
+			<div id="commun" class="clearfix">
+				<div id="commun-col1" class="float-left">
+					<div id="wrapper-nom" class="row-inner edit">
+						<?= $this->formRow($this->form->get('nom'));?></div>
+					<div id="wrapper-prenom" class="row-inner edit">
+						<?= $this->formRow($this->form->get('prenom'));?></div>
+					<div id="ligne-dateN-sexe">
+						<div id="wrapper-dateN" class="row-inner edit">
+							<?= $this->formRow($this->form->get('dateN'));?></div>
+						<div id="wrapper-sexe" class="row-inner table-cell align-right">
+						<?php $this->form->get('sexe')->setLabel('');?>
+						<?= $this->formRow($this->form->get('sexe'));?>
+					</div>
+					</div>
+					<div id="wrapper-joursTransport" class="row-inner edit">
+						<?= $this->formRow($this->form->get('joursTransport'));?></div>
+				</div>
+				<div id="commun-col2" class="float-left left-10px">
+					<div id="wrapper-etablissementId" class="row-inner edit">
+						<?= $this->formRow($this->form->get('etablissementId'));?>
+					<br> <span class='annee-precedente etablissement-precedent'>
+						<?= $this->scolarite_precedente['etablissement']; ?></span>
+					</div>
+					<div id="ligne-classe-regime">
+						<div id="wrapper-classeId" class="row-inner edit">
+							<?= $this->formRow($this->form->get('classeId'));?>
+							<span class='annee-precedente classe-precedente'>
+							<?= $this->scolarite_precedente['classe']; ?></span>
+						</div>
+						<div id="wrapper-regime" class="row-inner table-cell">
+							<?=$this->formRow($this->form->get('regimeId'));?></div>
+					</div>
+					<div id="commun-col2-periode" class="clearfix">
+						<div id="wrapper-anneeComplete" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('anneeComplete'));?></div>
+						<div id="wrapper-dateDebut" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateDebut'));?></div>
+						<div id="wrapper-dateFin" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('dateFin'));?></div>
+					</div>
+					<div id="commun-col2-derogation" class="clearfix">
+						<div id="wrapper-derogation" class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('derogation'));?></div>
+						<div id="wrapper-motifDerogation"
+							class="row-inner edit float-left">
+							<?= $this->formRow($this->form->get('motifDerogation'));?></div>
+					</div>
+				</div>
+				<div id="commun-col3" class="float-left left-10px">
+					<div id="wrapper-numero">
+						<div class="label">N° carte</div>
+						<div class="input">
+							<?= $this->data['numero'];?></div>
+					</div>
+					<div id="wrapper-inscrit">
+						<div class="label">Etat</div>
+						<div class="input">
+							<?= $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
+					</div>
+					<div id="wrapper-paiement">
+						<div class="label">
+							<?= $this->formRow($this->form->get('btnpaiement'));?></div>
+						<div class="input" id="inner-paiement">
+							<?= $this->data['paiement'];?></div>
+					</div>
+					<div id="wrapper-district">
+						<?= $this->formRow($this->form->get('district'));?></div>
+					<div id="wrapper-fa">
+						<?= $this->formRow($this->form->get('fa'));?></div>
+					<div id="wrapper-ga">
+						<?= $this->formRow($this->form->get('ga'));?></div>
+				</div>
+			</div>
+			<div id="tabs" class="sbm-tabs-wrapper">
+				<ul>
+					<li><a href="#tabs-1">Responsable</a></li>
+					<li><a href="#tabs-2">Garde alternée</a></li>
+					<li><a href="#tabs-3">Historique</a></li>
+					<li><a href="#tabs-4">Photo</a></li>
+				</ul>
+				<div id="tabs-1" class="sbm-tabs-container"><?php // Responsable 1?>
+				    <div id="tabs-1-r1" class="clearfix">
+						<div class="float-left edit-tab-col1">
+							<div id="wrapper-responsable1Id" class="row-inner edit">
+								<?= $this->formRow($this->form->get('responsable1Id'));?></div>
+							<div id="wrapper-responsable1" class="wrapper-responsable">
+								<div id="r1-ligne1"></div>
+								<div id="r1-ligne2"></div>
+								<div id="r1-ligne3"></div>
+								<div id="r1-ligne4"></div>
+								<div id="r1-ligne5"></div>
+							</div>
+							<div id="wrapper-tarifR1">
+								<div id="wrapper-grilletarifR1" class="top-18px">
+									<?= $this->formRow($this->form->get('grilleTarifR1'));?></div>
+								<div id="wrapper-reductionR1">
+									<?= $this->formRow($this->form->get('reductionR1'));?></div>
+							</div>
+							<div id="wrapper-distanceR1">
+									<?= $this->formRow($this->form->get('distanceR1'));?></div>
+						</div>
+						<div class="float-left left-10px edit-tab-col2">
+							<div class="clearfix">
+								<div id="wrapper-demandeR1" class="row-inner edit float-left">
+									<?= $this->formRow($this->form->get('demandeR1'));?></div>
+								<div id="block-demander1">
+									<div class="clearfix">
+										<div class="float-left">
+											<div id="wrapper-accordR1">
+											<?= $this->formRow($this->form->get('accordR1'));?></div>
+											<div id="wrapper-subventionr1">
+											<?= $this->formRow($this->form->get('subventionR1'));?></div>
+										</div>
+										<div id="wrapper-motifRefusr1" class="float-right">
+									<?= $this->formRow($this->form->get('motifRefusR1'));?></div>
+									</div>
+								</div>
+							</div>
+							<div id="block-affectationsr1" class="block-affectations">
+								<h3 id="h3-affectationsr1">
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+										title="Recherche automatique des circuits pour <?= $this->identite;?>"
+										data-button="btnchercheraffectations" data-trajet="1"
+										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+										title="Ajouter un circuit pour <?= $this->identite;?>"
+										data-button="btnaffectation" data-trajet="1"
+										data-href="/op:add"></i>
+								</h3>
+								<?php if (isset($this->structAffectations[1])) : ?>
+									<?= $this->affectations(1, $this->structAffectations[1]);?>
+								<?php endif;?>
+                            </div>
+						</div>
+					</div>
+				</div>
+				<div id="tabs-2" class="sbm-tabs-container">
+					<div id="tabs-2-r2" class="clearfix">
+						<div class="float-left edit-tab-col1">
+							<div id="wrapper-responsable2Id" class="row-inner edit">
+								<?= $this->formRow($this->form->get('responsable2Id'));?></div>
+							<div id="wrapper-responsable2" class="wrapper-responsable">
+								<div id="r2-ligne1"></div>
+								<div id="r2-ligne2"></div>
+								<div id="r2-ligne3"></div>
+								<div id="r2-ligne4"></div>
+								<div id="r2-ligne5"></div>
+							</div>
+							<div id="wrapper-tarifR2">
+								<div id="wrapper-grilletarifR2" class="top-18px">
+									<?= $this->formRow($this->form->get('grilleTarifR2'));?></div>
+								<div id="wrapper-reductionR2">
+									<?= $this->formRow($this->form->get('reductionR2'));?></div>
+							</div>
+							<div id="wrapper-distanceR2">
+									<?= $this->formRow($this->form->get('distanceR2'));?></div>
+						</div>
+						<div class="float-left left-10px edit-tab-col2">
+							<div class="clearfix">
+								<div id="wrapper-demandeR2" class="row-inner edit float-left">
+									<?= $this->formRow($this->form->get('demandeR2'));?></div>
+								<div id="block-demander2">
+									<div class="clearfix">
+										<div class="float-left">
+											<div id="wrapper-accordR2">
+											<?= $this->formRow($this->form->get('accordR2'));?></div>
+											<div id="wrapper-subventionr2">
+											<?= $this->formRow($this->form->get('subventionR2'));?></div>
+										</div>
+										<div id="wrapper-motifRefusr2" class="float-right">
+									<?= $this->formRow($this->form->get('motifRefusR2'));?></div>
+									</div>
+								</div>
+							</div>
+							<div id="block-affectationsr2" class="block-affectations">
+								<h3 id="h3-affectationsr2">
+									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+										title="Recherche automatique des circuits pour <?= $this->identite;?>"
+										data-button="btnchercheraffectations" data-trajet="2"
+										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+										title="Ajouter une affectation pour <?= $this->identite;?>"
+										data-button="btnaffectation" data-trajet="2"
+										data-href="/op:add"></i>
+								</h3>
+								<?php if (isset($this->structAffectations[2])) :?>
+									<?= $this->affectations(2, $this->structAffectations[2]);?>
+								<?php endif;?>
+                            </div>
+						</div>
+					</div>
+				</div>
+				<div id="tabs-3" class="sbm-tabs-container">
+					<div class="clearfix">
+						<div id="tabs-3-col1" class="float-left">
+							<h3>Identité de l'élève</h3>
+							<div id="#eleve-dateCreation">
+								<div class="eleve-tabs-3-col-1-label">Date de création</div>
+									<?= formatDate($this->historique['eleve']['dateCreation']);?>
+									</div>
+							<div id="#eleve-dateModification">
+								<div class="eleve-tabs-3-col-1-label">Date de modification</div>
+									<?= formatDate($this->historique['eleve']['dateModification']);?>
+									</div>
+							<div id="#elevephoto-dateExtraction">
+								<div class="eleve-tabs-3-col-1-label">Date du lot de photos</div>
+									<?= formatDate($this->historique['photo']['dateExtraction']);?>
+									</div>
+						</div>
+						<div id="tabs-3-col2" class="float-left left-10px">
+							<h3>Responsable 1</h3>
+							<div id="#responsable1-dateCreation">
+								<div class="eleve-tabs-3-col-2-label">Date de création</div>
+									<?= formatDate($this->historique['responsable1']['dateCreation']);?>
+									</div>
+							<div id="#responsable1-dateModification">
+								<div class="eleve-tabs-3-col-2-label">Date de modification</div>
+									<?= formatDate($this->historique['responsable1']['dateModification']);?>
+									</div>
+							<div id="#responsable1-dateDemenagement">
+								<div class="eleve-tabs-3-col-2-label">Date de déménagement</div>
+									<?= $this->historique['responsable1']['demenagement'] ? formatDate($this->historique['responsable1']['dateDemenagement'], false) : '';?>
+									</div>
+						</div>
+				        <?php if (array_key_exists('responsable2', $this->historique)):?>
+				        <div id="tabs-3-col3" class="float-left left-10px">
+							<h3>Responsable 2</h3>
+							<div id="#responsable2-dateCreation">
+								<div class="eleve-tabs-3-col-3-label">Date de création</div>
+									<?= formatDate($this->historique['responsable2']['dateCreation']);?>
+									</div>
+							<div id="#responsable2-dateModification">
+								<div class="eleve-tabs-3-col-3-label">Date de modification</div>
+									<?= formatDate($this->historique['responsable2']['dateModification']);?>
+									</div>
+							<div id="#responsable2-dateDemenagement">
+								<div class="eleve-tabs-3-col-3-label">Date de déménagement</div>
+									<?= $this->historique['responsable2']['demenagement'] ? formatDate($this->historique['responsable2']['dateDemenagement'], false) : '';?>
+									</div>
+						</div>
+				        <?php endif;?>
+				    </div>
+					<div class="clearfix">
+						<div id="tabs-3-col1" class="float-left">
+							<h3>Inscription cette année scolaire</h3>
+							<div id="#scolarite-modeInscription">
+								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div>
+									<?= $this->historique['scolarite']['internet'] ? 'par internet' : 'par formulaire papier';?>
+									</div>
+							<div id="#scolarite-dateInscription">
+								<div class="eleve-tabs-3-col-1-label">Date d'inscription</div>
+									<?= formatDate($this->historique['scolarite']['dateInscription']);?></div>
+							<div id="#scolarite-dateModification">
+								<div class="eleve-tabs-3-col-1-label">Date de modification</div>
+									<?= formatDate($this->historique['scolarite']['dateModification']);?></div>
+							<div id="#scolarite-dateCarte">
+								<div class="eleve-tabs-3-col-1-label">Date du lot de carte</div>
+									<?= formatDate($this->historique['scolarite']['dateCarte']);?></div>
+						</div>
+						<div id="tabs-3-col2" class="float-left left-10px">
+							<h3>Participation familiale</h3>
+							<div id="#scolarite-tarif">
+								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
+								<span id="tabs-3-grilleTarifR1">
+									<?=$this->historique['scolarite']['grilleTarifR1'];?></span> <span
+									id="tabs-3-reduction">
+							    <?=$this->historique['scolarite']['reductionR1'] ? 'Tarif réduit' : 'Tarif normal'?>
+							    </span>
+							</div>
+							<div id="#scolarite-duplicata">
+								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
+								<span id="nbduplicata" class="right-10px">
+								<?= $this->historique['scolarite']['duplicata'];?></span>
+								<button name="duplicata-moins" type="button"
+									title="Supprimer un duplicata" id="duplicatamoins">
+									<i class="fam-delete"></i>
+								</button>
+								<button name="duplicata-plus" type="button"
+									title="Ajouter un duplicata" id="duplicataplus">
+									<i class="fam-add"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="tabs-4" class="sbm-tabs-container">
+					<div class="clearfix">
+						<div id="wrapper-photo" class="float-left">
+							<img src=<?= $this->dataphoto;?> height="180" />
+						</div>
+						<div id="wrapper-filephoto"
+							class="float-left left-10px top-18px row-inner">
+							<div id="btnphoto" style="display: inline-block">
+				            <?php
+                $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
+                $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
+                $btnSupprPhoto = new \Zend\Form\Element\Button('supprphoto');
+                $btnSupprPhoto->setLabelOption('disable_html_escape', 'on');
+                ?>
+				                <?= $this->formButton($btnOpenDialog, '<i class="fam-camera-edit"></i> Envoyer une photo');?>
+				                <?= $this->formButton($btnSupprPhoto, '<i class="fam-camera-delete"></i> Supprimer la photo');?>
+							</div>
+							<p></p>
+							<div id="btnoutilsphoto" style="display: inline-block">
+							<?php
+    $btnQuartGauche = new \Zend\Form\Element\Button('quartgauchephoto');
+    $btnQuartGauche->setLabelOption('disable_html_escape', 'on');
+    $btnQuartDroite = new \Zend\Form\Element\Button('quartdroitephoto');
+    $btnQuartDroite->setLabelOption('disable_html_escape', 'on');
+    $btnRetourne = new \Zend\Form\Element\Button('retournephoto');
+    $btnRetourne->setLabelOption('disable_html_escape', 'on');
+    ?>
+								<?=$this->formButton($btnQuartGauche, '<i class="fam-arrow-rotate-anticlockwise"></i> Quart de tour à gauche');?>
+								<?=$this->formButton($btnQuartDroite, '<i class="fam-arrow-rotate-clockwise"></i> Quart de tour à droite');?>
+								<?=$this->formButton($btnRetourne, '<i class="fam-arrow-switch"></i> Retourner');?>
+							</div>
+							<p class="sbm-description">Les quarts de tour dégradent la photo.
+								Le demi-tour ne la dégrade pas.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="wrapper-commentaire">
+				<div id="wrapper-notes-annuelles" class="row-inner edit top-6px">
+				<?= $this->formRow($this->form->get('commentaire'));?></div>
+				<div id="wrapper-notes-permanentes" class="row-inner edit top-6px">
+				<?= $this->formRow($this->form->get('note'));?></div>
+			</div>
+		</fieldset>
+		<div id="wrapper-buttons" class="row-inner edit left-95px">
+            <?= $this->formSubmit($this->form->get('submit'));?>
+            <?= $this->formSubmit($this->form->get('cancel'));?>
+        </div>
+<?= $this->form()->closeTag();?>
+	</div><?php // fiche_inner ?>
+    <div id="fiche-footer"></div>
+</div>
+<?php
+// fermeture du div fiche_wrapper
+
+// gestion des messages d'erreur à améliorer
+/*
+ * if (count($this->form->getMessages())) { echo '<p><u>DEBUG</u></p>';
+ * var_dump($this->form->getMessages()); }
+ */
+
+// formulaire invisible de l'envoi d'une photo
+$this->formphoto->setAttribute('action',
+    $this->url('sbmajaxeleve', [
+        'action' => 'savephoto'
+    ]))
+    ->prepare();
+$this->formphoto->get('eleveId')->setValue($this->eleveId);
+$btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
+?>
+<div id="photo-form-modele" class="invisible"
+	data-title="Envoi d'une photo">
+    <?= $this->form()->openTag($this->formphoto);?>
+    <?= $this->formHidden($this->formphoto->get('eleveId'));?>
+    <?= $this->formRow($this->formphoto->get('filephoto')); ?>
+    <div style="display: inline;">
+    <?= $this->formButton($this->formphoto->get('envoiphoto'), 'Envoyer la photo'); ?>
+    </div>
+	<div class="photo-progress" style="display: none;">
+		<div class="photo-msg">Envoi en cours ...</div>
+		<div
+			style="margin-left: 40px; margin-bottom: 10px; height: 20px; width: 100px; border: 1px solid blue;">
+			<div class="photo-progressbar" style="background-color: lightgrey;"></div>
+		</div>
+	</div>
+	<div><?= $this->formButton($btnCloseDialog, 'Abandonner'); ?></div>
+<?= $this->form()->closeTag();?>
+</div>

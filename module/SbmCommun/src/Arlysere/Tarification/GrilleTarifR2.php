@@ -27,15 +27,11 @@
  * @filesource GrilleTarifR2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
 
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Where;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class GrilleTarifR2 extends GrilleTarifR1
 {

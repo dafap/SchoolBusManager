@@ -12,7 +12,7 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mars 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -81,15 +81,14 @@ trait DebugTrait
 
     /**
      *
-     * @return self
+     * @param int $options
+     * @param int $limit
+     * @return \SbmCommun\Model\Traits\DebugTrait
      */
-    public function debugTrace()
+    public function debugTrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS, int $limit = 0)
     {
         $fp = fopen($this->filename, 'a');
-        ob_start();
-        var_dump(debug_backtrace());
-        fwrite($fp, ob_get_clean());
-        fclose($fp);
+        fwrite($fp, print_r(debug_backtrace($options, $limit), true));
         return $this;
     }
 }

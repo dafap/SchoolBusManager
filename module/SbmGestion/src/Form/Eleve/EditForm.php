@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -212,18 +212,15 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'derogation',
                 'attributes' => [
-                    'id' => 'eleve-derogation'
+                    'id' => 'eleve-derogation',
+                    'class'=>'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Dérogation',
+                    'label' => 'Réduction',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'value_options' => [
-                        '0' => 'Non',
-                        '1' => 'Dérogation',
-                        '2' => 'Non ayant-droit'
-                    ],
+                    'empty_options' => 'Y a-t-il une réduction ?',
                     'error_attributes' => [
                         'class' => 'sbm_error'
                     ]
@@ -674,7 +671,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Enregistrer',
-                    'id' => 'station-submit',
+                    'id' => 'eleve-submit',
                     'class' => 'button default submit'
                 ]
             ]);
@@ -684,7 +681,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'station-cancel',
+                    'id' => 'eleve-cancel',
                     'class' => 'button default cancel'
                 ]
             ]);

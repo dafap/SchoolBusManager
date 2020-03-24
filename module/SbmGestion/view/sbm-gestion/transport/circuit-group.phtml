@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -55,7 +55,10 @@ $url_add_photo = $this->url('sbmgestion/eleve',
     ]);
 $hiddens = [
     'circuitId' => $this->circuitId,
-    'serviceId' => $this->circuit->serviceId,
+    'ligneId' => $this->circuit->ligneId,
+    'sens'=>$this->circuit->sens,
+    'moment'=>$this->circuit->moment,
+    'ordre'=>$this->circuit->ordre,
     'stationId' => $this->circuit->stationId
 ];
 $menuImpression = $this->menuRapports(
@@ -84,7 +87,7 @@ $actions = [
 <div id="liste-wrapper">
 	<div id="liste-title" class="clearfix">
 		<ul class="float-left">
-			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
+			<li>Circuit : <?= $this->escapeHtml($this->circuit->designationService()); ?></li>
 			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> -
 						<?= $this->escapeHtml($this->circuit->communeStation); ?></li>
 			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>

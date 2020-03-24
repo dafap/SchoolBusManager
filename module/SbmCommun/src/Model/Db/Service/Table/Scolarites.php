@@ -8,12 +8,11 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
-use SbmCommun\Model\Db\ObjectData\Exception as ExceptionObjectData;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Strategy\Semaine as SemaineStrategy;
 use Zend\Db\Sql\Expression;
@@ -44,24 +43,40 @@ class Scolarites extends AbstractSbmTable
      * détermination des droits et tarifs ont changé (etablissement, regime) (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
+     *
+     * @return array tableau de booléens dont les clés sont 'etablissementChange',
+     *         'reductionChange' et 'saveResultat'
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
+        $result = [
+            'is_new' => false,
+            'distanceR1Inconnue' => $obj_data->demandeR1 &&
+            ($obj_data->distanceR1 == 99 || $obj_data->distanceR1 == 0),
+            'distanceR2Inconnue' => $obj_data->demandeR2 &&
+            ($obj_data->distanceR2 == 99 || $obj_data->distanceR2 == 0),
+            'etablissementChange' => false,
+            'reductionChange' => false,
+            'saveRecord' => false,
+            'obj_data' => $obj_data
+        ];
         try {
             $old_data = $this->getRecord($obj_data->getId());
             // update
-            if ($obj_data->isUnchanged($old_data)) {
-                try {
-                    $forceCalculDroits = ! $old_data->avoirDroits();
-                } catch (ExceptionObjectData\ExceptionInterface $e) {
-                    $forceCalculDroits = true;
+            if ($old_data->etablissementId != $obj_data->etablissementId) {
+                $obj_data->distanceR1 = $obj_data->distanceR2 = 0;
+                if ($obj_data->demandeR1 = 2) {
+                    $obj_data->demandeR1 = 1;
                 }
-                return $forceCalculDroits;
+                if ($obj_data->demandeR2 = 2) {
+                    $obj_data->demandeR2 = 1;
+                }
+                $result['etablissementChange'] = true;
             }
-            try {
-                $forceCalculDroits = $this->recalculerLesDroits($obj_data, $old_data);
-            } catch (ExceptionObjectData\ExceptionInterface $e) {
-                $forceCalculDroits = true;
+            if ($old_data->derogation != $obj_data->derogation) {
+                $obj_data->reductionR1 = ($obj_data->derogation != 0) ? 1 : 0;
+                $obj_data->reductionR2 = $obj_data->reductionR1;
+                $result['reductionChange'] = true;
             }
             $obj_data->addCalculateField('dateModification');
         } catch (Exception\ExceptionInterface $e) {
@@ -69,25 +84,12 @@ class Scolarites extends AbstractSbmTable
             $obj_data->setCalculateFields([
                 'dateInscription'
             ]);
-            $forceCalculDroits = true;
+            $result['etablissementChange'] = true;
+            $result['reductionChange'] = true;
+            $result['is_new'] = true;
         }
-        $ok = parent::saveRecord($obj_data) !== false;
-        return $forceCalculDroits && $ok;
-    }
-
-    /**
-     * L'ancien enregistrement n'avait pas les droits ou le régime a changé ou
-     * l'établissement a changé
-     *
-     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
-     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $old_data
-     * @return boolean
-     */
-    private function recalculerLesDroits(ObjectDataInterface $obj_data,
-        ObjectDataInterface $old_data)
-    {
-        return ! $old_data->avoirDroits() || $obj_data->regimeId != $old_data->regimeId ||
-            $obj_data->etablissementId != $old_data->etablissementId;
+        $result['saveRecord'] = parent::saveRecord($obj_data);
+        return $result;
     }
 
     /**

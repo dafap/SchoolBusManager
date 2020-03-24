@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -170,6 +170,10 @@ foreach ($data as $row) :
     foreach ($array_adresse as &$ligne) {
         $ligne = $this->escapeHtml($ligne);
     }
+    $services1 = $this->printServices($row['eleveId'], 1);
+    $services2 = $this->printServices($row['eleveId'], 2);
+    $stations1 = $this->printStations($row['eleveId'], 1);
+    $stations2 = $this->printStations($row['eleveId'], 2);
     ?>
                 <tr class="<?= $this->cycle(["even","odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
@@ -180,8 +184,8 @@ foreach ($data as $row) :
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
-					<td><?= $row['serviceId'];?></td>
-					<td><?= $row['station'];?></td>
+					<td><?= implode('<br>', array_filter([$services1, $services2]));?></td>
+					<td><?= implode('<br>', array_filter([$stations1, $stations2]));?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>

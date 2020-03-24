@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2020
+ * @date 23 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -180,9 +180,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     public function setMillesime(int $millesime = null)
     {
         if (is_null($millesime)) {
-            $this->data['millesime'] = Session::get('millesime');
+            $this->millesime = Session::get('millesime');
         } else {
-            $this->data['millesime'] = $millesime;
+            $this->millesime = $millesime;
         }
     }
 
@@ -228,11 +228,19 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->eleve = $this->getTable('eleves')->getRecord($this->eleveId);
         // charge la fiche scolarite pour disposer de l'établissement et de(s) la
         // station(s) demandée(s)
+        try {
         $this->scolarite = $this->getTable('Scolarites')->getRecord(
             [
                 'millesime' => $this->millesime,
                 'eleveId' => $this->eleveId
             ]);
+        } catch (\Exception $e) {
+            echo '<pre>';
+            echo $e->getMessage();
+            echo "\n";
+            echo $e->getTraceAsString();
+            die("</pre>");
+        }
         $this->setDataFromScolarite();
         // calcul des distances si on ne les garde pas ou si elles ne sont pas connues
         if (! $this->gardeDistance ||

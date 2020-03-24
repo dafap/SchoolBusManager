@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -50,8 +50,7 @@ class Liste extends AbstractQuery implements FactoryInterface
     private $sql;
 
     /**
-     * La nouvelle version n'initialise plus la propriété $select
-     * (non-PHPdoc)
+     * La nouvelle version n'initialise plus la propriété $select (non-PHPdoc)
      *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
@@ -90,7 +89,12 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function queryGroup($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
+    public function queryGroup($millesime, $filtre,
+        $order = [
+            'commune',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroup($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -107,7 +111,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorGroup($millesime, $filtre,
-        $order = ['commune', 'nom', 'prenom'])
+        $order = [
+            'commune',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroup($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
@@ -123,7 +131,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function queryGroupParAffectations(int $millesime, array $filtre,
-        $order = ['serviceId', 'nom', 'prenom'])
+        $order = [
+            'serviceId',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -141,7 +153,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorGroupParAffectations(int $millesime, array $filtre,
-        $order = ['serviceId', 'nom', 'prenom'])
+        $order = [
+            'serviceId',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
@@ -182,13 +198,14 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'res.communeId=comres.communeId', [])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId=sco.eleveId', [
-            'inscrit',
-            'paiement',
-            'fa',
-            'gratuit',
-            'dateCarte'
-        ])
+        ], 'ele.eleveId=sco.eleveId',
+            [
+                'inscrit',
+                'paiement',
+                'fa',
+                'gratuit',
+                'dateCarte'
+            ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -205,8 +222,13 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
             ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
             [
-                'service1Id',
-                'service2Id'
+                'moment',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
             ], SELECT::JOIN_LEFT)
             ->join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
@@ -236,8 +258,10 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'prenom',
                 'sexe',
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
-                'adresseL2' => new Literal('CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2'),
-                'adresseL3' => new Literal('CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE ""'),
+                'adresseL2' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2 END'),
+                'adresseL3' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE "" END'),
                 'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
                 'commune' => new Literal('IFNULL(comsco.alias, comres.alias)')
             ])
@@ -340,8 +364,10 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'prenom',
                 'sexe',
                 'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
-                'adresseL2' => new Literal('CASE WHEN s.adresseL1 IS NULL THEN r.adresseL2 ELSE s.adresseL2'),
-                'adresseL3' => new Literal('CASE WHEN s.adresseL1 IS NULL THEN r.adresseL3 ELSE ""'),
+                'adresseL2' => new Literal(
+                    'CASE WHEN s.adresseL1 IS NULL THEN r.adresseL2 ELSE s.adresseL2 END'),
+                'adresseL3' => new Literal(
+                    'CASE WHEN s.adresseL1 IS NULL THEN r.adresseL3 ELSE "" END'),
                 'codePostal' => new Literal('IFNULL(s.codePostal, r.codePostal)'),
                 'commune' => new Literal('IFNULL(d.alias, c.alias)')
             ]);
@@ -349,7 +375,7 @@ class Liste extends AbstractQuery implements FactoryInterface
         if (! empty($order)) {
             $select->order($order);
         }
-        //die($this->getSqlString($select));
+        // die($this->getSqlString($select));
         return $select;
     }
 
@@ -371,10 +397,12 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'eleveId',
                 'trajet',
                 'jours',
-                'sens',
+                'moment',
                 'responsableId',
                 'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
+                'ligneId' => 'ligne1Id',
+                'sens' => 'sensligne1',
+                'ordre' => 'ordreligne1'
             ])
             ->where([
             'millesime' => $millesime
@@ -387,26 +415,27 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'eleveId',
                 'trajet',
                 'jours',
-                'sens',
+                'moment',
                 'stationId' => 'station1Id',
-                'serviceId' => 'service1Id'
+                'ligneId' => 'ligne1Id',
+                'sens' => 'sensligne1',
+                'ordre' => 'ordreligne1'
             ])
-            ->where([
-            'millesime' => $millesime,
-            'correspondance' => 2
-        ]);
+            ->where(
+            (new Where())->equalTo('millesime', $millesime)
+                ->greaterThan('correspondance', 1));
 
         $jointure = [
             "a2.millesime=correspondances.millesime",
             "a2.eleveId=correspondances.eleveId",
             "a2.trajet=correspondances.trajet",
             "a2.jours=correspondances.jours",
-            "a2.sens=correspondances.sens",
+            "a2.moment=correspondances.moment",
             "a2.station2Id=correspondances.stationId"
         ];
         $where2 = new Where();
         $where2->equalTo('a2.millesime', $millesime)
-            ->isNotNull('service2Id')
+            ->isNotNull('ligne2Id')
             ->isNull('correspondances.millesime');
         $select2 = $this->sql->select([
             'a2' => $tableAffectations
@@ -417,10 +446,12 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'eleveId',
                 'trajet',
                 'jours',
-                'sens',
+                'moment',
                 'responsableId',
                 'stationId' => 'station2Id',
-                'serviceId' => 'service2Id'
+                'ligneId' => 'ligne2Id',
+                'sens' => 'sensligne2',
+                'ordre' => 'ordreligne2'
             ])
             ->join([
             'correspondances' => $select1cor2

@@ -8,14 +8,15 @@
  * - caisse : liste des libelles concernant les caisses du régisseur
  * - modeDePaiement : liste des libelles concernant les modes de paiement
  * - nature : liste des natures de libellés sans doublon
- * 
+ * - motfsReduction : liste des réductions (avec en plus Pas de réduction)
+ *
  * @project sbm
  * @package SbmAdmin/Model/Db/Service/Select
  * @filesource LibellesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 23 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -130,7 +131,7 @@ class LibellesForSelect implements FactoryInterface
     public function ouvertes()
     {
         $where = new Where();
-        $where->literal('ouverte = 1');
+        $where->literal('ouvert = 1');
         $select = $this->sql->select($this->table_name);
         $select->columns([
             'code',
@@ -149,4 +150,44 @@ class LibellesForSelect implements FactoryInterface
         }
         return $array;
     }
-} 
+
+    /**
+     * Renvoie les motifs d réduction en rajoutant au début 'Pas de réduction' en 0 et en
+     * remplaçant le chaine %dateDebut% et %echeance% par leurs valeurs
+     *
+     * @return string[]
+     */
+    public function motifsReduction()
+    {
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $etatDuSite = $tCalendar->getEtatDuSite();
+        $where = new Where();
+        $where->literal('ouvert = 1')->equalTo('nature', 'MotifReduction');
+        $select = $this->sql->select($this->table_name);
+        $select->columns([
+            'code',
+            'libelle'
+        ])
+            ->order([
+            'nature',
+            'code'
+        ])
+            ->where($where);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [
+            'Pas de réduction'
+        ];
+        foreach ($rowset as $row) {
+            $array[$row['code']] = str_replace([
+                '%dateDebut%',
+                '%echeance%'
+            ],
+                [
+                    $etatDuSite['dateDebut']->format('d/m/Y'),
+                    $etatDuSite['echeance']->format('d/m/Y')
+                ], $row['libelle']);
+        }
+        return $array;
+    }
+}

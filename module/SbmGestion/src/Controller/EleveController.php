@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
+ * @date 24 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -263,8 +263,7 @@ class EleveController extends AbstractActionController
             if ($form->isValid()) {
                 $odata = $form->getData();
                 // les valeurs obligatoires sont prises dans odata, responsable2Id est
-                // pris dans
-                // args pour éviter de gérer les exceptions
+                // pris dans args pour éviter de gérer les exceptions
                 $where = new Where();
                 $filtreSA = new \SbmCommun\Filter\SansAccent();
                 $where->equalTo('ele.nomSA', $filtreSA->filter($odata->nom))
@@ -429,8 +428,7 @@ class EleveController extends AbstractActionController
                 return $prg;
             } elseif ($prg === false) {
                 // Cela pourrait être F5 ou back du navigateur. Il faut savoir si la fiche
-                // a été
-                // créée.
+                // a été créée.
                 // On reviendra donc toujours à eleveAjout21Action() pour vérifier.
                 return $this->redirect()->toRoute('sbmgestion/eleve',
                     [
@@ -497,15 +495,27 @@ class EleveController extends AbstractActionController
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
                 $odata->internet = 0;
-                $recalcul = $tableScolarites->saveRecord($odata);
-                if ($recalcul) {
-                    $majDistances = $this->cartographie_manager->get(
-                        'Sbm\CalculDroitsTransport');
-                    try {
-                        $majDistances->majDistancesDistrict($eleveId);
-                    } catch (\Exception $e) {
-                        die($e->getMessage());
+                $result = $tableScolarites->saveRecord($odata);
+                try {
+                    if ($result['saveRecord']) {
+                        try {
+                            $this->cartographie_manager->get('Sbm\CalculDroitsTransport')->majDistancesDistrict(
+                                $eleveId);
+                        } catch (\SbmCartographie\Model\Exception\RangeException $e) {
+                            $this->flashMessenger()->addErrorMessage(
+                                'Calcul de distance impossible. ');
+                            $this->flashMessenger()->addInfoMessage(
+                                'Vérifiez la géolocalisation des responsables de l\'élève.');
+                        }
+                        $this->db_manager->get('Sbm\GrilleTarifR1')->appliquerTarif(
+                            $eleveId);
+                    } else {
+                        throw new \Exception('La méthode saveRecord() a échoué.');
                     }
+                } catch (\Exception $e) {
+                    // DEBUG
+                    die($e->getTraceAsString());
+                    // -------------------------
                 }
                 $viewModel = $this->eleveEditAction(
                     [
@@ -602,15 +612,16 @@ class EleveController extends AbstractActionController
                             ]);
                     }
                 }
-
-                if (array_key_exists('group', $args)) {
-                    $this->redirectToOrigin()->setBack($args['group']);
-                    unset($args['group']);
-                    Session::set('post', $args);
-                } elseif (array_key_exists('origine', $args)) {
-                    $this->redirectToOrigin()->setBack($args['origine']);
-                    unset($args['origine']);
-                    Session::set('post', $args);
+                if (! array_key_exists('csrf', $args)) {
+                    if (array_key_exists('group', $args)) {
+                        $this->redirectToOrigin()->setBack($args['group']);
+                        unset($args['group']);
+                        Session::set('post', $args);
+                    } elseif (array_key_exists('origine', $args)) {
+                        $this->redirectToOrigin()->setBack($args['origine']);
+                        unset($args['origine']);
+                        Session::set('post', $args);
+                    }
                 }
             }
         } else {
@@ -651,7 +662,7 @@ class EleveController extends AbstractActionController
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         // ATTENTION Pour la version d'ALBERTVILLE on n'a besoin que des grilles
-        // tarifaires
+        // tarifaires mais il faut aussi le motif de réduction dans derogation
         $qAffectations = $this->db_manager->get(
             'Sbm\Db\Query\AffectationsServicesStations');
         // les invariants
@@ -711,6 +722,8 @@ class EleveController extends AbstractActionController
         $etabSelect = $this->db_manager->get('Sbm\Db\Select\Etablissements')->desservis();
         $clasSelect = $this->db_manager->get('Sbm\Db\Select\Classes')->tout();
         $grilleTarifSelect = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getGrilles();
+        $motifsReduction = $this->db_manager->get('Sbm\DbSelect\Libelles')->motifsReduction();
+        // array_unshift($motifsReduction, 'Pas de réduction');
         $form = $this->form_manager->get(FormEleve\EditForm::class);
         $form->setAttribute('action',
             $this->url()
@@ -719,6 +732,7 @@ class EleveController extends AbstractActionController
                     'action' => 'eleve-edit',
                     'page' => $currentPage
                 ]))
+            ->setValueOptions('derogation', $motifsReduction)
             ->setValueOptions('responsable1Id', $respSelect)
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
@@ -776,28 +790,44 @@ class EleveController extends AbstractActionController
                 }
                 // enregistrement dans la table scolarites
                 $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
-                $recalcul = $tScolarites->saveRecord($odata);
-                // recalcul des droits et des distances en cas de modification de la
-                // destination ou d'une origine
-                if ($recalcul || $changeR1 || $changeR2 ||
-                    $odata->derogation != $odata1->derogation) {
-                    $majDistances = $this->cartographie_manager->get(
-                        'Sbm\CalculDroitsTransport');
-                    if ($odata1->avoirDroits() && $odata->regimeId == $odata1->regimeId &&
-                        $odata->derogation == $odata1->derogation) {
-                        $majDistances->majDistancesDistrictSansPerte($eleveId);
-                    } else {
-                        try {
-                            $majDistances->majDistancesDistrict($eleveId);
-                        } catch (\Exception $e) {
-                            die($e->getMessage());
+                $aResult = $tScolarites->saveRecord($odata);
+                try {
+                    if ($aResult['saveRecord']) {
+                        // recalcul des distances si modif de la destination ou d'une
+                        // origine ou si elles ne sont pas connues (0 ou 99)
+                        if ($aResult['etablissementChange'] || $changeR1 || $changeR2 ||
+                            $aResult['distanceR1Inconnue'] ||
+                            $aResult['distanceR2Inconnue']) {
+                            try {
+                                $this->cartographie_manager->get(
+                                    'Sbm\CalculDroitsTransport')->majDistancesDistrict(
+                                    $eleveId);
+                            } catch (\SbmCartographie\Model\Exception\RangeException $e) {
+                                $this->flashMessenger()->addErrorMessage(
+                                    'Calcul de distance impossible. ');
+                                $this->flashMessenger()->addInfoMessage(
+                                    'Vérifiez la géolocalisation des responsables de l\'élève.');
+                            }
                         }
+                        if ($aResult['is_new']) {
+                            // cela ne doit jamais se produire ici (voir
+                            // eleveAjout31Action()
+                            $this->db_manager->get('Sbm\GrilleTarifR1')->appliquerTarif(
+                                $eleveId);
+                        }
+                    } else {
+                        throw new \Exception('La méthode saveRecord() a échoué.');
                     }
+                } catch (\Exception $e) {
+                    // DEBUG
+                    die($e->getTraceAsString());
+                    // --------------------------
                 }
                 $this->flashMessenger()->addSuccessMessage(
                     "Les modifications ont été enregistrées.");
                 try {
-                    return $this->redirectToOrigin()->back();
+                    $url = $this->redirectToOrigin()->back();
+                    return $url;
                 } catch (RedirectToOrigineException $e) {
                     return $this->redirect()->toRoute('sbmgestion/eleve',
                         [
@@ -806,9 +836,11 @@ class EleveController extends AbstractActionController
                         ]);
                 }
             } else {
+                // formulaire invalide
                 $identite = $args['nom'] . ' ' . $args['prenom'];
             }
         } else {
+            // premier appel (avant envoi du formualaire)
             $identite = $odata0->nom . ' ' . $odata0->prenom;
             $adata1 = $odata1->getArrayCopy();
             if ($odata1->anneeComplete) {
@@ -821,7 +853,8 @@ class EleveController extends AbstractActionController
             $form->setValueOptions('classeId',
                 $this->db_manager->get('Sbm\Db\Select\Classes')
                     ->niveau($etablissement->niveau, 'in'));
-            $form->setData(array_merge($odata0->getArrayCopy(), $adata1));
+            $formData = array_merge($odata0->getArrayCopy(), $adata1);
+            $form->setData($formData);
         }
         // historique des responsables
         $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
