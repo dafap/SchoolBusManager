@@ -8,8 +8,8 @@
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juillet 2018
- * @version 2018-2.4.2
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
 
@@ -133,6 +133,24 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                 ],
                 'options' => [
                     'label' => 'Nom CG',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'alias_laposte',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'commune-aliaslaposte',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Nom postal',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -378,7 +396,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'alias' => [
                 'name' => 'alias',
-                'required' => false,
+                'required' => true,
                 'filters' => [
                     [
                         'name' => 'StripTags'
@@ -393,7 +411,7 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'alias_min' => [
                 'name' => 'alias_min',
-                'required' => false,
+                'required' => true,
                 'filters' => [
                     [
                         'name' => 'StripTags'
@@ -412,6 +430,21 @@ class Commune extends AbstractSbmForm implements InputFilterProviderInterface
                     ],
                     [
                         'name' => 'StringTrim'
+                    ]
+                ]
+            ],
+            'alias_laposte' => [
+                'name' => 'alias_laposte',
+                'required' => true,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
+                    ],
+                    [
+                        'name' => 'StringToUpper'
                     ]
                 ]
             ],
