@@ -7,7 +7,7 @@
  * @filesource Ligne.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 fév. 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -237,6 +237,25 @@ class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
+            'ligneId' => [
+                'name' => 'ligneId',
+                'required' => true,
+                'filters' => [
+                    [
+                        'name' => 'StripTags'
+                    ],
+                    [
+                        'name' => 'StringTrim'
+                    ],
+                    // met en majuscules, y compris les lettres accentuées et ligatures
+                    [
+                        'name' => 'Zend\Filter\StringToUpper',
+                        'options' => [
+                            'encoding' => 'utf-8'
+                        ]
+                    ]
+                ]
+            ],
             'lotId' => [
                 'name' => 'lotId',
                 'required' => false

@@ -40,25 +40,25 @@ $actions = [
         <?=$this->formHidden($this->form->get('id'));?>
         <?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="wrapper-ligneid" class="ligneId">
+			<div id="wrapper-ligneid" class="row-inner edit">
 			<?=$this->formRow($this->form->get('ligneId'));?></div>
-			<div id="wrapper-lotid" class="lotId">
+			<div id="wrapper-lotid" class="row-inner edit">
 			<?=$this->formRow($this->form->get('lotId'));?></div>
-			<div id="wrapper-operateur" class="operateur">
+			<div id="wrapper-operateur" class="row-inner edit">
 			<?=$this->formRow($this->form->get('operateur'));?></div>
-			<div id="wrapper-extremite1" class="extremite1">
+			<div id="wrapper-extremite1" class="row-inner edit">
 			<?=$this->formRow($this->form->get('extremite1'));?></div>
-			<div id="wrapper-extremite2" class="extremite2">
+			<div id="wrapper-extremite2" class="row-inner edit">
 			<?=$this->formRow($this->form->get('extremite2'));?></div>
-			<div id="wrapper-via" class="via">
-			<div id="wrapper-internes" class="internes">
+			<div id="wrapper-via" class="row-inner edit">
 			<?=$this->formRow($this->form->get('internes'));?></div>
+			<div id="wrapper-internes" class="row-inner edit">
 			<?=$this->formRow($this->form->get('via'));?></div>
-			<div id="wrapper-actif" class="actif">
+			<div id="wrapper-actif" class="row-inner edit">
 			<?=$this->formRow($this->form->get('actif'));?></div>
-			<div id="wrapper-commentaire" class="commentaire">
+			<div id="wrapper-commentaire" class="row-inner edit">
 			<?=$this->formRow($this->form->get('commentaire'));?></div>
-			<div id="wrapper-buttons" class="boutons">
+			<div id="wrapper-buttons" class="row-inner edit boutons">
         		<?=$this->formSubmit($this->form->get('submit'));?>
                 <?=$this->formSubmit($this->form->get('cancel'));?></div>
 		</fieldset>

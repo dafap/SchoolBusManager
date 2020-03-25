@@ -1,0 +1,42 @@
+/**
+ * Feuille de style pour les formulaires de la table lignes
+ *
+ * 
+ * 
+ * @project sbm
+ * @package public/css/tra/sbm-gestion/transport
+ * @filesource eleve-ajout.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+
+label.sbm-label {
+	display: inline-block;
+	padding-left: 5px;
+	width: 225px;
+}
+
+input.submit {
+	margin-left: 230px;
+}
+
+input.cancel {
+	margin-left: 20px;
+}
+
+textarea {
+	width: 400px;
+	height: 80px;
+}
+
+div.row-inner {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+div.boutons {
+	margin-top: 6px;
+}
