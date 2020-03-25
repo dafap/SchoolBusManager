@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2019
- * @version 2019-2.4.10
+ * @date 25 mars 2020
+ * @version 2020-2.4.13
  */
 namespace SbmGestion\Controller;
 
@@ -594,15 +594,16 @@ class EleveController extends AbstractActionController
                             ]);
                     }
                 }
-                
-                if (array_key_exists('group', $args)) {
-                    $this->redirectToOrigin()->setBack($args['group']);
-                    unset($args['group']);
-                    Session::set('post', $args);
-                } elseif (array_key_exists('origine', $args)) {
-                    $this->redirectToOrigin()->setBack($args['origine']);
-                    unset($args['origine']);
-                    Session::set('post', $args);
+                if (! array_key_exists('csrf', $args)) {
+                    if (array_key_exists('group', $args)) {
+                        $this->redirectToOrigin()->setBack($args['group']);
+                        unset($args['group']);
+                        Session::set('post', $args);
+                    } elseif (array_key_exists('origine', $args)) {
+                        $this->redirectToOrigin()->setBack($args['origine']);
+                        unset($args['origine']);
+                        Session::set('post', $args);
+                    }
                 }
             }
         } else {
@@ -1423,7 +1424,7 @@ class EleveController extends AbstractActionController
         $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
-        $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';        
+        $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';
         // formulaire des critères de recherche
         $criteres_form = new \SbmCommun\Form\CriteresForm('responsables');
         // initialiser le form pour les select ...
