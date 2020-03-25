@@ -7,7 +7,7 @@
  * @filesource AbstractObject.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Communication;
@@ -81,7 +81,7 @@ abstract class AbstractObject
 
     /**
      * Si $data contient les clés contenues dans $ref alors c'est un service, on
-     * initialise les propriétés filterNae et filterValue et on renvoie true
+     * initialise les propriétés filterName et filterValue et on renvoie true
      *
      * @param array $data
      * @return boolean
