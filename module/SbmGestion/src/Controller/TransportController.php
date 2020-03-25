@@ -1663,7 +1663,8 @@ class TransportController extends AbstractActionController
     /**
      * Localisation d'un établissement sur la carte et enregistrement de ses coordonnées
      */
-    public function etablissementLocalisationAction($etablissementId = null, $currentPage = 1)
+    public function etablissementLocalisationAction($etablissementId = null,
+        $currentPage = 1)
     {
         if (is_null($etablissementId)) {
             $currentPage = $this->params('page', 1);
@@ -2455,11 +2456,7 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('lotId',
             $this->db_manager->get('Sbm\Db\Select\Lots')
                 ->lotId())
-            ->setValueOptions('operateur',
-            [
-                'TRA' => 'Arlysère',
-                'CR' => 'Conseil régional'
-            ]);
+            ->setValueOptions('operateur', $this->operateurs);
         $params = [
             'data' => [
                 'table' => 'lignes',
@@ -2501,11 +2498,7 @@ class TransportController extends AbstractActionController
         $form->setValueOptions('lotId',
             $this->db_manager->get('Sbm\Db\Select\Lots')
                 ->lotId())
-            ->setValueOptions('operateur',
-            [
-                'TRA' => 'Arlysère',
-                'CR' => 'Conseil régional'
-            ]);
+            ->setValueOptions('operateur', $this->operateurs);
         $params = [
             'data' => [
                 'table' => 'lignes',
@@ -3221,12 +3214,11 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
         $form->modifFormForEdit()
-            ->setValueOptions('lotId',
-            $this->db_manager->get('Sbm\Db\Select\Lots')
-                ->lotId())
+            ->setValueOptions('newligneId',
+            $this->db_manager->get('Sbm\Db\Select\Lignes')
+                ->tout())
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', $this->operateurs)
             ->setValueOptions('semaine', Strategy\Semaine::getJours());
         $params = [
             'data' => [
@@ -3378,18 +3370,12 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Service::class);
-        $form->setValueOptions('lotId',
-            $this->db_manager->get('Sbm\Db\Select\Lots')
-                ->lotId())
+        $form->setValueOptions('ligneId',
+            $this->db_manager->get('Sbm\Db\Select\Lignes')
+                ->tout())
             ->setValueOptions('transporteurId',
             $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-            ->setValueOptions('operateur', $this->operateurs)
-            ->setValueOptions('horaire1', Strategy\Semaine::getJours())
-            ->setValueOptions('horaire2', Strategy\Semaine::getJours())
-            ->setValueOptions('horaire3', Strategy\Semaine::getJours())
-            ->setValueOptions('natureCarte',
-            $this->db_manager->get('Sbm\Db\Table\Services')
-                ->getNatureCartes());
+            ->setValueOptions('semaine', Strategy\Semaine::getJours());
         $params = [
             'data' => [
                 'table' => 'services',

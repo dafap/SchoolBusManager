@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -19,8 +19,17 @@ use Zend\InputFilter\InputFilterProviderInterface;
 class Service extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
+    /**
+     * Permet de faire savoir à getInputFilterSpecification() si on est en modif (true) ou
+     * en ajout (false)
+     *
+     * @var bool
+     */
+    private $edit;
+
     public function __construct()
     {
+        $this->edit = false;
         parent::__construct('service');
         $this->setAttribute('method', 'post');
         $this->add(
@@ -39,15 +48,96 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         ]);
         $this->add(
             [
-                'name' => 'serviceId',
-                'type' => 'text',
+                'name' => 'ligneId',
+                'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
-                    'id' => 'service-codeid',
+                    'id' => 'service-ligneid',
                     'autofocus' => 'autofocus',
-                    'class' => 'sbm-width-15c'
+                    'class' => 'sbm-width-10c'
                 ],
                 'options' => [
-                    'label' => 'Code du service',
+                    'label' => 'Ligne',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'sens',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'service-sens',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Sens',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Aller',
+                        '2' => 'Retour'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'moment',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'service-moment',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Moment',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Matin',
+                        '2' => 'Midi',
+                        '3' => 'Soir'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'ordre',
+                'type' => 'SbmCommun\Form\Element\IsInt',
+                'attributes' => [
+                    'id' => 'service-ordre',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Ordre',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'rang',
+                'type' => 'SbmCommun\Form\Element\IsInt',
+                'attributes' => [
+                    'id' => 'service-rang',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Rang de recherche',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -62,83 +152,10 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'text',
                 'attributes' => [
                     'id' => 'service-alias',
-                    'class' => 'sbm-width-15c'
-                ],
-                'options' => [
-                    'label' => 'Rabattement sur',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'aliasTr',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'service-aliasTr',
-                    'class' => 'sbm-width-15c'
-                ],
-                'options' => [
-                    'label' => 'Identifiant sur le véhicule',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'aliasCG',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'service-aliascg',
-                    'class' => 'sbm-width-15c'
-                ],
-                'options' => [
-                    'label' => 'Désignation au CR',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'lotId',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'service-lotId',
-                    'class' => 'sbm-width-30c'
-                ],
-                'options' => [
-                    'label' => 'Lot du marché',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Choisissez un lot de marché',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'nom',
-                'type' => 'text',
-                'attributes' => [
-                    'id' => 'service-nom',
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Désignation du service',
+                    'label' => 'Désignation',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -150,55 +167,15 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
 
         $this->add(
             [
-                'name' => 'horaire1',
+                'name' => 'semaine',
                 'type' => 'Zend\Form\Element\MultiCheckbox',
                 'attributes' => [
-                    'id' => 'circuit-semaine',
+                    'id' => 'service-semaine',
                     'class' => 'sbm-multicheckbox'
                 ],
                 'options' => [
                     'use_hidden_element' => true,
-                    'label' => 'Jours de l\'horaire 1',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-semaine'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-
-        $this->add(
-            [
-                'name' => 'horaire2',
-                'type' => 'Zend\Form\Element\MultiCheckbox',
-                'attributes' => [
-                    'id' => 'circuit-semaine',
-                    'class' => 'sbm-multicheckbox'
-                ],
-                'options' => [
-                    'use_hidden_element' => true,
-                    'label' => 'Jours de l\'horaire 2',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-semaine'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-
-        $this->add(
-            [
-                'name' => 'horaire3',
-                'type' => 'Zend\Form\Element\MultiCheckbox',
-                'attributes' => [
-                    'id' => 'circuit-semaine',
-                    'class' => 'sbm-multicheckbox'
-                ],
-                'options' => [
-                    'use_hidden_element' => true,
-                    'label' => 'Jours de l\'horaire 3',
+                    'label' => 'Jours de circulation',
                     'label_attributes' => [
                         'class' => 'sbm-label-semaine'
                     ],
@@ -228,28 +205,8 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'operateur',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'service-operateur',
-                    'class' => 'sbm-width-20c'
-                ],
-                'options' => [
-                    'label' => 'Opérateur',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Choisissez un opérateur',
-                    'value_options' => [],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
                 'name' => 'nbPlaces',
-                'type' => 'text',
+                'type' => 'SbmCommun\Form\Element\IsInt',
                 'attributes' => [
                     'id' => 'service-nbPlaces',
                     'class' => 'sbm-width-5c'
@@ -266,52 +223,16 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'kmAVide',
-                'type' => 'SbmCommun\Form\Element\IsDecimal',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'actif',
                 'attributes' => [
-                    'id' => 'service-kmAVide',
-                    'class' => 'sbm-width-10c'
+                    'id' => 'service-actif',
+                    'class' => 'sbm-checkbox'
                 ],
                 'options' => [
-                    'label' => 'Km à vide',
+                    'label' => 'Service actif',
                     'label_attributes' => [
                         'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'kmEnCharge',
-                'type' => 'SbmCommun\Form\Element\IsDecimal',
-                'attributes' => [
-                    'id' => 'service-kmEnCharge',
-                    'class' => 'sbm-width-10c'
-                ],
-                'options' => [
-                    'label' => 'Km en charge',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\MultiCheckbox',
-                'name' => 'natureCarte',
-                'attributes' => [
-                    'id' => 'service-natureCarte',
-                    'class' => 'sbm-multicheckbox'
-                ],
-                'options' => [
-                    'label' => 'Indiquer la nature des cartes à imprimer',
-                    'label_attributes' => [
-                        'class' => 'sbm-label-nature-carte'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -321,18 +242,36 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'surEtatCG',
+                'name' => 'visible',
                 'attributes' => [
-                    'id' => 'service-surEtatCG',
+                    'id' => 'service-visible',
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
-                    'label' => 'Sur les états du CR',
+                    'label' => 'Service visible',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Textarea',
+                'name' => 'commentaire',
+                'attributes' => [
+                    'id' => 'service-commentaire',
+                    'class' => 'sbm-note'
+                ],
+                'options' => [
+                    'label' => 'Commentaires',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm_error'
                     ]
                 ]
             ]);
@@ -361,23 +300,102 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function modifFormForEdit()
     {
-        $this->remove('serviceId');
+        $this->remove('ligneId')
+            ->remove('sens')
+            ->remove('moment')
+            ->remove('ordre');
+
         $this->add([
-            'name' => 'serviceId',
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'sens',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'moment',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'ordre',
             'type' => 'hidden'
         ]);
-        $this->get('nom')->setAttribute('autofocus', 'autofocus');
+
         $this->add(
             [
-                'name' => 'codeService',
-                'type' => 'text',
+                'name' => 'newligneId',
+                'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
-                    'id' => 'service-codeid',
-                    'disabled' => 'disabled',
-                    'class' => 'sbm-width-15c'
+                    'id' => 'service-ligneid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-10c'
                 ],
                 'options' => [
-                    'label' => 'Code du service',
+                    'label' => 'Ligne',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'newsens',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'service-sens',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Sens',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Aller',
+                        '2' => 'Retour'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'newmoment',
+                'type' => 'Zend\Form\Element\Radio',
+                'attributes' => [
+                    'id' => 'service-moment',
+                    'class' => 'sbm-radio'
+                ],
+                'options' => [
+                    'label' => 'Moment',
+                    'label_attributes' => [
+                        'class' => 'sbm-label-radio'
+                    ],
+                    'value_options' => [
+                        '1' => 'Matin',
+                        '2' => 'Midi',
+                        '3' => 'Soir'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'newordre',
+                'type' => 'SbmCommun\Form\Element\IsInt',
+                'attributes' => [
+                    'id' => 'service-ordre',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Ordre',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -391,23 +409,22 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function getInputFilterSpecification()
     {
-        return [
-            'serviceId' => [
-                'name' => 'serviceId',
-                'required' => true,
-                'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
-                    [
-                        'name' => 'StringTrim'
-                    ]
-                ],
-                'validators' => [
-                    [
-                        'name' => 'SbmCommun\Model\Validator\CodeService'
-                    ]
-                ]
+        $spec = [
+            'ligneId' => [
+                'name' => 'ligneId',
+                'required' => true
+            ],
+            'sens' => [
+                'name' => 'sens',
+                'required' => true
+            ],
+            'moment' => [
+                'name' => 'moment',
+                'required' => true
+            ],
+            'ordre' => [
+                'name' => 'ordre',
+                'required' => true
             ],
             'alias' => [
                 'name' => 'alias',
@@ -421,53 +438,17 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ],
-            'aliasTr' => [
-                'name' => 'aliasTr',
-                'required' => false,
-                'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
-                    [
-                        'name' => 'StringTrim'
-                    ]
-                ]
+            'actif' => [
+                'name' => 'actif',
+                'required' => false
             ],
-            'aliasCG' => [
-                'name' => 'aliasCG',
-                'required' => false,
-                'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
-                    [
-                        'name' => 'StringTrim'
-                    ]
-                ]
+            'visible' => [
+                'name' => 'visible',
+                'required' => false
             ],
-            'nom' => [
-                'name' => 'nom',
-                'required' => true,
-                'filters' => [
-                    [
-                        'name' => 'StripTags'
-                    ],
-                    [
-                        'name' => 'StringTrim'
-                    ]
-                ]
-            ],
-            'horaire1' => [
-                'name' => 'horaire1',
+            'semaine' => [
+                'name' => 'semaine',
                 'required' => true
-            ],
-            'horaire2' => [
-                'name' => 'horaire2',
-                'required' => false
-            ],
-            'horaire3' => [
-                'name' => 'horaire3',
-                'required' => false
             ],
             'transporteurId' => [
                 'name' => 'transporteurId',
@@ -477,16 +458,37 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'surEtatCG',
                 'required' => false
             ],
+            'rang' => [
+                'name' => 'rang',
+                'required' => true
+            ],
             'nbPlaces' => [
                 'name' => 'nbPlaces',
-                'required' => true,
-                'filters' => [
-                    [
-                        'name' => 'Digits'
-                    ]
-                ]
+                'required' => true
             ]
         ];
+        if ($this->edit) {
+            $spec = array_merge($spec,
+                [
+                    'newligneId' => [
+                        'name' => 'ligneId',
+                        'required' => true
+                    ],
+                    'newsens' => [
+                        'name' => 'sens',
+                        'required' => true
+                    ],
+                    'newmoment' => [
+                        'name' => 'moment',
+                        'required' => true
+                    ],
+                    'newordre' => [
+                        'name' => 'ordre',
+                        'required' => true
+                    ]
+                ]);
+        }
+        return $spec;
     }
 
     public function setData($data)
@@ -495,9 +497,24 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             $data['millesime'] = Session::get('millesime');
         }
         parent::setData($data);
-        if ($this->has('codeService')) {
-            $e = $this->get('codeService');
-            $e->setValue($this->get('serviceId')
+        if ($this->has('newligneId')) {
+            $e = $this->get('newligneId');
+            $e->setValue($this->get('ligneId')
+                ->getValue());
+        }
+        if ($this->has('newsens')) {
+            $e = $this->get('newsens');
+            $e->setValue($this->get('sens')
+                ->getValue());
+        }
+        if ($this->has('newmoment')) {
+            $e = $this->get('newmoment');
+            $e->setValue($this->get('moment')
+                ->getValue());
+        }
+        if ($this->has('newordre')) {
+            $e = $this->get('newordre');
+            $e->setValue($this->get('ordre')
                 ->getValue());
         }
     }

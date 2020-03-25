@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/service-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/transport', 'service-fiche.css');
@@ -38,51 +38,46 @@ $actions = [
 	</div>
 	<div id="fiche-inner" class="edit">
 		<?= $this->form()->openTag($this->form);?>
-		<?= $this->formHidden($this->form->get('serviceId'));?>
+		<?= $this->formHidden($this->form->get('millesime'));?>
+		<?= $this->formHidden($this->form->get('ligneId'));?>
+		<?= $this->formHidden($this->form->get('sens'));?>
+		<?= $this->formHidden($this->form->get('moment'));?>
+		<?= $this->formHidden($this->form->get('ordre'));?>
 		<?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
 			<div class="clearfix">
-				<div id="wrapper-serviceId" class="row-inner tiers float-left">
-				<?= $this->formRow($this->form->get('codeService')); ?></div>
-				<div id="wrapper-alias" class="row-inner tiers float-left">
-				<?= $this->formRow($this->form->get('alias')); ?></div>
-				<div id="wrapper-aliasTr" class="row-inner tiers-droite float-left">
-				<?= $this->formRow($this->form->get('aliasTr')); ?></div>
+				<div id="wrapper-ligneId" class="row-inner p25 float-left">
+				<?= $this->formRow($this->form->get('newligneId')); ?></div>
+				<div id="wrapper-sens" class="row-inner p20 float-left">
+				<?= $this->formRow($this->form->get('newsens')); ?></div>
+				<div id="wrapper-moment" class="row-inner p30 float-left">
+				<?= $this->formRow($this->form->get('newmoment')); ?></div>
+				<div id="wrapper-ordre" class="row-inner float-left">
+				<?= $this->formRow($this->form->get('newordre')); ?></div>
+
 			</div>
-			<div id="wrapper-lotId" class="row-inner">
-				<?= $this->formRow($this->form->get('lotId')); ?></div>
-			<div id="wrapper-nom" class="row-inner">
-				<?= $this->formRow($this->form->get('nom')); ?></div>
-			<div id="wrapper-aliasCG" class="row-inner">
-				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
+			<div id="wrapper-alias" class="row-inner">
+				<?= $this->formRow($this->form->get('alias')); ?></div>
 			<div id="wrapper-transporteurId" class="row-inner">
 				<?= $this->formRow($this->form->get('transporteurId')); ?></div>
-			<div id="wrapper-operateur" class="row-inner">
-				<?= $this->formRow($this->form->get('operateur')); ?></div>
+
 			<div class="clearfix">
-				<div id="wrapper-nbPlaces" class="row-inner tiers float-left">
-				<?= $this->formRow($this->form->get('nbPlaces')); ?></div>
-				<div id="wrapper-kmAVide" class="row-inner tiers float-left">
-				<?= $this->formRow($this->form->get('kmAVide')); ?></div>
-				<div id="wrapper-kmEnCharge"
-					class="row-inner tiers-droite float-left">
-				<?= $this->formRow($this->form->get('kmEnCharge')); ?></div>
+				<div id="wrapper-rang" class="row-inner p25 float-left">
+					<?= $this->formRow($this->form->get('rang')); ?></div>
+				<div id="wrapper-nbPlaces" class="row-inner p20 float-left">
+					<?= $this->formRow($this->form->get('nbPlaces')); ?></div>
+				<div id="wrapper-semaine" class="row-inner horaire">
+					<?= $this->formRow($this->form->get('semaine')); ?></div>
 			</div>
 			<div class="clearfix">
-				<div id="wrapper-horaire1"
-					class="row-inner horaire tiers float-left">
-				<?= $this->formRow($this->form->get('horaire1')); ?></div>
-				<div id="wrapper-horaire2"
-					class="row-inner horaire tiers float-left">
-				<?= $this->formRow($this->form->get('horaire2')); ?></div>
-				<div id="wrapper-horaire3"
-					class="row-inner horaire tiers-droite float-left">
-				<?= $this->formRow($this->form->get('horaire3')); ?></div>
+				<div id="wrapper-actif" class="row-inner p25 float-left">
+				<?= $this->formRow($this->form->get('actif')); ?></div>
+				<div id="wrapper-visible"
+					class="row-inner demi float-left">
+				<?= $this->formRow($this->form->get('visible')); ?></div>
 			</div>
-			<div id="wrapper-natureCarte" class="row-inner tiers">
-                <?= $this->formRow($this->form->get('natureCarte')); ?></div>
-			<div id="wrapper-surEtatCG" class="row-inner">
-				<?= $this->formRow($this->form->get('surEtatCG')); ?></div>
+			<div id="wrapper-commentaire" class="row-inner">
+				<?= $this->formRow($this->form->get('commentaire')); ?></div>
 			<div id="wrapper-buttons" class="row-inner">
         		<?= $this->formSubmit($this->form->get('submit'));?>
         		<?= $this->formSubmit($this->form->get('cancel'));?></div>

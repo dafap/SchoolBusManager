@@ -10,7 +10,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -132,10 +132,10 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
      * @param int $sens
      * @param int $moment
      * @param int $ordre
-     * @param int $semaine
+     * @param array $semaine
      */
     public function majSemaine(int $millesime, string $ligneId, int $sens, int $moment,
-        int $ordre, int $semaine)
+        int $ordre, array $semaine)
     {
         $keys = [
             'millesime' => $millesime,
@@ -144,9 +144,10 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
             'moment' => $moment,
             'ordre' => $ordre
         ];
-        $this->table_gateway->update([
-            'semaine' => $semaine
-        ], $keys);
+        $this->table_gateway->update(
+            [
+                'semaine' => $this->strategies['semaine']->extract($semaine)
+            ], $keys);
     }
 }
 

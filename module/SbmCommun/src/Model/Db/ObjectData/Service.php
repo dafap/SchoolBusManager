@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -20,7 +20,13 @@ class Service extends AbstractObjectData
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName('serviceId');
+        $this->setIdFieldName([
+            'millesime',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre'
+        ]);
     }
 
     public function designation()

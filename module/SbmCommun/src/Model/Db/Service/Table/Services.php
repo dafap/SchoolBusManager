@@ -10,7 +10,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -38,14 +38,6 @@ class Services extends AbstractSbmTable implements EffectifInterface
             'ordre'
         ];
         $this->strategies['semaine'] = new SemaineStrategy();
-        // $this->strategies['natureCarte'] = new NatureCarteStrategy();
-        // $tLibelles = $this->db_manager->get('Sbm\Db\System\Libelles');
-        // $resultset = $tLibelles->fetchAll([
-        // 'nature' => 'NatureCartes'
-        // ]);
-        // foreach ($resultset as $row) {
-        // $this->strategies['natureCarte']->addNatureCarte($row->libelle);
-        // }
     }
 
     public function getNatureCartes()

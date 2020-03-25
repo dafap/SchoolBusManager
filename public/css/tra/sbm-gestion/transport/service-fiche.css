@@ -6,30 +6,42 @@
  * @filesource service-fiche.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  **/
-div.tiers {
-	width: calc(33% - 25px);
+div.p20 {
+	width: calc(20% - 25px);
 	margin-right: 25px;
 }
-
-div.tiers-droite {
-	width: calc(33% - 25px);
+div.p25 {
+	width: calc(25% - 25px);
+	margin-right: 25px;
+}
+div.p30 {
+	width: calc(30% - 25px);
+	margin-right: 25px;
 }
 
 label {
 	display: inline-block;
 	padding-left: 5px;
-	width: 170px;
+	width: 140px;
 }
 
 label.sbm-label-semaine {
 	width: 50px;
 }
 
+label.sbm-label-radio {
+	width: 85px;
+}
+textarea.sbm-note {
+	width: calc(100% - 160px);
+	height: 80px;
+}
+
 label.sbm-label-nature-carte {
-	width: 160px;
+	width: 130px;
 }
 
 label.sbm-label-semaine.required:after, label.sbm-label-nature-carte.required:after
@@ -37,7 +49,8 @@ label.sbm-label-semaine.required:after, label.sbm-label-nature-carte.required:af
 	content: none;
 }
 
-#service-horaire1 legend:after, #service-natureCarte legend:after {
+#service-horaire1 legend:after, #service-sens legend:after,
+	#service-moment legend:after {
 	color: #f78042;
 	content: '*';
 }
@@ -45,4 +58,9 @@ label.sbm-label-semaine.required:after, label.sbm-label-nature-carte.required:af
 input.submit {
 	margin-top: 6px;
 	margin-left: 175px;
+}
+
+div.clearfix {
+	display: flex;
+	align-items: center;
 }
