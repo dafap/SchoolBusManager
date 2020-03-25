@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -50,6 +50,8 @@ $actions = [
 				<?= $this->formRow($this->form->get('alias')); ?></div>
 			<div id="wrapper-alias-min" class="row-inner edit">
 				<?= $this->formRow($this->form->get('alias_min')); ?></div>
+			<div id="wrapper-alias-laposte" class="row-inner ajout">
+				<?= $this->formRow($this->form->get('alias_laposte')); ?></div>
 			<div id="wrapper-aliasCG" class="row-inner edit">
 				<?= $this->formRow($this->form->get('aliasCG')); ?></div>
 			<div id="wrapper-codepostal" class="row-inner edit">

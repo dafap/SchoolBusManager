@@ -13,8 +13,8 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -150,7 +150,7 @@ $actions = [
                     'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
-                        'title' => 'élèves de ' . $commune->nom
+                        'title' => 'élèves de ' . $commune->alias
                     ]
                 ];
                 if ($this->layout()->hassbmservicesms) {
@@ -169,7 +169,7 @@ $actions = [
 					<td class="communeid">
 						<?=$this->escapeHtml($commune->communeId);?></td>
 					<td class="nom">
-						<?=$this->escapeHtml($commune->nom);?></td>
+						<?=$this->escapeHtml($commune->alias);?></td>
 					<td class="codepostal">
 						<?=$this->escapeHtml($commune->codePostal);?></td>
 					<td class="centre membre">
