@@ -9,38 +9,40 @@
  * @filesource station-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
-$this->themeJS('commun','localisation.js');
-$this->themeJS('commun','StyledMarker.js');
+$this->themeJS('commun', 'localisation.js');
+$this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
     $e = $pt->getAttribute('station');
     if ($e->ouverte) {
         $color = "#00ff00";
-        // $nature = "ouverte";
+        $nature = "ouverte";
     } else {
         $color = "#ff0000";
-        // $nature = "fermée";
+        $nature = "fermée";
     }
     $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
+        $this->escapeHtml($e->alias),
         implode(' ', [
             $e->codePostal,
             $e->commune
         ])
     ];
+    $d[] = 'Station ' . $nature;
     $aMarkers[] = [
         'lat' => $pt->getLatitude(),
         'lng' => $pt->getLongitude(),
         'color' => $color,
         'text' => 'S',
         'title' => $e->nom,
-        'info' => implode('<br>', $d)
+        'info' => implode('<br>', array_filter($d))
     ];
 }
 // lancement du script (sera affiché dans le layout à la fin de la page)
@@ -65,10 +67,12 @@ $this->inlineScript()->captureEnd();
 			</ul>
 		</div>
 		<div class="float-right left-10px" style="max-width: 700px;">
-			Cliquez sur la carte à l'emplacement de la station puis cliquez sur
-			le bouton <b>'Enregistrer la localisation'</b>. Utilisez le zoom pour
-			plus de précision.<br>
 			<?= $this->form($this->form); ?>
+			<p class="sbm-description">
+				Cliquez sur la carte à l'emplacement de la station puis cliquez sur
+				le bouton <b>'Enregistrer la localisation'</b>.<br>Utilisez le zoom
+				pour plus de précision.
+			</p>
 		</div>
 
 	</div>

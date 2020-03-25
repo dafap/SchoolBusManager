@@ -12,8 +12,8 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -23,7 +23,7 @@ $this->themeJS('commun', 'carte.js');
 $this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $i = 0;
-$tMarkers = "[\n";
+$aMarkers = [];
 foreach ($this->ptStations as $pt) {
     $e = $pt->getAttribute('station');
     if ($e->ouverte) {
@@ -35,24 +35,29 @@ foreach ($this->ptStations as $pt) {
     }
     $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
+        $this->escapeHtml($e->alias),
         implode(' ', [
             $e->codePostal,
-            $e->commune
+            $e->lacommune
         ])
     ];
-
-    $tMarkers .= '{"lat":' . $pt->getLatitude() . ',"lng":' . $pt->getLongitude() .
-        ',"color":"' . $color . '","text":"S","title":"' . $e->nom . '","info":"' .
-        implode('<br>', $d) . "\"},\n";
+    $d[] = 'Station ' . $nature;
+    $aMarkers[] = [
+        'lat' => $pt->getLatitude(),
+        'lng' => $pt->getLongitude(),
+        'color' => $color,
+        'text' => 'S',
+        'title' => $e->nom,
+        'info' => implode('<br>', array_filter($d))
+    ];
 }
-$tMarkers .= ']';
 // lancement du script
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
 const INI_ZOOM = <?= $this->config['zoom']; ?>;
-initialiser("<?=$this->scheme;?>",<?=$tMarkers;?>);
+initialiser("<?=$this->scheme;?>",<?= json_encode($aMarkers);?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
@@ -70,7 +75,7 @@ $actions = [
 		<div class="menu float-left">
 		<?= $this->listeZoneActions($hiddens,$actions);?>
 		</div>
-		<div class="float-right right-10px">
+		<div class="float-right right-10px sbm-description">
 			<span style="background-color: #ff0000; font-weight: bold;">En rouge</span>
 			les points d'arrêt fermés. <span
 				style="background-color: #00ff00; font-weight: bold;">En vert</span>

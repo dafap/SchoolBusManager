@@ -12,7 +12,7 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -22,14 +22,16 @@ $this->themeJS('commun', 'carte.js');
 $this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $i = 0;
-$tMarkers = "[\n";
+$aMarkers = [];
 foreach ($this->ptEtablissements as $pt) {
     $e = $pt->getAttribute('etablissement');
     $niveau = array_sum($e->niveau);
+    $accord_desservi = "";
     if ($niveau < 4) {
         // $color = "#ffff00";
         $lettre = "E";
-        $nature = "Ecole";
+        $nature = "École";
+        $accord_desservi = "e";
     } elseif ($niveau == 4) {
         // $color = "#fc6700";
         $lettre = "C";
@@ -41,10 +43,10 @@ foreach ($this->ptEtablissements as $pt) {
     }
     if ($e->desservie) {
         $color = "#00ff00";
-        $nature .= " desservie";
+        $nature .= " desservi" . $accord_desservi;
     } else {
         $color = "#ff0000";
-        $nature .= " non desservie";
+        $nature .= " non desservi" . $accord_desservi;
     }
     $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
@@ -54,7 +56,7 @@ foreach ($this->ptEtablissements as $pt) {
         ]), " -"),
         implode(' ', [
             $e->codePostal,
-            $e->commune
+            $e->lacommune
         ]),
         'Tél. ' . $this->telephone($e->telephone)
     ];
@@ -63,19 +65,22 @@ foreach ($this->ptEtablissements as $pt) {
         $d[] = 'Email : ' . $e->email;
     }
     $d[] = $nature;
-
-    $tMarkers .= '{"lat":' . $pt->getLatitude() . ',"lng":' . $pt->getLongitude() .
-        ',"color":"' . $color . '","text":"' . $lettre . '","title":"' . $e->nom .
-        '","info":"' . implode('<br>', $d) . "\"},\n";
+    $aMarkers[] = [
+        'lat' => $pt->getLatitude(),
+        'lng' => $pt->getLongitude(),
+        'color' => $color,
+        'text' => $lettre,
+        'title' => $e->nom,
+        'info' => implode('<br>', $d)
+    ];
 }
-$tMarkers .= ']';
 // lancement du script
 $this->inlineScript()->captureStart();
 ?>
 const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
 const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
 const INI_ZOOM = <?= $this->config['zoom']; ?>;
-initialiser("<?=$this->scheme;?>",<?=$tMarkers;?>);
+initialiser("<?=$this->scheme;?>",<?= json_encode($aMarkers);?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
@@ -93,9 +98,8 @@ $actions = [
 		<div class="menu float-left">
 		<?= $this->listeZoneActions($hiddens, $actions);?>
 		</div>
-		<div class="float-right right-10px">
-			Zoomez puis cliquez sur une marque pour obtenir des renseignements.
-		</div>
+		<div class="float-right right-10px sbm-description">Zoomez puis cliquez sur une marque
+			pour obtenir des renseignements.</div>
 	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>

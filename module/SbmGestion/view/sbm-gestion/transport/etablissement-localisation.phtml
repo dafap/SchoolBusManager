@@ -9,8 +9,8 @@
  * @filesource etablissement-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.6.0
  */
 // mise en place des JS de googleMaps
 $this->headScript()->appendFile($this->url_api);
@@ -21,25 +21,51 @@ $i = 0;
 $aMarkers = [];
 foreach ($this->ptEtablissements as $pt) {
     $e = $pt->getAttribute('etablissement');
+    $niveau = array_sum($e->niveau);
+    $accord_desservi = "";
+    if ($niveau < 4) {
+        // $color = "#ffff00";
+        $lettre = "E";
+        $nature = "École";
+        $accord_desservi = "e";
+    } elseif ($niveau == 4) {
+        // $color = "#fc6700";
+        $lettre = "C";
+        $nature = "Collège";
+    } else {
+        // $color = "#e5c3d0";
+        $lettre = "L";
+        $nature = "Lycée";
+    }
     if ($e->desservie) {
         $color = "#00ff00";
-        // $nature = "ouverte";
+        $nature .= " desservi" . $accord_desservi;
     } else {
         $color = "#ff0000";
-        // $nature = "fermée";
+        $nature .= " non desservi" . $accord_desservi;
     }
     $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
+        implode(" - ", array_filter([
+            $e->adresse1,
+            $e->adresse2
+        ])),
         implode(' ', [
             $e->codePostal,
-            $e->commune
-        ])
+            $e->lacommune
+        ]),
+        'Tél. ' . $this->telephone($e->telephone)
     ];
+    $tmp = $e->email;
+    if ($e->email) {
+        $d[] = 'Email : ' . $e->email;
+    }
+    $d[] = $nature;
     $aMarkers[] = [
         'lat' => $pt->getLatitude(),
         'lng' => $pt->getLongitude(),
         'color' => $color,
-        'text' => 'S',
+        'text' => $lettre,
         'title' => $e->nom,
         'info' => implode('<br>', $d)
     ];
@@ -66,10 +92,10 @@ $this->inlineScript()->captureEnd();
 			</ul>
 		</div>
 		<div class="float-right left-10px" style="max-width: 700px;">
-			Cliquez sur la carte à l'emplacement de l'établissement scolaire puis
-			cliquez sur le bouton <b>'Enregistrer la localisation'</b>. Utilisez
-			le zoom pour plus de précision.<br>
 			<?= $this->form($this->form); ?>
+			<p class="sbm-description">Cliquez sur la carte à l'emplacement de l'établissement scolaire puis
+			cliquez sur le bouton <b>'Enregistrer la localisation'</b>.<br>Utilisez
+			le zoom pour plus de précision.</p>
 		</div>
 
 	</div>
