@@ -11,7 +11,7 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -25,6 +25,8 @@ class Telephone extends AbstractHelper
     {
         if (is_null($data)) {
             return '';
+        } elseif (is_int($data)) {
+            $data = (string) $data;
         } elseif (! is_string($data)) {
             throw new InvalidArgumentException('Un numéro de téléphone est attendu.');
         }
