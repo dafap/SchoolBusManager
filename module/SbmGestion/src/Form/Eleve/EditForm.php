@@ -7,8 +7,8 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2019
- * @version 2019-2.5.0
+ * @date 25 mars 2020
+ * @version 2020-2.5.5
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -681,7 +681,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Enregistrer',
-                    'id' => 'station-submit',
+                    'id' => 'eleve-submit',
                     'class' => 'button default submit'
                 ]
             ]);
@@ -691,7 +691,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'type' => 'submit',
                     'value' => 'Abandonner',
-                    'id' => 'station-cancel',
+                    'id' => 'eleve-cancel',
                     'class' => 'button default cancel'
                 ]
             ]);

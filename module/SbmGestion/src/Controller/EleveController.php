@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 25 mars 2020
+ * @version 2020-2.5.5
  */
 namespace SbmGestion\Controller;
 
@@ -602,15 +602,16 @@ class EleveController extends AbstractActionController
                             ]);
                     }
                 }
-
-                if (array_key_exists('group', $args)) {
-                    $this->redirectToOrigin()->setBack($args['group']);
-                    unset($args['group']);
-                    Session::set('post', $args);
-                } elseif (array_key_exists('origine', $args)) {
-                    $this->redirectToOrigin()->setBack($args['origine']);
-                    unset($args['origine']);
-                    Session::set('post', $args);
+                if (! array_key_exists('csrf', $args)) {
+                    if (array_key_exists('group', $args)) {
+                        $this->redirectToOrigin()->setBack($args['group']);
+                        unset($args['group']);
+                        Session::set('post', $args);
+                    } elseif (array_key_exists('origine', $args)) {
+                        $this->redirectToOrigin()->setBack($args['origine']);
+                        unset($args['origine']);
+                        Session::set('post', $args);
+                    }
                 }
             }
         } else {
