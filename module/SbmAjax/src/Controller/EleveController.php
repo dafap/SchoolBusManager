@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
+ * @date 25 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -172,7 +172,16 @@ class EleveController extends AbstractActionController
             $responsableId = $this->params('responsableId');
             $responsable = $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecord(
                 $responsableId);
-
+            foreach ([
+                'telephoneF',
+                'telephoneP',
+                'telephoneT'
+            ] as $telephone) {
+                if ($responsable->{$telephone}) {
+                    $responsable->{$telephone} = implode(' ',
+                        str_split($responsable->{$telephone}, 2));
+                }
+            }
             return $this->getResponse()->setContent(
                 Json::encode(
                     array_merge($responsable->getArrayCopy(), [
@@ -378,7 +387,11 @@ class EleveController extends AbstractActionController
         $millesime = Session::get('millesime');
         $eleveId = $this->params('eleveId', 0);
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-        $oscolarite = $tScolarites->getRecord(['millesime'=>$millesime,'eleveId'=>$eleveId]);
+        $oscolarite = $tScolarites->getRecord(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId
+            ]);
         $stationId = $oscolarite->{'stationIdR' . $trajet};
         $aData = [
             'millesime' => $millesime,
@@ -475,7 +488,7 @@ class EleveController extends AbstractActionController
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
-                        //$this->debugTrace($e->getTraceAsString());
+                        // $this->debugTrace($e->getTraceAsString());
                         $response->setContent(
                             Json::encode([
                                 'cr' => $e->getMessage(),
