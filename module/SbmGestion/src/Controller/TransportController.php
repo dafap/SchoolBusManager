@@ -3657,7 +3657,6 @@ class TransportController extends AbstractActionController
      */
     public function stationsNonDesserviesAction()
     {
-        $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -3668,9 +3667,11 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
 
-                'data' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->stationsNonDesservies(),
+                'paginator' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->paginatorStationsNonDesservies(),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
                 'effectifStations' => $effectifStations,
-                'page' => $currentPage
+                'page' => $this->params('page', 1),
+                'id' => $this->params('id', 1)
             ]);
     }
 

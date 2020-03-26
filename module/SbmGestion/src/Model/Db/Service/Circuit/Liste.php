@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
- * @version 2019-2.5.0
+ * @date 26 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
 
@@ -19,6 +19,8 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 
 class Liste implements FactoryInterface
 {
@@ -100,6 +102,20 @@ class Liste implements FactoryInterface
      */
     public function stationsNonDesservies()
     {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectStationsNonDesservies());
+        return $statement->execute();
+    }
+
+    public function paginatorStationsNonDesservies()
+    {
+        return new Paginator(
+            new DbSelect($this->selectStationsNonDesservies(),
+                $this->db_manager->getDbAdapter()));
+    }
+
+    private function selectStationsNonDesservies()
+    {
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('circuits'))
             ->columns([
@@ -114,9 +130,12 @@ class Liste implements FactoryInterface
         ])
             ->join([
             'v' => $this->db_manager->getCanonicName('communes')
-        ], 'v.communeId=s.communeId', [
-            'commune' => 'nom'
-        ])
+        ], 'v.communeId=s.communeId',
+            [
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
+            ])
             ->join([
             'c' => $select1
         ], 's.stationId=c.stationId', [], Select::JOIN_LEFT)
@@ -127,7 +146,6 @@ class Liste implements FactoryInterface
             'commune',
             'nom'
         ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
+        return $select;
     }
 }

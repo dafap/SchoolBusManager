@@ -8,25 +8,25 @@
  * @filesource view/sbm-gestion/transport/stations-non-desservies.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
- * @version 2019-2.5.0
+ * @date 27 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_origine = $this->url('sbmgestion/transport',
     [
         'action' => 'stations-non-desservies',
-        'page' => $this->page
+        'page' => $this->page,
+        'id'=>$this->id
     ]);
 $url_rapports = $this->url('sbmgestion/transport',
     [
-        'action' => 'stations-non-desservies-pdf',
-        'page' => $this->page
+        'action' => 'stations-non-desservies-pdf'
     ]);
 $url_retour = $this->url('sbmgestion/transport',
     [
         'action' => 'station-liste',
-        'page' => $this->page
+        'page' => $this->id
     ]);
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -42,6 +42,9 @@ $actions = [
     ],
     'rapports' => $menuImpression['content']
 ];
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$stations = $this->paginator->getCurrentItems();
 ?>
 <h1>Liste des stations non desservies</h1>
 <div id="liste-wrapper">
@@ -67,7 +70,7 @@ $actions = [
 				</tr>
             <?php
 
-            foreach ($this->data as $station) :
+            foreach ($stations as $station) :
                 ?>
             	<?php
                 $nbInscrits = $this->effectifStations->transportes($station['stationId']);
@@ -81,17 +84,20 @@ $actions = [
                 $url_edit = $this->url('sbmgestion/transport',
                     [
                         'action' => 'station-edit',
-                        'page' => $this->page
+                        'page' => $this->page,
+                        'id' => $this->id
                     ]);
                 $url_delete = $this->url('sbmgestion/transport',
                     [
                         'action' => 'station-suppr',
-                        'page' => $this->page
+                        'page' => $this->page,
+                        'id' => $this->id
                     ]);
                 $url_group = $this->url('sbmgestion/transport',
                     [
                         'action' => 'station-group',
-                        'page' => $this->page
+                        'page' => $this->page,
+                        'id' => $this->id
                     ]);
                 $hiddens = [
                     'stationId' => $station['stationId'],
@@ -118,7 +124,7 @@ $actions = [
                 ?>
                 <tr class="<?=$css;?>">
 					<td class="commune">
-						<?=$this->escapeHtml($station['commune']);?></td>
+						<?=$this->escapeHtml($station['lacommune']);?></td>
 					<td class="nom">
 						<?=$this->escapeHtml($station['nom']);?></td>
 					<td class="visible">
@@ -138,5 +144,8 @@ $actions = [
             </tbody>
 		</table>
 	</div>
-	<div id="liste-footer"></div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+	</div>
 </div>

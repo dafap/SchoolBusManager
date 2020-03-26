@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév.2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -57,7 +57,7 @@ $url_rapports = $this->url('sbmgestion/transport',
 $url_nondesservies = $this->url('sbmgestion/transport',
     [
         'action' => 'stations-non-desservies',
-        'page' => $this->page
+        'id' => $this->page
     ]);
 $url_localiser = $this->url('sbmgestion/transport',
     [
