@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -300,6 +300,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function modifFormForEdit()
     {
+        $this->edit = true;
         $this->remove('ligneId')
             ->remove('sens')
             ->remove('moment')
@@ -471,19 +472,19 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
             $spec = array_merge($spec,
                 [
                     'newligneId' => [
-                        'name' => 'ligneId',
+                        'name' => 'newligneId',
                         'required' => true
                     ],
                     'newsens' => [
-                        'name' => 'sens',
+                        'name' => 'newsens',
                         'required' => true
                     ],
                     'newmoment' => [
-                        'name' => 'moment',
+                        'name' => 'newmoment',
                         'required' => true
                     ],
                     'newordre' => [
-                        'name' => 'ordre',
+                        'name' => 'newordre',
                         'required' => true
                     ]
                 ]);

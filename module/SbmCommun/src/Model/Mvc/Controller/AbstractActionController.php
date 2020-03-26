@@ -552,11 +552,15 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * @param callable|null $initform
      *            Fonction d'initialisation du formulaire. Son paramètre est $args
      *            (tableau des paramètres fournis en post ou en session)
+     * @param callable|null $prepareData
+     *            Fonction qui prépare un premier objData contenant les anciennes primary
+     *            keys et un autre objData avec les données modifiées
      * @return \Zend\Http\PhpEnvironment\Response|string|int renvoie une redirection 303
      *         si c'est un post, ou un \SbmCommun\Model\Mvc\Controller\EditResponse
      *         contenant les données à renvoyer
      */
-    protected function editData($params, $renvoyer = null, $initform = null)
+    protected function editData($params, $renvoyer = null, $initform = null,
+        $prepareData = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -608,17 +612,35 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $initform($args);
         }
         $form->bind($table->getObjData());
-
         if ($isPost) {
-            $form->setData($args);
-            if ($form->isValid()) {
-                $table->saveRecord($form->getData());
-                $this->flashMessenger()->addSuccessMessage(
-                    "Les modifications ont été enregistrées.");
-                return new EditResponse('success', $args);
-            } elseif (getenv('APPLICATION_ENV') == 'development') {
-                echo '<h3>Debug:</h3>';
-                var_dump($form->getMessages());
+            if (is_callable($prepareData)) {
+                $objDataWithPk = $table->getObjData()->exchangeArray($args);
+                $form->setData($prepareData($args));
+                if ($form->isValid()) {
+                    $table->updateRecord($objDataWithPk, $form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        "Les modifications ont été enregistrées.");
+                    return new EditResponse('success', $args);
+                } else {
+                    if (getenv('APPLICATION_ENV') == 'development') {
+                        echo '<h3>Debug:</h3>';
+                        var_dump($form->getMessages());
+                    }
+                    // remettre en place les hiddens
+                    $args = array_merge($args, $objDataWithPk->getArrayCopy());
+                    $form->setData($args);
+                }
+            } else {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $table->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        "Les modifications ont été enregistrées.");
+                    return new EditResponse('success', $args);
+                } elseif (getenv('APPLICATION_ENV') == 'development') {
+                    echo '<h3>Debug:</h3>';
+                    var_dump($form->getMessages());
+                }
             }
         } else {
             $form->setData($table->getRecord($id)

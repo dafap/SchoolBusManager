@@ -7,7 +7,7 @@
  * @filesource Ligne.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -18,8 +18,17 @@ use SbmBase\Model\Session;
 class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
+    /**
+     * Permet de faire savoir à getInputFilterSpecification() si on est en modif (true) ou
+     * en ajout (false)
+     *
+     * @var bool
+     */
+    private $edit;
+
     public function __construct()
     {
+        $this->edit = false;
         parent::__construct('ligne');
         $this->setAttribute('method', 'post');
         $this->add(
@@ -236,7 +245,7 @@ class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function getInputFilterSpecification()
     {
-        return [
+        $spec = [
             'ligneId' => [
                 'name' => 'ligneId',
                 'required' => true,
@@ -325,6 +334,42 @@ class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
                 'required' => false
             ]
         ];
+        if ($this->edit) {
+            $spec['newligneId'] = [
+                'name' => 'newligneId',
+                'required' => true
+            ];
+        }
+        return $spec;
+    }
+
+    public function modifFormForEdit()
+    {
+        $this->edit = true;
+        $this->remove('ligneId');
+        $this->add([
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ])->add(
+            [
+                'name' => 'newligneId',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'ligne-ligneid',
+                    'autofocus' => 'autofocus',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'Code de la ligne',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        return $this;
     }
 
     public function setData($data)
@@ -332,6 +377,11 @@ class Ligne extends AbstractSbmForm implements InputFilterProviderInterface
         if (! array_key_exists('millesime', $data)) {
             $data['millesime'] = Session::get('millesime');
         }
-        return parent::setData($data);
+        parent::setData($data);
+        if ($this->has('newligneId')) {
+            $e = $this->get('newligneId');
+            $e->setValue($this->get('ligneId')
+                ->getValue());
+        }
     }
 }

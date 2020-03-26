@@ -2495,7 +2495,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Ligne::class);
-        $form->setValueOptions('lotId',
+        $form->modifFormForEdit()
+            ->setValueOptions('lotId',
             $this->db_manager->get('Sbm\Db\Select\Lots')
                 ->lotId())
             ->setValueOptions('operateur', $this->operateurs);
@@ -2504,11 +2505,18 @@ class TransportController extends AbstractActionController
                 'table' => 'lignes',
                 'type' => 'table',
                 'alias' => 'Sbm\Db\Table\Lignes',
-                'id' => 'id'
+                'id' => [
+                    'millesime',
+                    'ligneId'
+                ]
             ],
             'form' => $form
         ];
-        $r = $this->editData($params);
+        $r = $this->editData($params, null, null,
+            function ($args) {
+                $args['ligneId'] = $args['newligneId'];
+                return $args;
+            });
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -3188,6 +3196,9 @@ class TransportController extends AbstractActionController
         if ($args instanceof Response) {
             return $args;
         }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
+        $args['where']->equalTo('millesime', $millesime);
         $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
         $effectifServices->init();
         // $effectifServices = null;
@@ -3195,11 +3206,12 @@ class TransportController extends AbstractActionController
             [
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
-                    $args['where']->equalTo('millesime', Session::get('millesime'))),
+                    $args['where']),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
                 'effectifServices' => $effectifServices,
+                'as' => $as,
                 'natureCartes' => $this->db_manager->get('Sbm\Db\Vue\Services')->getNatureCartes()
             ]);
     }
@@ -3235,8 +3247,14 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-
-        $r = $this->editData($params);
+        $r = $this->editData($params, null, null,
+            function ($args) {
+                $args['ligneId'] = $args['newligneId'];
+                $args['sens'] = $args['newsens'];
+                $args['moment'] = $args['newmoment'];
+                $args['ordre'] = $args['newordre'];
+                return $args;
+            });
         if ($r instanceof Response) {
             return $r;
         } else {

@@ -7,7 +7,7 @@
  * @filesource ligne-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 fév. 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -38,10 +38,12 @@ $actions = [
 	<div id="fiche-inner">
         <?=$this->form()->openTag($this->form);?>
         <?=$this->formHidden($this->form->get('id'));?>
+		<?= $this->formHidden($this->form->get('millesime'));?>
+		<?= $this->formHidden($this->form->get('ligneId'));?>
         <?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
 			<div id="wrapper-ligneid" class="row-inner edit">
-			<?=$this->formRow($this->form->get('ligneId'));?></div>
+			<?=$this->formRow($this->form->get('newligneId'));?></div>
 			<div id="wrapper-lotid" class="row-inner edit">
 			<?=$this->formRow($this->form->get('lotId'));?></div>
 			<div id="wrapper-operateur" class="row-inner edit">

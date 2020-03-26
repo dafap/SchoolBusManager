@@ -11,7 +11,7 @@
  * @filesource ligne-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 fév. 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -65,10 +65,11 @@ $url_relation = $this->url('sbmgestion/transport',
         'id' => $this->page
     ]);
 if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-groupe',
-        'page' => $this->page
-    ]);
+    $url_sms = $this->url('sbmservicesms',
+        [
+            'action' => 'envoi-groupe',
+            'page' => $this->page
+        ]);
 }
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -112,9 +113,12 @@ echo $this->flashMessenger()->render('default');
 					<th>Départ</th>
 					<th>Terminus</th>
 					<th>Via</th>
-					<th>Nb<br>services</th>
-					<th>Nb élèves<br>transportés</th>
-					<th>Réservée<br>Internes</th>
+					<th>Nb<br>services
+					</th>
+					<th>Nb élèves<br>transportés
+					</th>
+					<th>Réservée<br>Internes
+					</th>
 					<th>Ouverte</th>
 					<th>Sélect.</th>
 					<th></th>
@@ -122,7 +126,8 @@ echo $this->flashMessenger()->render('default');
             <?php foreach ($lignes as $ligne) :?>
             <?php
                 if (! is_null($this->effectifLignesServices)) {
-                    $nbServices = $this->effectifLignesServices->nbservices($ligne->ligneId);
+                    $nbServices = $this->effectifLignesServices->nbservices(
+                        $ligne->ligneId);
                 } else {
                     $nbServices = 0;
                 }
@@ -143,6 +148,7 @@ echo $this->flashMessenger()->render('default');
                  */
                 $hiddens = [
                     'id' => $ligne->millesime . '|' . $ligne->ligneId,
+                    'ligneId' => $ligne->ligneId,
                     'origine' => 'ligne-liste'
                 ];
                 $buttons = [
