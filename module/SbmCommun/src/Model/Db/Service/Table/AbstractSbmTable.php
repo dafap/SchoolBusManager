@@ -10,8 +10,8 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2019
- * @version 2019-2.5.0
+ * @date 26 mars 2020
+ * @version 200-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -329,7 +329,8 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
-    public function fetchAll($where = null, $order = null, $combination = PredicateSet::OP_AND)
+    public function fetchAll($where = null, $order = null,
+        $combination = PredicateSet::OP_AND)
     {
         if (! $this->table_gateway->isInitialized()) {
             $this->initialize();
@@ -495,20 +496,27 @@ abstract class AbstractSbmTable implements FactoryInterface
 
     /**
      * Mise à jour d'un enregistrement dans une table. Si l'enregistrement est absent on
-     * lance une exception ATTENTION !!! Cette méthode ne convient pas lorsqu'on change la
-     * pk (ou une partie de la pk lorsqu'elle est basée sur plusieurs colonnes)
+     * lance une exception ATTENTION !!! Si on change la pk (ou une partie de la pk
+     * lorsqu'elle est basée sur plusieurs colonnes) on doit passer d'abord l'ancien
+     * objet avant modification puis les nouvelles données.
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
+     * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $new_data
      *
      * @throws Exception\RuntimeException
      */
-    public function updateRecord(ObjectDataInterface $obj_data)
+    public function updateRecord(ObjectDataInterface $obj_data,
+        ObjectDataInterface $new_data = null)
     {
-        if (! is_null($this->hydrator)) {
-            $data = $this->hydrator->extract($obj_data);
-        } else {
-            $data = $obj_data->getArrayCopy();
+        if (!$new_data) {
+            $new_data = $obj_data;
         }
+        if (! is_null($this->hydrator)) {
+            $data = $this->hydrator->extract($new_data);
+        } else {
+            $data = $new_data->getArrayCopy();
+        }
+        // where est construit sur les anciennes données (ou pk inchangées)
         $id = $obj_data->getId();
         if ($this->getRecord($id)) {
             if (is_array($id)) {
