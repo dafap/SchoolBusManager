@@ -9,7 +9,7 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 use Zend\Db\Sql\Join;
@@ -221,7 +221,7 @@ return [
                 'table' => 'lignes',
                 'type' => 'table',
                 'alias' => 'lig',
-                'relation' => 'lig.ligneId=ser.ligneId',
+                'relation' => 'lig.millesime = ser.millesime AND lig.ligneId = ser.ligneId',
                 'fields' => [
                     [
                         'field' => 'operateur'
