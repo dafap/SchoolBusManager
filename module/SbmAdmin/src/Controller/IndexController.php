@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
@@ -83,7 +83,7 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -122,7 +122,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -172,7 +172,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->supprData($this->db_manager, $params,
+        $r = $this->supprData($params,
             function ($id, $tableLibelles) {
                 return [
                     'id' => implode('|', $id),
@@ -368,7 +368,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
         $table = $this->db_manager->get($params['data']['alias']);
-        $r = $this->addData($this->db_manager, $params, null,
+        $r = $this->addData($params, null,
             function ($args) use ($table, $form) {
                 $form->setValueOptions('niveau', $table::getNiveaux());
             });
@@ -397,7 +397,7 @@ class IndexController extends AbstractActionController
         $form = $this->form_manager->get(Form\Rpi::class);
         $form->setValueOptions('grille',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
-            ->getGrilles());
+                ->getGrilles());
         $params = [
             'data' => [
                 'table' => 'rpi',
@@ -412,7 +412,7 @@ class IndexController extends AbstractActionController
         $tRpiCommunes = $this->db_manager->get('Sbm\Db\Table\RpiCommunes');
 
         $tRpiEtablissements = $this->db_manager->get('Sbm\Db\Table\RpiEtablissements');
-        $r = $this->editData($this->db_manager, $params, null,
+        $r = $this->editData($params, null,
             function ($args) use ($form, $tRpiClasses, $tRpi, $tRpiCommunes,
             $tRpiEtablissements) {
                 $form->setValueOptions('niveau', $tRpi::getNiveaux());
@@ -481,7 +481,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->supprData($this->db_manager, $params,
+        $r = $this->supprData($params,
             function ($id, $tRpi) {
                 return [
                     'id' => $id,
@@ -595,7 +595,7 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -647,7 +647,7 @@ class IndexController extends AbstractActionController
         ];
         $oRequete = $this->db_manager->get('Sbm\Db\Query\SecteursScolairesClgPu');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $table) use ($oRequete) {
                     // ici $table n'est pas utilisée et est remplacée par $oRequete
                     return [
@@ -764,7 +764,7 @@ class IndexController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -813,7 +813,7 @@ class IndexController extends AbstractActionController
         ];
         $oRequete = $this->db_manager->get('Sbm\Db\Query\SimulationEtablissements');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $table) use ($oRequete) {
                     // ici $table n'est pas utilisée et est remplacée par $oRequete
                     return [
@@ -1047,7 +1047,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->supprData($this->db_manager, $params,
+        $r = $this->supprData($params,
             function ($id, $tUsers) {
                 return [
                     'id' => $id,

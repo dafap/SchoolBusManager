@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -133,7 +133,7 @@ class TransportController extends AbstractActionController
         ];
 
         try {
-            $r = $this->editData($this->db_manager, $params);
+            $r = $this->editData($params);
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
                 $this->flashMessenger()->addWarningMessage(
@@ -215,7 +215,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
         $vue_circuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
-        $r = $this->supprData($this->db_manager, $params,
+        $r = $this->supprData($params,
             function ($id, $tableCircuits) use ($vue_circuits) {
                 return [
                     'id' => $id,
@@ -282,7 +282,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->addData($this->db_manager, $params);
+            $r = $this->addData($params);
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
                 $this->flashMessenger()->addWarningMessage(
@@ -740,7 +740,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -798,7 +798,7 @@ class TransportController extends AbstractActionController
         ];
 
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableClasses) {
                     return [
                         'id' => $id,
@@ -862,7 +862,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -1053,7 +1053,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1111,7 +1111,7 @@ class TransportController extends AbstractActionController
         ];
 
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableCommunes) {
                     return [
                         'id' => $id,
@@ -1172,7 +1172,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -1393,7 +1393,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1451,7 +1451,7 @@ class TransportController extends AbstractActionController
         ];
         $vueEtablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableEtablissements) use ($vueEtablissement) {
                     return [
                         'id' => $id,
@@ -1520,7 +1520,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -2465,7 +2465,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, null, function () {
+        $r = $this->addData($params, null, function () {
         });
         switch ($r) {
             case $r instanceof Response:
@@ -2508,7 +2508,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -2560,7 +2560,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableLignes) {
                     return [
                         'id' => implode('|', $id),
@@ -2843,7 +2843,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -2885,7 +2885,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -2938,7 +2938,7 @@ class TransportController extends AbstractActionController
         ];
         $vueLots = $this->db_manager->get('Sbm\Db\Vue\Lots');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableLots) use ($vueLots) {
                     return [
                         'id' => $id,
@@ -3195,7 +3195,7 @@ class TransportController extends AbstractActionController
             [
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
-                    $args['where']),
+                    $args['where']->equalTo('millesime', Session::get('millesime'))),
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
@@ -3236,7 +3236,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -3314,7 +3314,7 @@ class TransportController extends AbstractActionController
         ];
         $vueServices = $this->db_manager->get('Sbm\Db\Vue\Services');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableServices) use ($vueServices) {
                     return [
                         'id' => $id,
@@ -3384,7 +3384,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -3707,7 +3707,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -3775,7 +3775,7 @@ class TransportController extends AbstractActionController
         ];
         $vueStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableStations) use ($vueStations) {
                     return [
                         'id' => $id,
@@ -4525,7 +4525,7 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -4583,7 +4583,7 @@ class TransportController extends AbstractActionController
         ];
         $vuetransporteurs = $this->db_manager->get('Sbm\Db\Vue\Transporteurs');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tabletransporteurs) use ($vuetransporteurs) {
                     return [
                         'id' => $id,
@@ -4647,7 +4647,7 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;

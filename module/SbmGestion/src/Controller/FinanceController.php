@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -434,7 +434,7 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
         $sessionNS = $this->getSessionNamespace();
-        $r = $this->editData($this->db_manager, $params,
+        $r = $this->editData($params,
             function ($post) use ($sessionNS) {
                 if (array_key_exists('responsable', $post)) {
                     $responsable = $post['responsable'];
@@ -1273,7 +1273,7 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1329,7 +1329,7 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableTarifs) {
                     return [
                         'id' => $id,
@@ -1396,7 +1396,7 @@ class FinanceController extends AbstractActionController
             // 'id' => 'tarifId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -1566,7 +1566,7 @@ class FinanceController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params);
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -1609,7 +1609,7 @@ class FinanceController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params);
+        $r = $this->editData($params);
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -1661,7 +1661,7 @@ class FinanceController extends AbstractActionController
         ];
         $vueorganismes = $this->db_manager->get('Sbm\Db\Vue\Organismes');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableorganismes) use ($vueorganismes) {
                     return [
                         'id' => $id,

@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 26 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -472,8 +472,6 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * des formulaires sont initialisés de manière automatique par la méthode setData() en
      * prenant la valeur en session.
      *
-     * @param
-     *            $db_manager
      * @param array $params
      *            Tableau associatif dont les clés principales sont 'form' et 'data'. La
      *            clé 'form' contient l'objet formulaire ; la clé 'data' est un tableau
@@ -489,7 +487,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *         'success'} ou un id, ou le résultat de la fonction $renvoyer (souvent une
      *         fonction anonyme)
      */
-    protected function addData($db_manager, $params, $renvoyer = null, $initform = null)
+    protected function addData($params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -509,10 +507,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 "Aucun enregistrement n'a été ajouté.");
             return 'warning';
         }
-        $table = $db_manager->get($params['data']['alias']);
+        $table = $this->db_manager->get($params['data']['alias']);
         $form = $params['form'];
         $form->setMaxLength(
-            $db_manager->getMaxLengthArray($params['data']['table'],
+            $this->db_manager->getMaxLengthArray($params['data']['table'],
                 $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
@@ -531,7 +529,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             }
         } else {
             $form->setData(
-                $db_manager->getColumnDefaults($params['data']['table'],
+                $this->db_manager->getColumnDefaults($params['data']['table'],
                     $params['data']['type']));
         }
         if (is_callable($renvoyer)) {
@@ -558,7 +556,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *         si c'est un post, ou un \SbmCommun\Model\Mvc\Controller\EditResponse
      *         contenant les données à renvoyer
      */
-    protected function editData($db_manager, $params, $renvoyer = null, $initform = null)
+    protected function editData($params, $renvoyer = null, $initform = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -600,11 +598,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 "L'enregistrement n'a pas été modifié.");
             return new EditResponse('warning', $args);
         }
-        $table = $db_manager->get($params['data']['alias']);
+        $table = $this->db_manager->get($params['data']['alias']);
 
         $form = $params['form'];
         $form->setMaxLength(
-            $db_manager->getMaxLengthArray($params['data']['table'],
+            $this->db_manager->getMaxLengthArray($params['data']['table'],
                 $params['data']['type']));
         if (is_callable($initform)) {
             $initform($args);
@@ -648,7 +646,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *         'success'} ou un id, ou le résultat de la fonction $renvoyer (souvent une
      *         fonction anonyme)
      */
-    protected function supprData($db_manager, $params, $renvoyer = null)
+    protected function supprData($params, $renvoyer = null)
     {
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -688,7 +686,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 }
             }
         }
-        $table = $db_manager->get($params['data']['alias']);
+        $table = $this->db_manager->get($params['data']['alias']);
         if (is_null($id) || ! $table->getObjData()->isValidId($id)) {
             $this->flashMessenger()->addErrorMessage("Action interdite.");
             return new EditResponse('error', $args);

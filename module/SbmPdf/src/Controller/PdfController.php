@@ -3,14 +3,14 @@
  * Controller principal du module SbmPdf
  *
  * Gestion des la création et de la modification des documents pdf
- * 
+ *
  * @project sbm
  * @package SbmPdf/Controller
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2018
- * @version 2019-2.5.0
+ * @date 26 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
 
@@ -88,8 +88,8 @@ class PdfController extends AbstractActionController
     }
 
     /**
-     * Affiche et traite le formulaire d'ajout d'un document.
-     * Le formulaire est initialisé par les valeurs par défaut.
+     * Affiche et traite le formulaire d'ajout d'un document. Le formulaire est initialisé
+     * par les valeurs par défaut.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -141,7 +141,8 @@ class PdfController extends AbstractActionController
                 }
                 $this->flashMessenger()->addSuccessMessage(
                     "Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
+                // création des sections dans doctables, de la fiche étiquette ou de la
+                // fiche texte
                 switch ($oData->disposition) {
                     case 'Tabulaire':
                         $tDoctables = $this->db_manager->get('Sbm\Db\System\DocTables');
@@ -218,10 +219,9 @@ class PdfController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->editData($this->db_manager, $params,
-            function ($post) {
-                return $post;
-            });
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        });
         if ($r instanceof Response) {
             return $r;
         } else {
@@ -248,10 +248,9 @@ class PdfController extends AbstractActionController
     }
 
     /**
-     * Affiche et traite le formulaire d'ajout d'un document.
-     *
-     * Le formulaire est initialisé par les valeurs du formulaire de la ligne cliquée (documentId
-     * en post au moment de l'appel).
+     * Affiche et traite le formulaire d'ajout d'un document. Le formulaire est initialisé
+     * par les valeurs du formulaire de la ligne cliquée (documentId en post au moment de
+     * l'appel).
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -303,7 +302,8 @@ class PdfController extends AbstractActionController
                 }
                 $this->flashMessenger()->addSuccessMessage(
                     "Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
+                // création des sections dans doctables, de la fiche étiquette ou de la
+                // fiche texte
                 switch ($oData->disposition) {
                     case 'Tabulaire':
                         $tDoctables = $this->db_manager->get('Sbm\Db\System\DocTables');
@@ -393,7 +393,7 @@ class PdfController extends AbstractActionController
         ];
 
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableClasses) {
                     return [
                         'id' => $id,
@@ -475,12 +475,9 @@ class PdfController extends AbstractActionController
     // ====================================================================================================================================
 
     /**
-     * Présente les 3 sections d'un tableau d'un document pdf
-     * Reçoit des données en post, dont les données obligatoires suivantes :
-     * - documentId
-     * - name
-     * - ordinal_table
-     * - recordSource
+     * Présente les 3 sections d'un tableau d'un document pdf Reçoit des données en post,
+     * dont les données obligatoires suivantes : - documentId - name - ordinal_table -
+     * recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
      */
@@ -512,13 +509,8 @@ class PdfController extends AbstractActionController
     }
 
     /**
-     *
-     * Reçoit des données en post, dont les données obligatoires suivantes :
-     * - doctableId
-     * - documentId
-     * - name
-     * - ordinal_table
-     * - recordSource
+     * Reçoit des données en post, dont les données obligatoires suivantes : - doctableId
+     * - documentId - name - ordinal_table - recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -586,11 +578,8 @@ class PdfController extends AbstractActionController
     // ===================================================================================================
 
     /**
-     * Reçoit par post les paramètres suivants :
-     * - documentId
-     * - name
-     * - ordinal_table
-     * - recordSource
+     * Reçoit par post les paramètres suivants : - documentId - name - ordinal_table -
+     * recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -639,10 +628,9 @@ class PdfController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->editData($this->db_manager, $params,
-            function ($post) {
-                return $post;
-            },
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        },
             function ($post) use ($pdf_manager, $form) {
                 $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                     ->setRecordSource($post['documentId']);
@@ -692,7 +680,7 @@ class PdfController extends AbstractActionController
             // 'id' => 'doccolumnId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, function ($post) {
+        $r = $this->addData($params, function ($post) {
             return $post;
         },
             function ($post) use ($pdf_manager, $form) {
@@ -747,7 +735,7 @@ class PdfController extends AbstractActionController
             // 'id' => 'doccolumnId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, function ($post) {
+        $r = $this->addData($params, function ($post) {
             return $post;
         },
             function ($post) use ($pdf_manager, $form) {
@@ -816,7 +804,7 @@ class PdfController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tDocColumns) {
                     return [
                         'id' => $id,
@@ -867,11 +855,8 @@ class PdfController extends AbstractActionController
 
     // ============================================================================================
     /**
-     * Reçoit par post les paramètres suivants :
-     * - disposition (uniquement au moment de l'appel)
-     * - documentId
-     * - name
-     * - recordSource
+     * Reçoit par post les paramètres suivants : - disposition (uniquement au moment de
+     * l'appel) - documentId - name - recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -888,10 +873,9 @@ class PdfController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->editData($this->db_manager, $params,
-            function ($post) {
-                return $post;
-            },
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        },
             function ($post) use ($form) {
                 $form->setData(
                     [
@@ -927,10 +911,7 @@ class PdfController extends AbstractActionController
     // ============================================================================================
 
     /**
-     * Reçoit par post les paramètres suivants :
-     * - documentId
-     * - name
-     * - recordSource
+     * Reçoit par post les paramètres suivants : - documentId - name - recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -979,10 +960,9 @@ class PdfController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->editData($this->db_manager, $params,
-            function ($post) {
-                return $post;
-            },
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        },
             function ($post) use ($pdf_manager, $form) {
                 $columns = $pdf_manager->get(\SbmPdf\Model\Columns::class)
                     ->setRecordSource($post['documentId']);
@@ -1032,7 +1012,7 @@ class PdfController extends AbstractActionController
             // 'id' => 'docfieldId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, function ($post) {
+        $r = $this->addData($params, function ($post) {
             return $post;
         },
             function ($post) use ($pdf_manager, $form) {
@@ -1087,7 +1067,7 @@ class PdfController extends AbstractActionController
             // 'id' => 'docfieldId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, function ($post) {
+        $r = $this->addData($params, function ($post) {
             return $post;
         },
             function ($post) use ($pdf_manager, $form) {
@@ -1157,7 +1137,7 @@ class PdfController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tDocFields) {
                     return [
                         'id' => $id,
@@ -1245,7 +1225,7 @@ class PdfController extends AbstractActionController
             // 'id' => 'docaffectationId'
             'form' => $form
         ];
-        $r = $this->addData($this->db_manager, $params, function ($post) {
+        $r = $this->addData($params, function ($post) {
             return $post;
         },
             function ($post) use ($pdf_manager, $form) {
@@ -1300,10 +1280,9 @@ class PdfController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->editData($this->db_manager, $params,
-            function ($post) {
-                return $post;
-            },
+        $r = $this->editData($params, function ($post) {
+            return $post;
+        },
             function ($post) use ($routes, $form) {
                 $form->setValueOptions('route', $routes);
             });
@@ -1356,7 +1335,7 @@ class PdfController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tDocAffectations) {
                     return [
                         'id' => $id,
