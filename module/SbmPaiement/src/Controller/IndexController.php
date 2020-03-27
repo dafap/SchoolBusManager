@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 27 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Controller;
 
@@ -84,8 +84,12 @@ class IndexController extends AbstractActionController
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         $args = $this->initListe($table->criteres());
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmpaiement');
+        }
         $order = $table->getIdName() . ' DESC';
         if (method_exists($table, 'adapteWhere')) {
             $table->adapteWhere($args['where']);

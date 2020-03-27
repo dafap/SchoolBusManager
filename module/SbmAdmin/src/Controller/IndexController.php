@@ -55,8 +55,12 @@ class IndexController extends AbstractActionController
             }, [
                 'nature'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmadmin');
+        }
 
         return new ViewModel(
             [
@@ -342,8 +346,12 @@ class IndexController extends AbstractActionController
                     ]
                 ]
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmadmin');
+        }
 
         return new ViewModel(
             [
@@ -558,8 +566,12 @@ class IndexController extends AbstractActionController
                 'etablissementId',
                 'communeId'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmadmin');
+        }
 
         return new ViewModel(
             [
@@ -727,8 +739,12 @@ class IndexController extends AbstractActionController
                 'origineId',
                 'suivantId'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmadmin');
+        }
 
         return new ViewModel(
             [
@@ -884,8 +900,12 @@ class IndexController extends AbstractActionController
         ], [
             'active' => 'Literal:active=0'
         ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmadmin');
+        }
 
         return new ViewModel(
             [

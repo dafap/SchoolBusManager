@@ -9,7 +9,7 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -73,8 +73,12 @@ class PdfController extends AbstractActionController
             ], null, [
                 'page_templateId'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmpdf');
+        }
 
         return new ViewModel(
             [

@@ -1228,8 +1228,12 @@ class FinanceController extends AbstractActionController
                 'reduit',
                 'mode'
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/finance');
+        }
         $effectifTarifs = $this->db_manager->get('Sbm\Db\Eleve\EffectifTarifs');
         $effectifTarifs->init();
         return new ViewModel(
@@ -1535,8 +1539,12 @@ class FinanceController extends AbstractActionController
     public function organismeListeAction()
     {
         $args = $this->initListe('organismes');
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/finance');
+        }
         $effectifOrganismes = $this->db_manager->get('Sbm\Db\Eleve\EffectifOrganismes');
         $effectifOrganismes->init();
         return new ViewModel(

@@ -56,47 +56,54 @@ class TransportController extends AbstractActionController
     {
         $args = $this->initListe('circuits',
             function ($config, $form, $args) {
-                $form->setValueOptions('stationId',
+                $form->remove('ligneId')
+                    ->remove('sens')
+                    ->remove('moment')
+                    ->remove('ordre')
+                    ->setValueOptions('stationId',
                     $config['db_manager']->get('Sbm\Db\Select\Stations')
                         ->ouvertes());
-                $form->setValueOptions('ligneId',
-                    $config['db_manager']->get('Sbm\Db\Select\Lignes')
-                        ->tout());
             }, [
                 'ligneId',
                 'sens',
                 'moment',
                 'ordre',
                 'horaireA'
-            ]);
+            ], null,
+            function ($post) {
+                return [
+                    'ligneId' => $post['ligneId'],
+                    'sens' => $post['sens'],
+                    'moment' => $post['moment'],
+                    'ordre' => $post['ordre']
+                ];
+            });
         if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
+        $args['post']['millesime'] = $millesime;
         $args['where']->equalTo('millesime', $millesime);
-        $auth = $this->authenticate->by('email');
-        // on cherche si ce millesime a déjà des circuits enregistrés
-        $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
-        $resultset = $tCircuits->fetchAll([
-            'millesime' => $millesime
-        ]);
-        $circuitsVides = $resultset->count() == 0;
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
         $effectifCircuits->init();
         return new ViewModel(
             [
-
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
                     $args['where']),
                 'effectifCircuits' => $effectifCircuits,
                 'page' => $this->params('page', 1),
+                'id' => $this->params('id', 1),
+                'pr' => $this->params('pr', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
                 'criteres_form' => $args['form'],
-                'admin' => $auth->getCategorieId() > 253,
                 'as' => $as,
-                'circuitsVides' => $circuitsVides
+                'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord(
+                    $args['post'])
             ]);
     }
 
@@ -105,6 +112,9 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('lignes');
         if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
@@ -167,6 +177,9 @@ class TransportController extends AbstractActionController
             });
         if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
@@ -179,10 +192,11 @@ class TransportController extends AbstractActionController
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
                     $args['where']),
                 'page' => $this->params('page', 1),
+                'id' => $this->params('id', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
                 'effectifServices' => $effectifServices,
-                'as' => $as,
+                'as' => $as
             ]);
     }
 
@@ -785,8 +799,12 @@ class TransportController extends AbstractActionController
     public function classeListeAction()
     {
         $args = $this->initListe('classes');
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         $effectifClasses = $this->db_manager->get('Sbm\Db\Eleve\EffectifClasses');
         $effectifClasses->init();
         return new ViewModel(
@@ -1103,8 +1121,12 @@ class TransportController extends AbstractActionController
         // die(var_dump(Session::get('post', 'vide', $this->getSessionNamespace())));
         $args = $this->initListe('communes');
 
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         $effectifCommunes = $this->db_manager->get('Sbm\Db\Eleve\EffectifCommunes');
         $effectifCommunes->init();
         return new ViewModel(
@@ -1432,8 +1454,12 @@ class TransportController extends AbstractActionController
             [
                 'localisation' => 'Literal:' . $this->critereLocalisation('etablissement')
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         $effectifEtablissements = $this->db_manager->get(
             'Sbm\Db\Eleve\EffectifEtablissements');
         $effectifEtablissements->init();
@@ -2491,6 +2517,9 @@ class TransportController extends AbstractActionController
             });
         if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
@@ -2892,8 +2921,12 @@ class TransportController extends AbstractActionController
                     ->setValueOptions('lot', $selectLots->lot())
                     ->setValueOptions('dateFin', $selectLots->dateFin());
             });
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         try {
             $effectifLots = $this->db_manager->get('Sbm\Db\Eleve\EffectifLots');
             $effectifLots->init();
@@ -3281,6 +3314,9 @@ class TransportController extends AbstractActionController
             ]);
         if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
@@ -3719,8 +3755,12 @@ class TransportController extends AbstractActionController
             ], [
                 'localisation' => 'Literal:' . $this->critereLocalisation('station')
             ]);
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStations');
         $effectifStations->init();
         return new ViewModel(
@@ -4591,8 +4631,12 @@ class TransportController extends AbstractActionController
     public function transporteurListeAction()
     {
         $args = $this->initListe('transporteurs');
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
         $effectifTransporteurs = $this->db_manager->get(
             'Sbm\Db\Eleve\EffectifTransporteurs');
         $effectifTransporteurs->init();

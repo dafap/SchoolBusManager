@@ -27,8 +27,12 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $args = $this->initListe('cleversms');
-        if ($args instanceof Response)
+        if ($args instanceof Response) {
             return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmservicesms');
+        }
 
         return new ViewModel(
             [
