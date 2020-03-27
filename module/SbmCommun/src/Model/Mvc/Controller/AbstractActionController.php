@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -377,7 +377,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * renvoie [paginator, form, retour] à partir des paramètres en session - si c'est une
      * redirection 303, renvoie [paginator, form, retour] à partir du post initial
      *
-     * @param string $formName
+     * @param string|array $formName
      *            string : Le nom du formulaire est le nom de la table (ou de la vue) sur
      *            laquelle il porte. array : Tableau de définition des éléments à créer
      *            dans le formulaire
