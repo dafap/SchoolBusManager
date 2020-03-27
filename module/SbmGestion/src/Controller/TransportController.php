@@ -87,7 +87,11 @@ class TransportController extends AbstractActionController
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
         $args['post']['millesime'] = $millesime;
-        $args['where']->equalTo('millesime', $millesime);
+        $args['where']->equalTo('millesime', $millesime)
+            ->equalTo('ligneId', $args['post']['ligneId'])
+            ->equalTo('sens', $args['post']['sens'])
+            ->equalTo('moment', $args['post']['moment'])
+            ->equalTo('ordre', $args['post']['ordre']);
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
         $effectifCircuits->init();
@@ -97,8 +101,6 @@ class TransportController extends AbstractActionController
                     $args['where']),
                 'effectifCircuits' => $effectifCircuits,
                 'page' => $this->params('page', 1),
-                'id' => $this->params('id', 1),
-                'pr' => $this->params('pr', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
                 'criteres_form' => $args['form'],
                 'as' => $as,
@@ -192,7 +194,6 @@ class TransportController extends AbstractActionController
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
                     $args['where']),
                 'page' => $this->params('page', 1),
-                'id' => $this->params('id', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
                 'effectifServices' => $effectifServices,
@@ -209,19 +210,10 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Circuit::class);
-        $form->setValueOptions('ligneId',
-            $this->db_manager->get('Sbm\Db\Select\Lignes')
-                ->tout())
+        $form->setValueOptions('semaine', Strategy\Semaine::getJours())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
-                ->ouvertes())
-            ->setValueOptions('semaine',
-            [ // pour le validator
-                1 => '',
-                2 => '',
-                4 => ''
-            ])
-            ->setHoraires($this->db_manager->get('Sbm\Horaires'));
+                ->ouvertes());
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -231,7 +223,6 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-
         try {
             $r = $this->editData($params);
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
@@ -259,26 +250,11 @@ class TransportController extends AbstractActionController
                     break;
                 default:
                     $circuitId = $r->getResult();
-                    $horaires = $this->db_manager->get('Sbm\Horaires')->getTableHoraires(
-                        $circuitId);
-                    $value_options = [];
-                    $nature = [];
-                    for ($i = 1; $i <= 3; $i ++) {
-                        if (array_key_exists("horaire$i", $horaires)) {
-                            $ligne = $horaires["horaire$i"];
-                            $value_options[1 << ($i - 1)] = $nature[$i] = $ligne['nature'];
-                        } else {
-                            $nature[$i] = '';
-                        }
-                    }
-                    $form->setValueOptions('semaine', $value_options);
                     return new ViewModel(
                         [
-
                             'form' => $form->prepare(),
                             'page' => $currentPage,
                             'circuitId' => $circuitId,
-                            'nature' => $nature
                         ]);
                     break;
             }

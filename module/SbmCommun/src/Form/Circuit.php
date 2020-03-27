@@ -8,7 +8,7 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -37,6 +37,22 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
             'name' => 'millesime',
             'type' => 'hidden'
         ]);
+        $this->add([
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'sens',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'moment',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'ordre',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
                 'name' => 'csrf',
@@ -44,113 +60,6 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 'options' => [
                     'csrf_options' => [
                         'timeout' => 180
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'ligneId',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'circuit-ligneId',
-                    'autofocus' => 'autofocus',
-                    'class' => 'sbm-width-55c'
-                ],
-                'options' => [
-                    'label' => 'Ligne',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Quelle ligne ?',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'sens',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'circuit-sens',
-                    'class' => 'sbm-width-10c',
-                    'autofocus' => 'autofocus'
-                ],
-                'options' => [
-                    'label' => 'Sens',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Quel sens ?',
-                    'value_options' => [
-                        '1' => 'Aller',
-                        '2' => 'Retour'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'moment',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'circuit-moment',
-                    'class' => 'sbm-cidth-10c',
-                    'autofocus' => 'autofocus'
-                ],
-                'options' => [
-                    'label' => 'Moment',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'A quel moment ?',
-                    'value_options' => [
-                        '1' => 'Mation',
-                        '2' => 'Midi',
-                        '3' => 'Soir'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'name' => 'ordre',
-                'type' => 'Zend\Form\Element\Select',
-                'attributes' => [
-                    'id' => 'circuit-ordre',
-                    'class' => 'sbm-width-10c',
-                    'autofocus' => 'autofocus'
-                ],
-                'options' => [
-                    'label' => 'Ordre',
-                    'label_attributes' => [
-                        'class' => 'sbm-label'
-                    ],
-                    'empty_option' => 'Numéro ?',
-                    'value_options' => [
-                        '1' => '1',
-                        '2' => '2',
-                        '3' => '3',
-                        '4' => '4',
-                        '5' => '5',
-                        '6' => '6',
-                        '7' => '7',
-                        '8' => '8',
-                        '9' => '9',
-                        '10' => '10',
-                        '11' => '11',
-                        '12' => '12',
-                        '13' => '13',
-                        '14' => '14',
-                        '15' => '15',
-                        '16' => '16'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
                     ]
                 ]
             ]);
@@ -565,8 +474,8 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         ];
         for ($i = 0; $i < count($elementsTime); $i ++) {
             if (! empty($data[$elementsTime[$i]])) {
-                $dte = new \DateTime($data[$elementsTime[$i]]);
-                $data[$elementsTime[$i]] = $dte->format('H:i');
+                $data[$elementsTime[$i]] = (new \DateTime($data[$elementsTime[$i]]))->format(
+                    'H:i');
             }
         }
         if (! array_key_exists('millesime', $data)) {
@@ -574,48 +483,5 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         }
         // appelle la méthode de ZF2
         parent::setData($data);
-    }
-
-    public function setValueOptions($element, array $values_options)
-    {
-        if ($element == 'semaine') {
-            $values_options_semaine = [];
-            foreach ($values_options as $key => $value) {
-                for ($i = 0; $i < $key; $i ++) {
-                    if ($key >> $i == 1) {
-                        $i ++;
-                        break;
-                    }
-                }
-                $values_options_semaine[] = [
-                    'value' => $key,
-                    'label' => $value,
-                    'attributes' => [
-                        'id' => 'jours-horaire' . $i
-                    ],
-                    'label_attributes' => [
-                        'id' => 'label-jours-' . $key
-                    ]
-                ];
-            }
-            $values_options = $values_options_semaine;
-        }
-        return parent::setValueOptions($element, $values_options);
-    }
-
-    public function setLabelElement(string $elementName, string $label)
-    {
-        if ($this->has($elementName)) {
-            $element = $this->get($elementName);
-            $element->setLabel($label);
-        } else {
-            $msg = "Il n'y a pas d'élément du nom de `$elementName` dans ce formulaire.";
-            throw new \LogicException($msg);
-        }
-    }
-
-    public function setHoraires($horaires)
-    {
-        $this->horaires = $horaires;
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Liste des circuits
  *
@@ -12,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -64,7 +63,14 @@ $url_modifhoraires = $this->url('sbmgestion/transport',
         'action' => 'circuit-modif-horaires',
         'page' => $this->page
     ]);
-$url_retour = $this->url('sbmgestion/transport');
+$url_ici = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-liste',
+        'page' => $this->page
+    ]);
+$route_ici = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-liste'
+]);
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms',
         [
@@ -72,30 +78,30 @@ if ($this->layout()->hassbmservicesms) {
             'page' => $this->page
         ]);
 }
-$hiddens = [];
-$menuImpression = $this->menuRapports(
-    $this->url('sbmgestion/transport', [
-        'action' => 'circuit-liste'
-    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = [
+    'ligneId' => $this->service->ligneId,
+    'sens' => $this->service->sens,
+    'moment' => $this->service->moment,
+    'ordre' => $this->service->ordre
+];
+$menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
+    $hiddens);
 $hiddens = $menuImpression['hiddens'];
 $actions = [
-    'retour' => [
-        'class' => 'fam-door-out',
-        'formaction' => $url_retour,
-        'title' => 'Retour'
+    'cancel' => [
+        'class' => 'fam-book',
+        'formaction' => $url_ici,
+        'title' => 'Retour aux services de la ligne ' . $this->ligneId
     ],
     'rapports' => $menuImpression['content'],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
-        'title' => 'Nouvel arrêt sur un circuit'
+        'title' => 'Nouvel arrêt sur ce circuit'
     ]
 ];
-/*
- * if (! $this->admin) { unset($actions['dupliquer']); }
- */
 ?>
-<h1>Liste des circuits</h1>
+<h1>Liste des points d'arrêt du circuit <?=$this->service->designation();?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
@@ -111,22 +117,21 @@ $actions = [
 		<table class="circuits">
 			<tbody>
 				<tr>
-					<th>Service</th>
 					<th>Arrêt</th>
 					<th>Emplacement</th>
-					<th>Mont.</th>
-					<th>Desc.</th>
-					<th class="horaire">H1</th>
-					<th class="horaire">H2</th>
-					<th class="horaire">H3</th>
+					<th title="N° de passage sur ce circuit">Pas.</th>
+					<th title="Montée">Mont.</th>
+					<th title="Decente">Desc.</th>
+					<th title="Correspondance">Cor.</th>
+					<th title="Visible">Vis.</th>
+					<th title="Ouverte">Ouv.</th>
+					<th class="horaire">Horaire</th>
+					<th class="jours" title="Jours de passage">Jours</th>
 					<th class="nbinscrits">Effectif</th>
 					<th class="selection">Sélect.</th>
 					<th></th>
 				</tr>
-        <?php
-
-        foreach ($circuits as $circuit) :
-            ?>
+        <?php foreach ($circuits as $circuit) :?>
         	<?php
             $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
             // construction des JS pour selection
@@ -148,7 +153,8 @@ $actions = [
                     'id' => $this->page
                 ]);
             $hiddens = [
-                'circuitId' => $circuit->circuitId
+                'circuitId' => $circuit->circuitId,
+                'origine' => $url_ici
             ];
             $buttons = [
                 'modifier' => [
@@ -180,39 +186,38 @@ $actions = [
                 "odd"
             ])->next();
             $horaires = [
-                'h1' => [
-                    $circuit->horaireA,
-                    $circuit->horaireD
-                ],
-                'h2' => [
-                ],
-                'h3' => [
-                ]
+                (new \DateTime($circuit->horaireA))->format('H:i'),
+                (new \DateTime($circuit->horaireD))->format('H:i')
             ];
-            for ($i = 1; $i <= 3; $i ++) {
-                $horaires["h$i"] = array_filter($horaires["h$i"],
-                    function ($v) {
-                        return $v != '00:00:00';
-                    });
+            $horaires = array_unique($horaires);
+            $horaire_title = ' title="Heure de passage"';
+            if (count($horaires) > 1){
+                $horaire_title =  " title=\"Heure d'arrivée\nHeure de départ\"";
             }
+            $oSemaine = new \SbmCommun\Model\Strategy\Semaine();
+            $jours = $oSemaine->renderSemaine($oSemaine->extract($circuit->semaine));
             ?>
             	<tr class="petit <?=$css;?>">
-					<td class="service">
-						<?=$this->escapeHtml($circuit->designationService());?></td>
 					<td class="station">
 						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="emplacement">
 						<?=$this->escapeHtml($circuit->emplacement);?></td>
+					<td class="centre passage">
+						<?=$circuit->passage;?></td>
 					<td class="centre montee">
 						<?=$circuit->montee ? 'X' : '';?></td>
 					<td class="centre descente">
 						<?=$circuit->descente ? 'X' : '';?></td>
-					<td class="horaire">
-						<?=implode('<br>', $horaires['h1']);?></td>
-					<td class="horaire">
-						<?=implode('<br>', $horaires['h2']);?></td>
-					<td class="horaire">
-						<?=implode('<br>', $horaires['h3']);?></td>
+					<td class="centre correspondance">
+						<?=$circuit->correspondance ? 'X' : '';?></td>
+					<td class="centre visible">
+						<?=$circuit->visible ? 'X' : '';?></td>
+					<td class="centre ouvert">
+						<?=$circuit->ouvert ? 'X' : '';?></td>
+					<td class="horaire" <?=$horaire_title;?>>
+						<?=implode('<br>', $horaires);?></td>
+					<td class="jours">
+						<?=$jours;?></td>
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
@@ -221,10 +226,7 @@ $actions = [
 					<td class="boutons">
             			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
 				</tr>
-        <?php
-        endforeach
-        ;
-        ?>
+        <?php endforeach;?>
         </tbody>
 		</table>
 	</div>

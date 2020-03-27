@@ -10,7 +10,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -35,15 +35,16 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
 
     public function getSemaine()
     {
-        return [
-            SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
-            SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
-            SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
-            SemaineStrategy::CODE_SEMAINE_JEUDI => 'jeu',
-            SemaineStrategy::CODE_SEMAINE_VENDREDI => 'ven',
-            SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
-            SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim'
-        ];
+        /*
+         * return [ SemaineStrategy::CODE_SEMAINE_LUNDI => 'lun',
+         * SemaineStrategy::CODE_SEMAINE_MARDI => 'mar',
+         * SemaineStrategy::CODE_SEMAINE_MERCREDI => 'mer',
+         * SemaineStrategy::CODE_SEMAINE_JEUDI => 'jeu',
+         * SemaineStrategy::CODE_SEMAINE_VENDREDI => 'ven',
+         * SemaineStrategy::CODE_SEMAINE_SAMEDI => 'sam',
+         * SemaineStrategy::CODE_SEMAINE_DIMANCHE => 'dim' ];
+         */
+        return \SbmCommun\Module::getSemaine();
     }
 
     public function setSelection(int $circuitId, $selection)
@@ -148,6 +149,21 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
             [
                 'semaine' => $this->strategies['semaine']->extract($semaine)
             ], $keys);
+    }
+
+    /**
+     * Renvoi un tableau des 2 horaires
+     *
+     * @param int $circuitId
+     * @return array
+     */
+    public function getHoraires(int $circuitId)
+    {
+        $ocircuit = $this->getRecord($circuitId);
+        return [
+            'horaireA' => $ocircuit->horaireA,
+            'horaireD' => $ocircuit->horaireD
+        ];
     }
 }
 

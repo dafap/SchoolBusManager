@@ -10,7 +10,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -70,33 +70,6 @@ class Services extends AbstractSbmTable implements EffectifInterface
                 'selection' => $selection
             ]);
         parent::saveRecord($oData);
-    }
-
-    /**
-     * Renvoi un tableau des 2 horaires
-     *
-     * @param int $millesime
-     * @param string $ligneId
-     * @param int $sens
-     * @param int $moment
-     * @param int $ordre
-     * @return array
-     */
-    public function getHoraires(int $millesime, string $ligneId, int $sens, int $moment,
-        int $ordre)
-    {
-        $oservice = $this->getRecord(
-            [
-                'millesime' => $millesime,
-                'ligneId' => $ligneId,
-                'sens' => $sens,
-                'moment' => $moment,
-                'ordre' => $ordre
-            ]);
-        return [
-            'horaireA' => $oservice->horaireA,
-            'horaireD' => $oservice->horaireD
-        ];
     }
 }
 

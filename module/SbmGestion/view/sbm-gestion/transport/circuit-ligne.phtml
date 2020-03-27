@@ -19,8 +19,7 @@ $lignes = $this->paginator->getCurrentItems();
 $url_retour = $this->url('sbmgestion/transport');
 $url_ouvrir = $this->url('sbmgestion/transport',
     [
-        'action' => 'circuit-service',
-        'id' => $this->page
+        'action' => 'circuit-service'
     ]);
 $url_rapports = $this->url('sbmgestion/transport',
     [
@@ -28,7 +27,11 @@ $url_rapports = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $route_ici = $this->url('sbmgestion/transport', [
-    'action' => 'ligne-liste'
+    'action' => 'circuit-ligne'
+]);
+$url_ici = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-ligne',
+    'page' => $this->page
 ]);
 $hiddens = [];
 $menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
@@ -93,7 +96,7 @@ $actions = [
     $hiddens = [
         'id' => $ligne->millesime . '|' . $ligne->ligneId,
         'ligneId' => $ligne->ligneId,
-        'origine' => 'circuit-ligne'
+        'origine' => $url_ici
     ];
     $buttons = [
         'ouvrir' => [

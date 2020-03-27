@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -113,15 +113,34 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'ordre',
-                'type' => 'SbmCommun\Form\Element\IsInt',
+                'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
                     'id' => 'service-ordre',
-                    'class' => 'sbm-width-5c'
+                    'class' => 'sbm-width-10c',
                 ],
                 'options' => [
                     'label' => 'Ordre',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Numéro ?',
+                    'value_options' => [
+                        '1' => '1',
+                        '2' => '2',
+                        '3' => '3',
+                        '4' => '4',
+                        '5' => '5',
+                        '6' => '6',
+                        '7' => '7',
+                        '8' => '8',
+                        '9' => '9',
+                        '10' => '10',
+                        '11' => '11',
+                        '12' => '12',
+                        '13' => '13',
+                        '14' => '14',
+                        '15' => '15',
+                        '16' => '16'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -390,15 +409,35 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'newordre',
-                'type' => 'SbmCommun\Form\Element\IsInt',
+                'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
                     'id' => 'service-ordre',
-                    'class' => 'sbm-width-5c'
+                    'class' => 'sbm-width-5c',
+                    'autofocus' => 'autofocus'
                 ],
                 'options' => [
                     'label' => 'Ordre',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Numéro ?',
+                    'value_options' => [
+                        '1' => '1',
+                        '2' => '2',
+                        '3' => '3',
+                        '4' => '4',
+                        '5' => '5',
+                        '6' => '6',
+                        '7' => '7',
+                        '8' => '8',
+                        '9' => '9',
+                        '10' => '10',
+                        '11' => '11',
+                        '12' => '12',
+                        '13' => '13',
+                        '14' => '14',
+                        '15' => '15',
+                        '16' => '16'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
