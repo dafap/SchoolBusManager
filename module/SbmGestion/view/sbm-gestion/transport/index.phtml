@@ -8,14 +8,14 @@
  * @filesource view/transport/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév.2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_transport_circuits = $this->url('sbmgestion/transport',
     [
-        'action' => 'circuit-liste',
+        'action' => 'circuit-ligne',
         'page' => $this->page
     ]);
 $url_transport_classes = $this->url('sbmgestion/transport',

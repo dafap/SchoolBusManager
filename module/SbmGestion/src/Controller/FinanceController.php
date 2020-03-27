@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1216,7 +1216,7 @@ class FinanceController extends AbstractActionController
     public function tarifListeAction()
     {
         $args = $this->initListe('tarifs',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $table = $config['db_manager']->get('Sbm\Db\Table\Tarifs');
                 $form->setValueOptions('grille', $table->getGrilles())
                     ->setValueOptions('mode', $table->getModes())

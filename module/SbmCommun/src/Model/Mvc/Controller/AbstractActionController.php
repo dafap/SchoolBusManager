@@ -383,20 +383,23 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            dans le formulaire
      * @param \Closure $initForm
      *            Fonction anonyme lancée juste après la création du formulaire avec comme
-     *            paramètres le service manager et le formulaire. Elle sert à initialiser
-     *            les champs du formulaire, en particulier les listes déroulantes.
+     *            paramètres la propriété config, le formulaire et les paramètres passés
+     *            en post. Elle sert à initialiser les champs du formulaire, en
+     *            particulier les listes déroulantes.
      * @param array $strictWhere
      *            Liste des champs du formulaire pour lesquels l'égalité est recherché.
      *            Pour les autres, on fait un Like
      * @param array $aliasWhere
      *            Liste des champs du formulaire qui sont des alias
+     * @param \Closure $getArgs
+     *            Fonction anomyme renvoyant un tableau extrait du tableau $args
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere() pour plus d'explications.
      * @return <b>\SbmCommun\Model\Mvc\Controller\Response | array</b> Il faut tester si
      *         c'est un Response. Sinon, le tableau est de la forme ['paginator' => ...,
-     *         'form' => ..., 'retour' => boolean]
+     *         'form' => ..., 'post' => [...], 'retour' => boolean]
      */
     protected function initListe($formName, $initForm = null, $strictWhere = [],
-        $aliasWhere = [])
+        $aliasWhere = [], $getArgs = null)
     {
         $retour = false;
         $prg = $this->prg();
@@ -439,10 +442,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
         // formulaire des critères de recherche
         $criteres_form = new CriteresForm($formName);
         if (! is_null($initForm)) {
-            $initForm($this->config, $criteres_form);
+            $initForm($this->config, $criteres_form, $args);
         }
         $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
@@ -461,6 +463,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
         return [
             'where' => $criteres_obj->getWhere($strictWhere, $aliasWhere),
             'form' => $criteres_form,
+            'post' => is_callable($getArgs) ? $getArgs($args) : [],
             'retour' => $retour
         ];
     }

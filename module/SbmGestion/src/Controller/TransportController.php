@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -55,7 +55,7 @@ class TransportController extends AbstractActionController
     public function circuitListeAction()
     {
         $args = $this->initListe('circuits',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $form->setValueOptions('stationId',
                     $config['db_manager']->get('Sbm\Db\Select\Stations')
                         ->ouvertes());
@@ -97,6 +97,92 @@ class TransportController extends AbstractActionController
                 'admin' => $auth->getCategorieId() > 253,
                 'as' => $as,
                 'circuitsVides' => $circuitsVides
+            ]);
+    }
+
+    public function circuitLigneAction()
+    {
+        $args = $this->initListe('lignes');
+        if ($args instanceof Response) {
+            return $args;
+        }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
+        $args['where']->equalTo('millesime', $millesime);
+        $auth = $this->authenticate->by('email');
+        // on cherche si ce millesime a déjà des circuits enregistrés
+        $tLignes = $this->db_manager->get('Sbm\Db\Table\Circuits');
+        $resultset = $tLignes->fetchAll([
+            'millesime' => $millesime
+        ]);
+        $lignesVides = $resultset->count() == 0;
+        // mise en place du calcul d'effectif
+        try {
+            $effectifLignes = $this->db_manager->get('Sbm\Db\Eleve\EffectifLignes');
+            $effectifLignes->init();
+        } catch (\Exception $e) {
+            $effectifLignes = null;
+        }
+        try {
+            $effectifLignesServices = $this->db_manager->get(
+                'Sbm\Db\Service\EffectifLignes');
+            $effectifLignesServices->init();
+        } catch (\Exception $e) {
+            $effectifLignesServices = null;
+        }
+        $critere_form = $args['form'];
+        $critere_form->remove('lotId');
+        return new ViewModel(
+            [
+
+                'paginator' => $this->db_manager->get('Sbm\Db\Table\Lignes')->paginator(
+                    $args['where'], [
+                        'actif DESC',
+                        'ligneId'
+                    ]),
+                'effectifLignesServices' => $effectifLignesServices,
+                'effectifLignes' => $effectifLignes,
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_lignes', 15),
+                'criteres_form' => $critere_form,
+                'admin' => $auth->getCategorieId() > 253,
+                'as' => $as,
+                'circuitsVides' => $lignesVides
+            ]);
+    }
+
+    public function circuitServiceAction()
+    {
+        $args = $this->initListe('services',
+            function ($config, $form, $args) {
+                $form->remove('ligneId');
+                $form->setValueOptions('transporteurId',
+                    $config['db_manager']->get('Sbm\Db\Select\Transporteurs'));
+            }, [
+                'transporteurId'
+            ], null, function ($post) {
+                return [
+                    'ligneId' => $post['ligneId']
+                ];
+            });
+        if ($args instanceof Response) {
+            return $args;
+        }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
+        $args['where']->equalTo('millesime', $millesime)->equalTo('ligneId',
+            $args['post']['ligneId']);
+        $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
+        $effectifServices->init();
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Services')->paginator(
+                    $args['where']),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
+                'criteres_form' => $args['form'],
+                'effectifServices' => $effectifServices,
+                'as' => $as,
             ]);
     }
 
@@ -2399,7 +2485,7 @@ class TransportController extends AbstractActionController
     public function ligneListeAction()
     {
         $args = $this->initListe('lignes',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $selectLots = $config['db_manager']->get('Sbm\Db\Select\Lots');
                 $form->setValueOptions('lotId', $selectLots->lotId());
             });
@@ -2800,7 +2886,7 @@ class TransportController extends AbstractActionController
     public function lotListeAction()
     {
         $args = $this->initListe('lots',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $selectLots = $config['db_manager']->get('Sbm\Db\Select\Lots');
                 $form->setValueOptions('marche', $selectLots->marche())
                     ->setValueOptions('lot', $selectLots->lot())
@@ -3184,7 +3270,7 @@ class TransportController extends AbstractActionController
     public function serviceListeAction()
     {
         $args = $this->initListe('services',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $form->setValueOptions('transporteurId',
                     $config['db_manager']->get('Sbm\Db\Select\Transporteurs'))
                     ->setValueOptions('ligneId',
@@ -3624,7 +3710,7 @@ class TransportController extends AbstractActionController
     public function stationListeAction()
     {
         $args = $this->initListe('stations',
-            function ($config, $form) {
+            function ($config, $formn, $args) {
                 $form->setValueOptions('communeId',
                     $config['db_manager']->get('Sbm\Db\Select\Communes')
                         ->desservies());

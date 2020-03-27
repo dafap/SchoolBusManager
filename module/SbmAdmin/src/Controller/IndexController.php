@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
@@ -48,7 +48,7 @@ class IndexController extends AbstractActionController
     public function libelleListeAction()
     {
         $args = $this->initListe('libelles',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $form->setValueOptions('nature',
                     $config['db_manager']->get('Sbm\Db\Select\Libelles')
                         ->nature());
@@ -547,7 +547,7 @@ class IndexController extends AbstractActionController
     public function secteurScolaireListeAction()
     {
         $args = $this->initListe('secteursScolairesClgPu',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $form->setValueOptions('etablissementId',
                     $config['db_manager']->get('Sbm\Db\Select\Etablissements')
                         ->clgPu())
@@ -716,7 +716,7 @@ class IndexController extends AbstractActionController
     public function simulationEtablissementListeAction()
     {
         $args = $this->initListe('SimulationEtablissements',
-            function ($config, $form) {
+            function ($config, $form, $args) {
                 $form->setValueOptions('communeetaborigineId',
                     $config['db_manager']->get('Sbm\Db\Select\Communes')
                         ->desservies())

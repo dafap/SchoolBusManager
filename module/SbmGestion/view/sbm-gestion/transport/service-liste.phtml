@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -97,13 +97,13 @@ $actions = [
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
-		<div class="flashMessenger float-right"><?php
-echo $this->flashMessenger()->render('success');
-echo $this->flashMessenger()->render('warning');
-echo $this->flashMessenger()->render('error');
-echo $this->flashMessenger()->render('info');
-echo $this->flashMessenger()->render('default');
-?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
 	</div>
 	<div id="liste-inner">
 		<table class="liste-inner services">
@@ -119,10 +119,7 @@ echo $this->flashMessenger()->render('default');
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
-            <?php
-
-            foreach ($services as $service) :
-                ?>
+            <?php foreach ($services as $service) :?>
             <?php
                 $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
                     $service->ligneId, $service->sens, $service->moment, $service->ordre);
