@@ -1,6 +1,6 @@
 <?php
 /**
- * Page de modification d'un circuit
+ * Page de modification d'un point d'arrêt sur un circuit
  *
  *
  * @project sbm
@@ -8,21 +8,17 @@
  * @filesource view/sbm-gestion/transport/circuit-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 27 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/transport', 'circuit-fiche.css');
 $this->jQuery();
-$this->themeJS('gestion-transport','circuit-edit.js');
-$this->themeJS('commun','checkallbox.js');
+$this->themeJS('commun', 'checkallbox.js');
 // initialisation du javascript
-$serviceId = $this->form->get('serviceId')->getValue();
-$stationId = $this->form->get('stationId')->getValue();
 $this->inlineScript()->captureStart();
 ?>
 multicheckbox_actions.init("wrapper-semaine");
-js_actions.initedit("<?=$serviceId;?>",<?=$stationId;?>);
 <?php
 $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
@@ -40,8 +36,15 @@ $actions = [
         'onclick' => sprintf($js, "'retour'")
     ]
 ];
+$idService = [
+    'ligneId' => $this->form->get('ligneId')->getValue(),
+    'sens' => $this->form->get('sens')->getValue(),
+    'moment' => $this->form->get('moment')->getValue(),
+    'ordre' => $this->form->get('ordre')->getValue()
+];
 ?>
-<h1>Modification d'un point d'arrêt sur un circuit</h1>
+<h1>Modification d'un point d'arrêt sur le circuit
+	<?=(new \SbmCommun\Model\Db\ObjectData\Circuit())->identifiantService($idService);?></h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
@@ -52,69 +55,48 @@ $actions = [
         <?= $this->form()->openTag($this->form);?>
         <?= $this->formHidden($this->form->get('circuitId'));?>
         <?= $this->formHidden($this->form->get('millesime'));?>
+        <?= $this->formHidden($this->form->get('ligneId'));?>
+        <?= $this->formHidden($this->form->get('sens'));?>
+        <?= $this->formHidden($this->form->get('moment'));?>
+        <?= $this->formHidden($this->form->get('ordre'));?>
         <?= $this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1">
-			<div id="wrapper-serviceId" class="row-inner serviceId">
-				<?= $this->formRow($this->form->get('serviceId')); ?></div>
 			<div id="wrapper-stationId" class="row-inner stationId">
 				<?= $this->formRow($this->form->get('stationId')); ?></div>
+			<div id="wrapper-emplacement" class="row-inner emplacement">
+				<?= $this->formRow($this->form->get('emplacement')); ?></div>
 			<div class="clearfix">
+				<div class="tiers float-left">
+					<div id="wrapper-montee" class="row-inner">
+						<?= $this->formRow($this->form->get('montee')); ?></div>
+					<div id="wrapper-descente" class="row-inner">
+						<?= $this->formRow($this->form->get('descente')); ?></div>
+					<div id="wrapper-correspondance" class="row-inner">
+						<?= $this->formRow($this->form->get('correspondance')); ?></div>
+				</div>
 				<div class="tiers float-left">
 					<div id="wrapper-passage" class="row-inner">
 						<?= $this->formRow($this->form->get('passage')); ?></div>
-					<div id="wrapper-montee" class="row-inner">
-						<?= $this->formRow($this->form->get('montee')); ?></div>
+					<div id="wrapper-visible" class="row-inner">
+						<?= $this->formRow($this->form->get('visible')); ?></div>
+					<div id="wrapper-ouvert" class="row-inner">
+						<?= $this->formRow($this->form->get('ouvert')); ?></div>
 				</div>
 				<div class="tiers float-left">
-					<div id="wrapper-distance" class="row-inner">
-						<?= $this->formRow($this->form->get('distance')); ?></div>
-					<div id="wrapper-descente" class="row-inner">
-						<?= $this->formRow($this->form->get('descente')); ?></div>
+					<div id="wrapper-horaireA" class="row-inner">
+						<?= $this->formRow($this->form->get('horaireA')); ?></div>
+					<div id="wrapper-horaireD" class="row-inner">
+						<?= $this->formRow($this->form->get('horaireD')); ?></div>
 				</div>
-				<div id="wrapper-semaine" class="row-inner tiers-droite float-left">
-					<?= $this->formRow($this->form->get('semaine')); ?></div>
 			</div>
-			<fieldset class="horaires">
-				<legend class="horaires">
-					<div class="legend">Jours</div>
-					<div class="legend">Horaires aller</div>
-					<div class="legend">Horaires retour</div>
-				</legend>
-				<div id="wrapper-horaires-content" class="content">
-				<?php for ($i=1; $i<=3; $i++):?>
-					<div id="horaire<?= $i;?>" class="ligne">
-						<div id="wrapper-nature-horaire<?= $i;?>" class="row-inner nature">
-							<?= $this->nature[$i]; ?></div>
-						<div id="wrapper-m<?= $i;?>" class="row-inner aller">
-							<?= $this->formRow($this->form->get("m$i")); ?></div>
-						<div id="wrapper-s<?= $i;?>" class="row-inner retour1">
-							<?= $this->formRow($this->form->get("s$i")); ?></div>
-						<div id="wrapper-z<?= $i;?>" class="row-inner retour2">
-							<?= $this->formRow($this->form->get("z$i")); ?></div>
-					</div>
-				<?php endfor;?>
-				</div>
-			</fieldset>
-			<div id="wrapper-emplacement" class="row-inner">
-				<?= $this->formRow($this->form->get('emplacement')); ?></div>
-			<div id="wrapper-typeArret" class="row-inner">
-				<?= $this->formRow($this->form->get('typeArret')); ?></div>
 			<div class="clearfix">
-				<div id="commentaire-aller" class="row-inner float-left cols-2">
-					<div id="wrapper-commentaire1" class="row-inner">
-						<?= $this->formRow($this->form->get('commentaire1')); ?></div>
-				</div>
-				<div id="copy" class="float-left left-10px">
-					<br /> <input id="comment-copy" type="button"
-						class="fam-comments-add"
-						title="Copier le commentaire aller comme commentaire retour">
-				</div>
-				<div id="commentaire-retour"
-					class="row-inner ajout float-left cols-2 left-10px">
-					<div id="wrapper-commentaire2" class="row-inner">
-						<?= $this->formRow($this->form->get('commentaire2')); ?></div>
-				</div>
+				<div id="wrapper-semaine" class="row-inner float-right">
+					<?= $this->formRow($this->form->get('semaine')); ?></div>
+				<div id="wrapper-typeArret" class="row-inner">
+					<?= $this->formRow($this->form->get('typeArret')); ?></div>
 			</div>
+			<div id="wrapper-commentaire1" class="row-inner">
+				<?= $this->formRow($this->form->get('commentaire1')); ?></div>
 			<div id="wrapper-buttons" class="row-inner">
 				<?= $this->formSubmit($this->form->get('submit'));?>
 				<?= $this->formSubmit($this->form->get('cancel'));?></div>

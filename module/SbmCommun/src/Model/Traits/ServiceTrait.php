@@ -8,7 +8,7 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 27 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -148,7 +148,7 @@ trait ServiceTrait
      */
     public function identifiantService(array $data)
     {
-        return sprintf('%s - %s - %s - Numéro %d', $data['ligneId'], self::getSens($data),
+        return sprintf('%s - %s - %s - N° %d', $data['ligneId'], self::getSens($data),
             self::getMoment($data), $data['ordre']);
     }
 

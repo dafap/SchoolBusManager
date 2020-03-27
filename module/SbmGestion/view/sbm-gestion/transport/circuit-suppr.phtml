@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/circuit-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2018
- * @version 2019-2.5.0
+ * @date 27 mars 2020
+ * @version 2020-2.6.0
  */
 ?>
 <h1>Suppression d'un circuit</h1>
@@ -17,7 +17,7 @@
 	<p>Vous avez demandé la suppression du circuit :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?= $this->escapeHtml($this->data->serviceId); ?></li>
+			<li><?= $this->escapeHtml($this->data->designationService()); ?></li>
 			<li><?= $this->escapeHtml($this->data->station . ' - ' . $this->data->communeStation); ?></li>
 			<li>Passage n° <?= $this->data->passage; ?></li>
 		</ul>

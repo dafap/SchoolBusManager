@@ -210,9 +210,8 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = $this->form_manager->get(Form\Circuit::class);
-        $form->setValueOptions('semaine', Strategy\Semaine::getJours())
-            ->setValueOptions('stationId',
-            $this->db_manager->get('Sbm\Db\Select\Stations')
+        $form->setValueOptions('semaine', Strategy\Semaine::getJours())->setValueOptions(
+            'stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->ouvertes());
         $params = [
             'data' => [
@@ -249,12 +248,10 @@ class TransportController extends AbstractActionController
                         ]);
                     break;
                 default:
-                    $circuitId = $r->getResult();
                     return new ViewModel(
                         [
                             'form' => $form->prepare(),
-                            'page' => $currentPage,
-                            'circuitId' => $circuitId,
+                            'page' => $currentPage
                         ]);
                     break;
             }
@@ -290,12 +287,10 @@ class TransportController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $vue_circuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
         $r = $this->supprData($params,
-            function ($id, $tableCircuits) use ($vue_circuits) {
+            function ($id, $tableCircuits) {
                 return [
-                    'id' => $id,
-                    'data' => $vue_circuits->getRecord($id)
+                    'id' => $id
                 ];
             });
         if ($r instanceof Response) {
@@ -314,10 +309,10 @@ class TransportController extends AbstractActionController
                 default:
                     return new ViewModel(
                         [
-
                             'form' => $form->prepare(),
                             'page' => $currentPage,
-                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'data' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord(
+                                StdLib::getParam('id', $r->getResult())),
                             'circuitId' => StdLib::getParam('id', $r->getResult())
                         ]);
                     break;
@@ -335,20 +330,9 @@ class TransportController extends AbstractActionController
         $currentPage = $this->params('page', 1);
         // $horaires = $this->db_manager->get('Sbm\Horaires');
         $form = $this->form_manager->get(Form\Circuit::class);
-        $form->setValueOptions('ligneId',
-            $this->db_manager->get('Sbm\Db\Select\Lignes')
-                ->tout())
-            ->setValueOptions('stationId',
-            $this->db_manager->get('Sbm\Db\Select\Stations')
-                ->ouvertes())
-            ->setValueOptions('semaine',
-            [ // pour le validator
-                1 => '',
-                2 => '',
-                4 => ''
-            ])
-            ->setHoraires($this->db_manager->get('Sbm\Horaires'));
-        ;
+        $form->setValueOptions('semaine', Strategy\Semaine::getJours())->setValueOptions(
+            'stationId', $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes());
         $params = [
             'data' => [
                 'table' => 'circuits',
@@ -358,7 +342,12 @@ class TransportController extends AbstractActionController
             'form' => $form
         ];
         try {
-            $r = $this->addData($params);
+            $r = $this->addData($params, null,
+                function ($post) use ($form) {
+                    if (! array_key_exists('submit', $post)) {
+                        $form->setData($post);
+                    }
+                });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             if (stripos($e->getMessage(), '23000 - 1062 - Duplicate entry') !== false) {
                 $this->flashMessenger()->addWarningMessage(
@@ -389,9 +378,7 @@ class TransportController extends AbstractActionController
                     [
 
                         'form' => $form->prepare(),
-                        'page' => $currentPage,
-                        'circuitId' => null,
-                        'horaires' => $this->db_manager->get('Sbm\Horaires')
+                        'page' => $currentPage
                     ]);
                 break;
         }

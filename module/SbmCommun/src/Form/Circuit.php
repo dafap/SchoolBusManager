@@ -174,7 +174,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 ],
                 'options' => [
                     'format' => 'H:i',
-                    'label' => '',
+                    'label' => 'Heure d\'arrivée',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -197,7 +197,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                 ],
                 'options' => [
                     'format' => 'H:i',
-                    'label' => '',
+                    'label' => 'Heure de départ',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -270,7 +270,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
-                    'label' => 'Point de correspondance',
+                    'label' => 'Pt de correspondance',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
@@ -300,15 +300,15 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'typeArret',
-                'type' => 'text',
+                'type' => 'textarea',
                 'attributes' => [
                     'id' => 'circuit-typeArret',
-                    'class' => 'sbm-width-55c'
+                    'class' => 'sbm-width-40c'
                 ],
                 'options' => [
                     'label' => 'Type d\'arrêt',
                     'label_attributes' => [
-                        'class' => 'sbm-label'
+                        'class' => 'sbm-label-top'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -324,7 +324,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
-                    'label' => 'Commentaire aller',
+                    'label' => 'Commentaire',
                     'label_attributes' => [
                         'class' => 'sbm-label-top'
                     ],
@@ -342,7 +342,7 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-40c'
                 ],
                 'options' => [
-                    'label' => 'Commentaire retour',
+                    'label' => 'Note',
                     'label_attributes' => [
                         'class' => 'sbm-label-top'
                     ],
@@ -450,8 +450,8 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ],
-            'commentaire' => [
-                'name' => 'commentaire',
+            'commentaire1' => [
+                'name' => 'commentaire1',
                 'required' => false,
                 'filters' => [
                     [
