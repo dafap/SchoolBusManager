@@ -8,7 +8,7 @@
  * @filesource table.etablissements-services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 fév. 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -22,7 +22,7 @@ return [
     'structure' => [
         'fields' => [
             'etablissementId' => 'char(8) NOT NULL',
-            'millesime' => 'int(11) NOT NULL',
+            'millesime' => 'int(4) NOT NULL',
             'ligneId' => 'varchar(5) NOT NULL',
             'sens' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
             'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',

@@ -9,7 +9,7 @@
  * @filesource table.staffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 fév. 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -22,7 +22,7 @@ return [
     'add_data' => false,
     'structure' => [
         'fields' => [
-            'millesime' => 'int(4) NOT NULL DEFAULT "0"',
+            'millesime' => 'int(4) NOT NULL',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
             'trajet' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"', // 1 pour responsable 1,
                                                             // 2 pour responsable 2

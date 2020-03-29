@@ -9,7 +9,7 @@
  * @filesource vue.eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use Zend\Db\Sql\Select;
@@ -108,7 +108,10 @@ return [
                         'field' => 'inscrit'
                     ],
                     [
-                        'field' => 'paiement'
+                        'field' => 'paiementR1'
+                    ],
+                    [
+                        'field' => 'paiementR2'
                     ],
                     [
                         'field' => 'district'
@@ -127,6 +130,9 @@ return [
                     ],
                     [
                         'field' => 'demandeR2'
+                    ],
+                    [
+                        'field' => 'dateDemandeR2'
                     ],
                     [
                         'field' => 'stationIdR1'
@@ -157,6 +163,30 @@ return [
                     ],
                     [
                         'field' => 'reductionR2'
+                    ],
+                    [
+                        'field' => 'joursTransportR1'
+                    ],
+                    [
+                        'field' => 'joursTransportR2'
+                    ],
+                    [
+                        'field' => 'dateEtiquetteR1'
+                    ],
+                    [
+                        'field' => 'dateEtiquetteR2'
+                    ],
+                    [
+                        'field' => 'dateCarteR1'
+                    ],
+                    [
+                        'field' => 'dateCarteR2'
+                    ],
+                    [
+                        'field' => 'duplicataR1'
+                    ],
+                    [
+                        'field' => 'duplicataR2'
                     ]
                 ]
             ],

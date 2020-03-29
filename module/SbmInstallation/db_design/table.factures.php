@@ -10,8 +10,8 @@
  * @filesource table.factures.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -25,7 +25,7 @@ return [
         'fields' => [
             'exercice' => 'int(11) NOT NULL',
             'numero' => 'int(11) NOT NULL',
-            'millesime' => 'int(11) NOT NULL',
+            'millesime' => 'int(4) NOT NULL',
             'responsableId' => 'int(11) NOT NULL',
             'date' => 'date NOT NULL',
             'montant' => 'decimal(11,2) NOT NULL',
