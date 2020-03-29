@@ -208,7 +208,8 @@ return [
                         'field' => 'alias_laposte',
                         'alias' => 'laposteElv'
                     ]
-                ]
+                ],
+                'jointure' => Select::JOIN_LEFT
             ],
             [
                 'table' => 'etablissements',
