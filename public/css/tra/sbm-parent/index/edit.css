@@ -103,7 +103,7 @@ label.sbm-multi-label.required:after, label.sbm-radio-label.required:after
 	height: 6rem;
 }
 
-#wrapper-regimeId legend:after, #wrapper-joursTransport legend:after,
+#wrapper-regimeId legend:after, #wrapper-joursTransportR1 legend:after,
 	#wrapper-ga legend:after, #wrapper-fa legend:after, #r2_demandeR2 legend:after
 	{
 	color: #f78042;

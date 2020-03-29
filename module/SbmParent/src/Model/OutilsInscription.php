@@ -9,8 +9,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
 
@@ -245,9 +245,11 @@ class OutilsInscription
                 'millesime' => $this->millesime,
                 'eleveId' => $eleveId,
                 'inscrit' => 1,
-                'paiement' => 0,
+                'paiementR1' => 0,
+                'paiementR2' => 0,
                 'internet' => 1,
-                'duplicata' => 0,
+                'duplicataR1' => 0,
+                'duplicataR2' => 0,
                 'anneeComplete' => 1,
                 'subventionR1' => 0,
                 'subventionR2' => 0,

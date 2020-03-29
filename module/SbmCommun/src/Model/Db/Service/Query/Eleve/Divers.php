@@ -10,7 +10,7 @@
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -60,9 +60,11 @@ class Divers extends AbstractQuery
                 'eleveId',
                 'inscrit',
                 'fa',
-                'paiement',
+                'paiementR1',
+                'paiementR2',
                 'gratuit',
-                'dateCarte',
+                'dateCarteR1',
+                'dateCarteR2',
                 'service1R1' => new Expression(
                     $this->getSqlSemaineLigneHoraireSens('ser1r1.semaine',
                         'ser1r1.ligneId', 'cir1r1.horaireA', 'ser1r1.sens')),

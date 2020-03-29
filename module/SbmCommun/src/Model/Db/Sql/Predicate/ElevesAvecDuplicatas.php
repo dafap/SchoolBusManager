@@ -7,8 +7,8 @@
  * @filesource ElevesAvecDuplicatas.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
@@ -25,7 +25,7 @@ class ElevesAvecDuplicatas extends AbstractElevesPredicate
             $prefixe = '';
         }
         return $this->literal($prefixe . 'inscrit = 1')
-            ->literal($prefixe . 'duplicata > 0')
+            ->literal($prefixe . 'duplicataR1 > 0')
             ->equalTo($prefixe . 'millesime', $this->millesime);
     }
 }

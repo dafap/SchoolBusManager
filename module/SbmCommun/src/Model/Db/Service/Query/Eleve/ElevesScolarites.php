@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -71,18 +71,23 @@ class ElevesScolarites extends AbstractQuery
                 'y' => 'y',
                 'distanceR1' => 'distanceR1',
                 'distanceR2' => 'distanceR2',
-                'dateEtiquette' => 'dateEtiquette',
-                'dateCarte' => 'dateCarte',
+                'dateEtiquetteR1' => 'dateEtiquetteR1',
+                'dateEtiquetteR2' => 'dateEtiquetteR2',
+                'dateCarteR1' => 'dateCarteR1',
+                'dateCarteR2' => 'dateCarteR2',
                 'inscrit' => 'inscrit',
                 'gratuit' => 'gratuit',
-                'paiement' => 'paiement',
-                'duplicata' => 'duplicata',
+                'paiementR1' => 'paiementR1',
+                'paiementR2' => 'paiementR2',
+                'duplicataR1' => 'duplicataR1',
+                'duplicataR2' => 'duplicataR2',
                 'fa' => 'fa',
                 'anneeComplete' => 'anneeComplete',
                 'subventionR1' => 'subventionR1',
                 'subventionR2' => 'subventionR2',
                 'demandeR1' => 'demandeR1',
                 'demandeR2' => 'demandeR2',
+                'dateDemandeR2'=>'dateDemandeR2',
                 'accordR1' => 'accordR1',
                 'accordR2' => 'accordR2',
                 'internet' => 'internet',
@@ -90,7 +95,8 @@ class ElevesScolarites extends AbstractQuery
                 'derogation' => 'derogation',
                 'dateDebut' => 'dateDebut',
                 'dateFin' => 'dateFin',
-                'joursTransport' => 'joursTransport',
+                'joursTransportR1' => 'joursTransportR1',
+                'joursTransportR2' => 'joursTransportR2',
                 'subventionTaux' => 'subventionTaux',
                 'grilleTarifR1' => 'grilleTarifR1',
                 'grilleCodeR1' => 'grilleTarifR1',
@@ -313,7 +319,7 @@ class ElevesScolarites extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId', [])
             ->columns([
-            'nbDuplicatas' => new Expression('sum(sco.duplicata)')
+            'nbDuplicatas' => new Expression('sum(sco.duplicataR1)')
         ]);
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)

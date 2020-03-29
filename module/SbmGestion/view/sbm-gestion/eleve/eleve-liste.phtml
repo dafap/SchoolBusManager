@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -362,8 +362,7 @@ $actions = [
                 $tr_css .= ' alert';
                 $afficheRouge = true;
             }
-            $inscrit = $eleve['paiement'];
-            $inscrit |= $eleve['fa'];
+            $inscrit = $eleve['paiementR1'];
             $inscrit |= $eleve['gratuit'] > 0;
             $inscrit |= ($eleve['demandeR1'] == 2 && $eleve['accordR1'] == 0 &&
                 $eleve['subventionR1'] == 1);
@@ -373,7 +372,7 @@ $actions = [
                 ->addPreinscrit(! $inscrit)
                 ->addSansAffectation($eleve['affecte'])
                 ->addSansPhoto($eleve['sansphoto'])
-                ->addSansCarte($eleve['dateCarte'] < $this->dateDebut)
+                ->addSansCarte($eleve['dateCarteR1'] < $this->dateDebut)
                 ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'],
                 $eleve['demandeR2'], $eleve['distanceR2']);
             $hiddens = [

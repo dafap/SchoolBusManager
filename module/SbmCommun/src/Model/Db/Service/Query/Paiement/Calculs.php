@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-4.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
@@ -194,7 +194,7 @@ class Calculs extends AbstractQuery
         $listeEleves = [];
         $nbDuplicatas = 0;
         foreach ($duplicatasParEleve as $row) {
-            $nbDuplicatas += $row['duplicata'];
+            $nbDuplicatas += $row['duplicataR1'];
             $listeEleves[$row['eleveId']] = [
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
@@ -203,8 +203,10 @@ class Calculs extends AbstractQuery
                 'reductionR1' => $row['reductionR1'],
                 'grilleCodeR2' => $row['grilleCodeR2'],
                 'reductionR2' => $row['reductionR2'],
-                'duplicata' => $row['duplicata'],
-                'paiement' => $row['paiement'],
+                'duplicataR1' => $row['duplicataR1'],
+                'duplicataR2' => $row['duplicataR2'],
+                'paiementR1' => $row['paiementR1'],
+                'paiementR2' => $row['paiementR2'],
                 'fa' => $row['fa'],
                 'gratuit' => $row['gratuit']
             ];
@@ -291,7 +293,7 @@ class Calculs extends AbstractQuery
             'quantite' => new Literal('count(*)')
         ])
             ->where($where)
-            ->group('grilleCode');
+            ->group('grilleCodeR1');
     }
 
     /**
@@ -326,19 +328,21 @@ class Calculs extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId',
             [
-                'duplicata',
+                'duplicataR1',
+                'duplicataR2',
                 'grilleTarifR1',
                 'grilleCodeR1' => 'grilleTarifR1',
                 'reductionR1',
                 'grilleCodeR2' => 'grilleTarifR2',
                 'reductionR2',
-                'paiement',
+                'paiementR1',
+                'paiementR2',
                 'fa',
                 'gratuit'
             ])
             ->where($predicate)
             ->order([
-            'paiement DESC',
+            'paiementR1 DESC',
             'nomSA',
             'prenomSA'
         ]);

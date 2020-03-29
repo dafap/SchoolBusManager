@@ -7,8 +7,8 @@
  * @filesource Criteres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
 
@@ -100,7 +100,7 @@ class Criteres extends SbmCommunCriteres
         if ($this->sanspreinscrits) {
             $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                ->literal('paiementR1 = 1')->or->literal(
                 'gratuit > 0')->unnest();
         } else {
             $where->literal('inscrit = 1');
@@ -209,7 +209,7 @@ class Criteres extends SbmCommunCriteres
         if ($this->sanspreinscrits) {
             $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+                ->literal('paiementR1 = 1')->or->literal(
                 'gratuit > 0')->unnest();
         } else {
             $where->literal('inscrit = 1');

@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -229,8 +229,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                 if (! $row['sansphoto']) {
                     unset($buttons['addphoto']);
                 }
-                $inscrit = $row['paiement'] == 1;
-                $inscrit |= $row['fa'] == 1;
+                $inscrit = $row['paiementR1'] == 1;
                 $inscrit |= $row['gratuit'] > 0;
                 $inscrit |= ($row['demandeR1'] == 2 && $row['accordR1'] == 0 &&
                     $row['subventionR1'] == 1);
@@ -240,7 +239,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                     ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
                     ->addSansPhoto($row['sansphoto'])
                     ->addEnAttente($row['enAttente'])
-                    ->addSansCarte($row['dateCarte'] < $this->dateDebut);
+                    ->addSansCarte($row['dateCarteR1'] < $this->dateDebut);
                 if ($row['enAttente']) {
                     unset($buttons['majNotification'], $buttons['addphoto'],
                         $buttons['duplicata']);

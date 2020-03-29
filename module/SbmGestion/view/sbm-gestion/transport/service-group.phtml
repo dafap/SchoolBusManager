@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 29 mars 2020
  * @version 2019-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -156,9 +156,9 @@ $oService = $this->service;
 			<?php
 foreach ($data as $row) :
     $this->pictogrammes('init')
-        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addPreinscrit($row['paiementR1'] == 0 && $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto'])
-        ->addSansCarte($row['dateCarte'] < $this->dateDebut);
+        ->addSansCarte($row['dateCarteR1'] < $this->dateDebut);
     $hiddens = [
         'eleveId' => $row['eleveId'],
         'info' => $row['nom'] . ' ' . $row['prenom'],

@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -479,7 +479,8 @@ class EleveController extends AbstractActionController
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
-            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('joursTransportR1', Semaine::getJours())
+            ->setValueOptions('joursTransportR2', Semaine::getJours())
             ->bind($tableScolarites->getObjData());
         if ($ispost) {
             // avant de valider, il faut donner les valeurs possibles pour classeId
@@ -684,9 +685,12 @@ class EleveController extends AbstractActionController
             'R1' => $odata1->subventionR1,
             'R2' => $odata1->subventionR2
         ];
+        // ATTENTION !
+        // L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
+        // payant. Le R2 ne compte pas pour ça.
         if ($odata1->inscrit) {
-            $inscrit = $odata1->paiement;
-            $inscrit |= $odata1->fa;
+            $inscrit = $odata1->paiementR1;
+            //$inscrit |= $odata1->fa; Ne pas prendre en compte dans Arlysère
             $inscrit |= $odata1->gratuit > 0;
             $inscrit |= ($odata1->demandeR1 == 2 && $odata1->accordR1 == 0 &&
                 $odata1->subventionR1 == 1);
@@ -709,13 +713,16 @@ class EleveController extends AbstractActionController
         }
         $historique['scolarite']['dateInscription'] = $odata1->dateInscription;
         $historique['scolarite']['dateModification'] = $odata1->dateModification;
-        $historique['scolarite']['dateCarte'] = $odata1->dateCarte;
+        $historique['scolarite']['dateDemandeR2'] = $odata1->dateDemandeR2;
+        $historique['scolarite']['dateCarteR1'] = $odata1->dateCarteR1;
+        $historique['scolarite']['dateCarteR2'] = $odata1->dateCarteR2;
         $historique['scolarite']['grilleTarifR1'] = $tTarifs->getGrille(
             $odata1->grilleTarifR1);
         $historique['scolarite']['reductionR1'] = $odata1->reductionR1;
         $historique['scolarite']['grilleCodeR2'] = $odata1->grilleTarifR2;
         $historique['scolarite']['reductionR2'] = $odata1->reductionR2;
-        $historique['scolarite']['duplicata'] = $odata1->duplicata;
+        $historique['scolarite']['duplicataR1'] = $odata1->duplicataR1;
+        $historique['scolarite']['duplicataR2'] = $odata1->duplicataR2;
         $historique['scolarite']['internet'] = $odata1->internet;
 
         $respSelect = $this->db_manager->get('Sbm\Db\Select\Responsables');
@@ -737,7 +744,8 @@ class EleveController extends AbstractActionController
             ->setValueOptions('responsable2Id', $respSelect)
             ->setValueOptions('etablissementId', $etabSelect)
             ->setValueOptions('classeId', $clasSelect)
-            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('joursTransportR1', Semaine::getJours())
+            ->setValueOptions('joursTransportR2', Semaine::getJours())
             ->setValueOptions('grilleTarifR1', $grilleTarifSelect)
             ->setValueOptions('grilleTarifR2', $grilleTarifSelect)
             ->setMaxLength($this->db_manager->getMaxLengthArray('eleves', 'table'));

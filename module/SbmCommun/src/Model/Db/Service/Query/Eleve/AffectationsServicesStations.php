@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -578,7 +578,8 @@ class AffectationsServicesStations extends AbstractQuery
         ], 'sco.eleveId=aff.eleveId AND sco.millesime=aff.millesime',
             [
                 'inscrit',
-                'paiement',
+                'paiementR1',
+                'paiementR2',
                 'fa',
                 'regimeId'
             ])

@@ -45,12 +45,12 @@
 	width: 140px;
 }
 
-#commun-col1 #wrapper-joursTransport label {
+#commun-col1 #wrapper-joursTransportR1 label {
 	width: 5em;
 	padding-left: 0;
 }
 
-#wrapper-joursTransport label:after {
+#wrapper-joursTransportR1 label:after {
 	content: none;
 }
 
@@ -136,7 +136,7 @@ div#wrapper-regime {
 	text-align: left;
 }
 
-#wrapper-regime legend:after, #wrapper-joursTransport legend:after,
+#wrapper-regime legend:after, #wrapper-joursTransportR1 legend:after,
 	#wrapper-demandeR1 legend:after {
 	color: #f78042;
 	content: '*';

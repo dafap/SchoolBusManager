@@ -9,8 +9,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
 
@@ -144,7 +144,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         // préparation des paramètres pour la méthode prepareAppel()
         $this->elevesIds = [];
         foreach ($this->facture->getResultats()->getListeEleves() as $eleveId => $row) {
-            if (! $row['paiement'] && ! $row['fa'] && ! $row['gratuit']) {
+            if (! $row['paiementR1'] && ! $row['gratuit']) {
                 $this->elevesIds[] = $eleveId;
             }
         }

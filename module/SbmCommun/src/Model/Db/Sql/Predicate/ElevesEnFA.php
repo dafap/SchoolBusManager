@@ -7,8 +7,8 @@
  * @filesource ElevesEnFA.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
@@ -26,7 +26,7 @@ class ElevesEnFA extends AbstractElevesPredicate
         }
         return $this->literal($prefixe . 'inscrit = 1')
             ->literal($prefixe . 'selection = 0')
-            ->literal($prefixe . 'paiement = 0')
+            ->literal($prefixe . 'paiementR1 = 0')
             ->literal($prefixe . 'fa = 1')
             ->literal($prefixe . 'gratuit <> 1')
             ->equalTo($prefixe . 'millesime', $this->millesime);

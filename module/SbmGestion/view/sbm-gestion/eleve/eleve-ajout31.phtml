@@ -11,7 +11,7 @@
  * - si oui, passage en mode modification FIN
  * - si non, création de la scolarite (31)
  * (22) : enregistre le formulaire (Form1) et récupère le eleveId puis création de la scolarité (31)
- * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, demandeR1, demandeR2, commentaire
+ * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransportR1, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
  *
@@ -20,7 +20,7 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -32,7 +32,7 @@ $this->themeJS('gestion-eleve', 'ajout31.js');
 $this->themeJS('commun', 'checkallbox.js');
 $this->inlineScript()->captureStart();
 ?>
-multicheckbox_actions.init("wrapper-joursTransport");
+multicheckbox_actions.init("wrapper-joursTransportR1");
 js_ajout31.init();
 <?php
 $this->inlineScript()->captureEnd();
@@ -102,8 +102,8 @@ $actions = [
 							<div class="label2">Sexe</div>
 							<?= $this->data['sexe'] == 1 ? 'masculin' : 'féminin';?></div>
 					</div>
-					<div id="wrapper-joursTransport" class="row-inner">
-						<?= $this->formRow($this->form->get('joursTransport'));?></div>
+					<div id="wrapper-joursTransportR1" class="row-inner">
+						<?= $this->formRow($this->form->get('joursTransportR1'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner">

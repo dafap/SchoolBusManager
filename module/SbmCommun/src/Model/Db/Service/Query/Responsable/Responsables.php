@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -80,16 +80,19 @@ class Responsables extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'com.communeId=res.communeId', [
-            'commune' => 'nom',
-            'lacommune' => 'alias',
-            'laposte' => 'alias_laposte'
-        ]);
+        ], 'com.communeId=res.communeId',
+            [
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
+            ]);
     }
 
     /**
      * Renvoie la liste des responsables avec le nombre d'élèves inscrits répondant au
-     * where passé en paramètre, dans l'ordre demandé
+     * where passé en paramètre, dans l'ordre demandé. ATTENTION ! L'élève est inscrit si
+     * paiementR1 == 1 car c'est le R1 qui inscrit l'élève en payant. Le R2 ne compte pas
+     * pour ça.
      *
      * @param Where $where
      * @param string $order
@@ -99,7 +102,7 @@ class Responsables extends AbstractQuery
     {
         $where->literal('inscrit = 1')
             ->nest()
-            ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')
+            ->literal('paiementR1 = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')
             ->unnest()
             ->equalTo('millesime', $this->millesime);
         $select = clone $this->select;
@@ -157,8 +160,7 @@ class Responsables extends AbstractQuery
      */
     public function paginatorResponsables($where, $order = null, $responsableId = null)
     {
-        return $this->paginator(
-            $this->selectResponsables($where, $order, $responsableId));
+        return $this->paginator($this->selectResponsables($where, $order, $responsableId));
     }
 
     /**
@@ -208,7 +210,7 @@ class Responsables extends AbstractQuery
         $select5->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId',
-            'duplicata'
+            'duplicataR1'
         ])
             ->where($avecDuplicatas());
 
@@ -248,7 +250,7 @@ class Responsables extends AbstractQuery
             'dup' => $select5
         ], 'ele.eleveId=dup.eleveId',
             [
-                'nbDuplicata' => new Expression('sum(dup.duplicata)')
+                'nbDuplicata' => new Expression('sum(dup.duplicataR1)')
             ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);

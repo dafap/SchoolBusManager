@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -504,19 +504,18 @@ class EleveGestionController extends AbstractActionController
                 ];
                 switch ($args['critere']) {
                     case 'inscrits':
-                        $expression[] = '(paiement = 1 OR fa = 1 OR gratuit > 0)';
+                        $expression[] = '(paiementR1 = 1 OR gratuit > 0)';
                         $where->equalTo('inscrit', 1)
                             ->nest()
-                            ->equalTo('paiement', 1)->or->equalTo('fa', 1)->or->greaterThan(
+                            ->equalTo('paiementR1', 1)->or->greaterThan(
                             'gratuit', 0)->unnest();
                         break;
                     case 'preinscrits':
                         $where1 = new Where();
-                        $where1->equalTo('paiement', 1)->or->equalTo('fa', 1)->or->greaterThan(
+                        $where1->equalTo('paiementR1', 1)->or->greaterThan(
                             'gratuit', 0);
                         $where->equalTo('inscrit', 1)->addPredicate(new Not($where1));
-                        $expression[] = 'paiement = 0';
-                        $expression[] = 'fa = 0';
+                        $expression[] = 'paiementR1 = 0';
                         $expression[] = 'gratuit = 0';
                         break;
                     default: // tous
@@ -525,13 +524,13 @@ class EleveGestionController extends AbstractActionController
                 switch ($args['selection']) {
                     case 'nouvelle':
                         $lastDateCarte = $this->db_manager->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
-                        $expression[] = "dateCarte = '$lastDateCarte'";
-                        $where->equalTo('dateCarte', $lastDateCarte);
+                        $expression[] = "dateCarteR1 = '$lastDateCarte'";
+                        $where->equalTo('dateCarteR1', $lastDateCarte);
                         break;
                     case 'reprise':
                         $dateReprise = $args['dateReprise'];
-                        $expression[] = "dateCarte = '$dateReprise'";
-                        $where->equalTo('dateCarte', $dateReprise);
+                        $expression[] = "dateCarteR1 = '$dateReprise'";
+                        $where->equalTo('dateCarteR1', $dateReprise);
                         break;
                     case 'selection':
                         // il s'agit ici de la colonne `selection` de la table `eleves`

@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -34,7 +34,8 @@ class Scolarites extends AbstractSbmTable
             'millesime',
             'eleveId'
         ];
-        $this->strategies['joursTransport'] = new SemaineStrategy();
+        $this->strategies['joursTransportR1'] = new SemaineStrategy();
+        $this->strategies['joursTransportR2'] = new SemaineStrategy();
     }
 
     /**
@@ -99,12 +100,15 @@ class Scolarites extends AbstractSbmTable
      *            Millésime sur lequel on travaille
      * @param array|int $aEleveId
      *            Tableau de eleveId à mettre à jour ou index eleveId à mettre à jour
+     * @param string $r
+     *            prend la valeur R1 ou R2
      * @param bool $paiement
      *            Indique s'il faut valider (true par défaut) ou invalider (false) le
      *            paiement
      * @return int Nombre de lignes mises à jour
      */
-    public function setPaiement($millesime, $aEleveId, $paiement = true)
+    public function setPaiement(int $millesime, $aEleveId, int $r = 1,
+        bool $paiement = true)
     {
         $where = new Where();
         if (empty($aEleveId)) {
@@ -116,7 +120,7 @@ class Scolarites extends AbstractSbmTable
         }
         $update = $this->table_gateway->getSql()->update();
         $update->set([
-            'paiement' => $paiement ? 1 : 0
+            'paiement' . $r => $paiement ? 1 : 0
         ])->where($where);
         return $this->table_gateway->updateWith($update);
     }
@@ -194,7 +198,7 @@ class Scolarites extends AbstractSbmTable
         $select = $this->table_gateway->getSql()
             ->select()
             ->columns([
-            'lastDateCarte' => new Expression('MAX(dateCarte)')
+            'lastDateCarte' => new Expression('MAX(dateCarteR1)')
         ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateCarte;
@@ -214,10 +218,10 @@ class Scolarites extends AbstractSbmTable
             'millesime' => $millesime,
             'eleveId' => $eleveId
         ]);
-        if ($cancel && $oData->duplicata > 0) {
-            $oData->duplicata --;
+        if ($cancel && $oData->duplicataR1 > 0) {
+            $oData->duplicataR1 --;
         } else {
-            $oData->duplicata ++;
+            $oData->duplicataR1 ++;
         }
         return parent::saveRecord($oData);
     }

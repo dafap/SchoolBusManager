@@ -200,7 +200,7 @@ class IndexController extends AbstractActionController
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
-            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('joursTransportR1', Semaine::getJours())
             ->setData([
             'responsable1Id' => $responsable->responsableId
         ]);
@@ -345,7 +345,7 @@ class IndexController extends AbstractActionController
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
-            ->setValueOptions('joursTransport', Semaine::getJours())
+            ->setValueOptions('joursTransportR1', Semaine::getJours())
             ->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->membres());
@@ -755,7 +755,7 @@ class IndexController extends AbstractActionController
             $form->setValueOptions('etablissementId',
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
                     ->visibles())
-                ->setValueOptions('joursTransport', Semaine::getJours())
+                ->setValueOptions('joursTransportR1', Semaine::getJours())
                 ->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->membres());

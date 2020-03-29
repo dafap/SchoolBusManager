@@ -7,7 +7,7 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -132,7 +132,7 @@ class CalculMontant extends AbstractQuery
             $detailDuplicatas = [];
             $nbDuplicatas = 0;
             foreach ($duplicatasParEleve as $row) {
-                $nbDuplicatas += $row['duplicata'];
+                $nbDuplicatas += $row['duplicataR1'];
                 $detailDuplicatas[$row['eleveId']] = [
                     'nom' => $row['nom'],
                     'prenom' => $row['prenom'],
@@ -141,7 +141,7 @@ class CalculMontant extends AbstractQuery
                     'reductionR1' => $row['reductionR1'],
                     'grilleCodeR2' => $row['grilleCodeR2'],
                     'reductionR2' => $row['reductionR2'],
-                    'duplicata' => $row['duplicata']
+                    'duplicataR1' => $row['duplicataR1']
                 ];
             }
             $montantDuplicatas = $tTarifs->getMontant($tTarifs->getDuplicataCodeGrille(),
@@ -186,7 +186,8 @@ class CalculMontant extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId',
             [
-                'duplicata',
+                'duplicataR1',
+                'duplicataR2',
                 'grilleTarifR1',
                 'grilleCodeR1' => 'grilleTarifR1',
                 'reductionR1',

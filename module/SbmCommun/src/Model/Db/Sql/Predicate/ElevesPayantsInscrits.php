@@ -8,8 +8,8 @@
  * @filesource ElevesPayantsInscrits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
 
@@ -18,6 +18,14 @@ use Zend\Db\Sql\Where;
 class ElevesPayantsInscrits extends AbstractElevesPredicate
 {
 
+    /**
+     * ATTENTION !
+     * L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
+     * payant. Le R2 ne compte pas pour ça.
+     *
+     * {@inheritDoc}
+     * @see \SbmCommun\Model\Db\Sql\Predicate\AbstractElevesPredicate::__invoke()
+     */
     public function __invoke(): Where
     {
         if ($this->alias) {
@@ -28,7 +36,7 @@ class ElevesPayantsInscrits extends AbstractElevesPredicate
         return $this->literal($prefixe . 'inscrit = 1')
             ->literal($prefixe . 'selection = 0')
             ->nest()
-            ->literal($prefixe . 'paiement = 1')->or->literal($prefixe . 'gratuit = 2')->or->literal(
+            ->literal($prefixe . 'paiementR1 = 1')->or->literal($prefixe . 'gratuit = 2')->or->literal(
             $prefixe . 'fa = 1')
             ->unnest()
             ->equalTo($prefixe . 'millesime', $this->millesime);

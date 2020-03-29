@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -97,12 +97,14 @@ class Eleves extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'paiement',
+                'paiementR1',
+                'paiementR2',
                 'inscrit',
                 'fa',
                 'gratuit',
                 'demandeR1',
                 'demandeR2',
+                'dateDemandeR2',
                 'accordR1',
                 'accordR2',
                 'subventionR1',
@@ -113,7 +115,8 @@ class Eleves extends AbstractQuery
                 'grilleCodeR2' => 'grilleTarifR2',
                 'reductionR2',
                 'enAttente' => 'selection',
-                'dateCarte'
+                'dateCarteR1',
+                'dateCarteR2'
             ], Select::JOIN_LEFT)
             ->join(
             [

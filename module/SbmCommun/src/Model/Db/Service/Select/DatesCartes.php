@@ -8,8 +8,8 @@
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai. 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -60,21 +60,21 @@ class DatesCartes implements FactoryInterface
     public function cartesPapier()
     {
         $where = new Where();
-        $where->greaterThanOrEqualTo('dateCarte', $this->dateDebut);
+        $where->greaterThanOrEqualTo('dateCarteR1', $this->dateDebut);
         $sql = new Sql($this->db_manager->getDbAdapter());
         $select = $sql->select($this->db_manager->getCanonicName('scolarites', 'table'));
         $select->columns([
-            'dateCarte'
+            'dateCarteR1'
         ])
-            ->order('dateCarte Desc')
+            ->order('dateCarteR1 Desc')
             ->quantifier($select::QUANTIFIER_DISTINCT)
             ->where($where);
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$row['dateCarte']] = DateLib::formatDateTimeFromMysql(
-                $row['dateCarte']);
+            $array[$row['dateCarteR1']] = DateLib::formatDateTimeFromMysql(
+                $row['dateCarteR1']);
         }
         return $array;
     }

@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -55,7 +55,7 @@ $this->themeJS('gestion-eleve', 'edit.js');
 $this->themeJS('commun', 'checkallbox.js');
 $this->headScript()->captureStart();
 ?>
-multicheckbox_actions.init("wrapper-joursTransport");
+multicheckbox_actions.init("wrapper-joursTransportR1");
 <?php
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
@@ -136,8 +136,8 @@ $actions = [
 						<?= $this->formRow($this->form->get('sexe'));?>
 					</div>
 					</div>
-					<div id="wrapper-joursTransport" class="row-inner edit">
-						<?= $this->formRow($this->form->get('joursTransport'));?></div>
+					<div id="wrapper-joursTransportR1" class="row-inner edit">
+						<?= $this->formRow($this->form->get('joursTransportR1'));?></div>
 				</div>
 				<div id="commun-col2" class="float-left left-10px">
 					<div id="wrapper-etablissementId" class="row-inner edit">
@@ -377,7 +377,7 @@ $actions = [
 									<?= formatDate($this->historique['scolarite']['dateModification']);?></div>
 							<div id="#scolarite-dateCarte">
 								<div class="eleve-tabs-3-col-1-label">Date du lot de carte</div>
-									<?= formatDate($this->historique['scolarite']['dateCarte']);?></div>
+									<?= formatDate($this->historique['scolarite']['dateCarteR1']);?></div>
 						</div>
 						<div id="tabs-3-col2" class="float-left left-10px">
 							<h3>Participation familiale</h3>

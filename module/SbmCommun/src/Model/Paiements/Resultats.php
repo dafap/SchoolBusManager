@@ -9,7 +9,7 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Paiements;
@@ -64,8 +64,8 @@ class Resultats
         'grilleTarifR1',
         'grilleCodeR1',
         'reductionR1',
-        'duplicata',
-        'paiement'
+        'duplicataR1',
+        'paiementR1'
     ];
 
     /**
@@ -256,7 +256,7 @@ class Resultats
      * Cette liste est composée d'enregistrements indexés par 'eleveId' et présentant les
      * clés suivantes : <ul><li>nom</li> <li>prenom</li> <li>grilleTarifR1</li>
      * <li>grilleCodeR1</li> <li>reductionR1</li> <li>grilleCodeR2</li>
-     * <li>reductionR2</li> <li>duplicata</li> <li>paiement</li></ul>
+     * <li>reductionR2</li> <li>duplicataR1</li> <li>paiementR1</li></ul>
      *
      * @param string $nature
      *            'tous' ou 'liste'
@@ -510,7 +510,7 @@ class Resultats
             $this->getMontantDuplicatas(), $this->getMontantTotal());
         foreach ($this->getListeEleves() as $key => $value) {
             $tmp .= sprintf("%011d%02d%03d%d%d", $key, $value['grilleCode'],
-                $value['duplicata'], $value['fa'], $value['gratuit']);
+                $value['duplicataR1'], $value['fa'], $value['gratuit']);
         }
         foreach ($this->getAbonnementsDetail() as $key => $value) {
             $tmp .= sprintf("%02d%02d%.2f", $key, $value['quantite'], $value['montant']);
@@ -519,7 +519,7 @@ class Resultats
     }
 
     /**
-     * Deux résultats sont égaux s'ils ont les mêmes éléments de facturation (duplicata,
+     * Deux résultats sont égaux s'ils ont les mêmes éléments de facturation (duplicataR1,
      * liste d'élèves, abonnements). Il n'est pas tenu compte des paiements.
      *
      * @param Resultats $r
@@ -545,7 +545,7 @@ class Resultats
         if (array_keys($this->getListeEleves()) == array_keys($listeEleves)) {
             foreach ($this->getListeEleves() as $eleveId => $detail) {
                 $other = $listeEleves[$eleveId];
-                unset($detail['paiement'], $other['paiement']);
+                unset($detail['paiementR1'], $other['paiementR1']);
                 if ($other != $detail) {
                     return false;
                 }

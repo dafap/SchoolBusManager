@@ -8,7 +8,7 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -57,7 +57,9 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves inscrits par millesime
+     * Renvoie un tableau statistiques des élèves inscrits par millesime. ATTENTION !
+     * L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
+     * payant. Le R2 ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -71,7 +73,7 @@ class Statistiques extends AbstractQuery
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+            ->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -92,7 +94,10 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves préinscrits par millesime
+     * Renvoie un tableau statistiques des élèves préinscrits par millesime. ATTENTION !
+     * L'élève est inscrit si paiementR1 == 0 car c'est le R1 qui inscrit l'élève en
+     * payant. Le R2 ne compte pas pour ça.
+     *
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -105,7 +110,7 @@ class Statistiques extends AbstractQuery
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
-            ->literal('paiement = 0')
+            ->literal('paiementR1 = 0')
             ->literal('fa = 0')
             ->literal('gratuit = 0');
         if (isset($millesime)) {
@@ -162,7 +167,9 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves rayés par millesime
+     * Renvoie un tableau statistiques des élèves rayés par millesime. ATTENTION ! L'élève
+     * est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en payant. Le R2
+     * ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -178,11 +185,11 @@ class Statistiques extends AbstractQuery
         $where = new Where();
         $where->literal('inscrit = 0')->literal('selection = 0');
         if ($inscrits) {
-            $where->nest()->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+            $where->nest()->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal(
                 'gratuit > 0')->unnest();
         } else {
             $where1 = new Where();
-            $where1->literal('paiement = 1')->or->literal('fa = 1')->or->literal(
+            $where1->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal(
                 'gratuit > 0');
             $where->addPredicate(new Not($where1));
         }
@@ -206,7 +213,9 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves en garde alternée par millesime
+     * Renvoie un tableau statistiques des élèves en garde alternée par millesime.
+     * ATTENTION ! L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit
+     * l'élève en payant. Le R2 ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -220,7 +229,7 @@ class Statistiques extends AbstractQuery
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
+            ->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')
             ->unnest()
             ->isNotNull('responsable2Id');
         if (isset($millesime)) {
@@ -249,7 +258,9 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves inscrits par millesime et etablissement
+     * Renvoie un tableau statistiques des élèves inscrits par millesime et etablissement.
+     * ATTENTION ! L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit
+     * l'élève en payant. Le R2 ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -263,7 +274,7 @@ class Statistiques extends AbstractQuery
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+            ->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
@@ -299,7 +310,9 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves inscrits par millesime et classe
+     * Renvoie un tableau statistiques des élèves inscrits par millesime et classe.
+     * ATTENTION ! L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit
+     * l'élève en payant. Le R2 ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
@@ -313,7 +326,7 @@ class Statistiques extends AbstractQuery
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
             ->nest()
-            ->literal('paiement = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
+            ->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }

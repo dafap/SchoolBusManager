@@ -1,18 +1,18 @@
 <?php
 /**
- * Listener de l'évènement de paiement : 
+ * Listener de l'évènement de paiement :
  * - scolariteOK
  *
- * Indication de paiement dans la table scolarites
+ * Indication de paiement dans la table scolarites sur le champ paiementR1
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmPaiement/Listener
  * @filesource ScolariteOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 fév. 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Listener;
 
@@ -67,7 +67,7 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
     public function onScolariteOK(Event $e)
     {
         $params = $e->getParams();
-        // indicateur utiliser pour la mise à jour du champ `paiement` de la table
+        // indicateur utiliser pour la mise à jour du champ `paiementR1` de la table
         // `scolarites`
         $indicateur = $params['type'] == 'CREDIT' ? 0 : 1;
 
@@ -79,7 +79,7 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
                     [
                         'millesime' => $params['millesime'],
                         'eleveId' => $eleveId,
-                        'paiement' => $indicateur
+                        'paiementR1' => $indicateur
                     ]);
                 $table_scolarites->updateRecord($objectData_scolarite);
             } catch (\Exception $e) {

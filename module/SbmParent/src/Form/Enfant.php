@@ -346,9 +346,9 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
         $this->add(
             [
                 'type' => 'Zend\Form\Element\MultiCheckbox',
-                'name' => 'joursTransport',
+                'name' => 'joursTransportR1',
                 'attributes' => [
-                    'id' => 'enfant_joursTransport',
+                    'id' => 'enfant_joursTransportR1',
                     'tabindex' => 51,
                     'class' => 'sbmparent-enfant'
                 ],
@@ -554,8 +554,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'communeId',
                 'required' => false
             ],
-            'joursTransport' => [
-                'name' => 'joursTransport',
+            'joursTransportR1' => [
+                'name' => 'joursTransportR1',
                 'required' => true
             ],
             'demandeR2' => [
@@ -643,7 +643,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
     }
 
     /**
-     * Traitement de l'élément 'joursTransport' dans les données reçues avant de charger
+     * Traitement de l'élément 'joursTransportR1' dans les données reçues avant de charger
      * le formulaire (non-PHPdoc)
      *
      * @see \Zend\Form\Form::setData()
@@ -651,10 +651,10 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
     public function setData($data)
     {
         if ((is_array($data) || $data instanceof \ArrayObject) &&
-            array_key_exists('joursTransport', $data) &&
-            ! is_array($data['joursTransport'])) {
+            array_key_exists('joursTransportR1', $data) &&
+            ! is_array($data['joursTransportR1'])) {
             $strategie = new Semaine();
-            $data['joursTransport'] = $strategie->hydrate($data['joursTransport']);
+            $data['joursTransportR1'] = $strategie->hydrate($data['joursTransportR1']);
         }
         return parent::setData($data);
     }

@@ -1,15 +1,15 @@
 <?php
 /**
  * Méthodes pour gérer les cartes
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmGestion/Model/Cartes
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 fév. 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
 
@@ -62,7 +62,7 @@ class Cartes
     }
 
     /**
-     * Rechercher les eleveId à marquer Marquer les dateCarte dans scolarites pour les
+     * Rechercher les eleveId à marquer Marquer les dateCarteR1 dans scolarites pour les
      * eleveId trouvés
      *
      * @param int $millesime
@@ -75,11 +75,11 @@ class Cartes
         $now = DateLib::nowToMysql();
         $where = new Where();
         $where->expression('millesime = ?', $millesime)
-            ->lessThan('dateCarte', $dateDebut)
+            ->lessThan('dateCarteR1', $dateDebut)
             ->in('eleveId', $this->selectNouveauLot($millesime, $natureCarte));
 
         return $this->tScolarites->getTableGateway()->update([
-            'dateCarte' => $now
+            'dateCarteR1' => $now
         ], $where);
     }
 

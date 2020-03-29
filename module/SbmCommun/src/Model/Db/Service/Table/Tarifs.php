@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -16,6 +16,7 @@ namespace SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Arlysere\Tarification\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 
 class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifInterface
 {
@@ -61,10 +62,11 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Tarifs';
         $this->id_name = 'tarifId';
         $this->strategies = [
-            //'duplicata' => new TarifAttributsStrategy($this->duplicatas,
-            //    $this->duplicata_inconnu),
+            // 'duplicata' => new TarifAttributsStrategy($this->duplicatas,
+            // $this->duplicata_inconnu),
             'grille' => new TarifAttributsStrategy($this->grilles, $this->grille_inconnu),
-            //'reduit' => new TarifAttributsStrategy($this->reduits, $this->reduit_inconnu),
+            // 'reduit' => new TarifAttributsStrategy($this->reduits,
+            // $this->reduit_inconnu),
             'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
         ];
     }
@@ -82,7 +84,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     public function getGrilles()
     {
-        $array= $this->grilles;
+        $array = $this->grilles;
         unset($array[self::DUPLICATA]);
         return $array;
     }
@@ -108,7 +110,8 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     // ------------- recherche de données -----------------
 
     /**
-     * Renvoie le montant d'un tarif connaissant la grille et la quantité
+     * Renvoie le montant d'un tarif connaissant la grille et la quantité NE CONVIENT PAS
+     * POUR ARLYSERE
      *
      * @param int $grille
      * @param int $quantite
@@ -117,22 +120,28 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
      */
     public function getMontant(int $grille, int $quantite = 1)
     {
-        if ($quantite >= 1) {
-            $where = new Where();
-            $where->equalTo('grille', $grille)->lessThanOrEqualTo('seuil', $quantite);
-            $resultset = $this->fetchAll($where, 'seuil DESC');
-            if ($resultset->count()) {
-                $row = $resultset->current();
-                // selon que la strategy est appliquée ou non
-                if ($row->mode == self::DEGRESSIF ||
-                    $row->mode == $this->modes[self::DEGRESSIF]) {
-                    return $row->montant;
-                } else {
-                    return $row->montant * $quantite;
-                }
-            }
-        }
         return 0.0;
+    }
+
+    /**
+     * SELECT grille, reduit, max(montant) AS m FROM `sbm_t_tarifs` WHERE duplicata=false
+     * GROUP BY grille, reduit ORDER BY m DESC
+     */
+    public function getOrdreGrilles()
+    {
+        $select = $this->table_gateway->getSql()
+            ->select()
+            ->columns([
+            'grille',
+            'reduit'
+        ])
+            ->where('duplicata = 0')
+            ->group([
+            'grille',
+            'reduit'
+        ])
+        ->order(new Expression('MAX(montant) DESC'));
+        return $this->table_gateway->selectWith($select);
     }
 
     /**

@@ -67,7 +67,7 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
         ], 'ele.eleveId = sco.eleveId', [
             'grilleTarifR1',
             'reductionR1',
-            'duplicata'
+            'duplicataR1'
         ])
             ->where($conditions())
             ->order([
@@ -79,9 +79,10 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
                 ->getStrategie('grille'));
         $result = [];
         foreach ($this->renderResult($select) as $row) {
-            $result[$row['eleveId']] = sprintf('%s - %s %s (%d duplicatas)',
+            $result[$row['eleveId']] = sprintf('%s - %s %s (%d duplicata%s)',
                 $row['nomprenom'], $row['grilleTarifR1'],
-                $row['reductionR1'] ? 'Réduit' : 'Normal', $row['duplicata']);
+                $row['reductionR1'] ? 'Réduit' : 'Normal', $row['duplicataR1'],
+                $row['duplicataR1'] > 1 ? 's' : '');
         }
         return $result;
     }

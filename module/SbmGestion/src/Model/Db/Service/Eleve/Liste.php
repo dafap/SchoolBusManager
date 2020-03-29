@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -201,10 +201,12 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'ele.eleveId=sco.eleveId',
             [
                 'inscrit',
-                'paiement',
+                'paiementR1',
+                'paiementR2',
                 'fa',
                 'gratuit',
-                'dateCarte'
+                'dateCarteR1',
+                'dateCarteR2'
             ])
             ->join(
             [
@@ -299,10 +301,12 @@ class Liste extends AbstractQuery implements FactoryInterface
             's' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'e.eleveId=s.eleveId', [
             'inscrit',
-            'paiement',
+            'paiementR1',
+            'paiementR2',
             'fa',
             'gratuit',
-            'dateCarte'
+            'dateCarteR1',
+            'dateCarteR2'
         ])
             ->join(
             [

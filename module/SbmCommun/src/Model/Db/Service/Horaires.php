@@ -13,8 +13,8 @@
  * @filesource Horaires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2019
- * @version 2019-2.5.0
+ * @date 27 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -57,24 +57,6 @@ class Horaires implements FactoryInterface
         $this->semaine = new Semaine();
         $this->jours = Semaine::getJours();
         return $this;
-    }
-
-    public function getNatureHoraires(string $serviceId)
-    {
-        $jours = Semaine::getJours();
-        $aHoraires = $this->db_manager->get('Sbm\Db\Table\Services')->getHoraires(
-            $serviceId);
-        $result = [];
-        foreach ($aHoraires as $key => $codejours) {
-            $array = [];
-            foreach ($codejours as $value) {
-                $array[] = $jours[$value];
-            }
-            if (! empty($array)) {
-                $result[$key] = implode(' ', $array);
-            }
-        }
-        return $result;
     }
 
     public function getTableHoraires($id)

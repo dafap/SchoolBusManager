@@ -15,8 +15,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2019
- * @version 2019-2.5.1
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -713,11 +713,11 @@ class CriteresEleves extends SbmCommunCriteres
         if ($where instanceof Where) {
             return $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal(
+                ->literal('paiementR1 = 1')->OR->literal(
                 'gratuit > 0')->unnest();
         } else {
             $where['criteres']['etat'] = 1;
-            $where['expression']['etat'] = 'inscrit = 1 AND (paiement = 1 OR fa = 1 OR gratuit > 0)';
+            $where['expression']['etat'] = 'inscrit = 1 AND (paiementR1 = 1 OR gratuit > 0)';
             return $where;
         }
     }
@@ -733,12 +733,11 @@ class CriteresEleves extends SbmCommunCriteres
     {
         if ($where instanceof Where) {
             return $where->literal('inscrit = 1')
-                ->literal('paiement = 0')
-                ->literal('fa=0')
+                ->literal('paiementR1 = 0')
                 ->literal('gratuit = 0');
         } else {
             $where['criteres']['etat'] = 2;
-            $where['expression']['etat'] = 'inscrit = 1 AND paiement = 0 AND fa = 0 AND gratuit = 0';
+            $where['expression']['etat'] = 'inscrit = 1 AND paiementR1 = 0 AND gratuit = 0';
             return $where;
         }
     }

@@ -11,7 +11,7 @@
  * - si oui, passage en mode modification FIN
  * - si non, création de la scolarite (31)
  * (22) : enregistre le formulaire (Form1) et récupère le eleveId puis création de la scolarité (31)
- * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransport, fa, demandeR1, demandeR2, commentaire
+ * (31) : formulaire (Form2) pour saisir la scolarité (sans les éléments de décision) : etablissement, classe, joursTransportR1, fa, demandeR1, demandeR2, commentaire
  * - enregistre la scolarité
  * - passe en mode modification FIN
  *
@@ -20,8 +20,8 @@
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
- * @version 2019-2.5.0
+ * @date 29 mars 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -252,9 +252,27 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
         $this->add(
             [
                 'type' => 'Zend\Form\Element\MultiCheckbox',
-                'name' => 'joursTransport',
+                'name' => 'joursTransportR1',
                 'attributes' => [
-                    'id' => 'eleve_joursTransport',
+                    'id' => 'eleve_joursTransportR1',
+                    'class' => 'sbm-multicheckbox'
+                ],
+                'options' => [
+                    'label' => 'Demande de transport',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\MultiCheckbox',
+                'name' => 'joursTransportR2',
+                'attributes' => [
+                    'id' => 'eleve_joursTransportR2',
                     'class' => 'sbm-multicheckbox'
                 ],
                 'options' => [

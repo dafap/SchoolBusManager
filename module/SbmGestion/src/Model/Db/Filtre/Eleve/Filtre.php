@@ -10,7 +10,7 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -70,9 +70,7 @@ abstract class Filtre
             return [
                 'inscrit' => 1,
                 [
-                    'paiement' => 1,
-                    'or',
-                    'fa' => 1,
+                    'paiementR1' => 1,
                     'or',
                     '>' => [
                         'gratuit',
