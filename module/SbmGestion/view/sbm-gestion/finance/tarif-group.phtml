@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/finance/tarif-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 jan. 2019
- * @version 2019-2.4.6
+ * @date 30 mars 2020
+ * @version 2020-2.4.14
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/finance', 
@@ -137,7 +137,7 @@ echo $this->flashMessenger()->render('default');
         ];
     }
     $this->pictogrammes('init')->addPreinscrit(
-        $row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        $row['paiement'] == 0 && $row['fa'] == 0 && $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto']);
     ?>
 			    <tr class="<?php echo $this->cycle(["even", "odd"]);?>">
