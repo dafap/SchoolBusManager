@@ -31,9 +31,9 @@ class EleveController extends AbstractActionController
 
     public function indexAction()
     {
-        return [
+        return new ViewModel([
             'args' => $this->params('args', null)
-        ];
+        ]);
     }
 
     /**

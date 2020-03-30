@@ -8,7 +8,7 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -111,7 +111,7 @@ trait ServiceTrait
         $ref = self::getServiceKeys();
         $serviceKeys = array_intersect_key($data, array_combine($ref, $ref));
         $serviceKeys = array_merge(array_combine($ref, $ref), $serviceKeys);
-        return implode('|', $serviceKeys);
+        return urlencode(implode('|', $serviceKeys));
     }
 
     /**
@@ -126,7 +126,7 @@ trait ServiceTrait
     {
         if ($serviceId) {
             $ref = self::getServiceKeys();
-            $array = explode('|', $serviceId);
+            $array = explode('|', urldecode($serviceId));
             $nbref = count($ref);
             $nbarray = count($array);
             if ($nbarray == $nbref + 1) {
