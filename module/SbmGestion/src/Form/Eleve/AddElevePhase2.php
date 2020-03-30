@@ -20,7 +20,7 @@
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -442,6 +442,10 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
         return [
             'demandeR2' => [
                 'name' => 'demandeR2',
+                'required' => false
+            ],
+            'joursTransportR2' => [
+                'name' => 'joursTransportR2',
                 'required' => false
             ]
         ];
