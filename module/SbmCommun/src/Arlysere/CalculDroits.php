@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -163,13 +163,12 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      */
     private function getData()
     {
-        return [
-            'millesime' => $this->millesime,
-            'eleveId' => $this->eleveId,
-            'distanceR1' => $this->distanceR1,
-            'distanceR2' => $this->distanceR2,
-            'district' => $this->district
-        ];
+        return array_merge($this->scolarite->getArrayCopy(),
+            [
+                'distanceR1' => $this->distanceR1,
+                'distanceR2' => $this->distanceR2,
+                'district' => $this->district
+            ]);
     }
 
     /**
@@ -202,12 +201,11 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->calculs();
         $oData = $this->getTable('Scolarites')->getObjData();
         $oData->exchangeArray($this->getData());
-        $this->tScolarites->saveRecord($oData);
+        $this->getTable('Scolarites')->saveRecord($oData);
     }
 
     /**
      * Pour cette version de Arlysère, c'est la même chose
-     *
      * Lance la mise à jour les tables scolarites et affectations pour cet élève : -
      * distanceR1 (sauf si gardeDistance) - distanceR2 (sauf si gardeDistance) - district
      * (s'il est à 0, sinon on garde 1 quoi qu'il en soit) - grille tarifaire -
@@ -229,11 +227,11 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         // charge la fiche scolarite pour disposer de l'établissement et de(s) la
         // station(s) demandée(s)
         try {
-        $this->scolarite = $this->getTable('Scolarites')->getRecord(
-            [
-                'millesime' => $this->millesime,
-                'eleveId' => $this->eleveId
-            ]);
+            $this->scolarite = $this->getTable('Scolarites')->getRecord(
+                [
+                    'millesime' => $this->millesime,
+                    'eleveId' => $this->eleveId
+                ]);
         } catch (\Exception $e) {
             echo '<pre>';
             echo $e->getMessage();
