@@ -501,6 +501,24 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
+        $this->add([
+            'name' => 'dateDemandeR2',
+            'type' => 'Zend\Form\Element\Date',
+            'attributes' => [
+                'id' => 'eleve-dateDemandeR2',
+                'class' => 'sbm-text15',
+            ],
+            'options' => [
+                'label' => 'Date de la demande',
+                'label_attributes' => [
+                    'class' => 'sbm-label'
+                ],
+                'error_attributes' => [
+                    'class' => 'sbm-error'
+                ],
+                'format' => 'Y-m-d'
+            ]
+        ]);
         $this->add(
             [
                 'name' => 'distanceR1',
@@ -810,6 +828,10 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'joursTransportR2' => [
                 'name' => 'joursTransportR2',
+                'required' => false
+            ],
+            'dateDemandeR2' => [
+                'name' => 'dateDemandeR2',
                 'required' => false
             ]
         ];

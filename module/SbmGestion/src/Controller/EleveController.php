@@ -853,6 +853,8 @@ class EleveController extends AbstractActionController
         } else {
             // premier appel (avant envoi du formualaire)
             $identite = $odata0->nom . ' ' . $odata0->prenom;
+            $odata1->dateDemandeR2 = \DateTime::createFromFormat('Y-m-d H:i:s',
+                $odata1->dateDemandeR2)->format('Y-m-d');
             $adata1 = $odata1->getArrayCopy();
             if ($odata1->anneeComplete) {
                 $adata1['dateDebut'] = Session::get('as')['dateDebut'];

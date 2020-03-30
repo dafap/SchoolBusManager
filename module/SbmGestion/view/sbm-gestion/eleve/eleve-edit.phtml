@@ -293,9 +293,11 @@ if (getenv('APPLICATION_ENV') == 'development') {
 								<div id="block-demander2">
 									<div class="clearfix">
 										<div class="float-left">
+											<div id="wrapper-dateDemandeR2">
+											<?= $this->formRow($this->form->get('dateDemandeR2'));?></div>
 											<div id="wrapper-accordR2">
 											<?= $this->formRow($this->form->get('accordR2'));?></div>
-											<div id="wrapper-subventionr2">
+											<div id="wrapper-subventionr2" class="invisible">
 											<?= $this->formRow($this->form->get('subventionR2'));?></div>
 										</div>
 										<div id="wrapper-motifRefusr2" class="float-right">
