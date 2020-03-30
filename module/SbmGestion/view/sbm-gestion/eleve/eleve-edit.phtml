@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -101,6 +101,14 @@ $actions = [
         'onclick' => sprintf($js, "'eleve-edit'")
     ]
 ];
+// DEBUG =============================
+if (getenv('APPLICATION_ENV') == 'development') {
+    echo '<div class="debug">';
+    echo '<h3>Debug:</h3><pre>';
+    var_dump($this->form->getMessages());
+    echo '</pre><hr></div>';
+}
+// ====================================
 ?>
 <div id="winpopup"></div>
 <h1>Modification d'un élève</h1>
@@ -392,7 +400,7 @@ $actions = [
 							<div id="#scolarite-duplicata">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
 								<span id="nbduplicata" class="right-10px">
-								<?= $this->historique['scolarite']['duplicata'];?></span>
+								<?= $this->historique['scolarite']['duplicataR1'];?></span>
 								<button name="duplicata-moins" type="button"
 									title="Supprimer un duplicata" id="duplicatamoins">
 									<i class="fam-delete"></i>

@@ -515,7 +515,10 @@ class EleveController extends AbstractActionController
                     }
                 } catch (\Exception $e) {
                     // DEBUG
-                    die($e->getTraceAsString());
+                    if (getenv('APPLICATION_ENV') == 'development') {
+                        echo $e->getMessage();
+                        die($e->getTraceAsString());
+                    }
                     // -------------------------
                 }
                 $viewModel = $this->eleveEditAction(
@@ -690,7 +693,7 @@ class EleveController extends AbstractActionController
         // payant. Le R2 ne compte pas pour ça.
         if ($odata1->inscrit) {
             $inscrit = $odata1->paiementR1;
-            //$inscrit |= $odata1->fa; Ne pas prendre en compte dans Arlysère
+            // $inscrit |= $odata1->fa; Ne pas prendre en compte dans Arlysère
             $inscrit |= $odata1->gratuit > 0;
             $inscrit |= ($odata1->demandeR1 == 2 && $odata1->accordR1 == 0 &&
                 $odata1->subventionR1 == 1);

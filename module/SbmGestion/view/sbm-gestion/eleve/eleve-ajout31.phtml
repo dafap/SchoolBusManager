@@ -20,7 +20,7 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -73,6 +73,14 @@ $actions = [
         'onclick' => sprintf($js, "'localiser'")
     ]
 ];
+// DEBUG =============================
+if (getenv('APPLICATION_ENV') == 'development') {
+    echo '<div class="debug">';
+    echo '<h3>Debug:</h3><pre>';
+    var_dump($this->form->getMessages());
+    echo '</pre><hr></div>';
+}
+// ====================================
 ?>
 <h1>Création d'un nouvel élève</h1>
 <div id="fiche-wrapper">
@@ -193,14 +201,14 @@ $actions = [
 							<?= $this->data['responsable2NomPrenom'];?></div>
 						<div id="r2-ligne2">
 						<?php
-    echo implode(' ',
-        array_filter(
-            [
-                $this->data['adresseL1R2'],
-                $this->data['adresseL2R2'],
-                $this->data['adresseL3R2']
-            ]));
-    ?>
+        echo implode(' ',
+            array_filter(
+                [
+                    $this->data['adresseL1R2'],
+                    $this->data['adresseL2R2'],
+                    $this->data['adresseL3R2']
+                ]));
+        ?>
 						</div>
 						<div id="r2-ligne3">
 							<?= $this->data['codePostalR2'];?>
