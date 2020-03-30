@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -806,6 +806,10 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'reductionR2' => [
                 'name' => 'reductionR2',
+                'required' => false
+            ],
+            'joursTransportR2' => [
+                'name' => 'joursTransportR2',
                 'required' => false
             ]
         ];

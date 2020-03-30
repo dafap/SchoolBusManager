@@ -9,7 +9,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -83,13 +83,5 @@ class AbstractActionController extends ZendAbstractActionController
         } else {
             return parent::params($param, $default);
         }
-    }
-
-    protected function debugTrace($args)
-    {
-        $fp = fopen('/debug/debug-ajax.txt', 'a');
-        fputs($fp, print_r($args, true));
-        fputs($fp, "\n");
-        fclose($fp);
     }
 }

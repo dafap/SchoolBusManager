@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -18,10 +18,10 @@ namespace SbmAjax\Controller;
 use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
+use SbmCommun\Model\Traits\ServiceTrait;
 use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
-use SbmCommun\Model\Traits\ServiceTrait;
 
 class EleveController extends AbstractActionController
 {
@@ -449,13 +449,12 @@ class EleveController extends AbstractActionController
                             case 'auto':
                                 $tScolarites = $this->db_manager->get(
                                     'Sbm\Db\Table\Scolarites');
-                                $oScolarite = $tScolarites->getObjData();
-                                $oScolarite->exchangeArray(
+                                $oScolarite = $tScolarites->getRecord(
                                     [
                                         'millesime' => Session::get('millesime'),
-                                        'eleveId' => $data['eleveId'],
-                                        'stationIdR' . $data['trajet'] => $data['stationId']
+                                        'eleveId' => $data['eleveId']
                                     ]);
+                                $oScolarite->{'stationIdR' . $data['trajet']} = $data['stationId'];
                                 $tScolarites->saveRecord($oScolarite);
                                 $this->db_manager->get('Sbm\ChercheTrajet')
                                     ->setEtablissementId($data['etablissementId'])
@@ -488,7 +487,6 @@ class EleveController extends AbstractActionController
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
-                        // $this->debugTrace($e->getTraceAsString());
                         $response->setContent(
                             Json::encode([
                                 'cr' => $e->getMessage(),
