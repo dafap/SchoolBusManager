@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/classe-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 30 mars 2020
+ * @version 2020-2.5.6
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmgestion/transport',
@@ -147,7 +147,7 @@ $data = $this->paginator->getCurrentItems();
         ];
     }
     $this->pictogrammes('init')
-        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 & $row['gratuit'] == 0)
+        ->addPreinscrit($row['paiement'] == 0 && $row['fa'] == 0 && $row['gratuit'] == 0)
         ->addSansPhoto($row['sansphoto'])
         ->addSansCarte($row['dateCarte'] < $this->dateDebut);
     ?>
