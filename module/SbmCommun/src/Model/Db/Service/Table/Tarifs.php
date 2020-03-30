@@ -13,10 +13,11 @@
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use SbmBase\Model\Session;
 use SbmCommun\Arlysere\Tarification\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\TarifAttributs as TarifAttributsStrategy;
-use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Where;
 
 class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifInterface
 {
@@ -52,6 +53,8 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $grille_inconnu = "La grille demandée est inconnue";
 
+    private $millesime;
+
     /**
      * Initialisation de la classe
      */
@@ -69,6 +72,17 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
             // $this->reduit_inconnu),
             'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
         ];
+        $this->setMillesime();
+    }
+
+    public function setMillesime($millesime = null)
+    {
+        if (is_null($millesime)) {
+            $this->millesime = Session::get('millesime');
+        } else {
+            $this->millesime = $millesime;
+        }
+        return $this;
     }
 
     // --------------- nomenclatures ------------------------
@@ -135,12 +149,15 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
             'grille',
             'reduit'
         ])
-            ->where('duplicata = 0')
+            ->where([
+            'duplicata' => 0,
+            'millesime' => $this->millesime
+        ])
             ->group([
             'grille',
             'reduit'
         ])
-        ->order(new Expression('MAX(montant) DESC'));
+            ->order(new Expression('MAX(montant) DESC'));
         return $this->table_gateway->selectWith($select);
     }
 
@@ -155,7 +172,9 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     public function getTarifId(int $grille, int $seuil = 1)
     {
         $where = new Where();
-        $where->equalTo('grille', $grille)->lessThanOrEqualTo('seuil', $seuil);
+        $where->equalTo('grille', $grille)
+            ->lessThanOrEqualTo('seuil', $seuil)
+            ->equalTo('millesime', $this->millesime);
         $resultset = $this->fetchAll($where, 'seuil DESC');
         $row = $resultset->current();
         return $row->tarifId;
@@ -172,6 +191,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     public function getTarifs(int $grille = null, int $seuil = null)
     {
         $where = new Where();
+        $where->equalTo('millesime', $this->millesime);
         if ($grille) {
             $where->equalTo('grille', $grille);
         }

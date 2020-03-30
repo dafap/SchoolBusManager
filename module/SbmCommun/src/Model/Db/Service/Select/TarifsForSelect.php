@@ -8,11 +8,12 @@
  * @filesource TarifsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mars 2020
+ * @date 29 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Literal;
@@ -23,6 +24,8 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class TarifsForSelect implements FactoryInterface
 {
+
+    private $millesime;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -44,6 +47,17 @@ class TarifsForSelect implements FactoryInterface
             'reduction',
             'seuil'
         ];
+        $this->setMillesime();
+        return $this;
+    }
+
+    public function setMillesime($millesime = null)
+    {
+        if (is_null($millesime)) {
+            $this->millesime = Session::get('millesime');
+        } else {
+            $this->millesime = $millesime;
+        }
         return $this;
     }
 
@@ -62,7 +76,11 @@ class TarifsForSelect implements FactoryInterface
     public function toutes()
     {
         $select = $this->sql->select($this->table_name);
-        $select->columns($this->columns)->order($this->order);
+        $select->columns($this->columns)
+            ->where([
+            'millesime' => $this->millesime
+        ])
+            ->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
@@ -75,7 +93,7 @@ class TarifsForSelect implements FactoryInterface
     public function grille($n)
     {
         $where = new Where();
-        $where->equalTo('grille', $n);
+        $where->equalTo('grille', $n)->equalTo('millesime', $this->millesime);
         $select = $this->sql->select($this->table_name);
         $select->where($where)
             ->columns($this->columns)
