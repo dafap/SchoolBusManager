@@ -3,13 +3,17 @@
  * Structure de la table des `eleves`
  *
  * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
+ * ATTENTION !
+ * La valeur par défaut des champs joursTransportR1 et joursTransportR2 doit être une
+ * valeur valide dans la strategie Semaine. Aussi on choisit 31 (LMMJV) ou 27 (LM-JV)
+ * et surtout pas 127 qui ne conviendrait que si les jours étaient tous autorisés.
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -65,8 +69,8 @@ return [
             'derogation' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateDebut' => 'date NOT NULL',
             'dateFin' => 'date NOT NULL',
-            'joursTransportR1' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
-            'joursTransportR2' => 'tinyint(3) unsigned NOT NULL DEFAULT "127"',
+            'joursTransportR1' => 'tinyint(3) unsigned NOT NULL DEFAULT "31"',
+            'joursTransportR2' => 'tinyint(3) unsigned NOT NULL DEFAULT "31"',
             'subventionTaux' => 'int(3) NOT NULL DEFAULT "0"',
             'grilleTarifR1' => 'int(3) NOT NULL DEFAULT "1"',
             'reductionR1' => 'int(1) NOT NULL DEFAULT "0"',

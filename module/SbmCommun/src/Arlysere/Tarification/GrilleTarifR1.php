@@ -16,7 +16,7 @@
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2020
+ * @date 30 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
@@ -300,7 +300,9 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         try {
             $sql = new Sql($this->db_manager->getDbAdapter());
             $select = $sql->select($this->db_manager->getCanonicName('rpi', 'table'))
-                ->columns('grille')
+                ->columns([
+                'grille'
+            ])
                 ->join(
                 [
                     'rpietab' => $this->db_manager->getCanonicName('rpi-etablissements',
