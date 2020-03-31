@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -721,6 +721,8 @@ class EleveController extends AbstractActionController
         $historique['scolarite']['dateCarteR2'] = $odata1->dateCarteR2;
         $historique['scolarite']['grilleTarifR1'] = $tTarifs->getGrille(
             $odata1->grilleTarifR1);
+        $historique['scolarite']['grilleTarifR2'] = $tTarifs->getGrille(
+            $odata1->grilleTarifR2);
         $historique['scolarite']['reductionR1'] = $odata1->reductionR1;
         $historique['scolarite']['grilleCodeR2'] = $odata1->grilleTarifR2;
         $historique['scolarite']['reductionR2'] = $odata1->reductionR2;
@@ -831,7 +833,10 @@ class EleveController extends AbstractActionController
                     }
                 } catch (\Exception $e) {
                     // DEBUG
-                    die($e->getTraceAsString());
+                    if (getenv(APPLICATION_ENV) == 'development') {
+                        echo '<p>' . $e->getMessage() . '</p><pre>';
+                        die($e->getTraceAsString() . '</pre>');
+                    }
                     // --------------------------
                 }
                 $this->flashMessenger()->addSuccessMessage(

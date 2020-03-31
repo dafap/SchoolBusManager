@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -322,9 +322,9 @@ if (getenv('APPLICATION_ENV') == 'development') {
 						</div>
 					</div>
 				</div>
-				<div id="tabs-3" class="sbm-tabs-container">
-					<div class="clearfix">
-						<div id="tabs-3-col1" class="float-left">
+				<div id="tabs-3" class="sbm-tabs-container table">
+					<div class="clearfix table-row">
+						<div id="tabs-3-col1" class="table-cell">
 							<h3>Identité de l'élève</h3>
 							<div id="#eleve-dateCreation">
 								<div class="eleve-tabs-3-col-1-label">Date de création</div>
@@ -339,7 +339,7 @@ if (getenv('APPLICATION_ENV') == 'development') {
 									<?= formatDate($this->historique['photo']['dateExtraction']);?>
 									</div>
 						</div>
-						<div id="tabs-3-col2" class="float-left left-10px">
+						<div id="tabs-3-col2" class="table-cell">
 							<h3>Responsable 1</h3>
 							<div id="#responsable1-dateCreation">
 								<div class="eleve-tabs-3-col-2-label">Date de création</div>
@@ -355,7 +355,7 @@ if (getenv('APPLICATION_ENV') == 'development') {
 									</div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
-				        <div id="tabs-3-col3" class="float-left left-10px">
+				        <div id="tabs-3-col3" class="table-cell">
 							<h3>Responsable 2</h3>
 							<div id="#responsable2-dateCreation">
 								<div class="eleve-tabs-3-col-3-label">Date de création</div>
@@ -371,9 +371,9 @@ if (getenv('APPLICATION_ENV') == 'development') {
 									</div>
 						</div>
 				        <?php endif;?>
-				    </div>
-					<div class="clearfix">
-						<div id="tabs-3-col1" class="float-left">
+				    </div >
+					<div class="table-row">
+						<div id="tabs-3-col1" class="table-cell">
 							<h3>Inscription cette année scolaire</h3>
 							<div id="#scolarite-modeInscription">
 								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div>
@@ -389,30 +389,64 @@ if (getenv('APPLICATION_ENV') == 'development') {
 								<div class="eleve-tabs-3-col-1-label">Date du lot de carte</div>
 									<?= formatDate($this->historique['scolarite']['dateCarteR1']);?></div>
 						</div>
-						<div id="tabs-3-col2" class="float-left left-10px">
-							<h3>Participation familiale</h3>
+						<div id="tabs-3-col2" class="table-cell">
+							<h3>Participation du responsable 1</h3>
 							<div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
-								<span id="tabs-3-grilleTarifR1">
-									<?=$this->historique['scolarite']['grilleTarifR1'];?></span> <span
-									id="tabs-3-reduction">
+								<div class="bloc-tarif">
+									<span id="tabs-3-grilleTarifR1">
+									<?=$this->historique['scolarite']['grilleTarifR1'];?></span><br>
+									<span id="tabs-3-reductionR1">
 							    <?=$this->historique['scolarite']['reductionR1'] ? 'Tarif réduit' : 'Tarif normal'?>
 							    </span>
+								</div>
 							</div>
-							<div id="#scolarite-duplicata">
+							<div id="#scolarite-duplicataR1">
 								<div class="eleve-tabs-3-col-2-label">Nombre de duplicatas</div>
-								<span id="nbduplicata" class="right-10px">
+								<span id="nbduplicataR1" class="right-10px">
 								<?= $this->historique['scolarite']['duplicataR1'];?></span>
 								<button name="duplicata-moins" type="button"
-									title="Supprimer un duplicata" id="duplicatamoins">
+									title="Supprimer un duplicata" data-button="duplicatamoins"
+									data-trajet="1">
 									<i class="fam-delete"></i>
 								</button>
 								<button name="duplicata-plus" type="button"
-									title="Ajouter un duplicata" id="duplicataplus">
+									title="Ajouter un duplicata" data-button="duplicataplus"
+									data-trajet="1">
 									<i class="fam-add"></i>
 								</button>
 							</div>
 						</div>
+				        <?php if (array_key_exists('responsable2', $this->historique)):?>
+						<div id="tabs-3-col3" class="table-cell">
+							<h3>Participation du responsable 2</h3>
+							<div id="#scolarite-tarif">
+								<div class="eleve-tabs-3-col-3-label">Grille tarifaire</div>
+								<div class="bloc-tarif">
+									<span id="tabs-3-grilleTarifR2">
+									<?=$this->historique['scolarite']['grilleTarifR2'];?></span><br>
+									<span id="tabs-3-reductionR2">
+							    <?=$this->historique['scolarite']['reductionR2'] ? 'Gratuit' : 'Payant'?>
+							    </span>
+								</div>
+							</div>
+							<div id="#scolarite-duplicataR2">
+								<div class="eleve-tabs-3-col-3-label">Nombre de duplicatas</div>
+								<span id="nbduplicataR2" class="right-10px">
+								<?= $this->historique['scolarite']['duplicataR2'];?></span>
+								<button name="duplicata-moins" type="button"
+									title="Supprimer un duplicata" data-button="duplicatamoins"
+									data-trajet="2">
+									<i class="fam-delete"></i>
+								</button>
+								<button name="duplicata-plus" type="button"
+									title="Ajouter un duplicata" data-button="duplicataplus"
+									data-trajet="2">
+									<i class="fam-add"></i>
+								</button>
+							</div>
+						</div>
+						<?php endif;?>
 					</div>
 				</div>
 				<div id="tabs-4" class="sbm-tabs-container">

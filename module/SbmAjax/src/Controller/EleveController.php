@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -838,21 +838,23 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
+            $trajet = $this->params('trajet');
             $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
             $odata = $tScolarites->getRecord(
                 [
                     'millesime' => Session::get('millesime'),
                     'eleveId' => $eleveId
                 ]);
-            if ($odata->duplicata > 0) {
-                $odata->duplicata --;
+            if ($odata->{'duplicataR' . $trajet} > 0) {
+                $odata->{'duplicataR' . $trajet} --;
             }
             $tScolarites->saveRecord($odata);
             return $this->getResponse()->setContent(
-                Json::encode([
-                    'duplicata' => $odata->duplicata,
-                    'success' => 1
-                ]));
+                Json::encode(
+                    [
+                        'duplicataR' . $trajet => $odata->{'duplicataR' . $trajet},
+                        'success' => 1
+                    ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([
@@ -872,19 +874,21 @@ class EleveController extends AbstractActionController
     {
         try {
             $eleveId = $this->params('eleveId');
+            $trajet = $this->params('trajet');
             $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
             $odata = $tScolarites->getRecord(
                 [
                     'millesime' => Session::get('millesime'),
                     'eleveId' => $eleveId
                 ]);
-            $odata->duplicata ++;
+            $odata->{'duplicataR' . $trajet} ++;
             $tScolarites->saveRecord($odata);
             return $this->getResponse()->setContent(
-                Json::encode([
-                    'duplicata' => $odata->duplicata,
-                    'success' => 1
-                ]));
+                Json::encode(
+                    [
+                        'duplicataR' . $trajet => $odata->{'duplicataR' . $trajet},
+                        'success' => 1
+                    ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([

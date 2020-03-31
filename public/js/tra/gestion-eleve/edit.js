@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 
@@ -283,13 +283,15 @@ var js_edit = (function() {
 				}
 			});
 		});
-		$("#duplicatamoins").click(function() {
+		$("button[data-button=duplicatamoins]").click(function() {
+			var trajet = $(this).attr('data-trajet');
 			$.ajax({
-				url : '/sbmajaxeleve/decrementeduplicata/eleveId:'+ELEVE_ID,
+				url : '/sbmajaxeleve/decrementeduplicata/eleveId:'+ELEVE_ID+'/trajet:'+trajet,
 				dataType : 'json',
 				success : function(data) {
-					var myid = "#nbduplicata";
-					var duplicata = data.duplicata;
+					var propriete = 'duplicataR' + trajet
+					var myid = "#nb" + propriete;
+					var duplicata = data[propriete];
 					$(myid).empty();
 					$(myid).append(duplicata.toString());
 				},
@@ -298,13 +300,15 @@ var js_edit = (function() {
 				}
 			});
 		});
-		$("#duplicataplus").click(function() {
+		$("button[data-button=duplicataplus]").click(function() {
+			var trajet = $(this).attr('data-trajet');
 			$.ajax({
-				url : '/sbmajaxeleve/incrementeduplicata/eleveId:'+ELEVE_ID,
+				url : '/sbmajaxeleve/incrementeduplicata/eleveId:'+ELEVE_ID+'/trajet:'+trajet,
 				dataType : 'json',
 				success : function(data) {
-					var myid = "#nbduplicata";
-					var duplicata = data.duplicata;
+					var propriete = 'duplicataR' + trajet
+					var myid = "#nb" + propriete;
+					var duplicata = data[propriete];
 					$(myid).empty();
 					$(myid).append(duplicata.toString());
 				},

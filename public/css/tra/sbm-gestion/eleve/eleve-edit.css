@@ -8,7 +8,7 @@
  * @filesource eleve-edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  **/
 .table-cell div {
@@ -319,4 +319,27 @@ table.eleve-affectations td.third {
 
 table.eleve-affectations td.last {
 	width: 42px;
+}
+
+div.table {
+	display: table;
+}
+
+div.table-row {
+	display: table-row;
+}
+
+div.table-cell {
+	display: table-cell;
+	width: 33%;
+}
+
+div.table-cell>div.table-cell {
+	padding-left: 20px;
+}
+
+div.bloc-tarif {
+	display: inline-block;
+	margin-bottom: 4px;
+	vertical-align: top;
 }
