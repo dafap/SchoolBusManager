@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -25,13 +25,16 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Exception;
+use SbmCartographie\Model\Point;
+use SbmCartographie\Model\Projection;
 use SbmCommun\Model\Paiements\GrilleTarifInterface;
+use SbmCommun\Model\Traits\DebugTrait;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmCartographie\Model\Point;
 
 class CalculDroits implements FactoryInterface, GrilleTarifInterface
 {
+    use DebugTrait;
 
     /**
      *
@@ -101,6 +104,12 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     /**
      *
+     * @var Projection
+     */
+    private $oProjection;
+
+    /**
+     *
      * @var array
      */
     private $latRange;
@@ -123,6 +132,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->lngRange = $config_carte['valide']['lng'];
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
+        $this->oProjection = $serviceLocator->get(Projection::class);
         $this->setMillesime();
         $this->resetData();
         return $this;
@@ -205,12 +215,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
-     * Pour cette version de Arlysère, c'est la même chose
-     * Lance la mise à jour les tables scolarites et affectations pour cet élève : -
-     * distanceR1 (sauf si gardeDistance) - distanceR2 (sauf si gardeDistance) - district
-     * (s'il est à 0, sinon on garde 1 quoi qu'il en soit) - grille tarifaire -
-     * affectations du matin (avec correspondances) - affectation du soir (avec
-     * correspondances) - affectation du mercredi midi (avec correspondances)
+     * Pour cette version de Arlysère, c'est la même chose que majDistancesDistrict()
      *
      * @param int $eleveId
      * @param bool $gardeDistance
@@ -249,9 +254,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             // initialise l'établissement
             $ptEtablissement = $this->getPtEtablissement(
                 $this->scolarite->etablissementId);
-            // initialise le domicile du responsable 1
-            // si l'élève a une adresse perso (localisation valide) elle remplace celle du
-            // R1
+            // initialise le domicile du responsable 1 si l'élève a une adresse perso
+            // (localisation valide) elle remplace celle du R1
             $ptDomicileR1 = $this->getPtDomicilePerso();
             if (! $ptDomicileR1) {
                 $ptDomicileR1 = $this->getPtDomicileResponsable(
@@ -307,7 +311,10 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             if (getenv('APPLICATION_ENV') == 'development') {
                 throw new \Exception(__METHOD__, __LINE__, $e);
             } else {
-                // @TODO: log dans le fichier des erreurs
+                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                    'sbm_error.log');
+                $this->debugLog($e->getMessage());
+                $this->debugLog($e->getTraceAsString());
             }
         }
     }
@@ -333,10 +340,11 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     private function getPtDomicilePerso()
     {
         $pt = new Point($this->scolarite->x, $this->scolarite->y);
-        if ($pt->isValid()) {
+        if ($this->oProjection->isValid($pt, 'gestion')) {
             $pt->setAttribute('communeId', $this->scolarite->communeId);
             return $pt;
         }
+
         return false;
     }
 }
