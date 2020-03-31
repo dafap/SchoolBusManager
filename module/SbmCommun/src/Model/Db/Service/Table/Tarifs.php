@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -21,6 +21,7 @@ use Zend\Db\Sql\Where;
 
 class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifInterface
 {
+    use OutilsMillesimeTrait;
 
     private $modes = [
         self::DEGRESSIF => 'dégressif',
@@ -36,9 +37,14 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $reduit_inconnu = "L'application de la réduction est indéterminée";
 
+    /**
+     * Le champ duplicata correspond à un booléen
+     *
+     * @var array
+     */
     private $duplicatas = [
-        self::ABONNEMENT => 'Abonnement',
-        self::DUPLICATA => 'Duplicata'
+        0 => 'Abonnement',
+        1 => 'Duplicata'
     ];
 
     private $duplicata_inconnu = "La nature de ce tarif est inconnue";
@@ -65,11 +71,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Tarifs';
         $this->id_name = 'tarifId';
         $this->strategies = [
-            // 'duplicata' => new TarifAttributsStrategy($this->duplicatas,
-            // $this->duplicata_inconnu),
             'grille' => new TarifAttributsStrategy($this->grilles, $this->grille_inconnu),
-            // 'reduit' => new TarifAttributsStrategy($this->reduits,
-            // $this->reduit_inconnu),
             'mode' => new TarifAttributsStrategy($this->modes, $this->mode_inconnu)
         ];
         $this->setMillesime();
@@ -124,24 +126,36 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     // ------------- recherche de données -----------------
 
     /**
-     * Renvoie le montant d'un tarif connaissant la grille et la quantité NE CONVIENT PAS
-     * POUR ARLYSERE
+     * Renvoie le montant d'un tarif connaissant la grille et la quantité. Si le millesime
+     * n'est pas passé, on prend celui de l'objet.
+     *
+     * @formatter NE CONVIENT PAS POUR ARLYSERE
      *
      * @param int $grille
      * @param int $quantite
+     * @param int $millesime
      *
      * @return float (currency)
      */
-    public function getMontant(int $grille, int $quantite = 1)
+    public function getMontant(int $grille, int $quantite = 1, int $millesime = null)
     {
         return 0.0;
     }
 
     /**
-     * SELECT grille, reduit, max(montant) AS m FROM `sbm_t_tarifs` WHERE duplicata=false
-     * GROUP BY grille, reduit ORDER BY m DESC
+     * Si le millesime n'est pas passé, on prend celui de l'objet
+     *
+     * @formatter
+     * SELECT grille, reduit,max(montant) AS m
+     * FROM `sbm_t_tarifs`
+     * WHERE duplicata=false
+     * GROUP BY grille, reduit
+     * ORDER BY m DESC
+     *
+     * @param int $millesime
+     * @return \Zend\Db\ResultSet\ResultSetInterface
      */
-    public function getOrdreGrilles()
+    public function getOrdreGrilles(int $millesime = null)
     {
         $select = $this->table_gateway->getSql()
             ->select()
@@ -151,7 +165,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
         ])
             ->where([
             'duplicata' => 0,
-            'millesime' => $this->millesime
+            'millesime' => $millesime ?: $this->millesime
         ])
             ->group([
             'grille',
@@ -162,16 +176,23 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     }
 
     /**
-     * Renvoie l'identifiant d'un tarif connaissant la grille et la quantité
+     * Renvoie l'identifiant d'un tarif connaissant la grille et la quantité. Si le
+     * millesime n'est pas passé, on prend celui de l'objet
      *
      * @param int $grille
      * @param int $quantite
+     * @param int $millesime
      *
      * @return integer
      */
-    public function getTarifId(int $grille, int $seuil = 1)
+    public function getTarifId(int $grille, int $seuil = 1, int $millesime = null)
     {
         $where = new Where();
+        if ($millesime) {
+            $where->equalTo('millesime', $millesime);
+        } else {
+            $where->equalTo('millesime', $this->millesime);
+        }
         $where->equalTo('grille', $grille)
             ->lessThanOrEqualTo('seuil', $seuil)
             ->equalTo('millesime', $this->millesime);
@@ -181,17 +202,23 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
     }
 
     /**
-     * Renvoie le tableau de grilles de tarifs [grille => [seuil => montant, ...], ...]
+     * Renvoie le tableau de grilles de tarifs [grille => [seuil => montant, ...], ...].
+     * Si le millesime n'est pas passé, on prend celui de l'objet
      *
      * @param int $grille
      * @param int $seuil
+     * @param int $millesime
      *
      * @return array
      */
-    public function getTarifs(int $grille = null, int $seuil = null)
+    public function getTarifs(int $grille = null, int $seuil = null, int $millesime = null)
     {
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime);
+        if ($millesime) {
+            $where->equalTo('millesime', $millesime);
+        } else {
+            $where->equalTo('millesime', $this->millesime);
+        }
         if ($grille) {
             $where->equalTo('grille', $grille);
         }

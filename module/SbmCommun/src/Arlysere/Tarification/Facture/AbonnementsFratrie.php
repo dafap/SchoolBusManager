@@ -20,7 +20,7 @@
  * @filesource AbonnementsFratrie.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -28,6 +28,7 @@ namespace SbmCommun\Arlysere\Tarification\Facture;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
+use SbmBase\Model\Session;
 
 class AbonnementsFratrie implements FactoryInterface
 {
@@ -37,6 +38,12 @@ class AbonnementsFratrie implements FactoryInterface
      * @var DbManager
      */
     private $dbManager;
+
+    /**
+     *
+     * @var int
+     */
+    private $millesime;
 
     /**
      * Grille tarifaire. C'est un tableau de tableaux. Les clés de niveau 1 sont les
@@ -71,17 +78,41 @@ class AbonnementsFratrie implements FactoryInterface
         $this->dbManager = $dbManager;
         $this->eleves = [];
         $this->abonnements = [];
+        $this->dbManager = null;
+        $this->setMillesime();
     }
 
+    public function setMillesime(int $millesime = null)
+    {
+        if (! $millesime) {
+            $this->millesime = Session::get('millesime');
+        } else {
+            $this->millesime = $millesime;
+        }
+        if ($this->dbManager) {
+            $this->setTarifs();
+        }
+        return $this;
+    }
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if (!($serviceLocator instanceof DbManager)) {
+        if (! ($serviceLocator instanceof DbManager)) {
             $msg = 'Le serviceLocator reçu doit être un DbManager';
             throw new \SbmCommun\Arlysere\Exception\InvalidArgumentException($msg);
         }
-        $tTarifs = $serviceLocator->get('Sbm\Db\Table\Tarifs');
-        $resultset = $tTarifs->fetchAll('duplicata = 0');
+        $this->dbManager = $serviceLocator;
+        $this->setTarifs();
+        return $this;
+    }
+
+    private function setTarifs()
+    {
+        $resultset = $this->dbManager->get('Sbm\Db\Table\Tarifs')->fetchAll(
+            [
+                'millesime' => $this->millesime,
+                'duplicata' => 0
+            ]);
         $this->tarifs = [];
         foreach ($resultset as $row) {
             $this->tarifs[$row->grille][$row->seuil] = $row->montant;

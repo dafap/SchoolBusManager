@@ -8,7 +8,7 @@
  * @filesource NatureGrilleTarif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -32,9 +32,9 @@ class NatureGrilleTarif extends AbstractHelper implements GrilleTarifInterface, 
     public function __invoke($data)
     {
         if ($data) {
-            return $this->nature_grille[self::DUPLICATA];
+            return $this->nature_grille[1];
         } else {
-            return $this->nature_grille[self::ABONNEMENT];
+            return $this->nature_grille[0];
         }
     }
 }

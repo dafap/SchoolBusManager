@@ -9,15 +9,16 @@
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
-use SbmCommun\Model\Db\Service\DbManager;
-use SbmCommun\Model\Db\Exception as DbException;
-use SbmCommun\Model\Db\Service\Table\Exception as DbTableException;
+use SbmBase\Model\StdLib;
 use SbmCommun\Arlysere\CalculDroits;
+use SbmCommun\Model\Db\Exception as DbException;
+use SbmCommun\Model\Db\Service\DbManager;
+use SbmCommun\Model\Db\Service\Table\Exception as DbTableException;
 use SbmCommun\Model\Strategy\Niveau;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -25,6 +26,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Prepare implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      * Service manager
@@ -36,7 +38,7 @@ class Prepare implements FactoryInterface
     /**
      * Classe permettant de mettre à jour les distances
      *
-     * @var \SbmCommun\Model\Service\CalculDroits
+     * @var \SbmCommun\Arlysere\CalculDroits
      */
     private $majDistances;
 
@@ -123,8 +125,23 @@ class Prepare implements FactoryInterface
     {
         $this->db_manager->get('Sbm\Db\Table\Lignes')->dupliquer($source, $cible);
         $this->db_manager->get('Sbm\Db\Table\Services')->dupliquer($source, $cible);
-        $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->dupliquer($source, $cible);
+        $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->dupliquer($source,
+            $cible);
         $this->db_manager->get('Sbm\Db\Table\Circuits')->dupliquer($source, $cible);
+        return $this;
+    }
+
+    /**
+     * Cette méthode duplique les tarifs du millesime source dans le millesime cible à
+     * condition que le millesime cible soit vide.
+     *
+     * @param int $source
+     * @param int $cible
+     * @return \SbmGestion\Model\Db\Service\Simulation\Prepare
+     */
+    public function duplicateTarifs($source, $cible)
+    {
+        $this->db_manager->get('Sbm\Db\Table\Tarifs')->dupliquer($source, $cible);
         return $this;
     }
 
@@ -171,7 +188,15 @@ class Prepare implements FactoryInterface
                         // pu)
                         $secteur = new SectorisationCollege($this->db_manager,
                             $scolarite->eleveId);
-                        $scolarite->etablissementId = $secteur->getEtablissementId();
+                        try {
+                            $scolarite->etablissementId = $secteur->getEtablissementId();
+                        } catch (Exception $e) {
+                            // en cas d'erreur, on enregistre mais on continue
+                            $this->debugInitLog(
+                                StdLib::findParentPath(__DIR__, 'data/logs'),
+                                'sbm_error.log');
+                            $this->debugLog($e->getMessage());
+                        }
                     } elseif ($this->niveauClasse == Niveau::CODE_NIVEAU_SECOND_CYCLE) {
                         // secteur scolaire lycée (ici, un seul lycée marqué secteur
                         // scolaire)
@@ -199,11 +224,11 @@ class Prepare implements FactoryInterface
     }
 
     /**
-     * Renvoie le bon etablissementId en fonction de la nouvelle classe.
-     * Les règles sont : - etablissement d'origine en RPI - pas de changement de niveau -
-     * règle inscrite dans la table 'simulation-etablissements' Ne traite pas le cas des
-     * secteurs scolaires de collège et de lycée qui dépendent de la commune de résidence.
-     * Dans ce cas une DbTableException est lancée et on retrouvera le niveau de la classe
+     * Renvoie le bon etablissementId en fonction de la nouvelle classe. Les règles sont :
+     * - etablissement d'origine en RPI - pas de changement de niveau - règle inscrite
+     * dans la table 'simulation-etablissements' Ne traite pas le cas des secteurs
+     * scolaires de collège et de lycée qui dépendent de la commune de résidence. Dans ce
+     * cas une DbTableException est lancée et on retrouvera le niveau de la classe
      * suivante dans la propriété niveauClasse.
      *
      * @param string $etablissementOrigineId

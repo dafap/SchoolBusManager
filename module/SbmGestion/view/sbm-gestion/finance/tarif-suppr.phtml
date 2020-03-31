@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/finance/tarif-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
@@ -18,13 +18,13 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 	<p>Vous avez demandé la suppression du tarif :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?= $this->escapeHtml($this->data->nom); ?></li>
-			<li><?= $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
-			<li><?= $this->escapeHtml($this->data->duplicata); ?></li>
+			<li><?= $this->escapeHtml($this->natureGrilleTarif($this->data->duplicata)); ?></li>
 			<li><?= $this->escapeHtml($this->data->grille); ?></li>
-			<li><?= $this->escapeHtml($this->data->redui); ?></li>
 			<li><?= $this->escapeHtml($this->data->mode); ?></li>
-			<li><?= $this->data->seuil; ?></li>
+			<li>Seuil : <?= $this->data->seuil; ?></li>
+			<li><?= $this->escapeHtml($this->data->nom); ?></li>
+			<li><?= $this->escapeHtml($this->reductionTarif($this->data->reduit)); ?></li>
+			<li><?= $fmt->formatCurrency($this->data->montant, 'EUR'); ?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

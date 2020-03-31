@@ -9,8 +9,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
- * @version 2020-4.6.0
+ * @date 31 mars 2020
+ * @version 2020-5.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
@@ -142,7 +142,7 @@ class Calculs extends AbstractQuery
         $detailAbonnements = [];
         $montantAbonnements = 0;
         foreach ($effectifsParGrilleTarif as $row) {
-            $montantGrille = $tTarifs->getMontant($row['grilleCode'], $row['quantite']);
+            $montantGrille = $tTarifs->getMontant($row['grilleCode'], $row['quantite'], $this->millesime);
             $detailAbonnements[$row['grilleCode']] = [
                 'grilleR1' => $row['grilleTarifR1'],
                 'reductionR1' => $row['reductionR1'],
@@ -213,7 +213,7 @@ class Calculs extends AbstractQuery
         }
         $tTarifs = $this->db_manager->get('Sbm\Db\Table\Tarifs');
         $montantDuplicatas = $tTarifs->getMontant($tTarifs->getDuplicataCodeGrille(),
-            $nbDuplicatas);
+            $nbDuplicatas, $this->millesime);
         $this->resultats->setListeEleves($nature, $listeEleves);
         $this->resultats->setMontantDuplicatas($nature, $montantDuplicatas);
     }

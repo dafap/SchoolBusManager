@@ -2,10 +2,10 @@
  * Ensemble des scripts des pages de sbm-gestion/annee-scolaire/vider-reseau.phtml
  * 
  * @project sbm
- * @filesource dupliquer-reseau.js
+ * @filesource simulation-vider.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 var js_objet =(function(){

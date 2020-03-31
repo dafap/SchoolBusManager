@@ -362,12 +362,14 @@ class AnneeScolaireController extends AbstractActionController
                     $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->dupliquer(
                         $args['millesime_source'], $data['millesime_nouveau']) &&
                     $this->db_manager->get('Sbm\Db\Table\Circuits')->dupliquer(
+                        $args['millesime_source'], $data['millesime_nouveau']) &&
+                    $this->db_manager->get('Sbm\Db\Table\Tarifs')->dupliquer(
                         $args['millesime_source'], $data['millesime_nouveau'])) {
                     $this->flashMessenger()->addSuccessMessage(
-                        'Les circuits de l\'année scolaire ont été créés.');
+                        'Les circuits et tarifs de l\'année scolaire ont été créés.');
                 } else {
                     $this->flashMessenger()->addErrorMessage(
-                        'Impossible car les circuits de l\'année scolaire existent déjà.' .
+                        'Impossible car les circuits ou tarifs de l\'année scolaire existent déjà.' .
                         ' Si nécessaire, les vider et recommencer.');
                 }
                 try {
@@ -399,12 +401,14 @@ class AnneeScolaireController extends AbstractActionController
             if (array_key_exists('submit', $prg) && array_key_exists('millesime', $prg)) {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    set_time_limit(0);
                     $millesime = $prg['millesime'];
                     $this->db_manager->get('Sbm\Db\Simulation\Prepare')
                         ->setMajDistances(
                         $this->cartographie_manager->get('Sbm\CalculDroitsTransport'))
                         ->duplicateCircuits($millesime,
                         $this->db_manager->get('simulation'))
+                        ->duplicateTarifs($millesime, $this->db_manager->get('simulation'))
                         ->duplicateEleves($millesime, $this->db_manager->get('simulation'));
                     $this->flashMessenger()->addSuccessMessage(
                         "La simulation a été préparée à partir de l'année $millesime.");
@@ -469,13 +473,16 @@ class AnneeScolaireController extends AbstractActionController
                         $this->db_manager->get('simulation'));
                     $cr['lignes'] = $this->db_manager->get('Sbm\Db\Table\Lignes')->viderMillesime(
                         $this->db_manager->get('simulation'));
+                    $cr['tarifs'] = $this->db_manager->get('Sbm\Db\Table\Tarifs')->viderMillesime(
+                        $this->db_manager->get('simulation'));
                     $message = '';
                     foreach ($cr as $key => $value) {
                         $message .= sprintf(
                             "%d enregistrements supprimés dans la table %s \n", $value,
                             $key);
                     }
-                    $this->flashMessenger()->addSuccessMessage('La simulation a été effacée.');
+                    $this->flashMessenger()->addSuccessMessage(
+                        'La simulation a été effacée.');
                     $this->flashMessenger()->addInfoMessage($message);
                 } catch (\Zend\Db\TableGateway\Exception\RuntimeException $e) {
                     $this->flashMessenger()->addErrorMessage(

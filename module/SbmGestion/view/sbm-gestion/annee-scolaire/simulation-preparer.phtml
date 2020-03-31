@@ -3,16 +3,24 @@
  * Page de paramétrage de la préparation
  *
  * Formulaire de paramétrage indiquant les classes reprises ou non
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/annee-scolaire
  * @filesource simulation-preparer.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 sept. 2018
- * @version 2019-2.5.0
+ * @date 31 mars 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/annee-scolaire', 'simulation-preparer.css');
+$this->jQuery('jquery-ui');
+$this->themeJS('gestion-annee-scolaire', 'simulation-preparer.js');
+$this->inlineScript()->captureStart();
+?>
+js_object.init();
+<?php
+$this->inlineScript()->captureEnd();
 $url_retour = $this->url('sbmgestion/anneescolaire');
 $hiddens = [];
 $actions = [
@@ -55,7 +63,7 @@ $actions = [
 			</ul>
 			</div>
 		</div>
-		<div class="row-inner">
+		<div id="simulation-preparer" class="row-inner">
 		<?= $this->form()->openTag($form);?>
 		<?= $this->formCollection($form);?>
 		<?= $this->form()->closeTag();?>

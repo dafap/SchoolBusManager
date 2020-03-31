@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1238,9 +1238,9 @@ class FinanceController extends AbstractActionController
         $effectifTarifs->init();
         return new ViewModel(
             [
-
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Tarifs')->paginator(
-                    $args['where'], [
+                    $args['where']->equalTo('millesime', Session::get('millesime')),
+                    [
                         'duplicata',
                         'grille',
                         'reduit',

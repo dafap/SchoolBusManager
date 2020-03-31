@@ -8,7 +8,7 @@
  * @filesource Tarif
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -22,12 +22,15 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
     {
         parent::__construct('tarif');
         $this->setAttribute('method', 'post');
-        $this->add(
-            [
-                'name' => 'tarifId',
-                'type' => 'hidden'
-            ]);
-        $this->add(
+        $this->add([
+            'name' => 'tarifId',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'millesime',
+            'type' => 'hidden'
+        ])
+            ->add(
             [
                 'name' => 'csrf',
                 'type' => 'Zend\Form\Element\Csrf',
@@ -74,23 +77,24 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add([
-            'name' => 'duplicata',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => [
-                'id' => 'tarif-duplicata',
-                'class' => 'sbm-checkbox',
-            ],
-            'options' => [
-                'label' => 'Duplicata',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'duplicata',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'tarif-duplicata',
+                    'class' => 'sbm-checkbox'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Duplicata',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -110,23 +114,24 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add([
-            'name' => 'reduit',
-            'type' => 'Zend\Form\Element\Checkbox',
-            'attributes' => [
-                'id' => 'tarif-reduit',
-                'class' => 'sbm-checkbox',
-            ],
-            'options' => [
-                'label' => 'Réduit',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'reduit',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'tarif-reduit',
+                    'class' => 'sbm-checkbox'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
+                'options' => [
+                    'label' => 'Réduit',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
                 ]
-            ]
-        ]);
+            ]);
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -189,6 +194,10 @@ class Tarif extends AbstractSbmForm implements InputFilterProviderInterface
     public function getInputFilterSpecification()
     {
         return [
+            'millesime' => [
+                'name' => 'millesime',
+                'required' => true
+            ],
             'nom' => [
                 'name' => 'nom',
                 'requeried' => true,

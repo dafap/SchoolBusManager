@@ -1,0 +1,36 @@
+/**
+ * Feuille de style pour formulaire
+ * 
+ * 
+ * @project sbm
+ * @package public/css/tra
+ * @filesource simulation-preparer.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 31 mars 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+
+div#simulation-preparer {
+	margin-bottom: 8px;
+	margin-left: 0;
+	padding-left: 1em;
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+#simulation-preparer input[type=submit] {
+	margin-left: 20px;
+	margin-top: 6px;
+}
+
+#simulation-preparer fieldset {
+	border: 0;
+}
+
+.attendre {
+	background-image: url("/img/attendre-3.gif");
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}

@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -260,7 +260,7 @@ class ElevesScolarites extends AbstractQuery
             ]);
         $resultset = $this->renderResult($select->where($elevesInscrits()));
         foreach ($resultset as $row) {
-            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite']);
+            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite'], $this->millesime);
         }
         return $montant;
     }

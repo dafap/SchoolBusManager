@@ -2,7 +2,7 @@
  * Ensemble des scripts des pages de sbm-gestion/annee-scolaire/vider-reseau.phtml
  * 
  * @project sbm
- * @filesource vider-reseau.js
+ * @filesource simulation-preparer.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 31 mars 2020
@@ -11,13 +11,13 @@
 var js_objet =(function(){
 	 // fonctions privées
 	 function attendre() {
-		 $("#vider-reseau").addClass("attendre");
+		 $("#simulation-preparer").addClass("attendre");
 	 }
 	 // mise en place des listeners
 	 // selector pour filtrer les descendants du selector
 	 // data pour passer à la fonction dans l'event e sous e.data
 	 $(document).ready(function() {
-			$("#Form").submit(function(e){
+			$("#simulation").submit(function(e){
 				attendre();
 			});
 		});
@@ -25,7 +25,7 @@ var js_objet =(function(){
 	 // (dans ces méthodes on passe tous les paramètres qu'on veut)
 	 return {
 		 "init": function() {
-			 $("#vider-reseau").removeClass('attendre');
+			 $("#simulation-preparer").removeClass('attendre');
 		 }
 	 }
 })();

@@ -7,7 +7,7 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 31 mars 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -59,7 +59,7 @@ class CalculMontant extends AbstractQuery
             $detailAbonnements = [];
             $montantAbonnements = 0;
             foreach ($effectifsParGrilleTarif as $row) {
-                $montantGrille = $tTarifs->getMontant($row['grilleCodeR1'], $row['quantite']);
+                $montantGrille = $tTarifs->getMontant($row['grilleCodeR1'], $row['quantite'], $this->millesime);
                 $detailAbonnements[$row['grilleCodeR1']] = [
                     'grille' => $row['grilleTarifR1'],
                     'reduction'=>$row['reductionR1'],
@@ -145,7 +145,7 @@ class CalculMontant extends AbstractQuery
                 ];
             }
             $montantDuplicatas = $tTarifs->getMontant($tTarifs->getDuplicataCodeGrille(),
-                $nbDuplicatas);
+                $nbDuplicatas, $this->millesime);
             $this->duplicatas = [
                 'detailDuplicatas' => $detailDuplicatas,
                 'montantDuplicatas' => $montantDuplicatas
