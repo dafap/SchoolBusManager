@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -119,6 +119,12 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      * @var array
      */
     private $lngRange;
+
+    /**
+     *
+     * @var array
+     */
+    private $compte_rendu;
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -223,6 +229,38 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     public function majDistancesDistrictSansPerte(int $eleveId, bool $gardeDistance = true)
     {
         $this->majDistancesDistrict($eleveId, $gardeDistance);
+    }
+
+    /**
+     * NON UTILISE DANS CETTE VERSION. Uniquement pour la compatibilité du code.
+     *
+     * @param array $row
+     *            tableau décrivant la scolarité d'un élève avec au moins les champs
+     *            suivants : distanceR1, distanceR2, district, derogation
+     * @return boolean
+     */
+    public function estEnAttente($row)
+    {
+        return false;
+    }
+
+    /**
+     * . NON UTILISE DANS CETTE VERSION. Le compte-rendu renvoyé est un tableau de la
+     * forme :
+     *
+     * @formatter off
+     *  []
+     *  ou ['message' => string]
+     *  ou [
+     *        'etablissements' => array
+     *     ] où array est un tableau de ['nom' => string, 'commune'=>string]
+     * @formatter on
+     *
+     * @return array
+     */
+    public function getCompteRendu()
+    {
+        return $this->compte_rendu;
     }
 
     private function calculs()

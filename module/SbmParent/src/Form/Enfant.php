@@ -12,8 +12,8 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
- * @version 2019-2.5.0
+ * @date 1 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
 
@@ -119,7 +119,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'sexe',
                 'attributes' => [
                     'id' => 'eleve-sexe',
-                    'tabindex' => 31
+                    'tabindex' => 31,
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Sexe',
@@ -143,7 +144,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_chez',
                     'tabindex' => 41,
-                    'class' => 'sbm-width-40c'
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Chez',
@@ -162,7 +163,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_adresseEleveL1',
                     'tabindex' => 42,
-                    'class' => 'sbm-width-40c'
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Adresse',
@@ -182,7 +183,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'id' => 'enfant_adresseEleveL2',
 
                     'tabindex' => 43,
-                    'class' => 'sbm-width-40c'
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Complément d\'adresse',
@@ -201,7 +202,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_codePostalEleve',
                     'tabindex' => 44,
-                    'class' => 'sbm-width-5c'
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Code postal',
@@ -220,7 +221,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_communeEleveId',
                     'tabindex' => 45,
-                    'class' => 'sbm-width-40c'
+                    'class' => 'sbmparent-enfant'
                 ],
                 'options' => [
                     'label' => 'Commune',
@@ -246,13 +247,13 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'day_attributes'=>[
+                    'day_attributes' => [
                         'tabindex' => 21
                     ],
-                    'month_attributes'=>[
+                    'month_attributes' => [
                         'tabindex' => 22
                     ],
-                    'year_attributes'=>[
+                    'year_attributes' => [
                         'tabindex' => 23
                     ],
                     'error_attributes' => [
@@ -467,6 +468,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'demandeR2',
                 'attributes' => [
                     'id' => 'demandeR2',
+                    'tabindex' => 280,
                     'class' => 'sbmparent-enfant',
                     'value' => 0
                 ],
@@ -479,6 +481,47 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                         '1' => 'Oui',
                         '0' => 'Non'
                     ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'name' => 'stationIdR1',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'enfant_stationIdR1',
+                    'tabindex' => 52,
+                    'class' => 'sbmparent-enfant'
+                ],
+                'options' => [
+                    'label' => 'Point de montée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un point d\'arrêt',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'stationIdR2',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'enfant_stationIdR2',
+                    'tabindex' => 290,
+                    'class' => 'sbmparent-enfant'
+                ],
+                'options' => [
+                    'label' => 'Point de montée',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'empty_option' => 'Choisissez un point d\'arrêt',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -560,6 +603,10 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'demandeR2' => [
                 'name' => 'demandeR2',
+                'required' => false
+            ],
+            'stationIdR2' => [
+                'name' => 'stationIdR2',
                 'required' => false
             ]
         ];

@@ -15,7 +15,7 @@
  * @filesource Responsable2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
@@ -75,8 +75,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'name' => 'r2titre',
                     'attributes' => [
                         'id' => 'titre',
-                        'class' => 'sbm-width-15c',
-                        'autofocus' => 'autofocus'
+                        'class' => 'sbmparent-enfant r2',
+                        'tabindex' => 201,
                     ],
                     'options' => [
                         'label' => 'Identité du responsable',
@@ -103,7 +103,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'name' => 'r2nom',
                     'attributes' => [
                         'id' => 'nom',
-                        'class' => 'sbm-width-30c'
+                        'tabindex' => 206,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Nom',
@@ -121,7 +122,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'name' => 'r2prenom',
                     'attributes' => [
                         'id' => 'prenom',
-                        'class' => 'sbm-width-30c'
+                        'tabindex' => 211,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Prénom',
@@ -139,7 +141,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'SbmCommun\Form\Element\Adresse',
                     'attributes' => [
                         'id' => 'adresseL1',
-                        'class' => 'sbm-width-40c'
+                        'tabindex' => 216,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Adresse',
@@ -157,7 +160,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'SbmCommun\Form\Element\Adresse',
                     'attributes' => [
                         'id' => 'adresseL2',
-                        'class' => 'sbm-width-40c'
+                        'tabindex' => 221,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Adresse',
@@ -175,7 +179,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'SbmCommun\Form\Element\Adresse',
                     'attributes' => [
                         'id' => 'adresseL3',
-                        'class' => 'sbm-width-40c'
+                        'tabindex' => 226,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Adresse',
@@ -193,7 +198,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'SbmCommun\Form\Element\CodePostal',
                     'attributes' => [
                         'id' => 'codePostal',
-                        'class' => 'sbm-width-5c'
+                        'tabindex' => 231,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Code postal',
@@ -211,7 +217,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'Zend\Form\Element\Select',
                     'attributes' => [
                         'id' => 'communeId',
-                        'class' => 'sbm-width-45c'
+                        'tabindex' => 236,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Commune',
@@ -232,7 +239,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'SbmCommun\Form\Element\Telephone',
                     'attributes' => [
                         'id' => 'telephoneF',
-                        'class' => 'sbm-width-15c'
+                        'tabindex' => 241,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Téléphone',
@@ -249,7 +257,9 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                 [
                     'name' => 'r2smsF',
                     'type' => 'Zend\Form\Element\Radio',
-                    'attributes' => [],
+                    'attributes' => [
+                        'tabindex' => 246,
+                    ],
                     'options' => [
                         'label' => 'Accepte SMS',
                         'label_attributes' => [
@@ -267,7 +277,8 @@ class Responsable2 extends AbstractSbmForm implements InputFilterProviderInterfa
                     'type' => 'Zend\Form\Element\Email',
                     'attributes' => [
                         'id' => 'email',
-                        'class' => 'sbm-width-50c'
+                        'tabindex' => 251,
+                        'class' => 'sbmparent-enfant r2'
                     ],
                     'options' => [
                         'label' => 'Email',

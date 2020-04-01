@@ -1,6 +1,6 @@
 <?php
 /**
- * Page d'entrée dans l'espace Parents - Version Millau Grands Causses
+ * Page d'entrée dans l'espace Parents - Version Arlysère
  *
  * Elle dispose des propriétés suivantes :
  * 'theme' : objet SbmInstallation\Model\Theme
@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -347,8 +347,9 @@ $url_facture = $this->url('sbmdocument', [
             <?php
         $alerte = false;
         foreach ($this->preinscrits as $row) {
-            $peutPayer = $row['grilleCode'] != GrilleTarifInterface::NON_AYANT_DROIT ||
-                $row['derogation'] >= 1;
+            //$peutPayer = $row['grilleCode'] != GrilleTarifInterface::NON_AYANT_DROIT ||
+            //    $row['derogation'] >= 1;
+            $peutPayer = true;
             if ($row['selectionScolarite']) {
                 $grilleTarif = '<span class="exces" title="Cet enfant n\'est pas inscrit.' .
                     ' Respectez les délais.">en attente</span>';

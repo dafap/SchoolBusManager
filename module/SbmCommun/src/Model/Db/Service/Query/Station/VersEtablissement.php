@@ -7,8 +7,8 @@
  * @filesource VersEtablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 oct. 2019
- * @version 2019-2.5.4
+ * @date 1 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
@@ -49,7 +49,15 @@ class VersEtablissement extends AbstractQuery
             ->join(
             [
                 'e' => $this->db_manager->getCanonicName('etablissements-services')
-            ], 'c.serviceId = e.serviceId', [])
+            ],
+            implode(' AND ',
+                [
+                    'e.millesime = c.millesime',
+                    'e.ligneId = c.ligneId',
+                    'e.sens = c.sens',
+                    'e.moment = c.moment',
+                    'e.ordre = c.ordre'
+                ]), [])
             ->where(
             [
                 's.visible' => 1,

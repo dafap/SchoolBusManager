@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -137,7 +137,7 @@ class IndexController extends AbstractActionController
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
                 'resultats' => $this->db_manager->get(
-                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    \SbmCommun\Arlysere\Tarification\Facture\Calculs::class)->getResultats(
                     $responsable->responsableId, null, true), // pour forcer le calcul
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
@@ -333,6 +333,7 @@ class IndexController extends AbstractActionController
         $eleveId = $args['id'];
         $outils = new OutilsInscription($this->db_manager,
             $auth_responsable->responsableId, $authUserId, $eleveId);
+        $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
         $form = $this->form_manager->get(Form\Enfant::class);
         $form->setAttribute('action',
             $this->url()
@@ -348,7 +349,9 @@ class IndexController extends AbstractActionController
             ->setValueOptions('joursTransportR1', Semaine::getJours())
             ->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
-                ->membres());
+                ->membres())
+            ->setValueOptions('stationIdR1', $selectStations)
+            ->setValueOptions('stationIdR2', $selectStations);
         // pour la garde alternée, on doit déterminer si le formulaire sera complet ou non
         // afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout de même
         // responsableId (attention ! dans le post, les champs sont préfixés par r2)

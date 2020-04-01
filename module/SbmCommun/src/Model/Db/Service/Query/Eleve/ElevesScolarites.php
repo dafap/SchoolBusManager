@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -88,6 +88,8 @@ class ElevesScolarites extends AbstractQuery
                 'demandeR1' => 'demandeR1',
                 'demandeR2' => 'demandeR2',
                 'dateDemandeR2'=>'dateDemandeR2',
+                'stationIdR1' => 'stationIdR1',
+                'stationIdR2' => 'stationIdR2',
                 'accordR1' => 'accordR1',
                 'accordR2' => 'accordR2',
                 'internet' => 'internet',

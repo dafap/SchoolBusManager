@@ -8,7 +8,7 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -18,12 +18,12 @@ $this->themeJS('sbm-parent', 'edit-eleve.js');
 $texteDemandeR2 = <<<EOT
 Si cette deuxième adresse est dans le ressort territorial, une deuxième carte
 de transport sera attribuée. Sinon, vous devez faire une demande auprès du
-service régional des transports de l’Aveyron à l’adresse :
+service régional des transports à l’adresse :
 EOT;
 $texteDemandeR2 = preg_replace('/\s/', ' ', $texteDemandeR2) . ' ' . $this->url_ts_region;
 $this->headScript()->captureStart();
 ?>
-texteDemandeR2 = "<?=$texteDemandeR2;?>";
+texteDemandeR2 = "";
 <?php
 $this->headScript()->captureEnd();
 $this->inlineScript()->captureStart();
@@ -103,24 +103,26 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
 					</div>
-				</div>
-				<div class="zone col2">
 					<div id="enfant-etablissementId" class="row-inner">
 					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
+					<div class="flex">
+						<div id="enfant-classeId" class="row-inner">
+					   		<?=$this->formRow($this->form->get('classeId'));?></div>
+						<div id="wrapper-regimeId" class="bloc-wrapper zone fit-content">
+					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
+					</div>
+					<div id="enfant-stationIdR1">
+						<?= $this->formRow($this->form->get('stationIdR1'));?></div>
+				</div>
+				<div class="zone col2">
 					<div class="table2cols">
 						<div class="zone col21">
-							<div id="enfant-classeId" class="row-inner">
-					   		<?=$this->formRow($this->form->get('classeId'));?></div>
 							<div id="wrapper-radio-col2" class="table2cols">
-								<div id="wrapper-regimeId" class="bloc-wrapper zone fit-content">
-					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
 								<div id="wrapper-ga" class="bloc-wrapper zone fit-content">
 								<?=$this->formRow($this->form->get('ga'));?></div>
 							</div>
 						</div>
-						<div id="wrapper-photo" class="zone col22">
-							<img height="140" alt="photo" src="<?=$this->dataphoto;?>" />
-							<div id="wrapper-filephoto">
+						<div id="wrapper-filephoto" class="zone col22">
 							<?php
     $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
     $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
@@ -131,6 +133,9 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 							<?=$this->formButton($btnOpenDialog, "<i class=\"fam-camera-edit\"></i> $btnDialogLabel");?>
 				    		<?=$this->formButton($btnSupprPhoto,'<i class="fam-camera-delete"></i> Supprimer la photo');?>
 							</div>
+						<div id="wrapper-photo" class="zone col23">
+							<img height="140" alt="photo" src="<?=$this->dataphoto;?>" />
+
 						</div>
 					</div>
 					<div id="z3cd-r1"></div>
@@ -221,8 +226,6 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 						<?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="?adresseEleveL2" class="row-inner">
 						<?=$this->formRow($this->form->get('adresseL2'));?></div>
-			<div id="?adresseEleveL3" class="row-inner">
-						<?=$this->formRow($this->form->get('adresseL3'));?></div>
 			<div id="?codePostalEleve" class="row-inner">
 						<?=$this->formRow($this->form->get('codePostal'));?></div>
 			<div id="?communeEleveId" class="row-inner">
@@ -263,6 +266,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 			    <?=$this->formRow($this->formga->get('r2email'));?></div>
 			<div id="_demandeR2" class="row-inner">
 			    <?=$this->formRow($this->form->get('demandeR2'));?></div>
+			<div id="_stationIdR2" class="row-inner">
+				<?=$this->formRow($this->form->get('stationIdR2'));?></div>
 		</fieldset>
 		<?php else :?>
 		<fieldset style="padding-right: 0.5em;">

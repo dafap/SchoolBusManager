@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -50,44 +50,61 @@ class Scolarites extends AbstractSbmTable
      */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
-        $result = [
-            'is_new' => false,
-            'distanceR1Inconnue' => $obj_data->demandeR1 &&
-            ($obj_data->distanceR1 == 99 || $obj_data->distanceR1 == 0),
-            'distanceR2Inconnue' => $obj_data->demandeR2 &&
-            ($obj_data->distanceR2 == 99 || $obj_data->distanceR2 == 0),
-            'etablissementChange' => false,
-            'reductionChange' => false,
-            'saveRecord' => false,
-            'obj_data' => $obj_data
-        ];
         try {
             $old_data = $this->getRecord($obj_data->getId());
+            // résultat type
+            $obj_complete = $this->getObjData()->exchangeArray($old_data->getArrayCopy(),
+                $obj_data->getArrayCopy());
+            $result = [
+                'is_new' => false,
+                'distanceR1Inconnue' => $obj_complete->demandeR1 &&
+                ($obj_complete->distanceR1 == 99 || $obj_complete->distanceR1 == 0),
+                'distanceR2Inconnue' => $obj_complete->demandeR2 &&
+                ($obj_complete->distanceR2 == 99 || $obj_complete->distanceR2 == 0),
+                'etablissementChange' => false,
+                'reductionChange' => false,
+                'saveRecord' => null,
+                'obj_data' => $obj_data
+            ];
             // update
-            if ($old_data->etablissementId != $obj_data->etablissementId) {
+            if ($old_data->etablissementId != $obj_complete->etablissementId) {
                 $obj_data->distanceR1 = $obj_data->distanceR2 = 0;
-                if ($obj_data->demandeR1 = 2) {
+                if ($obj_complete->demandeR1 = 2) {
                     $obj_data->demandeR1 = 1;
                 }
-                if ($obj_data->demandeR2 = 2) {
+                if ($obj_complete->demandeR2 = 2) {
                     $obj_data->demandeR2 = 1;
                 }
                 $result['etablissementChange'] = true;
             }
-            if ($old_data->derogation != $obj_data->derogation) {
-                $obj_data->reductionR1 = ($obj_data->derogation != 0) ? 1 : 0;
+            if ($old_data->derogation != $obj_complete->derogation) {
+                $obj_data->reductionR1 = ($obj_complete->derogation != 0) ? 1 : 0;
                 $obj_data->reductionR2 = $obj_data->reductionR1;
                 $result['reductionChange'] = true;
             }
             $obj_data->addCalculateField('dateModification');
         } catch (Exception\ExceptionInterface $e) {
             // insert
+            $result = [
+                'is_new' => true,
+                'distanceR1Inconnue' => true,
+                'distanceR2Inconnue' => true,
+                'etablissementChange' => true,
+                'reductionChange' => true,
+                'saveRecord' => null,
+                'obj_data' => $obj_data
+            ];
+            if (isset($obj_data->demandeR1) && isset($obj_data->distanceR1)) {
+                $result['distanceR1Inconnue'] = $obj_data->demandeR1 &&
+                    ($obj_data->distanceR1 == 99 || $obj_data->distanceR1 == 0);
+            }
+            if (isset($obj_data->demandeR2) && isset($obj_data->distanceR2)) {
+                $result['distanceR2Inconnue'] = $obj_data->demandeR2 &&
+                ($obj_data->distanceR2 == 99 || $obj_data->distanceR2 == 0);
+            }
             $obj_data->setCalculateFields([
                 'dateInscription'
             ]);
-            $result['etablissementChange'] = true;
-            $result['reductionChange'] = true;
-            $result['is_new'] = true;
         }
         $result['saveRecord'] = parent::saveRecord($obj_data);
         return $result;
