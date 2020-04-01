@@ -9,8 +9,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 1 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
@@ -38,8 +38,7 @@ class FinanceController extends AbstractActionController
             // die(var_dump($eleveId, $responsableId));
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
                 $eleveId, 1);
-            $resultats = $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId);
             $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
             $sommeDue = $inscrits + $resultats->getMontantDuplicatas();
@@ -101,8 +100,7 @@ class FinanceController extends AbstractActionController
                         ]));
             }
             $tScolarites->setPaiement($millesime, $eleveId, 0);
-            $resultats = $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId);
             $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
             $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
@@ -361,8 +359,7 @@ class FinanceController extends AbstractActionController
                     'success' => 0
                 ]));
         }
-        $resultat = $this->db_manager->get(
-            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+        $resultat = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
             $responsableId, $aEleveId);
         return $this->getResponse()->setContent(
             Json::encode(

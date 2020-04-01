@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -44,8 +44,7 @@ class DocumentController extends AbstractActionController
         // factureset est un objet Iterator
         $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
             $responsableId,
-            $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId));
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
@@ -77,8 +76,7 @@ class DocumentController extends AbstractActionController
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
         $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
-            $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId));
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(

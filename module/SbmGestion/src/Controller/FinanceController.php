@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 1 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -215,8 +215,7 @@ class FinanceController extends AbstractActionController
                 ]);
             $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
             // calcul des montants dus, payés et du solde
-            $resultats = $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId);
             // condition pour le paginator
             $where = new Where();
@@ -327,8 +326,7 @@ class FinanceController extends AbstractActionController
                 // validation des paiements dans les fiches scolarites
                 if (! empty($args['eleveId'])) {
                     $responsableId = $form->getData()->responsableId;
-                    $resultats = $this->db_manager->get(
-                        \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                         $responsableId, $args['eleveId']);
                     if ($montant >= $resultats->getSolde('liste')) {
                         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
@@ -1102,8 +1100,7 @@ class FinanceController extends AbstractActionController
                                                                          // SBM_DG_SESSION
         }
         $responsableId = $args['responsableId'];
-        $resultats = $this->db_manager->get(
-            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+        $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
             $responsableId);
         return new ViewModel(
             [

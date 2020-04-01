@@ -86,7 +86,7 @@ return [
             'Sbm\GrilleTarifR1' => Arlysere\Tarification\GrilleTarifR1::class,
             'Sbm\GrilleTarifR2' => Arlysere\Tarification\GrilleTarifR2::class,
             'Sbm\AbonnementsFratrie' => Arlysere\Tarification\Facture\AbonnementsFratrie::class,
-            Arlysere\Tarification\Facture\Calculs::class => Arlysere\Tarification\Facture\Calculs::class,
+            'Sbm\Facture\Calculs' => Arlysere\Tarification\Facture\Calculs::class,
 
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,

@@ -136,8 +136,7 @@ class IndexController extends AbstractActionController
                     $responsable->responsableId),
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
-                'resultats' => $this->db_manager->get(
-                    \SbmCommun\Arlysere\Tarification\Facture\Calculs::class)->getResultats(
+                'resultats' => $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                     $responsable->responsableId, null, true), // pour forcer le calcul
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [

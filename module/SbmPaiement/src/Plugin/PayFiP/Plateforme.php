@@ -7,8 +7,8 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 1 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayFiP;
 
@@ -134,8 +134,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             // génère une facture ou la récupère si elle existe déjà
             $this->setFacture(
                 new \SbmCommun\Model\Paiements\Facture($this->db_manager,
-                    $this->db_manager->get(
-                        \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)
+                    $this->db_manager->get('Sbm\Facture\Calculs')
                         ->getResultats($this->responsable->responsableId)))
                 ->facturer();
         }
