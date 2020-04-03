@@ -62,6 +62,7 @@ class Scolarites extends AbstractSbmTable
                 'distanceR2Inconnue' => $obj_complete->demandeR2 &&
                 ($obj_complete->distanceR2 == 99 || $obj_complete->distanceR2 == 0),
                 'etablissementChange' => false,
+                'gaChange' => false,
                 'reductionChange' => false,
                 'saveRecord' => null,
                 'obj_data' => $obj_data
@@ -82,8 +83,10 @@ class Scolarites extends AbstractSbmTable
                 $obj_data->reductionR2 = $obj_data->reductionR1;
                 $result['reductionChange'] = true;
             }
-            if ($old_data->demandeR2 != $obj_complete->demandeR2) {
+            if (($old_data->demandeR2 + $obj_complete->demandeR2) > 0 &&
+                ($old_data->demandeR2 * $obj_complete->demandeR2) == 0) {
                 $obj_data->addCalculateField('dateDemandeR2');
+                $result['gaChange'] = true;
             }
             $obj_data->addCalculateField('dateModification');
         } catch (Exception\ExceptionInterface $e) {
@@ -93,6 +96,7 @@ class Scolarites extends AbstractSbmTable
                 'distanceR1Inconnue' => true,
                 'distanceR2Inconnue' => true,
                 'etablissementChange' => true,
+                'gaChange' => true,
                 'reductionChange' => true,
                 'saveRecord' => null,
                 'obj_data' => $obj_data

@@ -34,7 +34,7 @@ class OutilsInscription
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db_manager;
+    private $local_manager;
 
     /**
      * Identifiant de l'élève à réinscrire ou à modifier. Il sera null pour une
@@ -53,9 +53,15 @@ class OutilsInscription
 
     /**
      *
-     * @var \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
+     * @var \SbmCommun\Model\Db\ObjectData\Scolarite
      */
-    private $scolariteAnneePrecedente;
+    private $oScolarite;
+
+    /**
+     *
+     * @var \SbmCommun\Model\Db\ObjectData\ObjectDataInterface[]
+     */
+    private $aEntities;
 
     /**
      * userId de la personne authentifiée. Correspond à
@@ -66,8 +72,23 @@ class OutilsInscription
     private $userId;
 
     /**
+     * Compte-rendu permettant de connaitre l'état de l'évolution des données. En
+     * particulier on enregistre le retour des différents saveRecord()
      *
-     * @param \SbmCommun\Model\Db\Service\DbManager $db_manager
+     * @var array
+     */
+    private $cr;
+
+    /**
+     * Messages à transmettre au controller
+     *
+     * @var array
+     */
+    private $messages;
+
+    /**
+     *
+     * @param \SbmCommun\Model\Db\Service\DbManager $local_manager
      * @param int $responsableId
      *            responsableId de la personne authentifiée.
      * @param int $userId
@@ -76,31 +97,21 @@ class OutilsInscription
      *            Identifiant de l'élève à réinscrire ou à modifier. Il sera null pour une
      *            inscription.
      */
-    public function __construct($db_manager, $responsableId, $userId, $eleveId = null)
+    public function __construct($local_manager, $responsableId, $userId, $eleveId = null)
     {
         $this->millesime = Session::get('millesime');
-        $this->db_manager = $db_manager;
+        $this->local_manager = $local_manager;
         $this->responsableId = $responsableId;
         $this->userId = $userId;
         $this->eleveId = $eleveId;
-    }
-
-    private function getScolariteAnneePrecedente()
-    {
-        if ($this->eleveId) {
-            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-            try {
-                $this->scolariteAnneePrecedente = $tScolarites->getRecord(
-                    [
-                        'millesime' => $this->millesime - 1,
-                        'eleveId' => $this->eleveId
-                    ])->getArrayCopy();
-            } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-                $this->scolariteAnneePrecedente = [];
-            }
-        } else {
-            $this->scolariteAnneePrecedente = [];
-        }
+        $this->cr = [];
+        $this->messages = [];
+        $this->aEntities = [
+            'eleve' => null,
+            'scolarite' => null,
+            'responsable1' => null,
+            'respondable2' => null
+        ];
     }
 
     /**
@@ -112,11 +123,13 @@ class OutilsInscription
      */
     public function isOwner($responsableId)
     {
-        $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+        $tResponsables = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Responsables');
         try {
             $email = $tResponsables->getRecord($responsableId)->email;
             if ($email) {
-                $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
+                $tUsers = $this->local_manager->get('Sbm\DbManager')->get(
+                    'Sbm\Db\Table\Users');
                 $user = $tUsers->getRecordByEmail($email);
                 $owner = ! $user->confirme || ! $user->active;
             } else {
@@ -142,7 +155,8 @@ class OutilsInscription
      */
     public function saveResponsable($data)
     {
-        $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+        $tResponsables = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Responsables');
         $oData = $tResponsables->getObjData();
         $oData->exchangeArray($data);
         if (! $oData->userId) {
@@ -151,8 +165,9 @@ class OutilsInscription
         try {
             if ($tResponsables->saveRecord($oData)) {
                 // on s'assure de rendre cette commune visible
-                $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
-                    $oData->communeId);
+                $this->local_manager->get('Sbm\DbManager')
+                    ->get('Sbm\Db\table\Communes')
+                    ->setVisible($oData->communeId);
             }
             // on récupère le responsableId qui vient d'être enregistré,
             // que ce soit un insert, un update ou la reprise d'un autre responsable par
@@ -186,7 +201,7 @@ class OutilsInscription
      */
     public function saveEleve($data, $hasGa = false, $responsable2Id = null)
     {
-        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $tEleves = $this->local_manager->get('Sbm\DbManager')->get('Sbm\Db\Table\Eleves');
         $oData = $tEleves->getObjData();
         $responsable1Id = StdLib::getParam('responsable1Id', $data);
         if (empty($responsable1Id)) {
@@ -213,37 +228,43 @@ class OutilsInscription
                 $oData->exchangeArray($data);
             }
         }
-        return $tEleves->saveRecord($oData); // renvoie eleveId
+        $eleveId = $tEleves->saveRecord($oData); // renvoie eleveId
+        if (! $this->eleveId) {
+            $this->eleveId = $eleveId;
+        }
+        return $eleveId;
     }
 
     /**
      * Enregistre la scolarité et renvoie un indicateur précisant si on doit recalculer
      * les distances. Le recalcul des distances est nécessaire (true) si l'une des
      * condition est remplie :<ul> <li>l'établissement a changé,</li> <li>c'est un nouvel
-     * enregistrement</li> <li>district = 0</li></ul>
-     * Il est nécessaire de remettre accordR1 et accordR2 à 1 pour traiter le cas de non
-     * ayant droits repassant ayant droit par changement d'établissement ou de domicile.
+     * enregistrement</li> <li>district = 0</li></ul> Il est nécessaire de remettre
+     * accordR1 et accordR2 à 1 pour traiter le cas de non ayant droits repassant ayant
+     * droit par changement d'établissement ou de domicile.
      *
      * @param array $data
      *            tableau de données contenant la scolarité
-     * @param int|null $eleveId
-     *            ne doit être passé que pour une réinscription
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
      * @return <b>boolean</b> : indicateur de recalcul de distances
      */
-    public function saveScolarite($data, $eleveId = null)
+    public function saveScolarite(array $data, string $mode)
     {
-        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Scolarites');
         $oData = $tScolarites->getObjData();
-        if (is_null($eleveId)) {
+        if ($mode == 'edit') {
             $array = [
                 'millesime' => $this->millesime,
+                'eleveId' => $this->eleveId,
                 'accordR1' => 1,
                 'accordR2' => 1
             ];
         } else {
             $array = [
                 'millesime' => $this->millesime,
-                'eleveId' => $eleveId,
+                'eleveId' => $this->eleveId,
                 'inscrit' => 1,
                 'paiementR1' => 0,
                 'paiementR2' => 0,
@@ -259,12 +280,182 @@ class OutilsInscription
         }
         $oData->exchangeArray(array_merge($data, $array));
 
-        return $tScolarites->saveRecord($oData);
+        $this->cr['saveScolarite'] = $tScolarites->saveRecord($oData);
+    }
+
+    /**
+     * Examine ce qu'il faut mettre à jour après l'inscription ou la modification :
+     * distanceR1, distanceR2, grilleTarifR1, grilleTarifR2, affectations pour le R1,
+     * affectations pour le R2. Puis lance les méthodes de mises à jour. Au fur et à
+     * mesure, les erreurs et problèmes seront enregistrés dans la propriété messages
+     *
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     */
+    public function apresInscription(string $mode)
+    {
+        if ($mode == 'edit') {
+            if ($this->cr['saveScolarite']['etablissementChange']) {
+                $this->supprAffectations();
+            } elseif ($this->cr['saveScolarite']['gaChange']) {
+                $this->supprAffectations(true);
+            }
+        }
+        $this->majDistances($mode);
+        $this->majGrillesTarif($mode, 1);
+        $this->majReductions($mode, 1);
+        $this->rechercheTrajets($mode, 1);
+        if ($this->getEleve()->responsable2Id && $this->getScolarite()->demandeR2 > 0) {
+            $this->majGrillesTarif($mode, 2);
+            $this->majReductions($mode, 2);
+            $this->rechercheTrajets($mode, 2);
+        }
+    }
+
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    private function addMessage($messages)
+    {
+        if (is_string($messages)) {
+            $messages = (array) $messages;
+        }
+        $this->messages = array_merge($this->messages, $messages);
+    }
+
+    /**
+     * On lance la procédure majDistanceDistrict() de la classe
+     * \SbmCommun\Arlysere\CalculDroits
+     *
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     */
+    private function majDistances(string $mode)
+    {
+        if ($mode == 'edit') {
+            $calculDistance = $this->cr['saveScolarite']['distanceR1Inconnue'] ||
+                $this->cr['saveScolarite']['distanceR2Inconnue'] ||
+                $this->cr['saveScolarite']['etablissementChange'];
+        } else {
+            $calculDistance = ! ($this->memeDomicile($this->getResponsable(1)) &&
+                $this->memeScolarite());
+            if (! $calculDistance) {
+                $r2 = $this->getResponsable(2);
+                if ($r2) {
+                    $calculDistance = ! $this->memeDomicile($r2);
+                }
+            }
+        }
+        if (! $calculDistance) {
+            $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
+                'Sbm\CalculDroitsTransport');
+            try {
+                $majDistances->majDistancesDistrict($this->eleveId, false);
+                $cr = $majDistances->getCompteRendu();
+                $this->addMessage($cr);
+            } catch (\OutOfBoundsException $e) {
+                $this->addMessage($e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * On met à jour la grilleTarifR1 et, si nécessaire, la grilleTarifR2
+     *
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     * @param int $rang
+     *            1 pour le responsable1 et 2 pour le responsable2
+     */
+    private function majGrillesTarif(string $mode, int $rang)
+    {
+        ;
+    }
+
+    /**
+     * On met à jour la reductionR1 et, si nécessaire, la reductionR2.
+     *
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     * @param int $rang
+     *            1 pour le responsable1 et 2 pour le responsable2
+     */
+    private function majReductions(string $mode, int $rang)
+    {
+        ;
+    }
+
+    /**
+     * On lance une recherche de trajet par les méthodes de l'objet
+     * \SbmCommun\Arlysere\ChercheTrajet En mode inscription ou reinscription il faut
+     * rechercher un trajet. En mode edit, la recherche de trajets n'est nécessaire que si
+     * on change de domicile ou si on change d'établissement scolaire
+     *
+     * @param string $mode
+     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     * @param int $rang
+     *            1 pour le responsable1 et 2 pour le responsable2
+     */
+    private function rechercheTrajets(string $mode, int $rang)
+    {
+        ;
+    }
+
+    private function getEleve()
+    {
+        if (! $this->aEntities['eleve']) {
+            $this->aEntities['eleve'] = $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\Db\Table\Eleves')
+                ->getRecord($this->eleveId);
+        }
+        return $this->aEntities['eleve'];
+    }
+
+    /**
+     * Pour le responsable2, cela peut renvoyer null
+     *
+     * @param int $rang
+     * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
+     */
+    private function getResponsable(int $rang)
+    {
+        if (! $this->aEntities['responsable' . $rang]) {
+            try {
+                $this->aEntities['responsable' . $rang] = $this->local_manager->get(
+                    'Sbm\DbManager')
+                    ->get('Sbm\Db\Table\Responsables')
+                    ->getRecord($this->getEleve()->{'responsable' . $rang . 'Id'});
+            } catch (\Exception $e) {
+            }
+        }
+        return $this->aEntities['responsable' . $rang];
+    }
+
+    /**
+     * Renvoie la scolarité de l'élève
+     *
+     * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
+     */
+    private function getScolarite()
+    {
+        if (! $this->aEntities['scolarite']) {
+            $this->aEntities['scolarite'] = $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\Db\Table\Scolarites')
+                ->getRecord(
+                [
+                    'millesime' => $this->millesime,
+                    'eleveId' => $this->eleveId
+                ]);
+        }
+        return $this->aEntities['scolarite'];
     }
 
     private function repriseDistancesDistrictPrecedents()
     {
-        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Scolarites');
         try {
             // recherche la scolarité de l'année précédente
             $oDataPrecedent = $tScolarites->getRecord(
@@ -300,10 +491,13 @@ class OutilsInscription
     {
         $calculDroits = true; // indique s'il faut recalculer les droits et les distances
         if ($this->memeScolarite()) {
-            $eleve = $this->db_manager->get('Sbm\Db\Table\Eleves')->getRecord(
-                $this->eleveId);
+            $eleve = $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\Db\Table\Eleves')
+                ->getRecord($this->eleveId);
             // affectations de l'année précédentes
-            $affectations = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll(
+            $affectations = $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\Db\Table\Affectations')
+                ->fetchAll(
                 [
                     'millesime' => $this->millesime - 1,
                     'eleveId' => $this->eleveId
@@ -342,17 +536,20 @@ class OutilsInscription
     private function repriseAffectationsPour($affectations, $responsable1Id,
         $responsable2Id, $demandeR1, $demandeR2)
     {
-        $responsable1 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
-            $responsable1Id);
+        $responsable1 = $this->local_manager->get('Sbm\DbManager')
+            ->get('Sbm\Db\Table\Responsables')
+            ->getRecord($responsable1Id);
         $memeDomicileR1 = $this->memeDomicile($responsable1);
         try {
-            $responsable2 = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
-                $responsable2Id);
+            $responsable2 = $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\Db\Table\Responsables')
+                ->getRecord($responsable2Id);
             $memeDomicileR2 = $this->memeDomicile($responsable2);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $memeDomicileR2 = true;
         }
-        $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        $tAffectations = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Affectations');
         $reprise1 = $reprise2 = false;
         foreach ($affectations as $oaffectation) {
             // pour les affectations du responsable 1 à reprendre
@@ -404,11 +601,12 @@ class OutilsInscription
         if (! $responsable->demenagement) {
             return true;
         }
-        $as = $this->db_manager->get('Sbm\Db\System\Calendar')->fetchAll(
-            [
-                'millesime' => $this->millesime - 1,
-                'nature' => 'AS'
-            ]);
+        $as = $this->local_manager->get('Sbm\DbManager')
+            ->get('Sbm\Db\System\Calendar')
+            ->fetchAll([
+            'millesime' => $this->millesime - 1,
+            'nature' => 'AS'
+        ]);
         if (! $as->count()) {
             return false; // il n'y avait pas d'année scolaire précédente donc rien à
                           // reprendre
@@ -427,7 +625,9 @@ class OutilsInscription
      */
     private function memeScolarite()
     {
-        return $this->db_manager->get(Eleves::class)->memeScolarite($this->eleveId);
+        return $this->local_manager->get('Sbm\DbManager')
+            ->get(Eleves::class)
+            ->memeScolarite($this->eleveId);
     }
 
     /**
@@ -437,7 +637,8 @@ class OutilsInscription
      */
     private function supprDerogation()
     {
-        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Scolarites');
         $tScolarites->setDerogation($this->millesime, $this->eleveId, 0);
     }
 
@@ -450,7 +651,8 @@ class OutilsInscription
      */
     public function supprAffectations($r2seulement = false)
     {
-        $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        $tAffectations = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\Affectations');
         if ($r2seulement) {
             $tAffectations->getTableGateway()->delete(
                 [

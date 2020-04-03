@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2020
+ * @date 3 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -187,7 +187,7 @@ class IndexController extends AbstractActionController
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmparent');
         }
-        $outils = new OutilsInscription($this->db_manager, $responsable->responsableId,
+        $outils = new OutilsInscription($this->local_manager, $responsable->responsableId,
             $authUserId);
         $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
         $form = $this->form_manager->get(Form\Enfant::class);
@@ -232,34 +232,21 @@ class IndexController extends AbstractActionController
                     $responsable2Id = null;
                 }
                 // Enregistrement de l'élève
-                $eleveId = $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
                 // Ajout des dates de début et de fin de l'année scolaire
                 $data = $form->getData();
                 $as = Session::get('as');
                 $data['dateDebut'] = $as['dateDebut'];
                 $data['dateFin'] = $as['dateFin'];
                 // Enregistre la scolarité
-                $cr = [];
-                if ($outils->saveScolarite($data, $eleveId)) {
-                    $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
-                        'Sbm\CalculDroitsTransport');
-                    try {
-                        $majDistances->majDistancesDistrict($eleveId, false);
-                        $cr = $majDistances->getCompteRendu();
-                    } catch (\OutOfBoundsException $e) {
-                        $cr['message'] = $e->getMessage();
-                    }
-                }
+                $outils->saveScolarite($data, 'inscription');
+                $outils->apresInscription('inscription');
+                $cr = $outils->getMessages();
                 if (empty($cr)) {
-                    if ($args['fa']) {
-                        $this->flashMessenger()->addSuccessMessage(
-                            'L\'enfant est inscrit.');
-                    } else {
-                        $this->flashMessenger()->addSuccessMessage(
-                            'L\'enfant est enregistré.');
-                        $this->flashMessenger()->addWarningMessage(
-                            'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
-                    }
+                    $this->flashMessenger()->addSuccessMessage(
+                        'L\'enfant est enregistré.');
+                    $this->flashMessenger()->addWarningMessage(
+                        'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
                 } else {
                     $this->warningDerogationNecessaire($cr);
                 }
@@ -402,24 +389,14 @@ class IndexController extends AbstractActionController
                     $responsable2Id = null;
                 }
                 // Enregistrement de l'élève
-                $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
-                // Enregistrement de sa scolarité
-                /**
-                 * Si on change d'établissement, on supprime les affecations reprises et
-                 * on recalcule les droits. Mais si on supprime la demandeR2, il faut
-                 * supprimer les affectations la concernant (trajet == 2).
-                 */
-                $cr = [];
-                if ($outils->saveScolarite($form->getData())) {
-                    $outils->supprAffectations();
-                    $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
-                        'Sbm\CalculDroitsTransport');
-                    $majDistances->majDistancesDistrict($eleveId, false);
-                    $cr = $majDistances->getCompteRendu();
-                } elseif (! $form->getData()['demandeR2']) {
-                    // supprime les affectations de responsable2Id si demandeR2 == 0
-                    $outils->supprAffectations(true);
+                $ctrl = $outils->saveEleve($form->getData(), $hasGa, $responsable2Id);
+                if ($ctrl != $eleveId) {
+                    throw new \Exception('Arrêt du programme. Incohérence des données.');
                 }
+                // Enregistrement de sa scolarité
+                $outils->saveScolarite($form->getData(), 'edit');
+                $outils->apresInscription('edit');
+                $cr = $outils->getMessages();
                 Session::remove('responsable2', $this->getSessionNamespace());
                 Session::remove('post', $this->getSessionNamespace());
                 if (empty($cr)) {
@@ -818,7 +795,6 @@ class IndexController extends AbstractActionController
                     $data = $form->getData();
                     $ctrl = $outils->saveEleve($data, $hasGa, $responsable2Id);
                     if ($ctrl != $eleveId) {
-                        die(var_dump($ctrl, $eleveId));
                         throw new \Exception(
                             'Arrêt du programme. Incohérence des données.');
                     }
@@ -829,36 +805,18 @@ class IndexController extends AbstractActionController
                     $data['demandeR1'] = 1;
                     $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                     // Enregistrement de sa scolarité
-                    $outils->saveScolarite($data, $eleveId);
-                    // affectations si l'adresse et la scolarité n'ont pas changé
-                    $calculDroitsNecessaire = $outils->repriseAffectations(
-                        $data['demandeR1'], $data['demandeR2']);
-                    // mise à jour des droits
-                    $cr = [];
-                    if ($calculDroitsNecessaire) {
-                        $majDistances = $this->local_manager->get(
-                            'Sbm\CartographieManager')->get('Sbm\CalculDroitsTransport');
-                        $majDistances->majDistancesDistrict($eleveId, false);
-                        $cr = $majDistances->getCompteRendu();
-                    }
+                    $outils->saveScolarite($form->getData(), 'reinscription');
+                    $outils->apresInscription('reinscription');
+                    $cr = $outils->getMessages();
                     // compte-rendu et nettoyage de la session
                     Session::remove('responsable2', $this->getSessionNamespace());
                     Session::remove('post', $this->getSessionNamespace());
                     if (empty($cr)) {
-                        if ($args['fa']) {
-                            $this->flashMessenger()->addSuccessMessage(
-                                'L\'enfant est inscrit.');
-                        } else {
-                            $this->flashMessenger()->addSuccessMessage(
-                                'L\'enfant est enregistré.');
-                            $this->flashMessenger()->addWarningMessage(
-                                'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
-                        }
+                        $this->flashMessenger()->addSuccessMessage(
+                            'L\'enfant est enregistré.');
+                        $this->flashMessenger()->addWarningMessage(
+                            'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
                     } else {
-                        if ($args['fa']) {
-                            // retirer le paiement
-                            ;
-                        }
                         $this->warningDerogationNecessaire($cr);
                     }
                     return $this->redirect()->toRoute('sbmparent');

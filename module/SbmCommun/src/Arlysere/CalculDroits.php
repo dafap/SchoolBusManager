@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 3 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -139,6 +139,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->db_manager = $serviceLocator->get('Sbm\DbManager');
         $this->oDistanceMatrix = $serviceLocator->get(GoogleMaps\DistanceMatrix::class);
         $this->oProjection = $serviceLocator->get(Projection::class);
+        $this->compte_rendu = [];
         $this->setMillesime();
         $this->resetData();
         return $this;
@@ -163,7 +164,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->eleveId = 0;
         $this->distanceR1 = 0.0;
         $this->distanceR2 = 0.0;
-        $this->district = 0;
+        $this->district = 1;
     }
 
     private function setDataFromScolarite()
@@ -276,11 +277,10 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                     'eleveId' => $this->eleveId
                 ]);
         } catch (\Exception $e) {
-            echo '<pre>';
-            echo $e->getMessage();
-            echo "\n";
-            echo $e->getTraceAsString();
-            die("</pre>");
+            $this->compte_rendu[] = $e->getMessage();
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
+            $this->debugLog($e->getMessage());
+            $this->debugLog($e->getTraceAsString());
         }
         $this->setDataFromScolarite();
         // calcul des distances si on ne les garde pas ou si elles ne sont pas connues
@@ -306,7 +306,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                 $ptDomicileR2 = null;
             }
-
             $this->setDistances($ptEtablissement, $ptDomicileR1, $ptDomicileR2);
         }
         // ici le district est toujours 1
@@ -345,12 +344,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             } else {
                 $this->distanceR2 = 0.0;
             }
+            $this->compte_rendu[] = 'GoogleMaps ne répond pas';
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
+            $this->debugLog('GoogleMaps ne répond pas');
         } catch (\Exception $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
                 throw new \Exception(__METHOD__, __LINE__, $e);
             } else {
-                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
-                    'sbm_error.log');
+                $this->compte_rendu[] = $e->getMessage();
+                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
                 $this->debugLog($e->getMessage());
                 $this->debugLog($e->getTraceAsString());
             }
@@ -382,7 +384,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             $pt->setAttribute('communeId', $this->scolarite->communeId);
             return $pt;
         }
-
         return false;
     }
 }
