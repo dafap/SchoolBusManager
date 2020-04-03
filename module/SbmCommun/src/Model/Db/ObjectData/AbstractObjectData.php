@@ -3,13 +3,13 @@
  * Classe abstraite pour définir les objets data à manipuler dans les tables et les formulaires
  *
  * (test phpunit complet)
- * 
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource AbstractObjectData.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
- * @version 2019-2.5.0
+ * @date 3 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -43,8 +43,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     private $obj_name;
 
     /**
-     * Nom(s) du (ou des) champ(s) id
-     * (voir la définition de primary key pour la table concernée)
+     * Nom(s) du (ou des) champ(s) id (voir la définition de primary key pour la table
+     * concernée)
      *
      * @var string|array
      */
@@ -58,18 +58,18 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     private $max_length_array = [];
 
     /**
-     * Masque servant de modèle pour la composition de la donnée dans la méthode exchangeArray()
-     * (Pour un objet associé à une table, c'est la liste des noms de colonnes)
+     * Masque servant de modèle pour la composition de la donnée dans la méthode
+     * exchangeArray() (Pour un objet associé à une table, c'est la liste des noms de
+     * colonnes)
      *
      * @var array
      */
     private $array_mask = [];
 
     /**
-     * Tableau des champs qui doivent être null lorsqu'ils sont vides
-     * Ce tableau est de la forme ['field_name' => boolean,)
-     * où boolean est vrai si le champ doit être null lorsqu'il est vide
-     * pour tous les champs de l'objectdata
+     * Tableau des champs qui doivent être null lorsqu'ils sont vides Ce tableau est de la
+     * forme ['field_name' => boolean,) où boolean est vrai si le champ doit être null
+     * lorsqu'il est vide pour tous les champs de l'objectdata
      *
      * @var array
      */
@@ -83,12 +83,11 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     private $calculate_fields = [];
 
     /**
-     * Renvoie la donnée correspondant à la propriété indiquée.
-     * Lance une exception si le paramètre n'est pas présent dans dataSource.
+     * Renvoie la donnée correspondant à la propriété indiquée. Lance une exception si le
+     * paramètre n'est pas présent dans dataSource.
      *
      * @param string $param
      *            nom de la propriété
-     *            
      * @throws Exception\OutOfBoundsException
      *
      * @return mixed
@@ -115,9 +114,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Affectation par défaut.
-     * Lance une exception si la propriété n'existe pas et n'est pas autorisée
-     * dans array_mask.
+     * Affectation par défaut. Lance une exception si la propriété n'existe pas et n'est
+     * pas autorisée dans array_mask.
      *
      * @param string $param
      *            nom de la propriété
@@ -154,12 +152,11 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Cette méthode magique est appelée chaque fois que isset() est appelée sur une propriété
-     * de la variable d'objet.
+     * Cette méthode magique est appelée chaque fois que isset() est appelée sur une
+     * propriété de la variable d'objet.
      *
      * @param string $param
      *            nom du paramètre
-     *            
      * @return bool vrai si la variable d'objet est défini, sinon false
      */
     public function __isset($param)
@@ -180,8 +177,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Cette méthode magique est appelée chaque fois que unset() est appelé sur une propriété
-     * de la variable d'objet.
+     * Cette méthode magique est appelée chaque fois que unset() est appelé sur une
+     * propriété de la variable d'objet.
      *
      * @param string $param
      */
@@ -232,8 +229,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Enregistre le(s) nom(s) du(des) champ(s) Id de l'objet.
-     * Peut être une chaine de caractères ou un tableau.
+     * Enregistre le(s) nom(s) du(des) champ(s) Id de l'objet. Peut être une chaine de
+     * caractères ou un tableau.
      *
      * @param string|array $name
      * @return void
@@ -256,8 +253,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Enregistre le masque à utiliser pour la méthode exchangeArray().
-     * Lance une exception si le paramètre n'est pas un tableau.
+     * Enregistre le masque à utiliser pour la méthode exchangeArray(). Lance une
+     * exception si le paramètre n'est pas un tableau.
      *
      * @param array $array_mask
      *
@@ -275,8 +272,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Enregistre la liste des champs avec l'indicateur is_nullable (boolean)
-     * Lance une exception si le paramètre n'est pas un tableau.
+     * Enregistre la liste des champs avec l'indicateur is_nullable (boolean) Lance une
+     * exception si le paramètre n'est pas un tableau.
      *
      * @param array $are_nullable
      * @throws Exception\InvalidArgumentException
@@ -301,8 +298,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Initialise la propriété calculate_fields avec le tableau fourni.
-     * Lance une exception si le paramètre n'est pas un tableau.
+     * Initialise la propriété calculate_fields avec le tableau fourni. Lance une
+     * exception si le paramètre n'est pas un tableau.
      *
      * @param array $array
      *
@@ -321,14 +318,14 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Ajoute le champ fourni comme paramètre dans la propriété calculate_fields
-     * Lance une exception si le paramètre n'est pas une chaine de caractères.
+     * Ajoute le champ fourni comme paramètre dans la propriété calculate_fields Lance une
+     * exception si le paramètre n'est pas une chaine de caractères.
      *
      * @param string $str
-     *
      * @throws Exception\InvalidArgumentException
+     * @return \SbmCommun\Model\Db\ObjectData\AbstractObjectData
      */
-    public function addCalculateField($str)
+    public function addCalculateField(string $str)
     {
         if (! is_string($str)) {
             ob_start();
@@ -338,6 +335,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
                 sprintf(_(self::ERROR_NOT_STRING), __METHOD__, $dump));
         }
         $this->calculate_fields[] = $str;
+        return $this;
     }
 
     /**
@@ -351,8 +349,7 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * (non-PHPdoc)
-     * Lance une exception si le paramètre n'est pas du type attendu.
+     * (non-PHPdoc) Lance une exception si le paramètre n'est pas du type attendu.
      *
      * @see Bdts\Model.ObjectDataInterface::exchangeArray()
      *
@@ -438,8 +435,8 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Devra être surchargé si un contrôle de construction d'id est nécessaire.
-     * C'est le cas lorsque la primary key est composée de plusieurs champs.
+     * Devra être surchargé si un contrôle de construction d'id est nécessaire. C'est le
+     * cas lorsque la primary key est composée de plusieurs champs.
      *
      * @param int|string|array $id
      *
@@ -451,14 +448,12 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     }
 
     /**
-     * Lorsque $id est une chaine composée de plusieurs champs séparés par |
-     * la méthode renvoie un tableau associatif conforme à l'id_field_name.
-     * Dans les autres cas, la méthode renvoie $id inchangé.
-     *
-     * Renvoie un id correct :
-     * - scalaire si id_field_name est un scalaire,
-     * - tableau associatif si id_field_name est un tableau
-     * On doit s'assurer avant que l'id est valide
+     * Lorsque $id est une chaine composée de plusieurs champs séparés par | la méthode
+     * renvoie un tableau associatif conforme à l'id_field_name. Dans les autres cas, la
+     * méthode renvoie $id inchangé.
+     * Renvoie un id correct : - scalaire si id_field_name est un scalaire, - tableau
+     * associatif si id_field_name est un tableau On doit s'assurer avant que l'id est
+     * valide
      *
      * @param int|string|array $id
      *

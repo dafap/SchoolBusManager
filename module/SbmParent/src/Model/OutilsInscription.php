@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 3 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -360,8 +360,7 @@ class OutilsInscription
                 $oaffectation->responsableId == $responsable1Id) {
                 $oaffectation->millesime = $this->millesime;
                 $oaffectation->trajet = 1; // au cas où il y aurait inversion des
-                                           // responsables 1 et
-                                           // 2
+                                           // responsables 1 et 2
                 $tAffectations->saveRecord($oaffectation);
                 $reprise1 = true;
             }

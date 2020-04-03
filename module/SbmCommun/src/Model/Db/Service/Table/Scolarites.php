@@ -82,6 +82,9 @@ class Scolarites extends AbstractSbmTable
                 $obj_data->reductionR2 = $obj_data->reductionR1;
                 $result['reductionChange'] = true;
             }
+            if ($old_data->demandeR2 != $obj_complete->demandeR2) {
+                $obj_data->addCalculateField('dateDemandeR2');
+            }
             $obj_data->addCalculateField('dateModification');
         } catch (Exception\ExceptionInterface $e) {
             // insert
@@ -105,6 +108,11 @@ class Scolarites extends AbstractSbmTable
             $obj_data->setCalculateFields([
                 'dateInscription'
             ]);
+            try {
+                if ($obj_data->demandeR2) {
+                    $obj_data->addCalculateField('dateDemandeR2');
+                }
+            } catch(\Exception $e){}
         }
         $result['saveRecord'] = parent::saveRecord($obj_data);
         return $result;

@@ -2,10 +2,10 @@
 /**
  * Hydrator pour tenir à jour la modification d'une fiche Scolarite dans la table Scolarites
  *
- * Cet hydrator 
- * déclaré dans SbmCommun\Model\Db\Service\TableGateway\TableGatewayScolarites::init() 
+ * Cet hydrator
+ * déclaré dans SbmCommun\Model\Db\Service\TableGateway\TableGatewayScolarites::init()
  * sera utilisé dans SbmCommun\Model\Db\Service\Table\Scolarites::saveRecord()
- * 
+ *
  * @project sbm
  * @package SbmCommun/Model/Hydrator
  * @filesource Scolarites.php
@@ -37,15 +37,20 @@ class Scolarites extends AbstractHydrator
                     __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();
-        $now = new \DateTime('now');
+        $now = (new \DateTime('now'))->format('Y-m-d H:i:s');
         foreach ($calculate_fields as $value) {
             if ($value == 'dateModification') {
-                $object->dateModification = $now->format('Y-m-d H:i:s');
+                $object->dateModification = $now;
             } elseif ($value == 'dateInscription') {
-                $object->dateInscription = $now->format('Y-m-d H:i:s');
+                $object->dateInscription = $now;
+            } elseif ($value == 'dateDemandeR2') {
+                if ($object->demandeR2) {
+                    $object->dateDemandeR2 = $now;
+                } else {
+                    $object->dateDemandeR2 = '1900-01-01 00:00:00';
+                }
             }
         }
         return $object;
     }
 }
- 
