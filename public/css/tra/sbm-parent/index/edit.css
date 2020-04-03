@@ -7,7 +7,7 @@
  * @filesource edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 2 avr. 2020
  * @version 2020-2.6.0
  **/
 div.flex {
@@ -90,6 +90,7 @@ div.table2cols div.col23 img {
 
 div.table2cols>div.zone {
 	display: table-cell;
+	vertical-align: top;
 }
 
 div.bloc-wrapper fieldset {
@@ -153,4 +154,12 @@ label.sbm-multi-label.required:after, label.sbm-radio-label.required:after
 	{
 	color: #f78042;
 	content: '*';
+}
+
+div.regime fieldset {
+	width: 125px;
+}
+
+select[name=classeId] {
+	width: 170px;
 }

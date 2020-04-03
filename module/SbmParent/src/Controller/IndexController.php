@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 2 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -189,6 +189,7 @@ class IndexController extends AbstractActionController
         }
         $outils = new OutilsInscription($this->db_manager, $responsable->responsableId,
             $authUserId);
+        $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
         $form = $this->form_manager->get(Form\Enfant::class);
         $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
         $form->setAttribute('action',
@@ -202,7 +203,9 @@ class IndexController extends AbstractActionController
             ->setValueOptions('joursTransportR1', Semaine::getJours())
             ->setData([
             'responsable1Id' => $responsable->responsableId
-        ]);
+        ])
+            ->setValueOptions('stationIdR1', $selectStations)
+            ->setValueOptions('stationIdR2', $selectStations);
         // Le formulaire de garde alterné est prévu complet pour une saisie
         $formga = $this->form_manager->get(Form\Service\Responsable2Complet::class);
         if (array_key_exists('submit', $args)) {
@@ -268,6 +271,8 @@ class IndexController extends AbstractActionController
         $formga->setValueOptions('r2communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
                 ->visibles());
+
+        $ophoto = new \SbmCommun\Model\Photo\Photo();
         return new ViewModel(
             [
                 'url_ts_region' => $this->url_ts_region,
@@ -275,7 +280,8 @@ class IndexController extends AbstractActionController
                 'formga' => $formga->prepare(),
                 'responsable' => $responsable,
                 'ga' => StdLib::getParam('ga', $args, 0),
-                'userId' => $authUserId
+                'userId' => $authUserId,
+                'dataphoto' => $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif')
             ]);
     }
 
@@ -739,6 +745,7 @@ class IndexController extends AbstractActionController
             $eleveId = $args['id'];
             $outils = new OutilsInscription($this->db_manager,
                 $auth_responsable->responsableId, $authUserId, $eleveId);
+            $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
             $form = $this->form_manager->get(Form\Enfant::class);
             $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
             $form->setAttribute('action',
@@ -760,12 +767,13 @@ class IndexController extends AbstractActionController
                 ->setValueOptions('joursTransportR1', Semaine::getJours())
                 ->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
-                    ->membres());
+                    ->membres())
+                ->setValueOptions('stationIdR1', $selectStations)
+                ->setValueOptions('stationIdR2', $selectStations);
             // pour la garde alternée, on doit déterminer si le formulaire sera complet ou
             // non afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout
-            // de
-            // même responsableId (attention ! dans le post, les champs sont préfixés par
-            // r2)
+            // de même responsableId (attention ! dans le post, les champs sont préfixés
+            // par r2)
             $formgaComplet = true;
             if ($isPost) {
                 $hasGa = StdLib::getParam('ga', $args, false);
