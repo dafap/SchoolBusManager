@@ -11,8 +11,8 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
- * @version 2019-2.5.0
+ * @date 3 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Hydrator;
 
@@ -20,7 +20,6 @@ use SbmCommun\Model\Db\ObjectData\Scolarite as ObjectData;
 
 class Scolarites extends AbstractHydrator
 {
-
     /**
      * (non-PHPdoc)
      *

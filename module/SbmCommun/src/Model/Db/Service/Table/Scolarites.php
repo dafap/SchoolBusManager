@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 3 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -53,8 +53,8 @@ class Scolarites extends AbstractSbmTable
         try {
             $old_data = $this->getRecord($obj_data->getId());
             // résultat type
-            $obj_complete = $this->getObjData()->exchangeArray($old_data->getArrayCopy(),
-                $obj_data->getArrayCopy());
+            $obj_complete = $this->getObjData()->exchangeArray(
+                array_merge($old_data->getArrayCopy(), $obj_data->getArrayCopy()));
             $result = [
                 'is_new' => false,
                 'distanceR1Inconnue' => $obj_complete->demandeR1 &&
@@ -69,10 +69,10 @@ class Scolarites extends AbstractSbmTable
             // update
             if ($old_data->etablissementId != $obj_complete->etablissementId) {
                 $obj_data->distanceR1 = $obj_data->distanceR2 = 0;
-                if ($obj_complete->demandeR1 = 2) {
+                if ($obj_complete->demandeR1 == 2) {
                     $obj_data->demandeR1 = 1;
                 }
-                if ($obj_complete->demandeR2 = 2) {
+                if ($obj_complete->demandeR2 == 2) {
                     $obj_data->demandeR2 = 1;
                 }
                 $result['etablissementChange'] = true;
@@ -103,7 +103,7 @@ class Scolarites extends AbstractSbmTable
             }
             if (isset($obj_data->demandeR2) && isset($obj_data->distanceR2)) {
                 $result['distanceR2Inconnue'] = $obj_data->demandeR2 &&
-                ($obj_data->distanceR2 == 99 || $obj_data->distanceR2 == 0);
+                    ($obj_data->distanceR2 == 99 || $obj_data->distanceR2 == 0);
             }
             $obj_data->setCalculateFields([
                 'dateInscription'
@@ -112,7 +112,8 @@ class Scolarites extends AbstractSbmTable
                 if ($obj_data->demandeR2) {
                     $obj_data->addCalculateField('dateDemandeR2');
                 }
-            } catch(\Exception $e){}
+            } catch (\Exception $e) {
+            }
         }
         $result['saveRecord'] = parent::saveRecord($obj_data);
         return $result;
