@@ -166,5 +166,5 @@ interface ObjectDataInterface
      * @throws Exception\InvalidArgumentException
      * @return \SbmCommun\Model\Db\ObjectData\AbstractObjectData
      */
-    public function addCalculateField($str);
+    public function addCalculateField(string $str);
 }
