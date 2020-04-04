@@ -5,7 +5,7 @@
  * Pour l'utilisation, penser à initialiser la date de demande du R2 avant de lancer les calculs
  * $this->db_manager->get('Sbm\GrilleTarifR2')->setDateDemandeR2('2020-03-21')->appliquerTarif($eleveId);
  *
- * Surcharge de GrilleTarifR1 pour aplliquer les règles du R2 basées sur le règlement d'Arlysère
+ * Surcharge de GrilleTarifR1 pour appliquer les règles du R2 basées sur le règlement d'Arlysère
  * et sur la réponse de Monsieur Stéphane PIQUIER, par mail le 12 mars 2020 :
  * Un enfant est en garde alternée
  * 1. Son inscription se fait dans les délais.
@@ -27,7 +27,7 @@
  * @filesource GrilleTarifR2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2020
+ * @date 4 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;

@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 4 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -303,11 +303,9 @@ class OutilsInscription
         }
         $this->majDistances($mode);
         $this->majGrillesTarif($mode, 1);
-        $this->majReductions($mode, 1);
         $this->rechercheTrajets($mode, 1);
         if ($this->getEleve()->responsable2Id && $this->getScolarite()->demandeR2 > 0) {
             $this->majGrillesTarif($mode, 2);
-            $this->majReductions($mode, 2);
             $this->rechercheTrajets($mode, 2);
         }
     }
@@ -362,7 +360,10 @@ class OutilsInscription
     }
 
     /**
-     * On met à jour la grilleTarifR1 et, si nécessaire, la grilleTarifR2
+     * En mode 'inscription' ou 'reinscription' on met à jour la grilleTarifR1 et la
+     * reductionR1 et, si nécessaire, la grilleTarifR2 et la reductionR2. En mode 'edit'
+     * les grilleTarif ne changent pas (pas de changement de domicile) et les reductions
+     * ne changent que si on a obtenu un reductionChange dans le cr.
      *
      * @param string $mode
      *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
@@ -371,20 +372,21 @@ class OutilsInscription
      */
     private function majGrillesTarif(string $mode, int $rang)
     {
-        ;
-    }
-
-    /**
-     * On met à jour la reductionR1 et, si nécessaire, la reductionR2.
-     *
-     * @param string $mode
-     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
-     * @param int $rang
-     *            1 pour le responsable1 et 2 pour le responsable2
-     */
-    private function majReductions(string $mode, int $rang)
-    {
-        ;
+        if ($mode != 'edit' || $this->cr['saveScolarite']['reductionChange']) {
+            if ($rang == 1) {
+                $this->local_manager->get('Sbm\DbManager')
+                    ->get('Sbm\GrilleTarifR1')
+                    ->setOEleve($this->getEleve())
+                    ->setOScolarite($this->getScolarite())
+                    ->appliquerTarif($this->eleveId);
+            } elseif ($this->getEleve()->responsable2Id && $this->getScolarite()->demandeR2) {
+                $this->local_manager->get('Sbm\DbManager')
+                    ->get('Sbm\GrilleTarifR2')
+                    ->setOEleve($this->getEleve())
+                    ->setOScolarite($this->getScolarite())
+                    ->appliquerTarif($this->eleveId);
+            }
+        }
     }
 
     /**
@@ -400,7 +402,17 @@ class OutilsInscription
      */
     private function rechercheTrajets(string $mode, int $rang)
     {
-        ;
+        if ($mode != 'edit' || $this->cr['saveScolarite']['etablissementChange']) {
+            $this->local_manager->get('Sbm\DbManager')
+                ->get('Sbm\ChercheTrajet')
+                ->setEtablissementId($this->getScolarite()->etablissementId)
+                ->setStationId($this->getScolarite()->{'stationIdR' . $rang})
+                ->setEleveId($this->eleveId)
+                ->setJours($this->getScolarite()->{'joursTransportR' . $rang})
+                ->setTrajet($rang)
+                ->setResponsableId($this->getEleve()->{'responsable' . $rang . 'Id'})
+                ->run();
+        }
     }
 
     private function getEleve()

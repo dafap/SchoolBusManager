@@ -5,6 +5,9 @@
  * Utilisation de la forme :
  * $this->db_manager->get('Sbm\GrilleTarifR1')->appliquerTarif($eleveId);
  *
+ * Si on ne veut pas relire les fiches eleve et scolarite, on peut passer les objectData oEleve et oSolarite
+ * $this->db_manager->get('Sbm\GrilleTarifR1')->setOEleve($oEleve)->setOScolarite($oScolarite)->appliquerTarif($eleveId);
+ *
  * La méthode appliquerTarif() calcule et enregistre si nécessaire la grille tarifaire et la réduction
  * La méthode getObjectDataScolarite() calcule la grile tarifaire et la réduction et renvoie l'object
  * sans l'enregistrer
@@ -16,7 +19,7 @@
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 4 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
@@ -91,6 +94,24 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
      */
     protected $grilleTarif;
 
+    /**
+     * @param \SbmCommun\Model\Db\ObjectData\Eleve $oEleve
+     */
+    public function setOEleve($oEleve)
+    {
+        $this->oEleve = $oEleve;
+        return $this;
+    }
+
+    /**
+     * @param \SbmCommun\Model\Db\ObjectData\Scolarite $oScolarite
+     */
+    public function setOScolarite($oScolarite)
+    {
+        $this->oScolarite = $oScolarite;
+        return $this;
+    }
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof \SbmCommun\Model\Db\Service\DbManager)) {
@@ -104,6 +125,8 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         $this->init();
         return $this;
     }
+
+
 
     /**
      * Calcule la réduction et la grille tarifaire et enregistre le résultat s'il a

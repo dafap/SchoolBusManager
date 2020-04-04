@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 4 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -323,7 +323,7 @@ class IndexController extends AbstractActionController
         }
         $isPost = array_key_exists('submit', $args);
         $eleveId = $args['id'];
-        $outils = new OutilsInscription($this->db_manager,
+        $outils = new OutilsInscription($this->local_manager,
             $auth_responsable->responsableId, $authUserId, $eleveId);
         $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
         $form = $this->form_manager->get(Form\Enfant::class);
@@ -720,7 +720,7 @@ class IndexController extends AbstractActionController
             $aReinscrire = [];
             $isPost = array_key_exists('submit', $args);
             $eleveId = $args['id'];
-            $outils = new OutilsInscription($this->db_manager,
+            $outils = new OutilsInscription($this->local_manager,
                 $auth_responsable->responsableId, $authUserId, $eleveId);
             $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
             $form = $this->form_manager->get(Form\Enfant::class);
@@ -805,7 +805,7 @@ class IndexController extends AbstractActionController
                     $data['demandeR1'] = 1;
                     $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                     // Enregistrement de sa scolarité
-                    $outils->saveScolarite($form->getData(), 'reinscription');
+                    $outils->saveScolarite($data, 'reinscription');
                     $outils->apresInscription('reinscription');
                     $cr = $outils->getMessages();
                     // compte-rendu et nettoyage de la session

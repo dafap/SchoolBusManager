@@ -84,11 +84,16 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
 
     /**
      *
-     * @param number $jours
+     * @param array|int $jours
      */
-    public function setJours(int $jours)
+    public function setJours($jours)
     {
-        $this->jours = $jours;
+        if (is_array($jours)) {
+            $strategy = new \SbmCommun\Model\Strategy\Semaine();
+            $this->jours = $strategy->extract($jours);
+        } else {
+            $this->jours = $jours;
+        }
         if (method_exists($this, 'debugLog')) {
             $this->debugLog($this->jours);
         }
@@ -157,8 +162,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Le tableau renvoyé est de la forme [$moment => boolean]
-     * Pour chaque moment on renvoie true si on a trouvé une solution et false sinon.
+     * Le tableau renvoyé est de la forme [$moment => boolean] Pour chaque moment on
+     * renvoie true si on a trouvé une solution et false sinon.
      *
      * @return boolean[]
      */
@@ -211,7 +216,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                     // ---------
                     $this->tAffectations->saveRecord($oAffectation);
                     // DEBUG
-                    //$this->debugLog(__LINE__);
+                    // $this->debugLog(__LINE__);
                     // ---------------
                 }
                 $trouve[$moment] = true;
@@ -429,7 +434,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 ], $this->jointureSurUnCircuit($i), $columns3);
         }
         $select->where($this->getConditions($moment, $nb_cir));
-        // die($this->getSqlString($select));
+        //die($this->getSqlString($select));
         return $select;
     }
 
