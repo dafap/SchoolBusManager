@@ -264,8 +264,9 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         }
         // sur chaque circuit,
         for ($i = 1; $i <= $nb_cir; $i ++) {
-            $where->equalTo(sprintf('cir%dsta1.millesime', $i), $this->millesime)->equalTo(
-                sprintf('cir%dsta1.moment', $i), $moment);
+            $where->equalTo(sprintf('cir%dsta1.millesime', $i), $this->millesime)
+                ->equalTo(sprintf('cir%dsta1.moment', $i), $moment)
+                ->literal(sprintf('eta.jOuverture & cir%dsta1.semaine <>0', $i));
             if ($moment == 1) {
                 // départ de la station1 avant arrivée en station2
                 $left = sprintf('cir%dsta1.horaireD', $i);
