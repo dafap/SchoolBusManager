@@ -3,14 +3,14 @@
  * Page de suppression d'une inscription d'un élève
  *
  * Après validation, les affectations et la scolarité seront supprimées. Par contre, la fiche eleve n'est pas supprimée.
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource suppr-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 oct. 2018
- * @version 2019-2.5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 ?>
 <h1>Suppression de l'inscription d'un enfant</h1>
@@ -19,12 +19,12 @@
 	<div class="header-wrapper">
 		<ul>
 			<li><?= $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
-			<li>Scolarisé à <?= $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
+			<li>Scolarisation : <?= $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
 	        <?php if ($this->affectations->count() > 0) : ?>
-	        <li>Affecté sur :
+	        <li>Circuits utilisés :
 				<ul>
 	            <?php foreach ($this->affectations as $affectation) :?>
-	               <li><?= $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
+	               <li><?= $this->printAffectation($affectation); ?></li>
 	            <?php endforeach; ?>
 	            </ul>
 			</li>
