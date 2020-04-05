@@ -5,8 +5,8 @@
  * @filesource edit-eleve.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 01 juin 2019
- * @version 2019-2.4.6
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 var texteDemandeR2;
 function phraseDemandeR2(state) {
@@ -19,6 +19,14 @@ function phraseDemandeR2(state) {
 	div.empty();
 	if (state) {
 		div.append(texteDemandeR2);
+	}
+}
+function montreStationIdR2(state) {
+	var div = $("#r2_stationIdR2");
+	if (state) {
+		div.show();
+	} else {
+		div.hide();
 	}
 }
 // copie / suppression de la div par le bouton radio (#btradioap...)
@@ -127,6 +135,12 @@ $(function() {
 					this.id = 'r2' + this.id;
 				}
 			});
+			ch = bloc.find('*[for]');
+			ch.each(function(i){
+				if (this.attributes['for']) {
+					this.attributes['for'].nodeValue = 'r2'+this.attributes['for'].nodeValue;
+				}
+			});
 			bloc.removeAttr("id").appendTo("#enfant_ga");
 		}
 	});
@@ -163,6 +177,7 @@ $(function() {
 			function() {
 				var state = $(this).val() == 1;
 				phraseDemandeR2(state);
+				montreStationIdR2(state);
 			});
 });
 
@@ -182,10 +197,19 @@ $(function() {
 				this.id = 'r2' + this.id;
 			}
 		});
+		ch = bloc.find('*[for]');
+		ch.each(function(i){
+			if (this.attributes['for']) {
+				this.attributes['for'].nodeValue = 'r2'+this.attributes['for'].nodeValue;
+			}
+		});
 		bloc.removeAttr("id").appendTo("#enfant_ga");
 	}
 	if ($("#r2demandeR2").is(':checked')) {
 		phraseDemandeR2(true);
+		montreStationIdR2(true);
+	} else {
+		montreStationIdR2(false);
 	}
 });
 
