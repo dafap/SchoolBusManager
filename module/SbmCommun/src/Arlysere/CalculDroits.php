@@ -16,7 +16,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -76,13 +76,13 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      *
      * @var \SbmCommun\Model\Db\ObjectData\Eleve
      */
-    private $eleve;
+    private $oEleve;
 
     /**
      *
      * @var \SbmCommun\Model\Db\ObjectData\Scolarite
      */
-    private $scolarite;
+    private $oScolarite;
 
     /**
      *
@@ -146,6 +146,63 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
+     *
+     * @return \SbmCommun\Model\Db\ObjectData\Eleve
+     */
+    public function getOEleve()
+    {
+        if (! $this->oEleve && $this->eleveId) {
+            $this->oEleve = $this->getTable('eleves')->getRecord(
+                $this->eleveId);
+        }
+        return $this->oEleve;
+    }
+
+    /**
+     *
+     * @return \SbmCommun\Model\Db\ObjectData\Scolarite
+     */
+    public function getOScolarite()
+    {
+        if (!$this->oScolarite && $this->eleveId) {
+            try {
+                $this->oScolarite = $this->getTable('Scolarites')->getRecord(
+                    [
+                        'millesime' => $this->millesime,
+                        'eleveId' => $this->eleveId
+                    ]);
+            } catch (\Exception $e) {
+                $this->compte_rendu[] = $e->getMessage();
+                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                    'sbm_error.log');
+                $this->debugLog($e->getMessage());
+                $this->debugLog($e->getTraceAsString());
+            }
+        }
+        return $this->oScolarite;
+    }
+
+    /**
+     *
+     * @param \SbmCommun\Model\Db\ObjectData\Eleve $oEleve
+     */
+    public function setOEleve($oEleve)
+    {
+        $this->oEleve = $oEleve;
+        return $this;
+    }
+
+    /**
+     *
+     * @param \SbmCommun\Model\Db\ObjectData\Scolarite $oScolarite
+     */
+    public function setOScolarite($oScolarite)
+    {
+        $this->oScolarite = $oScolarite;
+        return $this;
+    }
+
+    /**
      * Dans le nom de la table sera donné soit en respectant la casse, soit en minuscule
      * pour les tables simples. Pour les tables de liaison comme RpiEtablissements, la
      * deuxième partie du nom devra respecteur la casse.
@@ -165,13 +222,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $this->distanceR1 = 0.0;
         $this->distanceR2 = 0.0;
         $this->district = 1;
+        $this->oEleve = null;
+        $this->oScolarite = null;
     }
 
     private function setDataFromScolarite()
     {
-        $this->distanceR1 = $this->scolarite->distanceR1;
-        $this->distanceR2 = $this->scolarite->distanceR2;
-        $this->district = $this->scolarite->district;
+        $this->distanceR1 = $this->getOScolarite()->distanceR1;
+        $this->distanceR2 = $this->getOScolarite()->distanceR2;
+        $this->district = $this->getOScolarite()->district;
     }
 
     /**
@@ -180,7 +239,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      */
     private function getData()
     {
-        return array_merge($this->scolarite->getArrayCopy(),
+        return array_merge($this->getOScolarite()->getArrayCopy(),
             [
                 'distanceR1' => $this->distanceR1,
                 'distanceR2' => $this->distanceR2,
@@ -266,43 +325,27 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     private function calculs()
     {
-        // charge la fiche élève pour disposer des responsableId
-        $this->eleve = $this->getTable('eleves')->getRecord($this->eleveId);
-        // charge la fiche scolarite pour disposer de l'établissement et de(s) la
-        // station(s) demandée(s)
-        try {
-            $this->scolarite = $this->getTable('Scolarites')->getRecord(
-                [
-                    'millesime' => $this->millesime,
-                    'eleveId' => $this->eleveId
-                ]);
-        } catch (\Exception $e) {
-            $this->compte_rendu[] = $e->getMessage();
-            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
-            $this->debugLog($e->getMessage());
-            $this->debugLog($e->getTraceAsString());
-        }
         $this->setDataFromScolarite();
         // calcul des distances si on ne les garde pas ou si elles ne sont pas connues
         if (! $this->gardeDistance ||
-            ($this->scolarite->demandeR1 && $this->scolarite->distanceR1 == 0) ||
-            ($this->scolarite->demandeR1 && $this->scolarite->distanceR1 == 99) ||
-            ($this->scolarite->demandeR2 && $this->scolarite->distanceR2 == 0) ||
-            ($this->scolarite->demandeR2 && $this->scolarite->distanceR2 == 99)) {
+            ($this->getOScolarite()->demandeR1 && $this->getOScolarite()->distanceR1 == 0) ||
+            ($this->getOScolarite()->demandeR1 && $this->getOScolarite()->distanceR1 == 99) ||
+            ($this->getOScolarite()->demandeR2 && $this->getOScolarite()->distanceR2 == 0) ||
+            ($this->getOScolarite()->demandeR2 && $this->getOScolarite()->distanceR2 == 99)) {
             // initialise l'établissement
             $ptEtablissement = $this->getPtEtablissement(
-                $this->scolarite->etablissementId);
+                $this->getOScolarite()->etablissementId);
             // initialise le domicile du responsable 1 si l'élève a une adresse perso
             // (localisation valide) elle remplace celle du R1
             $ptDomicileR1 = $this->getPtDomicilePerso();
             if (! $ptDomicileR1) {
                 $ptDomicileR1 = $this->getPtDomicileResponsable(
-                    $this->eleve->responsable1Id);
+                    $this->getOEleve()->responsable1Id);
             }
             // initialise éventuellement le domicile du responsable 2 (pareil)
             try {
                 $ptDomicileR2 = $this->getPtDomicileResponsable(
-                    $this->eleve->responsable2Id);
+                    $this->getOEleve()->responsable2Id);
             } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                 $ptDomicileR2 = null;
             }
@@ -334,25 +377,27 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             }
         } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
             // GoogleMaps ne répond pas
-            if ($this->scolarite->demandeR1) {
+            if ($this->getOScolarite()->demandeR1) {
                 $this->distanceR1 = 99.0;
             } else {
                 $this->distanceR1 = 0.0;
             }
-            if ($this->scolarite->demandeR2) {
+            if ($this->getOScolarite()->demandeR2) {
                 $this->distanceR2 = 99.0;
             } else {
                 $this->distanceR2 = 0.0;
             }
             $this->compte_rendu[] = 'GoogleMaps ne répond pas';
-            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                'sbm_error.log');
             $this->debugLog('GoogleMaps ne répond pas');
         } catch (\Exception $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
                 throw new \Exception(__METHOD__, __LINE__, $e);
             } else {
                 $this->compte_rendu[] = $e->getMessage();
-                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
+                $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                    'sbm_error.log');
                 $this->debugLog($e->getMessage());
                 $this->debugLog($e->getTraceAsString());
             }
@@ -364,8 +409,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $etablissement = $this->getTable('Etablissements')->getRecord($etablissementId);
         return (new Point($etablissement->x, $etablissement->y))->setAttribute(
             'etablissementId', $etablissement->etablissementId)
-            ->setAttribute('classeId', $this->scolarite->classeId)
-            ->setAttribute('regimeId', $this->scolarite->regimeId)
+            ->setAttribute('classeId', $this->getOScolarite()->classeId)
+            ->setAttribute('regimeId', $this->getOScolarite()->regimeId)
             ->setAttribute('communeId', $etablissement->communeId)
             ->setAttribute('statut', $etablissement->statut);
     }
@@ -379,9 +424,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     private function getPtDomicilePerso()
     {
-        $pt = new Point($this->scolarite->x, $this->scolarite->y);
+        $pt = new Point($this->getOScolarite()->x, $this->getOScolarite()->y);
         if ($this->oProjection->isValid($pt, 'gestion')) {
-            $pt->setAttribute('communeId', $this->scolarite->communeId);
+            $pt->setAttribute('communeId', $this->getOScolarite()->communeId);
             return $pt;
         }
         return false;

@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -304,7 +304,7 @@ class OutilsInscription
         $this->majDistances($mode);
         $this->majGrillesTarif($mode, 1);
         $this->rechercheTrajets($mode, 1);
-        if ($this->getEleve()->responsable2Id && $this->getScolarite()->demandeR2 > 0) {
+        if ($this->getOEleve()->responsable2Id && $this->getOScolarite()->demandeR2 > 0) {
             $this->majGrillesTarif($mode, 2);
             $this->rechercheTrajets($mode, 2);
         }
@@ -337,20 +337,22 @@ class OutilsInscription
                 $this->cr['saveScolarite']['distanceR2Inconnue'] ||
                 $this->cr['saveScolarite']['etablissementChange'];
         } else {
-            $calculDistance = ! ($this->memeDomicile($this->getResponsable(1)) &&
+            $calculDistance = ! ($this->memeDomicile($this->getOResponsable(1)) &&
                 $this->memeScolarite());
             if (! $calculDistance) {
-                $r2 = $this->getResponsable(2);
+                $r2 = $this->getOResponsable(2);
                 if ($r2) {
                     $calculDistance = ! $this->memeDomicile($r2);
                 }
             }
         }
-        if (! $calculDistance) {
+        if ($calculDistance) {
             $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
                 'Sbm\CalculDroitsTransport');
             try {
-                $majDistances->majDistancesDistrict($this->eleveId, false);
+                $majDistances->setOEleve($this->getOEleve())
+                    ->setOScolarite($this->getOScolarite())
+                    ->majDistancesDistrict($this->eleveId, false);
                 $cr = $majDistances->getCompteRendu();
                 $this->addMessage($cr);
             } catch (\OutOfBoundsException $e) {
@@ -376,14 +378,15 @@ class OutilsInscription
             if ($rang == 1) {
                 $this->local_manager->get('Sbm\DbManager')
                     ->get('Sbm\GrilleTarifR1')
-                    ->setOEleve($this->getEleve())
-                    ->setOScolarite($this->getScolarite())
+                    ->setOEleve($this->getOEleve())
+                    ->setOScolarite($this->getOScolarite())
                     ->appliquerTarif($this->eleveId);
-            } elseif ($this->getEleve()->responsable2Id && $this->getScolarite()->demandeR2) {
+            } elseif ($this->getOEleve()->responsable2Id &&
+                $this->getOScolarite()->demandeR2) {
                 $this->local_manager->get('Sbm\DbManager')
                     ->get('Sbm\GrilleTarifR2')
-                    ->setOEleve($this->getEleve())
-                    ->setOScolarite($this->getScolarite())
+                    ->setOEleve($this->getOEleve())
+                    ->setOScolarite($this->getOScolarite())
                     ->appliquerTarif($this->eleveId);
             }
         }
@@ -405,17 +408,21 @@ class OutilsInscription
         if ($mode != 'edit' || $this->cr['saveScolarite']['etablissementChange']) {
             $this->local_manager->get('Sbm\DbManager')
                 ->get('Sbm\ChercheTrajet')
-                ->setEtablissementId($this->getScolarite()->etablissementId)
-                ->setStationId($this->getScolarite()->{'stationIdR' . $rang})
+                ->setEtablissementId($this->getOScolarite()->etablissementId)
+                ->setStationId($this->getOScolarite()->{'stationIdR' . $rang})
                 ->setEleveId($this->eleveId)
-                ->setJours($this->getScolarite()->{'joursTransportR' . $rang})
+                ->setJours($this->getOScolarite()->{'joursTransportR' . $rang})
                 ->setTrajet($rang)
-                ->setResponsableId($this->getEleve()->{'responsable' . $rang . 'Id'})
+                ->setResponsableId($this->getOEleve()->{'responsable' . $rang . 'Id'})
                 ->run();
         }
     }
 
-    private function getEleve()
+    /**
+     *
+     * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
+     */
+    private function getOEleve()
     {
         if (! $this->aEntities['eleve']) {
             $this->aEntities['eleve'] = $this->local_manager->get('Sbm\DbManager')
@@ -431,14 +438,14 @@ class OutilsInscription
      * @param int $rang
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
      */
-    private function getResponsable(int $rang)
+    private function getOResponsable(int $rang)
     {
         if (! $this->aEntities['responsable' . $rang]) {
             try {
                 $this->aEntities['responsable' . $rang] = $this->local_manager->get(
                     'Sbm\DbManager')
                     ->get('Sbm\Db\Table\Responsables')
-                    ->getRecord($this->getEleve()->{'responsable' . $rang . 'Id'});
+                    ->getRecord($this->getOEleve()->{'responsable' . $rang . 'Id'});
             } catch (\Exception $e) {
             }
         }
@@ -450,7 +457,7 @@ class OutilsInscription
      *
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
      */
-    private function getScolarite()
+    private function getOScolarite()
     {
         if (! $this->aEntities['scolarite']) {
             $this->aEntities['scolarite'] = $this->local_manager->get('Sbm\DbManager')
