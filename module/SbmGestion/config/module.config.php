@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 7 juil. 2019
- * @version 2019-2.5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
@@ -68,7 +68,7 @@ return [
             'Sbm\Db\Eleve\EffectifTransporteurs' => SbmGestionDbService\Eleve\EffectifTransporteurs::class,
             'Sbm\Db\Eleve\EffectifTransporteursServices' => SbmGestionDbService\Eleve\EffectifTransporteursServices::class,
             'Sbm\Db\Service\EffectifLots' => SbmGestionDbService\Service\EffectifLots::class,
-            'Sbm\Db\Service\EffectifTransporteurs'=>SbmGestionDbService\Service\EffectifTransporteurs::class,
+            'Sbm\Db\Service\EffectifTransporteurs' => SbmGestionDbService\Service\EffectifTransporteurs::class,
             Cartes\Cartes::class => Cartes\CartesFactory::class,
             Photos\Photos::class => Photos\PhotosFactory::class
         ]
@@ -231,6 +231,9 @@ return [
         ]
     ],
     'view_helpers' => [
+        'invokables' => [
+            'designationService' => ViewHelper\DesignationService::class
+        ],
         'factories' => [
             'menuRapports' => ViewHelper\MenuRapports::class,
             'printServices' => ViewHelper\Services::class,
