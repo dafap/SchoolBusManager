@@ -15,7 +15,7 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -304,6 +304,8 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 		    	<?=$this->formRow($this->formga->get('r2email'));?></div>
 			<div id="_demandeR2" class="row-inner">
 		    	<?=$this->formRow($this->form->get('demandeR2'));?></div>
+			<div id="_stationIdR2" class="row-inner">
+				<?=$this->formRow($this->form->get('stationIdR2'));?></div>
 		</fieldset>
     <?php else :?>
 		<fieldset style="padding-right: 0.5em;">
