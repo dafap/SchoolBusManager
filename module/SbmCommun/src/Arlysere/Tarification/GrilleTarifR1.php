@@ -19,7 +19,7 @@
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
@@ -263,7 +263,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         }
     }
 
-    private function readEleve(int $eleveId)
+    protected function readEleve(int $eleveId)
     {
         if ($eleveId != $this->eleveId) {
             $this->eleveId = $eleveId;
