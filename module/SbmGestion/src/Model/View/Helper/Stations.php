@@ -3,14 +3,14 @@
  * Aide de vue permettant d'afficher les stations d'un élève dans la liste des élèves
  *
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/View/Helper
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\View\Helper;
 
@@ -72,7 +72,12 @@ class Stations extends AbstractHelper implements FactoryInterface
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'sta2.stationId=aff.station2Id', [
             'station2' => 'nom'
-        ], Select::JOIN_LEFT);
+        ], Select::JOIN_LEFT)
+            ->order([
+            'jours DESC',
+            'moment',
+            'correspondance'
+        ]);
         $statement = $sql->prepareStatementForSqlObject($select->where($where));
         $resultset = $statement->execute();
         $content = [];

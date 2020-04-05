@@ -9,7 +9,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\View\Helper;
@@ -52,7 +52,12 @@ class Services extends AbstractHelper implements FactoryInterface
         $where->equalTo('millesime', $millesime)
             ->equalTo('eleveId', $eleveId)
             ->equalTo('trajet', $trajet);
-        $resultset = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll($where);
+        $resultset = $this->db_manager->get('Sbm\Db\Table\Affectations')->fetchAll($where,
+            [
+                'jours DESC',
+                'moment',
+                'correspondance'
+            ]);
         $content = [];
         foreach ($resultset as $affectation) {
             $service1Id = $this->getDesignation($affectation, 1);
