@@ -10,7 +10,7 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -24,13 +24,16 @@ abstract class Filtre
     /**
      * Renvoie le filtre à utiliser comme paramètre dans l'appel de la méthode du même
      * nom. Ne renvoie pas les élèves rayés. Pour la compatibilité avec les autres
-     * filtres, il est possible de passer 3 paramètres ou de les passer sous la forme d'un
-     * tableau associatif ou d'un tableau ordonné (serviceId, stationId, inscrit). Le 3ème
-     * élément du tableau est optionnel. Si le passage de paramètres se fait par un
-     * tableau, les autres paramètres de la fonction sont ignorés.
+     * filtres, il est possible de passer 3 paramètres (le premier est obligatoirement un
+     * tableau de 4 valeurs au moins) ou de les passer sous la forme d'un seul tableau
+     * associatif ou d'un tableau ordonné (ligneId, sens, moment, ordre, stationId,
+     * inscrit). Les 5ème et 6ème éléments du tableau sont optionnels mais il faut pouvoir
+     * récupérer stationId d'une façon ou d'une autre. On peut passer une partie des
+     * paramètres par tableau et d'autres par les paramètres de la fonction.
      *
-     * @param string|array $args
-     *            valeur recherchée pour serviceId ou tableau des 3 paramètres
+     * @param array $args
+     *            tableau ligneId, sens, moment, ordre, avec éventuellement stationId
+     *            et/ou inscrit
      * @param int $stationId
      *            valeur recherchée
      * @param bool $inscrit
@@ -44,25 +47,34 @@ abstract class Filtre
     public static function byCircuit($args, $stationId = null, $inscrit = false)
     {
         if (is_array($args)) {
-            if (array_key_exists('serviceId', $args) &&
-                array_key_exists('stationId', $args)) {
-                $serviceId = $args['serviceId'];
-                $stationId = $args['stationId'];
-                $inscrit = StdLib::getParam('inscrit', $args, false);
-            } elseif (count($args) == 3) {
-                list ($serviceId, $stationId, $inscrit) = $args;
-            } elseif (count($args) == 2) {
-                list ($serviceId, $stationId) = $args;
-                $inscrit = false;
+            if (array_key_exists('ligneId', $args) && array_key_exists('sens', $args) &&
+                array_key_exists('moment', $args) && array_key_exists('ordre', $args)) {
+                // tableau associatif (au moins les 4 clés d'identification d'un service)
+                $ligneId = $args['ligneId'];
+                $sens = $args['sens'];
+                $moment = $args['moment'];
+                $ordre = $args['ordre'];
+                $stationId = StdLib::getParam('stationId', $args, $stationId);
+                $inscrit = StdLib::getParam('inscrit', $args, $inscrit);
+            } elseif (count($args) == 6) {
+                // tableau indexé de 6 éléments
+                list ($ligneId, $sens, $moment, $ordre, $stationId, $inscrit) = $args;
+            } elseif (count($args) == 5) {
+                // tableau indexé de 5 éléments
+                list ($ligneId, $sens, $moment, $ordre, $stationId) = $args;
+            } elseif (count($args) == 4) {
+                // tableau indexé de 4 éléments
+                list ($ligneId, $sens, $moment, $ordre) = $args;
             } else {
                 throw new Exception(
                     __METHOD__ .
-                    ' : Le tableau passé en paramètre n\'a pas 2 ou 3 éléments.');
+                    ' : Le tableau passé en paramètre n\'a pas 5 ou 6 éléments.');
             }
         } elseif (is_null($stationId)) {
             throw new Exception(__METHOD__ . ' : Station indéterminée.');
         } elseif (is_scalar($args)) {
-            $serviceId = $args;
+            $ligneId = $args;
+            throw new Exception(__METHOD__ . ' : Code à mettre à jour.');
         } else {
             throw new Exception(__METHOD__ . ' : Premier paramètre de type incorrect.');
         }
@@ -79,12 +91,18 @@ abstract class Filtre
                 ],
                 [
                     [
-                        'service1Id' => $serviceId,
+                        'ligne1Id' => $ligneId,
+                        'sensligne1' => $sens,
+                        'moment' => $moment,
+                        'ordreligne1' => $ordre,
                         'station1Id' => $stationId
                     ],
                     'or',
                     [
-                        'service2Id' => $serviceId,
+                        'ligne2Id' => $ligneId,
+                        'sensligne2' => $sens,
+                        'moment' => $moment,
+                        'ordreligne2' => $ordre,
                         'station2Id' => $stationId
                     ]
                 ]
@@ -94,12 +112,18 @@ abstract class Filtre
                 'inscrit' => 1,
                 [
                     [
-                        'service1Id' => $serviceId,
+                        'ligne1Id' => $ligneId,
+                        'sensligne1' => $sens,
+                        'moment' => $moment,
+                        'ordreligne1' => $ordre,
                         'station1Id' => $stationId
                     ],
                     'or',
                     [
-                        'service2Id' => $serviceId,
+                        'ligne2Id' => $ligneId,
+                        'sensligne2' => $sens,
+                        'moment' => $moment,
+                        'ordreligne2' => $ordre,
                         'station2Id' => $stationId
                     ]
                 ]
@@ -162,37 +186,68 @@ abstract class Filtre
      * `a.serviceId` porte sur une requête UNION</li></ul>
      *
      * @param string|array $args
-     * @param string $serviceId
+     *            etablissementId ou tableau contenant tous les paramètres
+     * @param string|array $arrayServiceId
+     *            ligneId ou tableau des paramètres identifiant le service (ligneId, sens,
+     *            moment, ordre)
+     * @param int $sens
+     * @param int $moment
+     * @param int $ordre
      *
      * @throws \SbmGestion\Model\Db\Service\Exception
      *
      * @return array : tableau structuré pour la méthode
      *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
-    public static function byEtablissementService($args, $serviceId = null)
+    public static function byEtablissementService($args, $arrayServiceId = null, $sens = 0,
+        $moment = 0, $ordre = 0)
     {
         if (is_array($args)) {
             if (array_key_exists('etablissementId', $args) &&
-                array_key_exists('serviceId', $args)) {
+                array_key_exists('ligneId', $args) && array_key_exists('sens', $args) &&
+                array_key_exists('moment', $args) && array_key_exists('ordre', $args)) {
                 $etablissementId = $args['etablissementId'];
-                $serviceId = $args['serviceId'];
-            } elseif (count($args) == 2) {
-                list ($etablissementId, $serviceId) = $args;
+                $ligneId = $args['ligneId'];
+                $sens = $args['sens'];
+                $moment = $args['moment'];
+                $ordre = $args['ordre'];
+            } elseif (count($args) == 5) {
+                list ($etablissementId, $ligneId, $sens, $moment, $ordre) = $args;
             } else {
                 throw new Exception(
                     __METHOD__ . ' : Le tableau passé en paramètre n\'a pas 2 éléments.');
             }
-        } elseif (is_null($serviceId)) {
+        } elseif (is_null($arrayServiceId)) {
             throw new Exception(__METHOD__ . ' : Service indéterminé.');
-        } elseif (is_string($args)) {
+        } elseif (is_string($args) && is_array($arrayServiceId)) {
             $etablissementId = $args;
+            if (array_key_exists('ligneId', $arrayServiceId) &&
+                array_key_exists('sens', $arrayServiceId) &&
+                array_key_exists('moment', $arrayServiceId) &&
+                array_key_exists('ordre', $arrayServiceId)) {
+                $ligneId = $args['ligneId'];
+                $sens = $args['sens'];
+                $moment = $args['moment'];
+                $ordre = $args['ordre'];
+            } elseif (count($args) == 4) {
+                list ($ligneId, $sens, $moment, $ordre) = $arrayServiceId;
+            } else {
+                throw new Exception(
+                    __METHOD__ . ' : Le tableau passé en deuxième paramètre n\'a pas 4 éléments.');
+            }
+        } elseif (is_string($args) && is_string($arrayServiceId)) {
+            $etablissementId = $args;
+            $ligneId = $arrayServiceId;
         } else {
             throw new Exception(__METHOD__ . ' : Premier paramètre de type incorrect.');
         }
         return [
             'inscrit' => 1,
             's.etablissementId' => $etablissementId,
-            'a.serviceId' => $serviceId
+            'a.ligneId' => $ligneId,
+            'a.sens' => $sens,
+            'a.moment' => $moment,
+            'a.ordre' => $ordre
         ];
     }
 
@@ -213,19 +268,49 @@ abstract class Filtre
 
     /**
      *
-     * @param string $serviceId
+     * @param string|array $args
+     *            tous les paramètres ou ligneId seulement
+     * @param number $sens
+     * @param number $moment
+     * @param number $ordre
      *
      * @return array : tableau structuré pour la méthode
      *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
-    public static function byService($serviceId)
+    public static function byService($args, $sens = 0, $moment = 0, $ordre = 0)
     {
+        if (is_array($args)) {
+            if (array_key_exists('ligneId', $args) && array_key_exists('sens', $args) &&
+                array_key_exists('moment', $args) && array_key_exists('ordre', $args)) {
+                // tableau associatif (au moins les 4 clés d'identification d'un service)
+                $ligneId = $args['ligneId'];
+                $sens = $args['sens'];
+                $moment = $args['moment'];
+                $ordre = $args['ordre'];
+            } elseif (count($ligneId) == 4) {
+                list ($ligneId, $sens, $moment, $ordre) = $args;
+            } else {
+                $ligneId = $args;
+            }
+        } else {
+            $ligneId = $args;
+        }
         return [
             'inscrit' => 1,
             [
-                'service1Id' => $serviceId,
+                [
+                    'ligne1Id' => $ligneId,
+                    'sensligne1' => $sens,
+                    'moment' => $moment,
+                    'ordreligne1' => $ordre
+                ],
                 'or',
-                'service2Id' => $serviceId
+                [
+                    'ligne2Id' => $ligneId,
+                    'sensligne2' => $sens,
+                    'moment' => $moment,
+                    'ordreligne2' => $ordre
+                ]
             ]
         ];
     }

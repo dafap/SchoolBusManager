@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -280,9 +280,12 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
             ];
             $services = [];
             foreach ($this->data['fnc_affectations']($row['eleveId']) as $affectation) {
-                $services[$affectation['service1Id']] = $affectation['service1Id'];
-                if (! empty($affectation['service2Id'])) {
-                    $services[$affectation['service2Id']] = $affectation['service2Id'];
+
+                $services[$this->designationService($affectation, 1)] = $this->designationService(
+                    $affectation, 1);
+                if (! empty($affectation['ligne2Id'])) {
+                    $services[$this->designationService($affectation, 2)] = $this->designationService(
+                        $affectation, 2);
                 }
             }
             if ($row['enAttente']) {

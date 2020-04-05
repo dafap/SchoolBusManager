@@ -7,7 +7,7 @@
  * @filesource organisme-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -143,6 +143,10 @@ $data = $this->paginator->getCurrentItems();
     foreach ($array_adresse as &$ligne) {
         $ligne = $this->escapeHtml($ligne);
     }
+    $services1 = $this->printServices($row['eleveId'], 1);
+    $services2 = $this->printServices($row['eleveId'], 2);
+    $stations1 = $this->printStations($row['eleveId'], 1);
+    $stations2 = $this->printStations($row['eleveId'], 2);
     ?>
 			    <tr class="<?= $this->cycle(["even", "odd"]);?>">
 					<td><?= $this->pictogrammes();?></td>
@@ -153,8 +157,8 @@ $data = $this->paginator->getCurrentItems();
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
-					<td><?= implode('<br>', [$row['service1Id'], $row['service2Id']]);?></td>
-					<td><?= implode('<br>', [$row['station1'], $row['station2']]);?></td>
+					<td><?= implode('<br>', array_filter([$services1, $services2]));?></td>
+					<td><?= implode('<br>', array_filter([$stations1, $stations2]));?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>

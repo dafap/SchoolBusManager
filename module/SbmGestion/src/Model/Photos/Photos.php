@@ -1,15 +1,15 @@
 <?php
 /**
  * Méthodes pour extraire les photos
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmGestion/Model/Photos
  * @filesource Photos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 fév. 2019
- * @version 2019-2.5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Photos;
 
@@ -141,10 +141,24 @@ class Photos
         ])
             ->join([
             's1' => $this->table_services
-        ], 'aff.service1Id = s1.serviceId', [])
+        ],
+            implode(' AND ',
+                [
+                    'aff.ligne1Id = s1.ligneId',
+                    'aff.sensligne1 = s1.sens',
+                    'aff.moment = s1.moment',
+                    'aff.ordreligne1 = s1.ordre'
+                ]), [])
             ->join([
             's2' => $this->table_services
-        ], 'aff.service2Id = s2.serviceId', [], Select::JOIN_LEFT)
+        ],
+            imlode(' AND ',
+                [
+                    'aff.service2Id = s2.serviceId',
+                    'aff.sensligne2 = s2.sens',
+                    'aff.moment = s2.moment',
+                    'aff.ordreligne2 = s2.ordre'
+                ]), [], Select::JOIN_LEFT)
             ->where($where)
             ->quantifier(Select::QUANTIFIER_DISTINCT);
         return $select;

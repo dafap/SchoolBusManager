@@ -10,8 +10,8 @@
  * @filesource EffectifLotsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -20,8 +20,7 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
-class EffectifLotsServices extends AbstractEffectifType3 implements
-    EffectifInterface
+class EffectifLotsServices extends AbstractEffectifType3 implements EffectifInterface
 {
 
     public function init(bool $sanspreinscrits = false)
@@ -29,7 +28,13 @@ class EffectifLotsServices extends AbstractEffectifType3 implements
         $this->structure = [];
         $conditions = $this->getConditions($sanspreinscrits);
 
-        $rowset = $this->requete('serviceId', $conditions, 'service1Id');
+        $rowset = $this->requete('serviceId', $conditions,
+            [
+                'ligne1Id',
+                'sens',
+                'moment',
+                'ordre'
+            ]);
         foreach ($rowset as $row) {
             $this->structure[$row['serviceId']][1] = $row['effectif'];
         }
@@ -66,11 +71,15 @@ class EffectifLotsServices extends AbstractEffectifType3 implements
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
             ->join([
             'ser' => $this->tableNames['services']
-        ], 'a.service1Id=ser.serviceId',
-            [
-                $column,
-                'effectif' => new Expression('count(*)')
-            ])
+        ], implode(' AND ', [
+            'a.ligne1Id = ser.ligneId',
+            'a.sensligne1 = ser.sens',
+            'a.moment = ser.moment',
+            'a.ordreligne1 = ser.ordre'
+        ]), [
+            $column,
+            'effectif' => new Expression('count(*)')
+        ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
 
@@ -88,12 +97,15 @@ class EffectifLotsServices extends AbstractEffectifType3 implements
         ]);
 
         $jointure = [
-            'a.millesime=correspondances.millesime',
-            'a.eleveId=correspondances.eleveId',
-            'a.trajet=correspondances.trajet',
-            'a.jours=correspondances.jours',
-            'a.sens=correspondances.sens',
-            'a.service2Id=correspondances.service1Id'
+            'a.millesime = correspondances.millesime',
+            'a.eleveId = correspondances.eleveId',
+            'a.trajet = correspondances.trajet',
+            'a.jours = correspondances.jours',
+            'a.sens = correspondances.sens',
+            'a.ligne2Id = correspondances.ligne1Id',
+            'a.sensligne2 = correspondances.sensligne1',
+            'a.moment = correspondances.moment',
+            'a.ordreligne2 = correspondances.ordreligne1'
         ];
         $where = new Where();
         $where->equalTo('a.millesime', $this->millesime)->isNull(

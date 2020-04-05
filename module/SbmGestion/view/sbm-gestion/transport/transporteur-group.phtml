@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/transporteur-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -102,7 +102,7 @@ $data = $this->paginator->getCurrentItems();
 	<div id="liste-inner">
 		<table class="eleves">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Service</th>
 					<th>Nom</th>
@@ -159,7 +159,7 @@ $data = $this->paginator->getCurrentItems();
     ?>
 			    <tr class="petit <?= $this->cycle(["even", "odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
-					<td><?= $row['serviceId'];?></td>
+					<td><?=$this->designationService($row, '', '');?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>
 					<td><?= implode('<br>', $array_adresse);?></td>

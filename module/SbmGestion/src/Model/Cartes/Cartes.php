@@ -8,7 +8,7 @@
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 5 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
@@ -114,7 +114,9 @@ class Cartes
         ])
             ->join([
             's1' => $this->table_services
-        ], 'aff.service1Id = s1.serviceId', [])
+        ],
+            'aff.ligne1Id=s1.ligneId AND aff.sensligne1=s1.sens AND aff.moment=s1.moment AND aff.ordreligne1=s1.ordre',
+            [])
             ->join([
             's2' => $this->table_services
         ], 'aff.service2Id = s2.serviceId', [], Select::JOIN_LEFT)

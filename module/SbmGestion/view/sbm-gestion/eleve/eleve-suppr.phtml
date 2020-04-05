@@ -8,8 +8,8 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 oct. 2018
- * @version 2019-2.5.0
+ * @date 5 avr. 2020
+ * @version 2020-2.6.0
  */
 ?>
 <h1>Suppression d'une inscription</h1>
@@ -23,7 +23,7 @@
 	        <li>Affecté sur :
 				<ul>
 	            <?php foreach ($this->affectations as $affectation) :?>
-	               <li><?= $affectation['service1Id'] . ' (' . $affectation['transporteur1'] . ')'; ?></li>
+	               <li><?=$this->printAffectation($affectation);?></li>
 	            <?php endforeach; ?>
 	            </ul>
 			</li>

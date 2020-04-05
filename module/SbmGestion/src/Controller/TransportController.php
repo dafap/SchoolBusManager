@@ -516,9 +516,13 @@ class TransportController extends AbstractActionController
 
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->ligneId, $circuit->sens,
-                        $circuit->moment, $circuit->ordre, $circuit->stationId, false),
-                    [
+                    FiltreEleve::byCircuit(
+                        [
+                            'ligneId' => $circuit->ligneId,
+                            'sens' => $circuit->sens,
+                            'moment' => $circuit->moment,
+                            'ordre' => $circuit->ordre
+                        ], $circuit->stationId, false), [
                         'nom',
                         'prenom'
                     ]),

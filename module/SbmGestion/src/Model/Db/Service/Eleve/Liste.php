@@ -219,36 +219,37 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ])
-            ->join(
-            [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
-            [
-                'moment',
-                'ligne1Id',
-                'sensligne1',
-                'ordreligne1',
-                'ligne2Id',
-                'sensligne2',
-                'ordreligne2'
-            ], SELECT::JOIN_LEFT)
-            ->join([
+            ->
+        // ->join(
+        // [
+        // 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+        // ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
+        // [
+        // 'moment',
+        // 'ligne1Id',
+        // 'sensligne1',
+        // 'ordreligne1',
+        // 'ligne2Id',
+        // 'sensligne2',
+        // 'ordreligne2'
+        // ], SELECT::JOIN_LEFT)
+        join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)
-            ->join([
-            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta1.stationId=aff.station1Id', [
-            'station1' => 'nom'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta2.stationId=aff.station2Id', [
-            'station2' => 'nom'
-        ], Select::JOIN_LEFT)
-            ->join(
-            [
-                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = ele.eleveId',
+            ->
+        // ->join([
+        // 'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        // ], 'sta1.stationId=aff.station1Id', [
+        // 'station1' => 'nom'
+        // ], Select::JOIN_LEFT)
+        // ->join([
+        // 'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        // ], 'sta2.stationId=aff.station2Id', [
+        // 'station2' => 'nom'
+        // ], Select::JOIN_LEFT)
+        join([
+            'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+        ], 'photos.eleveId = ele.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
@@ -299,15 +300,16 @@ class Liste extends AbstractQuery implements FactoryInterface
         ])
             ->join([
             's' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'e.eleveId=s.eleveId', [
-            'inscrit',
-            'paiementR1',
-            'paiementR2',
-            'fa',
-            'gratuit',
-            'dateCarteR1',
-            'dateCarteR2'
-        ])
+        ], 'e.eleveId=s.eleveId',
+            [
+                'inscrit',
+                'paiementR1',
+                'paiementR2',
+                'fa',
+                'gratuit',
+                'dateCarteR1',
+                'dateCarteR2'
+            ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -337,9 +339,19 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'd.communeId=s.communeId', [], Select::JOIN_LEFT)
             ->join([
             'ser' => $this->db_manager->getCanonicName('services', 'table')
-        ], 'ser.serviceId = a.serviceId', [
-            'serviceId'
-        ])
+        ],
+            implode(' AND ',
+                [
+                    'ser.ligneId = a.ligneId',
+                    'ser.sens = a.sens',
+                    'ser.moment = a.moment',
+                    'ser.ordre = a.ordre'
+                ]), [
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre'
+            ])
             ->join(
             [
                 'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')

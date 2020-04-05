@@ -92,8 +92,10 @@ $oService = $this->service;
 			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
 		<?php endif;?>
 		<?php if (!empty($oService)) :?>
-			<li><?= $this->escapeHtml($this->service->serviceId); ?></li>
-			<li><?= $this->escapeHtml($this->service->nom); ?></li>
+			<li><?= $this->escapeHtml($this->designationService($this->service, '')); ?></li>
+			<?php if ($this->service->alias):?>
+			<li><?= $this->escapeHtml($this->service->alias); ?></li>
+			<?php endif;?>
 			<li><?= $this->escapeHtml($this->service->transporteur); ?></li>
 		<?php endif;?>
 		</ul>
@@ -114,7 +116,7 @@ $oService = $this->service;
 	<div id="liste-inner">
 		<table class="eleves">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
@@ -175,7 +177,7 @@ foreach ($data as $row) :
     $stations1 = $this->printStations($row['eleveId'], 1);
     $stations2 = $this->printStations($row['eleveId'], 2);
     ?>
-                <tr class="<?= $this->cycle(["even","odd"])->next();?>">
+                <tr class="petit <?= $this->cycle(["even","odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>
