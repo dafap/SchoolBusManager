@@ -7,12 +7,13 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 5 avr. 2019
+ * @version 2020-2.6.0
  */
 use SbmParent\Controller;
 use SbmParent\Form;
 use SbmParent\Model\Db\Service\Query;
+use SbmParent\Model\View\Helper as ViewHelper;
 
 return [
     'acl' => [
@@ -88,6 +89,10 @@ return [
                 ],
                 'may_terminate' => true
             ]
+        ]
+    ],'view_helpers' => [
+        'invokables' => [
+            'printAffectation' => ViewHelper\LigneAffectation::class
         ]
     ],
     'view_manager' => [
