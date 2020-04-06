@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -4248,11 +4248,15 @@ class TransportController extends AbstractActionController
 
                 'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
                     $millesime,
-                    FiltreEleve::byCircuit($ligneId, $sens, $moment, $ordre, $stationId,
-                        false), [
+                    FiltreEleve::byCircuit([
+                        $ligneId,
+                        $sens,
+                        $moment,
+                        $ordre
+                    ], $stationId, false), [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'station'),
                 'circuit' => $circuit,
                 'page' => $currentPage,
                 'circuitId' => $circuit->circuitId,
