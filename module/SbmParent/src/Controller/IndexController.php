@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -614,8 +614,13 @@ class IndexController extends AbstractActionController
             $circuits[$i] = $tCircuits->getRecord($circuitId);
             $nbInscrits[$i] = $effectifCircuits->transportes($circuitId);
             $result = $rListe->queryGroup(Session::get('millesime'),
-                FiltreEleve::byCircuit($circuits[$i]->serviceId, $circuits[$i]->stationId,
-                    true), [
+                FiltreEleve::byCircuit(
+                    [
+                        $circuits[$i]->ligneId,
+                        $circuits[$i]->sens,
+                        $circuits[$i]->moment,
+                        $circuits[$i]->ordre
+                    ], $circuits[$i]->stationId, true), [
                     'nom',
                     'prenom'
                 ]);
@@ -626,17 +631,25 @@ class IndexController extends AbstractActionController
                 }
                 $eleves[$i][] = sprintf('%s %s - %s', $row['prenom'], $row['nom'], $classe);
             }
-            $serviceId = $circuits[$i]->serviceId; // on gardera le dernier trouvé
+            // on gardera le dernier circuit trouvé
+            $arrayServiceId = [
+                'ligneId' => $circuits[$i]->ligneId,
+                'sens' => $circuits[$i]->sens,
+                'moment' => $circuits[$i]->moment,
+                'ordre' => $circuits[$i]->ordre
+            ];
         }
         // ajout de l'arrêt à l'établissement
         try {
             $stationId = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getRecord(
-                [
-                    'etablissementId' => $args['etablissementId'],
-                    'serviceId' => $serviceId
-                ])->stationId;
-            $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'), $serviceId,
-                $stationId);
+                array_merge(
+                    [
+                        'etablissementId' => $args['etablissementId'],
+                        'millesime' => Session::get('millesime')
+                    ], $arrayServiceId))->stationId;
+            $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'),
+                $arrayServiceId['ligneId'], $arrayServiceId['sens'],
+                $arrayServiceId['moment'], $arrayServiceId['ordre'], $stationId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
         }
 

@@ -161,10 +161,10 @@ $url_facture = $this->url('sbmdocument', [
                     $entity[$key] = $service_transporteur;
                     $station[$key] = $station_commune;
                     $circuit[$key] = $circuitId;
-                    $correspondance = ! empty($transport['service2Id']) ||
+                    $correspondance = ! empty($transport['ligne2Id']) ||
                         ! empty($transport['station2Id']);
                     if ($correspondance) {
-                        if (! empty($transport['service2Id'])) {
+                        if (! empty($transport['ligne2Id'])) {
                             $service_transporteur = $transport['service2'] . ' - ' .
                                 $transport['transporteur2'];
                         } else {

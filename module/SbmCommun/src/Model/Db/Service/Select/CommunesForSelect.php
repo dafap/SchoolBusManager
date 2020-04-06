@@ -18,7 +18,7 @@
  * @filesource CommunesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 jan. 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -68,13 +68,12 @@ class CommunesForSelect implements FactoryInterface
         $where->like('nom', $like . '%');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(
-            [
-                'communeId',
-                'alias',
-                'departement',
-                'myDep' => $this->myDep
-            ]);
+        $select->columns([
+            'communeId',
+            'alias',
+            'departement',
+            'myDep' => $this->myDep
+        ]);
         $select->order([
             'myDep',
             'nom',
@@ -107,13 +106,12 @@ class CommunesForSelect implements FactoryInterface
         $where->equalTo('codePostal', $cp);
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(
-            [
-                'communeId',
-                'alias',
-                'departement',
-                'myDep' => $this->myDep
-            ]);
+        $select->columns([
+            'communeId',
+            'alias',
+            'departement',
+            'myDep' => $this->myDep
+        ]);
         $select->order([
             'myDep',
             'nom',
@@ -139,13 +137,12 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('visible = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(
-            [
-                'communeId',
-                'alias',
-                'departement',
-                'myDep' => $this->myDep
-            ]);
+        $select->columns([
+            'communeId',
+            'alias',
+            'departement',
+            'myDep' => $this->myDep
+        ]);
         $select->order([
             'myDep',
             'nom',
@@ -165,19 +162,21 @@ class CommunesForSelect implements FactoryInterface
      *
      * @return multitype:string
      */
-    public function desservies()
+    public function desservies($filtre = [])
     {
         $where = new Where();
         $where->literal('desservie = 1');
+        foreach ($filtre as $key => $value) {
+            $where->equalTo($key, $value);
+        }
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(
-            [
-                'communeId',
-                'alias',
-                'departement',
-                'myDep' => $this->myDep
-            ]);
+        $select->columns([
+            'communeId',
+            'alias',
+            'departement',
+            'myDep' => $this->myDep
+        ]);
         $select->order([
             'myDep',
             'nom',
@@ -203,13 +202,12 @@ class CommunesForSelect implements FactoryInterface
         $where->literal('membre = 1');
         $select = $this->sql->select($this->table_name);
         $select->where($where);
-        $select->columns(
-            [
-                'communeId',
-                'alias',
-                'departement',
-                'myDep' => $this->myDep
-            ]);
+        $select->columns([
+            'communeId',
+            'alias',
+            'departement',
+            'myDep' => $this->myDep
+        ]);
         $select->order([
             'myDep',
             'nom',

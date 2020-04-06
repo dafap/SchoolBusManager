@@ -7,8 +7,8 @@
  * @filesource localisation.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2016-2.1.10
+ * @date 6 avr. 2020
+ * @version 2020-2.6.0
  */
 
 /**
@@ -77,7 +77,7 @@ function initialiser(scheme,titre,description,tMarkers) {
 	// initialisation du marker
 	var ptLat = document.getElementById('lat').value;
 	var ptLng = document.getElementById('lng').value;
-	if (!ptLat && !ptLng) {
+	if (ptLat == 0 && ptLng == 0) {
 		ptLat = CENTRE_LAT;
 		ptLng = CENTRE_LNG;
 	}

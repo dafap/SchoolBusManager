@@ -7,7 +7,7 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 jan. 2020
+ * @date 06 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -226,7 +226,10 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
         $form = $this->form_manager->get(Form\ResponsableVerrouille::class);
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies(
+            [
+                'departement' => 73
+            ]);
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
