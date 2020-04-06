@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -85,8 +85,9 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @param int $millesime
      * @param array $filtre
-     * @param array $order
-     *
+     * @param string|array $order
+     * @param string $by
+     *            laisser vide sauf pour 'service' ou 'station'
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function queryGroup($millesime, $filtre,
@@ -94,9 +95,15 @@ class Liste extends AbstractQuery implements FactoryInterface
             'commune',
             'nom',
             'prenom'
-        ])
+        ], $by = '')
     {
-        $select = $this->selectGroup($millesime, $filtre, $order);
+        if ($by == 'service') {
+            $select = $this->selectGroupByService($millesime, $filtre, $order);
+        } elseif ($by == 'station') {
+            $select = $this->selectGroupByStation($millesime, $filtre, $order);
+        } else {
+            $select = $this->selectGroup($millesime, $filtre, $order);
+        }
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -106,8 +113,9 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @param int $millesime
      * @param array $filtre
-     * @param array $order
-     *
+     * @param string|array $order
+     * @param string $by
+     *            laisser vide sauf pour 'service' ou 'station'
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorGroup($millesime, $filtre,
@@ -115,9 +123,15 @@ class Liste extends AbstractQuery implements FactoryInterface
             'commune',
             'nom',
             'prenom'
-        ])
+        ], $by = '')
     {
-        $select = $this->selectGroup($millesime, $filtre, $order);
+        if ($by == 'service') {
+            $select = $this->selectGroupByService($millesime, $filtre, $order);
+        } elseif ($by == 'station') {
+            $select = $this->selectGroupByStation($millesime, $filtre, $order);
+        } else {
+            $select = $this->selectGroup($millesime, $filtre, $order);
+        }
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
@@ -167,6 +181,20 @@ class Liste extends AbstractQuery implements FactoryInterface
      * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves. Le
      * sélect est filtré par le filtre donné. (utilisé dans queryGroup() et dans
      * paginatorGroup())
+     *
+     * @formatter
+     * ATTENTION : pas d'affectation, ni de service, ni de station
+     * Les alias des tables sont les suivants :
+     * <ul>
+     * <li>eleves AS ele</li>
+     * <li>scolarites AS sco</li>
+     * <li>etablissements AS eta</li>
+     * <li>classes AS cla</li>
+     * <li>responsables AS res (lié sur affectations)</li>
+     * <li>communes AS comres (pour la commune du responsable)</li>
+     * <li>communes AS comsco (pour la commune de l'élève s'il a une adresse perso)</li>
+     * <li>elevesphotos AS photos</li>
+     * </ul>
      *
      * @param int $millesime
      * @param array $filtre
@@ -219,37 +247,13 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ])
-            ->
-        // ->join(
-        // [
-        // 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-        // ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
-        // [
-        // 'moment',
-        // 'ligne1Id',
-        // 'sensligne1',
-        // 'ordreligne1',
-        // 'ligne2Id',
-        // 'sensligne2',
-        // 'ordreligne2'
-        // ], SELECT::JOIN_LEFT)
-        join([
+            ->join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)
-            ->
-        // ->join([
-        // 'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-        // ], 'sta1.stationId=aff.station1Id', [
-        // 'station1' => 'nom'
-        // ], Select::JOIN_LEFT)
-        // ->join([
-        // 'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-        // ], 'sta2.stationId=aff.station2Id', [
-        // 'station2' => 'nom'
-        // ], Select::JOIN_LEFT)
-        join([
-            'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-        ], 'photos.eleveId = ele.eleveId',
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
@@ -282,6 +286,32 @@ class Liste extends AbstractQuery implements FactoryInterface
      * Renvoie un Select pour la recherche des élèves par EtablissementService, par Lot ou
      * par Transporteur. (utilisé par queryGroupParAffectations() et par
      * paginatorGroupParAffectations())
+     *
+     * @formatter
+     * ATTENTION
+     * Les alias des tables sont les suivants :
+     * <ul>
+     * <li>eleves AS e</li>
+     * <li>scolarites AS s</li>
+     * <li>etablissements AS eta</li>
+     * <li>classes AS cla</li>
+     * <li>affectations AS a (voir la note plus loin)</li>
+     * <li>responsables AS r (lié sur affectations)</li>
+     * <li>communes AS c (pour la commune du responsable)</li>
+     * <li>communes AS d (pour la commune de l'élève s'il a une adresse perso)</li>
+     * <li>services AS ser (uniquement le service1Id)</li>
+     * <li>transporteur AS tra</li>
+     * <li>stations AS sta (uniquement la station1Id)</li>
+     * <li>elevesphotos AS photos</li>
+     * </ul>
+     * La table affectations est remplacée par SELECT FROM affectations qui renomme les
+     * champs de la façon suivante :
+     * <ul>
+     * <li>station1Id devient stationId</li>
+     * <li>ligne1Id devient ligneId</li>
+     * <li>sensligne1 devient sens</li>
+     * <li>ordreligne1 devient ordre</li>
+     * </ul>
      *
      * @param int $millesime
      * @param array $filtre
@@ -396,8 +426,75 @@ class Liste extends AbstractQuery implements FactoryInterface
     }
 
     /**
+     * Reprend la requête obtenue par la méthode selectGroup() en lui rajoutant la table
+     * affectations AS aff
+     *
+     * @param int $millesime
+     * @param array $filtre
+     * @param string|array $order
+     *
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectGroupByService(int $millesime, array $filtre, $order)
+    {
+        return $this->selectGroup($millesime, $filtre, $order)->join(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
+            [
+                'moment',
+                'ligneId' => 'ligne1Id',
+                'sens' => 'sensligne1',
+                'ordre' => 'ordreligne1',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ], SELECT::JOIN_LEFT);
+    }
+
+    /**
+     * Reprend la requête obtenue par la méthode selectGroup() en lui rajoutant la table
+     * affectations et deux tables stations (AS sta1 liée sur station1Id et AS sta2 liée
+     * sur station2Id)
+     *
+     * @param int $millesime
+     * @param array $filtre
+     * @param string|array $order
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectGroupByStation(int $millesime, array $filtre, $order)
+    {
+        return $this->selectGroup($millesime, $filtre, $order)
+            ->join(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId', [],
+            SELECT::JOIN_LEFT)
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta1.stationId=aff.station1Id', [], Select::JOIN_LEFT)
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta2.stationId=aff.station2Id', [], Select::JOIN_LEFT);
+    }
+
+    /**
      * Renvoie les points de montée et les services des élèves pour un millesime donné en
      * tenant compte des correspondances. (pour selectGroupParAffectations)
+     *
+     * @formatter
+     * ATTENTION
+     * La table affectations est remplacée par SELECT FROM affectations qui renomme les
+     * champs de la façon suivante :
+     * <ul>
+     * <li>station1Id devient stationId</li>
+     * <li>ligne1Id devient ligneId</li>
+     * <li>sensligne1 devient sens</li>
+     * <li>ordreligne1 devient ordre</li>
+     * </ul>
      *
      * @param int $millesime
      *

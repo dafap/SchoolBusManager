@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/station-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -97,7 +97,7 @@ $data = $this->paginator->getCurrentItems();
 	<div id="liste-inner">
 		<table class="eleves">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
@@ -109,13 +109,10 @@ $data = $this->paginator->getCurrentItems();
 					<th>Services</th>
 					<th></th>
 				</tr>
-			<?php $services = [];?>
 			<?php foreach ($data as $row):?>
 			<?php
-    $services = implode('<br>', [
-        $row['service1Id'],
-        $row['service2Id']
-    ]);
+    $services1 = $this->printServices($row['eleveId'], 1);
+    $services2 = $this->printServices($row['eleveId'], 2);
     $hiddens = [
         'eleveId' => $row['eleveId'],
         'info' => $row['nom'] . ' ' . $row['prenom'],
@@ -167,7 +164,7 @@ $data = $this->paginator->getCurrentItems();
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
-					<td><?= $services;?></td>
+					<td><?= implode('<br>', array_filter([$services1, $services2]));?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 			<?php endforeach;?>

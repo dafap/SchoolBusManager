@@ -3569,7 +3569,7 @@ class TransportController extends AbstractActionController
                     [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'service'),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
                     [
@@ -4131,7 +4131,7 @@ class TransportController extends AbstractActionController
                     [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'station'),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),

@@ -8,8 +8,8 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
- * @version 2019-2.6.0
+ * @date 6 avr. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -118,8 +118,10 @@ $oService = $this->service;
 			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
 		<?php endif;?>
 		<?php if (!empty($oService)) :?>
-			<li><?= $this->escapeHtml($this->service->serviceId); ?></li>
-			<li><?= $this->escapeHtml($this->service->nom); ?></li>
+			<li><?= $this->escapeHtml($this->designationService($this->service)); ?></li>
+			<?php if ($this->service->alias):?>
+			<li><?= $this->escapeHtml($this->service->alias); ?></li>
+			<?php endif;?>
 			<li><?= $this->escapeHtml($this->service->transporteur); ?></li>
 		<?php endif;?>
 		</ul>
@@ -140,7 +142,7 @@ $oService = $this->service;
 	<div id="liste-inner">
 		<table class="eleves">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
@@ -196,8 +198,13 @@ foreach ($data as $row) :
     foreach ($array_adresse as &$ligne) {
         $ligne = $this->escapeHtml($ligne);
     }
+    $services1 = $this->printServices($row['eleveId'], 1);
+    $services2 = $this->printServices($row['eleveId'], 2);
+    $stations1 = $this->printStations($row['eleveId'], 1);
+    $stations2 = $this->printStations($row['eleveId'], 2);
     ?>
-                <tr class="petit <?= $this->cycle(["even","odd"])->next();?>">
+                <tr
+					class="petit <?= $this->cycle(["even","odd"])->next();?>">
 					<td><?= $this->pictogrammes();?></td>
 					<td><?= $this->escapeHtml($row['nom']);?></td>
 					<td><?= $this->escapeHtml($row['prenom']);?></td>
@@ -206,8 +213,8 @@ foreach ($data as $row) :
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
-					<td><?= implode('<br>', [$row['service1Id'], $row['service2Id']]);?></td>
-					<td><?= implode('<br>', [$row['station1'], $row['station2']]);?></td>
+					<td><?= implode('<br>', array_filter([$services1, $services2]));?></td>
+					<td><?= implode('<br>', array_filter([$stations1, $stations2]));?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>
