@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -150,7 +150,7 @@ $url_facture = $this->url('sbmdocument', [
             if ($nbAffectations) {
                 // construction des tableaux $entity, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
-                    $service_transporteur = $transport['service1Id'] . ' - ' .
+                    $service_transporteur = $transport['service1'] . ' - ' .
                         $transport['transporteur1'];
                     $station_commune = $transport['station1'] . ' - ' .
                         $transport['commune1'];
@@ -165,7 +165,7 @@ $url_facture = $this->url('sbmdocument', [
                         ! empty($transport['station2Id']);
                     if ($correspondance) {
                         if (! empty($transport['service2Id'])) {
-                            $service_transporteur = $transport['service2Id'] . ' - ' .
+                            $service_transporteur = $transport['service2'] . ' - ' .
                                 $transport['transporteur2'];
                         } else {
                             $service_transporteur = '';
@@ -288,7 +288,7 @@ $url_facture = $this->url('sbmdocument', [
                         if (! empty($circuit[$i])) {
                             $hiddens_ligne['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
-                        $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_5;
+                        $lignesTableau[$i] = '<tr class="petit ' . $css . '">' . $colonne1_5;
                         $lignesTableau[$i] .= '<td class="' . $avant_fin_aout . '">' .
                             $entity[$i] . '</td><td class="' . $avant_fin_aout . '">' .
                             $station[$i] . '</td>';

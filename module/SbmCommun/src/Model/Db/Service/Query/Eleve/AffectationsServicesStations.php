@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -194,6 +194,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'ser1' => $this->db_manager->getCanonicName('services', 'table')
             ], $this->jointureAffectationsServices(1, 'ser1'),
             [
+                'service1Id' => new Expression($this->getSqlEncodeServiceId('ser1')),
                 'service1_nbPlaces' => 'nbPlaces',
                 'service1_alias' => 'alias',
                 'semaine' => 'semaine'
@@ -226,7 +227,10 @@ class AffectationsServicesStations extends AbstractQuery
         ], $this->jointureAffectationsCircuits(1, 'cir1'),
             [
                 'horaire' => 'horaireA',
-                'circuit1Id' => 'circuitId'
+                'circuit1Id' => 'circuitId',
+                'service1' => new Expression(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireA',
+                        'sens', 'cir1'))
             ], $select::JOIN_LEFT)
             ->join([
             'lot1' => $this->db_manager->getCanonicName('lots', 'table')
@@ -244,6 +248,7 @@ class AffectationsServicesStations extends AbstractQuery
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ], $this->jointureAffectationsServices(2, 'ser2'),
             [
+                'service2Id' => new Expression($this->getSqlEncodeServiceId('ser2')),
                 'service2_nbPlaces' => 'nbPlaces',
                 'service2_alias' => 'alias',
                 'service2_semaine' => 'semaine'
@@ -288,11 +293,15 @@ class AffectationsServicesStations extends AbstractQuery
         ], $this->jointureAffectationsCircuits(2, 'cir2'),
             [
                 'horaire2' => 'horaireA',
-                'circuit2Id' => 'circuitId'
+                'circuit2Id' => 'circuitId',
+                'service2' => new Expression(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireA',
+                        'sens', 'cir2'))
             ], $select::JOIN_LEFT);
         $where = new Where();
         $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.millesime',
             $this->millesime)->and->equalTo('aff.eleveId', $eleveId);
+        //die($this->getSqlString($select->where($where)));
         return $this->renderResult($select->where($where));
     }
 
@@ -816,8 +825,8 @@ class AffectationsServicesStations extends AbstractQuery
             'telephone' => $telephone,
             'eleve' => 'eleve',
             'service1' => new Expression(
-                $this->getSqlDesignationService('ligne1Id', 'sensligne1',
-                    'moment', 'ordreligne1')),
+                $this->getSqlDesignationService('ligne1Id', 'sensligne1', 'moment',
+                    'ordreligne1')),
             'service2' => 'ligne2Id',
             'etablissement' => 'etablissement'
         ];

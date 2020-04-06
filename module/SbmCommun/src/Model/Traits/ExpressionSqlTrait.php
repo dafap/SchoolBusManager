@@ -7,7 +7,7 @@
  * @filesource ExpressionSqlTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 6 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -81,23 +81,27 @@ trait ExpressionSqlTrait
      * @return string
      */
     public function getSqlSemaineLigneHoraireSens(string $semaine = 'semaine',
-        string $ligneId = 'ligneId', string $horaire = 'horaire', string $sens = 'sens', string $alias = '')
+        string $ligneId = 'ligneId', string $horaire = 'horaire', string $sens = 'sens',
+        string $alias = '')
     {
+        if ($alias) {
+            $prefix = rtrim($alias, '.') . '.';
+        }
         $expr = implode(',',
             [
-                $this->getSqlSemaine($semaine),
+                $this->getSqlSemaine($prefix . $semaine),
                 "' '",
-                $ligneId,
+                $prefix . $ligneId,
                 "' '",
-                "DATE_FORMAT($horaire,'%H:%i')",
+                "DATE_FORMAT($prefix$horaire,'%H:%i')",
                 "' '",
-                $this->getSqlSens($sens)
+                $this->getSqlSens($prefix . $sens)
             ]);
         return 'CONCAT(' . $expr . ')';
     }
 
-    public function getSqlDesignationService(string $ligneId = 'ligneId', string $sens = 'sens',
-        string $moment = 'moment', string $ordre = 'ordre')
+    public function getSqlDesignationService(string $ligneId = 'ligneId',
+        string $sens = 'sens', string $moment = 'moment', string $ordre = 'ordre')
     {
         $expr = implode(',',
             [
@@ -110,6 +114,15 @@ trait ExpressionSqlTrait
                 $this->getSqlOrdre($ordre)
             ]);
         return 'CONCAT(' . $expr . ')';
+    }
+
+    public function getSqlEncodeServiceId(string $prefix = '')
+    {
+        if ($prefix) {
+            $prefix = rtrim($prefix, '.') . '.';
+        }
+        return sprintf('CONCAT_WS("|",%1$sligneId,%1$ssens,%1$smoment,%1$sordre)', $prefix);
+        // return 'CONCAT_WS(\'|\',ligneId,sens,moment,ordre)';
     }
 
     private function getAlias(string $alias)
