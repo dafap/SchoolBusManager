@@ -10,12 +10,13 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 10 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Traits\ServiceTrait;
@@ -25,7 +26,7 @@ use Zend\View\Model\ViewModel;
 
 class EleveController extends AbstractActionController
 {
-    use ServiceTrait;
+    use ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
 
     const ROUTE = 'sbmajaxeleve';
 
@@ -202,11 +203,16 @@ class EleveController extends AbstractActionController
      *
      * @return \SbmGestion\Form\AffectationDecision
      */
-    private function getFormAffectationDecision(string $etablissementId, $trajet)
+    private function getFormAffectationDecision(string $etablissementId, $trajet,
+        bool $tout = false)
     {
         $values_options1 = $this->db_manager->get('Sbm\Db\Select\Stations')->ouvertes();
-        $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->desservent(
-            $etablissementId);
+        if ($tout) {
+            $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->tout();
+        } else {
+            $values_options2 = $this->db_manager->get('Sbm\Db\Select\Services')->desservent(
+                $etablissementId);
+        }
         $form = new \SbmGestion\Form\AffectationDecision($trajet, 2);
         $form->remove('back');
         $form->setAttribute('action',
@@ -258,7 +264,7 @@ class EleveController extends AbstractActionController
                 'station1Id' => $station1Id,
                 'station2Id' => $station2Id,
                 'form' => $this->getFormAffectationDecision($etablissementId, $trajet)->setData(
-                    $aData),
+                    $aData, $aData['op'] == 'delete'),
                 'is_xmlhttprequest' => 1
             ]);
     }
@@ -271,6 +277,7 @@ class EleveController extends AbstractActionController
      */
     public function formaffectationvalidateAction()
     {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
         $request = $this->getRequest();
         $response = $this->getResponse();
         if ($request->isPost()) {
@@ -283,7 +290,8 @@ class EleveController extends AbstractActionController
                 ]));
             } else {
                 $form = $this->getFormAffectationDecision(
-                    $request->getPost('etablissementId'), $request->getPost('trajet'))
+                    $request->getPost('etablissementId'), $request->getPost('trajet'),
+                    $request->getPost('op') == 'delete')
                     ->setData($request->getPost());
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
@@ -296,6 +304,8 @@ class EleveController extends AbstractActionController
                             }
                         }
                     }
+                    $this->debugLog(
+                        sprintf('%s (%d) : %s', __METHOD__, __LINE__, $messages));
                     $response->setContent(
                         Json::encode([
                             'cr' => $messages,
@@ -344,6 +354,8 @@ class EleveController extends AbstractActionController
                                     'success' => 1
                                 ]));
                     } catch (\Exception $e) {
+                        $this->debugLog(
+                            sprintf('%s (%d) : %s', __METHOD__, __LINE__, $e->getMessage()));
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
                         $response->setContent(
