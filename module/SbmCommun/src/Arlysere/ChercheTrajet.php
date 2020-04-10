@@ -11,11 +11,12 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
+ * @date 10 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Traits\DebugTrait;
 use Zend\Db\Sql\Expression;
@@ -69,6 +70,12 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
      */
     private $tAffectations;
 
+    private function hasDebugger()
+    {
+        $debug = getenv('APPLICATION_ENV') == 'development';
+        return method_exists($this, 'debugLog') && $debug;
+    }
+
     /**
      *
      * @param number $eleveId
@@ -76,7 +83,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     public function setEleveId(int $eleveId)
     {
         $this->eleveId = $eleveId;
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->eleveId);
         }
         return $this;
@@ -94,7 +101,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         } else {
             $this->jours = $jours;
         }
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->jours);
         }
         return $this;
@@ -107,7 +114,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     public function setTrajet(int $trajet)
     {
         $this->trajet = $trajet;
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->trajet);
         }
         return $this;
@@ -120,7 +127,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     public function setResponsableId(int $responsableId)
     {
         $this->responsableId = $responsableId;
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->responsableId);
         }
         return $this;
@@ -133,7 +140,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     public function setEtablissementId(string $etablissementId)
     {
         $this->etablissementId = $etablissementId;
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->etablissementId);
         }
         return $this;
@@ -146,7 +153,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     public function setStationId(int $stationId)
     {
         $this->stationId = $stationId;
-        if (method_exists($this, 'debugLog')) {
+        if ($this->hasDebugger()) {
             $this->debugLog($this->stationId);
         }
         return $this;
@@ -156,22 +163,23 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     {
         $this->tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         if (method_exists($this, 'debugInitLog')) {
-            $this->debugInitLog('/debug', 'debug-cherchetrajet.txt');
-            $this->debugClear();
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                'sbm_error.log');
         }
     }
 
     /**
      * Le tableau renvoyé est de la forme [$moment => boolean] Pour chaque moment on
-     * renvoie true si on a trouvé une solution et false sinon.
+     * renvoie true si on a trouvé une solution et false sinon. En mode debuggage le
+     * compte-rendu cr est enregistré dans le fichier erreurs.
      *
      * @return boolean[]
      */
     public function run()
     {
-        // DEBUG
-        $cr = [];
-        // ------------
+        if ($this->hasDebugger()) {
+            $cr = [];
+        }
         $trouve = [];
         for ($moment = 1; $moment <= 3; $moment ++) {
             $trouve[$moment] = false;
@@ -181,19 +189,18 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 $trajetsPossibles = $this->getTrajets($moment, $i);
             }
             $i --;
-            // // DEBUG
-            $cr[$this->eleveId][$moment]['nb_circuits'] = $i;
-            // $cr[$this->eleveId][$moment]['nb_trajets'] = count($trajetsPossibles);
-            // $this->debugLog(__LINE__);
-            // ---------
+            if ($this->hasDebugger()) {
+                $cr[$this->eleveId][$moment]['nb_circuits'] = $i;
+                $this->debugLog(sprintf('moment : %d', $moment));
+                $this->debugLog($trajetsPossibles);
+            }
             if (count($trajetsPossibles)) {
                 // si on a trouvé des trajets
                 // @TODO: contrôle des places disponibles
                 $trajet = current($trajetsPossibles);
-                // DEBUG
-                // $cr[$this->eleveId][$moment]['trajet'] = $trajet;
-                // $this->debugLog(__LINE__);
-                // --------------
+                if ($this->hasDebugger()) {
+                    $cr[$this->eleveId][$moment]['trajet'] = $trajet;
+                }
                 $oAffectation = $this->tAffectations->getObjData();
                 $oAffectation->millesime = $this->millesime;
                 $oAffectation->eleveId = $this->eleveId;
@@ -203,28 +210,28 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 for ($j = 1; $j <= $i; $j ++) {
                     $oAffectation->jours = $trajet["semaine_$j"];
                     $oAffectation->correspondance = $j;
-                    $oAffectation->station1Id = $trajet["station1Id_$j"];
+                    if ($moment == 1) {
+                        $oAffectation->station1Id = $trajet["station1Id_$j"];
+                        $oAffectation->station2Id = $trajet["station2Id_$j"];
+                    } else {
+                        // remettre correctement la montée et la descente au retour
+                        $oAffectation->station2Id = $trajet["station1Id_$j"];
+                        $oAffectation->station1Id = $trajet["station2Id_$j"];
+                    }
                     $oAffectation->ligne1Id = $trajet["ligne1Id_$j"];
                     $oAffectation->sensligne1 = $trajet["sensligne1_$j"];
                     $oAffectation->ordreligne1 = $trajet["ordreligne1_$j"];
-                    $oAffectation->station2Id = $trajet["station2Id_$j"];
-                    // DEBUG
-                    // $cr[$this->eleveId][$moment]['affectation'][$j] =
-                    // $oAffectation->getArrayCopy();
-                    $this->debugLog(__LINE__);
-                    $this->debugLog($oAffectation);
-                    // ---------
+                    if ($this->hasDebugger()) {
+                        $cr[$this->eleveId][$moment]['affectation'][$j] = $oAffectation->getArrayCopy();
+                    }
                     $this->tAffectations->saveRecord($oAffectation);
-                    // DEBUG
-                    // $this->debugLog(__LINE__);
-                    // ---------------
                 }
                 $trouve[$moment] = true;
             }
         }
-        // DEBUG
-        // $this->debugLog($cr);
-        // -----------------------
+        if ($this->hasDebugger()) {
+            $this->debugLog($cr);
+        }
         return $trouve;
     }
 
@@ -308,6 +315,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         return sprintf($modele, $rang_correspondance, $rang_correspondance + 1);
     }
 
+    private function jointureCircuitService(int $rang_correspondance)
+    {
+        $modele = 'cir%1$dsta1.millesime = ser%1$d.millesime' .
+            ' AND cir%1$dsta1.ligneId = ser%1$d.ligneId AND cir%1$dsta1.sens=ser%1$d.sens' .
+            ' AND cir%1$dsta1.moment=ser%1$d.moment AND cir%1$dsta1.ordre=ser%1$d.ordre';
+        return sprintf($modele, $rang_correspondance);
+    }
+
     private function jointureCircuitCorrespondance(int $rang_correspondance)
     {
         $modele = 'cir%1$dsta1.stationId=cor%2$d.station1Id';
@@ -383,6 +398,9 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             [
                 'etasta' => $this->db_manager->getCanonicName('etablissements-stations')
             ], 'eta.etablissementId=etasta.etablissementId', []);
+        $ordre = [
+            'etasta.rang'
+        ];
         for ($i = $nb_cir; $i >= 1; $i --) {
             $columns1 = [];
             $columns2 = [
@@ -432,10 +450,22 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 [
                     sprintf('cir%dsta1', $i) => $this->db_manager->getCanonicName(
                         'circuits')
-                ], $this->jointureSurUnCircuit($i), $columns3);
+                ], $this->jointureSurUnCircuit($i), $columns3)
+                ->join(
+                [
+                    sprintf('ser%d', $i) => $this->db_manager->getCanonicName('services')
+                ], $this->jointureCircuitService($i), []);
+            $ordre[] = sprintf('ser%d.rang', $i);
         }
-        $select->where($this->getConditions($moment, $nb_cir));
-        //die($this->getSqlString($select));
+        if ($moment == 1) {
+            // partir le plus tard possible
+            $ordre[] = 'cir1sta1.horaireD DESC';
+        } else {
+            // arriver le plus tôt possible
+            $ordre[] = 'cir1sta1.horaireA';
+        }
+        $select->where($this->getConditions($moment, $nb_cir))
+            ->order($ordre);
         return $select;
     }
 
