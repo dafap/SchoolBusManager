@@ -14,8 +14,8 @@
  * @filesource circuit-modif-horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2019
- * @version 2019-2.5.0
+ * @date 11 avr. 2020
+ * @version 2020-2.6.0
  */
 ?>
 <h1>Modification des horaires des arrêts sélectionnés</h1>
@@ -25,87 +25,33 @@
 		<?= $this->form()->openTag($this->form);?>
     	<fieldset class="sbm-page1">
 			<div id="circuit-modif-horaires-buttons" class="row-inner">
-				<div id="horaire-matin" class="row-inner">
+				<div id="wrapper-horaire-arrivee" class="row-inner">
 					<fieldset>
-						<legend>Horaires aller</legend>
+						<legend>Horaires arrivée en station</legend>
 						<table>
-							<tr id="circuit-m1" class="row-inner">
-								<th><?= $this->labelHoraires1;?></th>
-								<td><?= $this->FormRadio($this->form->get('m1-op'));?></td>
-								<td><?= $this->formText($this->form->get('m1-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('m1-sec'));?> sec</td>
-							</tr>
-							<tr id="circuit-m2" class="row-inner">
-								<th><?= $this->labelHoraires2;?></th>
-								<td><?= $this->FormRadio($this->form->get('m2-op'));?></td>
-								<td><?= $this->formText($this->form->get('m2-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('m2-sec'));?> sec</td>
-							</tr>
-							<tr id="circuit-m3" class="row-inner">
-								<th><?= $this->labelHoraires3;?></th>
-								<td><?= $this->FormRadio($this->form->get('m3-op'));?></td>
-								<td><?= $this->formText($this->form->get('m3-min'));?> min</td>
-								<td><?= $this->formText($this->form->get('m3-sec'));?> sec</td>
+							<tr id="circuit-horaireA" class="row-inner">
+								<th><?= $this->labelHorairesArrivee;?></th>
+								<td><?= $this->FormRadio($this->form->get('horaireA-op'));?></td>
+								<td><?= $this->formText($this->form->get('horaireA-min'));?> min</td>
+								<td><?= $this->formText($this->form->get('horaireA-sec'));?> sec</td>
 							</tr>
 						</table>
 					</fieldset>
 				</div>
-				<div id="horaire-soir" class="row-inner">
+				<div id="wrapper-horaire-depart" class="row-inner">
 					<fieldset>
-						<legend>Horaires retour</legend>
-						<table id="circuit-s1" class="row-inner">
+						<legend>Horaires départ en station</legend>
+						<table id="circuit-horaireD" class="row-inner">
 							<tr>
-								<th><? $this->labelHoraires1;?></th>
+								<th><? $this->labelHorairesDepart;?></th>
 								<td>
-									<?= $this->FormRadio($this->form->get('s1-op'));?>
-									<br>
-									<?= $this->FormRadio($this->form->get('z1-op'));?>
+									<?= $this->FormRadio($this->form->get('horaireD-op'));?>
 								</td>
 								<td>
-									<?= $this->formText($this->form->get('s1-min'));?> min
-									<br>
-									<?= $this->formText($this->form->get('z1-min'));?> min
+									<?= $this->formText($this->form->get('horaireD-min'));?> min
 								</td>
 								<td>
-									<?= $this->formText($this->form->get('s1-sec'));?> sec
-									<br>
-									<?= $this->formText($this->form->get('z1-sec'));?> sec
-								</td>
-							</tr>
-							<tr id="circuit-s2" class="row-inner">
-								<th><? $this->labelHoraires2;?></th>
-								<td>
-									<?= $this->FormRadio($this->form->get('s2-op'));?>
-									<br>
-									<?= $this->FormRadio($this->form->get('z2-op'));?>
-								</td>
-								<td>
-									<?= $this->formText($this->form->get('s2-min'));?> min
-									<br>
-									<?= $this->formText($this->form->get('z2-min'));?> min
-								</td>
-								<td>
-									<?= $this->formText($this->form->get('s2-sec'));?> sec
-									<br>
-									<?= $this->formText($this->form->get('z2-sec'));?> sec
-								</td>
-							</tr>
-							<tr id="circuit-s3" class="row-inner">
-								<th><? $this->labelHoraires3;?></th>
-								<td>
-									<?= $this->FormRadio($this->form->get('s3-op'));?>
-									<br>
-									<?= $this->FormRadio($this->form->get('z3-op'));?>
-								</td>
-								<td>
-									<?= $this->formText($this->form->get('s3-min'));?> min
-									<br>
-									<?= $this->formText($this->form->get('z3-min'));?> min
-								</td>
-								<td>
-									<?= $this->formText($this->form->get('s3-sec'));?> sec
-									<br>
-									<?= $this->formText($this->form->get('z3-sec'));?> sec
+									<?= $this->formText($this->form->get('horaireD-sec'));?> sec
 								</td>
 							</tr>
 						</table>
@@ -119,9 +65,10 @@
 	<div id="fiche-footer">
 		<p class="sbm-description">
 			Avancer le passage de 1 minute veut dire que le passage à tous les
-			arrêts sélectionnés aura lieu 1 minute plus tôt.<br>Retarder le
-			passage de 1 minute veut dire que le passage à tous les arrêts
-			sélectionnés aura lieu 1 minute plus tard.
+			arrêts sélectionnés aura lieu 1 minute plus tôt : sur l'horaire cela
+			revient à soustraire 1 minute.<br>Retarder le passage de 1 minute
+			veut dire que le passage à tous les arrêts sélectionnés aura lieu 1
+			minute plus tard : sur l'horaire cela revient à ajouter 1 minute.
 		</p>
 	</div>
 </div>

@@ -10,8 +10,8 @@
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2019
- * @version 2019-2.5.0
+ * @date 11 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model;
 
@@ -43,15 +43,8 @@ class ModifHoraires
     public function run()
     {
         $horaires = [
-            'm1',
-            'm2',
-            'm3',
-            's1',
-            's2',
-            's3',
-            'z1',
-            'z2',
-            'z3'
+            'horaireA',
+            'horaireD'
         ];
         $millesime = Session::get('millesime');
         $circuits = $this->tcircuits->fetchAll(
@@ -82,6 +75,9 @@ class ModifHoraires
                 } else {
                     continue; // inchangé
                 }
+            }
+            if ($circuit->horaireD < $circuit->horaireA) {
+                $circuit->horaireD = $circuit->horaireA;
             }
             if ($change) {
                 $this->tcircuits->updateRecord($circuit);
