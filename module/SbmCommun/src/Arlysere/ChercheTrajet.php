@@ -11,7 +11,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2020
+ * @date 11 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -401,6 +401,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         $ordre = [
             'etasta.rang'
         ];
+        $ordre_corr = [];
         for ($i = $nb_cir; $i >= 1; $i --) {
             $columns1 = [];
             $columns2 = [
@@ -424,6 +425,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                     ], sprintf('cir%dsta2.stationId = etasta.stationId', $i), $columns2);
             } else {
                 // cette station est une station de correspondance
+                array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance', $i));
                 $select->join([
                     sprintf('cor%d', $i) => $this->selectCorr($i)
                 ], $this->jointureCircuitCorrespondance($i), $columns1)
@@ -464,8 +466,15 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             // arriver le plus tôt possible
             $ordre[] = 'cir1sta1.horaireA';
         }
+        foreach ($ordre_corr as $column){
+            $ordre[] = $column;
+        }
+
         $select->where($this->getConditions($moment, $nb_cir))
             ->order($ordre);
+        if ($this->hasDebugger()) {
+            $this->debugLog($this->getSqlString($select));
+        }
         return $select;
     }
 
