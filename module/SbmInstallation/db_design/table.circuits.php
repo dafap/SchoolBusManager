@@ -8,7 +8,7 @@
  * @filesource table.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 11 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -38,7 +38,7 @@ return [
             'distance' => 'decimal(7,3) NOT NULL DEFAULT "0.000"',
             'montee' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'descente' => 'tinyint(1) NOT NULL DEFAULT "0"',
-            'correspondance' => 'tinyint(1) DEFAULT "0"',
+            'correspondance' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'emplacement' => 'varchar(45) NOT NULL DEFAULT ""',
             'typeArret' => 'text NULL',
             'commentaire1' => 'text NULL',
