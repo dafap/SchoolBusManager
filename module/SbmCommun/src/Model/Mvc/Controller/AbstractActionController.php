@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 11 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -534,6 +534,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $form->setData(
                 $this->db_manager->getColumnDefaults($params['data']['table'],
                     $params['data']['type']));
+            if (is_callable($initform)) {
+                $initform($args);
+            }
         }
         if (is_callable($renvoyer)) {
             return $renvoyer($args);
