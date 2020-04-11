@@ -1,14 +1,14 @@
 <?php
 /**
  * Page reçue par les parents habitant hors zone autorisée.
- * 
+ *
  * @project sbm
  * @package SbmFront/view/sbm-front/index
  * @filesource hors-zone.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 sept. 2018
- * @version 2019-2.5.0
+ * @date 11 avr. 2020
+ * @version 2020-2.6.0
  */
 $format = <<<EOT
 <p>Vous habitez dans la commune de %s.</p>
@@ -30,7 +30,13 @@ $explication = sprintf($format, $this->commune, $this->accueil, $this->client['n
     $this->client['email']);
 
 ?>
-<h1>Inscription en ligne non autorisée</h1>
+<div class="centre">
+	<h1 class="accueil">
+		Inscription aux transports<br>tra mobilité année <?=$this->as;?><br>Domicile
+		- établissement scolaire
+	</h1>
+	<h3>Inscription en ligne non autorisée</h3>
+</div>
 <div class="fiche-wrapper">
 	<div class="zone-actions"></div>
 	<div class="flashMessenger float-right">

@@ -19,14 +19,14 @@
  * @filesource index-avant.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2019
- * @version 2019-2.5.0
+ * @date 11 avr. 2020
+ * @version 2020-2.6.0
  */
 $msg = include $this->theme->getIncludeView('sbm-front/index/index-avant');
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->themeJS('sbm-front','index.js');
+$this->themeJS('sbm-front', 'index.js');
 
 $url_carte = $this->url('sbmcarte', [
     'action' => 'etablissements'
@@ -36,10 +36,12 @@ $url_carte = $this->url('sbmcarte', [
 	<div class="row">
 		<div class="column1 compressed">
 			<div class="centre">
-				<h1>Transports scolaires</h1>
-				<h3 class="accueil">Inscription et paiement en ligne</h3>
+				<h1 class="accueil">
+					Inscription aux transports<br>tra mobilité année <?=$this->as;?><br>Domicile
+					- établissement scolaire
+				</h1>
 			</div>
-		    <?= $msg; ?>
+			<div class="instructions"><?= $msg; ?></div>
 		</div>
 		<div class="column2">
 			<div class="vecartement-6px">
