@@ -11,8 +11,8 @@
  * @package module/SbmFront
  * @filesource view/layout/layout.phtml
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 sept. 2018
- * @version 2019-2.5.0
+ * @date 12 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -167,7 +167,7 @@ foreach (StdLib::getParamR([
     }
 }
 echo $this->headScript();
-?>        
+?>
 </head>
 <body id="main_body">
 	<div id="container-general">
@@ -184,11 +184,12 @@ echo $this->headScript();
 					<!--/a-->
 				</div>
 			</div>
-			<!-- bienvenue  -->
+			<div class="clearfix">
 			<?= $this->bienvenue(); ?>
+			</div>
 			<!-- corps de page -->
 			<div class="content">
-			<?php  //echo $this->navigation('navigation')->menu()->setPartial('menu')->render(); //test menu dynamique ?> 
+			<?php  //echo $this->navigation('navigation')->menu()->setPartial('menu')->render(); //test menu dynamique ?>
 			<?= $this->layout()->content; ?>
 			</div>
 
