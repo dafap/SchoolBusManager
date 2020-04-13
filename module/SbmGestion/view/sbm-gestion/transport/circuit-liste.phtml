@@ -11,38 +11,16 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
 $this->themeJS('gestion-transport', 'circuit-liste.js');
-$jsCallback = '';
-$jsTrigger = '';
-// modèle de jsCallback pour selection
-$modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectioncircuit/circuitId:%d',
-				success : function(data) {
-                    js_selection.actions();
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
 
-/*
- * $url_dupliquer = $this->url('sbmgestion/transport', [ 'action' => 'circuit-dupliquer'
- * ]); $url_vider = $this->url('sbmgestion/transport', [ 'action' => 'circuit-vider' ]);
- */
 $url_ajouter = $this->url('sbmgestion/transport',
     [
         'action' => 'circuit-ajout',
@@ -78,7 +56,7 @@ if ($this->layout()->hassbmservicesms) {
             'page' => $this->page
         ]);
 }
-$hiddens = [
+$hiddens_bas = $hiddens = [
     'ligneId' => $this->service->ligneId,
     'sens' => $this->service->sens,
     'moment' => $this->service->moment,
@@ -134,9 +112,6 @@ $actions = [
         <?php foreach ($circuits as $circuit) :?>
         	<?php
             $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
-            // construction des JS pour selection
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $circuit->circuitId);
-            $jsCallback .= sprintf("$modele\n", $circuit->circuitId, $circuit->circuitId);
             $url_edit = $this->url('sbmgestion/transport',
                 [
                     'action' => 'circuit-edit',
@@ -221,7 +196,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $circuit->circuitId, $circuit->selection)?>
 						</td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
@@ -251,7 +226,7 @@ $actions_selection = [
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">
-					<?=$this->listeZoneActions([], $actions_selection);?>
+					<?=$this->listeZoneActions($hiddens_bas, $actions_selection);?>
 				</div>
 			</div>
 			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
@@ -263,13 +238,3 @@ $actions_selection = [
 	    </div>
 	</div>
 </div>
-<?php
-$this->headScript()->captureStart();
-?>
-$(function() {
-function triggerChange() {
-<?=$jsTrigger;?>}
-<?=$jsCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

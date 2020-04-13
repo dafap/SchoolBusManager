@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -439,12 +439,22 @@ class TransportController extends AbstractActionController
         return $view;
     }
 
+    /**
+     * Reçoit en post ligneId, sens, moment, ordre
+     */
     public function circuitModifHorairesAction()
     {
         $currentPage = $this->params('page', 1);
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
+        } elseif(!$prg) {
+            $this->flashMessenger()->addWarningMessage('Recommencez SVP.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'circuit-liste',
+                    'page' => $currentPage
+                ]);
         }
         $args = $prg ?: [];
         if (array_key_exists('cancel', $args)) {
@@ -460,7 +470,8 @@ class TransportController extends AbstractActionController
             if ($form->isValid()) {
                 $modifHoraires = new \SbmGestion\Model\ModifHoraires($form->getData(),
                     $this->db_manager->get('Sbm\Db\Table\Circuits'));
-                if ($modifHoraires->run()) {
+                if ($modifHoraires->run($args['ligneId'], $args['sens'], $args['moment'],
+                    $args['ordre'])) {
                     $this->flashMessenger()->addSuccessMessage(
                         'Les horaires ont été modifiés.');
                 } else {
@@ -474,7 +485,8 @@ class TransportController extends AbstractActionController
                     ]);
             }
         } else {
-            $form->initData();
+            $form->initData($args['ligneId'], $args['sens'], $args['moment'],
+                $args['ordre']);
         }
         return new ViewModel([
 

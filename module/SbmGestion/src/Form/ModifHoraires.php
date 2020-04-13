@@ -7,7 +7,7 @@
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
@@ -20,13 +20,29 @@ class ModifHoraires extends Form
     public function __construct()
     {
         parent::__construct('modif-horaires');
-        $this->add($this->text('horaireA-min'));
-        $this->add($this->text('horaireA-sec'));
-        $this->add($this->text('horaireD-min'));
-        $this->add($this->text('horaireD-sec'));
-        $this->add($this->radio('horaireA-op'));
-        $this->add($this->radio('horaireD-op'));
-        $this->add(
+        $this->add([
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'sens',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'moment',
+            'type' => 'hidden'
+        ])
+            ->add([
+            'name' => 'ordre',
+            'type' => 'hidden'
+        ])
+            ->add($this->text('horaireA-min'))
+            ->add($this->text('horaireA-sec'))
+            ->add($this->text('horaireD-min'))
+            ->add($this->text('horaireD-sec'))
+            ->add($this->radio('horaireA-op'))
+            ->add($this->radio('horaireD-op'))
+            ->add(
             [
                 'name' => 'cancel',
                 'attributes' => [
@@ -36,8 +52,8 @@ class ModifHoraires extends Form
                     'autofocus' => 'autofocus',
                     'class' => 'button default cancel left-10px'
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'name' => 'submit',
                 'attributes' => [
@@ -77,16 +93,20 @@ class ModifHoraires extends Form
         ];
     }
 
-    public function initData()
+    public function initData($ligneId, $sens, $moment, $ordre)
     {
         $this->setData(
             [
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
                 'horaireA-op' => 0,
                 'horaireA-min' => 0,
                 'horaireA-sec' => 0,
                 'horaireD-op' => 0,
                 'horaireD-min' => 0,
-                'horaireD-sec' => 0,
+                'horaireD-sec' => 0
             ]);
     }
 }

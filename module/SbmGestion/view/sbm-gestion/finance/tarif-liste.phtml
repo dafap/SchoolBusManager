@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -179,7 +179,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 
 
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $tarif->tarifId, $tarif->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>

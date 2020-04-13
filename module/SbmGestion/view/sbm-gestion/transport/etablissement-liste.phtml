@@ -11,7 +11,7 @@
  * @filesource etablissement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -247,11 +247,11 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre desservi">
-						<?=$this->renderCheckbox('desservie', 'des' . $etablissement->etablissementId,$etablissement->desservie)?></td>
+						<?=$this->renderCheckbox('desservie', 'des', $etablissement->etablissementId,$etablissement->desservie)?></td>
 					<td class="centre visible">
-						<?=$this->renderCheckbox('visible', 'vis' . $etablissement->etablissementId,$etablissement->visible)?></td>
+						<?=$this->renderCheckbox('visible', 'vis', $etablissement->etablissementId,$etablissement->visible)?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $etablissement->etablissementId,$etablissement->selection)?></td>
+						<?=$this->renderCheckbox('selection', 'chk', $etablissement->etablissementId,$etablissement->selection)?></td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($etablissement->etablissementId, $hiddens, $buttons);?>
 						</td>

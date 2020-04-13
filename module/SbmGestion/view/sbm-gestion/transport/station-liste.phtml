@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -238,7 +238,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $station->stationId, $station->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $station->stationId, $station->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($station->stationId, $hiddens, $buttons);?></td>

@@ -8,8 +8,8 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2019
- * @version 2019-2.5.0
+ * @date 13 avr. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -122,7 +122,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="numauto">
 						<?= $this->escapeHtml($notification->numauto); ?></td>
 					<td class="centre selection">
-						<?= $this->renderCheckbox('selection', 'chk' . $notification->payfipId, $notification->selection)?></td>
+						<?= $this->renderCheckbox('selection', 'chk', $notification->payfipId, $notification->selection)?></td>
 					<td class="boutons">
             			<?= $this->listeLigneActions($notification->payfipId, $hiddens, $buttons);?></td>
 				</tr>

@@ -13,7 +13,7 @@
  * @filesource view/sbm-gestion/transport/commune-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -185,7 +185,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $commune->communeId, $commune->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $commune->communeId, $commune->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($commune->communeId, $hiddens, $buttons);?>

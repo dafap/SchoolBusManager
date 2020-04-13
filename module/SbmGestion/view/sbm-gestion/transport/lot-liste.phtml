@@ -11,8 +11,8 @@
  * @filesource lot-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 13 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -191,7 +191,7 @@ echo $this->flashMessenger()->render('default');
 						<?=$lot->actif ? 'Oui' : 'Non';?>
 						</td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $lot->lotId, $lot->selection);?>
+						<?=$this->renderCheckbox('selection', 'chk', $lot->lotId, $lot->selection);?>
 						</td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($lot->lotId, $hiddens, $buttons);?></td>

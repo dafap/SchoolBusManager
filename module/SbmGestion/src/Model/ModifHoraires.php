@@ -10,7 +10,7 @@
  * @filesource ModifHoraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model;
@@ -40,7 +40,7 @@ class ModifHoraires
      *
      * @return boolean
      */
-    public function run()
+    public function run($ligneId, $sens, $moment, $ordre)
     {
         $horaires = [
             'horaireA',
@@ -50,10 +50,14 @@ class ModifHoraires
         $circuits = $this->tcircuits->fetchAll(
             [
                 'millesime' => $millesime,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
                 'selection' => 1
             ]);
+        $cr = true;
         foreach ($circuits as $circuit) {
-            $cr = true;
             $change = false;
             foreach ($horaires as $horaire) {
                 $str_laps = sprintf('PT%dM%dS', $this->actions[$horaire . '-min'],

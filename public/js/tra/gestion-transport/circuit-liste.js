@@ -5,8 +5,8 @@
  * @filesource gestion-transport/circuit-liste.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 13 avr. 2020
+ * @version 2020-2.6.0
  */
 var js_selection = (function(){
 	var liste = "#liste-inner table.circuits tbody tr td.selection";
@@ -24,6 +24,19 @@ var js_selection = (function(){
 		}
 	}
 	$(document).ready(function() {
+		$("input[type=checkbox][name=selection]").change(function(){
+			var id = $(this).attr('data-id');
+			var action = ($(this).is(':checked'))?'check':'uncheck';
+		    $.ajax({
+						url : '/sbmajaxtransport/'+action+'selectioncircuit/circuitId:'+id,
+						success : function(data) {
+							fiches_selectionnees();
+						},
+						error : function(xhr, ajaxOptions, thrownError) {
+							alert(xhr.status + " " + thrownError);
+						}
+					});
+		});
 		$(document).on("change", checkboxes_sel, fiches_selectionnees);
 		fiches_selectionnees();
 	});

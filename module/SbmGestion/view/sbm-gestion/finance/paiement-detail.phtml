@@ -12,7 +12,7 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -183,7 +183,7 @@ $actions = [
 						<?= $enfant['duplicataR1'];?></td>
 							<td>
 							<?php if (!$enfant['fa'] && !$enfant['gratuit']):?>
-							<?= $this->renderCheckbox('paiement', "chk$eleveId", $enfant['paiement']);?>
+							<?= $this->renderCheckbox('paiement', 'chk', $eleveId, $enfant['paiement']);?>
 							<?php endif;?>
 							</td>
 						</tr>

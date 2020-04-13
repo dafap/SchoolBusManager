@@ -14,8 +14,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 oct. 2019
- * @version 2019-2.5.2
+ * @date 13 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -275,7 +275,7 @@ if ($this->h2) {
 					<td class="date-paiement"><?= $dp;?></td>
 					<td class="date-valeur"><?= $dv; ?></td>
 					<td class="centre selection">
-					    <?= $this->renderCheckbox('selection', 'chk' . $paiement->paiementId, $paiement->selection);?></td>
+					    <?= $this->renderCheckbox('selection', 'chk', $paiement->paiementId, $paiement->selection);?></td>
 					<td class="boutons">
 						<?= $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);?></td>
 				</tr>

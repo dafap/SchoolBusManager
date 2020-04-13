@@ -14,7 +14,7 @@
  * @filesource RenderCheckbox.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -25,14 +25,16 @@ use Zend\View\Helper\AbstractHelper;
 class RenderCheckbox extends AbstractHelper
 {
 
-    public function __invoke($name, $id, $value, $attributes = [])
+    public function __invoke($name, $op, $id, $value, $attributes = [])
     {
         $element = new Checkbox($name);
         $element->setUseHiddenElement(false)
-            ->setAttribute('id', $id)
+            ->setAttribute('id', $op . $id)
+            ->setAttribute('data-id', $id)
             ->setValue($value);
         foreach ($attributes as $key => $attribute_value) {
-            $element->setAttribute($key, $attribute_value);;
+            $element->setAttribute($key, $attribute_value);
+            ;
         }
         return $this->view->formCheckbox($element);
     }

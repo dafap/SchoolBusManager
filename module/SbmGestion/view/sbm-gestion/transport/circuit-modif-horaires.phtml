@@ -14,7 +14,7 @@
  * @filesource circuit-modif-horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 ?>
@@ -23,6 +23,10 @@
 	<div id="fiche-header"></div>
 	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('ligneId'));?>
+		<?= $this->formHidden($this->form->get('sens'));?>
+		<?= $this->formHidden($this->form->get('moment'));?>
+		<?= $this->formHidden($this->form->get('ordre'));?>
     	<fieldset class="sbm-page1">
 			<div id="circuit-modif-horaires-buttons" class="row-inner">
 				<div id="wrapper-horaire-arrivee" class="row-inner">
