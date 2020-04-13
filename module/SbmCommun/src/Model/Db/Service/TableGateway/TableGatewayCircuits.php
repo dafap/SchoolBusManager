@@ -8,10 +8,12 @@
  * @filesource TableGatewayCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 12 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
+
+use \SbmCommun\Model\Hydrator\Circuits as Hydrator;
 
 class TableGatewayCircuits extends AbstractSbmTableGateway
 {
@@ -21,5 +23,6 @@ class TableGatewayCircuits extends AbstractSbmTableGateway
         $this->table_name = 'circuits';
         $this->type = 'table';
         $this->data_object_alias = 'Sbm\Db\ObjectData\Circuit';
+        $this->hydrator = new Hydrator();
     }
 }

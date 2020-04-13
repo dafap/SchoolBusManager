@@ -8,7 +8,7 @@
  * @filesource Circuit.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 12 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -483,5 +483,17 @@ class Circuit extends AbstractSbmForm implements InputFilterProviderInterface
         }
         // appelle la méthode de ZF2
         parent::setData($data);
+    }
+
+    public function isValid()
+    {
+        if (strtotime($this->data['horaireD']) <strtotime($this->data['horaireA'])) {
+            $this->get('horaireD')->setMessages(['Le départ ne peut pas être antérieur à l\'arrivée en station.']);
+            $ctrl = false;
+        } else {
+            $ctrl = true;
+        }
+        $ok = parent::isValid();
+        return $ok & $ctrl;
     }
 }
