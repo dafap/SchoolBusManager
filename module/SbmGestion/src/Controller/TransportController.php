@@ -3431,7 +3431,11 @@ class TransportController extends AbstractActionController
     {
         $currentPage = $this->params('page', 1);
         $form = new Form\ButtonForm([
-            'id' => null,
+            'millesime' => null,
+            'ligneId'=>null,
+            'sens'=>null,
+            'moment'=>null,
+            'ordre'=>null,
             'origine' => null
         ],
             [

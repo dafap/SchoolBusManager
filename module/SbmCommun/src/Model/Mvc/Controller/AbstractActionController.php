@@ -7,7 +7,7 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2020
+ * @date 14 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Mvc\Controller;
@@ -690,7 +690,9 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $id = [];
                 $interdit = false;
                 foreach ($params['data']['id'] as $item) {
-                    if ($id[$item] = StdLib::getParam($item, $args, false)) {
+                    if ($item == 'millesime') {
+                        $id[$item] = Session::get('millesime');
+                    } elseif ($id[$item] = StdLib::getParam($item, $args, false)) {
                         Session::set($item, $id[$item], 'sbm_suppr');
                     } else {
                         $id[$item] = Session::get($item, - 1, 'sbm_suppr');
