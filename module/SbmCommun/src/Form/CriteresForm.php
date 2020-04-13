@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 13 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -37,7 +37,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         } else {
             $method = 'form' . ucwords(strtolower($tableName));
             if (method_exists($this, $method)) {
-                $this->$method();
+                $this->{$method}();
             }
         }
         $this->add(
@@ -112,112 +112,29 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
     {
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Select',
                 'name' => 'ligneId',
-                'attributes' => [
-                    'id' => 'critere-ligneId',
-                    'class' => 'sbm-width-55c'
-                ],
-                'options' => [
-                    'label' => 'Ligne',
-                    'label_attributes' => [
-                        'class' => ''
-                    ],
-                    'empty_option' => 'Tous',
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
+                'type' => 'hidden'
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Select',
                 'name' => 'sens',
-                'attributes' => [
-                    'id' => 'critere-sens',
-                    'class' => 'sbm-width-10c'
-                ],
-                'options' => [
-                    'label' => 'Sens',
-                    'label_attributes' => [
-                        'class' => 'sbm-first'
-                    ],
-                    'empty_option' => 'Tous',
-                    'value_options' => [
-                        1 => 'Aller',
-                        2 => 'Retour'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
+                'type' => 'hidden'
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Select',
                 'name' => 'moment',
-                'attributes' => [
-                    'id' => 'critere-moment',
-                    'class' => 'sbm-width-10c'
-                ],
-                'options' => [
-                    'label' => 'Moment',
-                    'label_attributes' => [
-                        'class' => 'sbm-first'
-                    ],
-                    'empty_option' => 'Tous',
-                    'value_options' => [
-                        1 => 'Matin',
-                        2 => 'Midi',
-                        3 => 'Soir'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
+                'type' => 'hidden'
             ]);
 
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Select',
                 'name' => 'ordre',
-                'attributes' => [
-                    'id' => 'critere-ordre',
-                    'class' => 'sbm-width-10c'
-                ],
-                'options' => [
-                    'label' => 'Ordre',
-                    'label_attributes' => [
-                        'class' => 'sbm-first'
-                    ],
-                    'empty_option' => 'Tous',
-                    'value_options' => [
-                        '1' => '1',
-                        '2' => '2',
-                        '3' => '3',
-                        '4' => '4',
-                        '5' => '5',
-                        '6' => '6',
-                        '7' => '7',
-                        '8' => '8',
-                        '9' => '9',
-                        '10' => '10',
-                        '11' => '11',
-                        '12' => '12',
-                        '13' => '13',
-                        '14' => '14',
-                        '15' => '15',
-                        '16' => '16'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
+                'type' => 'hidden'
             ]);
         $this->add(
             [
-                'type' => 'Zend\Form\Element\Select',
-                'name' => 'stationId',
+                'type' => 'text',
+                'name' => 'station',
                 'attributes' => [
                     'id' => 'critere-stationId',
                     'class' => 'sbm-width-55c'
@@ -225,9 +142,8 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'options' => [
                     'label' => 'Station',
                     'label_attributes' => [
-                        'class' => 'sbm-new-line'
+                        'class' => 'sbm-width-30c'
                     ],
-                    'empty_option' => 'Toutes',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -263,19 +179,19 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
         return [
             'ligneId' => [
                 'name' => 'ligneId',
-                'required' => false
+                'required' => true
             ],
             'sens' => [
                 'name' => 'sens',
-                'required' => false
+                'required' => true
             ],
             'moment' => [
                 'name' => 'moment',
-                'required' => false
+                'required' => true
             ],
             'ordre' => [
                 'name' => 'ordre',
-                'required' => false
+                'required' => true
             ],
             'stationId' => [
                 'name' => 'stationId',
@@ -623,7 +539,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'nomSA',
                 'attributes' => [
                     'type' => 'text',
-                'id' => 'critere-nomSA',
+                    'id' => 'critere-nomSA',
                     'maxlength' => '45',
                     'class' => 'sbm-width-45c'
                 ],

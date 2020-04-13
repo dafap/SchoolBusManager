@@ -54,16 +54,8 @@ class TransportController extends AbstractActionController
      */
     public function circuitListeAction()
     {
-        $args = $this->initListe('circuits',
-            function ($config, $form, $args) {
-                $form->remove('ligneId')
-                    ->remove('sens')
-                    ->remove('moment')
-                    ->remove('ordre')
-                    ->setValueOptions('stationId',
-                    $config['db_manager']->get('Sbm\Db\Select\Stations')
-                        ->ouvertes());
-            }, [
+        $args = $this->initListe('circuits', null,
+            [
                 'ligneId',
                 'sens',
                 'moment',
@@ -71,12 +63,16 @@ class TransportController extends AbstractActionController
                 'horaireA'
             ], null,
             function ($post) {
-                return [
-                    'ligneId' => $post['ligneId'],
-                    'sens' => $post['sens'],
-                    'moment' => $post['moment'],
-                    'ordre' => $post['ordre']
-                ];
+                if (array_key_exists('ligneId', $post)) {
+                    return [
+                        'ligneId' => $post['ligneId'],
+                        'sens' => $post['sens'],
+                        'moment' => $post['moment'],
+                        'ordre' => $post['ordre']
+                    ];
+                } else {
+                    return [];
+                }
             });
         if ($args instanceof Response) {
             return $args;
@@ -87,11 +83,13 @@ class TransportController extends AbstractActionController
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
         $args['post']['millesime'] = $millesime;
-        $args['where']->equalTo('millesime', $millesime)
-            ->equalTo('ligneId', $args['post']['ligneId'])
-            ->equalTo('sens', $args['post']['sens'])
-            ->equalTo('moment', $args['post']['moment'])
-            ->equalTo('ordre', $args['post']['ordre']);
+        $args['where']->equalTo('millesime', $millesime);
+        if (array_key_exists('ligneId', $args['post'])) {
+            $args['where']->equalTo('ligneId', $args['post']['ligneId'])
+                ->equalTo('sens', $args['post']['sens'])
+                ->equalTo('moment', $args['post']['moment'])
+                ->equalTo('ordre', $args['post']['ordre']);
+        }
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
         $effectifCircuits->init();
@@ -168,6 +166,10 @@ class TransportController extends AbstractActionController
         $args = $this->initListe('services',
             function ($config, $form, $args) {
                 $form->remove('ligneId');
+                $form->add([
+                    'name' => 'ligneId',
+                    'type' => 'hidden'
+                ]);
                 $form->setValueOptions('transporteurId',
                     $config['db_manager']->get('Sbm\Db\Select\Transporteurs'));
             }, [

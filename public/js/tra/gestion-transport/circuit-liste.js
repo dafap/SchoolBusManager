@@ -24,7 +24,7 @@ var js_selection = (function(){
 		}
 	}
 	$(document).ready(function() {
-		$("input[type=checkbox][name=selection]").change(function(){
+		$("#liste-inner input[type=checkbox][name=selection]").change(function(){
 			var id = $(this).attr('data-id');
 			var action = ($(this).is(':checked'))?'check':'uncheck';
 		    $.ajax({
