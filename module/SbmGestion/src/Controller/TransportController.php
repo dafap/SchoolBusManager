@@ -563,7 +563,7 @@ class TransportController extends AbstractActionController
                         ], $circuit->stationId, false), [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'service'),
                 'circuit' => $circuit,
                 'page' => $currentPage,
                 'pageRetour' => $this->params('id', 1),
