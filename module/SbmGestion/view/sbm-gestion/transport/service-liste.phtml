@@ -10,27 +10,12 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 14 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$jsCallback = '';
-$jsTrigger = '';
-// modèle de jsCallback pour selection
-$modele = <<<EOT
-$("#chk%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectionservice/serviceId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-
+$this->themeJS('gestion-transport', 'service-liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $services = $this->paginator->getCurrentItems();
@@ -121,17 +106,13 @@ $actions = [
 				</tr>
             <?php foreach ($services as $service) :?>
             <?php
-                $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
-                    $service->ligneId, $service->sens, $service->moment, $service->ordre);
+                $serviceId = $service->encodeServiceId($service->getArrayCopy());
                 if ($this->effectifServices) {
                     $nbInscrits = $this->effectifServices->transportes($service->ligneId,
                         $service->sens, $service->moment, $service->ordre);
                 } else {
                     $nbInscrits = 0;
                 }
-                // construction des JS pour selection
-                $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $serviceId);
-                $jsCallback .= sprintf("$modele\n", $serviceId, $serviceId);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -201,10 +182,7 @@ $actions = [
 					<td class="boutons">
             			<?=$this->listeLigneActions($serviceId, $hiddens, $buttons);?></td>
 				</tr>
-            <?php
-            endforeach
-            ;
-            ?>
+            <?php  endforeach;?>
             </tbody>
 		</table>
 	</div>
@@ -218,13 +196,3 @@ $actions = [
         </div>
 	</div>
 </div>
-<?php
-$this->headScript()->captureStart();
-?>
-$(function() {
-function triggerChange() {
-<?=$jsTrigger;?>}
-<?=$jsCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

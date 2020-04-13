@@ -11,7 +11,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 14 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -362,10 +362,9 @@ class TransportController extends AbstractActionController
     {
         try {
             $millesime = Session::get('millesime');
-            $ligneId = $this->params('ligneId');
-            $sens = $this->params('sens');
-            $moment = $this->params('moment');
-            $ordre = $this->params('ordre');
+            $objService = $this->db_manager->get('Sbm\Db\Table\Services')->getObjData();
+            list ($ligneId, $sens, $moment, $ordre) = array_values(
+                $objService->decodeServiceId($this->params('serviceId')));
             $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($millesime,
                 $ligneId, $sens, $moment, $ordre, 1);
             return $this->getResponse()->setContent(Json::encode([
@@ -390,10 +389,9 @@ class TransportController extends AbstractActionController
     {
         try {
             $millesime = Session::get('millesime');
-            $ligneId = $this->params('ligneId');
-            $sens = $this->params('sens');
-            $moment = $this->params('moment');
-            $ordre = $this->params('ordre');
+            $objService = $this->db_manager->get('Sbm\Db\Table\Services')->getObjData();
+            list ($ligneId, $sens, $moment, $ordre) = array_values(
+                $objService->decodeServiceId($this->params('serviceId')));
             $this->db_manager->get('Sbm\Db\Table\Services')->setSelection($millesime,
                 $ligneId, $sens, $moment, $ordre, 0);
             return $this->getResponse()->setContent(Json::encode([
@@ -521,80 +519,46 @@ class TransportController extends AbstractActionController
         }
     }
 
-    /**
-     * @ TODO : POUR LA VERSION DE TRANSDEV ALBERTVILLE CETTE METHODE EST INUTILE OU COMPLETEMENT A REVOIR
-     *
-     * @formatter:off
-     * Cette méthode doit recevoir en GET, au choix :<ul>
-     * <li>soit le paramètre 'circuitId'</li>
-     * <li>soit les paramètres 'serviceId' et 'stationId'</li></ul>
-     * En cas de succès, elle renvoie un tableau 4 colonnes x 3 lignes encodé JSON composé
-     * de la façon suivante :<ol>
-     * <li>première ligne correspond à l'horaire1 défini dans la fiche service</li>
-     * <li>deuxième ligne correspond à l'horaire2 défini dans la fiche service</li>
-     * <li>troisième ligne correspond à l'horaire3 défini dans la fiche service</li></ol>
-     * Chaque ligne est composée de :<ol>
-     * <li>horaire décodé de la fiche service</li>
-     * <li>horaire de l'aller (matin) ou vide</li>
-     * <li>horaire du premier retour ou vide</li>
-     * <li>horaire du second retour éventuel ou vide</li></ol>
-     * @formatter:on
-     *
-     * @return \Zend\Stdlib\ResponseInterface
+/**
+ * @ TODO : POUR LA VERSION DE TRANSDEV ALBERTVILLE CETTE METHODE EST INUTILE OU
+ * COMPLETEMENT A REVOIR
+ *
+ * @formatter:off
+ * Cette méthode doit recevoir en GET, au choix :<ul>
+ * <li>soit le paramètre 'circuitId'</li>
+ * <li>soit les paramètres 'serviceId' et 'stationId'</li></ul>
+ * En cas de succès, elle renvoie un tableau 4 colonnes x 3 lignes encodé JSON composé
+ * de la façon suivante :<ol>
+ * <li>première ligne correspond à l'horaire1 défini dans la fiche service</li>
+ * <li>deuxième ligne correspond à l'horaire2 défini dans la fiche service</li>
+ * <li>troisième ligne correspond à l'horaire3 défini dans la fiche service</li></ol>
+ * Chaque ligne est composée de :<ol>
+ * <li>horaire décodé de la fiche service</li>
+ * <li>horaire de l'aller (matin) ou vide</li>
+ * <li>horaire du premier retour ou vide</li>
+ * <li>horaire du second retour éventuel ou vide</li></ol>
+ * @formatter:on
+ *
+ * @return \Zend\Stdlib\ResponseInterface
+ */
+    /*
+     * public function tablehorairescircuitAction() { try { $horaires =
+     * $this->db_manager->get('Sbm\Horaires'); $circuitId = $this->params('$circuitId',
+     * false); if ($circuitId) { $result = $horaires->getTableHoraires($circuitId); return
+     * $this->getResponse()->setContent( Json::encode([ 'table' => $result, 'success' => 1
+     * ])); } else { $serviceId = $this->params('serviceId', false);
+     * $ligneId=$this->params('ligneId', false); $sens = $this->params('sens', 0); $moment
+     * = $this->params('moment', 0); $ordre = $this->params('ordre', 0); $stationId =
+     * $this->params('stationId', false); if ($ligneId && $sens && $moment && $ordre &&
+     * $stationId) { $result = $horaires->getTableHoraires( [ 'serviceId' => $serviceId,
+     * 'stationId' => $stationId ]); return $this->getResponse()->setContent(
+     * Json::encode([ 'table' => $result, 'success' => 1 ])); } elseif ($serviceId) { //
+     * on renvoie un tableau ou seule la première colonne est connue $result =
+     * $horaires->getTableHoraires($serviceId); return $this->getResponse()->setContent(
+     * Json::encode([ 'table' => $result, 'success' => 1 ])); } else { $msg = 'Impossible
+     * de déterminer les horaires car on ne connait pas le service.'; return
+     * $this->getResponse()->setContent( Json::encode([ 'cr' => $msg, 'success' => 0 ]));
+     * } } } catch (\Exception $e) { return $this->getResponse()->setContent(
+     * Json::encode([ 'cr' => $e->getMessage(), 'success' => 0 ])); } }
      */
-    /*public function tablehorairescircuitAction()
-    {
-        try {
-            $horaires = $this->db_manager->get('Sbm\Horaires');
-            $circuitId = $this->params('$circuitId', false);
-            if ($circuitId) {
-                $result = $horaires->getTableHoraires($circuitId);
-                return $this->getResponse()->setContent(
-                    Json::encode([
-                        'table' => $result,
-                        'success' => 1
-                    ]));
-            } else {
-                $serviceId = $this->params('serviceId', false);
-                $ligneId=$this->params('ligneId', false);
-                $sens = $this->params('sens', 0);
-                $moment = $this->params('moment', 0);
-                $ordre = $this->params('ordre', 0);
-                $stationId = $this->params('stationId', false);
-                if ($ligneId && $sens && $moment && $ordre && $stationId) {
-                    $result = $horaires->getTableHoraires(
-                        [
-                            'serviceId' => $serviceId,
-                            'stationId' => $stationId
-                        ]);
-                    return $this->getResponse()->setContent(
-                        Json::encode([
-                            'table' => $result,
-                            'success' => 1
-                        ]));
-                } elseif ($serviceId) {
-                    // on renvoie un tableau ou seule la première colonne est connue
-                    $result = $horaires->getTableHoraires($serviceId);
-                    return $this->getResponse()->setContent(
-                        Json::encode([
-                            'table' => $result,
-                            'success' => 1
-                        ]));
-                } else {
-                    $msg = 'Impossible de déterminer les horaires car on ne connait pas le service.';
-                    return $this->getResponse()->setContent(
-                        Json::encode([
-                            'cr' => $msg,
-                            'success' => 0
-                        ]));
-                }
-            }
-        } catch (\Exception $e) {
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'cr' => $e->getMessage(),
-                    'success' => 0
-                ]));
-        }
-    }*/
 }
