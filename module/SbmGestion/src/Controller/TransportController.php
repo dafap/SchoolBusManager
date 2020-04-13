@@ -392,8 +392,15 @@ class TransportController extends AbstractActionController
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
+        } elseif (! $prg) {
+            $this->flashMessenger()->addWarningMessage('Recommencez SVP !');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'circuit-liste',
+                    'page' => $this->params('page', 1)
+                ]);
         }
-        $args = $prg ?: [];
+        $args = $prg;
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
@@ -401,7 +408,13 @@ class TransportController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        $form = new Form\ButtonForm([],
+        $form = new Form\ButtonForm(
+            [
+                'ligneId' => $args['ligneId'],
+                'sens' => $args['sens'],
+                'moment' => $args['moment'],
+                'ordre' => $args['ordre']
+            ],
             [
                 'confirmer' => [
                     'class' => 'confirm',
@@ -417,7 +430,14 @@ class TransportController extends AbstractActionController
         if (array_key_exists('confirmer', $args)) {
             $form->setData($args);
             if ($form->isValid()) {
-                $tcircuits->clearSelection();
+                $tcircuits->clearSelection(
+                    [
+                        'millesime' => Session::get('millesime'),
+                        'ligneId' => $args['ligneId'],
+                        'sens' => $args['sens'],
+                        'moment' => $args['moment'],
+                        'ordre' => $args['ordre']
+                    ]);
                 $this->flashMessenger()->addSuccessMessage(
                     'Toutes les arrêts sont désélectionnées.');
                 return $this->redirect()->toRoute('sbmgestion/transport',
@@ -428,7 +448,11 @@ class TransportController extends AbstractActionController
             }
         }
         $where = new Where();
-        $where->equalTo('selection', 1);
+        $where->equalTo('selection', 1)
+            ->equalTo('ligneId', $args['ligneId'])
+            ->equalTo('sens', $args['sens'])
+            ->equalTo('moment', $args['moment'])
+            ->equalTo('ordre', $args['ordre']);
         $view = new ViewModel(
             [
 
@@ -448,15 +472,15 @@ class TransportController extends AbstractActionController
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
-        } elseif(!$prg) {
-            $this->flashMessenger()->addWarningMessage('Recommencez SVP.');
+        } elseif (! $prg) {
+            $this->flashMessenger()->addWarningMessage('Recommencez SVP !');
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [
                     'action' => 'circuit-liste',
                     'page' => $currentPage
                 ]);
         }
-        $args = $prg ?: [];
+        $args = $prg;
         if (array_key_exists('cancel', $args)) {
             return $this->redirect()->toRoute('sbmgestion/transport',
                 [

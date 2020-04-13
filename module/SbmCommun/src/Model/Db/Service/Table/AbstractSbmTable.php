@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 13 avr. 2020
  * @version 200-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -497,8 +497,8 @@ abstract class AbstractSbmTable implements FactoryInterface
     /**
      * Mise à jour d'un enregistrement dans une table. Si l'enregistrement est absent on
      * lance une exception ATTENTION !!! Si on change la pk (ou une partie de la pk
-     * lorsqu'elle est basée sur plusieurs colonnes) on doit passer d'abord l'ancien
-     * objet avant modification puis les nouvelles données.
+     * lorsqu'elle est basée sur plusieurs colonnes) on doit passer d'abord l'ancien objet
+     * avant modification puis les nouvelles données.
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $obj_data
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $new_data
@@ -508,7 +508,7 @@ abstract class AbstractSbmTable implements FactoryInterface
     public function updateRecord(ObjectDataInterface $obj_data,
         ObjectDataInterface $new_data = null)
     {
-        if (!$new_data) {
+        if (! $new_data) {
             $new_data = $obj_data;
         }
         if (! is_null($this->hydrator)) {
@@ -602,12 +602,13 @@ abstract class AbstractSbmTable implements FactoryInterface
      * Remie à zéro de la sélection des fiches de la table. Plus aucune fiche ne sera
      * sélectionnée. Encore faut-il que la table ait un champ `selection` !!!
      *
+     * @param string|array|\Closure $where
      * @return int
      */
-    public function clearSelection()
+    public function clearSelection($where = null)
     {
         return $this->getTableGateway()->update([
             'selection' => 0
-        ]);
+        ], $where);
     }
 }
