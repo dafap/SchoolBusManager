@@ -95,6 +95,7 @@ $actions = [
 		<table class="circuits">
 			<tbody>
 				<tr>
+					<th>Commune</th>
 					<th>Arrêt</th>
 					<th>Emplacement</th>
 					<th title="N° de passage sur ce circuit">Pas.</th>
@@ -166,13 +167,15 @@ $actions = [
             ];
             $horaires = array_unique($horaires);
             $horaire_title = ' title="Heure de passage"';
-            if (count($horaires) > 1){
-                $horaire_title =  " title=\"Heure d'arrivée\nHeure de départ\"";
+            if (count($horaires) > 1) {
+                $horaire_title = " title=\"Heure d'arrivée\nHeure de départ\"";
             }
             $oSemaine = new \SbmCommun\Model\Strategy\Semaine();
             $jours = $oSemaine->renderSemaine($oSemaine->extract($circuit->semaine));
             ?>
             	<tr class="petit <?=$css;?>">
+					<td class="commune">
+						<?=$this->escapeHtml($circuit->lacommuneStation);?></td>
 					<td class="station">
 						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="emplacement">
