@@ -1142,99 +1142,17 @@ class IndexController extends AbstractActionController
         $user = $this->db_manager->get('Sbm\Db\Table\Users')->getRecord($args['userId']);
         switch ($user->categorieId) {
             case 2:
-                $tUsersTransporteurs = $this->db_manager->get(
-                    'Sbm\Db\Table\UsersTransporteurs');
-                if ($tUsersTransporteurs->hasTransporteur($args['userId'])) {
-                    $transporteurId = $tUsersTransporteurs->getTransporteurId(
-                        $args['userId']);
-                    $viewmodel = new ViewModel(
-                        [
-                            'user' => $user,
-                            'transporteur' => $this->db_manager->get(
-                                'Sbm\Db\Vue\Transporteurs')->getRecord($transporteurId),
-                            'form' => false,
-                            'page' => $this->params('page', 1)
-                        ]);
-                } else {
-                    $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
-                        'transporteur');
-                    $form->setValueOptions('transporteurId',
-                        $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
-                        ->bind($tUsersTransporteurs->getObjData());
-                    if (array_key_exists('submit', $args)) {
-                        $form->setData($args);
-                        if ($form->isValid()) {
-                            $tUsersTransporteurs->saveRecord($form->getData());
-                            $this->flashMessenger()->addSuccessMessage(
-                                'Relation crée entre un utilisateur et un transporteur');
-                            return $this->redirect()->toRoute('sbmadmin',
-                                [
-                                    'action' => 'user-liste',
-                                    'page' => $this->params('page', 1)
-                                ]);
-                        }
-                    }
-                    $form->setData([
-                        'userId' => $args['userId']
-                    ]);
-                    $viewmodel = new ViewModel(
-                        [
-                            'user' => $user,
-                            'transporteur' => false,
-                            'form' => $form
-                        ]);
-                }
-                $viewmodel->setTemplate('sbm-admin/index/user-transporteur');
+                return $this->linkTransporteur($args, $user);
                 break;
             case 3:
-                $tUsersEtablissements = $this->db_manager->get(
-                    'Sbm\Db\Table\UsersEtablissements');
-                if ($tUsersEtablissements->hasEtablissement($args['userId'])) {
-                    $etablissementId = $tUsersEtablissements->getEtablissementId(
-                        $args['userId']);
-                    $viewmodel = new ViewModel(
-                        [
-                            'user' => $user,
-                            'etablissement' => $this->db_manager->get(
-                                'Sbm\Db\Vue\Etablissements')->getRecord($etablissementId),
-                            'form' => false,
-                            'page' => $this->params('page', 1)
-                        ]);
-                } else {
-                    $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
-                        'etablissement');
-                    $form->setValueOptions('etablissementId',
-                        $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                            ->desservis())
-                        ->bind($tUsersEtablissements->getObjData());
-                    if (array_key_exists('submit', $args)) {
-                        $form->setData($args);
-                        if ($form->isValid()) {
-                            $tUsersEtablissements->saveRecord($form->getData());
-                            $this->flashMessenger()->addSuccessMessage(
-                                'Relation crée entre un utilisateur et un établissement');
-                            return $this->redirect()->toRoute('sbmadmin',
-                                [
-                                    'action' => 'user-liste',
-                                    'page' => $this->params('page', 1)
-                                ]);
-                        }
-                    }
-                    $form->setData([
-                        'userId' => $args['userId']
-                    ]);
-                    $viewmodel = new ViewModel(
-                        [
-                            'user' => $user,
-                            'etablissement' => false,
-                            'form' => $form
-                        ]);
-                }
-                $viewmodel->setTemplate('sbm-admin/index/user-etablissement');
+                return $this->linkEtablissement($args, $user);
+                break;
+            case 100:
+                return $this->linkCommunes($args, $user);
                 break;
             default:
                 // récupère la fiche d'un responsable par son email (ancien comportement)
-                $viewmodel = new ViewModel(
+                return new ViewModel(
                     [
                         'user' => $user,
                         'responsable' => $this->db_manager->get('Sbm\Db\Vue\Responsables')->getRecordByEmail(
@@ -1243,7 +1161,207 @@ class IndexController extends AbstractActionController
                     ]);
                 break;
         }
+    }
+
+    private function linkCommunes(array $args,
+        \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $user): ViewModel
+    {
+        $tUsersCommunes = $this->db_manager->get('Sbm\Db\Table\UsersCommunes');
+        if ($tUsersCommunes->hasCommune($args['userId'])) {
+            $communeId = $tUsersCommunes->getCommuneId($args['userId']);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'commune' => $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+                        $communeId),
+                    'form' => false,
+                    'page' => $this->params('page', 1)
+                ]);
+        } else {
+            $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
+                'commune');
+            $form->setValueOptions('communeId',
+                $this->db_manager->get('Sbm\Db\Select\Communes')
+                    ->desservies())
+                ->bind($tUsersCommunes->getObjData());
+            if (array_key_exists('submit', $args)) {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $tUsersCommunes->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Relation crée entre un utilisateur et une commune');
+                    return $this->redirect()->toRoute('sbmadmin',
+                        [
+                            'action' => 'user-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
+                }
+            }
+            $form->setData([
+                'userId' => $args['userId']
+            ]);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'commune' => false,
+                    'form' => $form
+                ]);
+        }
+        $viewmodel->setTemplate('sbm-admin/index/user-commune');
         return $viewmodel;
+    }
+
+    private function linkEtablissement(array $args,
+        \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $user): ViewModel
+    {
+        $tUsersEtablissements = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements');
+        if ($tUsersEtablissements->hasEtablissement($args['userId'])) {
+            $etablissementId = $tUsersEtablissements->getEtablissementId($args['userId']);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+                        $etablissementId),
+                    'form' => false,
+                    'page' => $this->params('page', 1)
+                ]);
+        } else {
+            $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
+                'etablissement');
+            $form->setValueOptions('etablissementId',
+                $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                    ->desservis())
+                ->bind($tUsersEtablissements->getObjData());
+            if (array_key_exists('submit', $args)) {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $tUsersEtablissements->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Relation crée entre un utilisateur et un établissement');
+                    return $this->redirect()->toRoute('sbmadmin',
+                        [
+                            'action' => 'user-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
+                }
+            }
+            $form->setData([
+                'userId' => $args['userId']
+            ]);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'etablissement' => false,
+                    'form' => $form
+                ]);
+        }
+        $viewmodel->setTemplate('sbm-admin/index/user-etablissement');
+        return $viewmodel;
+    }
+
+    private function linkTransporteur(array $args,
+        \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $user): ViewModel
+    {
+        $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
+        if ($tUsersTransporteurs->hasTransporteur($args['userId'])) {
+            $transporteurId = $tUsersTransporteurs->getTransporteurId($args['userId']);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'transporteur' => $this->db_manager->get('Sbm\Db\Vue\Transporteurs')->getRecord(
+                        $transporteurId),
+                    'form' => false,
+                    'page' => $this->params('page', 1)
+                ]);
+        } else {
+            $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
+                'transporteur');
+            $form->setValueOptions('transporteurId',
+                $this->db_manager->get('Sbm\Db\Select\Transporteurs'))
+                ->bind($tUsersTransporteurs->getObjData());
+            if (array_key_exists('submit', $args)) {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $tUsersTransporteurs->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Relation crée entre un utilisateur et un transporteur');
+                    return $this->redirect()->toRoute('sbmadmin',
+                        [
+                            'action' => 'user-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
+                }
+            }
+            $form->setData([
+                'userId' => $args['userId']
+            ]);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'transporteur' => false,
+                    'form' => $form
+                ]);
+        }
+        $viewmodel->setTemplate('sbm-admin/index/user-transporteur');
+        return $viewmodel;
+    }
+
+    public function userCommuneSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (! array_key_exists('userId', $args) ||
+            ! array_key_exists('communeId', $args)) {
+                return $this->redirect()->toRoute('sbmadmin',
+                    [
+                        'action' => 'user-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+            $tUsersCommunes = $this->db_manager->get('Sbm\Db\Table\UsersCommunes');
+            $tUsersCommunes->deleteRecord(
+                [
+                    'userId' => $args['userId'],
+                    'communeId' => $args['communeId']
+                ]);
+            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+            return $this->redirect()->toRoute('sbmadmin',
+                [
+                    'action' => 'user-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+    }
+
+    public function userEtablissementSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (! array_key_exists('userId', $args) ||
+            ! array_key_exists('etablissementId', $args)) {
+                return $this->redirect()->toRoute('sbmadmin',
+                    [
+                        'action' => 'user-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+            $tUsersEtablissements = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements');
+            $tUsersEtablissements->deleteRecord(
+                [
+                    'userId' => $args['userId'],
+                    'etablissementId' => $args['etablissementId']
+                ]);
+            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+            return $this->redirect()->toRoute('sbmadmin',
+                [
+                    'action' => 'user-liste',
+                    'page' => $this->params('page', 1)
+                ]);
     }
 
     public function userTransporteurSupprAction()
@@ -1255,24 +1373,24 @@ class IndexController extends AbstractActionController
         $args = $prg ?: [];
         if (! array_key_exists('userId', $args) ||
             ! array_key_exists('transporteurId', $args)) {
+                return $this->redirect()->toRoute('sbmadmin',
+                    [
+                        'action' => 'user-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+            $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
+            $tUsersTransporteurs->deleteRecord(
+                [
+                    'userId' => $args['userId'],
+                    'transporteurId' => $args['transporteurId']
+                ]);
+            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
             return $this->redirect()->toRoute('sbmadmin',
                 [
                     'action' => 'user-liste',
                     'page' => $this->params('page', 1)
                 ]);
-        }
-        $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
-        $tUsersTransporteurs->deleteRecord(
-            [
-                'userId' => $args['userId'],
-                'transporteurId' => $args['transporteurId']
-            ]);
-        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
-        return $this->redirect()->toRoute('sbmadmin',
-            [
-                'action' => 'user-liste',
-                'page' => $this->params('page', 1)
-            ]);
     }
 
     public function userPrepareNouveauxComptesAction()

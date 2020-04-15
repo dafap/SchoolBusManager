@@ -1,0 +1,110 @@
+<?php
+/**
+ * Page d'accueil du portail pour les communes
+ *
+ * Les variables définies dans cette vue sont :
+ * - commune : nom de la commune
+ * - elevesEnregistres
+ * - elevesInscrits
+ * - elevesPreinscrits
+ * - elevesRayes
+ * - elevesFamilleAcceuil
+ * - elevesGardeAlternee
+ * - elevesMoins1km
+ * - elevesDe1A3km
+ * - eleves3kmEtPlus
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/index
+ * @filesource tr-index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleves = $this->url('sbmportail', [
+    'action' => 'com-eleves'
+]);
+$url_circuits = $this->url('sbmportail', [
+    'action' => 'com-circuits'
+]);
+$url_carte_stations = $this->url('sbmportail', [
+    'action' => 'com-carte-stations'
+]);
+$url_carte_etablissements = $this->url('sbmportail',
+    [
+        'action' => 'com-carte-etablissements'
+    ]);
+?>
+<div id="tableau-de-bord" class="clearfix">
+	<div class="flashMessenger float-right">
+		<?=$this->flashMessenger()->render('success');?>
+		<?=$this->flashMessenger()->render('warning');?>
+		<?=$this->flashMessenger()->render('error');?>
+		<?=$this->flashMessenger()->render('info');?>
+		<?=$this->flashMessenger()->render('default');?>
+    </div>
+	<h1>Portail des communes : <?=$this->commune;?></h1>
+	<div class="float-left">
+		<h2>Quelques chiffres</h2>
+		<table class="bleu float-left">
+			<tbody>
+				<tr>
+					<td>Nombre d'élèves enregistrés</td>
+					<td class="effectif"><?= $this->elevesEnregistres ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves inscrits</td>
+					<td class="effectif"><?= $this->elevesInscrits ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves préinscrits</td>
+					<td class="effectif"><?= $this->elevesPreinscrits ?:0;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves rayés</td>
+					<td class="effectif"><?= $this->elevesRayes ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves à moins de 1 km</td>
+					<td class="effectif"><?= $this->elevesMoins1km ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves de 1 à 3 km</td>
+					<td class="effectif"><?= $this->elevesDe1A3km ?:0;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves à 3 km et plus</td>
+					<td class="effectif"><?= $this->eleves3kmEtPlus ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves en famille d'accueil</td>
+					<td class="effectif"><?= $this->elevesFamilleAcceuil ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves en garde alternée</td>
+					<td class="effectif"><?= $this->elevesGardeAlternee ?:0;?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="menugeneral" class="float-right">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?=$url_circuits;?>"><i
+						class="fam-bullet-go"></i>Circuits et horaires</a></li>
+				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Points
+						d'arrêts de la commune</a></li>
+				<li><a href="<?=$url_carte_etablissements;?>"><i
+						class="fam-bullet-go"></i>Établissements scolaires fréquentés</a></li>
+			</ul>
+		</div>
+	</div>
+</div>

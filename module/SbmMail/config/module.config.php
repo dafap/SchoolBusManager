@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2018
- * @version 2018-2.5.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 use SbmMail\Controller;
@@ -26,6 +26,7 @@ return [
                         'parent',
                         'transporteur',
                         'etablissement',
+                        'commune',
                         'secretariat'
                     ]
                 ],

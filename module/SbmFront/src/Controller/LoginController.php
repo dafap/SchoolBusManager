@@ -225,6 +225,7 @@ EOT;
                     break;
                 case 2:
                 case 3:
+                case 100:
                 case 200:
                     Session::set('home', 'sbmportail', 'layout');
                     return $this->redirect()->toRoute('sbmportail',

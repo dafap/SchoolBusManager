@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmFront\Controller;
 use SbmFront\Form;
@@ -55,6 +55,7 @@ return [
                                 'transporteur',
                                 'etablissement',
                                 'secretariat',
+                                'commune',
                                 'gestion',
                                 'admin'
                             ]
@@ -123,6 +124,7 @@ return [
                             'roles' => [
                                 'parent',
                                 'secretariat',
+                                'commune',
                                 'transporteur',
                                 'etablissement'
                             ]
@@ -133,6 +135,7 @@ return [
                             'roles' => [
                                 'parent',
                                 'secretariat',
+                                'commune',
                                 'transporteur',
                                 'etablissement'
                             ]
@@ -143,6 +146,7 @@ return [
                             'roles' => [
                                 'parent',
                                 'secretariat',
+                                'commune',
                                 'transporteur',
                                 'etablissement'
                             ]
@@ -160,6 +164,7 @@ return [
                             'roles' => [
                                 'parent',
                                 'secretariat',
+                                'commune',
                                 'transporteur',
                                 'etablissement'
                             ]

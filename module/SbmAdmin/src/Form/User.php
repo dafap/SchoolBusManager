@@ -1,14 +1,14 @@
 <?php
 /**
  * Formulaire de saisie d'un user
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Form
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 9 sept. 2018
- * @version 2019-2.5.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAdmin\Form;
 
@@ -75,7 +75,8 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                         'Mlle' => 'Mademoiselle',
                         'Dr' => 'Docteur',
                         'Me' => 'Maître',
-                        'Pr' => 'Professeur'
+                        'Pr' => 'Professeur',
+                        'Secrétariat' => 'Secrétariat'
                     ],
                     'empty_option' => 'Choisissez la civilité',
                     'error_attributes' => [
@@ -154,6 +155,7 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                         '1' => 'Parent',
                         '2' => 'Transporteur',
                         '3' => 'Etablissement scolaire',
+                        '100' => 'Commune',
                         '200' => 'Secrétariat',
                         '253' => 'Gestionnaire',
                         '254' => 'Administrateur'

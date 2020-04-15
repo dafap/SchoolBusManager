@@ -3,14 +3,14 @@
  * Configuration du module SbmPortail
  *
  * Définition des routes et des acl
- * 
+ *
  * @project sbm
  * @package SbmPortail/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmPortail\Controller;
 
@@ -22,6 +22,7 @@ return [
                     'roles' => [
                         'transporteur',
                         'etablissement',
+                        'commune',
                         'secretariat',
                         'gestion'
                     ]

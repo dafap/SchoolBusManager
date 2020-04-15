@@ -8,7 +8,7 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 15 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -31,29 +31,39 @@ class Statistiques extends AbstractQuery
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $communeId
+     *            Si communeId est donné, on ne compte que les élèves de la commune
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbEnregistresByMillesime($millesime = null)
+    public function getNbEnregistresByMillesime($millesime = null, $communeId = null)
     {
+        $where = new Where();
+        $where->literal('sco.selection = 0'); // on supprime les élèves en attente
+        if (isset($millesime)) {
+            $where->equalTo('millesime', $millesime);
+        }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        $where = new Where();
-        $where->literal('selection = 0'); // on supprime les élèves en attente
-        if (isset($millesime)) {
-            $where->equalTo('millesime', $millesime);
-        }
-        return iterator_to_array($this->renderResult($select->where($where)));
+        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -67,26 +77,33 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbInscritsByMillesime($millesime = null)
+    public function getNbInscritsByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->nest()
             ->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal('gratuit > 0')->unnest();
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -105,11 +122,11 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbPreinscritsByMillesime($millesime = null)
+    public function getNbPreinscritsByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->literal('paiementR1 = 0')
             ->literal('fa = 0')
             ->literal('gratuit = 0');
@@ -117,15 +134,22 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -141,25 +165,32 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbFamilleAccueilByMillesime($millesime = null)
+    public function getNbFamilleAccueilByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->literal('fa = 1');
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -180,10 +211,11 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbRayesByMillesime($millesime = null, $inscrits = true)
+    public function getNbRayesByMillesime($millesime = null, $inscrits = true,
+        $communeId = null)
     {
         $where = new Where();
-        $where->literal('inscrit = 0')->literal('selection = 0');
+        $where->literal('inscrit = 0')->literal('sco.selection = 0');
         if ($inscrits) {
             $where->nest()->literal('paiementR1 = 1')->or->literal('fa = 1')->or->literal(
                 'gratuit > 0')->unnest();
@@ -197,15 +229,22 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -223,7 +262,7 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbGardeAlterneeByMillesime($millesime = null)
+    public function getNbGardeAlterneeByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -248,9 +287,13 @@ class Statistiques extends AbstractQuery
             ])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'ele.eleveId = sco.eleveId', [])
-            ->where($where)
-            ->group([
+        ], 'ele.eleveId = sco.eleveId', []);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -268,7 +311,7 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbByMillesimeEtablissement($millesime = null)
+    public function getNbByMillesimeEtablissement($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -287,7 +330,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Expression('count(sco.eleveId)')
             ])
             ->join(
             [
@@ -298,9 +341,13 @@ class Statistiques extends AbstractQuery
         ], 'com.communeId = eta.communeId',
             [
                 'etablissement' => new Expression('concat(com.alias, " - ", eta.nom)')
-            ])
-            ->where($where)
-            ->group([
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId',
             'com.nom',
@@ -320,7 +367,7 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbByMillesimeClasse($millesime = null)
+    public function getNbByMillesimeClasse($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -339,15 +386,19 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Expression('count(sco.eleveId)')
             ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
-        ])
-            ->where($where)
-            ->group([
+        ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId',
             'cla.nom'
@@ -365,26 +416,33 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbMoins1KmByMillesime($millesime = null)
+    public function getNbMoins1KmByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->lessThan('distanceR1', 1)
             ->lessThan('distanceR2', 1);
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -401,11 +459,11 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbDe1A3KmByMillesime($millesime = null)
+    public function getNbDe1A3KmByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->lessThan('distanceR1', 3)
             ->lessThan('distanceR2', 3)
             ->nest()
@@ -415,15 +473,22 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
@@ -440,11 +505,11 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNb3kmEtPlusByMillesime($millesime = null)
+    public function getNb3kmEtPlusByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
-            ->literal('selection = 0')
+            ->literal('sco.selection = 0')
             ->nest()
             ->greaterThanOrEqualTo('distanceR1', 3)->or->greaterThanOrEqualTo(
             'distanceR2', 3)->unnest();
@@ -452,18 +517,41 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        $select->from(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ])
             ->columns(
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
-            ])
-            ->where($where)
-            ->group([
+                'effectif' => new Expression('count(sco.eleveId)')
+            ]);
+        if ($communeId) {
+            $select->join([
+                'f' => $this->selectFiltreCommune($communeId)
+            ], 'f.eleveId = sco.eleveId', []);
+        }
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
         return iterator_to_array($this->renderResult($select));
+    }
+
+    private function selectFiltreCommune($communeId)
+    {
+        return $this->sql->select()
+            ->columns([
+            'eleveId'
+        ])
+            ->from([
+            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join([
+            'r' => $this->db_manager->getCanonicName('responsables', 'table')
+        ], 'r.responsableId = e.responsable1Id OR r.responsableId=e.responsable2Id')
+            ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+            ->where((new Where())->equalTo('communeId', $communeId));
     }
 }

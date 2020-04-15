@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 13 mai 2019
- * @version 2018-2.5.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmPdf\Controller;
 use SbmPdf\Service;
@@ -69,6 +69,7 @@ return [
                                 'parent',
                                 'transporteur',
                                 'etablissement',
+                                'commune',
                                 'secretariat',
                                 'gestion'
                             ]
@@ -79,6 +80,7 @@ return [
                             'roles' => [
                                 'transporteur',
                                 'etablissement',
+                                'commune',
                                 'secretariat',
                                 'gestion'
                             ]

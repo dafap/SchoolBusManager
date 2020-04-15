@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 15 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -63,6 +63,12 @@ class IndexController extends AbstractActionController
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'et-index'
                 ]);
+                break;
+            case 100:
+                return $this->redirect()->toRoute('sbmportail',
+                    [
+                        'action' => 'com-index'
+                    ]);
                 break;
             case 200:
             case 253:
@@ -249,7 +255,7 @@ class IndexController extends AbstractActionController
             ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
             ->setParam('where', $where)
             ->setData(
-                $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
+            $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
                 ->getScolaritesR($where, [
                 'nom',
                 'prenom'
@@ -301,7 +307,7 @@ class IndexController extends AbstractActionController
             'R2 Commune station montée' => 'communeStation1r2',
             'R2 Station Descente' => 'station2r2',
             'R2 Commune station descente' => 'communeStation2r2',
-            'R2 Correspondance' => 'service2R2',
+            'R2 Correspondance' => 'service2R2'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -357,7 +363,7 @@ class IndexController extends AbstractActionController
         // et construction d'un tabeau des datas
         $data = [];
         foreach ($result as $eleve) {
-            $aEleve = $eleve->getArrayCopy();//var_dump($aEleve);
+            $aEleve = $eleve->getArrayCopy(); // var_dump($aEleve);
             $ligne = [];
             foreach ($columns as $value) {
                 $ligne[] = $aEleve[$value];
@@ -392,6 +398,92 @@ class IndexController extends AbstractActionController
                 'effectifServices' => $effectifServices,
                 'page' => $this->params('page', 1)
             ]);
+    }
+
+    public function comIndexAction()
+    {
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity()) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $userId = $auth->getUserId();
+        try {
+            $communeId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+                $userId);
+            $commune = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+                $communeId)->nom;
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+            $commune = '';
+            $communeId = null;
+        }
+        $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
+        $millesime = Session::get('millesime');
+        return new ViewModel(
+            [
+                'commune' => $commune,
+                'elevesEnregistres' => current(
+                    $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
+                'elevesInscrits' => current(
+                    $statEleve->getNbInscritsByMillesime($millesime))['effectif'],
+                'elevesPreinscrits' => current(
+                    $statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
+                'elevesRayes' => current($statEleve->getNbRayesByMillesime($millesime))['effectif'],
+                'elevesFamilleAcceuil' => current(
+                    $statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
+                'elevesGardeAlternee' => current(
+                    $statEleve->getNbGardeAlterneeByMillesime($millesime))['effectif'],
+                'elevesMoins1km' => current(
+                    $statEleve->getNbMoins1KmByMillesime($millesime))['effectif'],
+                'elevesDe1A3km' => current(
+                    $statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
+                'eleves3kmEtPlus' => current(
+                    $statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif']
+            ]);
+    }
+
+    /**
+     * Présente la liste des élèves de la commune
+     */
+    public function comElevesAction()
+    {
+        ;
+    }
+
+    /**
+     * Renvoie un fichier de la liste des élèves de la commune
+     */
+    public function comElevesDownloadAction()
+    {
+        ;
+    }
+
+    /**
+     * Présente la carte des établissements fréquentés par les élèves inscrits pour le
+     * millesime en cours. On peut ouvrir la fiche de l'établissement.
+     */
+    public function comCarteEtablissementsAction()
+    {
+        ;
+    }
+
+    /**
+     * Présente la carte des stations de la commune, en indiquant pour chacune d'elles les
+     * circuits qui la desservent. On peut ouvrir la fiche d'une station.
+     */
+    public function comCarteStationsAction()
+    {
+        ;
+    }
+
+    /**
+     * Présente les circuits passant sur la commune, avec possibilité d'éditer les horaires,
+     * de consulter les élèves les fréquentant (par service, par station)
+     */
+    public function comCircuitsAction()
+    {
+        ;
     }
 
     /**

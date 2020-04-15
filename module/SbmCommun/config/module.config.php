@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 15 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Arlysere;
@@ -69,6 +69,7 @@ return [
             'Sbm\Db\ObjectData\Tarif' => ObjectData\Tarif::class,
             'Sbm\Db\ObjectData\Transporteur' => ObjectData\Transporteur::class,
             'Sbm\Db\ObjectData\User' => ObjectData\User::class,
+            'Sbm\Db\ObjectData\UserCommune' => ObjectData\UserCommune::class,
             'Sbm\Db\ObjectData\UserEtablissement' => ObjectData\UserEtablissement::class,
             'Sbm\Db\ObjectData\UserTransporteur' => ObjectData\UserTransporteur::class,
             'Sbm\Db\SysObjectData\Calendar' => ObjectData\Sys\Calendar::class,
@@ -115,6 +116,7 @@ return [
             'Sbm\Db\Table\Tarifs' => Table\Tarifs::class,
             'Sbm\Db\Table\Transporteurs' => Table\Transporteurs::class,
             'Sbm\Db\Table\Users' => Table\Users::class,
+            'Sbm\Db\Table\UsersCommunes'=>Table\UsersCommunes::class,
             'Sbm\Db\Table\UsersEtablissements' => Table\UsersEtablissements::class,
             'Sbm\Db\Table\UsersTransporteurs' => Table\UsersTransporteurs::class,
             'Sbm\Db\System\Calendar' => Table\Sys\Calendar::class,
@@ -153,6 +155,7 @@ return [
             'Sbm\Db\TableGateway\Tarifs' => TableGateway\TableGatewayTarifs::class,
             'Sbm\Db\TableGateway\Transporteurs' => TableGateway\TableGatewayTransporteurs::class,
             'Sbm\Db\TableGateway\Users' => TableGateway\TableGatewayUsers::class,
+            'Sbm\Db\TableGateway\UsersCommunes'=>TableGateway\TableGatewayUsersCommunes::class,
             'Sbm\Db\TableGateway\UsersEtablissements' => TableGateway\TableGatewayUsersEtablissements::class,
             'Sbm\Db\TableGateway\UsersTransporteurs' => TableGateway\TableGatewayUsersTransporteurs::class,
             'Sbm\Db\SysTableGateway\Calendar' => TableGateway\Sys\TableGatewayCalendar::class,

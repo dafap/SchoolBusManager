@@ -1,21 +1,21 @@
 <?php
 /**
  * Configuration du module SbmAuthentification
- * 
- * Initialidation des acl avec 
- *  - la liste des rôles, 
+ *
+ * Initialidation des acl avec
+ *  - la liste des rôles,
  *  - la correspondance avec la catégorie d'utilisateur,
  *  - la ressource par défaut,
  *  - la route à utiliser en cas d'accès non autorisé.
- * 
+ *
  *
  * @project sbm
  * @package SbmAuthentification/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 return [
     'acl' => [
@@ -24,6 +24,7 @@ return [
             1 => 'parent',
             2 => 'transporteur',
             3 => 'etablissement',
+            100 => 'commune',
             200 => 'secretariat',
             253 => 'gestion',
             254 => 'admin',
@@ -34,6 +35,7 @@ return [
             'guest' => null,
             'transporteur' => 'guest',
             'etablissement' => 'guest',
+            'commune'=> 'guest',
             'secretariat' => 'guest',
             'parent' => 'guest',
             'gestion' => 'parent',
@@ -53,6 +55,7 @@ return [
         'redirectTo' => [
             'transporteur' => 'sbmportail',
             'etablissement' => 'sbmportail',
+            'commune' => 'sbmportail',
             'secretariat' => 'sbmportail',
             'parent' => 'sbmparent',
             'gestion' => 'sbmgestion',

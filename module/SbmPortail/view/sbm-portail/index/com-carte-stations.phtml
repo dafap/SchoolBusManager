@@ -1,0 +1,41 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ *
+ * @project sbm
+ * @package
+ * @filesource com-carte-stations.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+// les url à utiliser
+$url_retour = $this->url('sbmportail', [
+    'action' => 'com-index',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Points d'arrêts situés sur la commune</h1>
+<div id="carte-wrapper">
+	<div id="carte-header" class="clearfix">
+		<div class="menu float-left">
+		<?= $this->listeZoneActions($hiddens, $actions);?>
+		</div>
+		<div class="float-right right-10px sbm-description">Zoomez puis cliquez sur une marque
+			pour obtenir des renseignements.</div>
+	</div>
+	<div id="carte-inner"
+		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
+</div>

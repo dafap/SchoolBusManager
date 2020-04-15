@@ -1,12 +1,12 @@
 <?php
 /**
- * Fiche du transporteur associé à un user
+ * Fiche du commune associé à un user
  *
  * S'il n'y a pas d'association, on présente un formulaire de création d'une relation
  *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
- * @filesource user-transporteur.phtml
+ * @filesource user-commune.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 15 avr. 2020
@@ -20,12 +20,12 @@ $url_retour = $this->url('sbmadmin', [
 ]);
 $url_suppr = $this->url('sbmadmin',
     [
-        'action' => 'user-transporteur-suppr',
+        'action' => 'user-commune-suppr',
         'page' => $this->page
     ]);
 $hiddens = [
     'userId' => $this->user->userId,
-    'transporteurId' => $this->transporteur ? $this->transporteur->transporteurId : null
+    'communeId' => $this->commune ? $this->commune->communeId : null
 ];
 $actions = [
     'retour' => [
@@ -37,11 +37,11 @@ $actions = [
     'suppr' => [
         'class' => 'fam-group-delete',
         'formaction' => $url_suppr,
-        'title' => 'Supprimer la relation entre cet utilisateur et ce transporteur'
+        'title' => 'Supprimer la relation entre cet utilisateur et cette commune'
     ]
 ];
 ?>
-<h1>Transporteur associé à un compte d'utilisateur</h1>
+<h1>Commune associée à un compte d'utilisateur</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header" class="clearfix">
 		<div class="menu">
@@ -61,16 +61,16 @@ $actions = [
 			</fieldset>
 		</div>
 		<div class="float-left">
-<?php if ($this->transporteur === false) :?>
-        <p class="left-10px">Il n'y a pas de transporteur associé à ce
+<?php if ($this->commune === false) :?>
+        <p class="left-10px">Il n'y a pas de commune associée à ce
 				compte d'utilisateur.</p>
 		<?= $this->form()->openTag($this->form);?>
         <fieldset class="sbm-page1">
     		<?= $this->formHidden($this->form->get('csrf'));?>
     		<?= $this->formHidden($this->form->get('userId'));?>
-            <div id="user-transporteur-ajout-transporteurId"
+            <div id="user-commune-ajout-communeId"
 					class="row-inner ajout">
-            <?= $this->formRow($this->form->get('transporteurId'));?>
+            <?= $this->formRow($this->form->get('communeId'));?>
             </div>
 			<div id="classe-ajout-buttons" class="row-inner ajout">
 			    <?= $this->formSubmit($this->form->get('submit'));?>
@@ -79,32 +79,22 @@ $actions = [
     	<?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="sbm-page1">
-			<legend>Transporteur</legend>
+			<legend>Commune</legend>
 			<div>
 				<div class="label">Nom</div>
-				<?= $this->transporteur->nom; ?></div>
+				<?= $this->commune->alias; ?></div>
 			<div>
-				<div class="label">Adresse</div>
-				<?= $this->transporteur->adresse1; ?></div>
+				<div class="label">Code postal</div>
+				<?= $this->commune->codePostal;?></div>
 			<div>
-				<div class="label">Adresse</div>
-				<?= $this->transporteur->adresse2; ?></div>
+				<div class="label">Code INSEE</div>
+				<?= $this->commune->communeId; ?></div>
 			<div>
-				<div class="label">Localité</div>
-				<?= $this->transporteur->codePostal;?>
-				<?= $this->transporteur->lacommune; ?></div>
+				<div class="label">Arlysère</div>
+				<?= $this->commune->membre ? 'Oui' : 'Non'; ?></div>
 			<div>
-				<div class="label">Téléphone</div>
-				<?= $this->telephone($this->transporteur->telephone); ?></div>
-			<div>
-				<div class="label">Fax</div>
-				<?= $this->telephone($this->transporteur->fax); ?></div>
-			<div>
-				<div class="label">Email</div>
-				<?= $this->transporteur->email; ?></div>
-			<div>
-				<div class="label">SIRET</div>
-				<?= $this->transporteur->siret; ?></div>
+				<div class="label">Desservie</div>
+				<?= $this->commune->desservie ? 'Oui' : 'Non'; ?></div>
 		</fieldset>
 <?php endif;?>
         </div>

@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmFront\Controller;
 
@@ -139,6 +139,59 @@ class IndexController extends AbstractActionController
         ]);
     }
 
+    public function testAction()
+    {
+        $error_msg[] = 'Terminé';
+        // dump de l'objet 'obj'
+        return new ViewModel([
+            'obj' => $error_msg
+        ]);
+    }
+
+    public function testAction_pourInsererDesUsers()
+    {
+        $adapter = $this->db_manager->getDbAdapter();
+        $sql = new \Zend\Db\Sql\Sql($adapter);
+        $select = $sql->select()
+            ->from('communaux')
+            ->columns([
+            'nom' => 'correspondant',
+            'email' => 'mail'
+        ]);
+        // die($sql->getSqlStringForSqlObject($select));
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $tUsers = $this->db_manager->get('Sbm\Db\Table\Users');
+        $oUser = $tUsers->getObjData();
+        // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
+        $error_msg = [];
+        foreach ($rowset as $row) {
+            $parts = explode(' ', $row['nom']);
+            $oUser->exchangeArray(
+                [
+                    'nom' => $parts[1],
+                    'email' => $row['email'],
+                    'prenom' => $parts[0],
+                    'titre' => 'Mme',
+                    'categorieId' => 100
+                ]);
+            $oUser->completeToCreate();
+            try {
+                $tUsers->saveRecord($oUser);
+            } catch (\Exception $e) {
+                $error_msg[] = [
+                    $row['nom'],
+                    $e->getMessage()
+                ];
+            }
+        }
+        $error_msg[] = 'Terminé';
+        // dump de l'objet 'obj'
+        return new ViewModel([
+            'obj' => $error_msg
+        ]);
+    }
+
     /**
      * Méthode prête pour donner un numéro aux élèves. La renommer testAction pour qu'elle
      * fonctionne. Si elle est trop longue, rajouter des ->limit(xxx) au select. Au
@@ -147,7 +200,7 @@ class IndexController extends AbstractActionController
      *
      * @return \Zend\View\Model\ViewModel
      */
-    public function testAction()
+    public function testAction_pourNumeroterLesEleves()
     {
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
@@ -165,7 +218,7 @@ class IndexController extends AbstractActionController
                 'responsable2Id',
                 'id_tra'
             ])
-            ->where((new Where())->equalTo('responsable1Id', 2070) )
+            ->where((new Where())->equalTo('responsable1Id', 2070))
             ->order('responsable1Id');
         $statement = $sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
