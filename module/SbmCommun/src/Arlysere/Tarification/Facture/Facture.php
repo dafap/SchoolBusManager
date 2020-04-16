@@ -88,13 +88,14 @@ class Facture implements FactoryInterface, FactureInterface
     /**
      * En même temps, lance les calculs si nécessaire
      *
-     * @param int $responsableId
-     * @return \SbmCommun\Arlysere\Tarification\Facture\Facture
+     * {@inheritDoc}
+     * @see \SbmCommun\Model\Paiements\FactureInterface::setResponsableId()
      */
-    public function setResponsableId(int $responsableId)
+    public function setResponsableId(int $responsableId):FactureInterface
     {
         $this->responsableId = $responsableId;
         $this->getResultats();
+        return $this;
     }
 
     /**
@@ -242,7 +243,7 @@ class Facture implements FactoryInterface, FactureInterface
      * {@inheritdoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::facturer()
      */
-    public function facturer()
+    public function facturer(): FactureInterface
     {
         $this->facturesPrecedentes = [];
         $this->montantDejaFacture = 0;
@@ -338,11 +339,13 @@ class Facture implements FactoryInterface, FactureInterface
 
     /**
      *
-     * {@inheritdoc}
+     *
+     * {@inheritDoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::setTauxTva()
      */
-    public function setTauxTva(float $taux): void
+    public function setTauxTva(float $taux): FactureInterface
     {
         $this->tauxTva = $taux;
+        return $this;
     }
 }

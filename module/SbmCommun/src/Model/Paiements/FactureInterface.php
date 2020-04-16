@@ -24,8 +24,10 @@ interface FactureInterface
      * celle qu'on doit sortir. En même temps on met à jour la propriété
      * 'montantDejaFacture'. La méthode traite la première facture en l'absence de
      * factures précédentes. La propriété oFacture est mise à jour.
+     *
+     * @return FactureInterface
      */
-    public function facturer(): void;
+    public function facturer(): FactureInterface;
 
     /**
      * Renvoie la date de la facture oFacture
@@ -68,8 +70,9 @@ interface FactureInterface
      * Affecte le taux de TVA à appliquer
      *
      * @param float $taux
+     * @return FactureInterface
      */
-    public function setTauxTva(float $taux): void;
+    public function setTauxTva(float $taux): FactureInterface;
 
     /**
      * Renvoie le montant de la TVA
