@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 16 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Arlysere;
@@ -88,6 +88,7 @@ return [
             'Sbm\GrilleTarifR2' => Arlysere\Tarification\GrilleTarifR2::class,
             'Sbm\AbonnementsFratrie' => Arlysere\Tarification\Facture\AbonnementsFratrie::class,
             'Sbm\Facture\Calculs' => Arlysere\Tarification\Facture\Calculs::class,
+            'Sbm\Facture' => Arlysere\Tarification\Facture\Facture::class,
 
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,
