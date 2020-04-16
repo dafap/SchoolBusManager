@@ -7,8 +7,8 @@
  * @filesource PlageIp.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 16 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Validator;
 
@@ -56,7 +56,7 @@ class PlageIp extends AbstractValidator
                 if (! $digit_validator->isValid($parts[1])) {
                     $this->error(self::INVALID_RANGE);
                     return false;
-                } elseif (1 > (int) $parts[1] || 31 < (int) $parts[1]) {
+                } elseif (! $this->isValidSubnet($this->isIpv6($parts[0]), $parts[1])) {
                     $this->error(self::INVALID_RANGE);
                     return false;
                 }
@@ -67,6 +67,33 @@ class PlageIp extends AbstractValidator
                 return false;
             }
             return true;
+        }
+    }
+
+    /**
+     * Indique si l'adresse est au format IPv6. On considère qu'elle est bien formée.
+     *
+     * @param string $value
+     * @return boolean
+     */
+    private function isIpv6(string $value)
+    {
+        return strpos($value, ':') !== false;
+    }
+
+    /**
+     * Vérifie la validité du sous-réseau demandé
+     *
+     * @param bool $ipv6
+     * @param int $subnet
+     * @return boolean
+     */
+    private function isValidSubnet(bool $ipv6, int $subnet)
+    {
+        if ($ipv6) {
+            return (0 < $subnet) && ($subnet <= 128);
+        } else {
+            return (0 < $subnet) && ($subnet <= 32);
         }
     }
 
@@ -82,7 +109,7 @@ class PlageIp extends AbstractValidator
             $this->error(self::NOT_IP_ADDRESS);
             return false;
         }
-        $intIp = $this->ipToInteger($ip);
+        $inet_addr = inet_pton($ip);
 
         // contrôle le $range et le force en tableau
         $range = $this->getOption('range');
@@ -94,12 +121,12 @@ class PlageIp extends AbstractValidator
         // pour chaque élément du tableau $range
         foreach ($range as $plageIp) {
             $parts = explode('/', $plageIp);
-            $intBaseIp = $this->ipToInteger($parts[0]);
+            $inet_base = inet_pton($parts[0]);
             if (count($parts) == 2) {
-                $masque = (int) (0xffffff << (32 - $parts[1]));
-                $valid = ($intBaseIp & $masque) == ($intIp & $masque);
+                $masque = $this->getMask($this->isIpv6($parts[0]), $parts[1]);
+                $valid = ($inet_base & $masque) == ($inet_addr & $masque);
             } else {
-                $valid = $intBaseIp == $intIp;
+                $valid = $inet_base == $inet_addr;
             }
             if ($valid) {
                 return true;
@@ -109,20 +136,28 @@ class PlageIp extends AbstractValidator
         return false;
     }
 
-    /**
-     * Renvoie un entier représentant l'adresse IP
-     * L'adresse ip est valide.
-     *
-     * @param string $ip
-     * @return integer
-     */
-    private function ipToInteger($ip)
+    private function getMask(bool $ipv6, int $subnet)
     {
-        $t4 = explode('.', $ip);
-        $n = 0;
-        foreach ($t4 as $i) {
-            $n = (int) (256 * $n + $i);
+        if ($ipv6) {
+            $len = 128;
+        } else {
+            $len = 32;
         }
-        return $n;
+        $mask = str_repeat('f', $subnet >> 2);
+        switch ($subnet & 3) {
+            case 3:
+                $mask .= 'e';
+                break;
+            case 2:
+                $mask .= 'c';
+                break;
+            case 1:
+                $mask .= '8';
+                break;
+        }
+        $mask = str_pad($mask, $len >> 2, '0');
+
+        // Packed representation of netmask
+        return pack('H*', $mask);
     }
 }
