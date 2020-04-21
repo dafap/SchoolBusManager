@@ -9,8 +9,8 @@
  * @filesource PlateformeInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2018-2.5.0
+ * @date 21 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin;
 
@@ -84,6 +84,13 @@ interface PlateformeInterface
      * @return self
      */
     public function setResponsable(\SbmFront\Model\Responsable\Responsable $responsable);
+
+    /**
+     *
+     * @param int $nb
+     * @return self
+     */
+    public function setPaiement3Fois(int $nb);
 
     /**
      * Prépare le plugin en initialisant les propriétés nécessaires au paiement

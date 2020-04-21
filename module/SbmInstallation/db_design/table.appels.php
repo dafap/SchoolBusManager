@@ -13,8 +13,8 @@
  * @filesource table.appels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 20 avr.2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -28,19 +28,22 @@ return [
         'fields' => [
             'appelId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'notified' => 'int(1) NOT NULL DEFAULT "0"',
-            'idOp' => 'char(36) NOT NULL',
-            'refdet' => 'varchar(30) NOT NULL',
+            'idOp' => 'char(10) NOT NULL',
+            'refdet' => 'varchar(90) NOT NULL',
             'responsableId' => 'int(11) NOT NULL',
-            'eleveId' => 'int(11) NOT NULL'
+            'eleveId' => 'int(11) NOT NULL',
+            'montant' => 'int(11) NOT NULL'
         ],
         'primary_key' => [
             'appelId'
         ],
         'keys' => [
-            'APPELS_idOp' => [
-                'unique' => false,
+            'APPELS_unicite' => [
+                'unique' => true,
                 'fields' => [
-                    'idOp'
+                    'idOp',
+                    'responsableId',
+                    'eleveId'
                 ]
             ],
             'APPELS_refdetNotified' => [

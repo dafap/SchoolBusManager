@@ -2,135 +2,26 @@
 /**
  * Formulaire d'appel de la plate-forme de paiement
  *
- * @TODO : A mettre au point pour PayBox
- *
- * Cette vue reçoit la variable $this->oPlateforme de type \SbmPaiement\Plugin\PayBox\Plateforme
- * Cet objet contient toutes les méthodes nécessaires pour obtenir les données de cette vue.
+ * Cette vue reçoit l'objet 'plugin_plateforme' qui possède une méthode getForm() renvoyant un
+ * formulaire ne présentant que les champs à envoyer à PayBox en hidden.
+ * Le formulaire n'a ni csrf, ni bouton.
+ * Un script en jQuery envoie le formulaire dès le chargement terminé.
+ * Si le jQuery échoue la page est vice (malgré tout avec le thème du site contenu dans le layer).
  *
  * @project sbm
  * @package SbmPaiement/Plugin/PayBox/view
  * @filesource formulaire.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 19 avr. 2020
  * @version 2020-2.6.0
  */
-$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->themeCss('sbm-paiement', 'formulaire.css');
-$this->jQuery('jquery.formatCurrency');
+$this->jQuery();
 $this->themeJS('sbm-paiement', 'formulaire.js');
-$this->inlineScript()->captureStart();
-?>
-js_formulaire.init();
-<?php
-$this->inlineScript()->captureEnd();
-$url_abandon = $this->url('sbmpaiement', [
-    'action' => 'form-abandonner'
-]);
-$responsable = $this->oPlateforme->getResponsable();
-$facture = $this->oPlateforme->getFacture();
-$form = $this->oPlateforme->getForm();
-$form->get('abandonner')->setAttribute('formaction', $url_abandon);
-$resultats = $facture->getResultats();
-$montantDuplicatas = $resultats->getMontantDuplicatas('tous');
-$montantAbonnements = $resultats->getAbonnementsMontant('tous');
-$aboInscrits = $resultats->getAbonnementsMontant('inscrits');
-$montantTotal = $resultats->getMontantTotal('tous');
-$dejaPaye = $resultats->getPaiementsMontant();
-?>
-<div class="wrapper-page">
-	<div class="wrapper-header">
-		<div class="widget widget-white text-center">
-			<h1>Demande de paiement</h1>
-			<dl>
-				<dt>Responsable :
-					<?=$responsable->titre;?> <?=$responsable->prenom;?> <?=$responsable->nom;?></dt>
-				<dd>Référence de la dette : <?=$this->oPlateforme->getObjet();?><br>
-			Code de la dette : <?=$this->oPlateforme->getRefDet();?></dd>
-			</dl>
-		</div>
-	</div>
-	<div class="wrapper-facture clearfix">
-		<fieldset class="float-left">
-			<legend>Facture</legend>
-			<table class="ligne-facture">
-				<tr>
-					<td>Coût des duplicatas :</td>
-					<td><span class="formatEuro">
-						<?=$montantDuplicatas;?></span></td>
-				</tr>
-				<tr>
-					<td>Coût des abonnements :
-						<ul class="detail-abonnements">
-							<li>Élèves inscrits : <span id="abo-inscrits" class="formatEuro">
-								<?=$aboInscrits;?></span>
-							</li>
-							<li>Élèves préinscrits : <span id="abo-preinscrits"
-								class="formatEuro"><?=$montantAbonnements- $aboInscrits;?>
-								</span>
-							</li>
-						</ul>
-					</td>
-					<td><span class="formatEuro"><?=$montantAbonnements;?></span></td>
-				</tr>
-				<tr class="separateur">
-					<td>Coût total :
-
-					<td><span class="formatEuro"><?=$montantTotal;?></span></td>
-				</tr>
-				<tr>
-					<td>Montant encaissé :</td>
-					<td><span class="formatEuro"><?=$dejaPaye;?></span></td>
-				</tr>
-				<tr>
-
-					<td class="">Reste à payer :</td>
-					<td><span class="formatEuro"><?=$montantTotal - $dejaPaye;?></span></td>
-				</tr>
-			</table>
-		</fieldset>
-		<fieldset class="float-left">
-			<legend>Abonnements facturés</legend>
-			<table class="liste-tarifs">
-				<tbody id="tbody-grille">
-					<tr>
-						<th>Tarif</th>
-						<th>Nombre</th>
-						<th>Montant</th>
-					</tr>
-					<?php foreach($resultats->getAbonnementsDetail('tous') as $row):?>
-					<tr>
-						<td><?=$row['grille'];?></td>
-						<td><?=$row['quantite'];?></td>
-						<td><span class="formatEuro"><?=$row['montant'];?></span></td>
-					</tr>
-					<?php endforeach;?>
-				</tbody>
-			</table>
-		</fieldset>
-		<fieldset class="float-left">
-			<legend>Liste des enfants</legend>
-			<table class="liste-eleves">
-				<tbody id="tbody-payants">
-					<tr>
-						<th>Nom</th>
-						<th>Prénom</th>
-						<th>Tarif</th>
-						<th>Nb de<br>duplicatas
-						</th>
-					</tr>
-	            <?php foreach ($resultats->getListeEleves('tous') as $eleveId => $enfant) : ?>
-	            		<tr>
-						<td><?=$this->escapeHtml($enfant['nom']);?></td>
-						<td><?=$this->escapeHtml($enfant['prenom']);?></td>
-						<td><?=$enfant['grilleTarifR1'];?>
-						    <?=$this->reductionTarif($enfant['reductionR1']);?></td>
-						<td><?=$enfant['duplicata'];?></td>
-					</tr>
-	            <?php endforeach;?>
-	            	</tbody>
-			</table>
-		</fieldset>
-	</div>
-	<div class="boutons"><?=$this->form($form);?></div>
-</div>
+// tout est en hidden
+$form = $this->plugin_plateforme->getForm();
+if ($form) {
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+}
