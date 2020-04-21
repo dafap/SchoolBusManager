@@ -7,7 +7,7 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 20 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmBase\Model;
@@ -211,5 +211,19 @@ class DateLib
     {
         $h = DateTime::createFromFormat('H:i:s', $t);
         return $h->format('H:i');
+    }
+
+    public static function datePlus1Mois()
+    {
+        $date = new DateTime();
+        $date->modify('+1 Month');
+        return $date->format('d/m/Y');
+    }
+
+    public static function datePlus2Mois()
+    {
+        $date = new DateTime();
+        $date->modify('+2 Month');
+        return $date->format('d/m/Y');
     }
 }

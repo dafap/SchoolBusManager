@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2020
+ * @date 21 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -61,12 +61,16 @@ if ($this->sadmin) {
     $etatDuSite['etat'] = $this->calendar::ETAT_PENDANT;
     $etatDuSite['inscription'] = true;
 }
-$dateFin = $etatDuSite['dateFin']->format('d/m/Y');
+$dateFinReduction = $etatDuSite['echeance']->format('d/m/Y');
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
 ]);
-$url_payer = $this->url('sbmpaiement', [
+$url_payercb1 = $this->url('sbmpaiement', [
     'action' => 'formulaire'
+]);
+$url_payercb3 = $this->url('sbmpaiement', [
+    'action' => 'formulaire',
+    'id' => 3
 ]);
 $url_horaires = $this->url('sbmparent', [
     'action' => 'horaires'
@@ -121,6 +125,61 @@ $url_facture = $this->url('sbmdocument', [
     ?>
 </div>
 <?php else : ?>
+<?php
+    $votre_vos = $nbPreinscrits == 1 ? 'votre' : 'vos';
+    $sera_seront = $nbPreinscrits == 1 ? 'sera' : 'seront';
+    $date_horaires_cartes = (new \DateTime(Session::get('as')['dateDebut']))->modify(
+        '8 days ago')->format('d/m/Y');
+    switch ($etatDuSite['etat']) {
+        case $this->calendar::ETAT_PENDANT:
+            $msg_reception_pass_inscrit = <<<EOT
+            Vous recevrez $votre_vos PASS ANNUEL JUNIOR par voie postale &agrave;
+            l'adresse indiqu&eacute;e &agrave; partir du $date_horaires_cartes."
+            EOT;
+            $msg_reception_pass_preinscrit = <<<EOT
+            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez transmis une photo 
+            d'identit&eacute; de l'&eacute;l&egrave;ve et <span id="help-payer" class="orange" 
+            title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
+            L'inscription doit &ecirc;tre r&eacute;gl&eacute;e avant le %s pour obtenir une place 
+            d&eacute;finitive sur le circuit et recevoir le PASS MOBILIT&Eacute; JUNIOR par la poste 
+            &agrave; partir du $date_horaires_cartes.
+            EOT;
+            $msg_reception_pass_preinscrit = sprintf($msg_reception_pass_preinscrit,
+                $dateFinReduction);
+            $msg_circuit_horaire = <<<EOT
+            Les circuits et horaires seront consultables ici &agrave; partir du $date_horaires_cartes.
+            EOT;
+            break;
+        case $this->calendar::ETAT_APRES:
+            $votre_vos = ucfirst($votre_vos);
+            $msg_reception_pass_inscrit = <<<EOT
+            $votre_vos PASS ANNUEL JUNIOR $sera_seront &agrave; retirer au Point Info Bus apr&egrave;s
+            r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
+            EOT;
+            $msg_reception_pass_preinscrit = <<<EOT
+            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez transmis une photo 
+            d'identit&eacute; de l'&eacute;l&egrave;ve et <span id="help-payer" class="orange" 
+            title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
+            Vous pourrez le retirer au Point Info Bus apr&egrave;s
+            r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
+            EOT;
+            $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
+            if ((new DateTime()) <(new \DateTime(Session::get('as')['dateDebut']))->modify(
+                '8 days ago')) {
+                $msg_circuit_horaire .= "&agrave; partir du $date_horaires_cartes et ";
+            }
+            $msg_circuit_horaire .= 'apr&egrave;s traitement de votre demande.';
+            break;
+        default:
+            $msg_reception_pass_inscrit = '';
+            $msg_reception_pass_preinscrit='';
+            $msg_circuit_horaire='';
+            break;
+    }
+    $msg_photo_manquante = <<<EOT
+    Veuillez transmettre une photo d'identit&eacute; r&eacute;cente pour obtenir la carte de transport.
+    EOT;
+    ?>
 <div id="parent-wrapper">
 	<div id="parent-inscrits">
     <?php if ($nbInscrits) : ?>
@@ -130,15 +189,15 @@ $url_facture = $this->url('sbmdocument', [
 				<tbody>
 					<tr class="petit">
 						<th>Nom</th>
-						<th>Prénom</th>
-						<th>Etablissement scolaire</th>
+						<th>Pr&eacute;nom</th>
+						<th>&Eacute;tablissement scolaire</th>
 						<th>Commune</th>
 						<th>Tarif</th>
 						<th class="<?=$avant_fin_aout;?>">Circuit</th>
-						<th class="<?=$avant_fin_aout;?>">Arrêt</th>
+						<th class="<?=$avant_fin_aout;?>">Arr&ecirc;t</th>
 						<th></th>
 					</tr>
-        <?php
+<?php
         $photo_manquante = false;
         foreach ($this->inscrits as $row) {
             $hiddens_ligne = [];
@@ -206,7 +265,7 @@ $url_facture = $this->url('sbmdocument', [
                 '</td>';
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
                 sprintf('%s %s', $row['grilleTarifR1'],
-                    $row['reductionR1'] ? 'Réduit' : 'Normal') . '</td>';
+                    $row['reductionR1'] ? 'R&eacute;duit' : 'Normal') . '</td>';
             // on prépare le code HTML avant pour ajuster les "rowspan", les boutons
             // et les hiddens si nécessaire
             $boutons_ligne = [
@@ -288,7 +347,8 @@ $url_facture = $this->url('sbmdocument', [
                         if (! empty($circuit[$i])) {
                             $hiddens_ligne['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
-                        $lignesTableau[$i] = '<tr class="petit ' . $css . '">' . $colonne1_5;
+                        $lignesTableau[$i] = '<tr class="petit ' . $css . '">' .
+                            $colonne1_5;
                         $lignesTableau[$i] .= '<td class="' . $avant_fin_aout . '">' .
                             $entity[$i] . '</td><td class="' . $avant_fin_aout . '">' .
                             $station[$i] . '</td>';
@@ -332,53 +392,43 @@ $url_facture = $this->url('sbmdocument', [
             echo $ligneHtml;
         }
         ?>
-            </tbody>
+</tbody>
 			</table>
 		</fieldset>
 <?php if ($photo_manquante): ?>
-        <p class="important">Veuillez transmettre une photo d'identité
-			récente pour obtenir la carte de transport.</p>
+<p class="important"><?=$msg_photo_manquante;?></p>
 <?php elseif (Session::get('as')['dateDebut'] >= date('Y-m-d')):?>
-<?php if ($nbInscrits > 1):?>
-		<p class="sbm-description">Vous allez recevoir les cartes de transport
-			par courrier fin août ou courant septembre.</p>
-<?php else :?>
-        <p class="sbm-description">Vous allez recevoir la carte de
-			transport par courrier fin août ou courant septembre.</p>
+<p class="sbm-description"><?=$msg_reception_pass_inscrit;?></p>
 <?php endif;?>
-<?php endif;?>
-		<p class="sbm-description">Les circuits et horaires seront
-			consultables ici 8 jours avant la rentrée scolaire.</p>
-    <?php endif; ?>
-    </div>
+<p class="sbm-description"><?=$msg_circuit_horaire;?></p>
+<?php endif; ?>
+</div>
 	<div id="parent-preinscrits">
     <?php if ($nbPreinscrits) : ?>
     <fieldset class="sbm-page1">
-			<legend>Enfants préinscrits</legend>
+			<legend>Enfants pr&eacute;inscrits</legend>
 			<table class="parent eleve">
 				<tbody>
 					<tr class="petit">
 						<th>Nom</th>
-						<th>Prénom</th>
-						<th>Etablissement scolaire</th>
+						<th>Pr&eacute;nom</th>
+						<th>&Eacute;tablissement scolaire</th>
 						<th>Commune</th>
 						<th>Tarif</th>
 					</tr>
             <?php
         $alerte = false;
         foreach ($this->preinscrits as $row) {
-            // $peutPayer = $row['grilleCode'] != GrilleTarifInterface::NON_AYANT_DROIT ||
-            // $row['derogation'] >= 1;
             $peutPayer = true;
             if ($row['selectionScolarite']) {
                 $grilleTarif = '<span class="exces" title="Cet enfant n\'est pas inscrit.' .
-                    ' Respectez les délais.">en attente</span>';
+                    ' Respectez les d&eacute;lais.">en attente</span>';
                 $enAttente = true;
             } elseif ($peutPayer) {
                 $grilleTarif = sprintf('%s %s', $row['grilleTarifR1'],
-                    $row['reductionR1'] ? 'Réduit' : 'Normal');
+                    $row['reductionR1'] ? 'R&eacute;duit' : 'Normal');
             } else {
-                $msgalerte = 'Pour obtenir une éventuelle dérogation, prenez contact avec le service des transports de : ';
+                $msgalerte = 'Pour obtenir une &eacute;ventuelle d&eacute;rogation, prenez contact avec le service des transports de : ';
                 $msgalerte .= $this->client['name'];
                 $grilleTarif = '<span class="exces" title="' . $msgalerte . '">' .
                     $row['grilleTarifR1'] . '</span>';
@@ -386,7 +436,7 @@ $url_facture = $this->url('sbmdocument', [
                 $msgalerte .= '<a href="' .
                     $this->url('sbmparentconfig', [
                         'action' => 'message'
-                    ]) . '">Écrire</a>';
+                    ]) . '">&Eacute;crire</a>';
                 $alerte = true;
             }
             $hiddens = [
@@ -397,8 +447,8 @@ $url_facture = $this->url('sbmdocument', [
                     'modifier' => [
                         'class' => 'button ligne',
                         'formaction' => $url_edit,
-                        'title' => 'modifier la scolarité de ' . $row['prenom'],
-                        'value' => 'Modifier ou compléter'
+                        'title' => 'modifier la scolarit&eacute; de ' . $row['prenom'],
+                        'value' => 'Modifier ou compl&eacute;ter'
                     ],
                     'supprimer' => [
                         'class' => 'button ligne',
@@ -411,7 +461,7 @@ $url_facture = $this->url('sbmdocument', [
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
                         $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
-                    $attenteTitle .= ' la liste des inscriptions à payer';
+                    $attenteTitle .= ' la liste des inscriptions &agrave; payer';
                     $buttons['attente'] = [
                         'class' => 'button ligne',
                         'formaction' => $url_attente,
@@ -459,13 +509,13 @@ $url_facture = $this->url('sbmdocument', [
             </tbody>
 				<tfoot>
 					<tr>
-						<th colspan="4">Total à payer</th>
+						<th colspan="4">Total &agrave; payer</th>
 						<td class="align-right">
 							<?=$fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
 							</td>
 					</tr>
 					<tr>
-						<th colspan="4">Déjà payé</th>
+						<th colspan="4">D&eacute;j&agrave; pay&eacute;</th>
 						<td class="align-right">
 							<?=$fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?>
 							</td>
@@ -495,14 +545,51 @@ $url_facture = $this->url('sbmdocument', [
             if ($enAttente) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
-                $payerTitle = "valider et payer toutes les inscriptions\nde la liste des enfants préinscrits.";
+                $payerTitle = "valider et payer toutes les inscriptions\nde la liste des enfants pr&eacute;inscrits.";
             }
             $boutons['payer'] = [
                 'class' => 'button default float-right left-10px',
-                'formaction' => $url_payer,
                 'value' => 'Valider la liste et payer',
                 'title' => $payerTitle
             ];
+            // ============== inclure ici le dialog ===================
+            ?>
+            <div id="payercb" class="invisible">
+            <?php
+            $montant_total = $this->resultats->getSolde();
+            $montant_abonnement = round($montant_total * 100 / 3, 0) / 100;
+            $montant_premier = $montant_total - 2 * $montant_abonnement;
+            ?>
+			<h3>Paiement par carte bancaire :</h3>
+					<p>Vous pouvez :</p>
+					<ul>
+						<li>Payer la somme de <?=$fmt->formatCurrency($montant_total,'EUR');?>
+						par carte bancaire</li>
+						<li style="list-style: none;">ou</li>
+						<li>Payer la somme de <?=$fmt->formatCurrency($montant_premier, 'EUR')?>
+						aujourd'hui puis la somme de <?=$fmt->formatCurrency($montant_abonnement,'EUR');?>
+						vous sera retir&eacute;e le <?= DateLib::datePlus1Mois()?> et &agrave; nouveau le
+						<?=DateLib::datePlus2Mois() ?></li>
+					</ul>
+					<p>Votre choix ?</p>
+					<div>
+						<form method="POST">
+							<input type="hidden" name="montant"
+								value="<?=$this->resultats->getSolde()?>"> <input type="hidden"
+								name="namespacectrl" value="<?=$this->namespacectrl;?>"> <input
+								type="submit" name="btnpayercb1" id="btnpayercb1"
+								class="default" formaction="<?=$url_payercb1;?>"
+								style="margin-left: 50px;" title="Payer en 1 fois"
+								value="Payer la totalit&eacute;"
+								onclick='$("#winpopup").dialog("close");'> <input type="submit"
+								name="btnpayercb3" id="btnpayercb3" class="default"
+								formaction="<?=$url_payercb3;?>" style="margin-left: 50px;"
+								title="Payer en 3 fois" value="Payer en 3 fois"
+								onclick='$("#winpopup").dialog("close");'>
+						</form>
+					</div>
+				</div>
+		<?php
         }
         $boutons['facture'] = [
             'class' => 'button default float-right left-10px',
@@ -521,106 +608,66 @@ $url_facture = $this->url('sbmdocument', [
         <?php if (! $this->responsable->paiementenligne && $this->resultats->getSolde() > 0) : ?>
         <p class="sbm-description">Les habitants de votre commune ne
 			peuvent pas payer en ligne. Prenez contact avec le service Transport
-			pour connaitre la marche à suivre pour votre cas particulier.</p>
+			pour connaitre la marche &agrave; suivre pour votre cas particulier.</p>
         <?php elseif ($this->resultats->getSolde() > 0) : ?>
-        <?php
-            switch ($etatDuSite['etat']) {
-                case $this->calendar::ETAT_PENDANT:
-                    $permanences = $this->calendar->getPermanences(
-                        $this->responsable->commune);
-                    switch (count($permanences)) {
-                        case 0:
-                            $permanences = '';
-                            break;
-                        case 1:
-                            $permanences = current($permanences);
-                            break;
-                        default:
-                            $permanences = implode(', ', $permanences);
-                            break;
-                    }
-                    $msg = <<<EOT
-                    La carte de transport ne sera délivrée que si vous avez transmis une photo d'identité
-                    de l'élève et payé son abonnement.<br>
-                    L'inscription doit être réglée avant le %s pour retenir une place définitive dans
-                    le circuit et recevoir la carte de transport par la poste.<br>
-                    Sinon, rendez-vous au %s pour connaitre
-                    la suite donnée à votre demande, payer et retirer la carte de transport.<br>
-                    EOT;
-                    $msg = sprintf($msg, $dateFin, $rendez_vous);
-                    break;
-                case $this->calendar::ETAT_APRES:
-                    $permanences = $this->calendar->getPermanences(
-                        $this->responsable->commune);
-                    switch (count($permanences)) {
-                        case 0:
-                            $permanences = '';
-                            break;
-                        case 1:
-                            $permanences = current($permanences);
-                            break;
-                        default:
-                            $permanences = implode(', ', $permanences);
-                            break;
-                    }
-                    $msg = <<<EOT
-                    La carte de transport ne sera délivrée que si vous avez transmis une photo d'identité
-                    de l'élève et payé son abonnement.<br>
-                    Si nécessaire, vous pouvez vous rendre à une permanence qui se tiendra à %s pour connaitre
-                    la suite donnée à votre demande, payer et retirer la carte de transport.<br>
-                    Pour les habitants de %s.<br>
-                    Si la date est passée, prenez rendez-vous.
-                    EOT;
-                    $msg = sprintf($msg, $adresse_organisateur, $permanences);
-                    break;
-                default:
-                    // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de
-                    // ETAT_FERME
-                    $msg = '';
-                    break;
-            }
-            ?>
+		<div id="content-payer" class="invisible">
+			<p>Paiement de l'abonnement</p>
+			<ul>
+				<li><strong>Par carte bleue <span class="orange">*</span></strong>
+					uniquement sur le site internet au moment de l'inscription.</li>
+				<li><strong>Par ch&egrave;que <span class="orange">**</span></strong>
+					&agrave; libeller &agrave; <strong>TRANSDEV ALBERTVILLE</strong>.</li>
+				<li><strong>En esp&egrave;ces,</strong> au POINT INFO BUS, Place de
+					la Gare &agrave; Albertville durant les heures d'ouverture.</li>
+			</ul>
+			<div style="display: table;">
+				<div style="display: table-row; margin-top: 4px;">
+					<div style="display: table-cell">
+						<span class="orange">*</span>
+					</div>
+					<div style="display: table-cell">Facilit&eacute; de paiement en 3
+						fois</div>
+				</div>
+				<div style="display: table-row; margin-top: 4px;">
+					<div style="display: table-cell">
+						<span class="orange">**</span>
+					</div>
+					<div style="display: table-cell">
+						Facilit&eacute; de paiement en 3 fois : contacter le POINT INFO
+						BUS<br>IMPORTANT : mentionner au dos du ch&egrave;que :
+						<ul>
+							<li>le nom du responsable l&eacute;gal</li>
+							<li>le nom de l'&eacute;l&egrave;ve</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<p class="cursor-zoom-out orange retour">
+				<em class="fam-cancel">&nbsp;</em> Cacher
+			</p>
+		</div>
 		<p class="sbm-description">
-			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i> <?=$msg;?>
+			<?=$msg_reception_pass_preinscrit;?>
 		</p>
 		<?php endif;?>
-		<div id="help-preinscrits-content" class="invisible">
-			<p>Vous pouvez :</p>
-			<ul>
-				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire
-				avant le <?= $dateFin;?>. Vous recevrez alors la carte de transport par la poste.</li>
-				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à
-				l'adresse ci-dessous avant le <?= $dateFin;?>. Vous recevrez alors la carte de transport
-				par la poste.</li>
-				<li>vous rendre à <?=$adresse_organisateur;?> (pour les habitant de
-				<?=$permanences;?>) pour payer en espèces ou par chèque et
-				retirer la carte de transport.</li>
-			</ul>
-			<div class="centre">
-				<?=$this->client['name'];?><br>
-				<?=implode('<br>',$this->client['adresse']);?><br>
-				<?=$this->client['code_postal']; ?> <?=$this->client['commune'];?><br>
-				Tél. <?=$this->telephone($this->client['telephone']);?>
-		    </div>
-		</div>
 	<?php elseif ($this->resultats->getSolde() > 0):?>
 	<?php
         $url_contact = $this->url('login', [
             'action' => 'contact'
         ]);
-        $msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
-        $msg = sprintf($msg, $url_contact);
+        $msg = 'Les insciptions &eacute;tant closes, prenez contact avec le <a href="%s">%s</a>.';
+        $msg = sprintf($msg, $url_contact, $rendez_vous);
         ?>
 	    <p class="sbm-description">
-			<i class="fam-help"></i> <b>Comment payer ?</b> <?=$msg;?>
+			<?=$msg;?>
 		</p>
     <?php endif;?>
-	</div>
+	</div> <?php // fin de preinscrits ?>
 	<div id="wrapper-finance" class="clearfix">
 		<div id="parent-paiements" class="float-left">
     	<?php if ($nbPaiements) : ?>
     		<fieldset class="sbm-page1">
-				<legend>Paiements enregistrés</legend>
+				<legend>Paiements enregistr&eacute;s</legend>
 				<table class="parent paiement">
 					<tbody>
 						<tr>
@@ -643,11 +690,11 @@ $url_facture = $this->url('sbmdocument', [
 		<div id="parent-factures" class="float-left">
     	<?php if ($this->factures->count()) : ?>
     		<fieldset class="sbm-page1">
-				<legend>Factures émises</legend>
+				<legend>Factures &eacute;mises</legend>
 				<table class="parent factures">
 					<tbody>
 						<tr>
-							<th>Numéro</th>
+							<th>Num&eacute;ro</th>
 							<th>Date</th>
 							<th>Montant</th>
 						</tr>

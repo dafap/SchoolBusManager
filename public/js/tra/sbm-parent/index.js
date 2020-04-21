@@ -5,8 +5,8 @@
  * @filesource parent/index.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 02 jan. 2020
- * @version 2020-2.5.4
+ * @date 21 avr. 2020
+ * @version 2020-2.6.0
  */
 $(document).ready(function($) {
 	$("*[id^='help-'").on("click", function() {
@@ -27,9 +27,8 @@ $(document).ready(function($) {
 		id = id.replace('content', 'help');
 		$("#"+id).show();
 	});
-	$("#help-preinscrits").trigger("click");
-	$("#help-preinscrits").on("click", function() {
-		var content = $("#help-preinscrits-content").html();
+	$("#payer").click(function(){
+		var content = $("#payercb").html();
 		$("#winpopup").dialog({
 			draggable : true,
 			modal : true,
@@ -41,5 +40,6 @@ $(document).ready(function($) {
 		});
 		$("#winpopup-content").html(content);
 		$("#winpopup").dialog("open");
+		return false;
 	});
 });

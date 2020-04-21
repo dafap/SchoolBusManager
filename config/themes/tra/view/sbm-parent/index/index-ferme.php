@@ -72,6 +72,8 @@ $menu = $this->listeZoneActions([],
             'value' => 'Inscrire un enfant'
         ]
     ]);
+$dateenvoi = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')->format(
+    'd/m/Y');
 return sprintf($format,
     Session::get('as')['libelle'],
     $etat['dateDebut']->format('d/m/Y'),
@@ -83,4 +85,6 @@ return sprintf($format,
     $permanences,
     $organisateur,
     $this->url_ts_region,
-    $this->accueil);
+    $this->accueil,
+    $this->url_ts_organisateur,
+    $dateenvoi);

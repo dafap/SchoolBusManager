@@ -23,13 +23,16 @@
  * @filesource index-ferme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 déc. 2019
- * @version 2019-2.5.4
+ * @date 7 avr. 2020
+ * @version 2020-2.6.0
  */
+use SbmBase\Model\Session;
+
 $format = file_get_contents(__DIR__ . '/index-ferme.inc.phtml');
 $organisateur = implode('<br>',
     [
-        sprintf('<a href="%s" target="_blank">%s</a>', $this->accueil, $this->client['name']),
+        sprintf('<a href="%s" target="_blank">%s</a>', $this->accueil,
+            $this->client['name']),
         implode('<br>', $this->client['adresse']),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
         $this->telephone($this->client['telephone']),
@@ -41,8 +44,10 @@ $membres = $this->communes->getListeMembre();
 if (is_bool($etat['dateDebut'])) {
     return '';
 }
+$dateenvoi = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')->format(
+    'd/m/Y');
 return sprintf($format, $this->as, $etat['dateDebut']->format('d/m/Y'),
     $etat['dateFin']->format('d/m/Y'), $etat['echeance']->format('d/m/Y'), count($membres),
     $this->client['name'], implode(', ', $membres),
     implode('<br>', $this->calendar->getPermanences()), $organisateur,
-    $this->url_ts_region, $this->accueil, $this->url_ts_organisateur);
+    $this->url_ts_region, $this->accueil, $this->url_ts_organisateur, $dateenvoi);

@@ -26,8 +26,8 @@
  * @filesource index-pendant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 02 jan. 2020
- * @version 2020-2.5.4
+ * @date 21 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
 
@@ -72,6 +72,8 @@ $menu = $this->listeZoneActions([],
             'value' => 'Inscrire un enfant'
         ]
     ]);
+$dateenvoi = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')->format(
+    'd/m/Y');
 return sprintf($format,
     Session::get('as')['libelle'],
     $etat['dateDebut']->format('d/m/Y'),
@@ -83,4 +85,6 @@ return sprintf($format,
     $permanences,
     $organisateur,
     $this->url_ts_region,
-    $this->accueil);
+    $this->accueil,
+    $this->url_ts_organisateur,
+    $dateenvoi);
