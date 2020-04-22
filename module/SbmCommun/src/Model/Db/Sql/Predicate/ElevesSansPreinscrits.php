@@ -8,7 +8,7 @@
  * @filesource ElevesSansPreinscrits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 21 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
@@ -19,11 +19,10 @@ class ElevesSansPreinscrits extends AbstractElevesPredicate
 {
 
     /**
-     * ATTENTION !
-     * L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
-     * payant. Le R2 ne compte pas pour ça.
+     * ATTENTION ! L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit
+     * l'élève en payant. Le R2 ne compte pas pour ça.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      * @see \SbmCommun\Model\Db\Sql\Predicate\AbstractElevesPredicate::__invoke()
      */
     public function __invoke(): Where
@@ -37,10 +36,6 @@ class ElevesSansPreinscrits extends AbstractElevesPredicate
             ->literal($prefixe . 'selection = 0')
             ->equalTo($prefixe . 'millesime', $this->millesime)
             ->nest()
-            ->literal($prefixe . 'district = 1')->or->literal($prefixe . 'derogation >= 1')
-            ->unnest()
-            ->nest()
-            ->literal($prefixe . 'paiementR1 = 1')->or->literal($prefixe . 'fa = 1')->or->literal(
-            $prefixe . 'gratuit > 0')->unnest();
+            ->literal($prefixe . 'paiementR1 = 1')->or->literal($prefixe . 'gratuit = 1')->unnest();
     }
 }

@@ -119,9 +119,9 @@ interface FactureInterface
     /**
      * Renvoie le résultat après, si nécessaire, relancé les calculs
      *
-     * @return \SbmCommun\Model\Paiements\Resultats
+     * @return \SbmCommun\Model\Paiements\ResultatsInterface
      */
-    public function getResultats(): \SbmCommun\Model\Paiements\Resultats;
+    public function getResultats(): ResultatsInterface;
 
     /**
      * Lit les factures de ce responsable jusqu'au numéro indiqué et place cette facture

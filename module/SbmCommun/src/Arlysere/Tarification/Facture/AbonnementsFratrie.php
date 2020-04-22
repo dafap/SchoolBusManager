@@ -4,7 +4,7 @@
  *
  * La création du service initialise les tarifs en interrogeant la table des tarifs.
  * Cette classe reçoit une liste des enfants d'un responsable avec leur grille tarifaire
- * (eleveId, grille) par la méthode setEleves.
+ * (eleveId, grille, reduit) par la méthode setEleves.
  * La méthode addEleve() permet d'ajouter un élève à la liste.
  * La méthode resetEleves() vide la liste des élèves.
  * Elle calcule les montants des abonnements à appliquer à chaque enfant par la méthode calcule().
@@ -20,7 +20,7 @@
  * @filesource AbonnementsFratrie.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 22 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -47,10 +47,12 @@ class AbonnementsFratrie implements FactoryInterface
 
     /**
      * Grille tarifaire. C'est un tableau de tableaux. Les clés de niveau 1 sont les
-     * numéros de grille. Les clés de niveau 2 sont les seuils. Exemple : [ 1 =>
-     * [2=>110,1=>110,3=>55, 4=>0], 2 => [1=>200,2=>200,3=>100,4=>0], 3 => [2=>55, 3=>28,
-     * 4=>0], 4 => [1=>0] ]. Peu importe l'ordre des seuils dans les grilles et peu
-     * importe l'ordre des grilles.
+     * numéros de grille. Les clés de niveau 2 sont la reduction. Les clés de niveau 3
+     * sont les seuils. Exemple : [ 1 => [0 => [2 => 165, 1 => 165, 3 => 83, 4 => 0], 1 =>
+     * [2 => 110, 1 => 110, 3 => 55, 4 => 0]], 2 => [0 => [1 => 200, 2 => 200, 3 => 100, 4
+     * => 0]], 3 => [0 => [1 => 82.5, 2 => 82.5, 3 => 41.50, 4 => 0], 1 => [1 => 55, 2 =>
+     * 55, 3 => 28, 4 => 0]], 4 => [0 => [1 => 55], 1 => [1 => 0]] ]. Peu importe l'ordre
+     * des seuils dans les grilles et peu importe l'ordre des grilles.
      *
      * @var array
      */
@@ -73,13 +75,18 @@ class AbonnementsFratrie implements FactoryInterface
      */
     private $abonnements;
 
-    public function __construct(DbManager $dbManager)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $this->dbManager = $dbManager;
+        if (! ($serviceLocator instanceof DbManager)) {
+            $msg = 'Le serviceLocator reçu doit être un DbManager';
+            throw new \SbmCommun\Arlysere\Exception\InvalidArgumentException($msg);
+        }
+        $this->dbManager = $serviceLocator;
         $this->eleves = [];
         $this->abonnements = [];
-        $this->dbManager = null;
         $this->setMillesime();
+        $this->setTarifs();
+        return $this;
     }
 
     public function setMillesime(int $millesime = null)
@@ -95,27 +102,16 @@ class AbonnementsFratrie implements FactoryInterface
         return $this;
     }
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        if (! ($serviceLocator instanceof DbManager)) {
-            $msg = 'Le serviceLocator reçu doit être un DbManager';
-            throw new \SbmCommun\Arlysere\Exception\InvalidArgumentException($msg);
-        }
-        $this->dbManager = $serviceLocator;
-        $this->setTarifs();
-        return $this;
-    }
-
     private function setTarifs()
     {
-        $resultset = $this->dbManager->get('Sbm\Db\Table\Tarifs')->fetchAll(
+        $resultset = $this->dbManager->get('Sbm\Db\Vue\Tarifs')->fetchAll(
             [
                 'millesime' => $this->millesime,
                 'duplicata' => 0
             ]);
         $this->tarifs = [];
         foreach ($resultset as $row) {
-            $this->tarifs[$row->grille][$row->seuil] = $row->montant;
+            $this->tarifs[$row->grilleTarif][$row->reduit][$row->seuil] = $row->montant;
         }
     }
 
@@ -133,7 +129,7 @@ class AbonnementsFratrie implements FactoryInterface
 
     /**
      * Initialise le tableau des élèves. Chaque élève du tableau se présente sous la forme
-     * d'un tableau associatif ayant au moins les clés 'eleveId' et 'grille'.
+     * d'un tableau associatif ayant au moins les clés 'eleveId', 'grille' et 'reduit'.
      *
      * @param array $eleves
      * @throws \SbmCommun\Arlysere\Exception\InvalidArgumentException
@@ -143,7 +139,7 @@ class AbonnementsFratrie implements FactoryInterface
     {
         foreach ($eleves as $row) {
             if (! (is_array($row) && array_key_exists('eleveId', $row) &&
-                array_key_exists('grille', $row))) {
+                array_key_exists('grille', $row) && array_key_exists('reduit', $row))) {
                 throw new \SbmCommun\Arlysere\Exception\InvalidArgumentException(
                     'Argument incorrect');
             }
@@ -155,7 +151,7 @@ class AbonnementsFratrie implements FactoryInterface
 
     /**
      * Ajoute un élève dans le tableau des élèves. L'élève est passé sour la forme d'un
-     * tableau associatif ayant au moins les clés 'eleveId' et 'grille'.
+     * tableau associatif ayant au moins les clés 'eleveId', 'grille' et 'reduit'.
      *
      * @param array $eleve
      * @throws \SbmCommun\Arlysere\Exception\InvalidArgumentException
@@ -163,7 +159,8 @@ class AbonnementsFratrie implements FactoryInterface
      */
     public function addEleve(array $eleve)
     {
-        if (! (array_key_exists('eleveId', $eleve) && array_key_exists('grille', $eleve))) {
+        if (! (array_key_exists('eleveId', $eleve) && array_key_exists('grille', $eleve) &&
+            array_key_exists('reduit', $eleve))) {
             throw new \SbmCommun\Arlysere\Exception\InvalidArgumentException(
                 'Argument incorrect');
         }
@@ -181,12 +178,12 @@ class AbonnementsFratrie implements FactoryInterface
     {
         $array = [];
         foreach ($this->eleves as $row) {
-            $array[] = new Abonnement($row['grille'], $this->tarifs[$row['grille']],
-                $row['eleveId']);
+            $array[] = new Abonnement($row['grille'], $row['reduit'],
+                $this->tarifs[$row['grille']][$row['reduit']], $row['eleveId']);
         }
         sort($array);
         for ($i = 0; $i < count($array); $i ++) {
-            $array[$i]->appliqueMontant($i + 1);
+            $array[$i]->appliquerMontant($i + 1);
         }
         $this->abonnements = $array;
         return $this;
@@ -203,7 +200,7 @@ class AbonnementsFratrie implements FactoryInterface
             $this->calcule();
         }
         foreach ($this->abonnements as $row) {
-            $total += $row;
+            $total += $row();
         }
         return $total;
     }

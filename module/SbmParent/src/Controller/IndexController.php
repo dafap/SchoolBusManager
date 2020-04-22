@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 21 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -137,7 +137,7 @@ class IndexController extends AbstractActionController
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
                 'resultats' => $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                    $responsable->responsableId, null, true), // pour forcer le calcul
+                    $responsable->responsableId, [], true), // pour forcer le calcul
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,

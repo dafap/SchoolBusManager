@@ -13,13 +13,13 @@
  * @filesource formulaire.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2020
+ * @date 22 avr. 2020
  * @version 2020-2.6.0
  */
 $this->jQuery();
 $this->themeJS('sbm-paiement', 'formulaire.js');
 // tout est en hidden
-$form = $this->plugin_plateforme->getForm();
+$form = $this->oPlateforme->getForm();
 if ($form) {
     echo $this->form()->openTag($form);
     echo $this->formCollection($form);

@@ -15,7 +15,7 @@
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 avr. 2020
+ * @date 22 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -24,8 +24,11 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmCommun\Model\Paiements\FactureInterface;
 use SbmCommun\Model\Db\ObjectData\Facture as ObjectDataFacture;
-use SbmCommun\Model\Paiements\Resultats;
 use Zend\Db\Sql\Where;
+use SbmCommun\Model\Paiements\ResultatsInterface;
+use SbmBase\Model\Session;
+use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 
 class Facture implements FactoryInterface, FactureInterface
 {
@@ -105,7 +108,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getNumero(): int
     {
-        return $this->oFacture->numero;
+        return $this->getOFacture()->numero;
     }
 
     /**
@@ -135,7 +138,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getMontant(): float
     {
-        return $this->oFacture->montant;
+        return $this->getOFacture()->montant;
     }
 
     /**
@@ -153,7 +156,7 @@ class Facture implements FactoryInterface, FactureInterface
      * {@inheritdoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::getResultats()
      */
-    public function getResultats(): Resultats
+    public function getResultats(): ResultatsInterface
     {
         try {
             return $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
@@ -171,7 +174,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getExercice(): int
     {
-        return $this->oFacture->exercice;
+        return $this->getOFacture()->exercice;
     }
 
     /**
@@ -181,7 +184,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getDate(): string
     {
-        return $this->oFacture->date;
+        return $this->getOFacture()->date;
     }
 
     /**
@@ -191,7 +194,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getMillesime(): int
     {
-        return $this->oFacture->millesime;
+        return $this->getOFacture()->millesime;
     }
 
     /**
@@ -201,6 +204,17 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getOFacture(): ObjectDataFacture
     {
+        if (!$this->oFacture) {
+            $this->oFacture = $this->tFactures->getObjData();
+            $this->oFacture->exchangeArray(
+                [
+                    'millesime' => Session::get('millesime'),
+                    'exercice' => date('Y'),
+                    'responsableId' => $this->getResponsableId(),
+                    'date' => DateLib::todayToMysql(),
+                    'montant' => 0
+                ]);
+        }
         return $this->oFacture;
     }
 
@@ -291,11 +305,11 @@ class Facture implements FactoryInterface, FactureInterface
                 'exercice' => $this->getExercice(),
                 'numero' => $this->getNouveauNumero(),
                 'millesime' => $this->getMillesime(),
-                'responsableId' => $this->resultats->getResponsableId(),
+                'responsableId' => $this->getResultats()->getResponsableId(),
                 'date' => $this->getDate(),
-                'montant' => $this->resultats->getMontantTotal() -
+                'montant' => $this->getResultats()->getMontantTotal() -
                 $this->getMontantDejaFacture(),
-                'signature' => $this->resultats->signature(),
+                'signature' => $this->getResultats()->signature(),
                 'content' => serialize($this->resultats)
             ]);
         if ($this->oFacture->montant) {

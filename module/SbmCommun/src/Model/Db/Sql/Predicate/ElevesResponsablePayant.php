@@ -7,7 +7,7 @@
  * @filesource ElevesResponsablePayant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 21 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
@@ -18,20 +18,20 @@ class ElevesResponsablePayant extends AbstractElevesPredicate
 {
 
     /**
-     * ATTENTION !
-     * L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
-     * payant. Le R2 ne compte pas pour ça.
+     * ATTENTION ! L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit
+     * l'élève en payant. Le R2 ne compte pas pour ça.
+     *
      * @formatter off
-     * Ceux qui ne sont pas en famille d'accueil et qui ne sont pas gratuit et qui sont
-     * inscrits avec un accord ou une derogation ou qui ont payé et qui sont scolarisés
-     * dans ce millesime. En fait on ne prend pas les préinscrits rayés ni les préinscrits
-     * non ayant droit sans derogation mais on prend les inscrits rayés. Donc c'est le
-     * contraire de :
+     * Ceux qui sont scolarisés dans ce millesime, qui ne sont pas en attente, pas gratuits,
+     * qui sont inscrits ou qui ont payé (même s'il ont été rayé par la suite) et pour lesquel
+     * on a une réponse positive à leur demande de transport.
+     * En fait on ne prend pas les préinscrits rayés, ni ceux mis en attente, ni ceux pour lesquels
+     * on n'a pas de solution de transport, ni les gratuits.
+     * Donc c'est le contraire de :
      * <ul>
      * <li> préinscits et rayés (paiementR1 == 0 et inscrit == 0)</li>
-     * <li> non ayant droit sans dérogation (accordR1 == 0 et accordR2 == 0 et derogation == 0)</li>
-     * <li> en fa (fa == 1)</li>
-     * <li> gratuits ou pris en charge par un organisme (gratuit > 0)</li>
+     * <li> demandes sans solution (demandeR1 > 0 et accordR1 == 0 et demandeR2 > 0 et accordR2 == 0)</li>
+     * <li> gratuits (gratuit = 1)</li>
      * </ul>
      * @formatter on
      *
@@ -45,18 +45,20 @@ class ElevesResponsablePayant extends AbstractElevesPredicate
         } else {
             $prefixe = '';
         }
-        return $this->literal($prefixe . 'fa = 0')
+        return $this->equalTo($prefixe . 'millesime', $this->millesime)
             ->literal($prefixe . 'selection = 0')
-            ->literal($prefixe . 'gratuit = 0')
+            ->literal($prefixe . 'gratuit <> 1')
             ->nest()
-            ->nest()
-            ->literal($prefixe . 'inscrit = 1')
-            ->nest()
-            ->literal($prefixe . 'accordR1 = 1')->or->literal($prefixe . 'accordR2 = 1')->or->literal(
-            $prefixe . 'derogation > 0')
+            ->literal($prefixe . 'inscrit = 1')->or->literal($prefixe . 'paiementR1 = 1')
             ->unnest()
-            ->unnest()->or->literal($prefixe . 'paiementR1 = 1')
+            ->nest()
+            ->nest()
+            ->literal($prefixe . 'demandeR1 > 0')
+            ->literal($prefixe . 'accordR1 = 1')
+            ->unnest()->or->nest()
+            ->literal($prefixe . 'demandeR2 > 0')
+            ->literal($prefixe . 'accordR2 = 1')
             ->unnest()
-            ->equalTo($prefixe . 'millesime', $this->millesime);
+            ->unnest();
     }
 }

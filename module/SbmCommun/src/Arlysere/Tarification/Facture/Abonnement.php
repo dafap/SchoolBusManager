@@ -16,7 +16,7 @@
  * @filesource Abonnement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2020
+ * @date 22 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -32,11 +32,18 @@ class Abonnement
 
     /**
      *
+     * @var int
+     */
+    private $reduit;
+
+    /**
+     *
      * @var float
      */
     private $montant;
 
     /**
+     * Tableau de tarifs indexé sur les seuils (important ! 1 seul niveau)
      *
      * @var array
      */
@@ -55,6 +62,11 @@ class Abonnement
     public function getGrille()
     {
         return $this->grille;
+    }
+
+    public function getReduit()
+    {
+        return $this->reduit;
     }
 
     /**
@@ -99,6 +111,12 @@ class Abonnement
         return $this;
     }
 
+    public function setReduit($reduit)
+    {
+        $this->reduit = $reduit;
+        return $this;
+    }
+
     /**
      *
      * @param array $tarifs
@@ -127,10 +145,11 @@ class Abonnement
      * @param array $tarifs
      * @param int $eleveId
      */
-    public function __construct($grille, $tarifs, $eleveId)
+    public function __construct($grille, $reduit, $tarifs, $eleveId)
     {
         $this->eleveId = $eleveId;
         $this->grille = $grille;
+        $this->reduit = $reduit;
         $this->tarifs = $tarifs;
         $this->initMontant();
     }

@@ -7,7 +7,7 @@
  * @filesource ElevesPreinscrits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 21 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Sql\Predicate;
@@ -35,15 +35,7 @@ class ElevesPreinscrits extends AbstractElevesPredicate
         return $this->literal($prefixe . 'inscrit = 1')
             ->literal($prefixe . 'selection = 0')
             ->equalTo($prefixe . 'millesime', $this->millesime)
-            ->nest()
-            ->nest()
             ->literal($prefixe . 'paiementR1 = 0')
-            ->literal($prefixe . 'fa = 0')
-            ->literal($prefixe . 'gratuit = 0')
-            ->unnest()->or->nest()
-            ->literal($prefixe . 'district = 0')
-            ->literal($prefixe . 'derogation = 0')
-            ->unnest()
-            ->unnest();
+            ->literal($prefixe . 'gratuit <> 1');
     }
 }

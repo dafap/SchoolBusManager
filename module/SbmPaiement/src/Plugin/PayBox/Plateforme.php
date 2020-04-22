@@ -9,7 +9,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2020
+ * @date 22 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -159,9 +159,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         }
         // préparation des paramètres pour la méthode prepareAppel()
         $this->elevesIds = [];
-        foreach ($this->facture->getResultats()->getListeEleves('a_facturer') as $eleveId => $row) {
-            $this->elevesIds[] = $eleveId;
-            unset($row);
+        foreach ($this->facture->getResultats()->getListeEleves() as $row) {
+            $this->elevesIds[] = $row['eleveId'];
         }
         $this->nbEnfants = count($this->elevesIds);
         return $this;
@@ -188,10 +187,10 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     public function initPaiement()
     {
         $params = $this->prepareAppel();
-        if ($params['montant'] < $this->getParam('montantmini')) {
+        if ($params['PBX_TOTAL'] < $this->getParam('montantmini')) {
             throw new Exception(
                 'Le montant du est inférieur au montant minimal pour un paiement par CB.');
-        } elseif ($params['montant'] > $this->getParam('montantmaxi')) {
+        } elseif ($params['PBX_TOTAL'] > $this->getParam('montantmaxi')) {
             throw new Exception(
                 'Le montant du est supérieur au montant maximal pour un paiement par CB.');
         }
@@ -368,7 +367,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     {
         $form = new Formulaire('Formulaire',
             [
-                'hiddens' => array_keys($this->getVariables())
+                'hiddens' => array_keys($this->variables)
             ]);
         $form->setAttribute('action', $this->getUrl())
             ->setData($this->variables);
@@ -396,9 +395,11 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     private function urlDispo(array $serveurs): string
     {
         $serveurOK = false;
-        foreach ($serveurs as $serveur) {
+        foreach ($serveurs as $url) {
+            $parts = parse_url($url);
+            $serveur = sprintf('%s://%s/load.html', $parts['scheme'], $parts['host']);
             $doc = new \DOMDocument();
-            $doc->loadHTMLFile('https://' . $serveur . '/load.html');
+            $doc->loadHTMLFile($serveur);
             $server_status = "";
             $element = $doc->getElementById('server_status');
             if ($element) {
@@ -410,7 +411,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             }
         }
         if ($serveurOK) {
-            return $serveur;
+            return $url;
         }
         throw new \SbmPaiement\Plugin\Exception('Serveur Paybox indisponible.');
     }
