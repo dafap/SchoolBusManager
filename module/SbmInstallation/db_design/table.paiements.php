@@ -54,7 +54,7 @@ return [
             'codeCaisse' => 'int(11) NOT NULL',
             'banque' => 'varchar(30) NOT NULL DEFAULT ""',
             'titulaire' => 'varchar(30) NOT NULL DEFAULT ""',
-            'reference' => 'varchar(30) NOT NULL DEFAULT ""',
+            'reference' => 'varchar(90) NOT NULL DEFAULT ""',
             'justificatif' => 'varchar(30) NOT NULL DEFAULT ""',
             'note' => 'text NULL'
         ],
@@ -65,7 +65,7 @@ return [
             'PAIEMENTS_date_reference' => [
                 'unique' => true,
                 'fields' => [
-                    'datePaiement',
+                    'dateValeur',
                     'reference'
                 ]
             ]

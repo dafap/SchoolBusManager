@@ -74,12 +74,12 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
             } else {
                 $paiement['montant'] *= .01;
             }
-            $datePaiement = $paiement['datePaiement'];
+            $dateValeur = $paiement['dateValeur'];
             $responsableId = $paiement['responsableId'];
             $reference = $paiement['reference'];
 
-            $paiement['paiementId'] = $table_paiements->getPaiementId(
-                $responsableId, $datePaiement, $reference);
+            $paiement['paiementId'] = $table_paiements->getPaiementId($responsableId,
+                $dateValeur, $reference);
             // La référence paiementId doit être définie avant la création de l'objectData
             $objectData_paiement = $this->db_manager->get('Sbm\Db\ObjectData\Paiement');
             $objectData_paiement->exchangeArray($paiement);
@@ -87,7 +87,9 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
             try {
                 $table_paiements->saveRecord($objectData_paiement);
             } catch (\Exception $e) {
-                $this->log(Logger::CRIT, 'Impossible d\'enregistrer le paiement', $paiement);
+                $this->log(Logger::CRIT, 'Impossible d\'enregistrer le paiement',
+                    $paiement);
+                $this->log(Logger::CRIT, $e->getMessage());
             }
         }
     }

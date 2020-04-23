@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2019
- * @version 2019-2.5.0
+ * @date 23 avr. 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 use SbmPaiement\Controller;
@@ -76,7 +76,7 @@ return [
             'sbmpaiement' => [
                 'type' => 'segment',
                 'options' => [
-                    'route' => '/paiement[/:action[/page/:page[/id/:id]]]',
+                    'route' => '/paiement[/:action[/page/:page][/id/:id]]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',

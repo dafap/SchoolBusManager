@@ -8,8 +8,8 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2019
- * @version 2019-2.5.4
+ * @date 23 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -66,17 +66,17 @@ class Paiements extends AbstractSbmTable
      * le paiement n'est pas enregistré
      *
      * @param int $responsableId
-     * @param string $datePaiement
+     * @param string $dateValeur
      * @param string $reference
      *
      * @return integer
      */
-    public function getPaiementId($responsableId, $datePaiement, $reference)
+    public function getPaiementId($responsableId, $dateValeur, $reference)
     {
         $where = new Where();
         $rowset = $this->fetchAll(
             $where->equalTo('responsableId', $responsableId)
-                ->equalTo('datePaiement', $datePaiement)
+                ->equalTo('dateValeur', $dateValeur)
                 ->equalTo('reference', $reference));
         if ($rowset && $rowset->current()) {
             return $rowset->current()->paiementId;

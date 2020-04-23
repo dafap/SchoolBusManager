@@ -9,7 +9,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2020
+ * @date 23 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -23,6 +23,7 @@ use SbmPaiement\Plugin\Exception;
 use Zend\Db\Sql\Where;
 use Zend\Log\Logger;
 use Zend\Stdlib\Parameters;
+use SbmBase\Model\DateLib;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
@@ -365,10 +366,9 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function getForm()
     {
-        $form = new Formulaire('Formulaire',
-            [
-                'hiddens' => array_keys($this->variables)
-            ]);
+        $form = new Formulaire('Formulaire', [
+            'hiddens' => array_keys($this->variables)
+        ]);
         $form->setAttribute('action', $this->getUrl())
             ->setData($this->variables);
         return $form;
@@ -422,18 +422,19 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
 
     /**
-     * Retrouve une partie dans refdet. Lorsqu'il n' a pas d'abonnement les clés
+     * La référence se trouve dans la propriété $data (voir parent), clé 'ref'. Retrouve
+     * et renvoie une partie dans la référence. Lorsqu'il n' a pas d'abonnement les clés
      * 'PBX_2MONT', 'PBX_NBPAIE', 'PBX_FREQ', 'PBX_QUAND' et 'PBX_DELAIS' renvoient une
      * chaine vide. Les autres clés n'étant pas obligatoire, la présence d'un abonnement
      * se traduit par un retour non vide pour 'PBX_2MONT'
      *
      * @param string $part
-     * @param string $refdet
      * @throws Exception
      * @return string
      */
-    public function getFromRefDet(string $part, string $refdet)
+    public function getFromRefDet(string $part)
     {
+        $refdet = $this->data['ref'];
         switch ($part) {
             case 'millesime':
                 $result = substr($refdet, 0, 4);
@@ -483,6 +484,45 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\AbstractPlateforme::validNotification()
      */
+
+    /**
+     * Surcharge pour renvoyer une page vide
+     *
+     * {@inheritdoc}
+     * @see \SbmPaiement\Plugin\AbstractPlateforme::notification()
+     */
+    public function notification(Parameters $data, $remote_addr = '')
+    {
+        try {
+            parent::notification($data, $remote_addr);
+        } catch (\Exception $e) {
+            $this->logError(Logger::CRIT, $e->getMessage(), [
+                $e->getTraceAsString()
+            ]);
+        }
+        return '';
+    }
+
+    /**
+     * Renvoie le tableau des adressses autorisées (adresses de Paybox)
+     *
+     * {@inheritdoc}
+     * @see \SbmPaiement\Plugin\AbstractPlateforme::getAuthorizedIp()
+     */
+    protected function getAuthorizedIp()
+    {
+        try {
+            $mode = $this->getParam('mode');
+        } catch (\Exception $e) {
+            $mode = 'TEST';
+        }
+        return $this->getParam([
+            'notification',
+            'authorized_ip',
+            $mode
+        ]);
+    }
+
     protected function validNotification(Parameters $data)
     {
         $ok = $data->offsetExists('erreur') && $data->offsetExists('ref') &&
@@ -508,6 +548,84 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     protected function prepareData()
     {
+        $responsableId = (int) $this->getFromRefDet('responsableId');
+        $millesime = (int) $this->getFromRefDet('millesime');
+        $ladateP = \DateTime::createFromFormat('dmYH:i:s',
+            $this->data['datetrans'] . $this->data['heuretrans']);
+        $exercice = (int) $this->getFromRefDet('exercice');
+        // $numeroF = (int) $this->getFromRefDet('numero');
+        // $nbEnfants = (int) $this->getFromRefDet('nbEnfants');
+        $pbx_2mont = (int) $this->getFromRefDet('PBX_2MONT');
+        try {
+            $pbx_nbpaie = (int) $this->getFromRefDet('PBX_NBPAIE');
+        } catch (Exception $e) {
+            $pbx_nbpaie = 0;
+        }
+        try {
+            $pbx_freq = (int) $this->getFromRefDet('PBX_FREQ');
+        } catch (Exception $e) {
+            $pbx_freq = 0;
+        }
+        try {
+            $pbx_quand = (int) $this->getFromRefDet('PBX_QUAND');
+        } catch (Exception $e) {
+            $pbx_quand = 0;
+        }
+        try {
+            $pbx_delais = (int) $this->getFromRefDet('PBX_DELAIS');
+        } catch (Exception $e) {
+            $pbx_delais = 0;
+        }
+        $arrayPaiements = [];
+        $paiement = [
+            'datePaiement' => $ladateP->format('Y-m-d H:i:s'),
+            'dateValeur' => $ladateP->format('Y-m-d'),
+            'responsableId' => $responsableId,
+            'anneeScolaire' => sprintf('%1$d-%1$d', $millesime),
+            'exercice' => $exercice,
+            'montant' => $this->data['montant'],
+            'codeModeDePaiement' => $this->getCodeModeDePaiement(),
+            'codeCaisse' => $this->getCodeCaisse(),
+            'reference' => $this->data['ref']
+        ];
+        $arrayPaiements[] = $paiement;
+        if ($pbx_2mont) {
+            if ($pbx_delais) {
+                $date1 = $ladateP->modify(
+                    sprintf('+%d Day%s', $pbx_delais, $pbx_delais > 1 ? 's' : ''));
+            } elseif ($pbx_quand) {
+                $date1 = $ladateP->format('Y-m') . '-' . $pbx_quand;
+                if ($date1 < $ladateP->format('Y-m-d')) {
+                    $date1->modify('+1 Month');
+                }
+            } else {
+                $date1 = $ladateP->modify('+1 Month');
+            }
+            $modif_date = sprintf('+%d Month%s', $pbx_freq, $pbx_freq > 1 ? 's' : '');
+            for ($p = 1; $p <= $pbx_nbpaie; $p ++) {
+                $paiement['dateValeur'] = $date1->format('Y-m-d');
+                $paiement['montant'] = $pbx_2mont;
+                $arrayPaiements[] = $paiement;
+                $date1->modify($modif_date);
+            }
+        }
+        $this->paiement = [
+            'type' => 'DEBIT',
+            'paiement' => $arrayPaiements
+        ];
+        $this->scolarite = [
+            'type' => 'DEBIT',
+            'millesime' => $this->millesime,
+            'responsableId' => $responsableId,
+            'eleveIds' => []
+        ];
+        $tAppels = $this->getDbManager()->get('Sbm\Db\Table\Appels');
+        $rowset = $tAppels->fetchAll([
+            'refdet' => $this->data['ref']
+        ]);
+        foreach ($rowset as $row) {
+            $this->scolarite['eleveIds'][] = $row->eleveId;
+        }
     }
 
     /**
@@ -603,38 +721,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     public function rapprochementCrHeader(): array
     {
-    }
-
-    /**
-     * Surcharge pour renvoyer une page vide
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\AbstractPlateforme::notification()
-     */
-    public function notification(Parameters $data, $remote_addr = '')
-    {
-        parent::notification($data, $remote_addr);
-        return '';
-    }
-
-    /**
-     * Renvoie le tableau des adressses autorisées (adresses de Paybox)
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\AbstractPlateforme::getAuthorizedIp()
-     */
-    protected function getAuthorizedIp()
-    {
-        try {
-            $mode = $this->getParam('mode');
-        } catch (\Exception $e) {
-            $mode = 'TEST';
-        }
-        return $this->getParam([
-            'notification',
-            'authorized_ip',
-            $mode
-        ]);
     }
 
     /**

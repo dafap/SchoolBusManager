@@ -158,16 +158,6 @@ class IndexController extends AbstractActionController
 
     public function notificationAction()
     {
-        // ============== DEBUG ======================
-        /*
-         * $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'),
-         * 'paybox-reponse.log'); $this->debugLog('REMOTE_ADDR');
-         * $this->debugLog($this->getRequest() ->getServer() ->get('REMOTE_ADDR'));
-         * $this->debugLog('GET'); $this->debugLog($this->getRequest() ->getQuery());
-         * $this->debugLog('POST'); $this->debugLog($this->getRequest() ->getPost());
-         * return $this->getResponse() ->setContent('') ->setStatusCode(200);
-         */
-        // =========== FIN DEBUG ======================
         $message = $this->plugin_plateforme->notification($this->getRequest()
             ->getPost(), $this->getRequest()
             ->getServer()
