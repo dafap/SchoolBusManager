@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2020
+ * @date 23 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Controller;
@@ -58,10 +58,7 @@ class IndexController extends AbstractActionController
                 ->initPaiement();
         } catch (\Exception $e) {
             $message = $e->getMessage();
-            $message = 'Une tentative de paiement est en attente de traitement.';
             $this->flashMessenger()->addErrorMessage($message);
-            $message = 'Un délai de 2 heures est nécessaire avant de pouvoir la renouveler.';
-            $this->flashMessenger()->addInfoMessage($message);
             return $this->redirect()->toRoute('sbmparent');
         }
         return new ViewModel([
@@ -85,7 +82,8 @@ class IndexController extends AbstractActionController
     public function listeAction()
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
-        $args = $this->initListe($table->criteres());
+        // les expressions sont définies dans le plugin
+        $args = $this->initListe($table->criteres(), null, [],$table->getExpressions());
         if ($args instanceof Response) {
             return $args;
         } elseif (array_key_exists('cancel', $args)) {

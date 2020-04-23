@@ -8,14 +8,15 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 23 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox\Db\Table;
 
 use SbmCommun\Model\Db\Service\Table\AbstractSbmTable;
 use SbmPaiement\Plugin\TablePluginInterface;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 
 class TablePlugin extends AbstractSbmTable implements TablePluginInterface
 {
@@ -47,18 +48,36 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     }
 
     /**
-     * @TODO : à mettre au point pour PayBox. Actuellement c'est le code utilisé dans PayFiP
+     * Surcharge la méthode pour que le paginator renvoie une structure contenant le nom
+     * du responsable et le mode
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::select()
+     */
+    public function join()
+    {
+        $t1 = $this->db_manager->getCanonicName($this->table_name, $this->table_type);
+        $t2 = $this->db_manager->getCanonicName('responsables', 'table');
+        $on = "$t1.responsableId = $t2.responsableId";
+        $this->obj_select->join($t2, $on,
+            [
+                'nom',
+                'responsable' => new Expression("concat($t2.nom,' ',$t2.prenom)")
+            ]);
+    }
+
+    /**
+     *
+     * {@inheritdoc}
      * @see \SbmPaiement\Plugin\TablePluginInterface::criteres()
      */
     public function criteres()
     {
         return [
             [
-                'name' => 'Titulaire',
+                'name' => 'nom',
+                'type' => 'text',
                 'attributes' => [
-                    'type' => 'text',
                     'id' => 'critere-titulaire',
                     'class' => 'sbm-width-30c',
                     'maxlegth' => '30'
@@ -72,10 +91,11 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ],[
-                'type'=> 'text',
-                'name' => 'exer',
-                'attributes'=>[
+            ],
+            [
+                'name' => 'exercice',
+                'type' => 'text',
+                'attributes' => [
                     'class' => 'sbm-width-5c'
                 ],
                 'options' => [
@@ -86,10 +106,23 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                 ]
             ],
             [
-                'type' => 'Zend\Form\Element\Date',
-                'name' => 'dattrans',
+                'name' => 'numero',
+                'type' => 'text',
                 'attributes' => [
-                    'id' => 'critere-dattrans',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'N° de facture',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ],
+            [
+                'type' => 'Zend\Form\Element\Date',
+                'name' => 'datetrans',
+                'attributes' => [
+                    'id' => 'critere-dattrans'
                 ],
                 'options' => [
                     'label' => 'Date du paiement',
@@ -100,14 +133,16 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
             ],
             [
                 'type' => 'Zend\Form\Element\Select',
-                'name' => 'saisie',
+                'name' => 'mode',
                 'options' => [
                     'label' => 'Mode',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
                     'empty_option' => 'Tous',
                     'value_options' => [
-                        'T' => 'Test',
-                        'X' => 'Activation',
-                        'W' => 'Production'
+                        '%' => 'Production',
+                        'XXXXXX' => 'Test'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -139,12 +174,17 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
         ];
     }
 
+    public function getExpressions()
+    {
+        return [
+            'mode' => "expression:IF(?='XXXXXX',auto='XXXXXX',auto<>'XXXXXX')"
+        ];
+    }
     /**
      * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire. Le
      * format créé est de la forme Y-m-d. Ici il faut Ymd.
      *
-     * @TODO à vérifier pour Paybox.
-     *
+     * @todo à vérifier pour Paybox.
      * @param Where $where
      */
     public function adapteWhere(Where &$where)
@@ -153,17 +193,13 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
         foreach ($predicates as &$predicate) {
             foreach ($predicate as &$item) {
                 if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
-                    $item->getIdentifier() == 'dattrans') {
-                        $datetmp = \DateTime::createFromFormat('Y-m-d|%', $item->getLike());
-                        if ($datetmp) {
-                            $item->setLike($datetmp->format('dmY'));
-                            // le % terminal est supprimé - comparaison stricte
-                        }
+                    $item->getIdentifier() == 'datetrans') {
+                    $datetmp = \DateTime::createFromFormat('Y-m-d|%', $item->getLike());
+                    if ($datetmp) {
+                        $item->setLike($datetmp->format('dmY'));
+                        // le % terminal est supprimé - comparaison stricte
                     }
-                    if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
-                        $item->getIdentifier() == 'titulaire') {
-                            $item->setLike('%' . $item->getLike());
-                        }
+                }
             }
         }
     }

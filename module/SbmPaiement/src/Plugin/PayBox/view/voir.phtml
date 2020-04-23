@@ -2,15 +2,13 @@
 /**
  * Détail d'une notification de paiement
  *
- * @TODO : A mettre au point pour PayBox
- *
  * @project sbm
  * @package SbmPaiement/Plugin/payBox/view
  * @filesource voir.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 23 avr. 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmpaiement', [
@@ -27,10 +25,7 @@ $actions = [
         'title' => 'Retour'
     ]
 ];
-$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-$dateheure = \DateTime::createFromFormat('dmYHi',
-    $this->notification->dattrans . $this->notification->heurtrans)->format('d/m/Y H:i');
-    ?>
+?>
 <h1>Détail d'une notification de paiement</h1>
 <div class="liste-wrapper">
 	<div id="liste-header" class="clearfix">
@@ -47,52 +42,48 @@ $dateheure = \DateTime::createFromFormat('dmYHi',
 		<table class="plugin">
 			<tbody>
 				<tr>
-					<td>Mode</td>
-					<td><b><?= $this->notification->saisie; ?></b></td>
-				</tr>
-				<tr>
-					<td>Titulaire</td>
-					<td><b><?= $this->notification->titulaire; ?></b></td>
+					<td>Autorisation</td>
+					<td><b><?= $this->notification->auto; ?></b></td>
 				</tr>
 				<tr>
 					<td>Montant</td>
-					<td><b><?= $fmt->formatCurrency($this->notification->montant/100, 'EUR'); ?></b></td>
+					<td><b><?= $this->notification->montant; ?></b></td>
 				</tr>
 				<tr>
-					<td>Exercice</td>
-					<td><b><?= $this->notification->exer; ?></b></td>
+					<td>Référence</td>
+					<td><b><?= $this->notification->ref; ?></b></td>
+				</tr>
+				<tr>
+					<td>Id transaction</td>
+					<td><b><?= $this->notification->idtrans; ?></b></td>
 				</tr>
 				<tr>
 					<td>Date de la transaction</td>
-					<td><b><?= $dateheure;?></b></td>
+					<td><b><?= $this->notification->datetrans;?></b></td>
 				</tr>
 				<tr>
-					<td>Résultat de la transaction</td>
-					<td><b><?= $this->notification->resultrans; ?></b></td>
+					<td>Heure de la transaction</td>
+					<td><b><?= $this->notification->heuretrans; ?></b></td>
 				</tr>
 				<tr>
-					<td>Objet de la transaction</td>
-					<td><b><?= $this->notification->objet; ?></b></td>
+					<td>Carte</td>
+					<td><b><?= $this->notification->carte; ?></b></td>
 				</tr>
 				<tr>
-					<td>Référence de la dette</td>
-					<td><b><?= $this->notification->refdet; ?></b></td>
+					<td>Début n° carte</td>
+					<td><b><?= $this->notification->bin6; ?></b></td>
 				</tr>
 				<tr>
-					<td>Autorisation n°</td>
-					<td><b><?= $this->notification->numauto; ?></b></td>
+					<td>Fin n° carte</td>
+					<td><b><?= $this->notification->bin2; ?></b></td>
 				</tr>
 				<tr>
-					<td>Email</td>
-					<td><b><?= $this->notification->mel; ?></b></td>
+					<td>Pays de la carte</td>
+					<td><b><?= $this->notification->pays; ?></b></td>
 				</tr>
 				<tr>
-					<td>Identifiant de l'opération</td>
-					<td><b><?= $this->notification->idOp; ?></b></td>
-				</tr>
-				<tr>
-					<td>Numéro client PayBox</td>
-					<td><b><?= $this->notification->numcli; ?></b></td>
+					<td>Pays de l'internaute</td>
+					<td><b><?= $this->notification->ip; ?></b></td>
 				</tr>
 			</tbody>
 		</table>

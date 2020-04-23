@@ -2,19 +2,17 @@
 /**
  * Liste des paiements pour la table `paybox`
  *
- * @TODO : A mettre au point pour PayBox
- *
  * @project sbm
  * @package SbmPaiement/Plugin/PayBox/view
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 23 avr. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-
+$this->themeJS('sbm-paiement', 'liste');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();
@@ -71,13 +69,12 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<tbody>
 				<tr>
 					<th>Mode</th>
+					<th>Responsable</th>
 					<th>Exercice</th>
-					<th>Nom Prénom</th>
-					<th>Email</th>
+					<th>N° facture</th>
 					<th>Montant</th>
 					<th>Réf. dette</th>
 					<th>Date</th>
-					<th>Résultat</th>
 					<th>N° autorisation</th>
 					<th>Sélect.</th>
 					<th></th>
@@ -85,12 +82,13 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
             <?php foreach($datas as $notification): ?>
             <?php
                 $montant = $fmt->formatCurrency($notification->montant / 100, 'EUR');
-                $date_trans = \DateTime::createFromFormat('dmYHi',
-                    $notification->dattrans . $notification->heurtrans)->format(
-                    'd/m/Y H:i:s');
+                $carte = sprintf('%s %s...%s', $notification->carte, $notification->bin6,
+                    $notification->bin2);
+                $date_trans = \DateTime::createFromFormat('dmY', $notification->datetrans)->format(
+                    'd/m/Y') . ' ' . $notification->heuretrans;
                 $title_voir = sprintf(
-                    "%s\nIdentifiant de l'opération %s\nNuméro de client PayBox %s",
-                    $notification->objet, $notification->idOp, $notification->numcli);
+                    "Identifiant de la transaction %s\nCarte %s\nPays %s",
+                    $notification->idtrans, $carte, $notification->ip);
                 $hiddens = [
                     'notificationId' => $notification->payboxId
                 ];
@@ -101,29 +99,28 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
                         'title' => $title_voir
                     ]
                 ];
+                $mode = $notification->auto == 'XXXXXX' ? 'TEST' : 'PROD';
                 ?>
                 <tr
 					class="petit <?= $this->cycle(["even", "odd"])->next();?>">
 					<td class="saisie">
-                		<?= $this->escapeHtml($notification->saisie); ?></td>
-					<td class="numcli">
-                		<?= $this->escapeHtml($notification->exer); ?></td>
+                		<?= $mode; ?></td>
 					<td class="identite">
-                		<?= $this->escapeHtml($notification->titulaire); ?></td>
-					<td class="mel">
-						<?= $this->escapeHtml($notification->mel); ?></td>
+                		<?= $this->escapeHtml($notification->responsable); ?></td>
+					<td class="esercice">
+                		<?= $this->escapeHtml($notification->exercice); ?></td>
+					<td class="numero">
+						<?= $this->escapeHtml($notification->numero); ?></td>
 					<td class="montant align-right">
 						<?= $montant; ?></td>
-					<td class="refdet">
-						<?= $this->escapeHtml($notification->refdet); ?></td>
+					<td class="ref">
+						<?= $this->escapeHtml($notification->ref); ?></td>
 					<td class="date">
 						<?= $date_trans; ?></td>
-					<td class="resultrans centre">
-						<?= $this->escapeHtml($notification->resultrans); ?></td>
 					<td class="numauto">
-						<?= $this->escapeHtml($notification->numauto); ?></td>
+						<?= $this->escapeHtml($notification->auto); ?></td>
 					<td class="centre selection">
-						<?= $this->renderCheckbox('selection', 'chk', $notification->payboxId, $notification->selection)?></td>
+						<?= $this->renderCheckbox('selection', 'chk', $notification->payboxId, $notification->selection, ['data-plugin'=>'paybox'])?></td>
 					<td class="boutons">
             			<?= $this->listeLigneActions($notification->payboxId, $hiddens, $buttons);?></td>
 				</tr>

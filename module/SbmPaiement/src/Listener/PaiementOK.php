@@ -4,15 +4,15 @@
  * - paiementOK
  *
  * Enregistrement dans la table paiements
- * Compaibilité ZF3
- * 
+ * Compatibilité paiements avec abonnement
+ *
  * @project sbm
  * @package SbmPaiement/Plugin
  * @filesource PaiementOK.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 fév. 2019
- * @version 2019-2.5.0
+ * @date 23 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPaiement\Listener;
 
@@ -67,25 +67,28 @@ class PaiementOK extends AbstractListener implements ListenerAggregateInterface
     public function onPaiementOK(Event $e)
     {
         $params = $e->getParams();
-        if ($params['type'] == 'CREDIT') {
-            $params['paiement']['montant'] *= - .01;
-        } else {
-            $params['paiement']['montant'] *= .01;
-        }
-        $datePaiement = $params['paiement']['datePaiement'];
-        $responsableId = $params['paiement']['responsableId'];
-        $reference = $params['paiement']['reference'];
         $table_paiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-        $params['paiement']['paiementId'] = $table_paiements->getPaiementId(
-            $responsableId, $datePaiement, $reference);
-        // La référence paiementId doit être définie avant la création de l'objectData
-        $objectData_paiement = $this->db_manager->get('Sbm\Db\ObjectData\Paiement');
-        $objectData_paiement->exchangeArray($params['paiement']);
-        // enregistrement du paiement
-        try {
-            $table_paiements->saveRecord($objectData_paiement);
-        } catch (\Exception $e) {
-            $this->log(Logger::CRIT, 'Impossible d\'enregistrer le paiement', $params);
+        foreach ($params['paiement'] as $paiement) {
+            if ($params['type'] == 'CREDIT') {
+                $paiement['montant'] *= - .01;
+            } else {
+                $paiement['montant'] *= .01;
+            }
+            $datePaiement = $paiement['datePaiement'];
+            $responsableId = $paiement['responsableId'];
+            $reference = $paiement['reference'];
+
+            $paiement['paiementId'] = $table_paiements->getPaiementId(
+                $responsableId, $datePaiement, $reference);
+            // La référence paiementId doit être définie avant la création de l'objectData
+            $objectData_paiement = $this->db_manager->get('Sbm\Db\ObjectData\Paiement');
+            $objectData_paiement->exchangeArray($paiement);
+            // enregistrement du paiement
+            try {
+                $table_paiements->saveRecord($objectData_paiement);
+            } catch (\Exception $e) {
+                $this->log(Logger::CRIT, 'Impossible d\'enregistrer le paiement', $paiement);
+            }
         }
     }
 }

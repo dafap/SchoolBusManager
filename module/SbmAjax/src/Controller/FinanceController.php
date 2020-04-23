@@ -22,6 +22,42 @@ class FinanceController extends AbstractActionController
 
     const ROUTE = 'sbmajaxfinance';
 
+    public function checkselectionplateformeAction()
+    {
+        try {
+            $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
+            $tableId = $this->params($table->getIdName());
+            $table->setSelection($tableId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    public function uncheckselectionplateformeAction()
+    {
+        try {
+            $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
+            $tableId = $this->params($table->getIdName());
+            $table->setSelection($tableId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
     /**
      * ajax - cocher la case paiement de scolarites à condition que le montant déjà payé
      * soit suffisant pour couvrir la somme due.

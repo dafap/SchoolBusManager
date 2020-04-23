@@ -67,19 +67,27 @@ class ScolariteOK extends AbstractListener implements ListenerAggregateInterface
     public function onScolariteOK(Event $e)
     {
         $params = $e->getParams();
-        // indicateur utiliser pour la mise à jour du champ `paiementR1` de la table
+        // indicateur utiliser pour la mise à jour du champ `paiementRx` de la table
         // `scolarites`
         $indicateur = $params['type'] == 'CREDIT' ? 0 : 1;
-
+        $table_eleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
         $table_scolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $objectData_scolarite = $this->db_manager->get('Sbm\Db\ObjectData\Scolarite');
         foreach ($params['eleveIds'] as $eleveId) {
+            try {
+            $eleve = $table_eleves->getRecord($eleveId);
+            $rx = $eleve->responsable1Id == $params['responsableId'] ? 1 : 2;
+            } catch (\Exception $e){
+                $msg = sprintf('Eleve n° %d introuvable.', $eleveId);
+                $this->log(Logger::CRIT, $msg, $params);
+                continue;
+            }
             try {
                 $objectData_scolarite->exchangeArray(
                     [
                         'millesime' => $params['millesime'],
                         'eleveId' => $eleveId,
-                        'paiementR1' => $indicateur
+                        "paiementR$rx" => $indicateur
                     ]);
                 $table_scolarites->updateRecord($objectData_scolarite);
             } catch (\Exception $e) {
