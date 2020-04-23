@@ -535,8 +535,41 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     protected function validPaiement()
     {
-        $ok = $this->data->offsetExists('auto') && $this->data->get('erreur') == '00000';
+        if ($this->data->offsetExists('auto') && $this->data->get('erreur') == '00000') {
+            $ok = true;
+            $this->enregistrePaybox();
+        } else {
+            $ok = false;
+        }
         return $ok;
+    }
+
+    protected function enregistrePaybox()
+    {
+        $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        $array = [
+            'responsableId'=>$this->getFromRefDet('responsableId'),
+            'exercice'=>$this->getFromRefDet('exercice'),
+            'numero'=>$this->getFromRefDet('numero'),
+            'auto'=>$this->data->get('auto'),
+            'montant'=>$this->data->get('montant'),
+            'ref'=>$this->data->get('ref'),
+            'idtrans'=>$this->data->get('idtrans'),
+            'datetrans'=>$this->data->get('datetrans'),
+            'heuretrans'=>$this->data->get('heuretrans'),
+            'carte'=>$this->data->get('carte'),
+            'bin6'=>$this->data->get('bin6'),
+            'bin2'=>$this->data->get('bin2'),
+            'pays'=>$this->data->get('pays'),
+            'ip'=>$this->data->get('ip'),
+        ];
+        $obj = $table->getObjData();
+        $obj->exchangeArray($array);
+        try {
+            $table->saveRecord($obj);
+        } catch(\Exception $e){
+            $this->logError(Logger::CRIT, $e->getMessage());
+        }
     }
 
     /**
@@ -623,9 +656,11 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         $rowset = $tAppels->fetchAll([
             'refdet' => $this->data['ref']
         ]);
+        // récupère les eleveId et coche les fiches de la table appels
         foreach ($rowset as $row) {
             $this->scolarite['eleveIds'][] = $row->eleveId;
         }
+        $tAppels->markNotified($row->idOp); // tous à la fois
     }
 
     /**
