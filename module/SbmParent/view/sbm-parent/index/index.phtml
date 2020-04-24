@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2020
+ * @date 24 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -670,14 +670,16 @@ $url_facture = $this->url('sbmdocument', [
 				<legend>Paiements enregistr&eacute;s</legend>
 				<table class="parent paiement">
 					<tbody>
-						<tr>
+						<tr class="petit">
 							<th>Date du paiement</th>
+							<th>Date de valeur</th>
 							<th>Moyen de paiement</th>
 							<th>Montant</th>
 						</tr>
             <?php foreach ($this->paiements as $row) :?>
-            			<tr>
+            			<tr class="petit">
 							<td><?=DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
+							<td><?=DateLib::formatDateTimeFromMysql($row->dateValeur);?></td>
 							<td><?=$row->modeDePaiement;?></td>
 							<td class="align-right"><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
 						</tr>
@@ -693,13 +695,13 @@ $url_facture = $this->url('sbmdocument', [
 				<legend>Factures &eacute;mises</legend>
 				<table class="parent factures">
 					<tbody>
-						<tr>
+						<tr class="petit">
 							<th>Num&eacute;ro</th>
 							<th>Date</th>
 							<th>Montant</th>
 						</tr>
             <?php foreach ($this->factures as $row) :?>
-            			<tr>
+            			<tr class="petit">
 							<td><?=$row->numero;?></td>
 							<td><?=DateLib::formatDateFromMysql($row->date);?></td>
 							<td class="align-right"><?=$fmt->formatCurrency($row->montant, 'EUR');?></td>
