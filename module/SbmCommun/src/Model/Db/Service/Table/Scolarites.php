@@ -150,7 +150,7 @@ class Scolarites extends AbstractSbmTable
         }
         $update = $this->table_gateway->getSql()->update();
         $update->set([
-            'paiement' . $r => $paiement ? 1 : 0
+            'paiementR' . $r => $paiement ? 1 : 0
         ])->where($where);
         return $this->table_gateway->updateWith($update);
     }
