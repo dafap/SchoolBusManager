@@ -9,7 +9,7 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2020
+ * @date 24 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -350,10 +350,19 @@ class Resultats implements ResultatsInterface
     {
         if ($r) {
             $key = $r == 1 ? self::MONTANT_ABONNEMENTS_R1 : self::MONTANT_ABONNEMENTS_R2;
-            return $this->abonnements[$nature][$key];
+            return StdLib::getParamR([
+                $nature,
+                $key
+            ], $this->abonnements, 0);
         } else {
-            return $this->abonnements[$nature][self::MONTANT_ABONNEMENTS_R1] +
-                $this->abonnements[$nature][self::MONTANT_ABONNEMENTS_R2];
+            return StdLib::getParamR([
+                $nature,
+                self::MONTANT_ABONNEMENTS_R1
+            ], $this->abonnements, 0) +
+                StdLib::getParamR([
+                    $nature,
+                    self::MONTANT_ABONNEMENTS_R2
+                ], $this->abonnements, 0);
         }
     }
 

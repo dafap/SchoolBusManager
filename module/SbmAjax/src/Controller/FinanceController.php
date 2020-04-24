@@ -9,7 +9,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 24 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -363,6 +363,7 @@ class FinanceController extends AbstractActionController
                 'nom' => $row['nom'],
                 'prenom' => $row['prenom'],
                 'grilleTarif' => $row['grilleTarif'],
+                'reduction' => $row['reduction'] ? 'Réduit' : 'Normal',
                 'duplicata' => $row['duplicata']
             ];
         }
@@ -400,9 +401,9 @@ class FinanceController extends AbstractActionController
         return $this->getResponse()->setContent(
             Json::encode(
                 [
-                    'total' => $resultat->getMontantTotal('liste'),
+                    'total' => $resultat->getMontantTotal(0, 'liste'),
                     'paye' => $resultat->getPaiementsMontant(),
-                    'solde' => $resultat->getSolde('liste'),
+                    'solde' => $resultat->getSolde(0, 'liste'),
                     'success' => 1
                 ]));
     }

@@ -12,16 +12,16 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 24 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
 // Les montants de la facture (avant l'initialisation du JavaScript)
-$montantDuplicatas = $this->resultats->getMontantDuplicatas('tous');
-$montantAbonnements = $this->resultats->getAbonnementsMontant('tous');
-$aboInscrits = $this->resultats->getAbonnementsMontant('inscrits');
-$montantTotal = $this->resultats->getMontantTotal('tous');
+$montantDuplicatas = $this->resultats->getMontantDuplicatas(0, 'tous');
+$montantAbonnements = $this->resultats->getAbonnementsMontant(0, 'tous');
+$aboInscrits = $this->resultats->getAbonnementsMontant(0, 'inscrits');
+$montantTotal = $this->resultats->getMontantTotal(0, 'tous');
 $dejaPaye = $this->resultats->getPaiementsMontant();
 // styles css et scripts
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -142,14 +142,14 @@ $actions = [
 					<tbody id="tbody-grille">
 						<tr>
 							<th>Tarif</th>
-							<th>Nombre</th>
+							<th>Nature</th>
 							<th>Montant</th>
 						</tr>
-					<?php foreach($this->resultats->getAbonnementsDetail('tous') as $row):?>
+					<?php foreach($this->resultats->getAbonnementsDetail() as $row):?>
 					<tr>
-							<td><?=$row['grille'];?></td>
-							<td><?=$row['quantite'];?></td>
-							<td><span class="formatEuro"><?=$row['montant'];?></span></td>
+							<td><?=$row->getGrille();?></td>
+							<td><?=$row->getReduit() ? 'Réduit' : 'Normal';?></td>
+							<td><span class="formatEuro"><?=$row->getMontant();?></span></td>
 						</tr>
 					<?php endforeach;?>
 				</tbody>
@@ -168,7 +168,7 @@ $actions = [
 							<th>Abonnement<br>payé
 							</th>
 						</tr>
-	            <?php foreach ($this->resultats->getListeEleves('tous') as $eleveId => $enfant) : ?>
+	            <?php foreach ($this->resultats->getListeEleves() as $eleveId => $enfant) : ?>
 	            <?php
                 // $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $eleveId);
                 // $jsCallback .= sprintf("$modele\n", $eleveId, $eleveId);
@@ -177,12 +177,12 @@ $actions = [
 							<td><?= $this->escapeHtml($enfant['nom']);?></td>
 							<td><?= $this->escapeHtml($enfant['prenom']);?></td>
 							<td>
-								<?= $enfant['grilleTarifR1'];?>
-								<?= $this->reductionTarif($enfant['reductionR1']);?></td>
+								<?= $enfant['grilleTarif'];?>
+								<?= $this->reductionTarif($enfant['reduction']);?></td>
 							<td>
-						<?= $enfant['duplicataR1'];?></td>
+						<?= $enfant['duplicata'];?></td>
 							<td>
-							<?php if (!$enfant['fa'] && !$enfant['gratuit']):?>
+							<?php if (!$enfant['gratuit']):?>
 							<?= $this->renderCheckbox('paiement', 'chk', $eleveId, $enfant['paiement']);?>
 							<?php endif;?>
 							</td>

@@ -87,7 +87,7 @@ class ElevesScolarites extends AbstractQuery
                 'subventionR2' => 'subventionR2',
                 'demandeR1' => 'demandeR1',
                 'demandeR2' => 'demandeR2',
-                'dateDemandeR2'=>'dateDemandeR2',
+                'dateDemandeR2' => 'dateDemandeR2',
                 'stationIdR1' => 'stationIdR1',
                 'stationIdR2' => 'stationIdR2',
                 'accordR1' => 'accordR1',
@@ -262,22 +262,64 @@ class ElevesScolarites extends AbstractQuery
             ]);
         $resultset = $this->renderResult($select->where($elevesInscrits()));
         foreach ($resultset as $row) {
-            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite'], $this->millesime);
+            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite'],
+                $this->millesime);
         }
         return $montant;
     }
 
-    public function getElevesPreinscritsWithGrille($responsableId)
+    /**
+     * VERSION SAVOIE : ALBERTVILLE On prend [les préinscrits R1] UNION [les préinscrits
+     * R2] et on renvoie le résultat de la requête avec, pour colonnes, eleveId, nom,
+     * prenom, grilleTarif, reduction, duplicata (où grilleTarif est en clair)
+     *
+     * @param int $responsableId
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getElevesPreinscritsWithGrille(int $responsableId)
     {
-        $select = clone $this->select;
-        $where = new Where(null, Where::COMBINED_BY_OR);
-        $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
-            $responsableId);
+        $select1 = $this->selectElevesPreinscritsWithGrille(1, $responsableId);
+        $select2 = $this->selectElevesPreinscritsWithGrille(2, $responsableId);
+        $select1->combine($select2);
+        $this->addStrategy('grilleTarif',
+            $this->db_manager->get('Sbm\Db\Table\Tarifs')
+                ->getStrategie('grille'));
+        return $this->renderResult($select1);
+    }
+
+    /**
+     * VERSION SAVOIE : ALBERTVILLE
+     *
+     * @param int $rx
+     * @param int $responsableId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectElevesPreinscritsWithGrille(int $rx, int $responsableId)
+    {
+        $where = new Where();
+        $where->equalTo('responsable' . $rx . 'Id', $responsableId);
         $predicate = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
             [
                 $where
             ]);
-        return $this->renderResult($select->where($predicate()));
+        return $this->sql->select()
+            ->columns([
+            'eleveId',
+            'nom',
+            'prenom'
+        ])
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId = sco.eleveId',
+            [
+                'grilleTarif' => 'grilleTarifR' . $rx,
+                'reduction' => 'reductionR' . $rx,
+                'duplicata' => 'duplicataR' . $rx
+            ])
+            ->where($predicate($rx));
     }
 
     public function getElevesPreinscritsWithMontant($responsableId)
