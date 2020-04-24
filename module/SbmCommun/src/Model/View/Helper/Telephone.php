@@ -21,7 +21,7 @@ use Zend\View\Helper\AbstractHelper;
 class Telephone extends AbstractHelper
 {
 
-    public function __invoke($data)
+    public function __invoke($data, $sep = ' ')
     {
         if (is_null($data)) {
             return '';
@@ -35,7 +35,7 @@ class Telephone extends AbstractHelper
         if (substr($data, 0, 1) == '+') {
             return $data;
         }
-        $render = implode(' ', str_split($data, 2));
+        $render = implode($sep, str_split($data, 2));
         if ($count) {
             $render = '(+33) ' . ltrim($render, '0');
         }
