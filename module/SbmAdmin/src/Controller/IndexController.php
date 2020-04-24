@@ -1440,6 +1440,7 @@ class IndexController extends AbstractActionController
             $message = sprintf('Compte créé le %s par %s %s', DateLib::today(),
                 $identity['nom'], $identity['prenom']);
             $compteur = 0;
+            set_time_limit(0);
             foreach ($creation->getResponsablesSansCompte() as $responsable) {
                 $oUser->exchangeArray(
                     [

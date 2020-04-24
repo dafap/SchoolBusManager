@@ -7,8 +7,8 @@
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2018
- * @version 2019-2.5.0
+ * @date 20 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmBase\Model;
 
@@ -16,9 +16,9 @@ abstract class StdLib
 {
 
     /**
-     * Renvoie le nom complet de l'entité (table ou view sql)
-     * - s'il y a un préfixe, il va être appliqué
-     * - puis le nom des tables est préfixé par `t_` et le nom des vues par `v_`
+     * Renvoie le nom complet de l'entité (table ou view sql) - s'il y a un préfixe, il va
+     * être appliqué - puis le nom des tables est préfixé par `t_` et le nom des vues par
+     * `v_`
      *
      * @param string $entityName
      * @param string $entityType
@@ -33,22 +33,23 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie true si toutes les clés contenues dans le tableau $keys existent de façon emboitée
-     * dans $search.
-     * (cad si $keys possède n élements, $search[$key1][$key2]...[$keyn] est défini)
-     * Renvoie false si $search n'est pas un tableau ou si une clé n'existe pas au rang prévu.
+     * Renvoie true si toutes les clés contenues dans le tableau $keys existent de façon
+     * emboitée dans $search. (cad si $keys possède n élements,
+     * $search[$key1][$key2]...[$keyn] est défini) Renvoie false si $search n'est pas un
+     * tableau ou si une clé n'existe pas au rang prévu.
      *
      * @param array $keys
      * @param array $search
-     * 
+     *
      * @return boolean
-     * 
+     *
      * @throws \SbmBase\Model\Exception\InvalidArgumentException
      */
     public static function array_keys_exists($keys, $search)
     {
         if (! is_array($keys)) {
-            throw new Exception\InvalidArgumentException('Argument invalide pour le tableau $keys.');
+            throw new Exception\InvalidArgumentException(
+                'Argument invalide pour le tableau $keys.');
         }
         $s = $search;
         foreach ($keys as $key) {
@@ -66,13 +67,13 @@ abstract class StdLib
     }
 
     /**
-     * Reçoit un tableau multidimensionnel et renvoie un objet.
-     * Pour les tableaux ayant des clés numériques :
+     * Reçoit un tableau multidimensionnel et renvoie un objet. Pour les tableaux ayant
+     * des clés numériques :
      *
      * @see http://stackoverflow.com/questions/10333016/how-to-access-object-properties-with-names-like-integers
      *
      * @param array|mixed $array
-     * 
+     *
      * @return \stdClass|mixed
      */
     public static function arrayToObject($array)
@@ -96,8 +97,8 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie la valeur associée à l'index dans le tableau.
-     * La valeur renvoyée peut être de tout type.
+     * Renvoie la valeur associée à l'index dans le tableau. La valeur renvoyée peut être
+     * de tout type.
      *
      * @param string|int $index
      * @param array $array
@@ -170,9 +171,8 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence
-     * de fichiers antérieure à $dir.
-     * Renvoie false si le $path n'est pas trouvé.
+     * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence de
+     * fichiers antérieure à $dir. Renvoie false si le $path n'est pas trouvé.
      *
      * @param string $dir
      * @param string $path
@@ -193,10 +193,10 @@ abstract class StdLib
     }
 
     /**
-     * Si $file commence par un double-slash, c'est une adresse absolue.
-     * La renvoyer sans concaténer.
-     * Sinon, concaténer le $path et le $file en vérifiant les séparateurs de chemin.
-     * Dans le résultat, le séparateur est / quels que soient ceux utilisés dans $path ou $file.
+     * Si $file commence par un double-slash, c'est une adresse absolue. La renvoyer sans
+     * concaténer. Sinon, concaténer le $path et le $file en vérifiant les séparateurs de
+     * chemin. Dans le résultat, le séparateur est / quels que soient ceux utilisés dans
+     * $path ou $file.
      *
      * @see http://php.net/manual/fr/regexp.reference.escape.php
      *
@@ -204,7 +204,7 @@ abstract class StdLib
      * @param string $file
      *
      * @throws \SbmBase\Model\Exception\InvalidArgumentException
-     * 
+     *
      * @return string
      */
     public static function concatPath($path, $file)
@@ -228,11 +228,11 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie la valeur $val si ce n'est pas une chaine.
-     * Evalue la chaine si c'est une valeur numérique
-     * Evalue la chaine si c'est une valeur booléenne (true|false, vrai|faux, yes|no, oui|non)
-     * Renvoie la chaine encadrée par des simples quotes, en échappant les apostrophes
-     * présentes si nécessaire et en supprimant les espaces de début et de fin.
+     * Renvoie la valeur $val si ce n'est pas une chaine. Evalue la chaine si c'est une
+     * valeur numérique Evalue la chaine si c'est une valeur booléenne (true|false,
+     * vrai|faux, yes|no, oui|non) Renvoie la chaine encadrée par des simples quotes, en
+     * échappant les apostrophes présentes si nécessaire et en supprimant les espaces de
+     * début et de fin.
      *
      * @param mixed $val
      *
@@ -268,17 +268,14 @@ abstract class StdLib
 
     /**
      * Renvoie un tableau associatif à partir d'une chaine qui décrit le tableau de la
-     * façon suivante :
-     * clé1 => valeur1, clé2 => valeur2, etc.
-     * Attention :
-     * clé1, clé2, clé3 ... sont numériques, booléen ou string
-     * valeur1, valeur2, valeur3 ... sont numériques ou string
-     * Il n'est pas nécessaire d'encadrer les chaines par des guillemets ou des apostrophes ;
-     * ce sera fait par la méthode
-     * Le séparateur de lignes du tableau est la virgule
+     * façon suivante : clé1 => valeur1, clé2 => valeur2, etc. Attention : clé1, clé2,
+     * clé3 ... sont numériques, booléen ou string valeur1, valeur2, valeur3 ... sont
+     * numériques ou string Il n'est pas nécessaire d'encadrer les chaines par des
+     * guillemets ou des apostrophes ; ce sera fait par la méthode Le séparateur de lignes
+     * du tableau est la virgule
      *
      * @param string $str
-     * 
+     *
      * @throws \SbmBase\Model\Exception\InvalidArgumentException
      *
      * @return array
@@ -289,7 +286,8 @@ abstract class StdLib
             throw new Exception\InvalidArgumentException(
                 'Le paramètre doit être une chaine de caractère ou un nombre ou null.');
         }
-        // on analyse la chaine reçue et on la formate correctement, avec quotes et échappement
+        // on analyse la chaine reçue et on la formate correctement, avec quotes et
+        // échappement
         $trows = explode(',', $str); // tableau de lignes
         foreach ($trows as &$row) {
             $tkeyvalue = explode('=>', $row);
@@ -313,9 +311,9 @@ abstract class StdLib
      *
      * @param mixed $data
      * @param array $array
-     * 
-     * @throws \SbmBase\Model\Exception\InvalidArgumentException (lancée par la méthode traduire)
-     * 
+     *
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException (lancée par la méthode
+     *         traduire)
      * @return mixed
      */
     public static function translateData($data, $array)
@@ -343,27 +341,24 @@ abstract class StdLib
     }
 
     /**
-     * Construit un data formaté par sprintf en tenant compte du type de donnée
-     * (digit, float, string) de la precision et de la completion.
+     * Construit un data formaté par sprintf en tenant compte du type de donnée (digit,
+     * float, string) de la precision et de la completion.
      *
      * @param number|string|null $data
-     *            Si $data est une chaine de digits alors elle est converti en float.
-     *            null est considérée comme une chaine vide.
+     *            Si $data est une chaine de digits alors elle est converti en float. null
+     *            est considérée comme une chaine vide.
      * @param int $precision
-     *            Ignoré si $data est un entier
-     *            Indique le nombre de décimales si $data est un décimal ou
-     *            une chaine de digits
-     *            Indique une troncature de la chaine $data sinon. Par exemple :
-     *            formatData('un bel exemple', 4, 9) donnera ' un b' (largeur 9 caractères).
-     *            Mettre un nombre négatif pour pas de troncature.
+     *            Ignoré si $data est un entier Indique le nombre de décimales si $data
+     *            est un décimal ou une chaine de digits Indique une troncature de la
+     *            chaine $data sinon. Par exemple : formatData('un bel exemple', 4, 9)
+     *            donnera ' un b' (largeur 9 caractères). Mettre un nombre négatif pour
+     *            pas de troncature.
      * @param int|string(0-9) $completion
-     *            Indique la largeur minimale de la chaine
-     *            Si c'est un entier, completion à gauche par un espace
-     *            Si c'est une chaine de chiffres commençant par 0, le caractère de complétion est
-     *            0
-     *            
+     *            Indique la largeur minimale de la chaine Si c'est un entier, completion
+     *            à gauche par un espace Si c'est une chaine de chiffres commençant par 0,
+     *            le caractère de complétion est 0
      * @throws \SbmBase\Model\Exception\InvalidArgumentException
-     * 
+     *
      * @return number|string
      */
     public static function formatData($data, $precision, $completion)
@@ -398,21 +393,53 @@ abstract class StdLib
     }
 
     /**
-     * Indique si un tableau est indexé (sinon, il est associatif).
-     * Dans le cas de tableaux emboités on ne regarde que le premier niveau.
+     * Indique si un tableau est indexé (sinon, il est associatif). Dans le cas de
+     * tableaux emboités on ne regarde que le premier niveau.
      *
      * @param array $array
-     * 
+     *
      * @throws \SbmBase\Model\Exception\InvalidArgumentException
-     * 
+     *
      * @return boolean
      */
     public static function isIndexedArray($array)
     {
         if (! is_array($array)) {
-            throw new Exception\InvalidArgumentException('Le paramètre doit être un tableau.');
+            throw new Exception\InvalidArgumentException(
+                'Le paramètre doit être un tableau.');
         }
         $keys = array_keys($array);
         return array_keys($keys) == array_values($keys);
+    }
+
+    /**
+     * Reçoit une chaine de caractères et renvoie la donnée au format d'un numéro de
+     * téléphone si possible
+     *
+     * @param int|string|null $data
+     * @param string $sep
+     * @throws \SbmBase\Model\Exception\InvalidArgumentException
+     * @return string|mixed
+     */
+    public static function formatTelephone($data, $sep = ' ')
+    {
+        if (is_null($data)) {
+            return '';
+        } elseif (is_int($data)) {
+            $data = (string) $data;
+        } elseif (! is_string($data)) {
+            throw new \SbmBase\Model\Exception\InvalidArgumentException(
+                'Un numéro de téléphone est attendu.');
+        }
+        $count = 0;
+        $data = str_replace('+33', '0', $data, $count);
+        if (substr($data, 0, 1) == '+') {
+            return $data;
+        }
+        $render = implode($sep, str_split($data, 2));
+        if ($count) {
+            $render = '(+33) ' . ltrim($render, '0');
+        }
+        return $render;
     }
 }

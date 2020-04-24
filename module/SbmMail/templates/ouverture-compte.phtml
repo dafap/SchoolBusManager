@@ -7,28 +7,33 @@
  * @filesource ouverture-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 24 avr. 2020
+ * @version 2020-2.6.0
  */
+use SbmBase\Model\StdLib;
+use SbmBase\Model\Session;
+
+$dateenvoi = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')->format(
+    'd/m/Y');
 ?>
 <p>Bonjour <?= $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
-<p>Vous avez demandé l'inscription de vos enfants au service des
-	transports de la <?= $this->client['name'];?>.</p>
-
+<p>Bienvenue au réseau TRA MOBILITÉ.</p>
 <p>
-	A partir de maintenant, vous pouvez suivre l'évolution du traitement de
-	votre demande et contrôler les informations qui vous concernent en vous
-	connectant au site de la communauté de communes par le lien suivant :<br>
+	Votre ou vos enfants ont besoin d'un PASS ANNUEL JUNIOR. Dorénavant,
+	vous pouvez formuler vos demandes, suivre l'évolution de leur
+	traitement et contrôler les informations qui vous concernent en vous
+	connectant au site du réseau TRA MOBILITÉ par le lien suivant :<br>
     <?= $this->url_confirme;?></p>
-
-<p>Le circuits sur lesquels vos enfants sont affectés et les horaires
-	seront publiés durant la dernière semaine d'août.</p>
-
-<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le
-	puis collez le dans la barre d'adresse de votre navigateur.</p>
+<ul>
+	<li style='list-style-type: "\00261B";'>Si ce lien n'est pas actif dans
+		votre messagerie mail, copiez-le puis collez-le dans la barre URL de
+		votre navigateur.</li>
+	<li style='list-style-type: "\00261B";'>Les circuits sur lesquels vos
+		enfants sont affectés et leurs horaires seront publiés à partir du <?=$dateenvoi;?>.</li>
+</ul>
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
-	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> - 
+	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> -
 	<?= $this->client['code_postal'];?> <?= $this->client['commune'];?>
-	<br>Tél. <?= $this->client['telephone'];?> - Email: <?= $this->client['email'];?>
+	<br>Tél. <?= StdLib::formatTelephone($this->client['telephone'], '.');?> - Email: <?= $this->client['email'];?>
 </div>

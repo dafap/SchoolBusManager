@@ -11,34 +11,19 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 24 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
+use SbmBase\Model\StdLib;
 
 class Telephone extends AbstractHelper
 {
 
     public function __invoke($data, $sep = ' ')
     {
-        if (is_null($data)) {
-            return '';
-        } elseif (is_int($data)) {
-            $data = (string) $data;
-        } elseif (! is_string($data)) {
-            throw new InvalidArgumentException('Un numéro de téléphone est attendu.');
-        }
-        $count = 0;
-        $data = str_replace('+33', '0', $data, $count);
-        if (substr($data, 0, 1) == '+') {
-            return $data;
-        }
-        $render = implode($sep, str_split($data, 2));
-        if ($count) {
-            $render = '(+33) ' . ltrim($render, '0');
-        }
-        return $render;
+        return StdLib::formatTelephone($data, $sep);
     }
 }

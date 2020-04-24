@@ -7,38 +7,44 @@
  * @filesource nouveau-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 24 avr. 2020
+ * @version 2020-2.6.0
  */
+use SbmBase\Model\StdLib;
 ?>
 <p>Bonjour <?= $this->titre . ' ' . $this->prenom . ' ' . $this->nom;?>,</p>
-<p>Bienvenue au service des transports de la <?= $this->client['name'];?>.</p>
-
+<p>Bienvenue au réseau TRA MOBILITÉ.</p>
 <p>
 	Pour éviter la création non autorisée d'un compte en votre nom, nous
 	avons mis en place un dispositif nécessitant votre validation.<br> Si
 	vous n'avez pas demandé à ouvrir ce compte, nous vous recommandons de
 	suivre les instructions pour l'annuler.
 </p>
-
-<p>
-	<b>CONFIRMER LE COMPTE</b><br> Pour confirmer cette demande d'ouverture
-	de compte, suivez le lien suivant :<br>
-    <?= $this->url_confirme;?></p>
-<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le
-	puis collez le dans la barre d'adresse de votre navigateur.</p>
-
+<div style="border: 1px solid black; padding-left: 4px;">
+	<p>
+		<b>CONFIRMER LE COMPTE</b><br> Pour confirmer cette demande
+		d'ouverture de compte, suivez le lien suivant :<br>
+    	<?= $this->url_confirme;?></p>
+	<ul>
+		<li style='list-style-type: "\00261B";'>Si ce lien n'est pas actif
+			dans votre messagerie mail, copiez-le puis collez-le dans la barre
+			URL de votre navigateur.</li>
+	</ul>
+</div>
 <p>
 	<b>ANNULER LE COMPTE</b><br> Si vous n'avez pas demandé l'ouverture de
 	ce compte avec cette adresse de messagerie et si vous souhaitez annuler
 	cette demande, suivez le lien suivant :<br>
     <?= $this->url_annule;?></p>
-<p>Si ce lien n'est pas actif dans vote logiciel de courrier, copiez le
-	puis collez le dans la barre d'adresse de votre navigateur.</p>
+<ul>
+	<li style='list-style-type: "\00261B";'>Si ce lien n'est pas actif dans
+		votre messagerie mail, copiez-le puis collez-le dans la barre URL de
+		votre navigateur.</li>
+</ul>
 
 <p>En cas d'anomalie, merci de bien vouloir prévenir le service.</p>
 <div style="text-align: center;">
-	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> - 
+	<b><?= $this->client['name'];?></b> <br><?= implode(' - ', $this->client['adresse']);?> -
 	<?= $this->client['code_postal'];?> <?= $this->client['commune'];?>
-	<br>Tél. <?= $this->client['telephone'];?> - Email: <?= $this->client['email'];?>
+	<br>Tél. <?= StdLib::formatTelephone($this->client['telephone'], '.');?> - Email: <?= $this->client['email'];?>
 </div>

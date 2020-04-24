@@ -6,14 +6,14 @@
  * Ce modèle doit recevoir les variables suivantes :
  * - services : tableau des serviceId sur lesquels il y a des modifications
  * - url_portail : url du portail des transporteurs
- * 
+ *
  * @project sbm
  * @package SbmMail/template
  * @filesource avertissement-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 24 avr. 2020
+ * @version 2020-2.6.0
  */
 if (count($this->services) == 1) {
     $lescircuits = 'le circuit suivant';
@@ -21,6 +21,7 @@ if (count($this->services) == 1) {
     $lescircuits = 'les circuits suivants';
 }
 ?>
+<p>Bienvenue au réseau TRA MOBILITÉ.</p>
 <p>Des modifications ont été enregistrées dans les inscriptions des
 	enfants inscrits sur <?= $lescircuits;?> :</p>
 <ul>
