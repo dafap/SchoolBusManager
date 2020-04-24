@@ -20,5 +20,5 @@ return sprintf($format,
     /*2*/ implode(', ', $this->client['adresse']),
     /*3*/ $this->client['code_postal'],
     /*4*/ $this->client['commune'],
-    /*5*/ $this->telephone($this->client['telephone']),
+    /*5*/ $this->telephone($this->client['telephone'], '.'),
     /*6*/ $this->client['email']);
