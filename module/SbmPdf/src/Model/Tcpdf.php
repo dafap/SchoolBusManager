@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2019
- * @version 2019-2.5.4
+ * @date 27 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
 
@@ -2931,9 +2931,11 @@ class Tcpdf extends \TCPDF
             'args' => $this->getParam('args', null)
         ]);
         $saut_de_page = false;
+        $this->templateDocBodyMethod7Object(new LogoFacture());
         foreach ($this->getData() as $value) {
             if ($saut_de_page) {
                 $this->AddPage();
+                $this->templateDocBodyMethod7Object(new LogoFacture());
             }
             $layout->setVariable('data', $value);
             $codeHtml = $viewRender->render($layout);
@@ -2942,6 +2944,57 @@ class Tcpdf extends \TCPDF
             $this->writeHTML($codeHtml, true, false, false, false, '');
             $saut_de_page = true;
         }
+    }
+
+    private function templateDocBodyMethod7Object($object)
+    {
+        $current_font_family = $this->getFontFamily();
+        $current_font_style = $this->getFontStyle();
+        $current_font_size = $this->getFontSizePt();
+        $current_text_color = $this->TextColor;
+        $current_fill_color = $this->FillColor;
+        $current_draw_color = $this->DrawColor;
+        $current_color_flag = $this->ColorFlag;
+        $current_fgcolor = $this->fgcolor;
+        $current_bgcolor = $this->bgcolor;
+        $x_origine = $this->x;
+        $y_origine = $this->y;
+        $object($this);
+        $this->SetXY($x_origine, $y_origine);
+        $this->SetFont($current_font_family, $current_font_style, $current_font_size);
+        $this->DrawColor = $current_draw_color;
+        $this->FillColor = $current_fill_color;
+        $this->TextColor = $current_text_color;
+        $this->ColorFlag = $current_color_flag;
+        $this->bgcolor = $current_bgcolor;
+        $this->fgcolor = $current_fgcolor;
+    }
+
+    public function templateFooterMethod7($param = null)
+    {
+        if (is_string($param) && $param == '?')
+            return 'Pied de page pour les factures';
+
+        $current_font_family = $this->getFontFamily();
+        $current_font_style = $this->getFontStyle();
+        $current_font_size = $this->getFontSizePt();
+        $current_text_color = $this->TextColor;
+        $current_fill_color = $this->FillColor;
+        $current_draw_color = $this->DrawColor;
+        $current_color_flag = $this->ColorFlag;
+        $current_fgcolor = $this->fgcolor;
+        $current_bgcolor = $this->bgcolor;
+        $x_origine = $this->x;
+        $y_origine = $this->y;
+        (new PiedFacture())($this);
+        $this->SetXY($x_origine, $y_origine);
+        $this->SetFont($current_font_family, $current_font_style, $current_font_size);
+        $this->DrawColor = $current_draw_color;
+        $this->FillColor = $current_fill_color;
+        $this->TextColor = $current_text_color;
+        $this->ColorFlag = $current_color_flag;
+        $this->bgcolor = $current_bgcolor;
+        $this->fgcolor = $current_fgcolor;
     }
 
     // =======================================================================================================

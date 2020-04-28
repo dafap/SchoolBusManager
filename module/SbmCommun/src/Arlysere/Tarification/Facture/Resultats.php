@@ -9,7 +9,7 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2020
+ * @date 27 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -139,15 +139,14 @@ class Resultats implements ResultatsInterface
                     $key
                 ], $this->enfants, []);
             } else {
-                return array_merge(
-                    StdLib::getParamR([
-                        $nature,
-                        self::ENFANTS_R1
-                    ], $this->enfants, []),
+                return StdLib::getParamR([
+                    $nature,
+                    self::ENFANTS_R1
+                ], $this->enfants, []) +
                     StdLib::getParamR([
                         $nature,
                         self::ENFANTS_R2
-                    ], $this->enfants, []));
+                    ], $this->enfants, []);
             }
         }
         throw new \SbmCommun\Arlysere\Exception\OutOfBoundsException(
@@ -396,8 +395,8 @@ class Resultats implements ResultatsInterface
             $key = $r == 1 ? self::DETAIL_ABONNEMENTS_R1 : self::DETAIL_ABONNEMENTS_R2;
             return $this->abonnements[$nature][$key];
         } else {
-            return array_merge($this->abonnements[$nature][self::DETAIL_ABONNEMENTS_R1],
-                $this->abonnements[$nature][self::DETAIL_ABONNEMENTS_R2]);
+            return $this->abonnements[$nature][self::DETAIL_ABONNEMENTS_R1] +
+                $this->abonnements[$nature][self::DETAIL_ABONNEMENTS_R2];
         }
     }
 

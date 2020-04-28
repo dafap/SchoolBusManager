@@ -15,7 +15,7 @@
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2020
+ * @date 27 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -79,7 +79,6 @@ class Facture implements FactoryInterface, FactureInterface
     {
         $this->db_manager = $serviceLocator;
         $this->tFactures = $this->db_manager->get('Sbm\Db\Table\Factures');
-        $this->resultats = null;
         $this->montantDejaFacture = 0;
         $this->facturesPrecedentes = [];
         $this->_nouveau_numero = 0;
@@ -310,7 +309,7 @@ class Facture implements FactoryInterface, FactureInterface
                 'montant' => $this->getResultats()->getMontantTotal() -
                 $this->getMontantDejaFacture(),
                 'signature' => $this->getResultats()->signature(),
-                'content' => serialize($this->resultats)
+                'content' => serialize($this->getResultats())
             ]);
         if ($this->oFacture->montant) {
             $this->tFactures->saveRecord($this->oFacture);

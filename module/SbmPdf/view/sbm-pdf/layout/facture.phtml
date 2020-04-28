@@ -11,12 +11,180 @@
  * @filesource facture.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 28 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 
+class Produit
+{
+
+    private $obj;
+
+    private $quantite;
+
+    private $montant;
+
+    public function __construct($data)
+    {
+        $this->obj = $data;
+        $this->quantite = 1;
+        $this->montant = $data->getMontant();
+    }
+
+    public function add($data)
+    {
+        $this->montant += $data->getMontant();
+        $this->quantite += 1;
+    }
+
+    public function __invoke()
+    {
+        return $obj->getTarifs()[1];
+    }
+
+    public function getMontant()
+    {
+        return $this->montant;
+    }
+
+    public function getQuantite()
+    {
+        return $this->quantite;
+    }
+
+    public function getGrille()
+    {
+        return $this->obj->getGrille();
+    }
+
+    public function getReduit()
+    {
+        return $this->obj->getReduit();
+    }
+}
+
+class Grille
+{
+
+    private $listeGrilles;
+
+    private $position;
+
+    public function __construct()
+    {
+        $this->listeGrilles = [];
+    }
+
+    public function add($abonnement)
+    {
+        if (array_key_exists(10 * $abonnement->getGrille() + $abonnement->getReduit(),
+            $this->listeGrilles)) {
+            $this->listeGrilles[10 * $abonnement->getGrille() + $abonnement->getReduit()]->add(
+                $abonnement);
+        } else {
+            $this->listeGrilles[10 * $abonnement->getGrille() + $abonnement->getReduit()] = new Produit(
+                $abonnement);
+        }
+    }
+
+    public function __invoke()
+    {
+        return $this->listeGrilles;
+    }
+}
+
+$nomenclature = [
+    1 => [
+        'designation' => 'PASS ANNUEL JUNIOR',
+        'code' => 'P1',
+        'reduction' => [
+            0 => 'Normal',
+            1 => 'Réduit'
+        ],
+        'qte' => 0,
+        'montant' => 0
+    ],
+    2 => [
+        'designation' => 'PASS ANNUEL JUNIOR',
+        'code' => 'P2',
+        'reduction' => [
+            0 => 'Normal',
+            1 => 'Réduit'
+        ],
+        'qte' => 0,
+        'montant' => 0
+    ],
+    3 => [
+        'designation' => 'PASS ANNUEL JUNIOR',
+        'code' => 'P3',
+        'reduction' => [
+            0 => 'Normal',
+            1 => 'Réduit'
+        ],
+        'qte' => 0,
+        'montant' => 0
+    ],
+    4 => [
+        'designation' => 'DOUBLE DOM 2ème PASS',
+        'code' => 'P4',
+        'reduction' => [
+            0 => 'Payant',
+            1 => 'Gratuit'
+        ],
+        'qte' => 0,
+        'montant' => 0
+    ],
+    5 => [
+        'designation' => 'DUPLICATA',
+        'code' => 'D',
+        'reduction' => [
+            0 => 'Normal'
+        ],
+        'qte' => 0,
+        'montant' => 0
+    ]
+];
+$logo = StdLib::concatPath(StdLib::findParentPath(__DIR__, '/public/img'), 'transdev.png');
 $facture = $this->data;
+$facture->setTauxTva(0.1);
+$listeEleves = $facture->getResultats()->getListeEleves();
+$tarifLibelles = [];
+foreach ($listeEleves as $eleve) {
+    $tarifLibelles[$eleve['grilleCode']] = $eleve['grilleTarif'];
+}
+$listeAbonnements = new Grille();
+foreach ($facture->getResultats()->getAbonnementsDetail() as $abonnement) {
+    $listeAbonnements->add($abonnement);
+}
+$encours = [];
+$paiementCB = [];
+$aujourdhui = new \DateTime();
+foreach ($facture->getResultats()->getPaiementsDetail() as $paiement) {
+    if ($paiement['caisse'] == 'Paybox') {
+        $exercice = substr($paiement['reference'], 4, 4);
+        $numero = substr($paiement['reference'], 22, 7);
+        $paiementCB[$paiement['reference']][] = [
+            'dateValeur' => $paiement['dateValeur'],
+            'montant' => $paiement['montant'],
+            'numero' => "$exercice-$numero"
+        ];
+        $dv = \DateTime::createFromFormat('Y-m-d H:i:s', $paiement['dateValeur']);
+        if ($aujourdhui < $dv) {
+            $encours[$paiement['reference']] = $paiement['reference'];
+        }
+    }
+}
+foreach ($paiementCB as &$array) {
+    usort($array,
+        function ($a, $b) {
+            if ($a['dateValeur'] == $b['dateValeur']) {
+                return 0;
+            }
+            return $a['dateValeur'] < $b['dateValeur'] ? -1 : 1;
+        });
+}
 $vendeur = $this->args['vendeur'];
 $acheteur = $this->args['acheteur'];
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
@@ -38,21 +206,22 @@ p.center {
 	float: right;
 }
 
+th {
+	font-size: 8pt;
+	font-weight: bold;
+}
+
 td {
 	font-size: 8pt;
 }
 
 table.entete td {
-	font-size: 12pt;
+	font-size: 11pt;
 }
 </style>
 <table class="entete">
 	<tr>
-		<td style="height: 30mm; width: 80mm;">
-			<?=$vendeur['name'];?><br>
-			<?=implode('<br>',$vendeur['adresse']);?><br>
-			<?=$vendeur['code_postal']?> <?=$vendeur['commune'];?>
-		</td>
+		<td style="height: 15mm; width: 90mm;"></td>
 		<td style="text-align: right;">
 			Date de la facture : <?=DateLib::formatDateFromMysql($facture->getDate());?>
 		</td>
@@ -68,136 +237,99 @@ table.entete td {
 </table>
 
 <h1>FACTURE N° <?=$facture->getExercice();?>-<?=$facture->getNumero();?></h1>
-<h2>TRANSPORTS SCOLAIRES</h2>
+<h2>PASS ANNUEL JUNIOR</h2>
 <p class="center">Année scolaire <?=$facture->getMillesime();?>-<?=$facture->getMillesime() + 1;?></p>
-<p>Exercice <?=$facture->getExercice();?></p>
-<p>Montant de la facture : <?= $fmt->formatCurrency($facture->getMontant(), 'EUR');?></p>
-<hr>
-<p></p>
-<i><b>Relevé des dépenses de l'année scolaire</b></i>
-<br>
-<table cellspacing="5">
+<p>Date d'achat du panier : <?=DateLib::formatDateFromMysql($facture->getDate());?></p>
+<p>Montant total des prestations : <?= $fmt->formatCurrency($facture->getResultats()->getMontantTotal(), 'EUR');?></p>
+<p>&nbsp;</p>
+<h3>Services facturés</h3>
+<table border="1" cellpadding="2">
 	<tr>
-		<td width="250">Abonnements<br>
-			<table border="1" cellpadding="2">
-				<tr>
-					<th style="width: 155;">Tarif</th>
-					<th style="width: 40;">Nombre</th>
-					<th style="width: 55;">Montant</th>
-				</tr>
-				<?php foreach ($facture->getResultats()->getAbonnementsDetail() as $row) :?>
-				<tr>
-					<td><?=$row['grille'];?></td>
-					<td style="text-align: right;"><?=$row['quantite'];?></td>
-					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
-				</tr>
-				<?php endforeach;?>
-			</table>
-		</td>
-		<td width="430">Liste des enfants transportés<br>
-			<table border="1" cellpadding="2">
-				<tr>
-					<th>Nom</th>
-					<th>Prénom</th>
-					<th style="width: 95;">Tarif</th>
-					<th style="width: 52;">Duplicatas</th>
-				</tr>
-				<?php foreach ($facture->getResultats()->getListeEleves() as $row) :?>
-				<?php
-        if (! $row['fa'] && ! $row['gratuit']) {
-            $elementTarif = sprintf('%s %s', $row['grilleTarifR1'],
-                $row['reductionR1'] ? 'Réduit' : 'Normal');
-        } else {
-            $elementTarif = '';
-        }
-        ?>
-				<tr>
-					<td><?=$row['nom'];?></td>
-					<td><?=$row['prenom'];?></td>
-					<td><?=$elementTarif;?></td>
-					<td style="text-align: right"><?=$row['duplicata'];?></td>
-				</tr>
-				<?php endforeach;?>
-			</table>
-		</td>
+		<th style="width: 135;">Désignation du produit</th>
+		<th style="width: 115;">Nom</th>
+		<th style="width: 75;">Prénom</th>
+		<th style="width: 50; text-align: center;">Code</th>
+		<th style="width: 60;">Tarif</th>
+		<th style="width: 60;">Duplicatas</th>
 	</tr>
+		<?php foreach ($facture->getResultats()->getAbonnementsDetail() as $row) :?>
 	<tr>
-		<td>
-		<?php if ($facture->getResultats()->getPaiementsMontant()):?>
-			Liste des paiements enregistrés<br>
-			<table border="1" cellpadding="2">
-				<tr>
-					<th style="width: 95;">Date</th>
-					<th style="width: 100;">Mode</th>
-					<th style="width: 55;">Montant</th>
-				</tr>
-				<?php foreach ($facture->getResultats()->getPaiementsDetail() as $row) :?>
-				<tr>
-					<td><?=DateLib::formatDateFromMysql($row['datePaiement']);?></td>
-					<td><?=$row['modeDePaiement'];?></td>
-					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
-				</tr>
-				<?php endforeach;?>
-			</table>
-		<?php else:?>
-		Aucun paiement enregistré.
-		<?php endif;?>
-		</td>
-		<td>
-		<?php if ($facture->getMontantDejaFacture()):?>
-			Liste des factures émises précédemment<br>
-			<table border="1" cellpadding="2">
-				<tr>
-					<th style="width: 95;">Numéro</th>
-					<th style="width: 100;">Date</th>
-					<th style="width: 55;">Montant</th>
-				</tr>
-				<?php foreach ($facture->getFacturesPrecedentes() as $row) :?>
-				<tr>
-					<td><?=$row['numero'];?></td>
-					<td><?=DateLib::formatDateFromMysql($row['date']);?></td>
-					<td style="text-align: right;"><?=$fmt->formatCurrency($row['montant'], 'EUR');?></td>
-				</tr>
-				<?php endforeach;?>
-			</table>
-		<?php else:?>
-		Aucune facture précédente.
-		<?php endif;?>
-		</td>
+		<td><?=$nomenclature[$row->getGrille()]['designation'];?></td>
+		<td><?=$listeEleves[$row->getEleveid()]['nom'];?></td>
+		<td><?=$listeEleves[$row->getEleveid()]['prenom'];?></td>
+		<td style="text-align: center;"><?=$nomenclature[$row->getGrille()]['code'];?></td>
+		<td><?=$nomenclature[$row->getGrille()]['reduction'][$row->getReduit()];?></td>
+		<td style="text-align: center;"><?=$listeEleves[$row->getEleveid()]['duplicata'];?></td>
 	</tr>
-</table>
-
-<table>
+		<?php endforeach;?>
+			</table>
+<p>&nbsp;</p>
+<table border="1" cellpadding="2">
 	<tr>
-		<td style="width: 180;">Coût des duplicatas</td>
-		<td style="width: 70; text-align: right;">
-					<?=$fmt->formatCurrency($facture->getResultats()->getMontantDuplicatas(), 'EUR');?>
-					</td>
+		<th style="width: 50; text-align: center;">Code</th>
+		<th style="width: 135;">Grille tarifaire</th>
+		<th style="width: 60;">Tarif</th>
+		<th style="width: 50; text-align: center;">Qté</th>
+		<th style="text-align: right;">Montant</th>
 	</tr>
+	<?php foreach($listeAbonnements() as $prod):?>
 	<tr>
-		<td>Coût des abonnements</td>
+		<td style="text-align: center;"><?=$nomenclature[$prod->getGrille()]['code'];?></td>
+		<td><?=$tarifLibelles[$prod->getGrille()];?></td>
+		<td><?=$nomenclature[$prod->getGrille()]['reduction'][$prod->getReduit()];?></td>
+		<td style="text-align: center;"><?=$prod->getQuantite();?></td>
+		<td style="text-align: right;"><?=$fmt->formatCurrency($prod->getMontant(), 'EUR');?></td>
+	</tr>
+	<?php endforeach;?>
+	<?php if($facture->getResultats()->getNbDuplicatas() > 0) :?>
+	<tr>
+		<td style="text-align: center;">D</td>
+		<td colspan="2">Duplicatas</td>
+		<td style="text-align: center;"><?=$facture->getResultats()->getNbDuplicatas();?></td>
 		<td style="text-align: right;">
-					<?=$fmt->formatCurrency($facture->getResultats()->getAbonnementsMontant(),'EUR');?>
-					</td>
+			<?=$fmt->formatCurrency($facture->getResultats()->getMontantDuplicatas(), 'EUR');?></td>
 	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<th>TOTAL</th>
+	<?php endif;?>
+	<?php if ($facture->getMontantDejaFacture() > 0):?>
+		<tr>
+		<th colspan="4">Total des prestations</th>
 		<th style="text-align: right;">
-					<?=$fmt->formatCurrency($facture->getResultats()->getMontantTotal(),'EUR');?>
+			<?= $fmt->formatCurrency($facture->getResultats()->getMontantTotal(), 'EUR');?></th>
+
+
+	</tr>
+	<tr>
+		<td colspan="4">Déjà facturé</td>
+		<td style="text-align: right;">
+			<?= $fmt->formatCurrency($facture->getMontantDejaFacture(), 'EUR');?></td>
+	</tr>
+	<?php endif;?>
+		<tr>
+		<th colspan="4">TOTAL HT</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getMontantHT(),'EUR');?>
 					</th>
 	</tr>
 	<tr>
-		<th>Total déjà versé</th>
+		<th colspan="4">TOTAL TVA 10%</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getTva(),'EUR');?>
+					</th>
+	</tr>
+	<tr>
+		<th colspan="4">TOTAL TTC &Agrave; R&Eacute;GLER</th>
+		<th style="text-align: right;">
+					<?=$fmt->formatCurrency($facture->getMontant(),'EUR');?>
+					</th>
+	</tr>
+	<tr>
+		<th colspan="4">Total déjà payé</th>
 		<th style="text-align: right;">
 					<?=$fmt->formatCurrency($facture->getResultats()->getPaiementsMontant(),'EUR');?>
 					</th>
 	</tr>
 	<tr>
-		<th>Net à payer</th>
+		<th colspan="4">NET RESTANT &Agrave; PAYER</th>
 		<th style="text-align: right;">
 					<?=$fmt->formatCurrency($facture->getResultats()->getSolde(),'EUR');?>
 		</th>
@@ -206,9 +338,25 @@ table.entete td {
 <?php if ($facture->getResultats()->getSolde() < 0) :?>
 <p class="center">Facture valant avoir</p>
 <?php elseif($facture->getResultats()->getSolde() == 0):?>
-<p class="center">Facture valant quittance</p>
+<p class="center">Facture acquittée à conserver</p>
 <?php elseif ($facture->getResultats()->getSolde() < $facture->getMontant()): ?>
-<p class="center">Facture valant reçu</p>
+<p class="center">Facture valant reçu à conserver</p>
 <?php else:?>
-<p class="center">Facture impayée</p>
+<p class="center">Facture à conserver</p>
+<?php endif;?>
+<?php if ($encours):?>
+<p style="font-size: 8pt;">
+	<b>Paiements en cours par Carte Bancaire</b>
+<?php foreach ($encours as $reference) :?>
+   <?php $x = 0; $sep1 = [' = ', ' puis ', ' et ']; $sep2 = ['le', 'à M+1 le', 'à M+2 le'];?>
+<br>FACTURE n°
+   <?php foreach ($paiementCB[$reference] as $paiement):?>
+   <?=$x ? '' : $paiement['numero'];?>
+   <?=$sep1[$x];?>
+   <?= $fmt->formatCurrency($paiement['montant'],'EUR');?> TTC
+   <?= $sep2[$x++]; ?>
+   <?= DateLib::formatDateFromMysql($paiement['dateValeur']);?>
+   <?php endforeach;?>
+<?php endforeach;?>
+</p>
 <?php endif;?>

@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2020
+ * @date 27 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -97,7 +97,7 @@ class Calculs extends AbstractQuery
                 throw new \SbmCommun\Arlysere\Exception\RuntimeException(
                     'La table des tarifs ne définit pas le montant d\'un duplicata pour l\'année en cours.');
             }
-            $this->duplicataPU = $duplicatas->current();
+            $this->duplicataPU = $duplicatas->current()->montant;
             $this->resultats->setDuplicataPU($this->duplicataPU);
         }
         return $this->duplicataPU;
