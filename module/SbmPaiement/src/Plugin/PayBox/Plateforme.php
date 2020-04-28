@@ -2,28 +2,23 @@
 /**
  * Plugin pour la plateforme de paiement PayBox
  *
- * @TODO : à reprendre en entier avec la doc de Paybox
- *
  * @project sbm
  * @package SbmPaiement/Plugin/PayBox
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2020
+ * @date 28 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
 
 use SbmBase\Model\Session;
-use SbmBase\Model\StdLib;
 use SbmCommun\Model\Paiements\FactureInterface as Facture;
 use SbmFront\Model\Responsable\Responsable;
 use SbmPaiement\Plugin;
 use SbmPaiement\Plugin\Exception;
-use Zend\Db\Sql\Where;
 use Zend\Log\Logger;
 use Zend\Stdlib\Parameters;
-use SbmBase\Model\DateLib;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
@@ -97,7 +92,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     /**
      * Fusionne les config du plugin trouvées dans sbm.local.php et dans
-     * Plugin/PayBox/config/paybox.config.php TODO: à adapter au fur et à mesure
+     * Plugin/PayBox/config/paybox.config.php
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\AbstractPlateforme::init()
@@ -548,26 +543,26 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     {
         $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
         $array = [
-            'responsableId'=>$this->getFromRefDet('responsableId'),
-            'exercice'=>$this->getFromRefDet('exercice'),
-            'numero'=>$this->getFromRefDet('numero'),
-            'auto'=>$this->data->get('auto'),
-            'montant'=>$this->data->get('montant'),
-            'ref'=>$this->data->get('ref'),
-            'idtrans'=>$this->data->get('idtrans'),
-            'datetrans'=>$this->data->get('datetrans'),
-            'heuretrans'=>$this->data->get('heuretrans'),
-            'carte'=>$this->data->get('carte'),
-            'bin6'=>$this->data->get('bin6'),
-            'bin2'=>$this->data->get('bin2'),
-            'pays'=>$this->data->get('pays'),
-            'ip'=>$this->data->get('ip'),
+            'responsableId' => $this->getFromRefDet('responsableId'),
+            'exercice' => $this->getFromRefDet('exercice'),
+            'numero' => $this->getFromRefDet('numero'),
+            'auto' => $this->data->get('auto'),
+            'montant' => $this->data->get('montant'),
+            'ref' => $this->data->get('ref'),
+            'idtrans' => $this->data->get('idtrans'),
+            'datetrans' => $this->data->get('datetrans'),
+            'heuretrans' => $this->data->get('heuretrans'),
+            'carte' => $this->data->get('carte'),
+            'bin6' => $this->data->get('bin6'),
+            'bin2' => $this->data->get('bin2'),
+            'pays' => $this->data->get('pays'),
+            'ip' => $this->data->get('ip')
         ];
         $obj = $table->getObjData();
         $obj->exchangeArray($array);
         try {
             $table->saveRecord($obj);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->logError(Logger::CRIT, $e->getMessage());
         }
     }
@@ -614,7 +609,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             'datePaiement' => $ladateP->format('Y-m-d H:i:s'),
             'dateValeur' => $ladateP->format('Y-m-d'),
             'responsableId' => $responsableId,
-            'anneeScolaire' => sprintf('%1$d-%1$d', $millesime),
+            'anneeScolaire' => sprintf('%d-%d', $millesime, $millesime + 1),
             'exercice' => $exercice,
             'montant' => $this->data['montant'],
             'codeModeDePaiement' => $this->getCodeModeDePaiement(),
@@ -656,11 +651,13 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         $rowset = $tAppels->fetchAll([
             'refdet' => $this->data['ref']
         ]);
-        // récupère les eleveId et coche les fiches de la table appels
-        foreach ($rowset as $row) {
-            $this->scolarite['eleveIds'][] = $row->eleveId;
+        if ($rowset->count()) {
+            // récupère les eleveId et coche les fiches de la table appels
+            foreach ($rowset as $row) {
+                $this->scolarite['eleveIds'][] = $row->eleveId;
+            }
+            $tAppels->markNotified($row->idOp); // tous à la fois
         }
-        $tAppels->markNotified($row->idOp); // tous à la fois
     }
 
     /**
@@ -852,663 +849,5 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00198' => '00198: Autorisation refusée  serveur innaccessible.',
             '00199' => '00199: Autorisation refusée  incident domaine initiateur.'
         ];
-    }
-}
-
-class Reserve
-{
-
-    public function setFacture(Facture $facture): Facture
-    {
-        $this->facture = $facture;
-        return $this;
-    }
-
-    public function getIdOp(): string
-    {
-        return $this->idOp;
-    }
-
-    public function getResponsable(): Responsable
-    {
-        return $this->responsable;
-    }
-
-    public function getFacture(): Facture
-    {
-        return $this->facture;
-    }
-
-    /**
-     * Prépare le plugin en initialisant les propriétés facture, justificatifs des sommes
-     * dues, nombre d'enfants concernés ...
-     *
-     * @return self
-     */
-    public function prepare()
-    {
-        if (empty($this->facture)) {
-            // génère une facture ou la récupère si elle existe déjà
-            $this->setFacture(
-                $this->db_manager->get('Sbm\Facture')
-                    ->setResponsableId($this->responsable->responsableId))
-                ->facturer();
-        }
-        // préparation des paramètres pour la méthode prepareAppel()
-        $this->elevesIds = [];
-        foreach ($this->facture->getResultats()->getListeEleves() as $eleveId => $row) {
-            if (! $row['paiementR1'] && ! $row['gratuit']) {
-                $this->elevesIds[] = $eleveId;
-            }
-        }
-        $this->nbEnfants = count($this->elevesIds);
-        return $this;
-    }
-
-    /**
-     * Prépare les paramètres de la requête paiement de PayBox, vérifie que le montant est
-     * dans la plage autorisée pour un paiement par CB, lance la requête et inscrit la
-     * demande de paiement dans la table appels
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::initPaiement()
-     */
-    public function initPaiement()
-    {
-        $params = $this->prepareAppel();
-        if ($params['montant'] < $this->getParam('montantmini')) {
-            throw new Exception(
-                'Le montant du est inférieur au montant minimal pour un paiement par CB.');
-        } elseif ($params['montant'] > $this->getParam('montantmaxi')) {
-            throw new Exception(
-                'Le montant du est supérieur au montant maximal pour un paiement par CB.');
-        }
-        $this->idOp = $this->getUniqueId($params);
-        if ($this->idOp) {
-            try {
-                $this->enregistreAppel();
-            } catch (\SbmCommun\Model\Db\Service\Table\Exception\RuntimeException $e) {
-                if ($this->rattrapageNotification($e->getMessage())) {
-                    throw new Exception('Vous avez déjà payé. La base a été mise à jour.');
-                } else {
-                    throw new Exception($e->getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * Vérifie si des appels du responsable enregistré sont non notifiés et si c'est le
-     * cas prépare le plugin puis lance le rattrapage de ces notifications.
-     *
-     * @return void
-     */
-    public function checkPaiement()
-    {
-        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
-        $where = new Where();
-        $where->literal('notified = 0')
-            ->equalTo('responsableId', $this->responsable->responsableId)
-            ->like('refdet', $this->millesime . '%');
-        $resultset = $tAppels->fetchAll($where);
-        if ($resultset->count()) {
-            $this->prepare();
-            $array = [];
-            // filtre les idOp pour en disposer de manière unique
-            foreach ($resultset as $row) {
-                $array[$row->idOp] = $row->idOp;
-            }
-            foreach ($array as $idOp) {
-                $this->rattrapageNotification($idOp);
-            }
-        }
-    }
-
-    /**
-     * Marque notified les fiches de la table des appels dont idOp est indiqué
-     */
-    private function marqueAppel()
-    {
-        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
-        $tAppels->markNotified($this->idOp);
-    }
-
-    /**
-     * Supprime l'appel à paiement correspondant à la propriété idOp de cet object Si
-     * $nonNotified == true alors on ne supprime que les appels non notifiés
-     * correspondants à idOp. Par défaut, supprime les appels notifiés ou non notifiés
-     * indifféremment.
-     *
-     * @param boolean $nonNotified
-     */
-    private function supprimeAppel(bool $nonNotified = false)
-    {
-        if (empty($this->idOp)) {
-            throw new Exception('idOp absent.');
-        }
-        $conditions = [
-            'idOp' => $this->idOp
-        ];
-        if ($nonNotified) {
-            $conditions['notified'] = 0;
-        }
-        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
-        $tAppels->deleteRecord($conditions);
-    }
-
-    /**
-     * Renvoie un ctrl construit à partir d'une chaine et du grain de sel
-     *
-     * @param string $s
-     * @return string
-     */
-    private function getCtrl(string $s)
-    {
-        return md5($s . $this->sel);
-    }
-
-    /**
-     * Vérifie si $ctrl est le codage de $idOp
-     *
-     * @param string $ctrl
-     * @param string $idOp
-     * @return boolean
-     */
-    private function validCtrl(string $ctrl, string $idOp)
-    {
-        return $ctrl == $this->getCtrl($idOp);
-    }
-
-    /**
-     * Renvoie l'URL de paiement proposée à l'usager pour accéder au paiement en ligne
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::getUrl()
-     */
-    public function getUrl()
-    {
-        return $this->getParam('urlpaiement') . $this->idOp;
-    }
-
-    /**
-     * CCMGC TS 2018 2019 Exercice 2019 Facture 00001 Responsable 0000002 Date 20190613 01
-     * Modèle ci-dessus
-     *
-     * @return string
-     */
-    public function getObjet()
-    {
-        return sprintf(
-            "CCMGC TS %4d %4d Exercice %4s Facture %05d Responsable %07d Date %s %02d",
-            $this->millesime, $this->millesime + 1, $this->exercice,
-            $this->facture->getNumero(), $this->responsable->responsableId, date('Ymd'),
-            $this->nbEnfants);
-    }
-
-    /**
-     * Exemple : "201820190000100000022019061301"
-     *
-     * @return string
-     */
-    public function getRefDet()
-    {
-        return sprintf("%4d%4s%05d%07d%s%02d", $this->millesime, $this->exercice,
-            $this->facture->getNumero(), $this->responsable->responsableId, date('Ymd'),
-            $this->nbEnfants);
-    }
-
-    /**
-     * Retrouve une partie dans refdet
-     *
-     * @param string $part
-     * @param string $refdet
-     * @throws Exception
-     * @return string
-     */
-    public function getFromRefDet(string $part, string $refdet)
-    {
-        switch ($part) {
-            case 'millesime':
-                $result = substr($refdet, 0, 4);
-                break;
-            case 'exercice':
-                $result = substr($refdet, 4, 4);
-                break;
-            case 'numero':
-                $result = substr($refdet, 8, 5);
-                break;
-            case 'responsableId':
-                $result = substr($refdet, 13, 7);
-                break;
-            case 'date':
-                $result = substr($refdet, 20, 8);
-                break;
-            case 'nbEnfants':
-                $result = substr($refdet, 28, 2);
-            default:
-                throw new Exception('Clé inconnue dans refdet.');
-                break;
-        }
-        return $result;
-    }
-
-    /**
-     *
-     * @todo : mettre au point pour Paybox
-     * @return boolean true si le paiement a été confirmé, false sinon
-     */
-    protected function validPaiement()
-    {
-        /*
-         * $this->idOp = $this->data['idop']; $arguments = [ 'arg0' => [ 'idOp' =>
-         * $this->idOp ] ]; try { $this->data->exchangeArray(
-         * $this->soapRequest('recupererDetailPaiementSecurise', $arguments));
-         * $this->marqueAppel(); if ($this->data['resultrans'] != 'P') { return false; }
-         * $this->enregistrePaybox(); return true; } catch (Exception $e) { return false;
-         * }
-         */
-        return false;
-    }
-
-    /**
-     * Reçoit en argument un tableau de paramètres contenant l'une des clés suivantes :
-     * idOp, responsableId ou eleveId. Interroge si nécessaire (responsableId ou eleveId)
-     * la table des appels pour trouver les idOp non notifiés, puis lance le rattrapage
-     * des notifications. Si le tableau de paramètres est vide, lance le rattrapage de
-     * tous les appels non notifiés de l'année scolaire en cours.
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::majnotification()
-     */
-    public function majnotification(array $args)
-    {
-        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
-        $where = new Where();
-        $idOps = [];
-        if (array_key_exists('idOp', $args)) {
-            $idOps = (array) $args['idOp'];
-        } elseif (array_key_exists('responsableId', $args)) {
-            // tout les appels non notifiés de l'année scolaire en cours pour ce
-            // responsable
-            $where->literal('notified = 0')
-                ->equalTo('responsableId', $args['responsableId'])
-                ->like('refdet', $this->millesime . '%');
-            $resultset = $tAppels->fetchAll($where);
-            if ($resultset->count()) {
-                $idOps = [];
-                // filtre les idOp pour en disposer de manière unique
-                foreach ($resultset as $row) {
-                    $idOps[$row->idOp] = $row->idOp;
-                }
-            }
-        } elseif (array_key_exists('eleveId', $args)) {
-            // tout les appels non notifiés de l'année scolaire en cours pour cet élève
-            $where->literal('notified = 0')
-                ->equalTo('eleveId', $args['eleveId'])
-                ->like('refdet', $this->millesime . '%');
-            $resultset = $tAppels->fetchAll($where);
-            if ($resultset->count()) {
-                $idOps = [];
-                // filtre les idOp pour en disposer de manière unique
-                foreach ($resultset as $row) {
-                    $idOps[$row->idOp] = $row->idOp;
-                }
-            }
-        } else {
-            // tout les appels non notifiés de l'année scolaire en cours
-            $where->literal('notified = 0')->like('refdet', $this->millesime . '%');
-            $resultset = $tAppels->fetchAll($where);
-            if ($resultset->count()) {
-                $idOps = [];
-                // filtre les idOp pour en disposer de manière unique
-                foreach ($resultset as $row) {
-                    $idOps[$row->idOp] = $row->idOp;
-                }
-            }
-        }
-        foreach ($idOps as $idOp) {
-            $this->rattrapageNotification($idOp);
-        }
-    }
-
-    /**
-     * Vérifie s'il n'y aurait pas un paiement non notifié relatif à idOp ATTENTION !!!
-     * L'index dans data est en minuscules.
-     *
-     * @param string $idOp
-     *
-     * @return boolean
-     */
-    private function rattrapageNotification(string $idOp)
-    {
-        $idOpSav = $this->idOp;
-        $this->data = new Parameters([
-            'idop' => $idOp
-        ]);
-        $ok = false;
-        if ($this->validPaiement()) {
-            $this->logError(Logger::INFO,
-                $this->error_no ? $this->error_msg : 'Paiement OK', $this->data);
-            $this->prepareData();
-            $this->getEventManager()->trigger('paiementOK', null, $this->paiement);
-            $this->getEventManager()->trigger('scolariteOK', null, $this->scolarite);
-            $ok = true;
-        } else {
-            $this->logError(Logger::NOTICE, 'Paiement KO : ' . $this->error_msg,
-                $this->data);
-        }
-        $this->idOp = $idOpSav;
-        return $ok;
-    }
-
-    /**
-     * Enregistre la notification dans la table paybox
-     *
-     * @todo : mettre au point pour Paybox
-     * @throws Exception
-     */
-    protected function enregistrePaybox()
-    {
-        /*
-         * $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table'); if
-         * ($this->responsable) { $titulaire = sprintf("%s %s", $this->responsable->nom,
-         * $this->responsable->prenom); } else { $responsableId =
-         * $this->getFromRefDet('responsableId', $this->data['refdet']); $tResponsable =
-         * $this->db_manager->get('Sbm\Db\Table\Responsables'); $responsable =
-         * $tResponsable->getRecord($responsableId); $titulaire = sprintf("%s %s",
-         * $responsable->nomSA, $responsable->prenomSA); } $objectData =
-         * $table->getObjData()->exchangeArray( array_merge($this->data->toArray(), [
-         * 'payboxId' => null, 'idOp' => $this->idOp, 'titulaire' => $titulaire ])); try {
-         * $table->saveRecord($objectData); $this->error_no = 0; } catch
-         * (\Zend\Db\Adapter\Exception\InvalidQueryException $e) { while ($e && ! $e
-         * instanceof \PDOException) { $e = $e->getPrevious(); } $code = $e->getCode(); if
-         * ($code == 23000) { $this->error_msg = 'Duplicate Entry'; $this->error_no =
-         * 23000; } else { throw new Exception( "Erreur #$code lors de l\'enregistrement
-         * de la notification de paiement.", is_int($code) ? $code : 99999, $e); } }
-         */
-    }
-
-    /**
-     * Vérifie que le paramètre idop est dans les paramètres
-     *
-     * @return boolean
-     */
-    protected function validNotification(Parameters $data)
-    {
-        if ($data->offsetExists('idop')) {
-            return true;
-        }
-        $this->error_msg = 'idop n\'a pas été trouvé !';
-        return false;
-    }
-
-    /**
-     * Vérifie que le paramètre post contient les clés 'ctrl' et 'idOp' et qu'elles sont
-     * compatibles.
-     *
-     * @param \Zend\Stdlib\Parameters $post
-     * @throws Exception
-     */
-    public function validFormAbandonner(Parameters $post)
-    {
-        if (! $post->offsetExists('ctrl') || ! $post->offsetExists('idOp') ||
-            ! $this->validCtrl($post['ctrl'], $post['idOp'])) {
-            $msg = 'Action interdite. L\'appel ne provient pas de la plateforme.';
-            throw new Exception($msg);
-        }
-        $this->idOp = $post['idOp'];
-        $this->supprimeAppel(true);
-    }
-
-    /**
-     * Cette méthode prépare les données à inclure dans les tables paiements et
-     * scolarites. Ces données sont rangées dans les propriétés de même nom.
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
-     */
-    protected function prepareData()
-    {
-        $ladate = \DateTime::createFromFormat('dmYHi',
-            $this->data['dattrans'] . $this->data['heurtrans'])->format('Y-m-d H:i:s');
-        $millesime = (int) $this->getFromRefDet('millesime', $this->data['refdet']);
-        $this->paiement = [
-            'type' => 'DEBIT',
-            'paiement' => [
-                'datePaiement' => $ladate,
-                'dateValeur' => $ladate,
-                'responsableId' => $this->getFromRefDet('responsableId',
-                    $this->data['refdet']),
-                'anneeScolaire' => sprintf('%d-%d', $millesime, $millesime + 1),
-                'exercice' => $this->getFromRefDet('exercice', $this->data['refdet']),
-                'montant' => $this->data['montant'],
-                'codeModeDePaiement' => $this->getCodeModeDePaiement(),
-                'codeCaisse' => $this->getCodeCaisse(),
-                'reference' => $this->data['refdet']
-            ]
-        ];
-        $this->scolarite = [
-            'type' => 'DEBIT',
-            'millesime' => $this->millesime,
-            'eleveIds' => []
-        ];
-        $tAppels = $this->getDbManager()->get('Sbm\Db\Table\Appels');
-        $rowset = $tAppels->fetchAll([
-            'idOp' => $this->idOp
-        ]);
-        foreach ($rowset as $row) {
-            $this->scolarite['eleveIds'][] = $row->eleveId;
-        }
-    }
-
-    /**
-     * Donne le nom complet du fichier wsdl. Il peut être en local ou en ligne mais il
-     * faut que les fichiers xsd associés soient accessibles. Ici la configuration est en
-     * local.
-     *
-     * @return string
-     */
-    protected function getWsdl()
-    {
-        // à modifier si on veut un wsdl en ligne
-        return StdLib::concatPath(StdLib::findParentPath(__DIR__, 'config/wsdl'),
-            'PaiementSecuriseService.wsdl');
-    }
-
-    protected function soapRequest(string $method, array $arguments)
-    {
-        $msg = '';
-        try {
-            $client = new \Zend\Soap\Client($this->getWsdl(),
-                [
-                    'soap_version' => SOAP_1_1,
-                    'cache_wsdl' => WSDL_CACHE_NONE
-                ]);
-            $result = $client->{$method}($arguments);
-            return $result->return;
-        } catch (\SoapFault $s) {
-            if (property_exists($s, 'detail')) {
-                $msg = sprintf('[ERROR: [%s] %s - %s (%d) : %s', $s->faultcode,
-                    $s->faultstring, $s->detail->FonctionnelleErreur->code,
-                    $s->detail->FonctionnelleErreur->severite,
-                    $s->detail->FonctionnelleErreur->libelle);
-                $origine = sprintf('ligne %d du fichier %s', $s->getLine(), $s->getFile());
-                $this->logError(\Zend\Log\Logger::WARN, $origine,
-                    [
-                        $s->faultcode,
-                        $s->faultstring,
-                        $s->detail->FonctionnelleErreur->code,
-                        $s->detail->FonctionnelleErreur->severite,
-                        $s->detail->FonctionnelleErreur->libelle
-                    ]);
-                $this->error_msg = sprintf('%s : %s',
-                    $s->detail->FonctionnelleErreur->code,
-                    $s->detail->FonctionnelleErreur->libelle);
-                $this->error_no = 1;
-            } else {
-                $msg = sprintf('[ERROR: [%s] %s - client->{%s}(%s) : %s', $s->faultcode,
-                    $s->faultstring, $method, json_encode($arguments), json_encode($s));
-                $origine = sprintf('ligne %d du fichier %s', $s->getLine(), $s->getFile());
-                $this->logError(\Zend\Log\Logger::WARN, $origine,
-                    [
-                        $s->faultcode,
-                        $s->faultstring,
-                        $method,
-                        json_encode($arguments),
-                        json_encode($s)
-                    ]);
-                $this->error_msg = sprintf('%s : %s', $s->faultcode, $s->faultstring);
-                $this->error_no = 2;
-            }
-        } catch (\Exception $e) {
-            $msg = sprintf('[ERROR: [%d] %s', $e->getCode(), $e->getMessage());
-            $origine = sprintf('ligne %d du fichier %s', $e->getLine(), $e->getFile());
-            $this->logError(\Zend\Log\Logger::ERR, $origine,
-                [
-                    $e->getCode(),
-                    $e->getMessage()
-                ]);
-            $this->error_msg = $e->getMessage();
-            $this->error_no = 2;
-        }
-        throw new Exception($msg);
-    }
-
-    /**
-     * Reçoit un fichier csv de compte-rendu et renvoie les lignes de ce fichiers qui
-     * n'ont pas de correspondance dans la table paybox.
-     *
-     * @todo : mettre au point pour PayBox
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::rapprochement()
-     */
-    public function rapprochement(string $csvname, bool $firstline, string $separator,
-        string $enclosure, string $escape): array
-    {
-        $tPaybox = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
-        $tResponsables = $this->getDbManager()->get('Sbm\Db\Table\Responsables');
-        $fcsv = fopen($csvname, 'r');
-        if ($firstline) {
-            fgets($fcsv);
-        }
-        $cr = [];
-        // die(var_dump($fcsv, 0, $separator, $enclosure, $escape));
-        while (($ligne = fgets($fcsv)) !== false) {
-            $data = explode($separator, $ligne);
-            if ($data[0] != 'LIGNE') {
-                // saute les lignes commençant par EN-TETE ou par PIED-DE-PAGE
-                continue;
-            }
-            if ($firstline) {
-                // saute la ligne d'en-tête des lignes commençant par LIGNE
-                $firstline = false;
-                continue;
-            }
-            if ($enclosure) {
-                array_walk($data,
-                    function (&$value, $key) use ($enclosure) {
-                        $value = trim($value, $enclosure);
-                    });
-            }
-            $dt = $data[1];
-            $refdet = $data[2];
-            $montant = $data[3];
-            $results = $tPaybox->fetchAll([
-                'refdet' => $refdet
-            ]);
-            $absent = $results->count() == 0;
-            if ($absent) {
-                $responsableId = (int) substr($refdet, 13, 7);
-                try {
-                    $oResponsable = $tResponsables->getRecord($responsableId);
-                } catch (\Exception $e) {
-                    $oResponsable = $tResponsables->getObjData();
-                    $oResponsable->exchangeArray([
-                        'nomSA' => '',
-                        'prenomSA' => ''
-                    ]);
-                }
-                $cr[] = [
-                    $dt,
-                    $oResponsable->nomSA,
-                    $oResponsable->prenomSA,
-                    $refdet,
-                    $montant
-                ];
-            }
-        }
-        fclose($fcsv);
-        return $cr;
-    }
-
-    /**
-     * Renvoie un tableau d'entête de lignes d'un compte-rendu d'un rapprochement (doit
-     * avoir autant d'élément qu'une ligne de cr)
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::rapprochementCrHeader()
-     */
-    public function rapprochementCrHeader(): array
-    {
-        $header = [];
-        $column = new \StdClass();
-        $column->label = 'Date';
-        $column->align = 'L';
-        $column->width = 20;
-        $column->format = new Formatage();
-        $header[] = $column;
-        $column = new \StdClass();
-        $column->label = 'Nom';
-        $column->align = 'L';
-        $column->width = 40;
-        $column->format = new Formatage();
-        $header[] = $column;
-        $column = new \StdClass();
-        $column->label = 'Prénom';
-        $column->align = 'L';
-        $column->width = 40;
-        $column->format = new Formatage();
-        $header[] = $column;
-        $column = new \StdClass();
-        $column->label = 'Référence';
-        $column->align = 'L';
-        $column->width = 50;
-        $column->format = new Formatage();
-        $header[] = $column;
-        $column = new \StdClass();
-        $column->label = 'Montant';
-        $column->align = 'R';
-        $column->width = 20;
-        $column->format = new Formatage();
-        $header[] = $column;
-        return $header;
-    }
-}
-
-class Formatage
-{
-
-    public function __construct($callback = null)
-    {
-        $this->func_format($callback);
-    }
-
-    private function func_format($callbackOrData)
-    {
-        static $f;
-        if (is_null($callbackOrData)) {
-            $f = function ($data) {
-                return $data;
-            };
-        } elseif (is_callable($callbackOrData)) {
-            $f = $callbackOrData;
-        } else {
-            return $f($callbackOrData);
-        }
-    }
-
-    public function __invoke($data)
-    {
-        return $this->func_format($data);
     }
 }
