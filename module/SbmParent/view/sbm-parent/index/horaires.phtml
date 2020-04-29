@@ -9,8 +9,8 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2019
- * @version 2019-2.4.8
+ * @date 29 avr. 2020
+ * @version 2020-2.4.15
  */
 $url_retour = $this->url('sbmparent');
 $url_horaires = $this->url('sbmdocument', [
@@ -121,7 +121,7 @@ for ($j = 0, $i = $nbCircuits - 1; $i >= 0; $i --, $j ++) {
 		<div class="left-95px top-6px">
 			<form method="post" action="<?php echo $url_retour;?>">
 				<input type="submit" class="default" name="horaires"
-					value="Imprimer" formaction="<?php echo $url_horaires;?> formtarget="_blank""> <input
+					value="Imprimer" formaction="<?php echo $url_horaires;?>" formtarget="_blank""> <input
 					type="submit" class="default" name="cancel" value="Retour">
 			</form>
 		</div>
