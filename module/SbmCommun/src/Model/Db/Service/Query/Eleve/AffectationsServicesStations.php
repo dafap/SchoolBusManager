@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 29 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -301,7 +301,7 @@ class AffectationsServicesStations extends AbstractQuery
         $where = new Where();
         $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.millesime',
             $this->millesime)->and->equalTo('aff.eleveId', $eleveId);
-        //die($this->getSqlString($select->where($where)));
+        // die($this->getSqlString($select->where($where)));
         return $this->renderResult($select->where($where));
     }
 
@@ -832,7 +832,8 @@ class AffectationsServicesStations extends AbstractQuery
         ];
     }
 
-    private function jointureAffectationsCircuits(int $n, string $cir)
+    private function jointureAffectationsCircuits(int $numeroLigne, string $aliasCir,
+        int $numeroStation = 1)
     {
         return sprintf(
             implode(' AND ',
@@ -842,8 +843,8 @@ class AffectationsServicesStations extends AbstractQuery
                     'aff.sensligne%1$d = %2$s.sens',
                     'aff.moment = %2$s.moment',
                     'aff.ordreligne%1$d = %2$s.ordre',
-                    'aff.station1Id = %2$s.stationId'
-                ]), $n, $cir);
+                    'aff.station%3$dId = %2$s.stationId'
+                ]), $numeroLigne, $aliasCir, $numeroStation);
     }
 
     private function jointureAffectationsServices(int $n, string $ser)
@@ -867,5 +868,118 @@ class AffectationsServicesStations extends AbstractQuery
                     '%1$s.millesime = %2$s.millesime',
                     '%1$s.ligneId = %2$s.ligneId'
                 ]), $ser, $ligne);
+    }
+
+    /**
+     * Renvoie les horaires d'un élève : moment, station1, commune1, horaireD, station2,
+     * commune2, horaireA
+     *
+     * @param int $eleveId
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getHoraires(int $eleveId)
+    {
+        return $this->renderResult($this->selectHoraires($eleveId));
+    }
+
+    /**
+     *
+     * @param int $eleveId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectHoraires(int $eleveId)
+    {
+        $where = new Where();
+        $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.eleveId',
+            $eleveId);
+        $select = $this->sql->select()
+            ->columns([
+            'moment'
+        ])
+            ->from(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ])
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta1.stationId = aff.station1Id', [
+            'station1' => 'nom'
+        ])
+            ->join([
+            'com1' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'sta1.communeId = com1.communeId', [
+            'commune1' => 'nom'
+        ])
+            ->join([
+            'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir1', 1), [
+            'horaireD'
+        ])
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta2.stationId = aff.station2Id', [
+            'station2' => 'nom'
+        ])
+            ->join([
+            'com2' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'sta2.communeId = com2.communeId', [
+            'commune2' => 'nom'
+        ])
+            ->join([
+            'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
+            'horaireA'
+        ])
+            ->where($where)
+            ->order([
+            'aff.moment',
+            'cir1.horaireD'
+        ]);
+        return $select;
+    }
+
+    /**
+     * Renvoie les lignes d'un élève
+     *
+     * @param int $eleveId
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getLignes(int $eleveId)
+    {
+        return $this->renderResult($this->selectLignes($eleveId));
+    }
+
+    /**
+     *
+     * @param int $eleveId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectLignes(int $eleveId)
+    {
+        $where = new Where();
+        $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.eleveId',
+            $eleveId);
+        $select = $this->sql->select()
+            ->columns([
+            'moment'
+        ])
+            ->from(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ])
+            ->join([
+            'li1' => $this->db_manager->getCanonicName('lignes', 'table')
+        ], 'li1.millesime = aff.millesime AND li1.ligneId = aff.ligne1Id',
+            [
+                'ligneId',
+                'ligneExtremite1' => 'extremite1',
+                'ligneExtremite2' => 'extremite2',
+                'ligneVia' => 'via'
+            ])
+            ->where($where)
+            ->order([
+            'aff.moment'
+        ]);
+        return $select;
     }
 }

@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 avr. 2020
+ * @date 29 avr. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -43,7 +43,7 @@ if ((new \DateTime()) <
     (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')) {
     $avant_fin_aout = 'invisible';
 }
-// initialisation nécessaire pour le popup help-preinscrits-content :
+// initialisation nécessaire pour le popup help-preinscrits-content
 $permanences = '';
 $enAttente = false;
 $adresse_organisateur = implode(', ',
@@ -164,16 +164,16 @@ $url_facture = $this->url('sbmdocument', [
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
-            if ((new DateTime()) <(new \DateTime(Session::get('as')['dateDebut']))->modify(
-                '8 days ago')) {
+            if ((new DateTime()) <
+                (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')) {
                 $msg_circuit_horaire .= "&agrave; partir du $date_horaires_cartes et ";
             }
             $msg_circuit_horaire .= 'apr&egrave;s traitement de votre demande.';
             break;
         default:
             $msg_reception_pass_inscrit = '';
-            $msg_reception_pass_preinscrit='';
-            $msg_circuit_horaire='';
+            $msg_reception_pass_preinscrit = '';
+            $msg_circuit_horaire = '';
             break;
     }
     $msg_photo_manquante = <<<EOT
@@ -200,7 +200,10 @@ $url_facture = $this->url('sbmdocument', [
 <?php
         $photo_manquante = false;
         foreach ($this->inscrits as $row) {
-            $hiddens_ligne = [];
+            $hiddens_ligne = [
+                'eleveId' => $row['eleveId'],
+                'enfant' => $row['prenom'] . ' ' . $row['nom']
+            ];
             $photo_manquante |= ! $row['hasphoto'];
             $reseau = $this->affectations->getCorrespondances($row['eleveId']);
             $nbAffectations = $reseau->count();
@@ -292,7 +295,6 @@ $url_facture = $this->url('sbmdocument', [
                     } else {
                         // bouton photo et pas d'horaire
                         unset($boutons_ligne['horaires']);
-                        $hiddens_ligne['eleveId'] = $row['eleveId'];
                         $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
                     }
@@ -307,11 +309,6 @@ $url_facture = $this->url('sbmdocument', [
                         // il y a des points d'arrêt mais pas de circuit donc pas
                         // d'horaire
                         unset($boutons_ligne['horaires']);
-                    } else {
-                        $hiddens_ligne = [
-                            'circuit1Id' => $circuit[0],
-                            'etablissementId' => $row['etablissementId']
-                        ];
                     }
                     if ($row['hasphoto']) {
                         unset($boutons_ligne['photo']);
@@ -324,7 +321,6 @@ $url_facture = $this->url('sbmdocument', [
                         }
                     } else {
                         // au moins le bouton photo
-                        $hiddens_ligne['eleveId'] = $row['eleveId'];
                         $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
                     }
@@ -340,13 +336,7 @@ $url_facture = $this->url('sbmdocument', [
                     $colonne1_5 = str_replace('%s' . $nbAffectations,
                         'rowspan="' . $nbCircuits . '"', $colonne1_5);
                     $lignesTableau = [];
-                    $hiddens_ligne = [
-                        'enfant' => $row['prenom'] . ' ' . $row['nom']
-                    ];
                     for ($i = 0; $i < $nbCircuits; $i ++) {
-                        if (! empty($circuit[$i])) {
-                            $hiddens_ligne['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
-                        }
                         $lignesTableau[$i] = '<tr class="petit ' . $css . '">' .
                             $colonne1_5;
                         $lignesTableau[$i] .= '<td class="' . $avant_fin_aout . '">' .
@@ -364,18 +354,11 @@ $url_facture = $this->url('sbmdocument', [
                         if ($row['hasphoto']) {
                             // pas de bouton
                             $lignesTableau[0] .= "<td></td><td class=\"alert\">$msgphoto</td></tr>\n";
-                        } else {
-                            // bouton `Envoyer une photo`
-                            $hiddens_ligne['eleveId'] = $row['eleveId'];
                         }
                     } else {
-                        $hiddens_ligne['etablissementId'] = $row['etablissementId'];
                         if ($row['hasphoto']) {
                             // bouton `Horaires`
                             unset($boutons_ligne['photo']);
-                        } else {
-                            // les 2 boutons
-                            $hiddens_ligne['eleveId'] = $row['eleveId'];
                         }
                     }
                     if (empty($hiddens_ligne) && $row['hasphoto']) {

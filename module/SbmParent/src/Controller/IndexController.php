@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2020
+ * @date 29 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -20,14 +20,13 @@ use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
-use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmParent\Form;
 use SbmParent\Model\OutilsInscription;
 use SbmParent\Model\Db\Service\Query;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\ViewModel;
 use Zend\Log\Logger;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
@@ -597,69 +596,21 @@ class IndexController extends AbstractActionController
             }
         } else {
             $args = $prg;
-            if (! array_key_exists('circuit1Id', $args)) {
+            if (! array_key_exists('eleveId', $args)) {
                 return $this->redirect()->toRoute('sbmparent');
             }
             Session::set('post', $args, $this->getSessionNamespace());
         }
-        $tCircuits = $this->db_manager->get('Sbm\Db\Vue\Circuits');
-        $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
-        $effectifCircuits->init(true);
-        $rListe = $this->db_manager->get('Sbm\Db\Eleve\Liste');
-        $nbInscrits = [];
-        $circuits = [];
-        $eleves = [];
-        for ($i = 1; array_key_exists('circuit' . $i . 'Id', $args); $i ++) {
-            $circuitId = $args['circuit' . $i . 'Id'];
-            $circuits[$i] = $tCircuits->getRecord($circuitId);
-            $nbInscrits[$i] = $effectifCircuits->transportes($circuitId);
-            $result = $rListe->queryGroup(Session::get('millesime'),
-                FiltreEleve::byCircuit(
-                    [
-                        $circuits[$i]->ligneId,
-                        $circuits[$i]->sens,
-                        $circuits[$i]->moment,
-                        $circuits[$i]->ordre
-                    ], $circuits[$i]->stationId, true), [
-                    'nom',
-                    'prenom'
-                ]);
-            foreach ($result as $row) {
-                $classe = $row['classe'];
-                if (is_numeric($classe)) {
-                    $classe .= '°';
-                }
-                $eleves[$i][] = sprintf('%s %s - %s', $row['prenom'], $row['nom'], $classe);
-            }
-            // on gardera le dernier circuit trouvé
-            $arrayServiceId = [
-                'ligneId' => $circuits[$i]->ligneId,
-                'sens' => $circuits[$i]->sens,
-                'moment' => $circuits[$i]->moment,
-                'ordre' => $circuits[$i]->ordre
-            ];
-        }
-        // ajout de l'arrêt à l'établissement
-        try {
-            $stationId = $this->db_manager->get('Sbm\Db\Table\EtablissementsServices')->getRecord(
-                array_merge(
-                    [
-                        'etablissementId' => $args['etablissementId'],
-                        'millesime' => Session::get('millesime')
-                    ], $arrayServiceId))->stationId;
-            $circuits[$i] = $tCircuits->getCircuit(Session::get('millesime'),
-                $arrayServiceId['ligneId'], $arrayServiceId['sens'],
-                $arrayServiceId['moment'], $arrayServiceId['ordre'], $stationId);
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-        }
 
         return new ViewModel(
             [
-
                 'enfant' => $args['enfant'],
-                'circuits' => $circuits,
-                'eleves' => $eleves,
-                't_nb_inscrits' => $nbInscrits
+                'circuits' => $this->db_manager->get(
+                    'Sbm\Db\Query\AffectationsServicesStations')->getHoraires(
+                    $args['eleveId']),
+                'lignes'=>$this->db_manager->get(
+                    'Sbm\Db\Query\AffectationsServicesStations')->getLignes(
+                        $args['eleveId']),
             ]);
     }
 
