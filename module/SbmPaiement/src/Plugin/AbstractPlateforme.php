@@ -14,7 +14,7 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 avr. 2020
+ * @date 1 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin;
@@ -285,7 +285,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
             } else {
                 // log en ERR puis lance un évènement 'notificationError' avec $data en
                 // paramètre
-                $this->logError(Logger::ERR, $this->error_msg, $data);
+                $this->logError(Logger::ERR, 'Notification incorrecte', $data);
                 $this->getEventManager()->trigger('notificationError', null, $data);
                 return "Notification incorrecte reçue le " . date('d/m/Y à H/i/s') .
                     ' (UTC).';

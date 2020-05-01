@@ -7,7 +7,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 avr. 2020
+ * @date 1 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -40,6 +40,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      * @var string
      */
     private $idOp;
+
+    /**
+     *
+     * @var string
+     */
+    private $refdet;
 
     /**
      *
@@ -109,6 +115,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         $this->nbEnfants = 0;
         $this->sel = 'eclipse';
         $this->paiement3fois = false;
+        $this->clearRefDet();
     }
 
     /*
@@ -276,17 +283,25 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function getRefDet()
     {
-        $cmd = sprintf("%4d%4s%14s%07d%07d%02d", $this->millesime, $this->exercice,
-            date('YmdHis'), $this->facture->getNumero(), $this->responsable->responsableId,
-            $this->nbEnfants);
-        if ($this->paiement3fois) {
-            $abonnement = $this->getFormulaireAbonnement();
-            $abonnement['PBX_2MONT'] = sprintf('%010d', $this->getMontantAbonnement());
-            foreach ($abonnement as $key => $value) {
-                $cmd .= $key . $value;
+        if (! $this->refdet) {
+            $cmd = sprintf("%4d%4s%14s%07d%07d%02d", $this->millesime, $this->exercice,
+                date('YmdHis'), $this->facture->getNumero(),
+                $this->responsable->responsableId, $this->nbEnfants);
+            if ($this->paiement3fois) {
+                $abonnement = $this->getFormulaireAbonnement();
+                $abonnement['PBX_2MONT'] = sprintf('%010d', $this->getMontantAbonnement());
+                foreach ($abonnement as $key => $value) {
+                    $cmd .= $key . $value;
+                }
             }
+            $this->refdet = $cmd;
         }
-        return $cmd;
+        return $this->refdet;
+    }
+
+    private function clearRefDet()
+    {
+        $this->refdet = '';
     }
 
     /**
@@ -394,7 +409,9 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $parts = parse_url($url);
             $serveur = sprintf('%s://%s/load.html', $parts['scheme'], $parts['host']);
             $doc = new \DOMDocument();
-            $doc->loadHTMLFile($serveur);
+            if (! @$doc->loadHTMLFile($serveur)) {
+                continue;
+            }
             $server_status = "";
             $element = $doc->getElementById('server_status');
             if ($element) {
@@ -408,7 +425,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         if ($serveurOK) {
             return $url;
         }
-        throw new \SbmPaiement\Plugin\Exception('Serveur Paybox indisponible.');
+        $message = 'Serveur Paybox indisponible.';
+        $this->logError(Logger::INFO,
+            sprintf($message . ' %s %s (%d - %s)', $this->responsable->nom,
+                $this->responsable->prenom, $this->responsable->responsableId,
+                $this->responsable->email));
+        throw new \SbmPaiement\Plugin\Exception($message);
     }
 
     /**
@@ -794,12 +816,13 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00009' => '00009: Erreur de création d\'un abonnement.',
             '00010' => '00010: Devise inconnue.',
             '00011' => '00011: Montant incorrect.',
-            '00015' => '00015: paiement déjà effectué.',
+            '00015' => '00015: Paiement déjà effectué.',
             '00016' => '00016: Abonné déjà existant.',
             '00021' => '00021: Carte non autorisée.',
             '00029' => '00029: Carte non conforme.',
             '00030' => '00030: Temps d\'attente trop long.',
             '00033' => '00033: Pays non autorisé.',
+            '00040' => '00040: Opération sans authentification 3-D Secure, bloquée par le filtre.',
             '00101' => '00101: Autorisation refusée  contacter l\'émetteur de carte.',
             '00102' => '00102: Autorisation refusée  contacter l\'émetteur de carte.',
             '00103' => '00103: Autorisation refusée  commerçant invalide.',
@@ -847,7 +870,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00196' => '00196: Autorisation refusée  mauvais fonctionnement du système.',
             '00197' => '00197: Autorisation refusée  échéance de la temporisation de surveillance globale.',
             '00198' => '00198: Autorisation refusée  serveur innaccessible.',
-            '00199' => '00199: Autorisation refusée  incident domaine initiateur.'
+            '00199' => '00199: Autorisation refusée  incident domaine initiateur.',
+            '99999' => '99999: Opération en attente de validation par l\'émetteur du moyen de paiement.'
         ];
     }
 }
