@@ -9,7 +9,7 @@
  * @filesource FinancePaiementSuppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
+ * @date 2 mai 2019
  * @version 2019-2.5.0
  */
 namespace SbmGestion\Form\Finances;
@@ -33,7 +33,7 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
         $this->add(
             [
                 'name' => 'natures',
-                'type' => 'Zend\Form\Element\Multicheckbox',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
                 'attributes' => [],
                 'options' => [
                     'label' => 'Ce paiement concerne :',
