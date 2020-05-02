@@ -20,7 +20,7 @@
  * @filesource AbonnementsFratrie.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 avr. 2020
+ * @date 2 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -179,7 +179,7 @@ class AbonnementsFratrie implements FactoryInterface
         $array = [];
         foreach ($this->eleves as $row) {
             $array[] = new Abonnement($row['grille'], $row['reduit'],
-                $this->tarifs[$row['grille']][$row['reduit']], $row['eleveId']);
+                $this->getTarifs($row['grille'], $row['reduit']), $row['eleveId']);
         }
         sort($array);
         for ($i = 0; $i < count($array); $i ++) {
@@ -187,6 +187,24 @@ class AbonnementsFratrie implements FactoryInterface
         }
         $this->abonnements = $array;
         return $this;
+    }
+
+    /**
+     * Soit la grille définit un tableau de tarifs réduits et un tableau de tarifs normaux
+     * (en fonction des seuils), soit elle ne définit qu'un tableau et cela correspond aux
+     * tarifs, que ce soit un cas 'normal' ou 'réduit'
+     *
+     * @param int $grille
+     * @param int $reduit
+     * @return array
+     */
+    private function getTarifs(int $grille, int $reduit): array
+    {
+        $tarifsGrille = $this->tarifs[$grille];
+        if (count($tarifsGrille) == 1) {
+            return current($tarifsGrille);
+        }
+        return $tarifsGrille[$reduit];
     }
 
     /**
