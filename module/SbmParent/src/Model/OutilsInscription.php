@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mai 2020
+ * @date 2 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -290,7 +290,7 @@ class OutilsInscription
      * mesure, les erreurs et problèmes seront enregistrés dans la propriété messages
      *
      * @param string $mode
-     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     *            Prend les valeurs 'inscription', 'reinscription' ou 'edit'
      */
     public function apresInscription(string $mode)
     {
@@ -328,7 +328,7 @@ class OutilsInscription
      * \SbmCommun\Arlysere\CalculDroits
      *
      * @param string $mode
-     *            Prend les valeurs 'insciption', 'reinscription' ou 'edit'
+     *            Prend les valeurs 'inscription', 'reinscription' ou 'edit'
      */
     private function majDistances(string $mode)
     {
@@ -337,7 +337,8 @@ class OutilsInscription
                 $this->cr['saveScolarite']['distanceR2Inconnue'] ||
                 $this->cr['saveScolarite']['etablissementChange'];
         } else {
-            $calculDistance = ! ($this->memeDomicile($this->getOResponsable(1)) &&
+            $calculDistance = $this->cr['saveScolarite']['distanceR1Inconnue']; //reprise des données 2019
+            $calculDistance |= ! ($this->memeDomicile($this->getOResponsable(1)) &&
                 $this->memeScolarite());
             if (! $calculDistance) {
                 $r2 = $this->getOResponsable(2);
