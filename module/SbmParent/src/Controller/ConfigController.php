@@ -7,7 +7,7 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 jan. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -72,7 +72,12 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(Form\Responsable::class);
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
+        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
+            $responsableId) == 1) {
+            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
+        } else {
+            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
+        }
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
@@ -138,10 +143,17 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(ModifAdresse::class);
-        $form->setValueOptions('communeId',
-            $this->db_manager->get('Sbm\Db\Select\Communes')
-                ->membres())
-            ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
+        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
+            $responsable) == 1) {
+            $form->setValueOptions('communeId',
+                $this->db_manager->get('Sbm\Db\Select\Communes')
+                    ->desservies());
+        } else {
+            $form->setValueOptions('communeId',
+                $this->db_manager->get('Sbm\Db\Select\Communes')
+                    ->visibles());
+        }
+        $form->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {

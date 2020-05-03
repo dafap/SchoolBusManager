@@ -15,9 +15,12 @@
 namespace SbmFront\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Db\Sql\Where;
+use Zend\Http\Client;
+use Zend\Http\Client\Adapter\Curl;
 
 /**
  * Dispose des propriétés provenant de IndexControllerFactory : - theme (objet
@@ -31,6 +34,7 @@ use Zend\Db\Sql\Where;
  */
 class IndexController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     public function indexAction()
     {
@@ -144,8 +148,10 @@ class IndexController extends AbstractActionController
         $error_msg[] = 'Terminé';
         // dump de l'objet 'obj'
         return new ViewModel([
-            'obj' => $error_msg
+            'obj' => $error_msg,
+            'form' => null
         ]);
+        // }
     }
 
     public function testAction_pourInsererDesUsers()

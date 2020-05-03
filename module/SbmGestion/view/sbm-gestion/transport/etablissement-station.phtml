@@ -1,0 +1,146 @@
+<?php
+/**
+ * Liste des stations pour un établissement donné
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource etablissement-station.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 mai 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station-ajout',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station',
+        'page' => $this->pageRetour
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station-suppr',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station-group',
+        'pr' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+
+$hiddens = [
+    'etablissementId' => $this->etablissement->etablissementId,
+    'origine' => 'etablissement-station'
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'etablissement-station'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvelle station'
+    ]
+];
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+?>
+<h1>Liste des stations desservant
+<?=substr($this->etablissement->nom, 0, 5) == 'ECOLE' ? ' l\'' : ' le '?>
+<?=$this->etablissement->nom . ' - ' . $this->etablissement->commune;?>
+</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner etablissements-stations">
+			<tbody>
+				<tr>
+					<th>Station</th>
+					<th>Commune</th>
+					<th>Rang</th>
+					<th></th>
+				</tr>
+            <?php
+            foreach ($data as $entity) :
+                ?>
+            	<?php
+                $entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="station">
+						<?=$this->escapeHtml($entity->sta_nom);?></td>
+					<td class="commune">
+						<?=$this->escapeHtml($entity->sta_lacommune);?></td>
+					<td class="rang">
+						<?=$entity->rang;?></td>
+					<td class="boutons">
+            <?php
+                $hiddens['stationId'] = $entity->stationId;
+                $buttons = [
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ]
+                ];
+                // etablissementId|millesime|ligneId|sens|moment|ordre
+                $id = sprintf('%s|%d', $this->etablissement->etablissementId,
+                    $entity->stationId);
+                echo $this->listeLigneActions($id, $hiddens, $buttons);
+                ?>
+                	</td>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+	</div>
+</div>

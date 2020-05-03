@@ -1,0 +1,28 @@
+<?php
+/**
+ * Page de suppression d'une relation station-station
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource station-station-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2020
+ * @version 2020-2.6.0
+ */
+$msg = <<<EOT
+Vous avez demandé la suppression d'un jumelage entre les stations %s - %s et  %s - %s.
+EOT;
+$msg = sprintf($msg, $this->station1->nom, $this->station1->commune,
+    $this->station2->nom, $this->station2->commune);
+?>
+<h1>Suppression d'un jumelage entre deux stations</h1>
+<div id="suppr-wrapper">
+	<p><?= $msg; ?></p>
+	<div class="header-wrapper"></div>
+	<p>Confirmez-vous ?</p>
+    <?= $this->form()->openTag($form);?>
+    <?= $this->formCollection($form);?>
+    <?= $this->form()->closeTag();?>
+</div>

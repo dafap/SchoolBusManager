@@ -54,17 +54,17 @@ class IndexController extends AbstractActionController
         // pour le moment, j'utilise la même entrée pour tous les rôles.
         // Le filtre programmé va limiter la vue aux données concernant l'utilisateur
         switch ($auth->getCategorieId()) {
-            case 2:
+            case 110:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
                 ]);
                 break;
-            case 3:
+            case 120:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'et-index'
                 ]);
                 break;
-            case 100:
+            case 130:
                 return $this->redirect()->toRoute('sbmportail',
                     [
                         'action' => 'com-index'
@@ -424,22 +424,23 @@ class IndexController extends AbstractActionController
             [
                 'commune' => $commune,
                 'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
+                    $statEleve->getNbEnregistresByMillesime($millesime, $communeId))['effectif'],
                 'elevesInscrits' => current(
-                    $statEleve->getNbInscritsByMillesime($millesime))['effectif'],
+                    $statEleve->getNbInscritsByMillesime($millesime, $communeId))['effectif'],
                 'elevesPreinscrits' => current(
-                    $statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
-                'elevesRayes' => current($statEleve->getNbRayesByMillesime($millesime))['effectif'],
+                    $statEleve->getNbPreinscritsByMillesime($millesime, $communeId))['effectif'],
+                'elevesRayes' => current(
+                    $statEleve->getNbRayesByMillesime($millesime, true, $communeId))['effectif'],
                 'elevesFamilleAcceuil' => current(
-                    $statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
+                    $statEleve->getNbFamilleAccueilByMillesime($millesime, $communeId))['effectif'],
                 'elevesGardeAlternee' => current(
-                    $statEleve->getNbGardeAlterneeByMillesime($millesime))['effectif'],
+                    $statEleve->getNbGardeAlterneeByMillesime($millesime, $communeId))['effectif'],
                 'elevesMoins1km' => current(
-                    $statEleve->getNbMoins1KmByMillesime($millesime))['effectif'],
+                    $statEleve->getNbMoins1KmByMillesime($millesime, $communeId))['effectif'],
                 'elevesDe1A3km' => current(
-                    $statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
+                    $statEleve->getNbDe1A3KmByMillesime($millesime, $communeId))['effectif'],
                 'eleves3kmEtPlus' => current(
-                    $statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif']
+                    $statEleve->getNb3kmEtPlusByMillesime($millesime, $communeId))['effectif']
             ]);
     }
 
@@ -478,8 +479,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Présente les circuits passant sur la commune, avec possibilité d'éditer les horaires,
-     * de consulter les élèves les fréquentant (par service, par station)
+     * Présente les circuits passant sur la commune, avec possibilité d'éditer les
+     * horaires, de consulter les élèves les fréquentant (par service, par station)
      */
     public function comCircuitsAction()
     {
@@ -644,7 +645,7 @@ class IndexController extends AbstractActionController
 
         // créer un objectData qui contient la méthode getWhere() adhoc
         $categorie = $auth->getCategorieId();
-        if ($categorie == 2) {
+        if ($categorie == 110) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -747,7 +748,7 @@ class IndexController extends AbstractActionController
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $categorie = $auth->getCategorieId();
-        if ($categorie == 2) {
+        if ($categorie == 110) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -900,7 +901,7 @@ class IndexController extends AbstractActionController
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         $categorie = $auth->getCategorieId();
-        if ($categorie == 2) {
+        if ($categorie == 110) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -1000,7 +1001,7 @@ class IndexController extends AbstractActionController
                 ->toutes());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $categorie = $auth->getCategorieId();
-        if ($categorie == 2) {
+        if ($categorie == 110) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;

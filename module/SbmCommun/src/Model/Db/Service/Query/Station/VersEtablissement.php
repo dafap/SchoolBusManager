@@ -133,4 +133,63 @@ class VersEtablissement extends AbstractQuery
     {
         return $this->stationsProches($pointDomicile, $etablissementId, 1000);
     }
+
+    public function stationsJumelles(int $stationId)
+    {
+        return $this->renderResult($this->selectStationsJumelles($stationId));
+    }
+
+    private function selectStationsJumelles(int $station1Id)
+    {
+        $where = new Where(null, Where::COMBINED_BY_OR);
+        $where->equalTo('station1Id', $station1Id)->equalTo('station2Id', $station1Id);
+        $select = $this->sql->select()
+            ->columns([
+            'station1Id',
+            'station2Id',
+            'temps'
+        ])
+            ->from([
+            'stasta' => $this->db_manager->getCanonicName('stations-stations')
+        ])
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations')
+        ], 'stasta.station1Id = sta1.stationId',
+            [
+                'sta1_nom' => 'nom',
+                'sta1_ouverte' => 'ouverte',
+                'sta1_visible' => 'visible'
+            ])
+            ->join([
+            'com1' => $this->db_manager->getCanonicName('communes')
+        ], 'com1.communeId = sta1.communeId',
+            [
+                'sta1_commune' => 'nom',
+                'sta1_lacommune' => 'alias',
+                'sta1_laposte' => 'alias_laposte'
+            ])
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations')
+        ], 'stasta.station2Id = sta2.stationId',
+            [
+                'sta2_nom' => 'nom',
+                'sta2_ouverte' => 'ouverte',
+                'sta2_visible' => 'visible'
+            ])
+            ->join([
+            'com2' => $this->db_manager->getCanonicName('communes')
+        ], 'com2.communeId = sta2.communeId',
+            [
+                'sta2_commune' => 'nom',
+                'sta2_lacommune' => 'alias',
+                'sta2_laposte' => 'alias_laposte'
+            ])
+            ->where($where)
+            ->order([
+            'com2.nom',
+            'sta2.nom'
+        ]);
+        //die($this->getSqlString($select));
+        return $select;
+    }
 }

@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 1 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -216,11 +216,11 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     'class'=>'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Réduction',
+                    'label' => 'Justificatif',
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_options' => 'Y a-t-il une réduction ?',
+                    'empty_options' => 'Y a-t-il un justificatif ?',
                     'error_attributes' => [
                         'class' => 'sbm_error'
                     ]

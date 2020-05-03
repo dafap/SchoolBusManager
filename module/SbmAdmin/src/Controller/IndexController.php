@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
@@ -1027,7 +1027,8 @@ class IndexController extends AbstractActionController
         $user = $tUser->getRecord($args['userId']);
         $form->setData($user->getArrayCopy());
         $telephones = [];
-        if ($user->categorieId == 1) {
+        if ($user->categorieId < 100) {
+            // parent ou organismes
             $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecordByEmail(
                 $user->email);
             if ($responsable) {
@@ -1141,13 +1142,16 @@ class IndexController extends AbstractActionController
         // récupère la fiche de l'user
         $user = $this->db_manager->get('Sbm\Db\Table\Users')->getRecord($args['userId']);
         switch ($user->categorieId) {
-            case 2:
+            case 50:
+                return $this->linkOrganismes($args, $user);
+                break;
+            case 110:
                 return $this->linkTransporteur($args, $user);
                 break;
-            case 3:
+            case 120:
                 return $this->linkEtablissement($args, $user);
                 break;
-            case 100:
+            case 130:
                 return $this->linkCommunes($args, $user);
                 break;
             default:
@@ -1161,6 +1165,53 @@ class IndexController extends AbstractActionController
                     ]);
                 break;
         }
+    }
+
+    private function linkOrganismes(array $args,
+        \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $user): ViewModel
+    {
+        $tUsersOrganismes = $this->db_manager->get('Sbm\Db\Table\UsersOrganismes');
+        if ($tUsersOrganismes->hasOrganisme($args['userId'])) {
+            $organismeId = $tUsersOrganismes->getOrganismeId($args['userId']);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'organisme' => $this->db_manager->get('Sbm\Db\Vue\Organismes')->getRecord(
+                        $organismeId),
+                    'form' => false,
+                    'page' => $this->params('page', 1)
+                ]);
+        } else {
+            $form = $this->form_manager->get(FormAdmin\UserRelation::class)->getForm(
+                'organisme');
+            $form->setValueOptions('organismeId',
+                $this->db_manager->get('Sbm\Db\Select\Organismes'))
+                ->bind($tUsersOrganismes->getObjData());
+            if (array_key_exists('submit', $args)) {
+                $form->setData($args);
+                if ($form->isValid()) {
+                    $tUsersOrganismes->saveRecord($form->getData());
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Relation crée entre un utilisateur et un organisme');
+                    return $this->redirect()->toRoute('sbmadmin',
+                        [
+                            'action' => 'user-liste',
+                            'page' => $this->params('page', 1)
+                        ]);
+                }
+            }
+            $form->setData([
+                'userId' => $args['userId']
+            ]);
+            $viewmodel = new ViewModel(
+                [
+                    'user' => $user,
+                    'organisme' => false,
+                    'form' => $form
+                ]);
+        }
+        $viewmodel->setTemplate('sbm-admin/index/user-organisme');
+        return $viewmodel;
     }
 
     private function linkCommunes(array $args,
@@ -1313,26 +1364,25 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $args = $prg ?: [];
-        if (! array_key_exists('userId', $args) ||
-            ! array_key_exists('communeId', $args)) {
-                return $this->redirect()->toRoute('sbmadmin',
-                    [
-                        'action' => 'user-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
-            }
-            $tUsersCommunes = $this->db_manager->get('Sbm\Db\Table\UsersCommunes');
-            $tUsersCommunes->deleteRecord(
-                [
-                    'userId' => $args['userId'],
-                    'communeId' => $args['communeId']
-                ]);
-            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        if (! array_key_exists('userId', $args) || ! array_key_exists('communeId', $args)) {
             return $this->redirect()->toRoute('sbmadmin',
                 [
                     'action' => 'user-liste',
                     'page' => $this->params('page', 1)
                 ]);
+        }
+        $tUsersCommunes = $this->db_manager->get('Sbm\Db\Table\UsersCommunes');
+        $tUsersCommunes->deleteRecord(
+            [
+                'userId' => $args['userId'],
+                'communeId' => $args['communeId']
+            ]);
+        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        return $this->redirect()->toRoute('sbmadmin',
+            [
+                'action' => 'user-liste',
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     public function userEtablissementSupprAction()
@@ -1344,24 +1394,52 @@ class IndexController extends AbstractActionController
         $args = $prg ?: [];
         if (! array_key_exists('userId', $args) ||
             ! array_key_exists('etablissementId', $args)) {
-                return $this->redirect()->toRoute('sbmadmin',
-                    [
-                        'action' => 'user-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
-            }
-            $tUsersEtablissements = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements');
-            $tUsersEtablissements->deleteRecord(
-                [
-                    'userId' => $args['userId'],
-                    'etablissementId' => $args['etablissementId']
-                ]);
-            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
             return $this->redirect()->toRoute('sbmadmin',
                 [
                     'action' => 'user-liste',
                     'page' => $this->params('page', 1)
                 ]);
+        }
+        $tUsersEtablissements = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements');
+        $tUsersEtablissements->deleteRecord(
+            [
+                'userId' => $args['userId'],
+                'etablissementId' => $args['etablissementId']
+            ]);
+        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        return $this->redirect()->toRoute('sbmadmin',
+            [
+                'action' => 'user-liste',
+                'page' => $this->params('page', 1)
+            ]);
+    }
+
+    public function userOrganismeSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (! array_key_exists('userId', $args) || ! array_key_exists('organismeId', $args)) {
+            return $this->redirect()->toRoute('sbmadmin',
+                [
+                    'action' => 'user-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $tUsersCommunes = $this->db_manager->get('Sbm\Db\Table\UsersOrganismes');
+        $tUsersCommunes->deleteRecord(
+            [
+                'userId' => $args['userId'],
+                'organismeId' => $args['organismeId']
+            ]);
+        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        return $this->redirect()->toRoute('sbmadmin',
+            [
+                'action' => 'user-liste',
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     public function userTransporteurSupprAction()
@@ -1373,24 +1451,24 @@ class IndexController extends AbstractActionController
         $args = $prg ?: [];
         if (! array_key_exists('userId', $args) ||
             ! array_key_exists('transporteurId', $args)) {
-                return $this->redirect()->toRoute('sbmadmin',
-                    [
-                        'action' => 'user-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
-            }
-            $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
-            $tUsersTransporteurs->deleteRecord(
-                [
-                    'userId' => $args['userId'],
-                    'transporteurId' => $args['transporteurId']
-                ]);
-            $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
             return $this->redirect()->toRoute('sbmadmin',
                 [
                     'action' => 'user-liste',
                     'page' => $this->params('page', 1)
                 ]);
+        }
+        $tUsersTransporteurs = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs');
+        $tUsersTransporteurs->deleteRecord(
+            [
+                'userId' => $args['userId'],
+                'transporteurId' => $args['transporteurId']
+            ]);
+        $this->flashMessenger()->addSuccessMessage('La relation a été supprimée');
+        return $this->redirect()->toRoute('sbmadmin',
+            [
+                'action' => 'user-liste',
+                'page' => $this->params('page', 1)
+            ]);
     }
 
     public function userPrepareNouveauxComptesAction()

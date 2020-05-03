@@ -1,0 +1,32 @@
+<?php
+/**
+ * Page de suppression d'une relation etablissement-station
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource etablissement-station-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 mai 2020
+ * @version 2020-2.6.0
+ */
+$h1 = sprintf("Suppression de la station %s - %s desservant par l'établissement %s - %s",
+    $this->station->nom, $this->station->commune, $this->etablissement->nom,
+    $this->etablissement->commune);
+$msg = <<<EOT
+Vous avez demandé la suppression de la station %s - %s dans la liste des stations
+desservant : %s - %s.
+EOT;
+$msg = sprintf($msg, $this->station->nom, $this->station->commune,
+    $this->etablissement->nom, $this->etablissement->commune);
+?>
+<h1><?= $h1; ?></h1>
+<div id="suppr-wrapper">
+	<p><?= $msg; ?></p>
+	<div class="header-wrapper"></div>
+	<p>Confirmez-vous ?</p>
+    <?= $this->form()->openTag($form);?>
+    <?= $this->formCollection($form);?>
+    <?= $this->form()->closeTag();?>
+</div>

@@ -1,0 +1,107 @@
+<?php
+/**
+ * Fiche d'un responsable d'un organisme associé à un user
+ *
+ * S'il n'y a pas d'association, on présente un formulaire de création d'une relation
+ *
+ * @project sbm
+ * @package SbmAdmin/view/sbm-admin/index
+ * @filesource user-organisme.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmadmin', [
+    'action' => 'user-liste',
+    'page' => $this->page
+]);
+$url_suppr = $this->url('sbmadmin',
+    [
+        'action' => 'user-organisme-suppr',
+        'page' => $this->page
+    ]);
+$hiddens = [
+    'userId' => $this->user->userId,
+    'organismeId' => $this->organisme ? $this->organisme->organismeId : null,
+];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ],
+    'suppr' => [
+        'class' => 'fam-group-delete',
+        'formaction' => $url_suppr,
+        'title' => 'Supprimer la relation entre cet utilisateur et ce responsable d\'un organisme'
+    ]
+];
+if ($this->organisme === false) {
+    unset($actions['suppr']);
+}
+?>
+<h1>Responsable d'un organisme associé à un compte d'utilisateur</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header" class="clearfix">
+		<div class="menu">
+        <?=$this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<div class="float-left">
+			<fieldset style="margin-top: 0;" class="sbm-page1 gras">
+				<legend>Utilisateur</legend>
+				<div>
+				   <?=$this->user->titre . ' ' . $this->user->nom . ' ' . $this->user->prenom;?>
+				   <br>&nbsp;
+				</div>
+				<div>Identifiant: <?=$this->user->email;?><br>&nbsp;
+				</div>
+				<div>Créé le: <?=$this->user->dateCreation;?></div>
+				<div>Modifié le: <?=$this->user->dateModification;?></div>
+			</fieldset>
+		</div>
+		<div class="float-left">
+<?php if ($this->organisme === false) :?>
+        <p class="left-10px">Il n'y a pas d'organisme associé à ce
+				compte d'utilisateur.</p>
+		<?=$this->form()->openTag($this->form);?>
+        <fieldset class="sbm-page1">
+    		<?=$this->formHidden($this->form->get('csrf'));?>
+    		<?=$this->formHidden($this->form->get('userId'));?>
+            <div id="user-organisme-ajout-organismeId"
+					class="row-inner ajout">
+            <?=$this->formRow($this->form->get('organismeId'));?>
+            </div>
+			<div id="classe-ajout-buttons" class="row-inner ajout">
+			    <?=$this->formSubmit($this->form->get('submit'));?>
+			    <?=$this->formSubmit($this->form->get('cancel'));?>
+			</div>
+			</fieldset>
+    	<?= $this->form()->closeTag();?>
+<?php else :?>
+        <fieldset id="user" class="sbm-page1">
+				<legend>Organisme</legend>
+				<div>
+					<div class="label">Nom</div>
+				<?=$this->organisme->nom;?></div>
+				<div>
+					<div class="label">Adresse</div>
+				<?=implode('<br>',array_filter([$this->organisme->adresse1, $this->organisme->adresse2]));?>
+				</div>
+				<div>
+					<div class="label">Code postal</div>
+				<?=$this->organisme->codePostal;?></div>
+				<div>
+					<div class="label">Commune</div>
+				<?=$this->organisme->commune;?></div>
+			</fieldset>
+<?php endif;?>
+        </div>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

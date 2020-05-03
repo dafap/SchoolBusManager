@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 30 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -93,6 +93,8 @@ class Users implements FactoryInterface
      */
     public function getMembersForMailChimpListe($limit = 0)
     {
+        $where = new Where();
+        $where->lessThan('usr.categorieId', 100);
         $sub_having = new Having();
         $sub_having->isNotNull('r.email');
         $sub_select = $this->sql->select(
@@ -143,9 +145,7 @@ class Users implements FactoryInterface
             ->join([
             'horsterm' => $this->usrHorsTerminales()
         ], 'horsterm.userId = usr.userId', [], Select::JOIN_LEFT)
-            ->where([
-            'usr.categorieId' => 1
-        ]);
+            ->where($where);
         if ($limit) {
             $select->limit($limit);
         }

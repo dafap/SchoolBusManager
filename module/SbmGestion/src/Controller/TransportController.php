@@ -2511,6 +2511,251 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * ======================== ETABLISSEMENTS-STATIONS =======================
+     */
+
+    /**
+     * renvoie la liste des élèves inscrits pour un etablissement donné
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function etablissementStationAction()
+    {
+        $prg = $this->prg();
+        $cancel = false;
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $etablissementId = Session::get('etablissementId', false,
+                $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            if (StdLib::getParam('op', $args, '') == 'retour') {
+                $etablissementId = null;
+                $cancel = true;
+            } else {
+                $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
+                Session::set('etablissementId', $etablissementId,
+                    $this->getSessionNamespace());
+            }
+        }
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        if ($etablissementId == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            $cancel = true;
+        }
+        if ($cancel) {
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'etablissement-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+        $table = $this->db_manager->get('Sbm\Db\Query\EtablissementsStations');
+        $where = new Where();
+        $where->equalTo('rel.etablissementId', $etablissementId);
+        return new ViewModel(
+            [
+
+                'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+                    $etablissementId),
+                'paginator' => $table->paginatorES($where, 'rang'),
+                'count_per_page' => 15,
+                'page' => $currentPage
+            ]);
+    }
+
+    /**
+     * Ajout d'un lien etablissement-station (la validation porte sur un champ csrf)
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function etablissementStationAjoutAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+            if (StdLib::getParam('origine', $args, false) === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                // on n'est pas capable de savoir d'où l'on vient
+                return $this->redirect()->toRoute('sbmgestion/transport');
+            }
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $origine = StdLib::getParam('origine', $args, 'index');
+        if (! is_null(StdLib::getParam('cancel', $args))) {
+            $this->flashMessenger()->addWarningMessage(
+                'Abandon de la création d\'une relation entre une station et un établissement.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => $origine,
+                    'page' => $currentPage
+                ]);
+        }
+        $isPost = ! is_null(StdLib::getParam('submit', $args));
+        $form = new Form\EtablissementStation(
+            $origine == 'etablissement-station' ? 'station' : 'etablissement');
+        $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsStations');
+        $station = null;
+        $etablissementId = StdLib::getParam('etablissementId', $args, null);
+        $etablissement = $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+            $etablissementId);
+        $form->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->toutes());
+        // pas de $form->bind() pour la gestion particulière de 'stationId' dans le
+        // formulaire ; le résultat de getData() sera un array
+        $form->bind($table->getObjData());
+        if ($isPost) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $obj = $form->getData();
+                if ($table->is_newRecord($obj->getId())) {
+                    $table->saveRecord($obj);
+                    $this->flashMessenger()->addSuccessMessage(
+                        "Une relation entre une station et un établissement a été crée.");
+                } else {
+                    $this->flashMessenger()->addWarningMessage(
+                        "Cette relation existait déjà !");
+                }
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => $origine,
+                        'page' => $currentPage
+                    ]);
+            }
+        } else {
+            $form->setData(
+                [
+                    'etablissementId' => $etablissementId,
+                    'stationId' => StdLib::getParam('stationId', $args, ''),
+                    'origine' => $origine
+                ]);
+        }
+        return new ViewModel(
+            [
+
+                'origine' => $origine,
+                'form' => $form->prepare(),
+                'page' => $currentPage,
+                'etablissement' => $etablissement,
+                'station' => $station
+            ]);
+    }
+
+    /**
+     * Suppression d'une relation établissement-station avec confirmation à l'appel, les
+     * variables suivantes sont récupérées : $etablissementId, $stationId, $origine, $op,
+     * $supproui. Lors de l'annulation, on a : $etablissementId, $stationId, $origine,
+     * $op, $supprnon. Lors de la validation on a : $etablissementId, $stationId,
+     * $origine, $op, $supproui
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function etablissementStationSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = [];
+        } else {
+            $args = $prg;
+        }
+        $origine = StdLib::getParam('origine', $args, 'index');
+        $etablissementId = StdLib::getParam('etablissementId', $args, false);
+        $stationId = StdLib::getParam('stationId', $args, false);
+        $cancel = StdLib::getParam('supprnon', $args, false);
+        if ($origine == 'index' || $etablissementId === false || $stationId == false) {
+            $this->flashMessenger()->addErrorMessage("Action interdite.");
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'index',
+                    'page' => $this->params('page', 1)
+                ]);
+        } elseif ($cancel) {
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été supprimé.");
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => $origine,
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $form = new Form\ButtonForm(
+            [
+                'etablissementId' => null,
+                'stationId' => null,
+                'origine' => $origine
+            ],
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ], 'etablissement-station-suppr', true);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmgestion/transport',
+                [
+                    'action' => 'etablissement-station-suppr',
+                    'page' => $this->params('page', 1)
+                ]));
+        $table = $this->db_manager->get('Sbm\Db\Table\EtablissementsStations');
+        if (array_key_exists('supproui', $args)) { // suppression confirmée
+            $form->setData($args);
+            if ($form->isValid()) {
+                $table->deleteRecord(
+                    [
+                        'etablissementId' => $etablissementId,
+                        'stationId' => $stationId
+                    ]);
+                $this->flashMessenger()->addSuccessMessage(
+                    "L'enregistrement a été supprimé.");
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => $origine,
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        } else {
+            $form->setData(
+                [
+                    'etablissementId' => $etablissementId,
+                    'stationId' => $stationId,
+                    'origine' => $origine
+                ]);
+        }
+        return new ViewModel(
+            [
+
+                'etablissementId' => $etablissementId,
+                'stationId' => $stationId,
+                'origine' => $origine,
+                'etablissement' => $this->db_manager->get('Sbm\Db\Vue\Etablissements')->getRecord(
+                    $etablissementId),
+                'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
+                    $stationId),
+                'form' => $form->prepare()
+            ]);
+    }
+
+    /**
      * =============================== LIGNES =========================
      */
     public function ligneListeAction()
@@ -3430,14 +3675,15 @@ class TransportController extends AbstractActionController
     public function serviceSupprAction()
     {
         $currentPage = $this->params('page', 1);
-        $form = new Form\ButtonForm([
-            'millesime' => null,
-            'ligneId'=>null,
-            'sens'=>null,
-            'moment'=>null,
-            'ordre'=>null,
-            'origine' => null
-        ],
+        $form = new Form\ButtonForm(
+            [
+                'millesime' => null,
+                'ligneId' => null,
+                'sens' => null,
+                'moment' => null,
+                'ordre' => null,
+                'origine' => null
+            ],
             [
                 'supproui' => [
                     'class' => 'confirm',
@@ -4630,6 +4876,242 @@ class TransportController extends AbstractActionController
             'form' => $form->prepare(),
             'page' => $currentPage
         ]);
+    }
+
+    /**
+     * ============================ STATIONS-STATIONS =========================
+     */
+
+    /**
+     * renvoie la liste des stations jumelles d'une station
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function stationStationAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $station1Id = StdLib::getParam('stationId', $args, - 1);
+        if ($station1Id == - 1) {
+            $circuitId = StdLib::getParam('circuitId', $args, - 1);
+            $circuit = $this->db_manager->get('Sbm\Db\Table\StationsStations')->getRecord(
+                $circuitId);
+            if (! empty($circuit)) {
+                $station1Id = $circuit->stationId;
+            }
+        }
+        if ($station1Id == - 1) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'station-liste',
+                    'page' => $pageRetour
+                ]);
+        }
+        return new ViewModel(
+            [
+
+                'data' => $this->db_manager->get(
+                    \SbmCommun\Model\Db\Service\Query\Station\VersEtablissement::class)->stationsJumelles(
+                    $station1Id),
+                'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
+                    $station1Id),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'stationId' => $station1Id
+            ]);
+    }
+
+    /**
+     * Ajout d'un lien station-station (la validation porte sur un champ csrf)
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function stationStationAjoutAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+            if (StdLib::getParam('origine', $args, false) === false) {
+                $this->flashMessenger()->addErrorMessage('Action interdite');
+                // on n'est pas capable de savoir d'où l'on vient
+                return $this->redirect()->toRoute('sbmgestion/transport');
+            }
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        $currentPage = $this->params('page', 1);
+        $origine = StdLib::getParam('origine', $args, 'index');
+        if (! is_null(StdLib::getParam('cancel', $args))) {
+            $this->flashMessenger()->addWarningMessage(
+                'Abandon de la création d\'une relation entre deux stations jumelles.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => $origine,
+                    'page' => $currentPage
+                ]);
+        }
+        $isPost = ! is_null(StdLib::getParam('submit', $args));
+        $form = new Form\StationStation();
+        $table = $this->db_manager->get('Sbm\Db\Table\StationsStations');
+        $stationId = StdLib::getParam('station1Id', $args, null);
+        $station = $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord($stationId);
+        $form->setValueOptions('station2Id',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->sauf($stationId));
+        $form->bind($table->getObjData());
+        if ($isPost) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $obj = $form->getData();
+                if ($table->is_newRecord($obj->getId())) {
+                    $table->saveRecord($obj);
+                    $this->flashMessenger()->addSuccessMessage(
+                        "Un jumelage entre deux stations a été crée.");
+                } else {
+                    $this->flashMessenger()->addWarningMessage(
+                        "Cette relation existait déjà !");
+                }
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => $origine,
+                        'page' => $currentPage
+                    ]);
+            }
+        } else {
+            $form->setData(
+                [
+                    'station1Id' => $stationId,
+                    'station2Id' => StdLib::getParam('station2Id', $args, ''),
+                    'temps' => StdLib::getParam('temps', $args, ''),
+                    'origine' => $origine
+                ]);
+        }
+        return new ViewModel(
+            [
+                'origine' => $origine,
+                'form' => $form->prepare(),
+                'page' => $currentPage,
+                'station' => $station
+            ]);
+    }
+
+    /**
+     * Suppression d'une relation station-station avec confirmation à l'appel, les
+     * variables suivantes sont récupérées : $station1Id, $station2Id, $origine, $op,
+     * $supproui. Lors de l'annulation, on a : $station1Id, $station2Id, $origine, $op,
+     * $supprnon. Lors de la validation on a : $station1Id, $station2Id, $origine, $op,
+     * $supproui
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function stationStationSupprAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = [];
+        } else {
+            $args = $prg;
+        }
+        $origine = StdLib::getParam('origine', $args, 'index');
+        $station1Id = StdLib::getParam('station1Id', $args, false);
+        $station2Id = StdLib::getParam('station2Id', $args, false);
+        $cancel = StdLib::getParam('supprnon', $args, false);
+        if ($origine == 'index' || $station1Id === false || $station2Id == false) {
+            $this->flashMessenger()->addErrorMessage("Action interdite.");
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'index',
+                    'page' => $this->params('page', 1)
+                ]);
+        } elseif ($cancel) {
+            $this->flashMessenger()->addWarningMessage(
+                "L'enregistrement n'a pas été supprimé.");
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => $origine,
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $form = new Form\ButtonForm(
+            [
+                'station1Id' => null,
+                'station2Id' => null,
+                'origine' => $origine
+            ],
+            [
+                'supproui' => [
+                    'class' => 'confirm',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ], 'station-station-suppr', true);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmgestion/transport',
+                [
+                    'action' => 'station-station-suppr',
+                    'page' => $this->params('page', 1)
+                ]));
+        $table = $this->db_manager->get('Sbm\Db\Table\StationsStations');
+        if (array_key_exists('supproui', $args)) { // suppression confirmée
+            $form->setData($args);
+            if ($form->isValid()) {
+                $table->deleteRecord(
+                    [
+                        'station1Id' => $station1Id,
+                        'station2Id' => $station2Id
+                    ]);
+                $this->flashMessenger()->addSuccessMessage(
+                    "L'enregistrement a été supprimé.");
+                return $this->redirect()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => $origine,
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        } else {
+            $form->setData(
+                [
+                    'station1Id' => $station1Id,
+                    'station2Id' => $station2Id,
+                    'origine' => $origine
+                ]);
+        }
+        return new ViewModel(
+            [
+
+                'station1Id' => $station1Id,
+                'station2Id' => $station2Id,
+                'origine' => $origine,
+                'station1' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
+                    $station1Id),
+                'station2' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
+                    $station2Id),
+                'form' => $form->prepare()
+            ]);
     }
 
     /**

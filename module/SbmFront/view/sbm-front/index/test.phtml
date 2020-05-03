@@ -11,6 +11,8 @@
  * @date 05 juin 2019
  * @version 2019-2.5.0
  */
+$this->jQuery('jquery.formatCurrency');
+$this->themeJS('sbm-paiement','formulaire.js');
 ?>
 <h1>DEBUG &amp; TESTS</h1>
 <div style="overflow: scroll;">
@@ -22,3 +24,10 @@
 </pre>
 
 </div>
+<?php
+if ($this->form) {
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+}
+?>

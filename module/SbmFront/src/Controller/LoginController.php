@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 30 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmFront\Controller;
 
@@ -173,9 +173,9 @@ class LoginController extends AbstractActionController
                             // ne sont pas autorisées pour les parents de cette commune.
                             $commune = $responsable->commune;
                             $message = <<<EOT
-Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants
-de votre commune.
-EOT;
+                            Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants
+                            de votre commune.
+                            EOT;
                             $this->flashMessenger()->addErrorMessage($message);
                             $this->logout();
                             return $this->redirect()->toRoute('home',
@@ -189,9 +189,9 @@ EOT;
                             // le paiement en ligne n'est pas permi pour les parents de
                             // cette commune
                             $message = <<<EOT
-Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants
-de votre commune.'
-EOT;
+                            Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants
+                            de votre commune.'
+                            EOT;
                             $this->flashMessenger()->addInfoMessage($message);
                         }
                         // contrôle de position géographique
@@ -223,9 +223,13 @@ EOT;
                     Session::set('home', 'sbmparentconfig', 'layout');
                     return $this->redirect()->toRoute('sbmparent');
                     break;
-                case 2:
-                case 3:
-                case 100:
+                case 50:
+                    Session::set('home', 'sbmparentconfig', 'layout');
+                    return $this->redirect()->toRoute('sbmparent');
+                    break;
+                case 110:
+                case 120:
+                case 130:
                 case 200:
                     Session::set('home', 'sbmportail', 'layout');
                     return $this->redirect()->toRoute('sbmportail',

@@ -9,7 +9,7 @@
  * @filesource user-commune.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -40,6 +40,9 @@ $actions = [
         'title' => 'Supprimer la relation entre cet utilisateur et cette commune'
     ]
 ];
+if ($this->commune === false) {
+    unset($actions['suppr']);
+}
 ?>
 <h1>Commune associée à un compte d'utilisateur</h1>
 <div id="fiche-wrapper">

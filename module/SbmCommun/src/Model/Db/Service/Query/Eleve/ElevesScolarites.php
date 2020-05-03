@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -143,11 +143,29 @@ class ElevesScolarites extends AbstractQuery
                 ->getStrategie('grille'));
     }
 
-    private function lienElevesResponsables(int $responsableId)
+    private function lienElevesResponsables(int $responsableId, int $categorieId = 1)
     {
         $jointure = new Predicate(null, Predicate::COMBINED_BY_OR);
-        return $jointure->equalTo('responsable1Id', $responsableId)->equalTo(
-            'responsable2Id', $responsableId);
+        if ($categorieId == 1) {
+            return $jointure->equalTo('responsable1Id', $responsableId)->equalTo(
+                'responsable2Id', $responsableId);
+        } else {
+            // liste des responsableId de l'organisme
+            $select = $this->sql->select()
+                ->columns([
+                'responsableId'
+            ])
+                ->from(
+                [
+                    'uo1' => $this->db_manager->getCanonicName('users-organismes', 'table')
+                ])
+                ->join(
+                [
+                    'uo2' => $this->db_manager->getCanonicName('users-organismes', 'table')
+                ], 'uo1.organismeId = uo2.organismeId', [])
+                ->where((new Where())->equalTo('uo2.responsableId', $responsableId));
+            return $jointure->in('responsable1Id', $select)->in('responsable2Id', $select);
+        }
     }
 
     public function getEleve($eleveId)
@@ -190,21 +208,23 @@ class ElevesScolarites extends AbstractQuery
         return $this->renderResult($select->where($where));
     }
 
-    public function getElevesInscrits($responsableId)
+    public function getElevesInscrits(int $responsableId, int $categorieId = 1)
     {
         $select = clone $this->select;
         $elevesSansPreinscrits = new PredicateEleve\ElevesSansPreinscrits(
-            $this->millesime, 'sco', [
-                $this->lienElevesResponsables($responsableId)
+            $this->millesime, 'sco',
+            [
+                $this->lienElevesResponsables($responsableId, $categorieId)
             ]);
         $where = $elevesSansPreinscrits();
         return $this->renderResult($select->where($where));
     }
 
-    public function getElevesPreinscritsOuEnAttente($responsableId)
+    public function getElevesPreinscritsOuEnAttente(int $responsableId,
+        int $categorieId = 1)
     {
         $select = clone $this->select;
-        $jointure = $this->lienElevesResponsables($responsableId);
+        $jointure = $this->lienElevesResponsables($responsableId, $categorieId);
         $elevesPreinscrits = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
             [
                 $jointure

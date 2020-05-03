@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -79,6 +79,11 @@ $url_relation = $this->url('sbmgestion/transport',
         'action' => 'station-service',
         'id' => $this->page
     ]);
+$url_jumelles = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station',
+        'page' => $this->page
+    ]);
 $url_group = $this->url('sbmgestion/transport',
     [
         'action' => 'station-group',
@@ -91,10 +96,11 @@ $url_suppr_doublon = $this->url('sbmgestion/transport',
     ]);
 $url_retour = $this->url('sbmgestion/transport');
 if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-groupe',
-        'page' => $this->page
-    ]);
+    $url_sms = $this->url('sbmservicesms',
+        [
+            'action' => 'envoi-groupe',
+            'page' => $this->page
+        ]);
 }
 $hiddens = [
     'back' => $url_origine
@@ -202,6 +208,12 @@ $actions = [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
                         'title' => sprintf('circuits desservant la station %s - %s',
+                            $station->nom, $station->commune)
+                    ],
+                    'jumelles' => [
+                        'class' => 'fam-connect',
+                        'formaction' => $url_jumelles,
+                        'title' => sprintf('stations jumelles de la station %s - %s',
                             $station->nom, $station->commune)
                     ],
                     'eleves' => [

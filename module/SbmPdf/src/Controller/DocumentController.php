@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -44,8 +44,7 @@ class DocumentController extends AbstractActionController
         // factureset est un objet Iterator
         $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
             $responsableId,
-            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                $responsableId));
+            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats($responsableId));
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
                 ->setParams(
@@ -75,9 +74,7 @@ class DocumentController extends AbstractActionController
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
-        $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
-            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                $responsableId));
+        $facture = $this->db_manager->get('Sbm\Facture')->setResponsableId($responsableId);
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(
             [
@@ -158,7 +155,7 @@ class DocumentController extends AbstractActionController
                         $tmp = $affectation->getEncodeServiceId(1);
                         $services[tmp] = $tmp;
                         if (! empty($affectation->ligne2Id)) {
-                            $tmp = getEncodeServiceId(2);
+                            $tmp = $affectation->getEncodeServiceId(2);
                             $services[tmp] = $tmp;
                         }
                     }
@@ -173,7 +170,7 @@ class DocumentController extends AbstractActionController
                     ]);
                 }
                 break;
-            case 2: // transporteur
+            case 110: // transporteur
                 try {
                     $transporteurId = $this->db_manager->get(
                         'Sbm\Db\Table\UsersTransporteurs')->getTransporteurId($userId);
@@ -187,13 +184,13 @@ class DocumentController extends AbstractActionController
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
-                        'Pas d\'enfants affectés sur vos circuits.');
+                        'Pas d\'enfant transporté sur vos circuits.');
                     return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
                     ]);
                 }
                 break;
-            case 3: // établissement
+            case 120: // établissement
                 try {
                     $etablissementId = $this->db_manager->get(
                         'Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
@@ -209,6 +206,23 @@ class DocumentController extends AbstractActionController
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(
                         'Aucun service dessert votre établissement.');
+                    return $this->redirect()->toRoute('login', [
+                        'action' => 'home-page'
+                    ]);
+                }
+                break;
+            case 130: // commune
+                try {
+                    $communeId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+                        $userId);
+                    $services = [];
+                    foreach ($this->db_manager->get('Sbm\Db\Query\Circuits')->getServicesViaCommune(
+                        $communeId) as $service) {
+                            $services[] = $service['serviceId'];
+                    }
+                } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+                    $this->flashMessenger()->addInfoMessage(
+                        'Pas d\'enfant transporté de votre commune.');
                     return $this->redirect()->toRoute('login', [
                         'action' => 'home-page'
                     ]);

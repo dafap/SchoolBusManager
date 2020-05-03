@@ -7,7 +7,7 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -1011,14 +1011,14 @@ class Effectif extends AbstractQuery implements FactoryInterface
                         'aff.sensligne1 = s.sens',
                         'aff.moment = s.moment',
                         'aff.ordreligne1 = s.ordre'
-                    ],
+                    ]),
                     implode(' AND ',
                         [
                             'aff.ligne2Id = s.ligneId',
                             'aff.sensligne2 = s.sens',
                             'aff.moment = s.moment',
                             'aff.ordreligne2 = s.ordre'
-                        ]))), [
+                        ])), [
                 'eleveId'
             ], Select::JOIN_LEFT)
             ->join([

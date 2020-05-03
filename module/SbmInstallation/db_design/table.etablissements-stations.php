@@ -1,11 +1,11 @@
 <?php
 /**
- * Structure de la table des `etablissementsServices`
+ * Structure de la table des `etablissements-stations`
  *
  *
  * @project sbm
  * @package SbmInstallation/db_design
- * @filesource table.etablissements-services.php
+ * @filesource table.etablissements-stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 2 mai 2020
@@ -14,7 +14,7 @@
 use SbmBase\Model\StdLib;
 
 return [
-    'name' => 'etablissements-services',
+    'name' => 'etablissements-stations',
     'type' => 'table',
     'drop' => false,
     'edit_entity' => false,
@@ -22,20 +22,12 @@ return [
     'structure' => [
         'fields' => [
             'etablissementId' => 'char(8) NOT NULL',
-            'millesime' => 'int(4) NOT NULL',
-            'ligneId' => 'varchar(5) NOT NULL',
-            'sens' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
-            'moment' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
-            'ordre' => 'tinyint(3) UNSIGNED NOT NULL DEFAULT "1"',
-            'stationId' => 'int(11) NOT NULL'
+            'stationId' => 'int(11) NOT NULL DEFAULT "0"',
+            'rang' => 'tinyint(4) NOT NULL DEFAULT "1"'
         ],
         'primary_key' => [
             'etablissementId',
-            'millesime',
-            'ligneId',
-            'sens',
-            'moment',
-            'ordre'
+            'stationId'
         ],
         'foreign key' => [
             [
@@ -44,29 +36,6 @@ return [
                     'table' => 'etablissements',
                     'fields' => [
                         'etablissementId'
-                    ],
-                    'on' => [
-                        'update' => 'CASCADE',
-                        'delete' => 'CASCADE'
-                    ]
-                ]
-            ],
-            [
-                'key' => [
-                    'millesime',
-                    'ligneId',
-                    'sens',
-                    'moment',
-                    'ordre'
-                ],
-                'references' => [
-                    'table' => 'services',
-                    'fields' => [
-                        'millesime',
-                        'ligneId',
-                        'sens',
-                        'moment',
-                        'ordre'
                     ],
                     'on' => [
                         'update' => 'CASCADE',
@@ -93,5 +62,5 @@ return [
         'collate' => 'utf8mb4_unicode_ci'
     ],
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
-        'data.etablissements-services.php')
+        'data.etablissements-stations.php')
 ];

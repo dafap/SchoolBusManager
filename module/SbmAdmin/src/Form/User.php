@@ -7,7 +7,7 @@
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 15 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Form;
@@ -153,9 +153,10 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                     'empty_option' => 'Quelle catégorie ?',
                     'value_options' => [
                         '1' => 'Parent',
-                        '2' => 'Transporteur',
-                        '3' => 'Etablissement scolaire',
-                        '100' => 'Commune',
+                        '50' => 'Organisme',
+                        '110' => 'Transporteur',
+                        '120' => 'Établissement scolaire',
+                        '130' => 'Commune',
                         '200' => 'Secrétariat',
                         '253' => 'Gestionnaire',
                         '254' => 'Administrateur'

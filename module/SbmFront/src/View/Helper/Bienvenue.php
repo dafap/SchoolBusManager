@@ -7,8 +7,8 @@
  * @filesource Bienvenue.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mars 2019
- * @version 2019-2.5.0
+ * @date 30 avr. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmFront\View\Helper;
 
@@ -32,7 +32,7 @@ class Bienvenue extends AbstractHelper
             $annee_scolaire = Session::get('as')['libelle'];
             $identity = $this->getAuthService()->getIdentity();
             $bienvenue = $identity['prenom'] . ' ' . $identity['nom'];
-            $categorie = $identity['categorieId'];
+            $categorieId = $identity['categorieId'];
             $view = $this->getView();
             $logout = $view->url('login', [
                 'action' => 'logout'
@@ -71,10 +71,10 @@ class Bienvenue extends AbstractHelper
                 "<li><a href=\"$url_localisation\">Mon domicile sur la carte</a></li>",
                 "<li><a href=\"$url_mailchimp\">S'inscrire à la liste de diffusion</a></li>"
             ];
-            if ($categorie > 1) {
+            if ($categorieId > 99) {
                 unset($a_menu_content[6], $a_menu_content[5]);
             }
-            if ($categorie > 199) {
+            if ($categorieId > 199) {
                 unset($a_menu_content[4]);
             }
             $menu_content = implode("\n", $a_menu_content);

@@ -5,7 +5,7 @@
  * @filesource edit-eleve.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 var texteDemandeR2;
@@ -29,24 +29,50 @@ function montreStationIdR2(state) {
 		div.hide();
 	}
 }
+
+function avecAdressePerso(choisi)
+{
+	$("#enfant_ap").empty();
+	$("#z3cg-r1").empty();
+	$("#z3cd-r1").empty();
+	if (choisi){
+		bloc = $("#content_responsable1").clone();
+		bloc.removeAttr("id").appendTo("#z3cd-r1");
+		bloc = $("#content_enfant_ap").clone();
+		ch = bloc.find('[id]');
+		ch.each(function(i) {
+			if (this.id) {
+				this.id = this.id.replace('enfant_', '');
+				this.id = this.id.replace('?', 'enfant-');
+			}
+		});
+		bloc.find('label').prop('for', function(i, oldVal) {
+					return oldVal.replace('enfant_', '');					
+		});
+		bloc.removeAttr("id").appendTo("#enfant_ap");
+	}
+}
+
+function sansAdressePerso(choisi)
+{
+	$("#enfant_ap").empty();
+	$("#z3cg-r1").empty();
+	$("#z3cd-r1").empty();
+	if (choisi) {
+		bloc = $("#content_responsable1").clone();
+		bloc.removeAttr("id").appendTo("#z3cg-r1");
+	}
+}
+
 // copie / suppression de la div par le bouton radio (#btradioap...)
 $(function() {
 	// montre ou cache la partie du formulaire concernant l'adresse perso
 	$("#btnradioap0").on('click', function() {
-		$("#enfant_ap").empty();
-		$("#z3cg-r1").empty();
-		$("#z3cd-r1").empty();
-		if ($(this).is(':checked')) {
-			bloc = $("#content_responsable1").clone();
-			bloc.removeAttr("id").appendTo("#z3cg-r1");
-		}
+		sansAdressePerso($(this).is(':checked'));
 	});
 	$("#btnradioap1").click(function() {
-		$("#enfant_ap").empty();
-		$("#z3cg-r1").empty();
-		$("#z3cd-r1").empty();
-		if ($(this).is(':checked')) {
-			bloc = $("#content_responsable1").clone();
+		avecAdressePerso($(this).is(':checked')); 
+			/*bloc = $("#content_responsable1").clone();
 			bloc.removeAttr("id").appendTo("#z3cd-r1");
 			bloc = $("#content_enfant_ap").clone();
 			ch = bloc.find('[id]');
@@ -60,7 +86,7 @@ $(function() {
 						return oldVal.replace('enfant_', '');					
 			});
 			bloc.removeAttr("id").appendTo("#enfant_ap");
-		}
+		*/
 	});
 	// adapte le select de la classe à l'établissement
 	$("#enfant_etablissementId").change(function(){
@@ -183,11 +209,9 @@ $(function() {
 
 $(function() {
 	if ($("#btnradioap1").is(':checked')) {
-		bloc = $("#content_responsable1").clone();
-		bloc.removeAttr("id").appendTo("#z3cd-r1");
+		avecAdressePerso(1);
 	} else {
-		bloc = $("#content_responsable1").clone();
-		bloc.removeAttr("id").appendTo("#z3cg-r1");
+		sansAdressePerso(1);
 	}
 	if ($("#btnradioga1").is(':checked')) {
 		bloc = $("#content_enfant_ga").clone();

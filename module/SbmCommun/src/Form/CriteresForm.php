@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -2603,9 +2603,11 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'empty_option' => 'Toutes',
                     'value_options' => [
                         '1' => 'Parent',
-                        '2' => 'Transporteur',
-                        '3' => 'Établissement scolaire',
-                        '250' => 'Secrétariat',
+                        '50'=>'Organisme',
+                        '110' => 'Transporteur',
+                        '120' => 'Établissement scolaire',
+                        '130' => 'Commune',
+                        '200' => 'Secrétariat',
                         '253' => 'Gestionnaire',
                         '254' => 'Administrateur'
                     ],

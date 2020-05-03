@@ -1,0 +1,71 @@
+<?php
+/**
+ * Page de création d'un lien entre un établissement et une station desservant l'établissement
+ *
+ * Voici les variables définies dans cette vue:
+ * $origine         : prend l'une des valeurs 'etablissement-station' ou 'station-etablissement'
+ * $etablissementId : identifiant d'un établissement
+ * $etablissement   : fiche de l'établissement pour affichage dans titre
+ * $form            : le formulaire de saisi
+ * $page            : la page de la liste initiale dans etablissement-liste ou dans station-liste
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource etablissement-station-ajout.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+//$this->themeJS('gestion-transport', 'etablissement-station-ajout.js');
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => $this->origine,
+        'page' => $this->page
+    ]);
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+$hiddens = [
+    'etablissementId' => $this->etablissement->etablissementId,
+    'origine' => $this->origine
+];
+$h1 = sprintf("Ajout d'une station desservant l'établissement\n%s %s - %s",
+    $this->etablissement->etablissementId, $this->etablissement->nom,
+    $this->etablissement->commune);
+$description1 = 'la station';
+?>
+<h1><?= nl2br($h1); ?></h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+        <?= $this->formHidden($this->form->get('origine'));?>
+        <?= $this->formHidden($this->form->get('csrf'));?>
+        <?= $this->formHidden($this->form->get('etablissementId'));?>
+    	<fieldset class="sbm-page1">
+			<div id="wrapper-stationId" class="row-inner ajout">
+            	<?= $this->formRow($this->form->get('stationId'));?>
+            </div>
+			<div id="wrapper-rang" class="row-inner ajout">
+        		<?= $this->formRow($this->form->get('rang'));?>
+			</div>
+			<div id="wrapper-buttons" class="row-inner ajout">
+    			<?= $this->formSubmit($this->form->get('submit'));?>
+    			<?= $this->formSubmit($this->form->get('cancel'));?>
+    		</div>
+		</fieldset>
+    	<?= $this->form()->closeTag();?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

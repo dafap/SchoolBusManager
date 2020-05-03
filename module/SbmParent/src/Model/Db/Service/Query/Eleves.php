@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model\Db\Service\Query;
@@ -181,11 +181,12 @@ class Eleves implements FactoryInterface
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = com.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'alias',
-            'laposteEtablissement' => 'alias_laposte'
-        ])
+        ], 'eta.communeId = com.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'alias',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         try {
@@ -221,6 +222,53 @@ class Eleves implements FactoryInterface
             ->nest()
             ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
             $responsableId)->unnest();
+        $select = $this->sql->select();
+        $select->from([
+            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->columns([
+            'eleveId',
+            'nom',
+            'prenom'
+        ])
+            ->join([
+            's' => $select1
+        ], 'e.eleveId = s.eleveId', [], Select::JOIN_LEFT)
+            ->where($where);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        return $statement->execute();
+    }
+
+    public function aReincrireOrganisme($responsableId)
+    {
+        // liste des responsableId de l'organisme
+        $select2 = $this->sql->select()
+            ->columns([
+            'responsableId'
+        ])
+            ->from(
+            [
+                'uo1' => $this->db_manager->getCanonicName('users-organismes', 'table')
+            ])
+            ->join(
+            [
+                'uo2' => $this->db_manager->getCanonicName('users-organismes', 'table')
+            ], 'uo1.organismeId = uo2.organismeId', [])
+            ->where((new Where())->equalTo('uo2.responsableId', $responsableId));
+        // tous les élèves scolarisés cette année
+        $where1 = new Where();
+        $where1->equalTo('millesime', $this->millesime);
+        $select1 = $this->sql->select();
+        $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($where1);
+        // ------------------------
+        // élèves de ces responsables non scolarisés cette année
+        $where = new Where();
+        $where->isNull('s.eleveId')
+            ->in('responsable1Id', $select2);
         $select = $this->sql->select();
         $select->from([
             'e' => $this->db_manager->getCanonicName('eleves', 'table')

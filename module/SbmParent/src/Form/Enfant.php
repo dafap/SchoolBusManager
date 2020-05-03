@@ -12,7 +12,7 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
@@ -144,7 +144,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_chez',
                     'tabindex' => 41,
-                    'class' => 'sbmparent-enfant'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Chez',
@@ -163,7 +163,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_adresseEleveL1',
                     'tabindex' => 42,
-                    'class' => 'sbmparent-enfant'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Adresse',
@@ -181,9 +181,8 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'SbmCommun\Form\Element\Adresse',
                 'attributes' => [
                     'id' => 'enfant_adresseEleveL2',
-
                     'tabindex' => 43,
-                    'class' => 'sbmparent-enfant'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Complément d\'adresse',
@@ -202,7 +201,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_codePostalEleve',
                     'tabindex' => 44,
-                    'class' => 'sbmparent-enfant'
+                    'class' => 'sbm-width-5c'
                 ],
                 'options' => [
                     'label' => 'Code postal',
@@ -221,7 +220,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                 'attributes' => [
                     'id' => 'enfant_communeEleveId',
                     'tabindex' => 45,
-                    'class' => 'sbmparent-enfant'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Commune',
@@ -374,9 +373,10 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     'value' => '0'
                 ],
                 'options' => [
-                    'label' => 'Résidense personnelle',
+                    'label' => 'Résidence de l\'enfant',
                     'label_attributes' => [
-                        'class' => 'sbm-radio-label'
+                        'class' => 'sbm-radio-label',
+                        'title' => 'lorsqu\'elle est différente de celle du responsable'
                     ],
                     'value_options' => [
                         [

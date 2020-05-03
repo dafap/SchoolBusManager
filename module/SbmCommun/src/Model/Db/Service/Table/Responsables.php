@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -367,7 +367,8 @@ class Responsables extends AbstractSbmTable
      * @param string $nom
      * @param string $prenom
      * @param string $adresse
-     *            On cherche s'il y a une correspondance avec adresseL1, adresseL2 ou adresseL3
+     *            On cherche s'il y a une correspondance avec adresseL1, adresseL2 ou
+     *            adresseL3
      * @param string $communeId
      *
      * @return boolean|\SbmCommun\Model\Db\ObjectData\Responsable
@@ -430,5 +431,38 @@ class Responsables extends AbstractSbmTable
                 ]);
         }
         return $resultset->current();
+    }
+
+    /**
+     * Tente de renvoyer la categorieId de l'utilisateur associé et renvoie 1 s'il n'y en
+     * a pas.
+     *
+     * @param int $responsableId
+     * @return int
+     */
+    public function getCategorieId(int $responsableId): int
+    {
+        $tableName = $this->db_manager->getCanonicName('responsables', 'table');
+        $select = $this->table_gateway->getSql()
+            ->select()
+            ->columns([])
+            ->join([
+            'usr' => $this->db_manager->getCanonicName('users', 'table')
+        ], "usr.email = $tableName.email", [
+            'categorieId'
+        ])
+            ->where([
+            'responsableId' => $responsableId
+        ]);
+        try {
+            $result = $this->table_gateway->selectWith($select);
+            if ($result->count() == 1) {
+                return $result->current()->categorieId;
+            } else {
+                return 1;
+            }
+        } catch (\Exception $e) {
+            return 1;
+        }
     }
 }

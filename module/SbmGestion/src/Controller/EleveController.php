@@ -1862,7 +1862,12 @@ class EleveController extends AbstractActionController
             ->getValidatorChain()
             ->attach($validator);
         // remplissage des listes des éléments select et longueurs maxi des inputs
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
+        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
+            $responsableId) == 1) {
+            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
+        } else {
+            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
+        }
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));

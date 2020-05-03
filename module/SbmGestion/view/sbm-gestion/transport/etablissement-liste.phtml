@@ -82,9 +82,14 @@ $url_delete = $this->url('sbmgestion/transport',
         'action' => 'etablissement-suppr',
         'page' => $this->page
     ]);
-$url_relation = $this->url('sbmgestion/transport',
+$url_relation_services = $this->url('sbmgestion/transport',
     [
         'action' => 'etablissement-service',
+        'id' => $this->page
+    ]);
+$url_relation_stations = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-station',
         'id' => $this->page
     ]);
 $url_group = $this->url('sbmgestion/transport',
@@ -203,8 +208,13 @@ $actions = [
                 ],
                 'services' => [
                     'class' => 'fam-table-relationship',
-                    'formaction' => $url_relation,
+                    'formaction' => $url_relation_services,
                     'title' => 'circuits desservant cet établissement'
+                ],
+                'stations' => [
+                    'class' => 'fam-arrow-in',
+                    'formaction' => $url_relation_stations,
+                    'title' => 'stations desservant cet établissement'
                 ],
                 'eleves' => [
                     'class' => 'fam-group',

@@ -9,7 +9,7 @@
  * @filesource UserRelation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 15 avr. 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Form;
@@ -24,10 +24,11 @@ class UserRelation extends AbstractSbmForm
         if (! in_array($name, [
             'commune',
             'etablissement',
+            'organisme',
             'transporteur'
         ])) {
             throw new DomainException(
-                "Les valeurs autorisées sont 'commune', 'etablissement' ou 'transporteur'.");
+                "Les valeurs autorisées sont 'commune', 'etablissement', 'organisme ou 'transporteur'.");
         }
         $choix = $name == 'commune' ? 'Choisissez une commune': 'Choisissez un ' . $name;
         parent::__construct($name);

@@ -1,0 +1,146 @@
+<?php
+/**
+ * Liste des stations jumelées à une autre station (correspondance à pied)
+ *
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport/
+ * @filesource station-station.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 3 mai 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_ajouter = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station-ajout',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station-suppr',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station-group',
+        'pr' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+
+$hiddens = [
+    'station1Id' => $this->station->stationId,
+    'origine' => 'station-station'
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'station-station'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ],
+    'rapports' => $menuImpression['content'],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Nouvelle station'
+    ]
+];
+
+?>
+<h1>Liste des stations jumelées à la station
+<?=$this->station->nom . ' - ' . $this->station->lacommune;?>
+</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner stations-stations">
+			<tbody>
+				<tr>
+					<th>Station 1</th>
+					<th>Commune</th>
+					<th>Station 2</th>
+					<th>Commune</th>
+					<th>Rang</th>
+					<th></th>
+				</tr>
+            <?php
+            foreach ($this->data as $entity) :
+                ?>
+            	<?php
+                $entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="station1">
+						<?=$this->escapeHtml($entity->sta1_nom);?></td>
+					<td class="commune1">
+						<?=$this->escapeHtml($entity->sta1_lacommune);?></td>
+					<td class="station2">
+						<?=$this->escapeHtml($entity->sta2_nom);?></td>
+					<td class="commune2">
+						<?=$this->escapeHtml($entity->sta2_lacommune);?></td>
+					<td class="temps">
+						<?=$entity->temps;?></td>
+					<td class="boutons">
+            <?php
+                $hiddens['station2Id'] = $entity->station2Id;
+                $buttons = [
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ]
+                ];
+                // station1Id|station2Id
+                $id = sprintf('%d|%d', $entity->station1Id, $entity->station2Id);
+                echo $this->listeLigneActions($id, $hiddens, $buttons);
+                ?>
+			        </td>
+				</tr>
+            <?php
+            endforeach
+            ;
+            ?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix"></div>
+	</div>
+</div>

@@ -3,23 +3,26 @@
  * Page de supprssion d'un user
  *
  * On ne peut supprimer un user que s'il n'est pas associé à un responsable.
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource user-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
- * @version 2019-2.5.0
+ * @date 2 mai 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $acategories = [
     255 => 'Administrateur',
     254 => 'Administrateur',
     253 => 'Gestionnaire',
-    1 => 'Parent',
-    2 => 'Transporteur',
-    3 => 'Etablissement'
+    200 => 'Secrétariat',
+    130 => 'Commune',
+    120 => 'Etablissement',
+    110 => 'Transporteur',
+    50 => 'Organisme',
+    1 => 'Parent'
 ];
 $url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
@@ -48,7 +51,7 @@ $actions = [
 	<p>Confirmez-vous ?</p>
     <?= $this->form()->openTag($this->form);?>
     <?= $this->formCollection($this->form);?>
-    <?= $this->form()->closeTag();?>    
+    <?= $this->form()->closeTag();?>
 <?php else :?>
     <p>Ce compte est celui d'un responsable. Pour supprimer ce compte,
 		vous devez d'abord supprimer le responsable associé.</p>

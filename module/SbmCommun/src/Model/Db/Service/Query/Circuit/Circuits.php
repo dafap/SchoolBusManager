@@ -7,17 +7,19 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Expression;
 
 class Circuits extends AbstractQuery
 {
-    use \SbmCommun\Model\Traits\ServiceTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     protected function init()
     {
@@ -88,7 +90,8 @@ class Circuits extends AbstractQuery
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)
             ->equalTo('ser.ligneId', $service['ligneId'])
-            ->equalTo('ser.sens', $service['sens'])->equalTo('ser.moment', $service['moment'])
+            ->equalTo('ser.sens', $service['sens'])
+            ->equalTo('ser.moment', $service['moment'])
             ->equalTo('ser.ordre', $service['ordre']);
         $order = 'horaireA';
         $columns = [
@@ -136,5 +139,45 @@ class Circuits extends AbstractQuery
             }
         }
         return $result;
+    }
+
+    /**
+     * Renvoie les services ayant des points d'arrêt sur la commune donnée
+     *
+     * @param string $communeId
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getServicesViaCommune(string $communeId)
+    {
+        return $this->renderResult($this->selectServicesViaCommune($communeId));
+    }
+
+    /**
+     *
+     * @param string $communeId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectServicesViaCommune(string $communeId)
+    {
+        $where = new Where();
+        $where->equalTo('cir.millesime', $this->millesime)->equalTo('sta.communeId',
+            $communeId);
+        return $this->sql->select()
+            ->columns(
+            [
+                'ligne',
+                'sens',
+                'moment',
+                'ordre',
+                'serviceId' => new Expression($this->getSqlEncodeServiceId())
+            ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->from([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations')
+        ], 'cir.stationId = sta.stationId', [])
+            ->where($where);
     }
 }

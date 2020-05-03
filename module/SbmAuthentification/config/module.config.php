@@ -14,7 +14,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 30 avr. 2020
  * @version 2020-2.6.0
  */
 return [
@@ -22,9 +22,10 @@ return [
         // association entre une categorieId (table users) et un rôle
         'roleId' => [
             1 => 'parent',
-            2 => 'transporteur',
-            3 => 'etablissement',
-            100 => 'commune',
+            50 => 'organisme',
+            110 => 'transporteur',
+            120 => 'etablissement',
+            130 => 'commune',
             200 => 'secretariat',
             253 => 'gestion',
             254 => 'admin',
@@ -38,6 +39,7 @@ return [
             'commune'=> 'guest',
             'secretariat' => 'guest',
             'parent' => 'guest',
+            'organisme' => 'parent',
             'gestion' => 'parent',
             'admin' => 'gestion',
             'sadmin' => 'admin'
@@ -58,6 +60,7 @@ return [
             'commune' => 'sbmportail',
             'secretariat' => 'sbmportail',
             'parent' => 'sbmparent',
+            'organisme' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',
             'sadmin' => 'sbminstall'

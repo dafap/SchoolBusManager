@@ -14,7 +14,7 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 3 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -68,6 +68,23 @@ class StationsForSelect implements FactoryInterface
     {
         $select = $this->sql->select($this->table_name);
         $select->columns($this->columns)->order($this->order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['stationId']] = $row['libelle'];
+        }
+        return $array;
+    }
+
+    public function sauf($stationId)
+    {
+        $where = new Where();
+        $where->notEqualTo('stationId', $stationId);
+        $select = $this->sql->select($this->table_name);
+        $select->columns($this->columns)
+            ->where($where)
+            ->order($this->order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
