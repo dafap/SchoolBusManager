@@ -1,0 +1,65 @@
+<?php
+/**
+ * Page présentant une carte interactive aux parents
+ *
+ * Un clic sur la carte pour placer ou déplacer le repère de l'emplacement du domicile
+ *
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/config
+ * @filesource eleve-localisation.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 mai 2020
+ * @version 2020-2.6.0
+ */
+// calcul du contenu de l'infobulle et du libellé du domicile
+$description = [];
+$description[] = $domicile = '<b>' .
+    implode(' ',
+        [
+            $this->eleve['nom'],
+            $this->eleve['prenom']
+        ]) . '</b>';
+$adresse = array_filter(
+    [
+        $this->eleve['adresseL1'],
+        $this->eleve['adresseL2']
+    ]);
+foreach ($adresse as $ligne) {
+    $description[] = $ligne;
+}
+$domicile .= ', ' . implode(', ', $adresse);
+$cp_commune = implode(' ', [
+    $this->eleve['codePostal'],
+    $this->eleve['lacommune']
+]);
+$description[] = $cp_commune;
+$domicile .= ', ' . $cp_commune;
+// mise en place des JS de googleMaps
+$this->headScript()->appendFile($this->url_api);
+$this->themeJS('commun', 'localisation.js');
+$this->themeJS('commun', 'StyledMarker.js');
+// lancement du script (sera affiché dans le layout à la fin de la page)
+$this->inlineScript()->captureStart();
+?>
+const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
+const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
+const INI_ZOOM = <?= $this->config['zoom'];?>;
+initialiser("<?=$this->scheme;?>",'domicile de l\'enfant', "<?= implode('<br/>', $description);?>", []);
+<?php
+$this->inlineScript()->captureEnd();
+/* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
+?>
+<h1>Position de votre domicile sur la carte</h1>
+<div id="carte-wrapper">
+	<div id="carte-header">
+		<p>
+			Cliquez sur la carte à l'emplacement de votre domicile <b><?= $domicile;?></b>
+			puis cliquez sur le bouton <b>Enregistrer la localisation</b>.
+			Utilisez le zoom pour plus de précision.
+		</p>
+		<?= $this->form($this->form);?>
+	</div>
+	<div id="carte-inner"
+		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>
+</div>

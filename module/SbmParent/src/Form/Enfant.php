@@ -12,7 +12,7 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 5 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
@@ -20,6 +20,7 @@ namespace SbmParent\Form;
 use SbmBase\Model\Session;
 use SbmCommun\Filter\SansAccent;
 use SbmCommun\Form\AbstractSbmForm;
+use SbmCommun\Model\Db\ObjectData\Scolarite;
 use SbmCommun\Model\Strategy\Semaine;
 use Zend\Db\Sql\Where;
 use Zend\InputFilter\InputFilterProviderInterface;
@@ -681,6 +682,21 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                                 'existe' => 'Cet enfant est déjà enregistré.'
                             ]
                         ]);
+                }
+            }
+            if ($ok) {
+                if ($data['chez'] || $data['adresseL1'] || $data['adresseL2'] ||
+                    $data['codePostal'] || $data['communeId']) {
+                    $obj = new Scolarite();
+                    $ok = $obj->exchangeArray($data)->hasAdressePerso();
+                    if (! $ok) {
+                        $this->setMessages(
+                            [
+                                'communeId' => [
+                                    'ap' => 'Une adresse personnelle doit nécessairement avoir au moins une adresse, un codePostal et une commune'
+                                ]
+                            ]);
+                    }
                 }
             }
             return $ok;

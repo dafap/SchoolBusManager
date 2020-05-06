@@ -9,7 +9,7 @@
  * @filesource Scolarite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mars 2020
+ * @date 5 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -36,11 +36,10 @@ class Scolarite extends AbstractObjectData
     public function hasAdressePerso()
     {
         try {
-            $value = $this->communeId;
-            $value = $this->codePostal;
-            $value = $this->adresseL1;
-            unset($value);
-            return true;
+            $value = ! empty($this->communeId);
+            $value &= ! empty($this->codePostal);
+            $value &= ! empty($this->adresseL1);
+            return $value;
         } catch (Exception\OutOfBoundsException $e) {
             return false;
         }

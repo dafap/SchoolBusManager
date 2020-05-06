@@ -19,13 +19,14 @@
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 5 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
 
 use SbmBase\Model\Session;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -95,6 +96,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     protected $grilleTarif;
 
     /**
+     *
      * @param \SbmCommun\Model\Db\ObjectData\Eleve $oEleve
      */
     public function setOEleve($oEleve)
@@ -104,6 +106,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
+     *
      * @param \SbmCommun\Model\Db\ObjectData\Scolarite $oScolarite
      */
     public function setOScolarite($oScolarite)
@@ -125,8 +128,6 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         $this->init();
         return $this;
     }
-
-
 
     /**
      * Calcule la réduction et la grille tarifaire et enregistre le résultat s'il a
@@ -292,9 +293,11 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     protected function reglesGrille()
     {
         // choix entre les grilles TARIF_ARLYSERE et HORS_ARLYSERE
+        $millesime = Session::get('millesime');
         try {
             $sql = new Sql($this->db_manager->getDbAdapter());
             $select = $sql->select()
+                ->quantifier(Select::QUANTIFIER_DISTINCT)
                 ->columns([
                 'membre'
             ])
@@ -306,9 +309,23 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
                 [
                     'res' => $this->db_manager->getCanonicName('responsables', 'table')
                 ], 'res.communeId = com.communeId', [])
+                ->join(
+                [
+                    'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+                ], 'com.communeId = sco.communeId', [], Select::JOIN_LEFT)
                 ->where(
                 (new Where())->literal('com.membre = 1')
-                    ->equalTo('res.responsableId', $this->oEleve->responsable1Id));
+                    ->nest()
+                    ->nest()
+                    ->equalTo('res.responsableId', $this->oEleve->responsable1Id)
+                    ->nest()
+                    ->isNull('sco.millesime')->or->notEqualTo('sco.millesime', $millesime)
+                    ->unnest()
+                    ->unnest()->or->nest()
+                    ->equalTo('sco.millesime', $millesime)
+                    ->equalTo('sco.eleveId', $this->oEleve->eleveId)
+                    ->unnest()
+                    ->unnest());
             $statement = $sql->prepareStatementForSqlObject($select);
             $result = $statement->execute();
             if ($result->count()) {

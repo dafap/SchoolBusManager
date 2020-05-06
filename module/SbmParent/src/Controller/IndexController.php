@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 6 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -27,6 +27,9 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
+use SbmCartographie\GoogleMaps;
+use SbmCartographie\Model\Point;
+use SbmCommun\Form\LatLng as LatLngForm;
 
 class IndexController extends AbstractActionController
 {
@@ -176,6 +179,11 @@ class IndexController extends AbstractActionController
         $outils = new OutilsInscription($this->local_manager, $responsable->responsableId,
             $authUserId);
         $selectStations = $this->db_manager->get('Sbm\Db\Select\Stations')->toutes();
+        if ($categorieId == 1) {
+            $selectCommunes = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
+        } else {
+            $selectCommunes = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
+        }
         $form = $this->form_manager->get(Form\Enfant::class);
         $form->get('classeId')->setEmptyOption('Choisir d\'abord l\'établissement');
         $form->setAttribute('action',
@@ -187,11 +195,12 @@ class IndexController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->visibles())
             ->setValueOptions('joursTransportR1', Semaine::getJours())
+            ->setValueOptions('communeId', $selectCommunes)
+            ->setValueOptions('stationIdR1', $selectStations)
+            ->setValueOptions('stationIdR2', $selectStations)
             ->setData([
             'responsable1Id' => $responsable->responsableId
-        ])
-            ->setValueOptions('stationIdR1', $selectStations)
-            ->setValueOptions('stationIdR2', $selectStations);
+        ]);
         // Le formulaire de garde alterné est prévu complet pour une saisie
         $formga = $this->form_manager->get(Form\Service\Responsable2Complet::class);
         if (array_key_exists('submit', $args)) {
@@ -236,7 +245,18 @@ class IndexController extends AbstractActionController
                 } else {
                     $this->warningCompteRendu($cr);
                 }
-                return $this->redirect()->toRoute('sbmparent');
+                if ($outils->doitGeolocaliser()) {
+                    Session::set('eleve',
+                        array_merge($outils->getOEleve()->getArrayCopy(),
+                            $outils->getOScolarite()->getArrayCopy()),
+                        'eleve-localisation');
+                    return $this->redirect()->toRoute('sbmparent',
+                        [
+                            'action' => 'eleve-localisation'
+                        ]);
+                } else {
+                    return $this->redirect()->toRoute('sbmparent');
+                }
             } elseif (getenv('APPLICATION_ENV') == 'development') {
                 echo '<h3>Debug:</h3>';
                 var_dump($form->getMessages());
@@ -254,7 +274,7 @@ class IndexController extends AbstractActionController
                 'url_ts_region' => $this->url_ts_region,
                 'form' => $form->prepare(),
                 'formga' => $formga->prepare(),
-                'categorieId'=>$categorieId,
+                'categorieId' => $categorieId,
                 'responsable' => $responsable,
                 'ga' => StdLib::getParam('ga', $args, 0),
                 'userId' => $authUserId,
@@ -400,7 +420,18 @@ class IndexController extends AbstractActionController
                 } else {
                     $this->warningCompteRendu($cr);
                 }
-                return $this->redirect()->toRoute('sbmparent');
+                if ($outils->doitGeolocaliser()) {
+                    Session::set('eleve',
+                        array_merge($outils->getOEleve()->getArrayCopy(),
+                            $outils->getOScolarite()->getArrayCopy()),
+                        'eleve-localisation');
+                    return $this->redirect()->toRoute('sbmparent',
+                        [
+                            'action' => 'eleve-localisation'
+                        ]);
+                } else {
+                    return $this->redirect()->toRoute('sbmparent');
+                }
             } elseif (getenv('APPLICATION_ENV') == 'development') {
                 echo '<h3>Debug:</h3>';
                 var_dump($form->getMessages());
@@ -791,7 +822,18 @@ class IndexController extends AbstractActionController
                     } else {
                         $this->warningCompteRendu($cr);
                     }
-                    return $this->redirect()->toRoute('sbmparent');
+                    if ($outils->doitGeolocaliser()) {
+                        Session::set('eleve',
+                            array_merge($outils->getOEleve()->getArrayCopy(),
+                                $outils->getOScolarite()->getArrayCopy()),
+                            'eleve-localisation');
+                        return $this->redirect()->toRoute('sbmparent',
+                            [
+                                'action' => 'eleve-localisation'
+                            ]);
+                    } else {
+                        return $this->redirect()->toRoute('sbmparent');
+                    }
                 } elseif (getenv('APPLICATION_ENV') == 'development') {
                     echo '<h3>Debug:</h3>';
                     var_dump($form->getMessages());
@@ -813,10 +855,10 @@ class IndexController extends AbstractActionController
                 // adresse personnelle de l'élève
                 if ($categorieId > 1 || ! empty($data['communeEleveId'])) {
                     $data['ap'] = 1;
-                    $data['adresseL1'] = $data['adresseEleveL1'];
-                    $data['adresseL2'] = $data['adresseEleveL2'];
-                    $data['codePostal'] = $data['codePostalEleve'];
-                    $data['communeId'] = $data['communeEleveId'];
+                    $data['adresseL1'] = StdLib::getParam('adresseEleveL1', $data, '');
+                    $data['adresseL2'] = StdLib::getParam('adresseEleveL2', $data, '');
+                    $data['codePostal'] = StdLib::getParam('codePostalEleve', $data, '');
+                    $data['communeId'] = StdLib::getParam('communeEleveId', $data, '');
                 } else {
                     $data['ap'] = 0;
                 }
@@ -980,5 +1022,130 @@ class IndexController extends AbstractActionController
             }
         }
         return $this->redirect()->toRoute('sbmparent');
+    }
+
+    public function eleveLocalisationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        $eleve = Session::get('eleve', [], 'eleve-localisation');
+        if (! array_key_exists('eleveId', $eleve) && ! array_key_exists('nom', $eleve) &&
+            ! array_key_exists('prenom', $eleve)) {
+            $this->flashMessenger()->addErrorMessage('Action interdite');
+            return $this->redirect()->toRoute('sbmparent');
+        }
+        $eleve['lacommune'] = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+            $eleve['communeId'])->alias;
+        $configCarte = StdLib::getParam('parent',
+            $this->cartographie_manager->get('cartes'));
+        $oDistanceMatrix = $this->cartographie_manager->get(
+            GoogleMaps\DistanceMatrix::class);
+        if (! $args) {
+            // vérifier que la personne authentifiée est responsable de l'élève
+
+            // initialisation du formulaire à partir de la fiche de l'élève
+            $point = new Point($eleve['x'], $eleve['y']);
+            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
+            $pt->setLatLngRange($configCarte['valide']['lat'],
+                $configCarte['valide']['lng']);
+            if (! $pt->isValid()) {
+                // essayer de localiser par l'adresse avant de présenter la carte
+                $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                    $eleve['adresseL1'], $eleve['codePostal'], $eleve['lacommune']);
+                $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
+                $pt->setLatLngRange($configCarte['valide']['lat'],
+                    $configCarte['valide']['lng']);
+                if (! $pt->isValid() && ! empty($eleve['adresseL2'])) {
+                    $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
+                        $eleve['adresseL2'], $eleve['codePostal'], eleve['lacommune']);
+                    $pt->setLatitude($array['lat']);
+                    $pt->setLongitude($array['lng']);
+                    if (! $pt->isValid()) {
+                        $pt->setLatitude($configCarte['centre']['lat']);
+                        $pt->setLongitude($configCarte['centre']['lng']);
+                    }
+                }
+            }
+        } else {
+            if (array_key_exists('cancel', $args)) {
+                return $this->redirect()->toRoute('sbmparent');
+            } elseif (array_key_exists('lng', $args) && array_key_exists('lat', $args)) {
+                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
+            } else {
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'logout'
+                ]);
+            }
+        }
+        // ici, le pt est initialisé en lat, lng, degré
+        $form = new LatLngForm([
+            'eleveId' => [
+                'id' => 'eleveId'
+            ]
+        ],
+            [
+                'submit' => [
+                    'class' => 'button default submit left-95px',
+                    'value' => 'Enregistrer la localisation'
+                ],
+                'cancel' => [
+                    'class' => 'button default cancel left-10px',
+                    'value' => 'Abandonner'
+                ]
+            ], $configCarte['valide']);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmparent', [
+                'action' => 'eleve-localisation'
+            ]));
+        $form->setData(
+            [
+                'eleveId' => $eleve['eleveId'],
+                'lat' => $pt->getLatitude(),
+                'lng' => $pt->getLongitude()
+            ]);
+        if (array_key_exists('submit', $args)) {
+            if ($args['eleveId'] != $eleve['eleveId']) {
+                // usurpation d'identité
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'logout'
+                ]);
+            }
+            // On vérifie qu'on a cliqué dans un rectangle autorisé
+            $form->setData($args);
+            if ($form->isValid()) {
+                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
+                $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+                $oData = $tScolarites->getObjData();
+                $oData->exchangeArray(
+                    [
+                        'millesime' => Session::get('millesime'),
+                        'eleveId' => $eleve['eleveId'],
+                        'x' => $point->getX(),
+                        'y' => $point->getY()
+                    ]);
+                $tScolarites->saveRecord($oData);
+                $majDistances = $this->cartographie_manager->get(
+                    'Sbm\CalculDroitsTransport');
+                $majDistances->majDistancesDistrict($eleve['eleveId'], false);
+                $this->flashMessenger()->addSuccessMessage(
+                    'La localisation du domicile est enregistrée.');
+                return $this->redirect()->toRoute('sbmparent');
+            }
+        }
+
+        return new ViewModel(
+            [
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
+                'eleve' => $eleve,
+                'form' => $form->prepare(),
+                'config' => $configCarte,
+                'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
+            ]);
     }
 }

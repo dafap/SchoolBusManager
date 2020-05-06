@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
+ * @date 6 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -279,8 +279,17 @@ class OutilsInscription
             ];
         }
         $oData->exchangeArray(array_merge($data, $array));
-
         $this->cr['saveScolarite'] = $tScolarites->saveRecord($oData);
+        if ($this->getOScolarite()->hasAdressePerso()) {
+            try {
+                $this->cr['geolocalisation'] = ($this->getOScolarite()->x +
+                    $this->getOScolarite()->y) == 0;
+            } catch (\Exception $e) {
+                $this->cr['geolocalisation'] = true;
+            }
+        } else {
+            $this->cr['geolocalisation'] = false;
+        }
     }
 
     /**
@@ -301,13 +310,24 @@ class OutilsInscription
                 $this->supprAffectations(true);
             }
         }
-        $this->majDistances($mode);
+        if (! $this->getOScolarite()->hasAdressePerso() ||
+            ($this->getOScolarite()->x + $this->getOScolarite()->y) != 0) {
+            // lorsqu'il y a une adresse perso et que la géolocalisation n'est pas faite
+            // il est inutile de tenter de calculer les distances. Il faudra demander la
+            // géolocalisation et le faire ensuite.
+            $this->majDistances($mode);
+        }
         $this->majGrillesTarif($mode, 1);
         $this->rechercheTrajets($mode, 1);
         if ($this->getOEleve()->responsable2Id && $this->getOScolarite()->demandeR2 > 0) {
             $this->majGrillesTarif($mode, 2);
             $this->rechercheTrajets($mode, 2);
         }
+    }
+
+    public function doitGeolocaliser()
+    {
+        return StdLib::getParam('geolocalisation', $this->cr, false);
     }
 
     public function getMessages()
@@ -337,7 +357,10 @@ class OutilsInscription
                 $this->cr['saveScolarite']['distanceR2Inconnue'] ||
                 $this->cr['saveScolarite']['etablissementChange'];
         } else {
-            $calculDistance = $this->cr['saveScolarite']['distanceR1Inconnue']; //reprise des données 2019
+            $calculDistance = $this->cr['saveScolarite']['distanceR1Inconnue']; // reprise
+                                                                                // des
+                                                                                // données
+                                                                                // 2019
             $calculDistance |= ! ($this->memeDomicile($this->getOResponsable(1)) &&
                 $this->memeScolarite());
             if (! $calculDistance) {
@@ -423,7 +446,7 @@ class OutilsInscription
      *
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
      */
-    private function getOEleve()
+    public function getOEleve()
     {
         if (! $this->aEntities['eleve']) {
             $this->aEntities['eleve'] = $this->local_manager->get('Sbm\DbManager')
@@ -458,7 +481,7 @@ class OutilsInscription
      *
      * @return \SbmCommun\Model\Db\ObjectData\ObjectDataInterface
      */
-    private function getOScolarite()
+    public function getOScolarite()
     {
         if (! $this->aEntities['scolarite']) {
             $this->aEntities['scolarite'] = $this->local_manager->get('Sbm\DbManager')

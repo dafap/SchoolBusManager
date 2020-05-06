@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 5 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -152,18 +152,31 @@ class ElevesScolarites extends AbstractQuery
         } else {
             // liste des responsableId de l'organisme
             $select = $this->sql->select()
-                ->columns([
-                'responsableId'
-            ])
+                ->columns([])
                 ->from(
                 [
                     'uo1' => $this->db_manager->getCanonicName('users-organismes', 'table')
+                ])
+                ->join([
+                'u1' => $this->db_manager->getCanonicName('users', 'table')
+            ], 'u1.userId = uo1.userId', [])
+                ->join(
+                [
+                    'r1' => $this->db_manager->getCanonicName('responsables', 'table')
+                ], 'r1.email = u1.email', [
+                    'responsableId'
                 ])
                 ->join(
                 [
                     'uo2' => $this->db_manager->getCanonicName('users-organismes', 'table')
                 ], 'uo1.organismeId = uo2.organismeId', [])
-                ->where((new Where())->equalTo('uo2.responsableId', $responsableId));
+                ->join([
+                'u2' => $this->db_manager->getCanonicName('users', 'table')
+            ], 'u2.userId = uo2.userId', [])
+                ->join([
+                'r2' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'r2.email = u2.email', [])
+                ->where((new Where())->equalTo('r2.responsableId', $responsableId));
             return $jointure->in('responsable1Id', $select)->in('responsable2Id', $select);
         }
     }
