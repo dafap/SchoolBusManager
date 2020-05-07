@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 fév. 2020
+ * @date 7 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCleverSms\Controller;
@@ -314,7 +314,7 @@ class IndexController extends AbstractActionController
             'form' => $form
         ];
 
-        $r = $this->supprData($this->db_manager, $params,
+        $r = $this->supprData($params,
             function ($id, $table) {
                 return [
                     'id' => $id,

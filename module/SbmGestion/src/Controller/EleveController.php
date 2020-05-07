@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mai 2020
+ * @date 7 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -2042,7 +2042,7 @@ class EleveController extends AbstractActionController
         ];
         $vueResponsables = $this->db_manager->get('Sbm\Db\Vue\Responsables');
         try {
-            $r = $this->supprData($this->db_manager, $params,
+            $r = $this->supprData($params,
                 function ($id, $tableResponsables) use ($vueResponsables) {
                     return [
                         'id' => $id,
