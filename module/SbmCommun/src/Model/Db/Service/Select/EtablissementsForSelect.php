@@ -1,17 +1,18 @@
 <?php
 /**
  * Service fournissant une liste des établissements sous la forme d'un tableau
- *   'etablissementId' => 'commune - nom'
- *   
- * La liste est ordonnées selon 'commune - nom' (ordre alphabétique) 
- * 
+ *   'etablissementId' => 'aliasCG - nom'
+ * où aliasCG correspond à alias (lacommune) sauf pour Chambéry pour lequel c'est AUTRES
+ *
+ * La liste est ordonnées selon 'commune - nom' (ordre alphabétique)
+ *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Select
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 6 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -55,20 +56,35 @@ class EtablissementsForSelect implements FactoryInterface
         return $this;
     }
 
+    /**
+     *
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectEtablissement(): \Zend\Db\Sql\Select
+    {
+        return $this->sql->select()
+            ->columns([
+            'etablissementId' => 'etablissementId',
+            'nom' => 'nom'
+        ])
+            ->from([
+            'eta' => $this->db_manager->getCanonicName('etablissements')
+        ])
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes')
+        ], 'eta.communeId = com.communeId', [
+            'commune' => 'aliasCG'
+        ])
+            ->order([
+            'com.aliasCG',
+            'eta.nom'
+        ]);
+    }
+
     public function tous()
     {
-        $select = $this->sql->select(
-            $this->db_manager->getCanonicName('etablissements', 'vue'));
-        $select->columns([
-            'etablissementId',
-            'commune',
-            'nom'
-        ]);
-        $select->order([
-            'commune',
-            'nom'
-        ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement());
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
@@ -79,19 +95,9 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function desservis()
     {
-        $select = $this->sql->select(
-            $this->db_manager->getCanonicName('etablissements', 'vue'));
-        $select->where('desservie = true');
-        $select->columns([
-            'etablissementId',
-            'commune',
-            'nom'
-        ]);
-        $select->order([
-            'commune',
-            'nom'
-        ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement()
+                ->where('eta.desservie = true'));
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
@@ -102,19 +108,9 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function visibles()
     {
-        $select = $this->sql->select(
-            $this->db_manager->getCanonicName('etablissements', 'vue'));
-        $select->where('visible = true');
-        $select->columns([
-            'etablissementId',
-            'commune',
-            'nom'
-        ]);
-        $select->order([
-            'commune',
-            'nom'
-        ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement()
+                ->where('eta.visible = true'));
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
@@ -125,19 +121,9 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function clgPu()
     {
-        $select = $this->sql->select(
-            $this->db_manager->getCanonicName('etablissements', 'vue'));
-        $select->where('statut = 1 AND niveau = 4');
-        $select->columns([
-            'etablissementId',
-            'commune',
-            'nom'
-        ]);
-        $select->order([
-            'commune',
-            'nom'
-        ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement()
+                ->where('eta.statut = 1 AND eta.niveau = 4'));
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
@@ -148,19 +134,9 @@ class EtablissementsForSelect implements FactoryInterface
 
     public function enRpi()
     {
-        $select = $this->sql->select(
-            $this->db_manager->getCanonicName('etablissements', 'vue'));
-        $select->where('regrPeda = 1 AND niveau <= 3');
-        $select->columns([
-            'etablissementId',
-            'commune',
-            'nom'
-        ]);
-        $select->order([
-            'commune',
-            'nom'
-        ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement()
+                ->where('eta.regrPeda = 1 AND eta.niveau <= 3'));
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
