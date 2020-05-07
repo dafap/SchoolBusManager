@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 6 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -822,9 +822,7 @@ class EleveController extends AbstractActionController
                                     'Vérifiez la géolocalisation des responsables de l\'élève.');
                             }
                         }
-                        if ($aResult['is_new']) {
-                            // cela ne doit jamais se produire ici (voir
-                            // eleveAjout31Action()
+                        if ($aResult['is_new'] || $aResult['etablissementChange']) {
                             $this->db_manager->get('Sbm\GrilleTarifR1')->appliquerTarif(
                                 $eleveId);
                         }
@@ -1445,7 +1443,7 @@ class EleveController extends AbstractActionController
             ]))
             ->setValueOptions('communeId',
             $this->db_manager->get('Sbm\Db\Select\Communes')
-                ->desservies());
+                ->visibles());
         $oDistanceMatrix = $this->cartographie_manager->get(
             GoogleMaps\DistanceMatrix::class);
         // chercher l'élève dans la table
@@ -1453,6 +1451,7 @@ class EleveController extends AbstractActionController
             $args['eleveId']);
         // traitement de la réponse
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
             $form->setData($args);
             $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
             if ($form->isValid()) {
@@ -1763,7 +1762,7 @@ class EleveController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire et on l'adapte
         $form = $this->form_manager->get(Form\Responsable::class);
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
@@ -1772,6 +1771,8 @@ class EleveController extends AbstractActionController
         $form->bind($tableResponsables->getObjData());
 
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
+            $form->get('ancienCommuneId')->setDisableInArrayValidator(true);
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
@@ -1862,20 +1863,15 @@ class EleveController extends AbstractActionController
             ->getValidatorChain()
             ->attach($validator);
         // remplissage des listes des éléments select et longueurs maxi des inputs
-        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
-            $responsableId) == 1) {
-            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
-        } else {
-            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
-        }
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         unset($value_options);
-
         $form->bind($tableResponsables->getObjData());
-
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
+            $form->get('ancienCommuneId')->setDisableInArrayValidator(true);
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
