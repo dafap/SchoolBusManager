@@ -189,7 +189,8 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     {
         $this->readEleve($eleveId);
         if ($this->oScolarite) {
-            $this->scolariteChange |= $this->oScolarite->grilleTarifR1 != $this->grilleTarif;
+            $this->scolariteChange |= $this->oScolarite->grilleTarifR1 !=
+                $this->grilleTarif;
             $this->oScolarite->grilleTarifR1 = $this->grilleTarif;
         }
         return $this;
@@ -292,8 +293,62 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
 
     protected function reglesGrille()
     {
-        // choix entre les grilles TARIF_ARLYSERE et HORS_ARLYSERE
-        $millesime = Session::get('millesime');
+        // rpi école à école
+        if ($this->regardeRPI()) {
+            $this->grilleTarif = self::RPI;
+            return;
+        }
+        // adresse de la famille ou de l'eleve ou de la station dans Arlysère
+        if ($this->regardeAdresseR1() || $this->regardeAdresseEleve() ||
+            $this->regardeCommuneStation()) {
+            $this->grilleTarif = self::TARIF_ARLYSERE;
+        } else {
+            $this->grilleTarif = self::HORS_ARLYSERE;
+        }
+    }
+
+    /**
+     * Renvoie true si l'adresse est dans Arlysère
+     *
+     * @return bool
+     */
+    private function regardeAdresseEleve(): bool
+    {
+        try {
+            $millesime = Session::get('millesime');
+            $sql = new Sql($this->db_manager->getDbAdapter());
+            $select = $sql->select()
+                ->quantifier(Select::QUANTIFIER_DISTINCT)
+                ->columns([
+                'membre'
+            ])
+                ->from(
+                [
+                    'com' => $this->db_manager->getCanonicName('communes', 'table')
+                ])
+                ->join(
+                [
+                    'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+                ], 'com.communeId = sco.communeId', [])
+                ->where(
+                (new Where())->literal('com.membre = 1')
+                    ->equalTo('sco.millesime', $millesime)
+                    ->equalTo('sco.eleveId', $this->oEleve->eleveId));
+            $statement = $sql->prepareStatementForSqlObject($select);
+            $result = $statement->execute();
+            return $result->count() > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Renvoie true si l'adresse est dans Arlysère
+     *
+     * @return bool
+     */
+    private function regardeAdresseR1(): bool
+    {
         try {
             $sql = new Sql($this->db_manager->getDbAdapter());
             $select = $sql->select()
@@ -308,35 +363,59 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
                 ->join(
                 [
                     'res' => $this->db_manager->getCanonicName('responsables', 'table')
-                ], 'res.communeId = com.communeId', [])
-                ->join(
-                [
-                    'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-                ], 'com.communeId = sco.communeId', [], Select::JOIN_LEFT)
+                ], 'com.communeId = res.communeId', [])
                 ->where(
                 (new Where())->literal('com.membre = 1')
-                    ->nest()
-                    ->nest()
-                    ->equalTo('res.responsableId', $this->oEleve->responsable1Id)
-                    ->nest()
-                    ->isNull('sco.millesime')->or->notEqualTo('sco.millesime', $millesime)
-                    ->unnest()
-                    ->unnest()->or->nest()
-                    ->equalTo('sco.millesime', $millesime)
-                    ->equalTo('sco.eleveId', $this->oEleve->eleveId)
-                    ->unnest()
-                    ->unnest());
+                    ->equalTo('res.responsableId', $this->oEleve->responsable1Id));
             $statement = $sql->prepareStatementForSqlObject($select);
             $result = $statement->execute();
-            if ($result->count()) {
-                $this->grilleTarif = self::TARIF_ARLYSERE;
-            } else {
-                $this->grilleTarif = self::HORS_ARLYSERE;
-            }
+            return $result->count() > 0;
         } catch (\Exception $e) {
-            $this->grilleTarif = self::HORS_ARLYSERE;
+            return false;
         }
-        // surcharge par l'application de la grille RPI si nécessaire
+    }
+
+    /**
+     * Revoie true si la station est dans Arlysère
+     *
+     * @return bool
+     */
+    private function regardeCommuneStation(): bool
+    {
+        try {
+            $millesime = Session::get('millesime');
+            $sql = new Sql($this->db_manager->getDbAdapter());
+            $select = $sql->select()
+                ->quantifier(Select::QUANTIFIER_DISTINCT)
+                ->columns([])
+                ->from(
+                [
+                    'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+                ])
+                ->join(
+                [
+                    'sta' => $this->db_manager->getCanonicName('stations', 'table')
+                ], 'sta.stationId = sco.stationIdR1', [])
+                ->join(
+                [
+                    'com' => $this->db_manager->getCanonicName('communes', 'table')
+                ], 'com.communeId = sta.communeId', [
+                    'membre'
+                ])
+                ->where(
+                (new Where())->literal('com.membre = 1')
+                    ->equalTo('sco.millesime', $millesime)
+                    ->equalTo('sco.eleveId', $this->oEleve->eleveId));
+            $statement = $sql->prepareStatementForSqlObject($select);
+            $result = $statement->execute();
+            return $result->count() > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function regardeRPI()
+    {
         try {
             $sql = new Sql($this->db_manager->getDbAdapter());
             $select = $sql->select(
@@ -357,13 +436,9 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
                     $this->oScolarite->etablissementId));
             $statement = $sql->prepareStatementForSqlObject($select);
             $result = $statement->execute();
-            if ($result->count()) {
-                $this->grilleTarif = self::RPI;
-            } else {
-                // on garde le calcul précédent
-            }
+            return $result->count() > 0;
         } catch (\Exception $e) {
-            // on garde le calcul précédent
+            return false;
         }
     }
 
