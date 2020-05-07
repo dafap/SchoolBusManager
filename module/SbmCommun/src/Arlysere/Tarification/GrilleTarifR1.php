@@ -189,7 +189,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     {
         $this->readEleve($eleveId);
         if ($this->oScolarite) {
-            $this->scolariteChange = $this->oScolarite->grilleTarifR1 != $this->grilleTarif;
+            $this->scolariteChange |= $this->oScolarite->grilleTarifR1 != $this->grilleTarif;
             $this->oScolarite->grilleTarifR1 = $this->grilleTarif;
         }
         return $this;
@@ -206,7 +206,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         $reduction = $this->periodeReduction($eleveId) ||
             $this->estPremiereInscription($eleveId) || $this->derogationObtenue($eleveId);
         if ($this->oScolarite) {
-            $this->scolariteChange = $this->oScolarite->reductionR1 != $reduction;
+            $this->scolariteChange |= $this->oScolarite->reductionR1 != $reduction;
             $this->oScolarite->reductionR1 = $reduction;
         }
         return $this;
