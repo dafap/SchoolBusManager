@@ -201,7 +201,8 @@ class LoginController extends AbstractActionController
                         $configCarte = StdLib::getParam('parent', $this->config_cartes);
                         $pt->setLatLngRange($configCarte['valide']['lat'],
                             $configCarte['valide']['lng']);
-                        if (! $pt->isValid()) {
+                        // if (! $pt->isValid()) {
+                        if (! $this->isValid($pt, $configCarte['centre'])) {
                             return $this->redirect()->toRoute('sbmparentconfig',
                                 [
                                     'action' => 'localisation'
@@ -258,6 +259,31 @@ class LoginController extends AbstractActionController
             $this->flashMessenger()->addWarningMessage('Identifiez-vous.');
             return $this->redirect()->toRoute('home');
         }
+    }
+
+    /**
+     * Pour ARLYSERE, les responsables sont acceptés de partout. Les coordonnées ne sont
+     * pas nulles et ne sont pas celles par défaut sur la carte.
+     *
+     * @param \SbmCartographie\Model\Point $pt
+     * @param array $centreCarte
+     * @return boolean
+     */
+    private function isValid(Point $pt, array $centreCarte)
+    {
+        $centre = [
+            $centreCarte['lat'],
+            $centreCarte['lng']
+        ];
+        $zero = [
+            0,
+            0
+        ];
+        $coordonnees = [
+            $pt->getLatitude(),
+            $pt->getLongitude()
+        ];
+        return ($coordonnees != $centre) && ($coordonnees != $zero);
     }
 
     private function logout()

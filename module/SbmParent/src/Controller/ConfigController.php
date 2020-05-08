@@ -273,6 +273,14 @@ class ConfigController extends AbstractActionController
             ]);
     }
 
+    /**
+     * Modification de la localisation du responsable afin qu'il puisse résider n'importe
+     * où. Remplacement de la méthode de validation ($pt->isValid() fait référence à un
+     * rectangle de coordonnées autorisées) par la méthode privée isValid($pt) de cette
+     * classe.
+     *
+     * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
+     */
     public function localisationAction()
     {
         try {
@@ -302,7 +310,7 @@ class ConfigController extends AbstractActionController
             $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
             $pt->setLatLngRange($configCarte['valide']['lat'],
                 $configCarte['valide']['lng']);
-            if (! $pt->isValid()) {
+            if (! $this->isValid($pt, $configCarte['centre'])) {
                 // essayer de localiser par l'adresse avant de présenter la carte
                 $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                     $responsable->adresseL1, $responsable->codePostal,
@@ -310,19 +318,21 @@ class ConfigController extends AbstractActionController
                 $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
                 $pt->setLatLngRange($configCarte['valide']['lat'],
                     $configCarte['valide']['lng']);
-                if (! $pt->isValid() && ! empty($responsable->adresseL2)) {
+                if (! $this->isValid($pt, $configCarte['centre']) &&
+                    ! empty($responsable->adresseL2)) {
                     $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
                         $responsable->adresseL2, $responsable->codePostal,
                         $responsable->lacommune);
                     $pt->setLatitude($array['lat']);
                     $pt->setLongitude($array['lng']);
-                    if (! $pt->isValid() && ! empty($responsable->adresseL3)) {
+                    if (! $this->isValid($pt, $configCarte['centre']) &&
+                        ! empty($responsable->adresseL3)) {
                         $array = $this->cartographie_manager->get(
                             GoogleMaps\Geocoder::class)->geocode($responsable->adresseL3,
                             $responsable->codePostal, $responsable->lacommune);
                         $pt->setLatitude($array['lat']);
                         $pt->setLongitude($array['lng']);
-                        if (! $pt->isValid()) {
+                        if (! $this->isValid($pt, $configCarte['centre'])) {
                             $pt->setLatitude($configCarte['centre']['lat']);
                             $pt->setLongitude($configCarte['centre']['lng']);
                         }
@@ -377,7 +387,10 @@ class ConfigController extends AbstractActionController
                     'action' => 'logout'
                 ]);
             }
-            // On vérifie qu'on a cliqué dans un rectangle autorisé
+            // ici on supprime le rectangle de validation
+            $form->getInputFilter()
+                ->remove('lat')
+                ->remove('lng');
             $form->setData($args);
             if ($form->isValid()) {
                 $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
@@ -413,6 +426,30 @@ class ConfigController extends AbstractActionController
                 'config' => $configCarte,
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
             ]);
+    }
+
+    /**
+     * Les coordonnées ne sont pas nulles et ne sont pas celles par défaut sur la carte.
+     *
+     * @param \SbmCartographie\Model\Point $pt
+     * @param array $centreCarte
+     * @return boolean
+     */
+    private function isValid(Point $pt, array $centreCarte)
+    {
+        $centre = [
+            $centreCarte['lat'],
+            $centreCarte['lng']
+        ];
+        $zero = [
+            0,
+            0
+        ];
+        $coordonnees = [
+            $pt->getLatitude(),
+            $pt->getLongitude()
+        ];
+        return ($coordonnees != $centre) && ($coordonnees != $zero);
     }
 
     public function inscriptionListeDeDiffusionAction()
