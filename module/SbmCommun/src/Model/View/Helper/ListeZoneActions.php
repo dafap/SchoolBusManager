@@ -29,10 +29,12 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
+
+use SbmBase\Model\StdLib;
 
 class ListeZoneActions extends AbstractListeAction
 {
@@ -112,7 +114,7 @@ class ListeZoneActions extends AbstractListeAction
         if (! array_key_exists('op', $hiddens)) {
             $hiddens['op'] = null;
         }
-        $result .= $this->getHiddens($hiddens);
+        $result .= $this->getHiddens($hiddens, StdLib::getParam('id', $attributes, ''));
         $result .= $this->getMenuBar($buttons);
         return $result . $this->closeForm();
     }
@@ -161,8 +163,8 @@ class ListeZoneActions extends AbstractListeAction
     private function getMenuOnglet($attributes)
     {
         $result = '<li';
-        if (array_key_exists('menu', $attributes) &&
-            empty($attributes['menu']) && array_key_exists('title', $attributes)) {
+        if (array_key_exists('menu', $attributes) && empty($attributes['menu']) &&
+            array_key_exists('title', $attributes)) {
             $result .= ' title="' . $attributes['title'] . '"';
         }
         if (array_key_exists('class', $attributes)) {

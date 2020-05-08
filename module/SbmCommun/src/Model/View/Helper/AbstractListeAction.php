@@ -9,7 +9,7 @@
  * @filesource AbstractListeAction.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -151,8 +151,7 @@ abstract class AbstractListeAction extends AbstractHelper
     protected function openForm($attributes, $form_name_default, $id = '')
     {
         // pour la compatibilité aves HTML 4, un attribut 'id' est toujours placé en même
-        // temps que
-        // l'attribut 'name' et prend la même valeur.
+        // temps que l'attribut 'name' et prend la même valeur.
         if (array_key_exists('name', $attributes)) {
             $this->form_name = $attributes['name'] . $id;
         } elseif (array_key_exists('id', $attributes)) {
