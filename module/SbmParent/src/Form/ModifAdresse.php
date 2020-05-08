@@ -10,7 +10,7 @@
  * @filesource ModifAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
@@ -113,7 +113,7 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'codePostal',
                 'type' => 'SbmCommun\Form\Element\CodePostal',
                 'attributes' => [
-                    'id' => 'codePostal',
+                    'id' => 'responsable-codePostal',
                     'class' => 'sbm-width-5c'
                 ],
                 'options' => [
@@ -131,7 +131,7 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'communeId',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
-                    'id' => 'communeId',
+                    'id' => 'responsable-communeId',
                     'class' => 'sbm-width-45c'
                 ],
                 'options' => [
@@ -298,10 +298,6 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'codePostal' => [
                 'name' => 'codePostal',
-                'required' => true
-            ],
-            'communeId' => [
-                'name' => 'communeId',
                 'required' => true
             ],
             'telephoneF' => [

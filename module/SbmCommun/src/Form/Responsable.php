@@ -10,7 +10,7 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;

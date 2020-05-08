@@ -7,7 +7,7 @@
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -72,23 +72,25 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(Form\Responsable::class);
-        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
-            $responsableId) == 1) {
-            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies();
-        } else {
-            $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
-        }
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
             if ($form->isValid()) {
-                // controle le csrf et contrôle les datas
-                $tableResponsables->saveResponsable($form->getData(), true);
+                $oResponsable = $form->getData();
+                $changeAdresse = $tableResponsables->saveResponsable($oResponsable, true);
                 $responsable->refresh();
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
+                if ($changeAdresse) {
+                    $this->db_manager->get('Sbm\Db\Table\Communes')->setVisible(
+                        $oResponsable->communeId);
+                    $this->flashMessenger()->addWarningMessage(
+                        'Vous devez positionner votre domicile sur la carte.');
+                }
                 return $this->redirect()->toRoute('login',
                     [
                         'action' => 'synchro-compte'
@@ -143,26 +145,22 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire complet et on l'adapte
         $form = $this->form_manager->get(ModifAdresse::class);
-        if ($this->db_manager->get('Sbm\Db\Table\Responsables')->getCategorieId(
-            $responsable) == 1) {
-            $form->setValueOptions('communeId',
-                $this->db_manager->get('Sbm\Db\Select\Communes')
-                    ->desservies());
-        } else {
-            $form->setValueOptions('communeId',
-                $this->db_manager->get('Sbm\Db\Select\Communes')
-                    ->visibles());
-        }
+        $form->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->visibles());
         $form->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
             if ($form->isValid()) {
-                $changeAdresse = $tableResponsables->saveResponsable($form->getData(),
-                    true);
+                $oResponsable = $form->getData();
+                $changeAdresse = $tableResponsables->saveResponsable($oResponsable, true);
                 $responsable->refresh();
                 $this->flashMessenger()->addSuccessMessage('Modifications enregistrées.');
                 if ($changeAdresse) {
+                    $this->db_manager->get('Sbm\Db\Table\Communes')->setVisible(
+                        $oResponsable->communeId);
                     return $this->redirect()->toRoute('sbmparentconfig',
                         [
                             'action' => 'localisation'
@@ -238,21 +236,20 @@ class ConfigController extends AbstractActionController
         $tableResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
         // on ouvre le formulaire avec l'identité verrouillée et on l'adapte
         $form = $this->form_manager->get(Form\ResponsableVerrouille::class);
-        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->desservies(
-            [
-                'departement' => 73
-            ]);
+        $value_options = $this->db_manager->get('Sbm\Db\Select\Communes')->visibles();
         $form->setValueOptions('communeId', $value_options)
             ->setValueOptions('ancienCommuneId', $value_options)
             ->setMaxLength($this->db_manager->getMaxLengthArray('responsables', 'table'));
-        unset($value_options);
-
         $form->bind($tableResponsables->getObjData());
         $form->setData($args);
         if (array_key_exists('submit', $args)) {
+            $form->get('communeId')->setDisableInArrayValidator(true);
             if ($form->isValid()) {
-                // controle le csrf et contrôle les datas
-                $tableResponsables->saveRecord($form->getData());
+                $oResponsable = $form->getData();
+                if ($tableResponsables->saveRecord($oResponsable)) {
+                    $this->db_manager->get('Sbm\Db\Table\Communes')->setVisible(
+                        $oResponsable->communeId);
+                }
                 $this->flashMessenger()->addSuccessMessage("La fiche a été enregistrée.");
                 try {
                     return $this->redirectToOrigin()->back();

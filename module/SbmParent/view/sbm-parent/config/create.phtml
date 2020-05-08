@@ -8,7 +8,7 @@
  * @filesource create.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -98,12 +98,16 @@ $elementTitre->setValue($this->identity['titre'])
 			<div id="responsable-edit-codePostal" class="row-inner edit">
 				<?= $this->formRow($this->form->get('codePostal')); ?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit">
-				<?= $this->formRow($this->form->get('communeId')); ?></div>
+				<?= $this->formRow($this->form->get('communeId')); ?>
+			<p class="sbm-description">Si votre commune n'est pas dans la liste,
+					indiquez le code postal avant de choisir la commune. La liste se
+					mettra à jour.</p>
+			</div>
 			<div id="responsable-edit-buttons" class="row-inner edit">
 				<?= $this->formSubmit($this->form->get('submit')); ?></div>
 		</fieldset>
 		<?= $this->form()->closeTag(); ?>
-    </div>
+			</div>
 	<div id="fiche-footer"></div>
 </div>
 <div id="help-r2-content" class="invisible">

@@ -9,12 +9,13 @@
  * @filesource modif-compte.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-parent/config', 'config.css');
 $this->jQuery('jquery-ui');
-$this->themeJS('commun','form-responsable.js');
+$this->themeJS('commun', 'form-responsable.js');
 $hiddens = [];
 $actions = [];
 ?>
@@ -64,23 +65,15 @@ $actions = [];
 					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneP'));?></div>
 					<div class="erreur-a-droite"><?=$this->formRow($this->form->get('telephoneT'));?></div>
 				</div>
-				<?php
-
-    if ($this->layout()->hassbmservicesms) :
-        ?>
+				<?php if ($this->layout()->hassbmservicesms) :?>
 				<div id="responsable-acceptsms" class="left-20px float-left">
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsF'));?></div>
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsP'));?></div>
 					<div>Accepte les SMS<?=$this->formRadio($this->form->get('smsT'));?></div>
 				</div>
-				<?php endif;
-
-    ?>
+				<?php endif;?>
 			</div>
-    <?php
-
-    if ($this->hasEnfantInscrit) :
-        ?>
+    <?php if ($this->hasEnfantInscrit) : ?>
             <?=$this->formHidden($this->form->get('email'));?>
             <?=$this->formHidden($this->form->get('adresseL1'));?>
             <?=$this->formHidden($this->form->get('adresseL2'));?>
@@ -94,22 +87,20 @@ $actions = [];
 			<div id="responsable-edit-adresseL3" class="row-inner edit"><?='<div class="enfant-label">Complément d\'adresse</div>' .$this->responsable['adresseL3'];?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?='<div class="enfant-label">Code postal</div>' .$this->responsable['codePostal'];?></div>
 			<div id="responsable-edit-communeId" class="row-inner edit"><?='<div class="enfant-label">Commune</div>' .$this->responsable['commune'];?></div>
-    <?php
-
-    else :
-        ?>
+    <?php else : ?>
             <div id="responsable-edit-email" class="row-inner edit"><?='<div class="enfant-label">Email</div>' .$this->responsable['email'];?></div>
 			<div id="responsable-edit-adresseL1" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL1'));?></div>
 			<div id="responsable-edit-adresseL2" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL2'));?></div>
 			<div id="responsable-edit-adresseL3" class="row-inner edit"><?=$this->formRow($this->form->get('adresseL3'));?></div>
 			<div id="responsable-edit-codePostal" class="row-inner edit"><?=$this->formRow($this->form->get('codePostal'));?></div>
-			<div id="responsable-edit-communeId" class="row-inner edit"><?=$this->formRow($this->form->get('communeId'));?></div>
+			<div id="responsable-edit-communeId" class="row-inner edit"><?=$this->formRow($this->form->get('communeId'));?>
+				<p class="sbm-description">Si votre commune n'est pas dans la liste,
+					indiquez le code postal avant de choisir la commune. La liste se
+					mettra à jour.</p>
+			</div>
 			<div id="responsable-edit-demenagement" class="row-inner edit"><?=$this->formRow($this->form->get('demenagement'));?></div>
-    <?php
-
-    endif;
-    ?>
-    <div id="responsable-edit-blocAncien"
+    <?php endif; ?>
+    		<div id="responsable-edit-blocAncien"
 				<?=$this->demenagement ? '' : 'style="display: none;"';?>>
 				<div id="responsable-edit-dateDemenagement" class="row-inner edit"><?=$this->formRow($this->form->get('dateDemenagement'));?></div>
 				<div id="responsable-edit-ancienAdresseL1" class="row-inner edit"><?=$this->formRow($this->form->get('ancienAdresseL1'));?></div>
@@ -124,6 +115,9 @@ $actions = [];
     		</div>
 		</fieldset>
 		<?=$this->form()->closeTag();?>
+		<?php if (! $this->hasEnfantInscrit) : ?>
+				<?php endif;?>
+
     </div>
 	<div id="fiche-footer"></div>
 </div>
