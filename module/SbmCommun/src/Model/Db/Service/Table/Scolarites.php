@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -130,15 +130,15 @@ class Scolarites extends AbstractSbmTable
      *            Millésime sur lequel on travaille
      * @param array|int $aEleveId
      *            Tableau de eleveId à mettre à jour ou index eleveId à mettre à jour
-     * @param string $r
-     *            prend la valeur R1 ou R2
      * @param bool $paiement
      *            Indique s'il faut valider (true par défaut) ou invalider (false) le
      *            paiement
+     * @param string $r
+     *            prend la valeur 1 pour R1 ou 2 pour R2
      * @return int Nombre de lignes mises à jour
      */
-    public function setPaiement(int $millesime, $aEleveId, int $r = 1,
-        bool $paiement = true)
+    public function setPaiement(int $millesime, $aEleveId, bool $paiement = true,
+        int $r = 1)
     {
         $where = new Where();
         if (empty($aEleveId)) {
