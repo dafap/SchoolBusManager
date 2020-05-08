@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 8 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -229,7 +229,7 @@ $actions_selection = [
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">
-					<?=$this->listeZoneActions($hiddens_bas, $actions_selection);?>
+					<?=$this->listeZoneActions($hiddens_bas, $actions_selection,['name'=>'zoneselection', 'id'=> 'selection']);?>
 				</div>
 			</div>
 			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
