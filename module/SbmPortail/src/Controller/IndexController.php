@@ -28,6 +28,7 @@ use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      * Indique si le portail des transporteur cache les préinscrits ou pas.
@@ -42,6 +43,13 @@ class IndexController extends AbstractActionController
      * @var bool
      */
     private $etablissement_sanspreinscrits = true;
+
+    /**
+     * Indique si le portail des communes cache les préinscrits ou pas.
+     *
+     * @var boolean
+     */
+    private $commune_sanspreinscrits = false;
 
     public function indexAction()
     {
@@ -499,7 +507,7 @@ class IndexController extends AbstractActionController
                 ->tout());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresCommune(
-            $criteres_form->getElementNames(), false);
+            $criteres_form->getElementNames(), $this->commune_sanspreinscrits);
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
@@ -538,7 +546,106 @@ class IndexController extends AbstractActionController
      */
     public function comElevesDownloadAction()
     {
-        ;
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $columns = [
+            'Nom' => 'nom',
+            'Prénom' => 'prenom',
+            'Établissement' => 'etablissement',
+            'Commune de l\'établissement' => 'communeEtablissement',
+            'Classe' => 'classe',
+            'R1 Identité' => 'responsable1NomPrenom',
+            'R1 Adresse ligne 1' => 'adresseL1R1',
+            'R1 Adresse ligne 2' => 'adresseL2R1',
+            'R1 Adresse ligne 3' => 'adresseL3R1',
+            'R1 Commune' => 'lacommuneR1',
+            'R1 Téléphone 1' => 'telephoneFR1',
+            'R1 Téléphone 2' => 'telephonePR1',
+            'R1 Téléphone 3' => 'telephoneTR1',
+            'R1 email' => 'emailR1',
+            'R2 Identité' => 'responsable2NomPrenom',
+            'R2 Adresse ligne 1' => 'adresseL1R2',
+            'R2 Adresse ligne 2' => 'adresseL2R2',
+            'R2 Adresse ligne 3' => 'adresseL3R2',
+            'R2 Commune' => 'lacommuneR2',
+            'R2 Téléphone 1' => 'telephoneFR2',
+            'R2 Téléphone 2' => 'telephonePR2',
+            'R2 Téléphone 3' => 'telephoneTR2',
+            'R2 email' => 'emailR2'
+        ];
+        // index du tableau $columns correspondant à des n° de téléphones
+        $aTelephoneIndexes = [];
+        $idx = 0;
+        foreach ($columns as $column_field) {
+            if (substr($column_field, 0, 9) == 'telephone') {
+                $aTelephoneIndexes[] = $idx;
+            }
+            $idx ++;
+        }
+        // contrôle de l'identité de l'utilisateur
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $userId = $auth->getUserId();
+        // reprise des critères
+        $criteres = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresCommune(
+            $criteres_form->getElementNames(), $this->commune_sanspreinscrits);
+        $criteres_form->setData($criteres);
+        if ($criteres_form->isValid()) {
+            $criteres_obj->exchangeArray($criteres_form->getData());
+        }
+        // lancement de la requête selon la catégorie de l'utilisateur
+        $where = $criteres_obj->getWhereForEleves();
+        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+            $userId);
+        $where = $criteres_obj->getWhere()
+            ->nest()
+            ->equalTo('r1.communeId', $right)->or->equalTo('r2.communeId', $right)->unnest();
+        try {
+            $result = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
+                $where, [
+                    'nom',
+                    'prenom'
+                ]);
+        } catch (\Exception $e) {
+            die('Erreur dans ' . __METHOD__);
+        }
+        // et construction d'un tabeau des datas
+        $data = [];
+        foreach ($result as $eleve) {
+            $aEleve = $eleve->getArrayCopy(); // var_dump($aEleve);
+            $ligne = [];
+            foreach ($columns as $value) {
+                $ligne[] = $aEleve[$value];
+            }
+            $data[] = $ligne;
+        }
+        // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
+        // le caractère d'enclosure
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
+        return $this->csvExport('eleves.csv', array_keys($columns), $data,
+            function ($item) use ($aTelephoneIndexes, $viewhelper) {
+                foreach ($aTelephoneIndexes as $idx) {
+                    $item[$idx] = $viewhelper($item[$idx]);
+                }
+                return $item;
+            });
     }
 
     /**
@@ -546,7 +653,46 @@ class IndexController extends AbstractActionController
      */
     public function comPdfAction()
     {
-        ;
+        $auth = $this->authenticate->by('email');
+        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $userId = $auth->getUserId();
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+            ->desservis())
+            ->setValueOptions('classeId',
+                $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresCommune(
+            $criteres_form->getElementNames(), $this->commune_sanspreinscrits);
+        $criteres = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
+        $criteres_form->setData($criteres);
+        if ($criteres_form->isValid()) {
+            $criteres_obj->exchangeArray($criteres_form->getData());
+        }
+        $documentId = 'List élèves portail commune';
+        $where = $criteres_obj->getWhereForEleves();
+        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+            $userId);
+        $where = $criteres_obj->getWherePdf()
+        ->nest()
+        ->equalTo('communeIdR1', $right)->or->equalTo('communeIdR2', $right)->unnest();
+        $call_pdf = $this->RenderPdfService;
+        if ($docaffectationId = $this->params('id', false)) {
+            $call_pdf->setParam('docaffectationId', $docaffectationId);
+        }
+        $call_pdf->setParam('documentId', $documentId)
+            ->setParam('where', $where)
+            ->setEndOfScriptFunction(
+            function () {
+                $this->flashMessenger()
+                    ->addSuccessMessage("Création d'un pdf.");
+            })
+            ->renderPdf();
     }
 
     /**

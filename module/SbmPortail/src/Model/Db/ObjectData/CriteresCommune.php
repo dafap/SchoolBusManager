@@ -116,14 +116,6 @@ class CriteresCommune extends SbmCommunCriteres
         if (! empty($this->data['classeId'])) {
             $where->equalTo('classeId', $this->data['classeId']);
         }
-        if (! empty($this->data['serviceId'])) {
-            $where->nest()->equalTo('service1Id', $this->data['serviceId'])->or->equalTo(
-                'service2Id', $this->data['serviceId'])->unnest();
-        }
-        if (! empty($this->data['stationId'])) {
-            $where->nest()->equalTo('station1Id', $this->data['stationId'])->or->equalTo(
-                'station2Id', $this->data['stationId'])->unnest();
-        }
         return $where;
     }
 
@@ -160,26 +152,14 @@ class CriteresCommune extends SbmCommunCriteres
             $where->like('ele.prenomSA', $this->data['prenomSA'] . '%');
         }
         if (! empty($this->data['responsable'])) {
-            $where->nest()->like('res1.nomSA', $this->data['responsable'] . '%')->or->like(
-                'res2.nomSA', $this->data['responsable'] . '%')->unnest();
+            $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->or->like(
+                'r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('sco.etablissementId', $this->data['etablissementId']);
         }
         if (! empty($this->data['classeId'])) {
             $where->equalTo('sco.classeId', $this->data['classeId']);
-        }
-        if (! empty($this->data['serviceId'])) {
-            $where->nest()->equalTo('affr1.service1Id', $this->data['serviceId'])->or->equalTo(
-                'affr1.service2Id', $this->data['serviceId'])->or->equalTo(
-                'affr2.service1Id', $this->data['serviceId'])->or->equalTo(
-                'affr2.service2Id', $this->data['serviceId'])->unnest();
-        }
-        if (! empty($this->data['stationId'])) {
-            $where->nest()->equalTo('affr1.station1Id', $this->data['stationId'])->or->equalTo(
-                'affr1.station2Id', $this->data['stationId'])->or->equalTo(
-                'affr2.station1Id', $this->data['stationId'])->or->equalTo(
-                'affr2.station2Id', $this->data['stationId'])->unnest();
         }
         return $where;
     }
@@ -224,18 +204,6 @@ class CriteresCommune extends SbmCommunCriteres
         }
         if (! empty($this->data['classeId'])) {
             $where->equalTo('classeId', $this->data['classeId']);
-        }
-        if (! empty($this->data['serviceId'])) {
-            $where->nest()->equalTo('service1IdR1', $this->data['serviceId'])->or->equalTo(
-                'service2IdR1', $this->data['serviceId'])->or->equalTo('service1IdR2',
-                $this->data['serviceId'])->or->equalTo('service2IdR2',
-                $this->data['serviceId'])->unnest();
-        }
-        if (! empty($this->data['stationId'])) {
-            $where->nest()->equalTo('station1IdR1', $this->data['stationId'])->or->equalTo(
-                'station2IdR1', $this->data['stationId'])->or->equalTo('station1IdR2',
-                $this->data['stationId'])->or->equalTo('station2IdR2',
-                $this->data['stationId'])->unnest();
         }
         return $where;
     }

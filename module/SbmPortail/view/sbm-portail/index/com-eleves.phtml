@@ -54,16 +54,16 @@ if ((new \DateTime()) < $date_fin_aout) {
 }
 // url_retour pour utiliser le redirectToOrigine
 $url_retour = $this->url('sbmportail', [
-    'action' => 'org-eleves',
+    'action' => 'com-eleves',
     'page' => $this->page
 ]);
 $url_rapports = $this->url('sbmportail', [
-    'action' => 'org-pdf',
+    'action' => 'com-pdf',
     'page' => $this->page
 ]);
 $url_download = $this->url('sbmportail',
     [
-        'action' => 'org-eleves-download',
+        'action' => 'com-eleves-download',
         'page' => $this->page
     ]);
 $hiddens = [];
@@ -141,16 +141,18 @@ $actions = [
             array_filter(
                 array_unique(
                     [
-                        $eleve['adresseR1L1'],
-                        $eleve['adresseR1L2'],
+                        $eleve['adresseL1R1'],
+                        $eleve['adresseL2R1'],
+                        $eleve['adresseL3R1'],
                         $eleve['lacommuneR1']
                     ])));
         $adresseR2 = implode('<br>',
             array_filter(
                 array_unique(
                     [
-                        $eleve['adresseR2L1'],
-                        $eleve['adresseR2L2'],
+                        $eleve['adresseL1R2'],
+                        $eleve['adresseL2R2'],
+                        $eleve['adresseL3R2'],
                         $eleve['lacommuneR2']
                     ])));
         if (! $eleve['inscrit']) {
