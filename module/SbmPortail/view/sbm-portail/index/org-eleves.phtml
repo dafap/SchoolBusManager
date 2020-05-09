@@ -9,7 +9,7 @@
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -157,7 +157,7 @@ $actions = [
                         [
                             $eleve['adresseR1L1'],
                             $eleve['adresseR1L2'],
-                            $eleve['communeR1']
+                            $eleve['lacommuneR1']
                         ])));
             $adresseR2 = implode('<br>',
                 array_filter(
@@ -165,7 +165,7 @@ $actions = [
                         [
                             $eleve['adresseR2L1'],
                             $eleve['adresseR2L2'],
-                            $eleve['communeR2']
+                            $eleve['lacommuneR2']
                         ])));
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';

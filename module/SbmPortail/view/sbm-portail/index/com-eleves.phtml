@@ -9,21 +9,81 @@
  * @filesource com-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
+use SbmBase\Model\Session;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-// les url à utiliser
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    // affichage d'une page d'erreur
+    ?>
+<h1>Liste des élèves</h1>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+		<pre>
+	  <?= $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer">
+		<div class="criteres-wrapper">
+		<?php if (! is_null($this->criteres_form)) :?>
+        	<?= $this->form()->openTag($this->criteres_form);?>
+        	<?= $this->formCollection($this->criteres_form, true);?>
+        	<?= $this->form()->closeTag();?>
+        <?php endif;?>
+        </div>
+	</div>
+</div>
+<?php
+    return; // fin du catch (affichage d'une page d'erreur)
+}
+$avant_fin_aout = '';
+$date_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago');
+if ((new \DateTime()) < $date_fin_aout) {
+    $avant_fin_aout = 'invisible';
+    $message_circuits = sprintf(
+        'Les circuits et les stations seront publiées à partir du %s',
+        $date_fin_aout->format('d/m/Y'));
+} else {
+    $message_circuits = '';
+}
+// url_retour pour utiliser le redirectToOrigine
 $url_retour = $this->url('sbmportail', [
-    'action' => 'com-index',
+    'action' => 'org-eleves',
     'page' => $this->page
 ]);
+$url_rapports = $this->url('sbmportail', [
+    'action' => 'org-pdf',
+    'page' => $this->page
+]);
+$url_download = $this->url('sbmportail',
+    [
+        'action' => 'org-eleves-download',
+        'page' => $this->page
+    ]);
 $hiddens = [];
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
         'formaction' => $url_retour,
         'title' => 'Retour'
+    ],
+    'rapports' => [
+        'class' => 'fam-printer',
+        'formaction' => $url_rapports,
+        'title' => 'Liste à imprimer',
+        'formtarget' => '_blank'
+    ],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Extraction de la liste dans un fichier'
     ]
 ];
 ?>
@@ -41,6 +101,113 @@ $actions = [
 			<?= $this->flashMessenger()->render('default');?>
 		</div>
 	</div>
-	<div id="liste-inner"></div>
-	<div id="liste-footer"></div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th>N° carte</th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Responsables</th>
+					<th>Etablissement scolaire</th>
+					<th>Classe</th>
+					<th class="<?=$avant_fin_aout;?>">Circuits</th>
+					<th class="<?=$avant_fin_aout;?>">Arrêts</th>
+					<th>Abonnement</th>
+				</tr>
+				<?php foreach($eleves as $eleve): ?>
+				<?php
+        $r = [];
+        $circuits = [];
+        $arrets = [];
+        if ($eleve['responsable1NomPrenom']) {
+            $r[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        if ($eleve['responsable2NomPrenom']) {
+            $r[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        $nbResponsables = count($r);
+        $tr_css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        // adresses
+        $adresseR1 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseR1L1'],
+                        $eleve['adresseR1L2'],
+                        $eleve['lacommuneR1']
+                    ])));
+        $adresseR2 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseR2L1'],
+                        $eleve['adresseR2L2'],
+                        $eleve['lacommuneR2']
+                    ])));
+        if (! $eleve['inscrit']) {
+            $tr_css .= ' barre';
+        }
+        if ($eleve['paiementR1'] || $eleve['gratuit'] > 0) {
+            $message = 'Payé';
+        } else {
+            $message = 'Non payé';
+        }
+        ?>
+        		<tr class="petit <?= $tr_css;?>">
+					<td class="numero align-right"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $eleve['numero']; ?></td>
+					<td class="nom"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['nom']); ?></td>
+					<td class="prenom"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['prenom']); ?></td>
+					<td class="adresse">
+					<?= $adresseR1; ?></td>
+					<td class="responsables">
+					<?= $r[0]; ?></td>
+					<td class="etablissement"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['etablissement']);?></td>
+					<td class="classe"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['classe']);?></td>
+					<td class="service <?=$avant_fin_aout;?>"><?= $this->printServices($eleve['eleveId'], 1);?></td>
+					<td class="station <?=$avant_fin_aout;?>"><?= $this->printStations($eleve['eleveId'], 1);?></td>
+					<td class="centre"><?= $message;?></td>
+					<?php if ($nbResponsables == 2) :?>
+				</tr>
+				<tr class="petit <?= $tr_css;?>">
+					<td class="adresse"><?= $adresseR2; ?></td>
+					<td><?= $r[1]; ?></td>
+					<td class="service <?=$avant_fin_aout;?>"><?= $this->printServices($eleve['eleveId'], 2);?></td>
+					<td class="station <?=$avant_fin_aout;?>"><?= $this->printStations($eleve['eleveId'], 2);?></td>
+					<?php endif;?>
+        		</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+		<p class="sbm-description"><?=$message_circuits;?></p>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="criteres-wrapper">
+		<?php if (! is_null($this->criteres_form)) :?>
+    		<?= $this->form()->openTag($this->criteres_form);?>
+    		<?= $this->formCollection($this->criteres_form, true);?>
+    		<?= $this->form()->closeTag();?>
+    	<?php endif;?>
+	    </div>
+	</div>
 </div>

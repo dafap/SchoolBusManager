@@ -449,13 +449,102 @@ class IndexController extends AbstractActionController
      */
     public function comElevesAction()
     {
-        ;
+        $auth = $this->authenticate->by('email');
+        $categorie = $auth->getCategorieId();
+        if (! $auth->hasIdentity() || $categorie != 130) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $userId = $auth->getUserId();
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $this->sbm_isPost = false; // un GET
+            $args = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
+        } else {
+            $args = $prg; // un POST redirigé
+            if (StdLib::getParam('op', $args, '') == 'retour') {
+                // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
+                // edit. Comme pour un get, on récupère ce qui est en session.
+                $this->sbm_isPost = false;
+                $args = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
+            } else {
+                if (array_key_exists('cancel', $args)) {
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                        return $this->redirect()->toRoute('sbmportail',
+                            [
+                                'action' => 'index'
+                            ]);
+                    }
+                } elseif (array_key_exists('origine', $args)) {
+                    $this->redirectToOrigin()->setBack($args['origine']);
+                    unset($args['origine']);
+                }
+                $this->sbm_isPost = true;
+                Session::set('post', $args, $this->getSessionNamespace('com-eleves'));
+            }
+        }
+        // formulaire des critères de recherche
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        // initialiser le form pour les select ...
+        $criteres_form->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout());
+        // créer un objectData qui contient la méthode getWhere() adhoc
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresCommune(
+            $criteres_form->getElementNames(), false);
+        if ($this->sbm_isPost) {
+            $criteres_form->setData($args);
+            if ($criteres_form->isValid()) {
+                $criteres_obj->exchangeArray($criteres_form->getData());
+            }
+        }
+        // récupère les données de la session si le post n'a pas été validé dans le
+        // formulaire (pas de post ou invalide)
+        if (! $criteres_form->hasValidated() && ! empty($args)) {
+            $criteres_obj->exchangeArray($args);
+            $criteres_form->setData($criteres_obj->getArrayCopy());
+        }
+        $where = $criteres_obj->getWhereForEleves();
+        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+            $userId);
+        $where = $criteres_obj->getWhere()
+            ->nest()
+            ->equalTo('r1.communeId', $right)->or->equalTo('r2.communeId', $right)->unnest();
+        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
+            $where, [
+                'nom',
+                'prenom'
+            ]);
+        return new ViewModel(
+            [
+                'categorie' => $categorie,
+                'paginator' => $paginator,
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'criteres_form' => $criteres_form
+            ]);
     }
 
     /**
      * Renvoie un fichier de la liste des élèves de la commune
      */
     public function comElevesDownloadAction()
+    {
+        ;
+    }
+
+    /**
+     * Renvoie la liste au format pdf
+     */
+    public function comPdfAction()
     {
         ;
     }
@@ -583,30 +672,25 @@ class IndexController extends AbstractActionController
     public function trElevesAction()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < 100 ||
+            $auth->getCategorieId() >= 130) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
         }
         $userId = $auth->getUserId();
-
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // ce n'était pas un post. Prendre les paramètres éventuellement dans la
-            // session (login ou cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         } else {
-            // c'était un post ; on le met en session si ce n'est pas un retour ou un
-            // cancel
             $args = $prg;
             $retour = StdLib::getParam('op', $args, '') == 'retour';
             if ($retour) {
                 // dans ce cas, il s'agit du retour d'une action de type suppr, ajout ou
-                // edit.
-                // Comme pour un get, on récupère ce qui est en session.
+                // edit. Comme pour un get, on récupère ce qui est en session.
                 $this->sbm_isPost = false;
                 $args = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
             } else {
@@ -642,7 +726,6 @@ class IndexController extends AbstractActionController
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
-
         // créer un objectData qui contient la méthode getWhere() adhoc
         $categorie = $auth->getCategorieId();
         if ($categorie == 110) {
@@ -652,7 +735,6 @@ class IndexController extends AbstractActionController
         }
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
             $criteres_form->getElementNames(), $sanspreinscrits);
-
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
@@ -665,7 +747,6 @@ class IndexController extends AbstractActionController
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
-
         switch ($categorie) {
             case 2:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce
@@ -720,7 +801,6 @@ class IndexController extends AbstractActionController
                 }
                 break;
         }
-
         return new ViewModel(
             [
                 'categorie' => $categorie,

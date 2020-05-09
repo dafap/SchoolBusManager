@@ -19,7 +19,7 @@
  * @filesource tr-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -56,11 +56,11 @@ $url_carte_etablissements = $this->url('sbmportail',
 					<td class="effectif"><?= $this->elevesEnregistres ?:0;?></td>
 				</tr>
 				<tr>
-					<td>Nombre d'élèves inscrits</td>
+					<td>Nombre d'abonnements payés</td>
 					<td class="effectif"><?= $this->elevesInscrits ?:0;?></td>
 				</tr>
 				<tr>
-					<td>Nombre d'élèves préinscrits</td>
+					<td>Nombre de demandes non payées</td>
 					<td class="effectif"><?= $this->elevesPreinscrits ?:0;?></td>
 				</tr>
 				<tr class="separateur">
@@ -78,10 +78,6 @@ $url_carte_etablissements = $this->url('sbmportail',
 				<tr class="separateur">
 					<td>Nombre d'élèves à 3 km et plus</td>
 					<td class="effectif"><?= $this->eleves3kmEtPlus ?:0;?></td>
-				</tr>
-				<tr>
-					<td>Nombre d'élèves en famille d'accueil</td>
-					<td class="effectif"><?= $this->elevesFamilleAcceuil ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en garde alternée</td>
