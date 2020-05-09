@@ -12,10 +12,11 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 
 // Les montants de la facture (avant l'initialisation du JavaScript)
 $montantDuplicatas = $this->resultats->getMontantDuplicatas(0, 'tous');
@@ -147,7 +148,9 @@ $actions = [
 						</tr>
 					<?php foreach($this->resultats->getAbonnementsDetail() as $row):?>
 					<tr>
-							<td><?=$row->getGrille();?></td>
+							<td>
+							<?=StdLib::getParam($row->getGrille(), $this->grilles,'');?>
+							</td>
 							<td><?=$row->getReduit() ? 'Réduit' : 'Normal';?></td>
 							<td><span class="formatEuro"><?=$row->getMontant();?></span></td>
 						</tr>

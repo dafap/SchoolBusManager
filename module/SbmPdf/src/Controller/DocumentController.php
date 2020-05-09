@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -42,9 +42,7 @@ class DocumentController extends AbstractActionController
     {
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // factureset est un objet Iterator
-        $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
-            $responsableId,
-            $this->db_manager->get('Sbm\Facture\Calculs')->getResultats($responsableId));
+        $factureset = $this->db_manager->get('Sbm\FactureSet')->init($responsableId);
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
                 ->setParams(
@@ -218,7 +216,7 @@ class DocumentController extends AbstractActionController
                     $services = [];
                     foreach ($this->db_manager->get('Sbm\Db\Query\Circuits')->getServicesViaCommune(
                         $communeId) as $service) {
-                            $services[] = $service['serviceId'];
+                        $services[] = $service['serviceId'];
                     }
                 } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
                     $this->flashMessenger()->addInfoMessage(

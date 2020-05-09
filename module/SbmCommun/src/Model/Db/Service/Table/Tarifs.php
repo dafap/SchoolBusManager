@@ -8,7 +8,7 @@
  * @filesource Tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -51,7 +51,7 @@ class Tarifs extends AbstractSbmTable implements EffectifInterface, GrilleTarifI
 
     private $grilles = [
         self::TARIF_ARLYSERE => 'Résidents Arlysère',
-        self::HORS_ARLYSERE => 'Résidents ou point de montée hors Arlysère',
+        self::HORS_ARLYSERE => 'Résidents et point de montée hors Arlysère',
         self::RPI => 'RPI École à École',
         self::CARTE_R2 => 'Double Domiciliation',
         self::DUPLICATA => 'Duplicata'

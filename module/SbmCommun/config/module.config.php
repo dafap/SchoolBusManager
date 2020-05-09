@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Arlysere;
@@ -21,7 +21,6 @@ use SbmCommun\Model\Db\Service\Select;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
 use SbmCommun\Model\Mvc\Controller\Plugin\Service as PluginController;
-use SbmCommun\Model\Service\CalculDroits;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Service\MajDistances;
 use SbmCommun\Model\View\Helper as ViewHelper;
@@ -52,7 +51,7 @@ return [
             'Sbm\Db\ObjectData\ElevePhoto' => ObjectData\ElevePhoto::class,
             'Sbm\Db\ObjectData\Etablissement' => ObjectData\Etablissement::class,
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
-            'Sbm\Db\ObjectData\EtablissementStation'=>ObjectData\EtablissementStation::class,
+            'Sbm\Db\ObjectData\EtablissementStation' => ObjectData\EtablissementStation::class,
             'Sbm\Db\ObjectData\Facture' => ObjectData\Facture::class,
             'Sbm\Db\ObjectData\Ligne' => ObjectData\Ligne::class,
             'Sbm\Db\ObjectData\Lot' => ObjectData\Lot::class,
@@ -67,13 +66,13 @@ return [
             'Sbm\Db\ObjectData\Service' => ObjectData\Service::class,
             'Sbm\Db\ObjectData\SimulationEtablissement' => ObjectData\SimulationEtablissement::class,
             'Sbm\Db\ObjectData\Station' => ObjectData\Station::class,
-            'Sbm\Db\ObjectData\StationStation'=>ObjectData\StationStation::class,
+            'Sbm\Db\ObjectData\StationStation' => ObjectData\StationStation::class,
             'Sbm\Db\ObjectData\Tarif' => ObjectData\Tarif::class,
             'Sbm\Db\ObjectData\Transporteur' => ObjectData\Transporteur::class,
             'Sbm\Db\ObjectData\User' => ObjectData\User::class,
             'Sbm\Db\ObjectData\UserCommune' => ObjectData\UserCommune::class,
             'Sbm\Db\ObjectData\UserEtablissement' => ObjectData\UserEtablissement::class,
-            'Sbm\Db\ObjectData\UserOrganisme'=>ObjectData\UserOrganisme::class,
+            'Sbm\Db\ObjectData\UserOrganisme' => ObjectData\UserOrganisme::class,
             'Sbm\Db\ObjectData\UserTransporteur' => ObjectData\UserTransporteur::class,
             'Sbm\Db\SysObjectData\Calendar' => ObjectData\Sys\Calendar::class,
             'Sbm\Db\SysObjectData\Document' => ObjectData\Sys\Document::class,
@@ -92,6 +91,7 @@ return [
             'Sbm\AbonnementsFratrie' => Arlysere\Tarification\Facture\AbonnementsFratrie::class,
             'Sbm\Facture\Calculs' => Arlysere\Tarification\Facture\Calculs::class,
             'Sbm\Facture' => Arlysere\Tarification\Facture\Facture::class,
+            'Sbm\FactureSet' => Arlysere\Tarification\Facture\FactureSet::class,
 
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,
@@ -102,7 +102,7 @@ return [
             'Sbm\Db\Table\ElevesPhotos' => Table\ElevesPhotos::class,
             'Sbm\Db\Table\Etablissements' => Table\Etablissements::class,
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
-            'Sbm\Db\Table\EtablissementsStations'=>Table\EtablissementsStations::class,
+            'Sbm\Db\Table\EtablissementsStations' => Table\EtablissementsStations::class,
             'Sbm\Db\Table\Factures' => Table\Factures::class,
             'Sbm\Db\Table\Lignes' => Table\Lignes::class,
             'Sbm\Db\Table\Lots' => Table\Lots::class,
@@ -122,9 +122,9 @@ return [
             'Sbm\Db\Table\Tarifs' => Table\Tarifs::class,
             'Sbm\Db\Table\Transporteurs' => Table\Transporteurs::class,
             'Sbm\Db\Table\Users' => Table\Users::class,
-            'Sbm\Db\Table\UsersCommunes'=>Table\UsersCommunes::class,
+            'Sbm\Db\Table\UsersCommunes' => Table\UsersCommunes::class,
             'Sbm\Db\Table\UsersEtablissements' => Table\UsersEtablissements::class,
-            'Sbm\Db\Table\UsersOrganismes'=>Table\UsersOrganismes::class,
+            'Sbm\Db\Table\UsersOrganismes' => Table\UsersOrganismes::class,
             'Sbm\Db\Table\UsersTransporteurs' => Table\UsersTransporteurs::class,
             'Sbm\Db\System\Calendar' => Table\Sys\Calendar::class,
             'Sbm\Db\System\Documents' => Table\Sys\Documents::class,
@@ -144,7 +144,7 @@ return [
             'Sbm\Db\TableGateway\ElevesPhotos' => TableGateway\TableGatewayElevesPhotos::class,
             'Sbm\Db\TableGateway\Etablissements' => TableGateway\TableGatewayEtablissements::class,
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
-            'Sbm\Db\TableGateway\EtablissementsStations'=>TableGateway\TableGatewayEtablissementsStations::class,
+            'Sbm\Db\TableGateway\EtablissementsStations' => TableGateway\TableGatewayEtablissementsStations::class,
             'Sbm\Db\TableGateway\Factures' => TableGateway\TableGatewayFactures::class,
             'Sbm\Db\TableGateway\Lignes' => TableGateway\TableGatewayLignes::class,
             'Sbm\Db\TableGateway\Lots' => TableGateway\TableGatewayLots::class,
@@ -160,13 +160,13 @@ return [
             'Sbm\Db\TableGateway\Services' => TableGateway\TableGatewayServices::class,
             'Sbm\Db\TableGateway\SimulationEtablissements' => TableGateway\TableGatewaySimulationEtablissements::class,
             'Sbm\Db\TableGateway\Stations' => TableGateway\TableGatewayStations::class,
-            'Sbm\Db\TableGateway\StationsStations'=>TableGateway\TableGatewayStationsStations::class,
+            'Sbm\Db\TableGateway\StationsStations' => TableGateway\TableGatewayStationsStations::class,
             'Sbm\Db\TableGateway\Tarifs' => TableGateway\TableGatewayTarifs::class,
             'Sbm\Db\TableGateway\Transporteurs' => TableGateway\TableGatewayTransporteurs::class,
             'Sbm\Db\TableGateway\Users' => TableGateway\TableGatewayUsers::class,
-            'Sbm\Db\TableGateway\UsersCommunes'=>TableGateway\TableGatewayUsersCommunes::class,
+            'Sbm\Db\TableGateway\UsersCommunes' => TableGateway\TableGatewayUsersCommunes::class,
             'Sbm\Db\TableGateway\UsersEtablissements' => TableGateway\TableGatewayUsersEtablissements::class,
-            'Sbm\Db\TableGateway\UsersOrganismes'=>TableGateway\TableGatewayUsersOrganismes::class,
+            'Sbm\Db\TableGateway\UsersOrganismes' => TableGateway\TableGatewayUsersOrganismes::class,
             'Sbm\Db\TableGateway\UsersTransporteurs' => TableGateway\TableGatewayUsersTransporteurs::class,
             'Sbm\Db\SysTableGateway\Calendar' => TableGateway\Sys\TableGatewayCalendar::class,
             'Sbm\Db\SysTableGateway\Documents' => TableGateway\Sys\TableGatewayDocuments::class,
@@ -246,6 +246,9 @@ return [
         ],
         'services' => [
             'simulation' => 2000
+        ],
+        'shared' => [
+            'Sbm\Facture\Calculs' => false
         ]
     ],
     'form_manager' => [

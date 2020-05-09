@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -197,13 +197,13 @@ class Responsables extends AbstractQuery
         ])
             ->where($gratuits());
         // en famille d'accueil
-        $enFA = new Predicate\ElevesEnFA($this->millesime);
+        /*$enFA = new Predicate\ElevesEnFA($this->millesime);
         $select4 = new Select();
         $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
             'eleveId'
         ])
-            ->where($enFA());
+            ->where($enFA());*/
         // avec duplicata
         $avecDuplicatas = new Predicate\ElevesAvecDuplicatas($this->millesime);
         $select5 = new Select();
@@ -241,11 +241,11 @@ class Responsables extends AbstractQuery
             [
                 'nbGratuits' => new Expression('count(gra.eleveId)')
             ], $select::JOIN_LEFT)
-            ->join([
+            /*->join([
             'fa' => $select4
         ], 'ele.eleveId=fa.eleveId', [
             'nbFa' => new Expression('count(fa.eleveId)')
-        ], $select::JOIN_LEFT)
+        ], $select::JOIN_LEFT)*/
             ->join([
             'dup' => $select5
         ], 'ele.eleveId=dup.eleveId',

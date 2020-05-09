@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1104,7 +1104,7 @@ class FinanceController extends AbstractActionController
             $responsableId);
         return new ViewModel(
             [
-
+                'grilles' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getGrilles(),
                 'namespacectrl' => md5('nsArgsFacture'),
                 'args' => $args,
                 'resultats' => $resultats,

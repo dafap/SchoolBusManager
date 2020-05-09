@@ -14,7 +14,7 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -174,11 +174,12 @@ if ($this->h2) {
         <?php
     $totalDu = $this->resultats->getSolde();
     ?>
-		<p class="left-10px">Total du : <?= $fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
-            <span class="left-95px">
-            	Payé : <?= $fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?></span>
-			<span class="left-95px">
-				Reste du : <?= $fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></span>
+		<p class="left-10px">Total dû :
+				<?= $fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?>
+            <span class="left-95px">Payé :
+            	<?= $fmt->formatCurrency($this->resultats->getPaiementsMontant(), 'EUR');?></span>
+			<span class="left-95px">Reste dû :
+				<?= $fmt->formatCurrency($this->resultats->getSolde(), 'EUR');?></span>
 		</p>
 <?php endif; ?>
 		<div class="menu float-left">

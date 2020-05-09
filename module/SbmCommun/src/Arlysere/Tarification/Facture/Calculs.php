@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -60,7 +60,7 @@ class Calculs extends AbstractQuery
     public function getResultats(int $responsableId, array $arrayEleveId = [],
         bool $force = false): Resultats
     {
-        if ($force || $this->resultats->isEmpty()) {
+        if ($this->responsableId != $responsableId || $force || $this->resultats->isEmpty()) {
             $this->responsableId = $responsableId;
             $this->resultats->setResponsableId($responsableId);
             $this->resultats->setResponsableId($responsableId);
@@ -77,6 +77,7 @@ class Calculs extends AbstractQuery
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         $this->duplicataPU = 0;
+        $this->responsableId = -1;
     }
 
     /**

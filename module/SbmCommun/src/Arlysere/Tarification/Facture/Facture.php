@@ -15,20 +15,19 @@
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2020
+ * @date 9 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
+use SbmBase\Model\DateLib;
+use SbmBase\Model\Session;
+use SbmCommun\Model\Db\ObjectData\Facture as ObjectDataFacture;
+use SbmCommun\Model\Paiements\FactureInterface;
+use SbmCommun\Model\Paiements\ResultatsInterface;
+use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use SbmCommun\Model\Paiements\FactureInterface;
-use SbmCommun\Model\Db\ObjectData\Facture as ObjectDataFacture;
-use Zend\Db\Sql\Where;
-use SbmCommun\Model\Paiements\ResultatsInterface;
-use SbmBase\Model\Session;
-use SbmBase\Model\DateLib;
-use SbmBase\Model\StdLib;
 
 class Facture implements FactoryInterface, FactureInterface
 {
@@ -44,6 +43,12 @@ class Facture implements FactoryInterface, FactureInterface
      * @var int
      */
     private $responsableId;
+
+    /**
+     *
+     * @var \SbmCommun\Model\Paiements\ResultatsInterface
+     */
+    private $resulats;
 
     /**
      *
@@ -84,19 +89,41 @@ class Facture implements FactoryInterface, FactureInterface
         $this->_nouveau_numero = 0;
         $this->responsableId = - 1;
         $this->tauxTva = 0;
+        $this->clearResultats();
         return $this;
     }
 
     /**
      * En même temps, lance les calculs si nécessaire
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::setResponsableId()
      */
-    public function setResponsableId(int $responsableId):FactureInterface
+    public function setResponsableId(int $responsableId): FactureInterface
     {
         $this->responsableId = $responsableId;
-        $this->getResultats();
+        return $this->clearResultats()->setResultats();
+    }
+
+    public function setResultats(
+        \SbmCommun\Model\Paiements\ResultatsInterface $resulats = null)
+    {
+        if (is_null($resulats)) {
+            try {
+                $this->resulats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
+                    $this->responsableId);
+            } catch (\Exception $e) {
+                $this->resulats = null;
+            }
+        } else {
+            $this->resulats = $resulats;
+        }
+        return $this;
+    }
+
+    public function clearResultats()
+    {
+        $this->resulats = null;
         return $this;
     }
 
@@ -157,13 +184,13 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getResultats(): ResultatsInterface
     {
-        try {
-            return $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                $this->responsableId);
-        } catch (\Exception $e) {
-            $this->calculs = false;
-            return null;
+        if (! $this->resulats) {
+            $this->setResultats();
         }
+        if ($this->resulats instanceof ResultatsInterface) {
+            return $this->resulats;
+        }
+        throw new \SbmCommun\Arlysere\Exception\RuntimeException('Pas de résultat.');
     }
 
     /**
@@ -203,7 +230,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     public function getOFacture(): ObjectDataFacture
     {
-        if (!$this->oFacture) {
+        if (! $this->oFacture) {
             $this->oFacture = $this->tFactures->getObjData();
             $this->oFacture->exchangeArray(
                 [
@@ -304,11 +331,13 @@ class Facture implements FactoryInterface, FactureInterface
                 'exercice' => $this->getExercice(),
                 'numero' => $this->getNouveauNumero(),
                 'millesime' => $this->getMillesime(),
-                'responsableId' => $this->getResultats()->getResponsableId(),
+                'responsableId' => $this->getResultats()
+                    ->getResponsableId(),
                 'date' => $this->getDate(),
-                'montant' => $this->getResultats()->getMontantTotal() -
-                $this->getMontantDejaFacture(),
-                'signature' => $this->getResultats()->signature(),
+                'montant' => $this->getResultats()
+                    ->getMontantTotal() - $this->getMontantDejaFacture(),
+                'signature' => $this->getResultats()
+                    ->signature(),
                 'content' => serialize($this->getResultats())
             ]);
         if ($this->oFacture->montant) {
@@ -352,8 +381,7 @@ class Facture implements FactoryInterface, FactureInterface
 
     /**
      *
-     *
-     * {@inheritDoc}
+     * {@inheritdoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::setTauxTva()
      */
     public function setTauxTva(float $taux): FactureInterface
