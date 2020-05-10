@@ -27,7 +27,8 @@
 		"zendframework/zendframework": "~2.5",
 		"drewm/mailchimp-api": "^2.1",
 		"zendframework/zftool": "dev-master",
-		"tecnickcom/tcpdf": "~6.2"
+		"tecnickcom/tcpdf": "~6.2",
+		"phpoffice/phpspreadsheet": "^1.12"
 	},
 	"require-dev": {
 		"zendframework/zend-developer-tools": "dev-master"
