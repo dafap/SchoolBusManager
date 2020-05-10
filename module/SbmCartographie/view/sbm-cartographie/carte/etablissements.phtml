@@ -12,7 +12,7 @@
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 10 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -25,7 +25,7 @@ $i = 0;
 $aMarkers = [];
 foreach ($this->ptEtablissements as $pt) {
     $e = $pt->getAttribute('etablissement');
-    $niveau = array_sum($e->niveau);
+    $niveau = is_array($e->niveau) ? array_sum($e->niveau) : $e->niveau;
     $accord_desservi = "";
     if ($niveau < 4) {
         // $color = "#ffff00";

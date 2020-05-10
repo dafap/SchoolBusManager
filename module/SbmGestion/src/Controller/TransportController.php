@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -103,7 +103,8 @@ class TransportController extends AbstractActionController
                 'criteres_form' => $args['form'],
                 'as' => $as,
                 'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord(
-                    $args['post'])
+                    $args['post']),
+                'categorieId' => $this->authenticate->by('email')->getCategorieId()
             ]);
     }
 

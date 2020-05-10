@@ -56,6 +56,11 @@ return [
             ]
         ]
     ],
+    'db_manager' => [
+        'factories' => [
+            'Sbm\Portail\Commune\Query' => \SbmPortail\Model\Db\Service\Query\Commune::class
+        ]
+    ],
     'view_manager' => [
         'template_map' => [],
         'template_path_stack' => [

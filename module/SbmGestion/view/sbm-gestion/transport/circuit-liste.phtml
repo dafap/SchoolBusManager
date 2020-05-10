@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -78,6 +78,9 @@ $actions = [
         'title' => 'Nouvel arrêt sur ce circuit'
     ]
 ];
+if ($this->categorieId < 250) {
+    unset($actions['ajouter']);
+}
 ?>
 <h1>Liste des points d'arrêt du circuit <?=$this->service->designation();?></h1>
 <div id="liste-wrapper">
@@ -98,64 +101,70 @@ $actions = [
 					<th>Commune</th>
 					<th>Arrêt</th>
 					<th>Emplacement</th>
+					<?php if ($this->categorieId >= 250):?>
 					<th title="N° de passage sur ce circuit">Pas.</th>
 					<th title="Montée">Mont.</th>
 					<th title="Decente">Desc.</th>
 					<th title="Correspondance">Cor.</th>
 					<th title="Visible">Vis.</th>
 					<th title="Ouverte">Ouv.</th>
+					<?php endif;?>
 					<th class="horaire">Horaire</th>
 					<th class="jours" title="Jours de passage">Jours</th>
 					<th class="nbinscrits">Effectif</th>
+					<?php if ($this->categorieId >= 250) :?>
 					<th class="selection">Sélect.</th>
 					<th></th>
+					<?php endif;?>
 				</tr>
         <?php foreach ($circuits as $circuit) :?>
         	<?php
             $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
-            $url_edit = $this->url('sbmgestion/transport',
-                [
-                    'action' => 'circuit-edit',
-                    'page' => $this->page
-                ]);
-            $url_delete = $this->url('sbmgestion/transport',
-                [
-                    'action' => 'circuit-suppr',
-                    'page' => $this->page
-                ]);
-            $url_group = $this->url('sbmgestion/transport',
-                [
-                    'action' => 'circuit-group',
-                    'id' => $this->page
-                ]);
-            $hiddens = [
-                'circuitId' => $circuit->circuitId,
-                'origine' => $url_ici
-            ];
-            $buttons = [
-                'modifier' => [
-                    'class' => 'fam-pencil',
-                    'formaction' => $url_edit,
-                    'title' => 'modifier'
-                ],
-                'supprimer' => [
-                    'class' => 'fam-delete',
-                    'formaction' => $url_delete,
-                    'title' => 'supprimer'
-                ],
-                'eleves' => [
-                    'class' => 'fam-group',
-                    'formaction' => $url_group,
-                    'title' => sprintf('élèves du circuit %s à l\'arrêt %s',
-                        $circuit->designationService(), $circuit->station)
-                ]
-            ];
-            if ($this->layout()->hassbmservicesms) {
-                $buttons['sms'] = [
-                    'class' => 'fam-phone',
-                    'formaction' => $url_sms,
-                    'title' => 'Envoyer un SMS'
+            if ($this->categorieId >= 250) {
+                $url_edit = $this->url('sbmgestion/transport',
+                    [
+                        'action' => 'circuit-edit',
+                        'page' => $this->page
+                    ]);
+                $url_delete = $this->url('sbmgestion/transport',
+                    [
+                        'action' => 'circuit-suppr',
+                        'page' => $this->page
+                    ]);
+                $url_group = $this->url('sbmgestion/transport',
+                    [
+                        'action' => 'circuit-group',
+                        'id' => $this->page
+                    ]);
+                $hiddens = [
+                    'circuitId' => $circuit->circuitId,
+                    'origine' => $url_ici
                 ];
+                $buttons = [
+                    'modifier' => [
+                        'class' => 'fam-pencil',
+                        'formaction' => $url_edit,
+                        'title' => 'modifier'
+                    ],
+                    'supprimer' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ],
+                    'eleves' => [
+                        'class' => 'fam-group',
+                        'formaction' => $url_group,
+                        'title' => sprintf('élèves du circuit %s à l\'arrêt %s',
+                            $circuit->designationService(), $circuit->station)
+                    ]
+                ];
+                if ($this->layout()->hassbmservicesms) {
+                    $buttons['sms'] = [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_sms,
+                        'title' => 'Envoyer un SMS'
+                    ];
+                }
             }
             $css = $this->cycle([
                 "even",
@@ -180,6 +189,7 @@ $actions = [
 						<?=$this->escapeHtml($circuit->station);?></td>
 					<td class="emplacement">
 						<?=$this->escapeHtml($circuit->emplacement);?></td>
+					<?php if ($this->categorieId >= 250):?>
 					<td class="centre passage">
 						<?=$circuit->passage;?></td>
 					<td class="centre montee">
@@ -192,17 +202,20 @@ $actions = [
 						<?=$circuit->visible ? 'X' : '';?></td>
 					<td class="centre ouvert">
 						<?=$circuit->ouvert ? 'X' : '';?></td>
+					<?php endif;?>
 					<td class="horaire" <?=$horaire_title;?>>
 						<?=implode('<br>', $horaires);?></td>
 					<td class="jours">
 						<?=$jours;?></td>
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
+					<?php if ($this->categorieId >= 250):?>
 					<td class="centre selection">
 						<?=$this->renderCheckbox('selection', 'chk', $circuit->circuitId, $circuit->selection)?>
 						</td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
+            		<?php endif;?>
 				</tr>
         <?php endforeach;?>
         </tbody>

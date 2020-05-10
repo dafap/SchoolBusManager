@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 10 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -408,10 +408,14 @@ class IndexController extends AbstractActionController
             ]);
     }
 
-    public function comIndexAction()
+    /**
+     *
+     * @return \Zend\Http\Response|array
+     */
+    private function initCommune()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -421,34 +425,54 @@ class IndexController extends AbstractActionController
             $communeId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
                 $userId);
             $commune = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
-                $communeId)->nom;
+                $communeId)->alias;
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            $commune = '';
-            $communeId = null;
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        return [
+            'userId' => $userId,
+            'communeId' => $communeId,
+            'nom' => $commune
+        ];
+    }
+
+    public function comIndexAction()
+    {
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
         }
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
-                'commune' => $commune,
+                'commune' => $commune['nom'],
                 'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbEnregistresByMillesime($millesime,
+                        $commune['communeId']))['effectif'],
                 'elevesInscrits' => current(
-                    $statEleve->getNbInscritsByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbInscritsByMillesime($millesime, $commune['communeId']))['effectif'],
                 'elevesPreinscrits' => current(
-                    $statEleve->getNbPreinscritsByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbPreinscritsByMillesime($millesime,
+                        $commune['communeId']))['effectif'],
                 'elevesRayes' => current(
-                    $statEleve->getNbRayesByMillesime($millesime, true, $communeId))['effectif'],
+                    $statEleve->getNbRayesByMillesime($millesime, true,
+                        $commune['communeId']))['effectif'],
                 'elevesFamilleAcceuil' => current(
-                    $statEleve->getNbFamilleAccueilByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbFamilleAccueilByMillesime($millesime,
+                        $commune['communeId']))['effectif'],
                 'elevesGardeAlternee' => current(
-                    $statEleve->getNbGardeAlterneeByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbGardeAlterneeByMillesime($millesime,
+                        $commune['communeId']))['effectif'],
                 'elevesMoins1km' => current(
-                    $statEleve->getNbMoins1KmByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbMoins1KmByMillesime($millesime, $commune['communeId']))['effectif'],
                 'elevesDe1A3km' => current(
-                    $statEleve->getNbDe1A3KmByMillesime($millesime, $communeId))['effectif'],
+                    $statEleve->getNbDe1A3KmByMillesime($millesime, $commune['communeId']))['effectif'],
                 'eleves3kmEtPlus' => current(
-                    $statEleve->getNb3kmEtPlusByMillesime($millesime, $communeId))['effectif']
+                    $statEleve->getNb3kmEtPlusByMillesime($millesime,
+                        $commune['communeId']))['effectif']
             ]);
     }
 
@@ -457,14 +481,10 @@ class IndexController extends AbstractActionController
      */
     public function comElevesAction()
     {
-        $auth = $this->authenticate->by('email');
-        $categorie = $auth->getCategorieId();
-        if (! $auth->hasIdentity() || $categorie != 130) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
         }
-        $userId = $auth->getUserId();
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -521,11 +541,10 @@ class IndexController extends AbstractActionController
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
         $where = $criteres_obj->getWhereForEleves();
-        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
-            $userId);
         $where = $criteres_obj->getWhere()
             ->nest()
-            ->equalTo('r1.communeId', $right)->or->equalTo('r2.communeId', $right)->unnest();
+            ->equalTo('r1.communeId', $commune['communeId'])->or->equalTo('r2.communeId',
+            $commune['communeId'])->unnest();
         $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
             $where, [
                 'nom',
@@ -533,7 +552,8 @@ class IndexController extends AbstractActionController
             ]);
         return new ViewModel(
             [
-                'categorie' => $categorie,
+                'categorie' => 130,
+                'commune' => $commune['nom'],
                 'paginator' => $paginator,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
@@ -546,6 +566,10 @@ class IndexController extends AbstractActionController
      */
     public function comElevesDownloadAction()
     {
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
+        }
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -584,14 +608,6 @@ class IndexController extends AbstractActionController
             }
             $idx ++;
         }
-        // contrôle de l'identité de l'utilisateur
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
         // reprise des critères
         $criteres = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
         // formulaire des critères de recherche
@@ -612,11 +628,10 @@ class IndexController extends AbstractActionController
         }
         // lancement de la requête selon la catégorie de l'utilisateur
         $where = $criteres_obj->getWhereForEleves();
-        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
-            $userId);
         $where = $criteres_obj->getWhere()
             ->nest()
-            ->equalTo('r1.communeId', $right)->or->equalTo('r2.communeId', $right)->unnest();
+            ->equalTo('r1.communeId', $commune['communeId'])->or->equalTo('r2.communeId',
+            $commune['communeId'])->unnest();
         try {
             $result = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
                 $where, [
@@ -653,19 +668,16 @@ class IndexController extends AbstractActionController
      */
     public function comPdfAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
         }
-        $userId = $auth->getUserId();
         $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-            ->desservis())
+                ->desservis())
             ->setValueOptions('classeId',
-                $this->db_manager->get('Sbm\Db\Select\Classes')
+            $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout());
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresCommune(
             $criteres_form->getElementNames(), $this->commune_sanspreinscrits);
@@ -676,11 +688,10 @@ class IndexController extends AbstractActionController
         }
         $documentId = 'List élèves portail commune';
         $where = $criteres_obj->getWhereForEleves();
-        $right = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
-            $userId);
         $where = $criteres_obj->getWherePdf()
-        ->nest()
-        ->equalTo('communeIdR1', $right)->or->equalTo('communeIdR2', $right)->unnest();
+            ->nest()
+            ->equalTo('communeIdR1', $commune['communeId'])->or->equalTo('communeIdR2',
+            $commune['communeId'])->unnest();
         $call_pdf = $this->RenderPdfService;
         if ($docaffectationId = $this->params('id', false)) {
             $call_pdf->setParam('docaffectationId', $docaffectationId);
@@ -701,7 +712,34 @@ class IndexController extends AbstractActionController
      */
     public function comCarteEtablissementsAction()
     {
-        ;
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
+        }
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $viewmodel = new ViewModel(
+            [
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
+                'ptEtablissements' => $this->db_manager->get('Sbm\Portail\Commune\Query')
+                    ->setProjection($this->projection)
+                    ->setCommuneId($commune['communeId'])
+                    ->etablissementsPourCarte(),
+                'config' => StdLib::getParam('etablissement', $this->config_cartes),
+                'url_api' => $this->url_api
+            ]);
+        $viewmodel->setTemplate('sbm-cartographie/carte/etablissements.phtml');
+        return $viewmodel;
     }
 
     /**
@@ -710,7 +748,35 @@ class IndexController extends AbstractActionController
      */
     public function comCarteStationsAction()
     {
-        ;
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
+        }
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'home-page'
+            ]);
+        }
+        $viewmodel = new ViewModel(
+            [
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
+                'ptStations' => $this->db_manager->get('Sbm\Portail\Commune\Query')
+                    ->setProjection($this->projection)
+                    ->setCommuneId($commune['communeId'])
+                    ->stationsPourCarte(),
+                'config' => StdLib::getParam('station', $this->config_cartes),
+                'url_api' => $this->url_api
+            ]);
+        $viewmodel->setTemplate('sbm-cartographie/carte/stations.phtml');
+        return $viewmodel;
     }
 
     /**
@@ -719,7 +785,39 @@ class IndexController extends AbstractActionController
      */
     public function comCircuitsAction()
     {
-        ;
+        $commune = $this->initCommune();
+        if ($commune instanceof \Zend\Http\Response) {
+            return $commune;
+        }
+        $args = $this->initListe('lignes');
+        if ($args instanceof Response) {
+            return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion/transport');
+        }
+        $millesime = Session::get('millesime');
+        $as = $millesime . '-' . ($millesime + 1);
+        $critere_form = $args['form'];
+        $critere_form->remove('lotId');
+        $viewhelper = new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Portail\Commune\Query')
+                    ->setCommuneId($commune['communeId'])
+                    ->paginatorLignes($args['where'], [
+                    'actif DESC',
+                    'ligneId'
+                ]),
+                'page' => $this->params('page', 1),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_lignes', 15),
+                'criteres_form' => $critere_form,
+                'admin' => false,
+                'millesime' => $millesime,
+                'as' => $as,
+                'commune' => $commune['nom']
+            ]);
+        $viewhelper->setTemplate('sbm-portail/index/com-ligne.phtml');
+        return $viewhelper;
     }
 
     /**
