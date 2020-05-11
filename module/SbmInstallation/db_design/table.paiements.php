@@ -8,8 +8,8 @@
  * @filesource table.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 11 mai 2020
+ * @version 2020-2.6.0
  */
 
 /**
@@ -41,6 +41,7 @@ return [
     'structure' => [
         'fields' => [
             'paiementId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            'mouvement' => 'tinyint(1) NOT NULL DEFAULT "1"', //credit = 1; débit = 0
             'selection' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'dateBordereau' => 'datetime DEFAULT NULL',
             'dateDepot' => 'datetime DEFAULT NULL',

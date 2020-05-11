@@ -9,8 +9,8 @@
  * @filesource vue.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2018-2.5.3
+ * @date 11 mai 2020
+ * @version 2020-2.6.0
  */
 return [
     'name' => 'paiements',
@@ -21,6 +21,9 @@ return [
         'fields' => [
             [
                 'field' => 'paiementId'
+            ],
+            [
+                'field' => 'mouvement'
             ],
             [
                 'field' => 'selection'

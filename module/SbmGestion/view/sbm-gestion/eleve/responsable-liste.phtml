@@ -173,8 +173,7 @@ $actions = [
             $jsCallback .= sprintf("$modele\n", $responsable['responsableId'],
                 $responsable['responsableId']);
             // nombre d'inscrits
-            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'] +
-                $responsable['nbFa'];
+            $nbInscrits = $responsable['nbInscrits'] + $responsable['nbGratuits'];
             $ttr = $this->escapeHtml($responsable['titre']);
             $nm = $this->escapeHtml($responsable['nom']);
             $prn = $this->escapeHtml($responsable['prenom']);

@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -241,17 +241,19 @@ class Scolarites extends AbstractSbmTable
      * @param int $millesime
      * @param int $eleveId
      * @param bool $cancel
+     * @param int $r
+     * @return number|false
      */
-    public function addDuplicata($millesime, $eleveId, $cancel = false)
+    public function addDuplicata(int $millesime, int $eleveId, bool $cancel = false, int $r = 1)
     {
         $oData = $this->getRecord([
             'millesime' => $millesime,
             'eleveId' => $eleveId
         ]);
-        if ($cancel && $oData->duplicataR1 > 0) {
-            $oData->duplicataR1 --;
+        if ($cancel && $oData->{"duplicataR$r"} > 0) {
+            $oData->{"duplicataR$r"} --;
         } else {
-            $oData->duplicataR1 ++;
+            $oData->{"duplicataR$r"} ++;
         }
         return parent::saveRecord($oData);
     }

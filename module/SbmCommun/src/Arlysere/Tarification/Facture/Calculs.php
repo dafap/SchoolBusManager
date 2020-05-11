@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -19,9 +19,11 @@ use SbmCommun\Model\Db\Sql\Predicate;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
+//use SbmBase\Model\StdLib;
 
 class Calculs extends AbstractQuery
 {
+//use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      *
@@ -62,7 +64,9 @@ class Calculs extends AbstractQuery
     {
         if ($this->responsableId != $responsableId || $force || $this->resultats->isEmpty()) {
             $this->responsableId = $responsableId;
-            $this->resultats->setResponsableId($responsableId);
+            $this->arrayEleveId = $arrayEleveId ?: [
+                - 1
+            ]; // pour compatibilité avec la clause IN
             $this->resultats->setResponsableId($responsableId);
             $this->resultats->setArrayEleveId($arrayEleveId);
             $this->analyse();
@@ -77,7 +81,7 @@ class Calculs extends AbstractQuery
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         $this->duplicataPU = 0;
-        $this->responsableId = -1;
+        $this->responsableId = - 1;
     }
 
     /**
@@ -171,7 +175,16 @@ class Calculs extends AbstractQuery
      */
     private function analyseListeEleves()
     {
-        ;
+        //$this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'analyse-liste.log');
+        for ($r = 1; $r <= 2; $r ++) {
+            $where = new Where();
+            $where->in('ele.eleveId', $this->arrayEleveId)->equalTo(
+                'responsable' . $r . 'Id', $this->responsableId);
+            $select = $this->selectAbonnementsEleves($r, $where);
+            //$this->debugLog($this->getSqlString($select));
+            $this->getAbonnementsFratrie($r, 'liste',
+                $select);
+        }
     }
 
     /**

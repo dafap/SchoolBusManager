@@ -9,7 +9,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -67,20 +67,17 @@ class FinanceController extends AbstractActionController
      */
     public function checkpaiementscolariteAction()
     {
-        $millesime = Session::get('millesime');
         try {
             $eleveId = $this->params('eleveId');
             $responsableId = $this->params('responsableId');
-            // die(var_dump($eleveId, $responsableId));
-            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
-                $eleveId, 1);
+            $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement($eleveId,
+                $responsableId, true);
             $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId);
-            $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
+            $inscrits = $resultats->getAbonnementsMontant(0, 'inscrits');
             $sommeDue = $inscrits + $resultats->getMontantDuplicatas();
             $dejaPaye = $resultats->getPaiementsMontant();
-            $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
-                $inscrits;
+            $preinscrits = $resultats->getAbonnementsMontant(0, 'tous') - $inscrits;
             if ($sommeDue <= $dejaPaye) {
                 return $this->getResponse()->setContent(
                     Json::encode(
@@ -90,8 +87,8 @@ class FinanceController extends AbstractActionController
                             'success' => 1
                         ]));
             } else {
-                $this->db_manager->get('Sbm\Db\Table\Scolarites')->setPaiement($millesime,
-                    $eleveId, 0);
+                $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement($eleveId,
+                    $responsableId, false);
                 return $this->getResponse()->setContent(
                     Json::encode(
                         [
@@ -121,13 +118,13 @@ class FinanceController extends AbstractActionController
         try {
             $eleveId = $this->params('eleveId');
             $responsableId = $this->params('responsableId');
-            $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-            $scolarite = $tScolarites->getRecord(
+            $r = $this->db_manager->get('Sbm\Db\Table\Eleves')->estResponsable(
+                $responsableId, $eleveId);
+            if ($this->db_manager->get('Sbm\Db\Table\Scolarites')->getRecord(
                 [
                     'millesime' => $millesime,
                     'eleveId' => $eleveId
-                ]);
-            if ($scolarite->duplicata) {
+                ])->{"duplicataR$r"}) {
                 return $this->getResponse()->setContent(
                     Json::encode(
                         [
@@ -135,12 +132,12 @@ class FinanceController extends AbstractActionController
                             'success' => 0
                         ]));
             }
-            $tScolarites->setPaiement($millesime, $eleveId, 0);
+            $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement($eleveId,
+                $responsableId, false);
             $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
                 $responsableId);
-            $inscrits = $resultats->getAbonnements('inscrits')['montantAbonnements'];
-            $preinscrits = $resultats->getAbonnements('tous')['montantAbonnements'] -
-                $inscrits;
+            $inscrits = $resultats->getAbonnementsMontant(0, 'inscrits');
+            $preinscrits = $resultats->getAbonnementsMontant(0, 'tous') - $inscrits;
             return $this->getResponse()->setContent(
                 Json::encode(
                     [

@@ -1,12 +1,12 @@
 /**
- * Feuille de style des pages du module
+ * Feuille de style des pages du thème
  * 
  * @project sbm
  * @package public/css/tra
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 avr. 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  **/
 
@@ -16,20 +16,23 @@ h1 {
 	margin-top: 5px;
 	margin-bottom: 8px;
 }
+
 h1.accueil {
 	text-transform: uppercase;
 }
+
 h2 {
 	font-size: 1.2em;
 	margin-top: 3px;
 	margin-bottom: 5px;
 }
-}
+
 h3 {
 	font-size: 1em;
 	margin-top: 2px;
 	margin-bottom: 3px;
 }
+
 #menugeneral-inner form {
 	display: inline-block;
 }
@@ -96,19 +99,23 @@ h3 {
 table.grille-tarifs {
 	border-collapse: collapse;
 }
+
 table.grille-tarifs th {
 	border: 1px solid gray;
 	text-align: center;
 }
+
 table.grille-tarifs td {
 	border: 1px solid gray;
 }
+
 table.grille-tarifs th.none {
 	border: none;
 }
-div.instructions li, div#content-payer div{
+
+div.instructions li, div#content-payer div {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 3px;
 	padding-left: 3px;
-} 
+}

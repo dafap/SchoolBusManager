@@ -1,0 +1,81 @@
+<?php
+/**
+ * Ecran de saisie d'un remboursement
+ *
+ * Le responsableId est dans un hidden car il est connu. Le retour se fait par un cancel dans
+ * l'action associée.
+ *
+ * @project sbm
+ * @package module\SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-debit.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+/*
+ * $this->themeJS('gestion-finance','paiement-ajout.js');
+ * $this->inlineScript()->captureStart(); ?> js_paiement_ajout.init(); <?php
+ * $this->inlineScript()->captureEnd();
+ */
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$url_retour = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-debit'
+]);
+$hiddens = [
+    'op' => $this->hidden_responsableId ? '' : 'retour'
+];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Enregistrement d'un remboursement</h1>
+<?php if ($this->hidden_responsableId):?>
+<h2>Remboursement concernant <?= $this->responsable; ?></h2>
+<?php endif;?>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        <div id="somme-due" class="float-left"></div>
+			<div id="somme-payee" class="float-left"></div>
+		</div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('paiementId'));?>
+		<?= $this->formHidden($this->form->get('responsableId')); ?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
+			<fieldset class="sbm-page1">
+			<div id="wrapper-code-caisse" class="row-inner edit">
+				<?= $this->formRow($this->form->get('codeCaisse')); ?></div>
+			<div id="wrapper-montant" class="row-inner edit">
+				<?= $this->formRow($this->form->get('montant')); ?></div>
+			<div id="wrapper-code-mode-de-paiement" class="row-inner edit">
+				<?= $this->formRow($this->form->get('codeModeDePaiement')); ?></div>
+			<div id="wrapper-exercice" class="row-inner edit">
+				<?= $this->formRow($this->form->get('exercice')); ?></div>
+			<div id="wrapper-annee-scolaire" class="row-inner edit">
+				<?= $this->formRow($this->form->get('anneeScolaire')); ?></div>
+			<div id="wrapper-date-paiement" class="row-inner edit">
+				<?= $this->formRowDateTime($this->form->get('datePaiement')); ?></div>
+			<div id="wrapper-reference" class="row-inner edit">
+				<?= $this->formRow($this->form->get('reference')); ?></div>
+			<div id="wrapper-note" class="row-inner edit">
+				<?= $this->formRow($this->form->get('note')); ?></div>
+			<div id="wrapper-buttons" class="row-inner edit">
+    			<?= $this->formSubmit($this->form->get('submit'));?>
+    			<?= $this->formSubmit($this->form->get('cancel')); ?></div>
+		</fieldset>
+<?= $this->form()->closeTag(); ?>
+    </div><?php // fiche-inner ?>
+	<div id="fiche-footer"></div>
+</div><?php // fiche-wrapper ?>

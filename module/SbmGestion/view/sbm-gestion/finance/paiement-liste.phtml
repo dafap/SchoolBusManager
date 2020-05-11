@@ -207,7 +207,7 @@ if ($this->h2) {
             $jsCallback .= sprintf("$modele\n", $paiement->paiementId,
                 $paiement->paiementId);
             $r = $this->escapeHtml($paiement->responsable);
-            $m = $fmt->formatCurrency($paiement->montant, 'EUR');
+            $m = $fmt->formatCurrency($paiement->montant * $paiement->mouvement, 'EUR');
             $cs = $this->escapeHtml($paiement->caisse);
             $mp = $this->escapeHtml($paiement->modeDePaiement);
             $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement);
@@ -267,8 +267,12 @@ if ($this->h2) {
                     'onclick' => $js
                 ];
             }
+            $css = $this->cycle(["even", "odd"])->next();
+            if ($paiement->mouvement <0) {
+                $css .= ' rouge';
+            }
             ?>
-                <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
+                <tr class="<?=$css;?>">
 					<td class="responsable"><?= $r;?></td>
 					<td class="montant align-right"><?= $m;?></td>
 					<td class="caisse"><?= $cs;?></td>

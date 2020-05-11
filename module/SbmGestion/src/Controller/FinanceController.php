@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -28,6 +28,7 @@ use Zend\Paginator\Adapter\ArrayAdapter;
 
 class FinanceController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      * Menu de gestion financière (non-PHPdoc)
@@ -101,6 +102,14 @@ class FinanceController extends AbstractActionController
             ]);
     }
 
+    /**
+     * Recoit enpost les paramètres :
+     * <ul><li>responsableId</li><li>info</li<li>responsable</li><li>nbInscrits</li>
+     * <li>nbPreinscits</li><li>nbDuplicata</li><li>url1_retour</li><li>origine</li>
+     * <li>url2_retour</li><li>group</li><li>email</li><li>telephones[]</li><li>op</li></ul>
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
+     */
     public function paiementListeAction()
     {
         $prg = $this->prg();
@@ -136,10 +145,8 @@ class FinanceController extends AbstractActionController
                 $args = $prg;
             }
             Session::set('post', $args, $this->getSessionNamespace());
-            Session::set('nsArgsFacture', $this->getSessionNamespace()); // en
-                                                                         // SBM_DG_SESSION
+            Session::set('nsArgsFacture', $this->getSessionNamespace()); // SBM_DG_SESSION
         }
-
         // la page vient de la route (compatibilité du paginateur)
         $currentPage = $this->params('page', 1);
         // le reste vient de $args
@@ -239,62 +246,160 @@ class FinanceController extends AbstractActionController
         }
     }
 
-    public function paiementAjoutAction()
+    /**
+     * Reçoit en post les valeurs suivantes :<ul> <li>url1_retour :
+     * /gestion/eleve/responsable-liste ou /gestion/finance</li> <li>url2_retour</li>
+     * <li>h2 : 1 si on vient d'un responsable, sinon vide</li> <li>namespacectrl : valeur
+     * md5 si on vient d'un responsable, sinon vide</li> <li>responsableId : identifiant
+     * du responsable à éditer ou -1 si c'est un ajout depuis gestion/finance</li>
+     * <li>responsable : titre nom prénom ou nom prénom ou vide si c'est un ajout depuis
+     * gestion/finance</li> <li>op</li></ul>
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function paiementDebitAction()
     {
-        /*
-         * Reçoit en post les données suivantes à utiliser pour le retour : h2,
-         * responsableId, responsable, url1_retour et url2_retour Reçoit dans la route la
-         * page de la liste d'où l'on vient
-         */
         $prg = $this->prg();
         if ($prg instanceof Response) {
-            // transforme un post en une redirection 303 avec le contenu de post en
-            // session
-            // 'prg_post1' (Expire_Hops = 1)
             return $prg;
-        } elseif ($prg === false) {
-            // ce n'était pas un post. Cette entrée est illégale et conduit à un retour à
-            // la liste
+        } elseif ($prg === false || array_key_exists('cancel', $prg)) {
+            $this->flashMessenger()->addInfoMessage('Demande annulée.');
             return $this->redirect()->toRoute('sbmgestion/finance',
                 [
-                    'action' => 'paiement-liste',
+                    'action' => 'paiement-detail',
                     'page' => $this->params('page', 1)
                 ]);
         }
-        // ici, on a eu un post qui a été transformé en rediretion 303. Les données du
-        // post sont
-        // dans $prg (à récupérer en un seul appel à cause de Expire_Hops)
-        $args = $prg;
-        // si $args contient la clé 'cancel' c'est un abandon de l'action
-        if (\array_key_exists('cancel', $args)) {
-            $this->flashMessenger()->addWarningMessage(
-                "L'enregistrement n'a pas été modifié.");
-            return $this->redirect()->toRoute('sbmgestion/finance',
-                [
-                    'action' => 'paiement-liste',
-                    'page' => $this->params('page', 1)
-                ]);
-        }
-        // on ouvre la table des paiements
-        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
-        // on détermine si le responsable est fixé ou s'il faudra le choisir
-        if (\array_key_exists('h2', $args)) {
+        // on détermine si le responsable est fixé ou sinon on sort
+        if (array_key_exists('h2', $prg)) {
             Session::set('responsable_attributes',
                 [
-                    'h2' => $args['h2'],
-                    'responsable' => $args['responsable']
+                    'h2' => $prg['h2'],
+                    'responsable' => $prg['responsable']
                 ], $this->getSessionNamespace());
         } else {
-            $responsable_attributes = Session::get('responsable_attributes', [],
-                $this->getSessionNamespace());
-            $args = \array_merge($args, $responsable_attributes);
+            $prg = array_merge($prg,
+                Session::get('responsable_attributes', [
+                    'h2' => false
+                ], $this->getSessionNamespace()));
         }
-        if ($args['h2']) {
+        if (! $prg['h2']) {
+            $this->flashMessenger()->addWarningMessage(
+                'Un remboursement se fait à partir de la fiche du responsable.');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-detail',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        // on ouvre le formulaire et l'adapte
+        $form = new Form\Remboursement();
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-debit',
+                    'page' => $this->params('page', 1)
+                ]))
+            ->setValueOptions('codeCaisse',
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->caisse())
+            ->setValueOptions('codeModeDePaiement',
+            $this->db_manager->get('Sbm\Db\Select\Libelles')
+                ->modeDePaiement())
+            ->setMaxLength($this->db_manager->getMaxLengthArray('paiements', 'table'));
+        // on ouvre la table des paiements et on la lie au formulaire
+        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        $form->bind($tablePaiements->getObjData());
+
+        if (array_key_exists('submit', $prg)) {
+            $form->setData($prg);
+            if ($form->isValid()) {
+                $montant = $form->getData()->montant;
+                // sauvegarde après avoir validé les datas
+                if ($montant > 0) {
+                    $objData = $form->getData();
+                    $objData->mouvement = - 1;
+                    $objData->dateValeur = $objData->datePaiement;
+                    $tablePaiements->saveRecord($objData);
+                    $this->flashMessenger()->addSuccessMessage(
+                        'Le remboursement est enregistré.');
+                } else {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Le montant doit être strictement positif.');
+                }
+                return $this->redirect()->toRoute('sbmgestion/finance',
+                    [
+                        'action' => 'paiement-detail',
+                        'page' => $this->params('page', 1)
+                    ]);
+            }
+        } else {
+            $millesime = Session::get('millesime');
+            $form->setData(
+                [
+                    'paiementId' => StdLib::getParam('paiementId', $prg),
+                    'responsableId' => $prg['responsableId'],
+                    'codeCaisse' => 1,
+                    'datePaiement' => date('Y-m-d H:i:s'),
+                    'exercice' => date('Y'),
+                    'anneeScolaire' => $millesime . '-' . ($millesime + 1)
+                ]);
+        }
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'paiementId' => StdLib::getParam('paiementId', $prg),
+                'responsableId' => $prg['responsableId'],
+                'responsable' => $prg['responsable'],
+                'prg' => $prg
+            ]);
+    }
+
+    /**
+     * Reçoit en post les valeurs suivantes :<ul> <li>url1_retour :
+     * /gestion/eleve/responsable-liste ou /gestion/finance</li> <li>url2_retour</li>
+     * <li>h2 : 1 si on vient d'un responsable, sinon vide</li> <li>namespacectrl : valeur
+     * md5 si on vient d'un responsable, sinon vide</li> <li>responsableId : identifiant
+     * du responsable à éditer ou -1 si c'est un ajout depuis gestion/finance</li>
+     * <li>responsable : titre nom prénom ou nom prénom ou vide si c'est un ajout depuis
+     * gestion/finance</li> <li>op</li></ul>
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function paiementAjoutAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || array_key_exists('cancel', $prg)) {
+            $this->flashMessenger()->addInfoMessage('Demande annulée');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        // on détermine si le responsable est fixé ou s'il faudra le choisir
+        if (array_key_exists('h2', $prg)) {
+            Session::set('responsable_attributes',
+                [
+                    'h2' => $prg['h2'],
+                    'responsable' => $prg['responsable']
+                ], $this->getSessionNamespace());
+        } else {
+            $prg = array_merge($prg,
+                Session::get('responsable_attributes', [
+                    'h2' => false
+                ], $this->getSessionNamespace()));
+        }
+        if ($prg['h2']) {
             $hidden_responsableId = true; // le responsable est fixé
         } else {
             $hidden_responsableId = false; // il faudra choisir le responsable
         }
-        // on ouvre le formulaire, l'adapte et le lie à l'échange de données
+        // on ouvre le formulaire et l'adapte
         $form = new Form\Paiement(
             [
                 'responsableId' => $hidden_responsableId,
@@ -318,33 +423,39 @@ class FinanceController extends AbstractActionController
             $form->setValueOptions('responsableId',
                 $this->db_manager->get('Sbm\Db\Select\Responsables'));
         }
+        // on ouvre la table des paiements et on la lie au formulaire
+        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
         $form->bind($tablePaiements->getObjData());
-        if (array_key_exists('submit', $args)) {
-            $form->setData($args);
+        if (array_key_exists('submit', $prg)) {
+            $form->setData($prg);
             if ($form->isValid()) {
                 $montant = $form->getData()->montant;
-                // validation des paiements dans les fiches scolarites
-                if (! empty($args['eleveId'])) {
-                    $responsableId = $form->getData()->responsableId;
-                    $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                        $responsableId, $args['eleveId']);
-                    if ($montant >= $resultats->getSolde(0,'liste')) {
-                        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                        $tScolarites->setPaiement(Session::get('millesime'),
-                            $args['eleveId']);
-                    }
-                    $msg = 'Les abonnements ont été mis à jour.';
-                } else {
-                    $msg = '';
-                }
                 // sauvegarde après avoir validé les datas
                 if ($montant > 0) {
-                    $tablePaiements->saveRecord($form->getData());
-                    $this->flashMessenger()->addSuccessMessage(
-                        implode(' ', [
-                            "Le paiement est enregistré.",
-                            $msg
-                        ]));
+                    if ($tablePaiements->saveRecord($form->getData())) {
+                        $msg = "Le paiement est enregistré.";
+                        // validation des paiements dans les fiches scolarites
+                        if (! empty($prg['eleveId'])) {
+                            $responsableId = $form->getData()->responsableId;
+                            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
+                                $responsableId, $prg['eleveId']);
+                            if ($montant >= $resultats->getSolde(0, 'liste')) {
+                                $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement(
+                                    $prg['eleveId'], $responsableId, true);
+                            }
+                            $this->flashMessenger()->addSuccessMessage(
+                                implode(' ',
+                                    [
+                                        $msg,
+                                        'Les abonnements ont été mis à jour.'
+                                    ]));
+                        } else {
+                            $this->flashMessenger()->addSuccessMessage($msg);
+                        }
+                    } else {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Impossible d\'enregistrer ce paiement. Avez-vous mis une référence à votre paiement ?');
+                    }
                 } elseif ($msg) {
                     $this->flashMessenger()->addWarningMessage($msg);
                 } else {
@@ -362,15 +473,14 @@ class FinanceController extends AbstractActionController
         } else {
             $millesime = Session::get('millesime');
             $as = $millesime . '-' . ($millesime + 1);
-            $libelles = $this->db_manager->get('Sbm\Libelles');
             $init_form = [
-                'codeCaisse' => $libelles->getCode('caisse', 'régisseur'),
+                'codeCaisse' => 1,
                 'datePaiement' => date('Y-m-d H:i:s'),
                 'exercice' => date('Y'),
                 'anneeScolaire' => $as
             ];
             if ($hidden_responsableId) {
-                $init_form['responsableId'] = $args['responsableId'];
+                $init_form['responsableId'] = $prg['responsableId'];
             }
             $form->setData($init_form);
         }
@@ -381,7 +491,7 @@ class FinanceController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'paiementId' => null,
                 'hidden_responsableId' => $hidden_responsableId,
-                'responsable' => $args['responsable']
+                'responsable' => $prg['responsable']
             ]);
     }
 
@@ -549,9 +659,8 @@ class FinanceController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $data->note = $args['note'];
-                $tableScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-                $tableScolarites->setPaiement(Session::get('millesime'),
-                    StdLib::getParam('eleveIds', $args, []), false);
+                $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement(
+                    StdLib::getParam('eleveIds', $args, []), $responsableId, false);
                 $tablePaiements->saveRecord($data);
                 $tablePaiements->deleteRecord($paiementId);
                 $this->flashMessenger()->addSuccessMessage(

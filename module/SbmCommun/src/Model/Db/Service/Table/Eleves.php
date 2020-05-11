@@ -8,7 +8,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mars 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -314,5 +314,29 @@ class Eleves extends AbstractSbmTable
                 ]);
         }
         return $resultset->current();
+    }
+
+    /**
+     * Renvoie 1 si le responsableId est R1, 2 s'il est R2, 0 s'il n'est pas responsable,
+     * -1 s'il n'y a pas d'élève avec cet identifiant
+     *
+     * @param int $responsableId
+     * @param int $eleveId
+     * @return int
+     */
+    public function estResponsable(int $responsableId, int $eleveId): int
+    {
+        try {
+            $eleve = $this->getRecord($eleveId);
+            if ($eleve->responsable1Id == $responsableId) {
+                return 1;
+            } elseif ($eleve->responsable2Id == $responsableId) {
+                return 2;
+            } else {
+                return 0;
+            }
+        } catch (\Exception $e) {
+            return - 1;
+        }
     }
 }

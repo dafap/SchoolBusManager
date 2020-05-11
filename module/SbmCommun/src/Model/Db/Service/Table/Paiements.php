@@ -8,7 +8,7 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -41,7 +41,7 @@ class Paiements extends AbstractSbmTable
             $dte = new \DateTime($obj_data->datePaiement);
             $obj_data->dateValeur = $dte->format('Y-m-d');
         }
-        parent::saveRecord($obj_data);
+        return parent::saveRecord($obj_data);
     }
 
     /**
@@ -333,7 +333,7 @@ class Paiements extends AbstractSbmTable
     {
         $select = $this->table_gateway->getSql()->select();
         $select->columns([
-            'somme' => new Expression('sum(montant)')
+            'somme' => new Expression('sum(montant * mouvement)')
         ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->somme ?: 0;

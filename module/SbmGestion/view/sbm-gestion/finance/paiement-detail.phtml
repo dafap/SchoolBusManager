@@ -12,7 +12,7 @@
  * @filesource paiement-detail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 11 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -46,8 +46,14 @@ $url_lesfactures = $this->url('sbmdocument', [
 $url_unefacture = $this->url('sbmdocument', [
     'action' => 'facture'
 ]);
+$url_debit = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-debit'
+]);
 $hiddens = [
-    'namespacectrl' => $this->namespacectrl
+    'namespacectrl' => $this->namespacectrl,
+    'h2' => $this->args['h2'],
+    'responsableId' => $this->args['responsableId'],
+    'responsable' => $this->args['responsable']
 ];
 /*
  * Impression spéciale de la facture qui déroge à la méthode habituelle $menuImpression =
@@ -77,8 +83,16 @@ $actions = [
                 'formtarget' => '_blank'
             ]
         ]
+    ],
+    'debit' => [
+        'class' => 'fam-coins-delete',
+        'formaction' => $url_debit,
+        'title' => 'Remboursement'
     ]
 ];
+if ($montantTotal >= $dejaPaye) {
+    unset($actions['debit']);
+}
 ?>
 <div id="liste-wrapper">
 	<div id="liste-title">
@@ -209,10 +223,14 @@ $actions = [
 								<th>Montant</th>
 							</tr>
 					<?php foreach ($this->resultats->getPaiementsDetail() as $row) :?>
-							<tr>
+					<?php
+					$css = $row['mouvement'] == -1 ? 'rouge' : '';
+					?>
+							<tr class='<?=$css;?>'>
 								<td><?=DateLib::formatDateFromMysql($row['datePaiement']);?></td>
-								<td><?=$row['modeDePaiement'];?></td>
-								<td><span class="formatEuro"><?=$row['montant'];?></span></td>
+								<td><?=$row['mouvement'] == -1 ? 'Remboursement ' : '';?>
+									<?=$row['modeDePaiement'];?></td>
+								<td><span class="formatEuro"><?=$row['montant'] * $row['mouvement'];?></span></td>
 							</tr>
 					<?php endforeach;?>
 				</tbody>

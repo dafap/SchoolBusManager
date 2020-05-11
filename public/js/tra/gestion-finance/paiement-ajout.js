@@ -33,7 +33,7 @@ var js_paiement_ajout = (function(){
 			dataType: 'json',
 			success : function(dataJson){		        			        
 				$("#tbody-preinscrits").empty();
-				$("#tbody-preinscrits").append('<tr><th>Nom</th><th>Prénom</th><th>Tarif</th><th>Duplicata</th><th></th></tr>');
+				$("#tbody-preinscrits").append('<tr><th>Nom</th><th>Prénom</th><th colspan="2">Tarif</th><th>Duplicata</th><th></th></tr>');
 				if (dataJson.success) {
 			    	nbPreinscrits = 0;
 			    	$.each(dataJson.data, function(k, d) {
@@ -41,9 +41,10 @@ var js_paiement_ajout = (function(){
 			        	var nom = d['nom'];
 			        	var prenom = d['prenom'];
 			        	var tarif = d['grilleTarif'];
+			        	var reduit = d['reduction'];
 			        	var duplicata = d['duplicata'];
 			        	var checkbox = '<input type="checkbox" name="eleveId[]" value="'+d['eleveId']+'" checked>';
-			            $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+tarif+"</td><td class=\"align-right\">"+duplicata+"</td><td>"+checkbox+"</td></tr>");
+			            $('#tbody-preinscrits').append("<tr><td>"+nom+"</td><td>"+prenom+"</td><td>"+tarif+"</td><td>"+reduit+"</td><td class=\"align-right\">"+duplicata+"</td><td>"+checkbox+"</td></tr>");
 			        });
 			    }
 				totalAPayer();
@@ -62,7 +63,7 @@ var js_paiement_ajout = (function(){
 	function totalAPayer() {
 		var result = [];
 		$("#tbody-preinscrits > tr:not(:first)").each(function(i) {			
-			var element = $("td:nth-child(5) > input[type=checkbox]")[i];
+			var element = $("td:nth-child(6) > input[type=checkbox]")[i];
 			if ($(element).is(':checked')) {
 				result.push(element.value);
 			}
