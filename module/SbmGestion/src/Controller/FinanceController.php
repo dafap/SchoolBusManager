@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1075,8 +1075,7 @@ class FinanceController extends AbstractActionController
         } else {
             $form2->setData(
                 [
-                    'codeCaisse' => $this->db_manager->get('Sbm\Db\System\Libelles')
-                        ->getCode('Caisse', 'régisseur')
+                    'codeCaisse' => 1
                 ]);
         }
         if (substr($this->params('id', ''), - 5) == 'error') {
