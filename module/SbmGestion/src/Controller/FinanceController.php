@@ -1061,10 +1061,8 @@ class FinanceController extends AbstractActionController
                 $args = $form1->getData();
                 $aKey = $sBordereaux->decode($args['bordereau']);
                 $n = $tPaiements->clotureDepot($aKey['dateBordereau'],
-                    $aKey['codeModeDePaiement'],
-                    $this->db_manager->get('Sbm\Db\System\Libelles')
-                        ->getCode('Caisse', 'comptable'));
-                $format = "Le bordereau de %s a été clôturé. Les %d paiements qu'il contient sont maintenant dans la caisse du comptable.";
+                    $aKey['codeModeDePaiement'],5);
+                $format = "Le bordereau de %s a été clôturé. Les %d paiements qu'il contient sont maintenant déposés en banque.";
                 $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
                 $this->flashMessenger()->addSuccessMessage($message);
                 return $this->redirect()->toRoute('sbmgestion/finance',
