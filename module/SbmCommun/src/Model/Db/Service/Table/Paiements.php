@@ -8,7 +8,7 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -108,6 +108,7 @@ class Paiements extends AbstractSbmTable
         $where = new Where();
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement)
             ->equalTo('codeCaisse', $codeCaisse)
+            ->literal('mouvement = 1')
             ->isNull('dateDepot')
             ->lessThanOrEqualTo('dateValeur', $date);
         if (! is_null($exercice)) {
@@ -241,7 +242,8 @@ class Paiements extends AbstractSbmTable
     public function dateDernierPaiement($codeModeDePaiement)
     {
         $where = new Where();
-        $where->equalTo('codeModeDePaiement', $codeModeDePaiement);
+        $where->equalTo('codeModeDePaiement', $codeModeDePaiement)->literal(
+            'mouvement = 1');
         $select = $this->table_gateway->getSql()->select();
         $select->columns([
             'date' => new Expression('max(datePaiement)')
@@ -308,7 +310,8 @@ class Paiements extends AbstractSbmTable
      * @param int $codeModeDePaiement
      * @return number|false
      */
-    public function totalExercice($exercice, $codeCaisse = null, $codeModeDePaiement = null)
+    public function totalExercice($exercice, $codeCaisse = null,
+        $codeModeDePaiement = null)
     {
         if ($codeCaisse === false || $codeModeDePaiement === false) {
             return false;

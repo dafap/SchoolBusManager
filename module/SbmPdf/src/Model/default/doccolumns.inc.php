@@ -7,8 +7,8 @@
  * @filesource doccolumns.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 return [
     'thead' => '',
@@ -29,6 +29,7 @@ return [
     'filter' => '',
     'width' => 0,
     'truncate' => true,
-    'precision' => - 1,
-    'completion' => 0
+    'nl' => 0,
+    'nature' => 0,
+    'format' => null
 ];
