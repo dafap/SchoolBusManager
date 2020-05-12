@@ -10,7 +10,7 @@
  * @filesource affecter-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -121,7 +121,7 @@ $actions = [
 					<td><?= $adresse?></td>
 					<td><?= $this->escapeHtml($row['commune']); ?></td>
 					<td><?= $this->escapeHtml($row['etablissement']); ?></td>
-					<td><?= $this->escapeHtml($row['communeEtablissement']); ?></td>
+					<td><?= $this->escapeHtml($row['lacommuneEtablissement']); ?></td>
 					<td><?= $distance; ?></td>
 					<td><?= $this->listeLigneActions($cle, $hiddens, $buttons); ?></td>
 				</tr>

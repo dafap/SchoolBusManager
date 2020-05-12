@@ -264,7 +264,7 @@ $url_facture = $this->url('sbmdocument', [
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
                 '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] .
+            $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['lacommuneEtablissement'] .
                 '</td>';
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
                 sprintf('%s %s', $row['grilleTarifR1'],
@@ -482,7 +482,7 @@ $url_facture = $this->url('sbmdocument', [
                 "odd",
                 "even"
             ])->next(), $row['nom'], $row['prenom'], $row['etablissement'],
-                $row['communeEtablissement'], $grilleTarif, $btligne, $pasdephoto);
+                $row['lacommuneEtablissement'], $grilleTarif, $btligne, $pasdephoto);
         }
         if ($alerte) {
             echo sprintf('<tr class="petit alert"><td colspan="7">%s</td></tr>',

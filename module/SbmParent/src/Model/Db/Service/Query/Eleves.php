@@ -9,7 +9,7 @@
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mai 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model\Db\Service\Query;
@@ -184,7 +184,7 @@ class Eleves implements FactoryInterface
         ], 'eta.communeId = com.communeId',
             [
                 'communeEtablissement' => 'nom',
-                'lacommuneEtablissement' => 'alias',
+                'lacommuneEtablissement' => 'aliasCG',
                 'laposteEtablissement' => 'alias_laposte'
             ])
             ->where($where);

@@ -1,15 +1,15 @@
 <?php
 /**
  * Page de consultation des inscrits ayant le même responsable
- * 
+ *
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
- * @version 2019-2.5.0
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -139,7 +139,7 @@ $actions = [
 						<td class="ga"><?= $eleve['responsable2Id'] ? 'G.A.' : '';?></td>
 						<td class="etablissement">
 					   		<?= $this->escapeHtml($eleve['etablissement']);?>
-					   		<?= $this->escapeHtml($eleve['communeEtablissement']);?>
+					   		<?= $this->escapeHtml($eleve['lacommuneEtablissement']);?>
 					   </td>
 						<td class="classe"><?= $this->escapeHtml($eleve['classe']);?></td>
 						<td class="service">

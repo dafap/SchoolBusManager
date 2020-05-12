@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -603,7 +603,9 @@ class AffectationsServicesStations extends AbstractQuery
             ->join([
             'etacom' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'eta.communeId = etacom.communeId', [
-            'communeEtablissement' => 'nom'
+            'communeEtablissement' => 'nom',
+            'lacommuneEtablissement' => 'aliasCG',
+            'laposteEtablissement' => 'alias_laposte'
         ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')

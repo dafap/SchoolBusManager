@@ -1,17 +1,17 @@
 <?php
 /**
  * Liste des élèves en garde alternée dont le responsable N°2 n'a pas de distance calculée.
- * 
- * Cela vient souvent du fait que le responsable n°1 a saisi l'identité du responsable n°2 
+ *
+ * Cela vient souvent du fait que le responsable n°1 a saisi l'identité du responsable n°2
  * mais qu'il n'est pas localisé sur la carte.
- * 
+ *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
  * @filesource ga-localisation-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 fév. 2019
- * @version 2019-2.5.0
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -75,7 +75,7 @@ $actions = [
             'descriptioneta' => implode('<br>',
                 [
                     $row['etablissement'],
-                    $row['communeEtablissement']
+                    $row['lacommuneEtablissement']
                 ])
         ];
         /*
@@ -117,7 +117,7 @@ $actions = [
 					<td><?= $this->escapeHtml($row['nom'] . ' ' . $row['prenom']);?></td>
 					<td>
 						<?= $this->escapeHtml($row['etablissement']);?> -
-						<?= $this->escapeHtml($row['communeEtablissement']);?></td>
+						<?= $this->escapeHtml($row['lacommuneEtablissement']);?></td>
 					<td><?= $adresseR1;?></td>
 					<td><?= $this->escapeHtml($row['communeR1']);?></td>
 					<td><?= $row['distanceR1'];?></td>

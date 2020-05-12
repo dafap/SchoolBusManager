@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1197,7 +1197,7 @@ class EleveController extends AbstractActionController
             'R2 Téléphone 2' => 'telephonePR2',
             'R2 Téléphone 3' => 'telephoneTR2',
             'Établissement' => 'etablissement',
-            'Commune de l\'établissement' => 'communeEtablissement',
+            'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe'
         ];
         // index du tableau $columns correspondant à des n° de téléphones

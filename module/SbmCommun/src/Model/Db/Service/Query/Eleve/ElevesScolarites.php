@@ -127,7 +127,7 @@ class ElevesScolarites extends AbstractQuery
         ], 'eta.communeId = com.communeId',
             [
                 'communeEtablissement' => 'nom',
-                'lacommuneEtablissement' => 'alias',
+                'lacommuneEtablissement' => 'aliasCG',
                 'laposteEtablissement' => 'alias_laposte'
             ])
             ->join(

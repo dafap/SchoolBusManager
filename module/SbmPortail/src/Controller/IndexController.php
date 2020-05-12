@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -286,7 +286,7 @@ class IndexController extends AbstractActionController
             'Nom' => 'nom',
             'Prénom' => 'prenom',
             'Établissement' => 'etablissement',
-            'Commune de l\'établissement' => 'communeEtablissement',
+            'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe',
             'R1 Identité' => 'responsable1',
             'R1 Adresse ligne 1' => 'adresseR1L1',
@@ -578,7 +578,7 @@ class IndexController extends AbstractActionController
             'Nom' => 'nom',
             'Prénom' => 'prenom',
             'Établissement' => 'etablissement',
-            'Commune de l\'établissement' => 'communeEtablissement',
+            'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe',
             'R1 Identité' => 'responsable1NomPrenom',
             'R1 Adresse ligne 1' => 'adresseL1R1',
@@ -1280,7 +1280,7 @@ class IndexController extends AbstractActionController
             'R Téléphone 2' => 'telephoneP',
             'R Téléphone 3' => 'telephoneT',
             'Établissement' => 'etablissement',
-            'Commune de l\'établissement' => 'communeEtablissement',
+            'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe',
             'Service' => 'service1',
             'Station Montée' => 'station1',

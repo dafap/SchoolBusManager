@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -443,7 +443,7 @@ $actions = [
 						<?= $this->escapeHtml($eleve['communeR1']);?></td>
 					<td <?= $rowspan;?> class="etablissement">
 						<?= $this->escapeHtml($eleve['etablissement']);?> -
-						<?= $this->escapeHtml($eleve['communeEtablissement']);?></td>
+						<?= $this->escapeHtml($eleve['lacommuneEtablissement']);?></td>
 					<td <?= $rowspan;?> class="classe">
 						<?= $this->escapeHtml($eleve['classe']);?></td>
 					<td class="service">

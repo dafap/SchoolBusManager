@@ -9,7 +9,7 @@
  * @filesource suppr-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 ?>
@@ -19,7 +19,7 @@
 	<div class="header-wrapper">
 		<ul>
 			<li><?= $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
-			<li>Scolarisation : <?= $this->eleve['etablissement'] . ' - ' . $this->eleve['communeEtablissement']; ?></li>
+			<li>Scolarisation : <?= $this->eleve['etablissement'] . ' - ' . $this->eleve['lacommuneEtablissement']; ?></li>
 	        <?php if ($this->affectations->count() > 0) : ?>
 	        <li>Circuits utilisés :
 				<ul>

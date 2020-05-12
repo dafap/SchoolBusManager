@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 12 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -325,7 +325,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
 					<td colspan="5">Non inscrit</td>
 				<?php else : ?>
 					<td><?= $row['millesime']?></td>
-					<td><?= $row['etablissement'];?> - <?= $row['communeEtablissement'];?></td>
+					<td><?= $row['etablissement'];?> - <?= $row['lacommuneEtablissement'];?></td>
 					<td class="centre"><?= $row['classe'];?></td>
 					<td><?= $row['grilleTarifR1'];?> <?= $this->reductionTarif($row['reductionR1']);?></td>
 					<td><?= implode(' / ', $services);?></td>

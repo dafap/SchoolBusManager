@@ -9,8 +9,8 @@
  * @filesource affecter.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 juin 2019
- * @version 2019-2.5.0
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 // test sur le formulaire decision
 
@@ -27,7 +27,7 @@ $descriptionEta = addslashes(
     implode('<br>',
         [
             $this->eleve['etablissement'],
-            $this->eleve['communeEtablissement']
+            $this->eleve['lacommuneEtablissement']
         ]));
 // page html
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -96,7 +96,7 @@ $adresse = implode(' - ',
 					    <?= $this->eleve['commune'];?></li>
 					<li>
 						<?= $this->eleve['etablissement'];?>
-						<?= $this->eleve['communeEtablissement'];?></li>
+						<?= $this->eleve['lacommuneEtablissement'];?></li>
 				</ul>
 				<div class="inner-form">
 <?php if ($this->op == 1):?>

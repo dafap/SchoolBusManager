@@ -7,8 +7,8 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
- * @version 2019-2.5.0
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
 
@@ -92,7 +92,9 @@ class Services extends AbstractQuery
             }
             $result[$row['serviceId']]['etablissements'][] = [
                 'etablissement' => $row['etablissement'],
-                'communeEtablissement' => $row['communeEtablissement']
+                'communeEtablissement' => $row['communeEtablissement'],
+                'lacommuneEtablissement' => $row['lacommuneEtablissement'],
+                'laposteEtablissement' => $row['laposteEtablissement']
             ];
         }
         return $result;
@@ -153,9 +155,12 @@ class Services extends AbstractQuery
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'com.communeId = eta.communeId', [
-            'communeEtablissement' => 'nom'
-        ])
+        ], 'com.communeId = eta.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'aliasCG',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->order('serviceId');
     }
 }
