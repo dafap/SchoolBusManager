@@ -7,12 +7,13 @@
  * @filesource Historique.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 12 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Paiements\Historique;
 
 use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
 
 class Historique
 {
@@ -218,7 +219,7 @@ class Historique
     {
         $code = $this->getCodeModePaiement();
         if ($code) {
-            return $this->modesDePaiement[$code];
+            return StdLib::getParam($code, $this->modesDePaiement, '');
         }
         return '';
     }
@@ -232,7 +233,7 @@ class Historique
     {
         $code = $this->getCodeCaisse();
         if ($code) {
-            return $this->caisses[$code];
+            return StdLib::getParam($code, $this->caisses, '');
         }
         return '';
     }
@@ -372,7 +373,7 @@ class Historique
                 $detail['codeModePaiement'] = [
                     'libelle' => 'Mode de paiement modifié',
                     'ancien' => $this->getCodeModePaiement(),
-                    'nouveau' => $this->$this->getNewCodeModePaiement()
+                    'nouveau' => $this->getNewCodeModePaiement()
                 ];
             }
             if ($this->getBanque() != $this->getNewBanque()) {
