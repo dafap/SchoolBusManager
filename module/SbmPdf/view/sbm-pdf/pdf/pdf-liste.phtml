@@ -7,8 +7,8 @@
  * @filesource pdf-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2019
- * @version 2019-2.5.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -53,7 +53,7 @@ $url_affectation = $this->url('sbmpdf',
 
 $url_etiquette = $this->url('sbmpdf',
     [
-        'action' => 'etiquette-format',
+        'action' => 'etiquette-liste',
         'page' => $this->page
     ]);
 $url_texte = $this->url('sbmpdf', [

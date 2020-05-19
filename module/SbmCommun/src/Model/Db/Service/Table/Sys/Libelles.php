@@ -9,8 +9,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 déc. 2019
- * @version 2019-2.5.4
+ * @date 15 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -38,9 +38,8 @@ class Libelles extends AbstractSbmTable
     }
 
     /**
-     * Soit on passe un tableau des valeurs correspondant à la propriété id_name (nature, code),
-     * soit on passe une chaine contenant ces valeurs séparées par |
-     *
+     * Soit on passe un tableau des valeurs correspondant à la propriété id_name (nature,
+     * code), soit on passe une chaine contenant ces valeurs séparées par |
      * (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()
@@ -138,7 +137,8 @@ class Libelles extends AbstractSbmTable
     }
 
     /**
-     * Renvoie un tableau indexé donnant les codes de la nature demandée à partir de leur libellé
+     * Renvoie un tableau indexé donnant les codes de la nature demandée à partir de leur
+     * libellé
      *
      * @param string $nature
      *
@@ -151,7 +151,8 @@ class Libelles extends AbstractSbmTable
         $array = [];
         foreach ($rowset as $row) {
             $array[$row->libelle] = $row->code;
-        };
+        }
+        ;
         return $array;
     }
 
@@ -171,8 +172,10 @@ class Libelles extends AbstractSbmTable
         $rowset = $this->fetchAll(
             $where->equalTo('nature', $nature)
                 ->equalTo('code', $code));
-        if (! $rowset) {
-            throw new Exception\RuntimeException('Ce code n\'existe pas.');
+        if (! $rowset || $rowset->count() == 0) {
+            throw new Exception\RuntimeException(
+                sprintf('Ce libellé (nature: %s - code: %d) n\'existe pas.', $nature,
+                    $code));
         } else {
             return $rowset->current()->libelle;
         }

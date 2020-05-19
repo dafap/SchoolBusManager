@@ -12,12 +12,12 @@
  * @filesource field-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->themeJS('sbm-pdf','field-edit.js');
+$this->themeJS('sbm-pdf', 'field-edit.js');
 $this->inlineScript()->captureStart();
 ?>
  $("#accordion").accordion();
@@ -45,9 +45,9 @@ $actions = [
     ]
 ];
 ?>
-<h1>Définition d'un champ d'un document</h1>
+<h1>Définition d'un champ dans le sous-formulaire n° <?= $this->document['sublabel'];?>
+	du document <?= $this->docyment['name'];?></h1>
 <ul>
-	<li>Document: <?= $this->document['name'];?></li>
 	<li>Source du document: <?= $this->document['recordSource'];?></li>
 </ul>
 <div id="fiche-wrapper">
@@ -61,6 +61,7 @@ $actions = [
     		<?= $this->form()->openTag($this->form);?>
     		<?= $this->formHidden($this->form->get('docfieldId'));?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
+    		<?= $this->formHidden($this->form->get('sublabel'));?>
     		<?= $this->formHidden($this->form->get('name'));?>
     		<?= $this->formHidden($this->form->get('recordSource'));?>
     		<?= $this->formHidden($this->form->get('csrf'));?>

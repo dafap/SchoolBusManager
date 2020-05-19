@@ -1,0 +1,106 @@
+<?php
+/**
+ * Ecran de saisie des paramètres des étiquettes
+ *
+ * Cette vue reçoit les variables suivantes :
+ * - form : formulaire d'édition
+ * - document : contient le nom du document, son identifiant, le sublabel, le recordsource
+ *
+ *
+ * @project sbm
+ * @package SbmPdf/view/sbm-pdf/document
+ * @filesource etiquette-edit.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_cancel = $this->url('sbmpdf', [
+    'action' => 'etiquette-liste',
+    'page' => $this->page
+]);
+
+$hiddens = [
+    'documentId' => $this->document['documentId'],
+    'sublabel' => $this->document['sublabel'],
+    'name' => $this->document['name'],
+    'recordSource' => $this->document['recordSource']
+];
+
+$actions = [
+    'homepdf' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_cancel,
+        'title' => 'Liste des sous-étiquettes'
+    ]
+];
+// le formulaire doit avoir id="accordion" pour que ça marche
+?>
+<h1>Paramétrage de la sous-étiquettes n° <?= $this->document['sublabel'] + 1;?>
+	du document <?= $this->document['name'];?></h1>
+<ul>
+	<li>Nombre de sous-étiquettes: <?= $this->nb_sublabel;?></li>
+	<li>Source du document: <?= $this->document['recordSource'];?></li>
+</ul>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner" class="clearfix">
+		<fieldset class="sbm-page1">
+    		<?= $this->form()->openTag($this->form);?>
+    		<?= $this->formHidden($this->form->get('doclabelId'));?>
+    		<?= $this->formHidden($this->form->get('documentId'));?>
+    		<?= $this->formHidden($this->form->get('sublabel'));?>
+    		<?= $this->formHidden($this->form->get('name'));?>
+    		<?= $this->formHidden($this->form->get('recordSource'));?>
+    		<?= $this->formHidden($this->form->get('csrf'));?>
+        	<div class="float-left">
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('cols_number'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('rows_number'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('label_width'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('label_height'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('margin_left'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('margin_top'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('x_space'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('y_space'));?></div>
+			</div>
+			<div class="float-left left-95px">
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('padding_top'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('padding_right'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('padding_bottom'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('padding_left'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('border'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('border_dash'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('border_width'));?></div>
+				<div class="row-inner label-240">
+					<?= $this->formRow($this->form->get('border_color'));?></div>
+			</div>
+			<div class="row-inner">
+	    		<?= $this->formSubmit($this->form->get('submit')); ?>
+	    		<?= $this->formSubmit($this->form->get('cancel')); ?>
+        	</div>
+        	<?= $this->form()->closeTag(); ?>
+        </fieldset>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

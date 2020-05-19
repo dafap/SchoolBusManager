@@ -1,0 +1,42 @@
+<?php
+/**
+ * Page de confirmation de la suppression d'une sous-étiquette d'un document
+ *
+ * Cette vue reçoit les variables :
+ * - form : formulaire de confirmation
+ * - document : contient le nom du document et le numero du sublabel
+ * - fields : tableau des noms des champs contenus dans la sous-étiquette
+ *
+ * @project sbm
+ * @package
+ * @filesource etiquette-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 mai 2020
+ * @version 2020-2.6.0
+ */
+?>
+<h1>Suppression de sous-étiquette n° <?= $this->document['sublabel'] + 1;?> du document <?=$this->document['name'];?></h1>
+<div id="suppr-wrapper">
+	<div class="header-wrapper">
+		<p>Vous avez demandé la suppression de sa sous-étiquette n° <?= $this->document['sublabel'] + 1;?>
+	du document <?=$this->document['name'];?>.
+	</p>
+	<?php if (count($this->fields)):?>
+		<p>Cette sous-étiquette contient les champs suivants :</p>
+		<ul>
+		<?php foreach($this->fields as $field):?>
+			<li><?= $field; ?></li>
+		<?php endforeach;?>
+		</ul>
+		<p>La suppression de la sous-étiquette supprimera aussi tous ces
+			champs.</p>
+		<?php else:?>
+		<p>Cette sous-étiquette ne contient pas de champs.</p>
+		<?php endif;?>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

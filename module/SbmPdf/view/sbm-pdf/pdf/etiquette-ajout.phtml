@@ -1,33 +1,29 @@
 <?php
 /**
- * Ecran de saisie des paramètres des étiquettes
+ * Page de création d'une sous-étiquette
  *
- * 
+ * Cette vue reçoit les variables :
+ * - document : objet qui contient les propriétés documentId, name, recordSource
+ * - sublabel : initialisé avec un sublabel disponible
+ *
  * @project sbm
- * @package SbmPdf/view/sbm-pdf/document
- * @filesource etiquette-format.phtml
+ * @package
+ * @filesource etiquette-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
- * @version 2019-2.5.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_cancel = $this->url('sbmpdf', [
-    'action' => 'pdf-liste',
-    'page' => $this->page
-]);
-$url_retour = $this->url('sbmpdf', [
-    'action' => 'pdf-edit',
-    'page' => $this->page
-]);
-$url_fields = $this->url('sbmpdf', [
-    'action' => 'field-liste',
+    'action' => 'etiquette-liste',
     'page' => $this->page
 ]);
 
 $hiddens = [
     'documentId' => $this->document['documentId'],
+    'sublabel' => $this->sublabel,
     'name' => $this->document['name'],
     'recordSource' => $this->document['recordSource']
 ];
@@ -36,25 +32,15 @@ $actions = [
     'homepdf' => [
         'class' => 'fam-door-out',
         'formaction' => $url_cancel,
-        'title' => 'Liste des documents'
+        'title' => 'Liste des sous-étiquettes'
     ],
-    'retour' => [
-        'class' => 'fam-book-previous',
-        'formaction' => $url_retour,
-        'title' => 'Configuration du document'
-    ],
-    'champs' => [
-        'formaction' => $url_fields,
-        'class' => 'button default',
-        'value' => 'Liste des champs',
-        'title' => 'Définition et mise en forme du contenu de l\'étiquette'
-    ]
 ];
 // le formulaire doit avoir id="accordion" pour que ça marche
 ?>
-<h1>Paramétrage des étiquettes</h1>
+<h1>Création de la sous-étiquettes n° <?= $this->sublabel + 1;?>
+	du document <?= $this->document['name'];?></h1>
 <ul>
-	<li>Document: <?= $this->document['name'];?></li>
+	<li>Nombre de sous-étiquettes: <?= $this->nb_sublabel;?></li>
 	<li>Source du document: <?= $this->document['recordSource'];?></li>
 </ul>
 <div id="fiche-wrapper">
@@ -65,9 +51,9 @@ $actions = [
 	</div>
 	<div id="fiche-inner" class="clearfix">
 		<fieldset class="sbm-page1">
-    		<?= $this->form()->openTag($this->form);?> 
-    		<?= $this->formHidden($this->form->get('doclabelId'));?>
+    		<?= $this->form()->openTag($this->form);?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
+    		<?= $this->formHidden($this->form->get('sublabel'));?>
     		<?= $this->formHidden($this->form->get('name'));?>
     		<?= $this->formHidden($this->form->get('recordSource'));?>
     		<?= $this->formHidden($this->form->get('csrf'));?>

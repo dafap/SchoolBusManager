@@ -8,8 +8,8 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2018
- * @version 2019-2.5.4
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Form;
 
@@ -31,6 +31,10 @@ class DocLabel extends Form implements InputFilterProviderInterface
         $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'sublabel'
         ]);
         $this->add([
             'type' => 'hidden',

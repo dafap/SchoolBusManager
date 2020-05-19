@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2020
+ * @date 19 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
@@ -913,8 +913,6 @@ class Tcpdf extends \TCPDF
      */
     protected function setStyle($nameStyle, $style = null, $size = null, $color = null)
     {
-        // $f = fopen('debug-style.txt', 'a');
-        // fputs($f, $nameStyle . "\n");
         $key = $nameStyle . '_font_family';
         $family = $this->getConfig('document', $key, PDF_FONT_NAME_MAIN);
         if (is_null($style)) {
@@ -925,14 +923,11 @@ class Tcpdf extends \TCPDF
             $key = $nameStyle . '_font_size';
             $size = $this->getConfig('document', $key, '');
         }
-        // fputs($f, "$family - $style - $size\n");
         $this->SetFont($family, $style, $size);
         if (is_null($color)) {
             $key = $nameStyle . '_text_color';
             $color = $this->getConfig('document', $key, '000000');
         }
-        // fputs($f, "$color\n");
-        // fclose($f);
         $this->SetTextColorArray($this->convertColor($color));
     }
 
@@ -2251,45 +2246,49 @@ class Tcpdf extends \TCPDF
                 $this->x,
                 $this->y
             ];
-            // partie graphique : rectangle si besoin
-            if ($label->hasBorder()) {
-                $this->Rect($this->x, $this->y, $label->wLab(0), $label->labelHeight(), '',
-                    $label->borderStyle(
-                        function ($colorHtml) {
-                            return $this->convertColor($colorHtml);
-                        }));
-            }
-            // partie graphique : photos
-            foreach ($photos as $rang => $img) {
-                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
-                    $label->parametresPhoto($rang));
-                unset($resize); // TODO : ce paramètre n'est pas utilisé
-                $x += $origine[0];
-                $y += $origine[1];
-                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
-            }
-            // partie texte - etiquetteData est indexé à partir de 0
-            list ($x, $y) = $origine;
-            $this->SetXY($x, $y);
-            for ($j = 0; $j < count($lignes); $j ++) {
-                $this->setStyle($descripteur[$j]['style']);
-                $txt = $lignes[$j];
-                $txtLabel = $descripteur[$j]['label'];
-                if (! empty($txtLabel)) {
-                    $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0,
-                        $label->alignLab($j), 0, '', $label->stretchLab($j));
-                    $this->x += $label->labelSpace($j);
+            foreach ($label->getSublabelIdx() as $idx) {
+                // partie graphique : rectangle si besoin
+                if ($label->hasBorder()) {
+                    $this->Rect($this->x, $this->y, $label->wLab(0), $label->labelHeight(),
+                        '',
+                        $label->borderStyle(
+                            function ($colorHtml) {
+                                return $this->convertColor($colorHtml);
+                            }));
                 }
-                $this->Cell($label->wCell($j), $label->hCell($j), $txt, 0, 0,
-                    $label->alignCell($j), 0, '', $label->stretchCell($j));
-                list ($this->x, $this->y) = $label->Ln($j);
-            }
-            if (($xy = $label->NextPosition($j)) == false) {
-                $page_vide = true;
-                $this->AddPage();
-                list ($this->x, $this->y) = $label->NewPage();
-            } else {
-                list ($this->x, $this->y) = $xy;
+                // partie graphique : photos
+                foreach (StdLib::getParam($idx, $photos, []) as $rang => $img) {
+                    list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                        $label->parametresPhoto($rang));
+                    unset($resize); // TODO : ce paramètre n'est pas utilisé
+                    $x += $origine[0];
+                    $y += $origine[1];
+                    $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+                }
+                // partie texte - etiquetteData est indexé à partir de 0
+                list ($x, $y) = $origine;
+                $this->SetXY($x, $y);
+                for ($j = 0; $j < count(StdLib::getParam($idx, $lignes, [])); $j ++, next(
+                    $lignes[$idx])) {
+                    $this->setStyle($descripteur[$idx][$j]['style']);
+                    $txt = current($lignes[$idx]);
+                    $txtLabel = $descripteur[$idx][$j]['label'];
+                    if (! empty($txtLabel)) {
+                        $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0,
+                            $label->alignLab($j), 0, '', $label->stretchLab($j));
+                        $this->x += $label->labelSpace($j);
+                    }
+                    $this->Cell($label->wCell($j), $label->hCell($j), $txt, 0, 0,
+                        $label->alignCell($j), 0, '', $label->stretchCell($j));
+                    list ($this->x, $this->y) = $label->Ln($j);
+                }
+                if (($xy = $label->NextPosition($j)) == false) {
+                    $page_vide = true;
+                    $this->AddPage();
+                    list ($this->x, $this->y) = $label->NewPage();
+                } else {
+                    list ($this->x, $this->y) = $xy;
+                }
             }
         }
         if ($page_vide) {
@@ -2328,57 +2327,50 @@ class Tcpdf extends \TCPDF
     {
         if ($force || empty($this->data)) {
             // prépare les filtres pour le décodage des données (notamment booléennes)
-            foreach ($descripteur as &$column) {
-                $column['filter'] = preg_replace([
-                    '/^\s+/',
-                    '/\s+$/'
-                ], '', $column['filter']);
-                if (! empty($column['filter'])) {
-                    $column['filter'] = StdLib::getArrayFromString($column['filter']);
-                } else {
-                    $column['filter'] = [];
-                }
-                unset($column);
-            }
+            $this->prepareFilters($descripteur);
             $this->data = [];
             if ($this->getRecordSourceType() == 'T') {
                 // La source doit être enregistrée dans le ServiceManager (table ou vue
-                // MySql)
-                // sinon exception
+                // MySql) sinon exception
                 $table = $this->getRecordSourceTable();
                 // lecture des données et application du filtre et du format
                 foreach ($table->fetchAll($this->getWhere(), $this->getOrderBy()) as $row) {
-                    $lignes = [];
-                    $photos = [];
-                    foreach ($descripteur as $rang => $column) {
-                        $value = StdLib::translateData($row->{$column['fieldname']},
-                            $column['filter']);
-                        switch ($column['nature']) {
-                            case 2:
-                                if ($value) {
-                                    $photos[$rang] = '@' . stripslashes($value);
-                                }
-                                break;
-                            case 1:
-                                if (! empty($column['format']) &&
-                                    stripos('h', $column['format']) !== false) {
-                                    $value = DateLib::formatDateTimeFromMysql($value);
-                                } else {
-                                    $value = DateLib::formatDateFromMysql($value);
-                                }
-                                break;
-                            default:
-                                $value = sprintf($column['format'], $value);
-                                break;
+                    $lignesRow = [];
+                    $photosRow = [];
+                    // foreach ($descripteur as $rang => $column) {
+                    foreach ($descripteur as $descripteurBySublabel) {
+                        foreach ($descripteurBySublabel as $rang => $column) {
+                            $value = StdLib::translateData($row->{$column['fieldname']},
+                                $column['filter']);
+                            switch ($column['nature']) {
+                                case 2:
+                                    if ($value) {
+                                        $photosRow[$column['sublabel']][$rang] = '@' .
+                                            stripslashes($value);
+                                    }
+                                    break;
+                                case 1:
+                                    if (! empty($column['format']) &&
+                                        stripos('h', $column['format']) !== false) {
+                                        $value = DateLib::formatDateTimeFromMysql($value);
+                                    } else {
+                                        $value = DateLib::formatDateFromMysql($value);
+                                    }
+                                    $lignesRow[$column['sublabel']][] = $value;
+                                    break;
+                                default:
+                                    $lignesRow[$column['sublabel']][] = sprintf(
+                                        $column['format'], $value);
+                                    break;
+                            }
                         }
-                        $lignes[] = $value;
                     }
-                    if ($photos == []) {
-                        $photos = false;
+                    if ($photosRow == []) {
+                        $photosRow = false;
                     }
                     $this->data[] = [
-                        'lignes' => $lignes,
-                        'photos' => $photos
+                        'lignes' => $lignesRow,
+                        'photos' => $photosRow
                     ];
                 }
             } else {
@@ -2448,46 +2440,55 @@ class Tcpdf extends \TCPDF
                     if ($rowset->count()) {
                         foreach ($rowset as $row) {
                             // $row est un ArrayObject
-                            $lignes = [];
-                            $photos = [];
-                            for ($key = 0; $key < count($descripteur); $key ++) {
-                                if (empty($descripteur[$key]['fieldname'])) {
-                                    $value = '';
-                                } else {
-                                    $value = StdLib::translateData(
-                                        $row[$descripteur[$key]['fieldname']],
-                                        $descripteur[$key]['filter']);
-                                    switch ($descripteur[$key]['nature']) {
-                                        case 2:
-                                            if ($value) {
-                                                $photos[$key] = '@' . stripslashes($value);
-                                            }
-                                            break;
-                                        case 1:
-                                            if (! empty($descripteur[$key]['format']) &&
-                                                stripos('h', $descripteur[$key]['format']) !==
-                                                false) {
-                                                $value = DateLib::formatDateTimeFromMysql(
-                                                    $value);
-                                            } else {
-                                                $value = DateLib::formatDateFromMysql(
-                                                    $value);
-                                            }
-                                            $lignes[] = $value;
-                                            break;
-                                        default:
-                                            if (! empty($descripteur[$key]['format'])) {
-                                                $value = sprintf(
-                                                    $descripteur[$key]['format'], $value);
-                                            }
-                                            $lignes[] = $value;
-                                            break;
+                            $lignesRow = [];
+                            $photosRow = [];
+                            foreach ($descripteur as $idx => $descripteurBySublabel) {
+                                for ($key = 0; $key < count($descripteurBySublabel); $key ++) {
+                                    if (empty($descripteurBySublabel[$key]['fieldname'])) {
+                                        $lignesRow[$idx][$descripteurBySublabel[$key]['fieldname']] = $value = '';
+                                    } else {
+                                        $value = StdLib::translateData(
+                                            $row[$descripteurBySublabel[$key]['fieldname']],
+                                            $descripteurBySublabel[$key]['filter']);
+                                        switch ($descripteurBySublabel[$key]['nature']) {
+                                            case 2:
+                                                if ($value) {
+                                                    $photosRow[$idx][] = '@' .
+                                                        stripslashes($value);
+                                                }
+                                                break;
+                                            case 1:
+                                                if (! empty(
+                                                    $descripteurBySublabel[$key]['format']) &&
+                                                    stripos('h',
+                                                        $descripteurBySublabel[$key]['format']) !==
+                                                    false) {
+                                                    $value = DateLib::formatDateTimeFromMysql(
+                                                        $value);
+                                                } else {
+                                                    $value = DateLib::formatDateFromMysql(
+                                                        $value);
+                                                }
+                                                $lignesRow[$idx][] = $value;
+                                                break;
+                                            default:
+                                                if (! empty(
+                                                    $descripteurBySublabel[$key]['format'])) {
+                                                    $format = $descripteurBySublabel[$key]['format'];
+                                                    if ($format == '%vide%') {
+                                                        $format = '';
+                                                    }
+                                                    $value = sprintf($format, $value);
+                                                }
+                                                $lignesRow[$idx][] = $value;
+                                                break;
+                                        }
                                     }
                                 }
                             }
                             $this->data[] = [
-                                'lignes' => $lignes,
-                                'photos' => $photos
+                                'lignes' => $lignesRow,
+                                'photos' => $photosRow
                             ];
                         }
                     }
@@ -2500,6 +2501,24 @@ class Tcpdf extends \TCPDF
             }
         }
         return $this->data;
+    }
+
+    private function prepareFilters(&$descripteur)
+    {
+        foreach ($descripteur as &$descripteurBySublabel) {
+            foreach ($descripteurBySublabel as &$column) {
+                $column['filter'] = preg_replace([
+                    '/^\s+/',
+                    '/\s+$/'
+                ], '', $column['filter']);
+                if (! empty($column['filter'])) {
+                    $column['filter'] = StdLib::getArrayFromString($column['filter']);
+                } else {
+                    $column['filter'] = [];
+                }
+                unset($column);
+            }
+        }
     }
 
     /**
@@ -2597,73 +2616,93 @@ class Tcpdf extends \TCPDF
         }
         list ($x, $y) = $label->xyStart();
         $this->SetXY($x, $y);
-        // le descripteur est indexé à partir de 0
+        // le descripteur est indexé à partir de 0 et décrit les champs de docfields
         $descripteur = $label->descripteurData();
-        $duplicata = $this->getParam('duplicata', false);
+        $filigrane = $this->getParam('filigrane', false);
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
             $lignes = $etiquetteData['lignes'];
             $photos = (array) $etiquetteData['photos'];
             $page_vide = false;
-            // partie graphique
-            $origine = [
-                $this->x,
-                $this->y
-            ];
-            // partie graphique : rectangle si besoin
-            if ($label->hasBorder()) {
-                $this->Rect($this->x, $this->y, $label->wLab(0), $label->labelHeight(), '',
-                    $label->borderStyle(
-                        function ($colorHtml) {
-                            return $this->convertColor($colorHtml);
-                        }));
-            }
-            // $this->templateDocBodyMethod3Picture();
-            // filigrane
-            if ($duplicata) {
+            // pour chaque sous-étiquette
+            foreach ($label->getSublabelIdx() as $idx) {
+                $origine = [
+                    $this->x,
+                    $this->y
+                ];
+                // partie graphique : rectangle si besoin
+                if ($label->hasBorder()) {
+                    $this->Rect($this->x, $this->y, $label->wLab(), $label->labelHeight(),
+                        '',
+                        $label->borderStyle(
+                            function ($colorHtml) {
+                                return $this->convertColor($colorHtml);
+                            }));
+                }
+                // $this->templateDocBodyMethod3Picture();
+                // filigrane
+                if ($filigrane) {
+                    $texte = $label->getFiligrane();
+                    if ($texte) {
+                        list ($x, $y) = $origine;
+                        $y += $label->labelHeight() * 2 / 3;
+                        $this->StartTransform();
+                        $this->Rotate(45, $x, $y);
+                        $this->SetXY($x + 10, $y);
+                        $this->Titre(1, $texte, 'L');
+                        $this->StopTransform();
+                    }
+                }
+                // partie photos
+                foreach (StdLib::getParam($idx, $photos, []) as $rang => $img) {
+                    list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
+                        $label->parametresPhoto($rang));
+                    unset($resize); // TODO : ce paramètre n'est pas utilisé
+                    $x += $origine[0];
+                    $y += $origine[1];
+                    $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
+                }
+                // partie texte - etiquetteData est indexé à partir de 0
                 list ($x, $y) = $origine;
-                $y += $label->labelHeight() * 2 / 3;
-                $this->StartTransform();
-                $this->Rotate(45, $x, $y);
-                $this->SetXY($x + 10, $y);
-                $this->Titre(1, 'DUPLICATA', 'L');
-                $this->StopTransform();
-            }
-            // partie photos
-            foreach ($photos as $rang => $img) {
-                list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
-                    $label->parametresPhoto($rang));
-                unset($resize); // TODO : ce paramètre n'est pas utilisé
-                $x += $origine[0];
-                $y += $origine[1];
-                $this->Image($img, $x, $y, $w, $h, $type, '', $align, '', 150);
-            }
-            // partie texte - etiquetteData est indexé à partir de 0
-            list ($x, $y) = $origine;
-            $this->SetXY($x, $y);
-            for ($i = 0; $i < count($lignes); $i ++) {
-                $this->setStyle($descripteur[$i]['style']);
-                $txt = [];
-                $txtLabel = $descripteur[$i]['label'];
-                if (! empty($txtLabel)) {
-                    $txt[] = $txtLabel;
-                }
-                if ($descripteur[$i]['data']) {
-                    $txt[] = $lignes[$i];
-                }
-                $this->SetX($label->X($i));
-                $this->Cell($label->wCell($i), $label->hCell($i), implode(' ', $txt), 0, 0,
-                    $label->alignCell($i), 0, '', $label->stretchCell($i));
-                unset($txt);
-                list ($x, $y) = $label->Ln($i);
                 $this->SetXY($x, $y);
-            }
-            if (($xy = $label->NextPosition($i)) == false) {
-                $page_vide = true;
-                $this->AddPage();
-                list ($this->x, $this->y) = $label->NewPage();
-            } else {
-                list ($this->x, $this->y) = $xy;
+                for ($j = 0; $j < count(StdLib::getParam($idx, $lignes, [])); $j ++, next(
+                    $lignes[$idx])) {
+                    $this->setStyle(
+                        StdLib::getParamR([
+                            $idx,
+                            $j,
+                            'style'
+                        ], $descripteur, 'data'));
+                    $txt = [];
+                    $txtLabel = StdLib::getParamR([
+                        $idx,
+                        $j,
+                        'label'
+                    ], $descripteur, '');
+                    if (! empty($txtLabel)) {
+                        $txt[] = $txtLabel;
+                    }
+                    if (StdLib::getParamR([
+                        $idx,
+                        $j,
+                        'data'
+                    ], $descripteur, false)) {
+                        $txt[] = current($lignes[$idx]);
+                    }
+                    $this->SetX($label->X($j));
+                    $this->Cell($label->wCell($j), $label->hCell($j), implode(' ', $txt),
+                        0, 0, $label->alignCell($j), 0, '', $label->stretchCell($j));
+                    unset($txt);
+                    list ($x, $y) = $label->Ln($j);
+                    $this->SetXY($x, $y);
+                }
+                if (($xy = $label->NextPosition($j)) == false) {
+                    $page_vide = true;
+                    $this->AddPage();
+                    list ($this->x, $this->y) = $label->NewPage();
+                } else {
+                    list ($this->x, $this->y) = $xy;
+                }
             }
         }
         if ($page_vide) {

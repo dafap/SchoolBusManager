@@ -9,7 +9,7 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 18 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -858,13 +858,50 @@ class PdfController extends AbstractActionController
     }
 
     // ============================================================================================
+    public function etiquetteListeAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || array_key_exists('retour', $prg)) {
+            $args = Session::get('post', false, $this->getSessionNamespace());
+            if ($args === false) {
+                return $this->redirect()->toRoute('sbmpdf',
+                    [
+                        'action' => 'pdf-liste',
+                        'page' => $this->params('page')
+                    ]);
+            }
+        } else {
+            Session::set('post', $prg, $this->getSessionNamespace());
+            $args = $prg;
+        }
+        try {
+            $data = $this->db_manager->get('Sbm\Db\System\DocLabels')->fetchAll(
+                [
+                    'documentId' => $args['documentId']
+                ]);
+        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+            $this->flashMessenger()->addWarningMessage($e->getMessage());
+            return $this->redirect()->toRoute('sbmpdf');
+        }
+        return new ViewModel(
+            [
+                'data' => $data,
+                'page' => $this->params('page', 1),
+                'document' => $args,
+                'nb_sublabel' => $this->db_manager->get('Sbm\Db\System\DocLabels')->nbSublabel(
+                    $args['documentId'])
+            ]);
+    }
+
     /**
      * Reçoit par post les paramètres suivants : - disposition (uniquement au moment de
      * l'appel) - documentId - name - recordSource
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
-    public function etiquetteFormatAction()
+    public function etiquetteEditAction()
     {
         $currentPage = $this->params('page', 1);
         $form = $this->pdf_manager->get('FormDocLabel');
@@ -873,7 +910,10 @@ class PdfController extends AbstractActionController
                 'table' => 'doclabels',
                 'type' => 'system',
                 'alias' => 'Sbm\Db\System\DocLabels',
-                'id' => 'documentId'
+                'id' => [
+                    'documentId',
+                    'sublabel'
+                ]
             ],
             'form' => $form
         ];
@@ -896,7 +936,7 @@ class PdfController extends AbstractActionController
                 case 'success':
                     return $this->redirect()->toRoute('sbmpdf',
                         [
-                            'action' => 'pdf-liste',
+                            'action' => 'etiquette-liste',
                             'page' => $currentPage
                         ]);
                     break;
@@ -910,6 +950,70 @@ class PdfController extends AbstractActionController
                     break;
             }
         }
+    }
+
+    public function etiquetteAjoutAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $pdf_manager = $this->pdf_manager;
+        $form = $pdf_manager->get('FormDocLabel');
+        $params = [
+            'data' => [
+                'table' => 'doclabels',
+                'type' => 'system',
+                'alias' => 'Sbm\Db\System\DocLabels'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($params, function ($post) {
+            return $post;
+        },
+            function ($post) use ($pdf_manager, $form) {
+                $form->setData(
+                    [
+                        'name' => $post['name'],
+                        'recordSource' => $post['recordSource']
+                    ]);
+            });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmpdf',
+                    [
+                        'action' => 'etiquette-liste',
+                        'page' => $currentPage
+                    ]);
+                break;
+            default:
+                $sublabel = array_key_exists('sublabel', $r) ? $r['sublabel'] : $this->db_manager->get(
+                    'Sbm\Db\System\DocLabels')->getNextSublabel($r['documentId']);
+                $form->setData(
+                    [
+                        'documentId' => $r['documentId'],
+                        'name' => $r['name'],
+                        'recordSource' => $r['recordSource'],
+                        'sublabel' => $sublabel
+                    ]);
+                $view = new ViewModel(
+                    [
+                        'form' => $form->prepare(),
+                        'page' => $currentPage,
+                        'document' => $r,
+                        'sublabel' => $sublabel
+                    ]);
+                // $view->setTemplate('sbm-pdf/pdf/etiquette-edit.phtml');
+                return $view;
+                break;
+        }
+    }
+
+    public function etiquetteSupprAction()
+    {
+        ;
     }
 
     // ============================================================================================
@@ -937,8 +1041,11 @@ class PdfController extends AbstractActionController
             }
         }
         try {
-            $data = $this->db_manager->get('Sbm\Db\System\DocFields')->getConfig(
-                $args['documentId']);
+            $data = $this->db_manager->get('Sbm\Db\System\DocFields')->fetchAll(
+                [
+                    'documentId' => $args['documentId'],
+                    'sublabel' => StdLib::getParam('sublabel', $args, 0)
+                ],['ordinal_position']);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $data = [];
         }
@@ -946,7 +1053,9 @@ class PdfController extends AbstractActionController
             [
                 'data' => $data,
                 'page' => $this->params('page', 1),
-                'document' => $args
+                'document' => $args,
+                'nb_sublabel' => $this->db_manager->get('Sbm\Db\System\DocLabels')->nbSublabel(
+                    $args['documentId'])
             ]);
     }
 
@@ -1041,6 +1150,7 @@ class PdfController extends AbstractActionController
                 $form->setData(
                     [
                         'documentId' => $r['documentId'],
+                        'sublabel' => $r['sublabel'],
                         'name' => $r['name'],
                         'recordSource' => $r['recordSource'],
                         'ordinal_position' => array_key_exists('new_position', $r) ? $r['new_position'] : 1

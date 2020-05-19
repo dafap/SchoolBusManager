@@ -11,7 +11,7 @@
  * @filesource table.lignes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 15 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -27,6 +27,7 @@ return [
             'millesime' => 'int(4) NOT NULL',
             'ligneId' => 'varchar(5) NOT NULL',
             'operateur' => 'varchar(5) NOT NULL DEFAULT "TRA"',
+            'natureCarte'=>'TINYINT(3) NOT NULL DEFAULT "1"',
             'lotId' => 'int(11) NULL DEFAULT NULL',
             'extremite1' => 'varchar(45) NOT NULL',
             'extremite2' => 'varchar(45) NOT NULL',

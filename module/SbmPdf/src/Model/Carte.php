@@ -11,10 +11,12 @@
  * @filesource Carte.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2019
- * @version 2019-2.5.0
+ * @date 18 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
+
+use SbmBase\Model\StdLib;
 
 class Carte extends Etiquette
 {
@@ -24,91 +26,89 @@ class Carte extends Etiquette
     public function __construct($db_manager, $documentId)
     {
         parent::__construct($db_manager, $documentId);
-        $this->initPositions(3.3, $this->writingAreaHeight());
+        foreach ($this->getSublabelIdx() as $sublabel) {
+            $this->initPositions($sublabel, 3.3, $this->writingAreaHeight($sublabel));
+        }
         $this->NewPage();
     }
 
     /**
-     * version 2015 sur étiquettes
+     * Version 2020 - Etiquette constituée de plusieurs sous-étiquettes L'appel à la
+     * méthode LineCount() ne renvoie que le nombre de lignes de la sous-étiquette
+     * courante. Ici il faut initialiser sans modifier la sous-étiquette courante. On
+     * consulte donc directemment la propriété sublableDescripteur
      *
-     * @param number $delta
-     * @param number $hauteur_utile
+     * @param float $delta
+     * @param float $hauteur_utile
      */
-    private function initPositions_version2015($delta, $hauteur_utile)
+    private function initPositions(int $sublabel, float $delta, float $hauteur_utile)
     {
-        // zone 1
-        for ($y = $delta, $i = 0; $i < 3; $i ++) {
-            $this->positions[$i]['x'] = 12;
-            $this->positions[$i]['y'] = $y;
-            $this->positions[$i]['data'] = true;
-            $this->positions[$i]['style'] = 'main';
-            $y += $delta;
-        }
-        $this->positions[0]['data'] = false; // c'est du texte - prendre uniquement le
-                                             // label du
-                                             // docfield
-        $y = $this->positions[2]['y'] = 15; // en mm
-                                            // zone 2
-        for ($y += $delta; $i < 14; $i ++) {
-            $this->positions[$i]['x'] = 1;
-            $this->positions[$i]['y'] = $y;
-            $this->positions[$i]['data'] = true;
-            $this->positions[$i]['style'] = 'data';
-            $y += $delta;
-        }
-        $this->positions[12]['data'] = false;
-        $this->positions[12]['style'] = 'titre4';
-        $this->positions[13]['style'] = 'titre4';
-        // optimisation des 11 lignes du bas
-        $d = $hauteur_utile - $y;
-        if (abs($d) > 0.11) {
-            $delta += $d / 11;
-            $this->initPositions($delta, $hauteur_utile);
+        $n = $this->sublabelDescripteur['lineCount'][$sublabel];
+        if ($n) {
+            for ($y = $delta, $i = 0; $i < $n; $i ++) {
+                $this->positions[$sublabel][$i]['x'] = 1;
+                $this->positions[$sublabel][$i]['y'] = $y;
+                $this->positions[$sublabel][$i]['data'] = true;
+                //$this->positions[$sublabel][$i]['style'] = 'data';
+                $y += $delta;
+            }
+            // optimisation des lignes
+            $d = $hauteur_utile - $y;
+            if (abs($d) > 0.01 * $n) {
+                $delta += $d / max($n, 2);
+                $this->initPositions($sublabel, $delta, $hauteur_utile);
+            }
+        } else {
+            $this->positions['default']['x'] = 0;
+            $this->positions['default']['y'] = 0;
+            $this->positions['default']['data'] = false;
+            //$this->positions['default']['style'] = 'data';
         }
     }
 
     /**
-     * version 2016 sur page A4 (revue en fév. 2019 pour paramétrer le nombre de lignes)
      *
-     * @param number $delta
-     * @param number $hauteur_utile
+     * @param int $rang
+     * @param string $key
+     * @return mixed
      */
-    private function initPositions($delta, $hauteur_utile)
+    private function getPosition(int $rang, string $key)
     {
-        $n = $this->lineCount();
-        for ($y = $delta, $i = 0; $i < $n; $i ++) {
-            $this->positions[$i]['x'] = 1;
-            $this->positions[$i]['y'] = $y;
-            $this->positions[$i]['data'] = true;
-            $this->positions[$i]['style'] = 'data';
-            $y += $delta;
-        }
-        // optimisation des lignes
-        $d = $hauteur_utile - $y;
-        if (abs($d) > 0.01 * $n) {
-            $delta += $d / max($n, 2);
-            $this->initPositions($delta, $hauteur_utile);
-        }
+        $sublabel = current($this->arraySublabels);
+        return StdLib::getParamR([
+            $sublabel,
+            $rang,
+            $key
+        ], $this->positions, $this->positions['default'][$key]);
     }
 
-    public function Ln($rang)
+    public function Ln(int $rang): array
     {
         $result = parent::Ln($rang);
-        $result[1] = $this->yStart() + $this->positions[$rang]['y'];
+        $result[1] = $this->yStart() + $this->getPosition($rang, 'y');
         return $result;
     }
 
-    public function descripteurData()
+    public function descripteurData(): array
     {
         $descripteur = parent::descripteurData();
-        for ($i = 0; $i < count($this->positions); $i ++) {
-            $descripteur[$i]['data'] = $this->positions[$i]['data'];
+        $keysSublabel = array_keys($descripteur);
+        foreach ($keysSublabel as $sublabel) {
+            $keysRang = array_keys($descripteur[$sublabel]);
+            foreach ($keysRang as $rang) {
+                $descripteur[$sublabel][$rang] = array_merge(
+                    $descripteur[$sublabel][$rang],
+                    StdLib::getParamR([
+                        $sublabel,
+                        $rang
+                    ], $this->positions, $this->positions['default']));
+            }
         }
         return $descripteur;
     }
 
     public function X($rang)
     {
-        return $this->xStart($rang) + $this->positions[$rang]['x'];
+        return $this->xStart($rang) + $this->getPosition($rang, 'x');
     }
 }

@@ -8,8 +8,8 @@
  * @filesource DocFields.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
- * @version 2019-2.5.0
+ * @date 14 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -48,8 +48,8 @@ class DocFields extends AbstractSbmTable
                     $this->table_name));
         }
         $result = [];
-        foreach ($resultset as $row) {
-            $result[] = $row->getArrayCopy();
+        foreach ($resultset as $odocfield) {
+            $result[$odocfield->sublabel][] = $odocfield->getArrayCopy();
         }
         return $result;
     }

@@ -7,21 +7,23 @@
  * @filesource system.doclabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 14 mai 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
 return [
     'name' => 'doclabels',
     'type' => 'system',
-    'drop' => false,
-    'edit_entity' => false,
+    'drop' => true,
+    'edit_entity' => true,
     'add_data' => false,
     'structure' => [
         'fields' => [
             'doclabelId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL',
+            'sublabel'=>'int(11) NOT NULL DEFAULT "0"',
+            'filigrane' => 'varchar(40) NOT NULL DEFAULT ""',
             'margin_left' => 'float NOT NULL DEFAULT "0"', // marge de gauche du la planche (0 mm
                                                             // par défaut)
             'margin_top' => 'float NOT NULL DEFAULT "8"', // marge du haut de la planche
@@ -71,6 +73,15 @@ return [
                         'update' => 'CASCADE',
                         'delete' => 'CASCADE'
                     ]
+                ]
+            ]
+        ],
+        'keys'=>[
+            'documentIdSublabel' => [
+                'unique' => true,
+                'fields' => [
+                    'documentId',
+                    'sublabel'
                 ]
             ]
         ],

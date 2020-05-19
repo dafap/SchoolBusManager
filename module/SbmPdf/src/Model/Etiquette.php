@@ -11,8 +11,8 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 nov. 2019
- * @version 2019-2.5.4
+ * @date 18 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
 
@@ -55,18 +55,32 @@ class Etiquette
     protected $currentRow;
 
     /**
-     * Ordonnée relative à la zone d'écriture de l'étiquette
+     * Tableau des identifiants des sous-étiquettes
      *
-     * @var float
+     * @var int[]
+     */
+    protected $arraySublabels;
+
+    /**
+     * Ordonnées relatives à la zone d'écriture de l'étiquette ou de la sublabel
+     *
+     * @var float[]
      */
     protected $y;
 
     /**
      * Espacement entre les lignes d'écriture sur une étiquette
      *
-     * @var float
+     * @var float[]
      */
     protected $y_space;
+
+    /**
+     * Mémorise les calculs sur les sous-étiquettes pour optimisation
+     *
+     * @var array
+     */
+    protected $sublabelDescripteur;
 
     /**
      * Initialise la structure. Doit être suivi par : $label->setCurrentColumn($j); //
@@ -103,68 +117,103 @@ class Etiquette
         try {
             $this->config['docfields'] = $t->getConfig($this->documentId);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            $this->config['docfields'] = [];
+            $this->config['docfields'][0] = [];
         }
-        $lineCount = $this->lineCount();
-        if ($lineCount > 1) {
-            $this->y_space = ($this->writingAreaHeight() - $this->totalLineHeight()) /
-                ($lineCount - 1);
-        } else {
-            $this->y_space = 0;
+        $this->currentColumn = 1;
+        $this->currentRow = 1;
+        $this->y = [];
+        $this->arraySublabels = $this->getSublabelIdx();
+        $this->sublabelDescripteur = [];
+        // préparation des lineCount. On ne compte pas les photos.
+        $this->sublabelDescripteur['lineCount'] = array_combine($this->getSublabelIdx(),
+            array_fill(0, count($this->config['doclabel']), 0));
+        foreach ($this->sublabelDescripteur['lineCount'] as $sublabel => &$n) {
+            foreach ($this->config['docfields'][$sublabel] as $docfield) {
+                if ($docfield['nature'] < 2) {
+                    $n ++;
+                }
+            }
+        }
+        $this->y_space = [];
+        // Attention ! Ne pas utiliser arraySublabels à la place de la méthode
+        // getSublabelIdx() afin de ne pas modifier son pointeur
+        foreach ($this->getSublabelIdx() as $idx) {
+            $lineCount = $this->sublabelDescripteur['lineCount'][$idx];
+            if ($lineCount > 1) {
+                $this->y_space[$idx] = ($this->writingAreaHeight($idx) -
+                    $this->totalLineHeight($idx)) / ($lineCount - 1);
+            } else {
+                $this->y_space[$idx] = 0;
+            }
         }
         $this->NewPage();
     }
 
     /**
-     * Donne le nombre de lignes d'écriture dans une étiquette. On ne compte pas les
-     * photos
+     * Renvoie les index de sublabels. Il y a au moins l'index 0.
      *
-     * @return int
+     * @return array
      */
-    public function lineCount()
+    public function getSublabelIdx()
     {
-        $n = 0;
-        foreach ($this->config['docfields'] as $docfield) {
-            if ($docfield['nature'] < 2) {
-                $n ++;
-            }
-        }
-        return $n;
-    }
-
-    public function labelHeight()
-    {
-        return (float) $this->config['doclabel']['label_height'];
+        return array_keys($this->config['doclabel']);
     }
 
     /**
-     * Hauteur de la zone d'écriture dans une étiquette
+     * Donne le nombre de lignes d'écriture dans la sous-étiquette courante. On n'a pas
+     * compté pas les photos.
      *
-     * @return number
+     * @return int
      */
-    protected function writingAreaHeight()
+    public function lineCount(): int
     {
-        $label_height = (float) $this->config['doclabel']['label_height'];
-        $padding_top = (float) $this->config['doclabel']['padding_top'];
-        $padding_bottom = (float) $this->config['doclabel']['padding_bottom'];
+        $sublabel = current($this->arraySublabels);
+        return $this->sublabelDescripteur['lineCount'][$sublabel];
+    }
+
+    /**
+     * Hauteur de la sous-étiquette courante
+     *
+     * @return float
+     */
+    public function labelHeight(): float
+    {
+        $sublabel = current($this->arraySublabels);
+        return (float) $this->config['doclabel'][$sublabel]['label_height'];
+    }
+
+    /**
+     * Hauteur de la zone d'écriture dans la sous-étiquette $sublabel
+     *
+     * @param int $sublabel
+     *            identifiant de la sous-étiquette
+     * @return float
+     */
+    protected function writingAreaHeight(int $sublabel): float
+    {
+        $label_height = (float) $this->config['doclabel'][$sublabel]['label_height'];
+        $padding_top = (float) $this->config['doclabel'][$sublabel]['padding_top'];
+        $padding_bottom = (float) $this->config['doclabel'][$sublabel]['padding_bottom'];
         return $label_height - $padding_top - $padding_bottom;
     }
 
     /**
-     * Renvoie la hauteur totale des lignes
+     * Renvoie la hauteur totale des lignes de la sous-étiquette $sublabel
      *
-     * @return number
+     * @param int $sublabel
+     *            identifiant de la sous-étiquette
+     * @return float
      */
-    private function totalLineHeight()
+    private function totalLineHeight(int $sublabel): float
     {
         $total = 0;
-        foreach ($this->config['docfields'] as $field) {
+        foreach ($this->config['docfields'][$sublabel] as $field) {
             $total += $field['height'];
         }
-        $writingAH = $this->writingAreaHeight();
+        $writingAH = $this->writingAreaHeight($sublabel);
         if ($total > $writingAH) {
             $ratio = $writingAH / $total;
-            foreach ($this->config['docfields'] as &$field) {
+            foreach ($this->config['docfields'][$sublabel] as &$field) {
                 $field['height'] *= $ratio;
             }
             return $writingAH;
@@ -173,179 +222,277 @@ class Etiquette
     }
 
     /**
-     * Initialise la colonne courante. Permet de fixer la position de la première
-     * étiquette à tirer sur une planche partiellement utilisée. Utile également pour
-     * tirer des duplicatas.
+     * Initialise la colonne courante de la planche d'étiquettes. Permet de fixer la
+     * position de la première étiquette à tirer sur une planche partiellement utilisée.
+     * Utile également pour tirer des duplicatas.
      *
      * @param int $n
      */
-    public function setCurrentColumn($n)
+    public function setCurrentColumn(int $n): self
     {
         $this->currentColumn = $n;
+        return $this;
     }
 
     /**
-     * Initialise la ligne courante. Permet de fixer la position de la première étiquette
-     * à tirer sur une planche partiellement utilisée. Utile également pour tirer des
-     * duplicatas.
+     * Initialise la ligne courante de la planche d'étiquettes. Permet de fixer la
+     * position de la première étiquette à tirer sur une planche partiellement utilisée.
+     * Utile également pour tirer des duplicatas.
      *
      * @param int $n
      */
-    public function setCurrentRow($n)
+    public function setCurrentRow(int $n): self
     {
         $this->currentRow = $n;
+        return $this;
     }
 
     /**
-     * Renvoie la position X origine pour l'étiquette courante
+     * Renvoie la position X origine pour la sous-étiquette courante
      *
      * @return float abcisse x en coordonnées absolue (page)
      */
-    protected function xStart()
+    protected function xStart(): float
     {
-        $margin_left = (float) $this->config['doclabel']['margin_left'];
-        $label_width = (float) $this->config['doclabel']['label_width'];
-        $x_space = (float) $this->config['doclabel']['x_space'];
-        $padding_left = (float) $this->config['doclabel']['padding_left'];
+        $sublabel = current($this->arraySublabels);
+        $margin_left = (float) $this->config['doclabel'][$sublabel]['margin_left'];
+        $label_width = (float) $this->config['doclabel'][$sublabel]['label_width'];
+        $x_space = (float) $this->config['doclabel'][$sublabel]['x_space'];
+        $padding_left = (float) $this->config['doclabel'][$sublabel]['padding_left'];
         $xa = $margin_left + ($this->currentColumn - 1) * ($label_width + $x_space);
         return $xa + $padding_left;
     }
 
     /**
-     * Renvoie la position Y origine pour l'étiquette courante
+     * Renvoie la position Y origine pour la sous-étiquette courante
      *
-     * @return float ordonnée y en coordonnées absolue (page)
+     * @return float ordonnée y en coorrdonnées absolue (page)
      */
-    protected function yStart()
+    protected function yStart(): float
     {
-        $margin_top = (float) $this->config['doclabel']['margin_top'];
-        $label_height = (float) $this->config['doclabel']['label_height'];
-        $y_space = (float) $this->config['doclabel']['y_space'];
-        $padding_top = (float) $this->config['doclabel']['padding_top'];
+        $sublabel = current($this->arraySublabels);
+        $margin_top = (float) $this->config['doclabel'][$sublabel]['margin_top'];
+        $label_height = (float) $this->config['doclabel'][$sublabel]['label_height'];
+        $y_space = (float) $this->config['doclabel'][$sublabel]['y_space'];
+        $padding_top = (float) $this->config['doclabel'][$sublabel]['padding_top'];
         $ya = $margin_top + ($this->currentRow - 1) * ($label_height + $y_space);
         return $ya + $padding_top;
     }
 
     /**
-     * Renvoie la position (X, Y) d'origine de l'étiquette courante. Si la première ligne
-     * est décalée (pas de label mais un label_width) alors X en tient compte et est
-     * décalé d'autant que nécessaire. L'affectation dans la classe Tcpdf se fera de la
-     * façon suivante : list($this->x, $this->y) = $label->xyStart(); Pour un changement
-     * d'étiquette on fera : $label = new Etiquette($sm, $documentId); list($this->x,
-     * $this->y) = $label->xyStart();
+     * Renvoie la position (X, Y) d'origine de la sous-étiquette courante. Si la première
+     * ligne est décalée (pas de label mais un label_width) alors X en tient compte et est
+     * décalé d'autant que nécessaire.
      *
-     * @return array of float (x, y) en coordonnées absolue (page)
+     * @formatter:off
+     * Usage dans Tcpdf :
+     * <pre>
+     * list($this->x, $this->y) = $label->xyStart();
+     * </pre>
+     *
+     * Pour un changement d'étiquette on fera :
+     * <pre>
+     * $label = new Etiquette($sm, $documentId);
+     * list($this->x, $this->y) = $label->xyStart();
+     * </pre>
+     * @formatter:on
+     *
+     * @return float[] (x, y) en coordonnées absolue (page)
      */
-    public function xyStart()
+    public function xyStart(): array
     {
-        if (empty($this->config['docfields'][0]['label'])) {
-            $label_width = (float) $this->config['docfields'][0]['label_width'];
+        $sublabel = current($this->arraySublabels);
+        if (empty($this->config['docfields'][$sublabel][0]['label'])) {
+            $label_width = (float) $this->config['docfields'][$sublabel][0]['label_width'];
         } else {
             $label_width = 0;
         }
-        $this->y = 0;
+        $this->y[$sublabel] = 0;
         return [
-            $this->xStart() + $label_width,
-            $this->yStart()
+            $this->xStart($sublabel) + $label_width,
+            $this->yStart($sublabel)
         ];
     }
 
     /**
-     * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans l'étiquette. On
-     * fera : list($this->x, $this->y) = $label->Ln($i); // ou $i est le numéro de la
-     * ligne qu'on vient d'écrire
+     * Renvoie la position (X, Y) d'une nouvelle ligne d'écriture dans la sous-étiquette
+     * courante.
+     *
+     * @formatter:off
+     * Usage dans Tcpdf :
+     * <pre>
+     * list($this->x, $this->y) = $label->Ln($i);
+     * </pre>
+     * où $i est le numéro de la ligne qu'on vient d'écrire
+     * @formatter:on
      *
      * @param int $rang
-     *
-     * @return array of float (x, y) en coordonnées absolue (page)
+     *            numéro de la donnée dans la sous-étiquette
+     * @return float[] (x, y) en coordonnées absolue (page)
      */
-    public function Ln($rang)
+    public function Ln(int $rang): array
     {
-        $height = (float) $this->config['docfields'][$rang]['height'];
-        if (array_key_exists($rang + 1, $this->config['docfields']) &&
-            empty($this->config['docfields'][$rang + 1]['label'])) {
-            $label_width = (float) $this->config['docfields'][$rang + 1]['label_width'];
+        $sublabel = current($this->arraySublabels);
+        $height = (float) $this->config['docfields'][$sublabel][$rang]['height'];
+        if (array_key_exists($rang + 1, $this->config['docfields'][$sublabel]) &&
+            empty($this->config['docfields'][$sublabel][$rang + 1]['label'])) {
+            $label_width = (float) $this->config['docfields'][$sublabel][$rang + 1]['label_width'];
         } else {
             $label_width = 0;
         }
-        $this->y += $this->y_space + $height;
+        $this->y[$sublabel] += $this->y_space[$sublabel] + $height;
         return [
             $this->xStart() + $label_width,
-            $this->yStart() + $this->y
+            $this->yStart() + $this->y[$sublabel]
         ];
     }
 
     /**
-     * Renvoie la position (X, Y) de la prochaine ligne d'écriture dans une étiquette.
-     * Changement d'étiquette si nécessaire. Si la page est pleine, renvoie false. Usage
-     * dans Tcpdf:<code> if (($xy = $label->NextPosition($i)) == false) {
-     * $this->AddPage(); list($this->x, $this->y) = $label->NewPage(); } else {
-     * list($this->x, $this->y) = $xy; }</code>
+     * Renvoie la position (X, Y) de la prochaine ligne d'écriture dans la sous-étiquette
+     * courante. Changement de sous-étiquette si nécessaire. Changement d'étiquette si
+     * nécessaire. Si la page est pleine, renvoie false.
+     *
+     * @formatter:off
+     * Usage dans Tcpdf :
+     * <pre>
+     * if (($xy = $label->NextPosition($i)) == false) {
+     *     $this->AddPage();
+     *     list($this->x, $this->y) = $label->NewPage();
+     * } else {
+     *     list($this->x, $this->y) = $xy;
+     * }
+     * </pre>
+     * @formatter:on
      *
      * @param int $rang
-     * @return array|boolean
+     *            numéro de la donnée dans la sous-étiquette
+     * @return array|number[]|boolean
      */
-    public function NextPosition($rang)
+    public function NextPosition(int $rang)
     {
         if ($rang < $this->lineCount()) {
             return $this->Ln($rang);
         }
+        // changemant de sous-étiquette
+        $sublabel = next($this->arraySublabels);
+        // $rang = 0;
+        if ($sublabel !== false) {
+            return $this->xyStart();
+        }
+        // changement d'étiquette dans la planche d'étiquettes
+        $sublabel = reset($this->arraySublabels);
         $this->currentColumn ++;
-        if ($this->currentColumn > $this->config['doclabel']['cols_number']) {
+        if ($this->currentColumn > $this->config['doclabel'][$sublabel]['cols_number']) {
             $this->currentRow ++;
             $this->currentColumn = 1;
         }
-        if ($this->currentRow <= $this->config['doclabel']['rows_number']) {
+        if ($this->currentRow <= $this->config['doclabel'][$sublabel]['rows_number']) {
             return $this->xyStart();
         }
-        // nécessite un changement de page
+        // nécessite un changement de page. On appellera NewPage() après la création de la
+        // nouvelle page Pdf
         return false;
     }
 
-    public function NewPage()
+    /**
+     * Initialisation des propriétés lors du passage à une nouvelle page.
+     *
+     * @return array|number[]
+     */
+    public function NewPage(): array
     {
         $this->currentColumn = 1;
         $this->currentRow = 1;
-        $this->y = 0;
+        foreach ($this->arraySublabels as $sublabel) {
+            $this->y[$sublabel] = 0;
+        }
         return $this->xyStart();
     }
 
-    public function wCell($rang)
+    /**
+     * Donne la largeur de la cellule contenant la donnée de rang $rang de la
+     * sous-étiquette courante
+     *
+     * @param int $rang
+     *            numéro de la donnée dans la sous-étiquette
+     * @return float
+     */
+    public function wCell(int $rang): float
     {
-        $label_width = (float) $this->config['doclabel']['label_width'];
-        $padding_left = (float) $this->config['doclabel']['padding_left'];
-        $padding_right = (float) $this->config['doclabel']['padding_right'];
-        if (empty($this->config['docfields'][$rang]['label'])) {
-            $margin_left = (float) $this->config['docfields'][$rang]['label_width'];
+        $sublabel = current($this->arraySublabels);
+        $label_width = (float) $this->config['doclabel'][$sublabel]['label_width'];
+        $padding_left = (float) $this->config['doclabel'][$sublabel]['padding_left'];
+        $padding_right = (float) $this->config['doclabel'][$sublabel]['padding_right'];
+        if (empty($this->config['docfields'][$sublabel][$rang]['label'])) {
+            $margin_left = (float) $this->config['docfields'][$sublabel][$rang]['label_width'];
         } else {
             $margin_left = 0;
         }
         return $label_width - $padding_left - $padding_right - $margin_left;
     }
 
-    public function hCell($rang)
+    /**
+     * Donne la hauteur de la cellule contenant la donnée de rang $rang de la
+     * sous-étiquette courante
+     *
+     * @param int $rang
+     *            numéro de la donnée dans la sous-étiquette
+     * @return float
+     */
+    public function hCell(int $rang): float
     {
-        return (float) $this->config['docfields'][$rang]['height'];
+        $sublabel = current($this->arraySublabels);
+        return (float) $this->config['docfields'][$sublabel][$rang]['height'];
     }
 
-    public function alignCell($rang)
+    /**
+     * Donne l'alignement de la donnée de rang $rang de la sous-étiquette courante
+     *
+     * @param int $rang
+     *            numéro de la donnée dans la sous-étiquette
+     * @return string
+     */
+    public function alignCell(int $rang): string
     {
-        return $this->config['docfields'][$rang]['fieldname_align'];
+        $sublabel = current($this->arraySublabels);
+        return $this->config['docfields'][$sublabel][$rang]['fieldname_align'];
     }
 
-    public function stretchCell($rang)
+    /**
+     * Donne le paramètre d'extension (stretch) de la donnée de rang $rang de la
+     * sous-étiquette courante
+     *
+     * @param int $rang
+     *            numéro de la donnée dans la sous-étiquette
+     * @return int
+     */
+    public function stretchCell(int $rang): int
     {
-        return $this->config['docfields'][$rang]['fieldname_stretch'];
+        $sublabel = current($this->arraySublabels);
+        return $this->config['docfields'][$sublabel][$rang]['fieldname_stretch'];
     }
 
-    public function wLab($rang)
+    /**
+     * Largeur de la sous-étiquette courante
+     *
+     * @return float
+     */
+    public function wLab(): float
     {
-        return (float) $this->config['doclabel']['label_width'];
+        $sublabel = current($this->arraySublabels);
+        return (float) $this->config['doclabel'][$sublabel]['label_width'];
     }
 
+    /**
+     * Style du bord de la sous-étiquette courante
+     *
+     * @param callable $convertColor
+     * @return array
+     */
     public function borderStyle(callable $convertColor): array
     {
-        switch ($this->config['doclabel']['border_dash']) {
+        $sublabel = current($this->arraySublabels);
+        switch ($this->config['doclabel'][$sublabel]['border_dash']) {
             case 2:
                 $dash = '1,3';
                 break;
@@ -357,52 +504,96 @@ class Etiquette
         }
         return [
             'all' => [
-                'width' => $this->config['doclabel']['border_width'],
+                'width' => $this->config['doclabel'][$sublabel]['border_width'],
                 'dash' => $dash,
-                'color' => $convertColor($this->config['doclabel']['border_color'])
+                'color' => $convertColor(
+                    $this->config['doclabel'][$sublabel]['border_color'])
             ]
         ];
     }
 
+    /**
+     * Indique si la sous-étiquette courante a un bord (cadre rectangulaire)
+     *
+     * @return bool
+     */
     public function hasBorder(): bool
     {
-        return $this->config['doclabel']['border'];
+        $sublabel = current($this->arraySublabels);
+        return $this->config['doclabel'][$sublabel]['border'];
     }
 
-    public function alignLab($rang)
+    /**
+     * Donne l'alignement du label de la donnée de rang $rang de la sous-étiquette
+     * courante
+     *
+     * @param int $rang
+     *            rang de la donnée dans la sous-étiquette
+     * @return string
+     */
+    public function alignLab(int $rang): string
     {
-        return $this->config['docfields'][$rang]['label_align'];
+        $sublabel = current($this->arraySublabels);
+        return $this->config['docfields'][$sublabel][$rang]['label_align'];
     }
 
-    public function stretchLab($rang)
+    /**
+     * Donne le paramètre d'extension (stretch) de l'étiquette de la donnée de rang $rang
+     * dans la sous-étiquette courante
+     *
+     * @param int $rang
+     *            rang de la donnée dans la sous-étiquette
+     * @return int
+     */
+    public function stretchLab(int $rang): int
     {
-        return $this->config['docfields'][$rang]['label_stretch'];
+        $sublabel = current($this->arraySublabels);
+        return $this->config['docfields'][$sublabel][$rang]['label_stretch'];
     }
 
-    public function labelSpace($rang)
+    /**
+     * Espacement des caractères pour le label de la donnée de rang $rang de la
+     * sous-étiquette courante
+     *
+     * @param int $rang
+     *            rang de la donnée dans la sous-étiquette
+     * @return float
+     */
+    public function labelSpace(int $rang): float
     {
-        return (float) $this->config['docfields'][$rang]['label_space'];
+        $sublabel = current($this->arraySublabels);
+        return (float) $this->config['docfields'][$sublabel][$rang]['label_space'];
     }
 
-    public function parametresPhoto($rang)
+    /**
+     * Pour la photo de la sous-étiquette courante numéro $rang, renvoie les paramètres
+     *
+     * @param int $rang
+     *            rang de la photo dans la sous-étiquette
+     * @return array
+     */
+    public function parametresPhoto(int $rang): array
     {
+        $sublabel = current($this->arraySublabels);
         return [
-            'x' => $this->config['docfields'][$rang]['photo_x'],
-            'y' => $this->config['docfields'][$rang]['photo_y'],
-            'w' => $this->config['docfields'][$rang]['photo_w'],
-            'h' => $this->config['docfields'][$rang]['photo_h'],
-            'type' => $this->config['docfields'][$rang]['photo_type'],
-            'align' => $this->config['docfields'][$rang]['photo_align'],
-            'resize' => $this->config['docfields'][$rang]['photo_resize']
+            'x' => $this->config['docfields'][$sublabel][$rang]['photo_x'],
+            'y' => $this->config['docfields'][$sublabel][$rang]['photo_y'],
+            'w' => $this->config['docfields'][$sublabel][$rang]['photo_w'],
+            'h' => $this->config['docfields'][$sublabel][$rang]['photo_h'],
+            'type' => $this->config['docfields'][$sublabel][$rang]['photo_type'],
+            'align' => $this->config['docfields'][$sublabel][$rang]['photo_align'],
+            'resize' => $this->config['docfields'][$sublabel][$rang]['photo_resize']
         ];
     }
 
     /**
-     * Renvoie un tableau indexé à partir de 0
+     * Renvoie un tableau indexé sur les sublabels de tableau de descripteurs de champ.
+     * Chaque descripteur de champ est un tableau associatif dont les clés sont celles du
+     * tableau $cles.
      *
      * @return array
      */
-    public function descripteurData()
+    public function descripteurData(): array
     {
         $cles = [
             'fieldname',
@@ -413,13 +604,29 @@ class Etiquette
             'style'
         ];
         $result = [];
-        foreach ($this->config['docfields'] as $field) {
-            $descripteur = [];
-            foreach ($cles as $key) {
-                $descripteur[$key] = $field[$key];
+        foreach ($this->config['docfields'] as $sublabel => $arrayDocfields) {
+            $resultSublabel = [];
+            foreach ($arrayDocfields as $field) {
+                $descripteur = [];
+                foreach ($cles as $key) {
+                    $descripteur[$key] = $field[$key];
+                }
+                $resultSublabel[] = $descripteur;
             }
-            $result[] = $descripteur;
+            $result[$sublabel] = $resultSublabel;
         }
         return $result;
+    }
+
+    /**
+     * Renvoie la chaine à mettre en filigrane (ou chaine vide s'il n'y en a pas) dans la
+     * sous-étiquette courante
+     *
+     * @return string
+     */
+    public function getFiligrane(): string
+    {
+        $sublabel = current($this->arraySublabels);
+        return $this->config['doclabels'][$sublabel]['filignrane'];
     }
 }

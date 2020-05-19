@@ -3,14 +3,14 @@
  * Formulaire de saisie/modification d'un champ d'un document pdf (hors présentation tabulaire)
  *
  * Description de la structure de la table
- * 
+ *
  * @project sbm
  * @package SbmPdf/Form
  * @filesource DocField.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
- * @version 2019-2.5.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmPdf\Form;
 
@@ -31,6 +31,10 @@ class DocField extends Form implements InputFilterProviderInterface
         $this->add([
             'type' => 'hidden',
             'name' => 'documentId'
+        ]);
+        $this->add([
+            'type' => 'hidden',
+            'name' => 'sublabel'
         ]);
         $this->add([
             'type' => 'hidden',
@@ -741,4 +745,3 @@ class DocField extends Form implements InputFilterProviderInterface
         return $this;
     }
 }
- 

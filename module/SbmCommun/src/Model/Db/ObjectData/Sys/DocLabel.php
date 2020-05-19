@@ -4,14 +4,14 @@
  *
  * Attention ! La liaison entre les tables `doclabels` et `document` étant de type 0<->1
  * on remplace la clé primaire pas documentId.
- * 
+ *
  * @project sbm
  * @package SbmCommun\Model\Db\ObjectData\Sys
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData\Sys;
 
@@ -23,7 +23,10 @@ class DocLabel extends AbstractObjectData
     public function __construct()
     {
         $this->setObjName(__CLASS__);
-        $this->setIdFieldName('documentId');
+        $this->setIdFieldName([
+            'documentId',
+            'sublabel'
+        ]);
     }
 
     public function isRecordSourceTable()
@@ -31,4 +34,3 @@ class DocLabel extends AbstractObjectData
         return $this->recordSourceType == 'T';
     }
 }
- 
