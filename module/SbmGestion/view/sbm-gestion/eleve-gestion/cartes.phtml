@@ -15,8 +15,8 @@
  * @filesource cartes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 19 mai 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -58,9 +58,7 @@ js_date.montreDate();
 	    <fieldset class="sbm-page1">
 			<p>
 				Si vous souhaitez préparer une nouvelle édition, cliquez sur le
-				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés
-				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?>
-				seront pris en compte.</p>
+				bouton ci-dessous.</p>
 			<div class="row-inner"><?= $this->formSubmit($this->form1->get('nouvelle')); ?></div>
 			<p>
 				Par la suite pour utiliser cette nouvelle édition, cochez <i>Dernière
