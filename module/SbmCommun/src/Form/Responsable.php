@@ -10,7 +10,7 @@
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2020
+ * @date 19 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -101,7 +101,8 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                             'Mlle' => 'Mademoiselle',
                             'Dr' => 'Docteur',
                             'Me' => 'Maître',
-                            'Pr' => 'Professeur'
+                            'Pr' => 'Professeur',
+                            'Asso' => 'Association'
                         ],
                         'empty_option' => 'Choisissez la civilité',
                         'error_attributes' => [
@@ -300,6 +301,7 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                     ]
                 ]
             ]);
+        $this->get('communeId')->setDisableInArrayValidator(true);
         $this->add(
             [
                 'name' => 'telephoneF',
@@ -644,6 +646,10 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
                 'name' => 'codePostal',
                 'required' => true
             ],
+            'communeId' => [
+                'name' => 'communeId',
+                'required' => true
+            ],
             'ancienAdresseL1' => [
                 'name' => 'ancienAdresseL1',
                 'required' => false
@@ -779,4 +785,5 @@ class Responsable extends AbstractSbmForm implements InputFilterProviderInterfac
         }
         return $result;
     }
+
 }
