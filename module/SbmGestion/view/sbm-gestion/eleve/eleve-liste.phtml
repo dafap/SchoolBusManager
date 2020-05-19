@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 19 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -351,13 +351,14 @@ $actions = [
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
-            if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
+            /*if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
                 $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
             } else {
                 $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
                     ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) ||
                     ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
-            }
+            }*/
+            $rouge = $eleve['demandeR1'] == 1 || $eleve['demandeR2'] == 1;
             if ($rouge) {
                 $tr_css .= ' alert';
                 $afficheRouge = true;
@@ -469,10 +470,8 @@ $actions = [
 		</table>
 		<?php if ($afficheRouge) : ?>
 		<p class="description">
-			<span class="alert">Les lignes écrites en couleur rouge</span>
-			correspondent à des élèves hors secteur et sans dérogation ou dont
-			le(s) domicile(s) se situe(nt) à moins d'un kilomètre de
-			l'établissement scolaire fréquenté.
+			Les lignes écrites en <span class="alert">couleur rouge</span>
+			correspondent à des élèves dont la demande n'est pas marquée <i>Traitée</i>.
 		</p>
 		<?php endif; ?>
 	</div>
