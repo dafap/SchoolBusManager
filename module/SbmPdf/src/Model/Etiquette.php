@@ -11,7 +11,7 @@
  * @filesource Etiquette.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2020
+ * @date 20 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
@@ -627,6 +627,6 @@ class Etiquette
     public function getFiligrane(): string
     {
         $sublabel = current($this->arraySublabels);
-        return $this->config['doclabels'][$sublabel]['filignrane'];
+        return $this->config['doclabel'][$sublabel]['filigrane'];
     }
 }

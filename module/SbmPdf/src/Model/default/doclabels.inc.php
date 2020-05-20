@@ -7,11 +7,12 @@
  * @filesource doclabels.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2020
+ * @date 20 mai 2020
  * @version 2020-2.6.0
  */
 return [
     0 => [
+        'sublabel' => 0,
         'filigrane' => '',
         'margin_left' => "0", // marge de gauche du la planche (0 mm par défaut)
         'margin_top' => "8", // marge du haut de la planche d'étiquettes (8 mm par

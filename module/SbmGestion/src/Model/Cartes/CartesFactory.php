@@ -1,14 +1,14 @@
 <?php
 /**
  * Injection des objets dans Cartes
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Cartes
  * @filesource CartesFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 fév. 2019
- * @version 2019-2.5.0
+ * @date 15 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
 
@@ -37,6 +37,7 @@ class CartesFactory implements FactoryInterface
             'tScolarites' => $serviceLocator->get('Sbm\Db\Table\Scolarites'),
             'table_affectations' => $serviceLocator->getCanonicName('affectations',
                 'table'),
+            'table_lignes' => $serviceLocator->getCanonicName('lignes', 'table'),
             'table_services' => $serviceLocator->getCanonicName('services', 'table'),
             'codesNatureCartes' => $this->prepareCodesForWhere($codesNatureCartes)
         ];

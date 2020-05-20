@@ -12,15 +12,16 @@
  * @filesource etiquette-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2020
+ * @date 20 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$url_cancel = $this->url('sbmpdf', [
-    'action' => 'etiquette-liste',
-    'page' => $this->page
-]);
+$url_cancel = $this->url('sbmpdf',
+    [
+        'action' => 'etiquette-liste',
+        'page' => $this->page
+    ]);
 
 $hiddens = [
     'documentId' => $this->document['documentId'],
@@ -50,7 +51,7 @@ $actions = [
         <?= $this->listeZoneActions($hiddens, $actions);?>
         </div>
 	</div>
-	<div id="fiche-inner" class="clearfix">
+	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
     		<?= $this->form()->openTag($this->form);?>
     		<?= $this->formHidden($this->form->get('doclabelId'));?>
@@ -59,42 +60,46 @@ $actions = [
     		<?= $this->formHidden($this->form->get('name'));?>
     		<?= $this->formHidden($this->form->get('recordSource'));?>
     		<?= $this->formHidden($this->form->get('csrf'));?>
-        	<div class="float-left">
-				<div class="row-inner label-240">
+    		<div class="clearfix">
+				<div class="float-left">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('cols_number'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('rows_number'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('label_width'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('label_height'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('margin_left'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('margin_top'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('x_space'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('y_space'));?></div>
-			</div>
-			<div class="float-left left-95px">
-				<div class="row-inner label-240">
+				</div>
+				<div class="float-left left-95px">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('padding_top'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('padding_right'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('padding_bottom'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('padding_left'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('border'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('border_dash'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('border_width'));?></div>
-				<div class="row-inner label-240">
+					<div class="row-inner label-240">
 					<?= $this->formRow($this->form->get('border_color'));?></div>
+				</div>
 			</div>
+			<div class="row-inner label-240">
+				<?= $this->formRow($this->form->get('filigrane'));?></div>
 			<div class="row-inner">
 	    		<?= $this->formSubmit($this->form->get('submit')); ?>
 	    		<?= $this->formSubmit($this->form->get('cancel')); ?>

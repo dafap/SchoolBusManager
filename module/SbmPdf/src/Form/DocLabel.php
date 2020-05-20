@@ -8,7 +8,7 @@
  * @filesource DocLabel.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2020
+ * @date 20 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Form;
@@ -51,6 +51,22 @@ class DocLabel extends Form implements InputFilterProviderInterface
                 'options' => [
                     'csrf_options' => [
                         'timeout' => 180
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'filigrane',
+                'attributes' => [
+                    'id' => 'label-filigrane',
+                    'class' => ''
+                ],
+                'options' => [
+                    'label' => 'Filigrane',
+                    'label_attributes' => [],
+                    'error_options' => [
+                        'class' => 'sbm-error'
                     ]
                 ]
             ]);

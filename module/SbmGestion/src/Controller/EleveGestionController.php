@@ -499,8 +499,8 @@ class EleveGestionController extends AbstractActionController
                 $where = new Where();
                 $criteres = [];
                 $expression = [
-                    "millesime = $millesime",
-                    'inscrit=1'
+                    'demandeR1 != 1',
+                    'demandeR2 != 1'
                 ];
                 switch ($args['critere']) {
                     case 'inscrits':
@@ -535,10 +535,9 @@ class EleveGestionController extends AbstractActionController
                     case 'selection':
                         // il s'agit ici de la colonne `selection` de la table `eleves`
                         $expression = [
-                            "millesime = $millesime",
                             'selection = 1'
                         ];
-                        $where->equalTo('millesime', $millesime)->literal('selection = 1');
+                        $where->literal('selection = 1');
                         break;
                 }
                 $call_pdf = $this->RenderPdfService;
@@ -610,10 +609,11 @@ class EleveGestionController extends AbstractActionController
             $documentName);
         $configLabel = $this->db_manager->get('Sbm\Db\System\DocLabels')->getConfig(
             $documentId);
+        $fistSublabel = current($configLabel);
         $form = new FormGestion\PlancheEtiquettesForm('duplicata',
             [
-                'nbcols' => $configLabel['cols_number'],
-                'nbrows' => $configLabel['rows_number']
+                'nbcols' => $fistSublabel['cols_number'],
+                'nbrows' => $fistSublabel['rows_number']
             ]);
         $form->add(
             [
@@ -659,11 +659,10 @@ class EleveGestionController extends AbstractActionController
                     ->setParam('criteres', [])
                     ->setParam('expression',
                     [
-                        "millesime = $millesime",
                         'eleveId = ' . $args['eleveId']
                     ])
                     ->setParam('position', $position)
-                    ->setParam('duplicata', true)
+                    ->setParam('filigrane', true)
                     ->setEndOfScriptFunction(
                     function () use ($millesime, $args) {
                         if (empty($args['gratuit'])) {

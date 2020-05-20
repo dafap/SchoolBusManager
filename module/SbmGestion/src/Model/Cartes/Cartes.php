@@ -8,7 +8,7 @@
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 15 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
@@ -87,7 +87,7 @@ class Cartes
     {
         // préparation du WHERE
         $where = new Where();
-        $where->equalTo('millesime', $millesime);
+        $where->equalTo('aff.millesime', $millesime);
         $or = false;
         $predicate = null;
         foreach ($this->codesNatureCartes[$naturecarte] as $code) {
@@ -113,13 +113,15 @@ class Cartes
             'aff' => $this->table_affectations
         ])
             ->join([
-            's1' => $this->table_services
+            's1' => $this->table_lignes
         ],
-            'aff.ligne1Id=s1.ligneId AND aff.sensligne1=s1.sens AND aff.moment=s1.moment AND aff.ordreligne1=s1.ordre',
+            'aff.millesime=s1.millesime AND aff.ligne1Id=s1.ligneId',
             [])
             ->join([
-            's2' => $this->table_services
-        ], 'aff.service2Id = s2.serviceId', [], Select::JOIN_LEFT)
+            's2' => $this->table_lignes
+        ],
+            'aff.millesime=s2.millesime AND aff.ligne2Id=s2.ligneId',
+            [], Select::JOIN_LEFT)
             ->where($where)
             ->quantifier(Select::QUANTIFIER_DISTINCT);
         return $select;
