@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 20 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -102,10 +102,10 @@ $actions = [
     ]
 ];
 // DEBUG =============================
-if (getenv('APPLICATION_ENV') == 'development') {
+if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getMessages())) {
     echo '<div class="debug">';
     echo '<h3>Debug:</h3><pre>';
-    var_dump($this->form->getMessages());
+    var_dump($debugMsg);
     echo '</pre><hr></div>';
 }
 // ====================================
