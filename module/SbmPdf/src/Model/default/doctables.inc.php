@@ -6,9 +6,10 @@
  * @package SbmPdf/Model/default
  * @filesource doctables.inc.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2015
- * @version 2015-2
+ * @date 20 mai 2020
+ * @version 2020-2.6.0
  */
+define('STANDARD', 's');
 return [
     'thead' => [
         'visible' => true,
@@ -32,7 +33,7 @@ return [
         'width' => 'auto',
         'row_height' => 6,
         'cell_border' => 'LR',
-        'cell_align' => 'standard',
+        'cell_align' => STANDARD,
         'cell_link' => '',
         'cell_stretch' => 0,
         'cell_ignore_min_height' => false,
@@ -49,7 +50,7 @@ return [
         'width' => null,
         'row_height' => 7,
         'cell_border' => 1,
-        'cell_align' => 'standard',
+        'cell_align' => STANDARD,
         'cell_link' => '',
         'cell_stretch' => 0,
         'cell_ignore_min_height' => false,
