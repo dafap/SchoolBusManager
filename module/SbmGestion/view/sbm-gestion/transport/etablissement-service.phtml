@@ -8,7 +8,7 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 21 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -142,7 +142,7 @@ $data = $this->paginator->getCurrentItems();
 					<td class="station">
 						<?=$this->escapeHtml($entity->sta_nom);?></td>
 					<td class="horaire centre">
-						<?=DateLib::formatHoraire($entity->cir_horaireA);?></td>
+						<?= $entity->cir_horaireA ? DateLib::formatHoraire($entity->cir_horaireA) : '';?></td>
 					<td class="boutons">
             <?php
                 $hiddens = [
