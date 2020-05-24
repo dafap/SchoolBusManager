@@ -7,7 +7,7 @@
  * @filesource EditForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mai 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -102,7 +102,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'dateN',
                 'attributes' => [
                     'id' => 'eleve-dateN',
-                    'class' => 'sbm-text15'
+                    'class' => 'sbm-dateN'
                 ],
                 'options' => [
                     'label' => 'Date de naissance',

@@ -8,7 +8,7 @@
  * @filesource eleve-edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  **/
 .table-cell div {
@@ -237,6 +237,10 @@ textarea[name="motifDerogation"] {
 
 textarea.demande-motifRefus {
 	width: 320px;;
+}
+
+input.sbm-dateN {
+	max-width: 125px;
 }
 
 .wrapper-responsable {
