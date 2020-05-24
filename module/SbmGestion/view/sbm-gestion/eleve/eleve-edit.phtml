@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -210,8 +210,10 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 					</div>
 					<div id="wrapper-district">
 						<?= $this->formRow($this->form->get('district'));?></div>
+					<?php if(false):?>
 					<div id="wrapper-fa">
 						<?= $this->formRow($this->form->get('fa'));?></div>
+					<?php endif;?>
 					<div id="wrapper-ga">
 						<?= $this->formRow($this->form->get('ga'));?></div>
 				</div>
