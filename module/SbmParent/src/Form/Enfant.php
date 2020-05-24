@@ -431,39 +431,42 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Radio',
-                'name' => 'fa',
-                'attributes' => [
-                    'id' => 'btnradiofa',
-                    'class' => 'sbmparent-enfant',
-                    'tabindex' => 58,
-                    'value' => '0'
-                ],
-                'options' => [
-                    'label' => 'Famille d\'accueil',
-                    'label_attributes' => [
-                        'class' => 'sbm-radio-label'
+        if (false) {
+            // pas géré dans cette version
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Radio',
+                    'name' => 'fa',
+                    'attributes' => [
+                        'id' => 'btnradiofa',
+                        'class' => 'sbmparent-enfant',
+                        'tabindex' => 58,
+                        'value' => '0'
                     ],
-                    'value_options' => [
-                        [
-                            'value' => '1',
-                            'label' => 'Oui',
-                            'attributes' => [
-                                'id' => 'btnradiofa1'
-                            ]
+                    'options' => [
+                        'label' => 'Famille d\'accueil',
+                        'label_attributes' => [
+                            'class' => 'sbm-radio-label'
                         ],
-                        [
-                            'value' => '0',
-                            'label' => 'Non',
-                            'attributes' => [
-                                'id' => 'btnradiofa0'
+                        'value_options' => [
+                            [
+                                'value' => '1',
+                                'label' => 'Oui',
+                                'attributes' => [
+                                    'id' => 'btnradiofa1'
+                                ]
+                            ],
+                            [
+                                'value' => '0',
+                                'label' => 'Non',
+                                'attributes' => [
+                                    'id' => 'btnradiofa0'
+                                ]
                             ]
                         ]
                     ]
-                ]
-            ]);
+                ]);
+        }
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Radio',

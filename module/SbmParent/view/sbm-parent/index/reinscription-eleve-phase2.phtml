@@ -140,8 +140,10 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 						<div id="wrapper-joursTransportR1"
 							class="row-inner bloc-wrapper zone col13">
                 		<?=$this->formRow($this->form->get('joursTransportR1'));?></div>
+                		<?php if (false):?>
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
+						<?php endif;?>
 					</div>
 					<div id="enfant-etablissementId" class="row-inner">
 					   <?=$this->formRow($this->form->get('etablissementId'));?></div>

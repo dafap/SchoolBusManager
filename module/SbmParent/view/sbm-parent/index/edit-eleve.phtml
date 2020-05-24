@@ -100,8 +100,10 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 						<div id="wrapper-joursTransportR1"
 							class="row-inner bloc-wrapper zone col13">
                 		<?=$this->formRow($this->form->get('joursTransportR1'));?></div>
+                		<?php if(false):?>
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
+						<?php endif;?>
 					</div>
 					<div id="enfant-etablissementId" class="row-inner">
 					   <?=$this->formRow($this->form->get('etablissementId'));?></div>
@@ -152,18 +154,16 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 				<div id="z3cd-r1"></div>
 				<div id="enfant_ga"></div>
 			</div>
-
-	</div>
-	<div id="wrapper-commentaire">
+			<div id="wrapper-commentaire">
 				<?=$this->formRow($this->form->get('commentaire'));?></div>
-	<div id="enfant-buttons" class="row-inner">
+			<div id="enfant-buttons" class="row-inner">
             	<?=$this->formSubmit($this->form->get('submit'));?>
             	<?=$this->formSubmit($this->form->get('cancel'));?>
             </div>
-	</fieldset>
+		</fieldset>
     <?=$this->form()->closeTag();?>
     </div>
-<div id="fiche-footer"></div>
+	<div id="fiche-footer"></div>
 </div>
 <?php
 /**
