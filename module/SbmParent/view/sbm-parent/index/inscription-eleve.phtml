@@ -10,7 +10,7 @@
  * @filesource inscription-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 $this->themeCss('sbm-parent/index', 'edit.css');
@@ -109,7 +109,10 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
 					</div>
 					<div id="enfant-stationIdR1">
-						<?= $this->formRow($this->form->get('stationIdR1'));?></div>
+						<?= $this->formRow($this->form->get('stationIdR1'));?>
+						<p class="sbm-description">Il s'agit du point d'arrêt proche du
+							domicile où l'enfant monte dans le bus le matin.</p>
+					</div>
 				</div>
 				<div class="zone col2">
 					<div class="table2cols">
@@ -205,7 +208,10 @@ $identiteResponsable = sprintf('%s %s %s', $this->responsable->titre,
 			<div id="_demandeR2" class="row-inner bloc-wrapper">
 				<?=$this->formRow($this->form->get('demandeR2'));?></div>
 			<div id="_stationIdR2" class="row-inner">
-				<?=$this->formRow($this->form->get('stationIdR2'));?></div>
+				<?=$this->formRow($this->form->get('stationIdR2'));?>
+				<p class="sbm-description">Il s'agit du point d'arrêt proche du
+					domicile où l'enfant monte dans le bus le matin.</p>
+			</div>
 		</fieldset>
 	</div>
 </div>

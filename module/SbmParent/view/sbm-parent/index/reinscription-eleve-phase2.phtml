@@ -15,7 +15,7 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -137,7 +137,8 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 					<div id="z3cg-r1"></div>
 					<div id="enfant_ap"></div>
 					<div id="wrapper-radio-col1" class="table2cols">
-						<div id="wrapper-joursTransportR1" class="row-inner bloc-wrapper zone col13">
+						<div id="wrapper-joursTransportR1"
+							class="row-inner bloc-wrapper zone col13">
                 		<?=$this->formRow($this->form->get('joursTransportR1'));?></div>
 						<div id="wrapper-fa" class="bloc-wrapper zone">
 						<?=$this->formRow($this->form->get('fa'));?></div>
@@ -151,7 +152,10 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
 					</div>
 					<div id="enfant-stationIdR1">
-						<?= $this->formRow($this->form->get('stationIdR1'));?></div>
+						<?= $this->formRow($this->form->get('stationIdR1'));?>
+						<p class="sbm-description">Il s'agit du point d'arrêt proche du
+							domicile où l'enfant monte dans le bus le matin.</p>
+					</div>
 				</div>
 				<div class="zone col2">
 					<div class="table2cols">
@@ -311,7 +315,10 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 			<div id="_demandeR2" class="row-inner">
 		    	<?=$this->formRow($this->form->get('demandeR2'));?></div>
 			<div id="_stationIdR2" class="row-inner">
-				<?=$this->formRow($this->form->get('stationIdR2'));?></div>
+				<?=$this->formRow($this->form->get('stationIdR2'));?>
+				<p class="sbm-description">Il s'agit du point d'arrêt proche du
+					domicile où l'enfant monte dans le bus le matin.</p>
+			</div>
 		</fieldset>
     <?php else :?>
 		<fieldset style="padding-right: 0.5em;">

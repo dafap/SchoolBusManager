@@ -12,7 +12,7 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Form;
@@ -24,6 +24,7 @@ use SbmCommun\Model\Db\ObjectData\Scolarite;
 use SbmCommun\Model\Strategy\Semaine;
 use Zend\Db\Sql\Where;
 use Zend\InputFilter\InputFilterProviderInterface;
+use SbmBase\Model\StdLib;
 
 class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
 {
@@ -697,6 +698,41 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                                 ]
                             ]);
                     }
+                }
+            }
+            // vérifie que le point d'origine n'est pas le point d'arrivée à
+            // l'établissement
+            try {
+                $this->db_manager->get('Sbm\Db\Table\Etablissements-Stations')->getRecord(
+                    [
+                        'etablissementId' => $data['etablissementId'],
+                        'stationId' => $data['stationIdR1']
+                    ]);
+                $ok = false;
+                $this->setMessages(
+                    [
+                        'stationIdR1' => [
+                            'Le point de montée est un point d\'arrêt proche du  domicile où votre enfant monte dans le bus le matin. Vous avez indiqué un point d\'arrivée à l\'établissement.'
+                        ]
+                    ]);
+            } catch (\Exception $e) {
+                try {
+                    if (StdLib::getParam('stationIdR1', $data, 0)) {
+                        $this->db_manager->get('Sbm\Db\Table\Etablissements-Stations')->getRecord(
+                            [
+                                'etablissementId' => $data['etablissementId'],
+                                'stationId' => $data['stationIdR2']
+                            ]);
+                        $ok = false;
+                        $this->setMessages(
+                            [
+                                'stationIdR2' => [
+                                    'Le point de montée est un point d\'arrêt proche du domicile où votre enfant monte dans le bus le matin. Vous avez indiqué un point d\'arrivée à l\'établissement.'
+                                ]
+                            ]);
+                    }
+                } catch (\Exception $e) {
+                    // tout va bien
                 }
             }
             return $ok;

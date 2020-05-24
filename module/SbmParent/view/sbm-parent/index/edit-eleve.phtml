@@ -8,7 +8,7 @@
  * @filesource edit-eleve.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -112,12 +112,17 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 					   			<?=$this->formRow($this->form->get('regimeId'));?></div>
 					</div>
 					<div id="enfant-stationIdR1">
-						<?= $this->formRow($this->form->get('stationIdR1'));?></div>
+						<?= $this->formRow($this->form->get('stationIdR1'));?>
+						<p class="sbm-description">Il s'agit du point d'arrêt proche du
+							domicile où l'enfant monte dans le bus le matin.</p>
+					</div>
+
 				</div>
-				<div class="zone col2">
-					<div class="table2cols">
-						<div class="zone col21">
-							<div id="wrapper-radio-col2" class="table2cols">
+			</div>
+			<div class="zone col2">
+				<div class="table2cols">
+					<div class="zone col21">
+						<div id="wrapper-radio-col2" class="table2cols">
 							<?php if ($this->categorieId == 1):?>
 								<div id="wrapper-ga" class="bloc-wrapper zone fit-content">
 								<?=$this->formRow($this->form->get('ga'));?></div>
@@ -127,8 +132,8 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 								<?=$this->formHidden($this->form->get('ga'));?></div>
 							<?php endif;?>
 							</div>
-						</div>
-						<div id="wrapper-filephoto" class="zone col22">
+					</div>
+					<div id="wrapper-filephoto" class="zone col22">
 							<?php
     $btnOpenDialog = new \Zend\Form\Element\Button('opendialog');
     $btnOpenDialog->setLabelOption('disable_html_escape', 'on');
@@ -139,25 +144,26 @@ $this->form->get('commentaire')->setLabelAttributes($label_attributes);
 							<?=$this->formButton($btnOpenDialog, "<i class=\"fam-camera-edit\"></i> $btnDialogLabel");?>
 				    		<?=$this->formButton($btnSupprPhoto,'<i class="fam-camera-delete"></i> Supprimer la photo');?>
 							</div>
-						<div id="wrapper-photo" class="zone col23">
-							<img height="140" alt="photo" src="<?=$this->dataphoto;?>" />
+					<div id="wrapper-photo" class="zone col23">
+						<img height="140" alt="photo" src="<?=$this->dataphoto;?>" />
 
-						</div>
 					</div>
-					<div id="z3cd-r1"></div>
-					<div id="enfant_ga"></div>
 				</div>
+				<div id="z3cd-r1"></div>
+				<div id="enfant_ga"></div>
 			</div>
-			<div id="wrapper-commentaire">
+
+	</div>
+	<div id="wrapper-commentaire">
 				<?=$this->formRow($this->form->get('commentaire'));?></div>
-			<div id="enfant-buttons" class="row-inner">
+	<div id="enfant-buttons" class="row-inner">
             	<?=$this->formSubmit($this->form->get('submit'));?>
             	<?=$this->formSubmit($this->form->get('cancel'));?>
             </div>
-		</fieldset>
+	</fieldset>
     <?=$this->form()->closeTag();?>
     </div>
-	<div id="fiche-footer"></div>
+<div id="fiche-footer"></div>
 </div>
 <?php
 /**
@@ -273,7 +279,10 @@ $btnCloseDialog = new \Zend\Form\Element\Button('closedialog');
 			<div id="_demandeR2" class="row-inner">
 			    <?=$this->formRow($this->form->get('demandeR2'));?></div>
 			<div id="_stationIdR2" class="row-inner">
-				<?=$this->formRow($this->form->get('stationIdR2'));?></div>
+				<?=$this->formRow($this->form->get('stationIdR2'));?>
+				<p class="sbm-description">Il s'agit du point d'arrêt proche du
+					domicile où l'enfant monte dans le bus le matin.</p>
+			</div>
 		</fieldset>
 		<?php else :?>
 		<fieldset style="padding-right: 0.5em;">
