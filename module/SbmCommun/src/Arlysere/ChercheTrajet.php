@@ -11,7 +11,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 avr. 2020
+ * @date 21 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -236,7 +236,11 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Renvoie le Where des requêtes de recherche de trajet
+     * Renvoie le Where des requêtes de recherche de trajet. L'établissement fréquenté est
+     * identifié par la propriété $this->etablissementId. La station d'origine est
+     * identifiée par la propriété $this->stationId. Une correspondance cor1 permet
+     * d'utiliser une station jumelle de la station d'origine comme point de départ
+     * (matin) ou d'arrivée (midi, soir).
      *
      * @param int $moment
      *            1 pour Matin, 2 pour Midi, 3 pour Soir
@@ -247,7 +251,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     private function getConditions(int $moment, int $nb_cir)
     {
         $where = (new Where())->equalTo('eta.etablissementId', $this->etablissementId)->equalTo(
-            'cir1sta1.stationId', $this->stationId);
+            'cor1.station1Id', $this->stationId);
         // arrivée à l'établissement
         switch ($moment) {
             case 1:
@@ -325,14 +329,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
 
     private function jointureCircuitCorrespondance(int $rang_correspondance)
     {
-        $modele = 'cir%1$dsta1.stationId=cor%2$d.station1Id';
-        return sprintf($modele, $rang_correspondance + 1, $rang_correspondance);
+        $modele = 'cir%1$dsta1.stationId=cor%1$d.station2Id';
+        return sprintf($modele, $rang_correspondance);
     }
 
     private function jointureCorrespondanceCircuit(int $rang_correspondance)
     {
-        $modele = 'cor%1$d.station2Id=cir%1$dsta2.stationId';
-        return sprintf($modele, $rang_correspondance);
+        $modele = 'cor%d.station1Id=cir%dsta2.stationId';
+        return sprintf($modele, $rang_correspondance + 1, $rang_correspondance);
     }
 
     private function jointureSurUnCircuit(int $rang_circuit)
@@ -403,7 +407,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         ];
         $ordre_corr = [];
         for ($i = $nb_cir; $i >= 1; $i --) {
-            $columns1 = [];
+            // $columns1 = [];
             $columns2 = [
                 "station2Id_$i" => 'stationId',
                 "horaireStation2_$i" => new Expression(
@@ -426,10 +430,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             } else {
                 // cette station est une station de correspondance
                 array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance', $i));
-                $select->join([
-                    sprintf('cor%d', $i) => $this->selectCorr($i)
-                ], $this->jointureCircuitCorrespondance($i), $columns1)
-                    ->join(
+                $select->join(
                     [
                         sprintf('cir%dsta2', $i) => $this->db_manager->getCanonicName(
                             'circuits')
@@ -456,7 +457,10 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 ->join(
                 [
                     sprintf('ser%d', $i) => $this->db_manager->getCanonicName('services')
-                ], $this->jointureCircuitService($i), []);
+                ], $this->jointureCircuitService($i), [])
+                ->join([
+                sprintf('cor%d', $i) => $this->selectCorr($i)
+            ], $this->jointureCircuitCorrespondance($i), $columns1);
             $ordre[] = sprintf('ser%d.rang', $i);
         }
         if ($moment == 1) {
@@ -466,7 +470,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             // arriver le plus tôt possible
             $ordre[] = 'cir1sta1.horaireA';
         }
-        foreach ($ordre_corr as $column){
+        foreach ($ordre_corr as $column) {
             $ordre[] = $column;
         }
 
