@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 21 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -699,7 +699,7 @@ class EleveController extends AbstractActionController
                 $odata1->subventionR1 == 1);
             $inscrit |= ($odata1->demandeR2 == 2 && $odata1->accordR2 == 0 &&
                 $odata1->subventionR2 == 1);
-            $invariants['etat'] = $inscrit ? 'Inscrit' : 'Préinscrit';
+            $invariants['etat'] = $inscrit ? 'Payé' : 'Impayé';
         } else {
             $invariants['etat'] = 'Rayé';
         }

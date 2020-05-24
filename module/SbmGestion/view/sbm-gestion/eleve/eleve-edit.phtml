@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2020
+ * @date 21 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -187,7 +187,20 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 					<div id="wrapper-inscrit">
 						<div class="label">Etat</div>
 						<div class="input">
-							<?= $this->data['etat'] == 'Rayé' ? '<span style="color: red;">Rayé</span>' : $this->data['etat'];?></div>
+							<?php
+    switch ($this->data['etat']) {
+        case 'Rayé':
+            echo '<span class="rouge">Rayé</span>';
+            break;
+        case 'Impayé':
+            echo '<span class="orange gras">Impayé</span>';
+            break;
+        default:
+            $this->data['etat'];
+            break;
+    }
+    ?>
+							</div>
 					</div>
 					<div id="wrapper-paiement">
 						<div class="label">
@@ -371,7 +384,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 									</div>
 						</div>
 				        <?php endif;?>
-				    </div >
+				    </div>
 					<div class="table-row">
 						<div id="tabs-3-col1" class="table-cell">
 							<h3>Inscription cette année scolaire</h3>
