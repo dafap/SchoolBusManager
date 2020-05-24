@@ -20,7 +20,7 @@
  * @filesource eleve-ajout31.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -152,8 +152,10 @@ if (getenv('APPLICATION_ENV') == 'development') {
 						<div class="label">Etat</div>
 						<div class="input">en cours...</div>
 					</div>
+					<?php if (false):?>
 					<div id="wrapper-fa">
 						<?= $this->formRow($this->form->get('fa'));?></div>
+					<?php endif;?>
 					<div id="wrapper-ga">
 						<?= empty($data['responsable2Id']) ? '' : 'Garde alternée';?></div>
 				</div>

@@ -7,7 +7,7 @@
  * @filesource StationDepart.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mars 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
@@ -49,6 +49,27 @@ class StationDepart extends Form
                     'label_attributes' => [
                         'class' => 'sbm-form-auto'
                     ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'raz',
+                'type' => 'Zend\Form\Element\Checkbox',
+                'attributes' => [
+                    'id' => 'affectations-raz',
+                    'value' => 0
+                ],
+                'options' => [
+                    'label' => 'Garder les affectations déjà présentes',
+                    'label_attributes' => [
+                        'class' => 'sbm-form-auto'
+                    ],
+                    'use_hidden_element' => true,
+                    'checked_value' => 'GARDE',
+                    'unchecked_value' => 'RAZ',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]

@@ -20,7 +20,7 @@
  * @filesource AddElevePhase2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -193,23 +193,25 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
                     ]
                 ]
             ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'fa',
-                'attributes' => [
-                    'id' => 'eleve-fa'
-                ],
-                'options' => [
-                    'label' => 'Famille d\'accueil',
-                    'label_attributes' => [
-                        'class' => 'sbm-label checkbox'
+        if (false) {
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Checkbox',
+                    'name' => 'fa',
+                    'attributes' => [
+                        'id' => 'eleve-fa'
                     ],
-                    'use_hidden_element' => true,
-                    'checked_value' => '1',
-                    'unchecked_value' => '0'
-                ]
-            ]);
+                    'options' => [
+                        'label' => 'Famille d\'accueil',
+                        'label_attributes' => [
+                            'class' => 'sbm-label checkbox'
+                        ],
+                        'use_hidden_element' => true,
+                        'checked_value' => '1',
+                        'unchecked_value' => '0'
+                    ]
+                ]);
+        }
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -237,7 +239,7 @@ class AddElevePhase2 extends AbstractSbmForm implements InputFilterProviderInter
                 'type' => 'Zend\Form\Element\Textarea',
                 'name' => 'motifDerogation',
                 'attributes' => [
-                    'id' => 'eleve-motifDerogation',
+                    'id' => 'eleve-motifDerogation'
                 ],
                 'options' => [
                     /*

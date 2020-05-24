@@ -213,7 +213,7 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'derogation',
                 'attributes' => [
                     'id' => 'eleve-derogation',
-                    'class'=>'sbm-width-45c'
+                    'class' => 'sbm-width-45c'
                 ],
                 'options' => [
                     'label' => 'Justificatif',
@@ -281,23 +281,25 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
-            [
-                'type' => 'Zend\Form\Element\Checkbox',
-                'name' => 'fa',
-                'attributes' => [
-                    'id' => 'eleve-fa'
-                ],
-                'options' => [
-                    'label' => 'Famille d\'accueil',
-                    'label_attributes' => [
-                        'class' => 'sbm-label checkbox'
+        if (false) {
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Checkbox',
+                    'name' => 'fa',
+                    'attributes' => [
+                        'id' => 'eleve-fa'
                     ],
-                    'use_hidden_element' => true,
-                    'checked_value' => '1',
-                    'unchecked_value' => '0'
-                ]
-            ]);
+                    'options' => [
+                        'label' => 'Famille d\'accueil',
+                        'label_attributes' => [
+                            'class' => 'sbm-label checkbox'
+                        ],
+                        'use_hidden_element' => true,
+                        'checked_value' => '1',
+                        'unchecked_value' => '0'
+                    ]
+                ]);
+        }
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Button',
@@ -501,24 +503,25 @@ class EditForm extends AbstractSbmForm implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add([
-            'name' => 'dateDemandeR2',
-            'type' => 'Zend\Form\Element\Date',
-            'attributes' => [
-                'id' => 'eleve-dateDemandeR2',
-                'class' => 'sbm-text15',
-            ],
-            'options' => [
-                'label' => 'Date de la demande',
-                'label_attributes' => [
-                    'class' => 'sbm-label'
+        $this->add(
+            [
+                'name' => 'dateDemandeR2',
+                'type' => 'Zend\Form\Element\Date',
+                'attributes' => [
+                    'id' => 'eleve-dateDemandeR2',
+                    'class' => 'sbm-text15'
                 ],
-                'error_attributes' => [
-                    'class' => 'sbm-error'
-                ],
-                'format' => 'Y-m-d'
-            ]
-        ]);
+                'options' => [
+                    'label' => 'Date de la demande',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ],
+                    'format' => 'Y-m-d'
+                ]
+            ]);
         $this->add(
             [
                 'name' => 'distanceR1',

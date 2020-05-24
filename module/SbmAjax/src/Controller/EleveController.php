@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 avr. 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -263,8 +263,8 @@ class EleveController extends AbstractActionController
                 'trajet' => $trajet,
                 'station1Id' => $station1Id,
                 'station2Id' => $station2Id,
-                'form' => $this->getFormAffectationDecision($etablissementId, $trajet)->setData(
-                    $aData, $aData['op'] == 'delete'),
+                'form' => $this->getFormAffectationDecision($etablissementId, $trajet,
+                    $aData['op'] == 'delete')->setData($aData),
                 'is_xmlhttprequest' => 1
             ]);
     }
@@ -426,6 +426,7 @@ class EleveController extends AbstractActionController
 
     public function formchercheraffectationsvalidateAction()
     {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
         $request = $this->getRequest();
         $response = $this->getResponse();
         if ($request->isPost()) {
@@ -449,6 +450,8 @@ class EleveController extends AbstractActionController
                             }
                         }
                     }
+                    $this->debugLog(
+                        sprintf('%s (%d) : %s', __METHOD__, __LINE__, $messages));
                     $response->setContent(
                         Json::encode([
                             'cr' => $messages,
@@ -457,6 +460,12 @@ class EleveController extends AbstractActionController
                 } else {
                     try {
                         $data = $form->getData();
+                        if ($data['raz'] == 'RAZ') {
+                            $tAffectations = $this->db_manager->get(
+                                'Sbm\Db\Table\Affectations');
+                            $tAffectations->deleteResponsableId(Session::get('millesime'),
+                                $data['eleveId'], $data['responsableId']);
+                        }
                         switch ($data['op']) {
                             case 'auto':
                                 $tScolarites = $this->db_manager->get(
@@ -497,6 +506,8 @@ class EleveController extends AbstractActionController
                                 break;
                         }
                     } catch (\Exception $e) {
+                        $this->debugLog(
+                            sprintf('%s (%d) : %s', __METHOD__, __LINE__, $e->getMessage()));
                         $this->flashMessenger()->addErrorMessage(
                             'Une erreur s\'est produite pendant le traitement de la demande.');
                         $response->setContent(

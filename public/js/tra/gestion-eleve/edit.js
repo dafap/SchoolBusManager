@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 24 mai 2020
  * @version 2020-2.6.0
  */
 
@@ -954,16 +954,14 @@ function stationdepart() {
 		}
 		var trajet = $(formstationdepart+' input[name=trajet]').val();
 		var data = {
-				//'csrf' : $(formstationdepart+' input[name=csrf]').val(),
 				'etablissementId' : $(formstationdepart+' input[name=etablissementId]').val(),
 				'eleveId' : $(formstationdepart+' input[name=eleveId]').val(),
 				'millesime' : $(formstationdepart+' input[name=millesime]').val(),
 				'trajet' : trajet,
 				'jours' : $(formstationdepart+' input[name=jours]').val(),
 				'responsableId' : $(formstationdepart+' input[name=responsableId]').val(),
-				//'demandeR1' : $(formstationdepart+' input[name=demandeR1]').val(),
-				//'demandeR2' : $(formstationdepart+' input[name=demandeR2]').val(),
 				'stationId' : $(formstationdepart+' select[name=stationId]').val(),
+				'raz' : $(formstationdepart+' input[name=raz]').val(),
 				'op' : $(formstationdepart+' input[name=op]').val(),
 				'submit' : btnclick
 		};
@@ -971,7 +969,13 @@ function stationdepart() {
 		$.post(urlform, data, function(itemJson) {
 			$("#winpopup").dialog('close');
 			js_edit.majBlockAffectations(trajet);
-		}, 'json').done(function(data){js_edit.majDisableAccordRi(trajet,data.nb);});
+		}, 'json').done(function(data){
+			if (data.success == 1) {
+				js_edit.majDisableAccordRi(trajet,data.nb);
+			} else {
+				alert('Une erreur s\'est produite pendant le traitement de la demande.');
+			}
+		});
 		return false;
 	});
 	return {
