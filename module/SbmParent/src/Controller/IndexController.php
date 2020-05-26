@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mai 2020
+ * @date 26 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -45,6 +45,7 @@ class IndexController extends AbstractActionController
     private function warningCompteRendu($cr)
     {
         $this->debugInitLog(Stdlib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
+        $this->debugLog(__METHOD__);
         $this->debugLog($cr);
     }
 
@@ -261,6 +262,7 @@ class IndexController extends AbstractActionController
                 echo '<h3>Debug:</h3>';
                 var_dump($form->getMessages());
             } else {
+                $this->debugLog(__METHOD__);
                 $this->debugLog($form->getMessages());
             }
         }
@@ -436,6 +438,7 @@ class IndexController extends AbstractActionController
                 echo '<h3>Debug:</h3>';
                 var_dump($form->getMessages());
             } else {
+                $this->debugLog(__METHOD__);
                 $this->debugLog($form->getMessages());
             }
             $responsable2 = Session::get('responsable2', null,
@@ -838,6 +841,7 @@ class IndexController extends AbstractActionController
                     echo '<h3>Debug:</h3>';
                     var_dump($form->getMessages());
                 } else {
+                    $this->debugLog(__METHOD__);
                     $this->debugLog($form->getMessages());
                 }
                 // $form->isValid() a échoué
