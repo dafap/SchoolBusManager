@@ -8,14 +8,16 @@
  * @filesource responsable-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 26 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->themeJS('commun','form-responsable.js');
+$this->themeJS('commun', 'form-responsable.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 if ($this->responsableId) {
+    $identite = $this->oResponsable->titre . ' ' . $this->oResponsable->nom . ' ' .
+        $this->oResponsable->prenom;
     $h1 = "Modification d'un responsable";
     $url_ici = $this->url('sbmgestion/eleve',
         [
@@ -32,13 +34,13 @@ if ($this->responsableId) {
     ]);
     if ($this->layout()->hassbmservicesms) {
         $url_sms = $this->url('sbmservicesms', [
-            'action' => 'envoi-msm'
+            'action' => 'envoi-sms'
         ]);
     }
     $email = $this->form->get('email')->getValue();
     $hiddens = [
         'responsableId' => $this->responsableId,
-        'info' => $this->identite,
+        'info' => $identite,
         'origine' => $url_ici
     ];
     $actions = [
@@ -56,7 +58,7 @@ if ($this->responsableId) {
     ];
     if (! empty($email)) {
         $hiddens['email'] = $email;
-        $hiddens['responsable'] = $this->identite;
+        $hiddens['responsable'] = $identite;
         $hiddens['group'] = $url_ici;
         $actions['ecrire'] = [
             'class' => 'fam-email',
@@ -64,7 +66,8 @@ if ($this->responsableId) {
             'title' => 'Envoyer un email'
         ];
     }
-    if ($this->layout()->hassbmservicesms && $this->accepte_sms) {
+    if ($this->layout()->hassbmservicesms && $this->oResponsable->accepteSms()) {
+        $hiddens['telephones[]'] = $this->oResponsable->telephonesPourSms();
         $actions['sms'] = [
             'class' => 'fam-phone',
             'formaction' => $url_sms,

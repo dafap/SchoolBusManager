@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2020
+ * @date 26 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1896,27 +1896,21 @@ class EleveController extends AbstractActionController
                 }
             }
             $demenagement = $args['demenagement'] ?: false;
-            $identite = $args['titre'] . ' ' . $args['nom'] . ' ' . $args['prenom'];
-            $smsOk = $tableResponsables->getObjData()
-                ->exchangeArray($args)
-                ->accepteSms();
+            $oData = $tableResponsables->getObjData()->exchangeArray($args);
         } else {
             $oData = $tableResponsables->getRecord($responsableId);
             $form->setData($oData->getArrayCopy());
             $this->hasUserCompte($this->db_manager, $oData->email,
                 $this->getSessionNamespace());
             $demenagement = $oData->demenagement;
-            $identite = $oData->titre . ' ' . $oData->nom . ' ' . $oData->prenom;
-            $smsOk = $oData->accepteSms();
         }
         return new ViewModel(
             [
                 'form' => $form->prepare(),
                 'page' => $this->params('page', 1),
                 'responsableId' => $responsableId,
-                'identite' => $identite,
                 'demenagement' => $demenagement,
-                'accepte_sms' => $smsOk
+                'oResponsable' => $oData
             ]);
     }
 
