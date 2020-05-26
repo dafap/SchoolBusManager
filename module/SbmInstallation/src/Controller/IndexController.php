@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 26 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmInstallation\Controller;
 
@@ -60,12 +60,16 @@ class IndexController extends AbstractActionController
         $fileNamePaiement = strtolower($this->config_paiement['plateforme']) . '_error.log';
         $filePaiement = StdLib::concatPath($this->config_paiement['path_filelog'],
             $fileNamePaiement);
+        if (! file_exists($filePaiement)) {
+            $fp = fopen($filePaiement, 'w');
+            fclose($fp);
+        }
         $fileNameSms = $this->hassbmservicesms ? strtolower($this->config_sms['filename']) : '';
         $fileSms = $this->hassbmservicesms ? StdLib::concatPath(
             $this->config_sms['path_filelog'], $fileNameSms) : '';
-        if (! file_exists($filePaiement)) {
-            $f = fopen($filePaiement, 'w');
-            fclose($f);
+        if ($this->hassbmservicesms && !file_exists($fileSms)) {
+            $fp = fopen($fileSms, 'w');
+            fclose($fp);
         }
         $fileErrors = $this->error_log;
         if (array_key_exists('fichier', $args)) {
