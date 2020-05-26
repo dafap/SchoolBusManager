@@ -8,7 +8,7 @@
  * @filesource responsable-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2020
+ * @date 26 mai 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -306,6 +306,7 @@ $actions = [
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
+		    <?php if ($this->layout()->hassbmservicesms):?>
 			<div class="sbm-description float-left">Pour envoyer un même message
 				à plusieurs responsables, sélectionnez-les.</div>
 			<div class="selection">
@@ -314,6 +315,7 @@ $actions = [
 					<?=$this->listeZoneActions([], $actions_selection, ['name'=>'zoneselection', 'id'=>'selection']);?>
 				</div>
 			</div>
+			<?php endif;?>
 			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
 		<div class="criteres-wrapper responsables">
 			<?=$this->form()->openTag($this->criteres_form);?>
