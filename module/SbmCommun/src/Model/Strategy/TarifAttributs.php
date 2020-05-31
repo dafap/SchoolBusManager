@@ -8,8 +8,8 @@
  * @filesource TarifRythme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 03 juin 2019
- * @version 2019-2.5.0
+ * @date 31 mai 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Strategy;
 
@@ -40,6 +40,7 @@ class TarifAttributs implements StrategyInterface
      */
     public function extract($param)
     {
+        $param = is_numeric($param) ? (int) $param : $param;
         if (is_int($param)) {
             if (array_key_exists($param, $this->codes)) {
                 return $param;
