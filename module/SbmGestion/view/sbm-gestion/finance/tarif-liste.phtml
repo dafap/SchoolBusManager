@@ -12,7 +12,7 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -128,7 +128,9 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
                 $tarif->tarifId);
             $hiddens = [
                 'tarifId' => $tarif->tarifId,
-                'grilleTarif' => $tarif->grille
+                'grille' => $tarif->grille,
+                'grilleTarif' => $tarif->grilleTarif,
+                'reduit' => $tarif->reduit
             ];
             $buttons = [
                 'modifier' => [

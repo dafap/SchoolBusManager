@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -125,13 +125,28 @@ class Liste extends AbstractQuery implements FactoryInterface
             'prenom'
         ], $by = '')
     {
-        if ($by == 'service') {
-            $select = $this->selectGroupByService($millesime, $filtre, $order);
-        } elseif ($by == 'station') {
-            $select = $this->selectGroupByStation($millesime, $filtre, $order);
-        } else {
-            $select = $this->selectGroup($millesime, $filtre, $order);
+        switch ($by) {
+            case 'service':
+                $select = $this->selectGroupByService($millesime, $filtre, $order);
+                break;
+            case 'station':
+                $select = $this->selectGroupByStation($millesime, $filtre, $order);
+                break;
+            case 'tarif':
+                $select = $this->selectGroupByScolariteResponsable($millesime,
+                    function () use ($filtre) {
+                        return new Expression(
+                            "IF(sco.demandeR2>0 AND sco.grilleTarifR2 = ?, res.responsableId=ele.responsable2Id,res.responsableId=ele.responsable1Id)",
+                            $filtre['grilleTarif']);
+                    },
+                    \SbmGestion\Model\Db\Filtre\Eleve\Filtre::byGrilleTarif(
+                        $filtre['grilleTarif'], $filtre['reduction']), $order);
+                break;
+            default:
+                $select = $this->selectGroup($millesime, $filtre, $order);
+                break;
         }
+        //die($this->getSqlString($select));
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
@@ -247,6 +262,86 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ])
+            ->join([
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], Select::JOIN_LEFT)
+            ->columns(
+            [
+                'eleveId',
+                'nom',
+                'prenom',
+                'sexe',
+                'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
+                'adresseL2' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2 END'),
+                'adresseL3' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE "" END'),
+                'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
+                'commune' => new Literal('IFNULL(comsco.alias, comres.alias)')
+            ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($this->arrayToWhere($where, $filtre));
+
+        if (! empty($order)) {
+            $select->order($order);
+        }
+        // die($this->getSqlString($select));
+        return $select;
+    }
+
+    private function selectGroupByScolariteResponsable(int $millesime,
+        callable $jointureEleveResponsable, array $filtre, $order)
+    {
+        $where = new Where();
+        $where->equalTo('sco.millesime', $millesime);
+
+        $select = $this->sql->select()
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId=sco.eleveId',
+            [
+                'inscrit',
+                'paiementR1',
+                'paiementR2',
+                'fa',
+                'gratuit',
+                'dateCarteR1',
+                'dateCarteR2'
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId', [
+                'etablissement' => 'nom'
+            ])
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'sco.classeId = cla.classeId', [
+            'classe' => 'nom'
+        ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], $jointureEleveResponsable(),
+            [
+                'email',
+                'responsable' => new Literal(
+                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+            ])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId=comres.communeId', [])
             ->join([
             'comsco' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)

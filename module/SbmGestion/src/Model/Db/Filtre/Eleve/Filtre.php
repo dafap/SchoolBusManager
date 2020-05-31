@@ -10,7 +10,7 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -233,7 +233,8 @@ abstract class Filtre
                 list ($ligneId, $sens, $moment, $ordre) = $arrayServiceId;
             } else {
                 throw new Exception(
-                    __METHOD__ . ' : Le tableau passé en deuxième paramètre n\'a pas 4 éléments.');
+                    __METHOD__ .
+                    ' : Le tableau passé en deuxième paramètre n\'a pas 4 éléments.');
             }
         } elseif (is_string($args) && is_string($arrayServiceId)) {
             $etablissementId = $args;
@@ -376,11 +377,29 @@ abstract class Filtre
      * @return array : tableau structuré pour la méthode
      *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
-    public static function byTarif($tarifId)
+    public static function byGrilleTarif($grilleTarif, $reduction)
     {
         return [
             'inscrit' => 1,
-            'tarifId' => $tarifId
+            [
+                [
+                    '>' => [
+                        'sco.demandeR1',
+                        0
+                    ],
+                    'sco.grilleTarifR1' => $grilleTarif,
+                    'sco.reductionR1' => $reduction
+                ],
+                'or',
+                [
+                    '>' => [
+                        'sco.demandeR2',
+                        0
+                    ],
+                    'sco.grilleTarifR2' => $grilleTarif,
+                    'sco.reductionR2' => $reduction
+                ]
+            ]
         ];
     }
 }

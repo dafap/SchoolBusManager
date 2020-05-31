@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1553,7 +1553,8 @@ class FinanceController extends AbstractActionController
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
         }
         $tarifId = StdLib::getParam('tarifId', $args, - 1);
-        $grilleTarif = StdLib::getParam('grilleTarif', $args);
+        $grilleTarif = StdLib::getParam('grille', $args);
+        $reduction = StdLib::getParam('reduit', $args);
         if (empty($grilleTarif) || $tarifId == - 1) {
             $this->flashMessenger()->addErrorMessage('Action interdite.');
             return $this->redirect()->toRoute('sbmgestion/finance',
@@ -1571,11 +1572,12 @@ class FinanceController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'), [
-                        'sco.grilleTarifR1' => $grilleTarifId
+                        'grilleTarif' => $grilleTarifId,
+                        'reduction' => $reduction
                     ], [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'tarif'),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'tarif' => $this->db_manager->get('Sbm\Db\Table\Tarifs')->getRecord(
                     $tarifId),
