@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 2 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -614,6 +614,19 @@ class ElevesResponsables extends AbstractQuery
                 'laposte_responsable1' => 'alias_laposte'
             ])
             ->join([
+            'ori1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'ori1.stationId=sco.stationIdR1', [
+            'station_origineR1' => 'nom'
+        ])
+            ->join([
+            'comori1' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'ori1.communeId=comori1.communeId',
+            [
+                'commune_origineR1' => 'nom',
+                'lacommune_origineR1' => 'alias',
+                'laposte_origineR1' => 'alias_laposte'
+            ])
+            ->join([
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'r2.responsableId=ele.responsable2Id',
             [
@@ -637,6 +650,20 @@ class ElevesResponsables extends AbstractQuery
                 'commune_responsable2' => 'nom',
                 'lacommune_responsable2' => 'alias',
                 'laposte_responsable2' => 'alias_laposte'
+            ], $select::JOIN_LEFT)
+            ->join([
+            'ori2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'ori2.stationId=sco.stationIdR2', [
+            'station_origineR2' => 'nom'
+        ], $select::JOIN_LEFT)
+            ->join(
+            [
+                'comori2' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'ori2.communeId=comori2.communeId',
+            [
+                'commune_origineR2' => 'nom',
+                'lacommune_origineR2' => 'alias',
+                'laposte_origineR2' => 'alias_laposte'
             ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
