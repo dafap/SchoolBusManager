@@ -1,0 +1,66 @@
+<?php
+/**
+ * Affiche les informations sur le compte Esendex configuré
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendex/index
+ * @filesource account-info.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 29 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'service-sms.css');
+$url_retour = $this->url('sbmservicesms', [
+    'action' => 'index',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$translate = [
+    'alias' => 'Alias',
+    'label' => 'Nom',
+    'address' => 'Adresse',
+    'reference' => 'Référence',
+    'messagesRemaining' => 'Nombre de crédits disponibles',
+    'expiresOn' => 'Date d\'expiration',
+    'defaultDialCode' => 'Indicatif téléphonique par défaut',
+    'id' => 'Identifiant',
+    'type' => 'type'
+];
+?>
+<h1>Informations sur le compte Esendex</h1>
+<div id='service-sms-wrapper'>
+	<div id='service-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="service-sms-inner">
+		<dl class='inline'>
+		<?php foreach ($this->account_info as $key => $account) :?>
+		    <?php foreach ($translate as $key => $label):?>
+		    <?php $value = $account->{$key}();?>
+		    <?php if ($value):?>
+				<dt><?=$label;?></dt>
+			<dd>
+				<?php
+            if ($key == 'telephone') {
+                echo $this->telephone($value);
+            } elseif ($value instanceof \DateTime) {
+                echo $value->format('d/m/Y');
+            } else {
+                echo $value;
+            }
+            ?>
+			<?php endif;?>
+			<?php endforeach;?>
+		<?php endforeach;?>
+		</dl>
+	</div>
+</div>

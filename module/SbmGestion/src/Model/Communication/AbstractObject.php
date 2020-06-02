@@ -7,7 +7,7 @@
  * @filesource AbstractObject.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Communication;
@@ -66,7 +66,7 @@ abstract class AbstractObject
      */
     private function setFilter(array $post)
     {
-        if ($this->validAndSetServiceKeys($post))
+        if ($this->validAndSetServiceKeys($post) || $this->validAndSetTarifKeys($post))
             return;
         // cas général
         foreach (array_keys($this->aOrigines) as $key) {
@@ -77,6 +77,20 @@ abstract class AbstractObject
             }
         }
         $this->filterName = 'responsable';
+    }
+
+    private function validAndSetTarifKeys(array $data)
+    {
+        $ref = [
+            'grilleTarif',
+            'reduit'
+        ];
+        $ok = array_values(array_intersect(array_keys($data), $ref)) == $ref;
+        if ($ok) {
+            $this->filterName = 'tarif';
+            $this->filterValue = array_intersect_key($data, array_combine($ref, $ref));
+        }
+        return $ok;
     }
 
     /**

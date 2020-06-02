@@ -1,22 +1,21 @@
 <?php
 /**
- * Module de gestion des envois de SMS
- *
- * Ce module est basé sur l'API de Clever SMS
+ * Ce module est basé sur l'API Esendex
  *
  * @project sbm
- * @package SbmCleverSms/src
+ * @package SbmEsendex/src
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 2 juin 2020
  * @version 2020-2.6.0
  */
-namespace SbmCleverSms;
+namespace SbmEsendex;
 
 use SbmBase\Module\AbstractModule;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
+use SbmBase\Model\StdLib;
 
 class Module extends AbstractModule implements BootstrapListenerInterface
 {

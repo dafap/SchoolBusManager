@@ -10,7 +10,7 @@
  * @filesource AbstractSbmTable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
+ * @date 1 juin 2020
  * @version 200-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -309,8 +309,26 @@ abstract class AbstractSbmTable implements FactoryInterface
      *
      * @return \Zend\Paginator\Paginator
      */
-    public function paginator($where_obj = null, $order = null)
+    public function paginator($where = null, $order = null)
     {
+        if (is_callable($where)) {
+            $where = $where(); // Attention ! Peut donner un Where
+        }
+        if ($where instanceof Where) {
+            $where_obj = $where;
+        } else {
+            $where_obj = new Where();
+            if (is_string($where)) {
+                $where_obj->literal($where);
+            } elseif (is_array($where)) {
+                foreach ($where as $key => $value) {
+                    $where_obj->equalTo($key, $value);
+                }
+            } else {
+                throw new Exception\InvalidArgumentException(
+                    __METHOD__ . ' : Argument where incorrect');
+            }
+        }
         return new Paginator(
             new DbSelect($this->select($where_obj, $order),
                 $this->db_manager->getDbadapter(),

@@ -1,0 +1,24 @@
+/**
+ * Feuille de style du formulaire d'envoi d'un SMS
+ * 
+ * @project sbm
+ * @package public/css/ccmgc/cleversms
+ * @filesource envoi-sms.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 29 avr. 2019
+ * @version 2019-2.5.0
+ **/
+textarea[name=body] {
+	width: 99%;
+	height: 10em;
+}
+input[type=submit] {
+	margin-top: 2em;
+}
+input.submit {
+	margin-left: 5em;
+}
+input.cancel {
+	margin-left: 1.5em;
+}

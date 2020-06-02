@@ -1,0 +1,32 @@
+<?php
+/**
+ * Page d'affichage d'un message
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendex/index
+ * @filesource voir-body.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 2 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'service-sms.css');
+$hiddens = [];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out'
+    ]
+];
+?>
+<h1>Contenu d'un message</h1>
+<div id='service-sms-wrapper'>
+	<div id='service-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="service-sms-inner">
+		<p></p>
+		<fieldset class="sbm-page1"><?= $this->data->bodytext(); ?></fieldset>
+
+	</div>
+</div>

@@ -1,0 +1,30 @@
+<?php
+/**
+ * Page de suppression d'un batch d'envoi de SMS et des fiches associées
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendex/index
+ * @filesource suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ */
+?>
+<h1>Suppression d'un lot d'envoi de SMS</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du lot :</p>
+	<div class="header-wrapper">
+		<dl>
+			<dt>Référence</dt><dd><?= $this->escapeHtml($this->data->batchid); ?></dd>
+			<dt>Date</dt><dd><?= $this->data->date; ?></dd>
+			<dt>Nombre de SMS envoyés</dt><dd><?= $this->data->nb_envois;?></dd>
+			<dt>Nombre de destinataires</dt><dd><?= $this->data->nb_demandes;?></dd>
+			<dt>Message</dt><dd><?= $this->data->body;?></dd>
+		</dl>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

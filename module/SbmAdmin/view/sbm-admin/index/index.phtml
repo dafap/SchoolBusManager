@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2019
- * @version 2019-2.5.0
+ * @date 2 juin 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_pdf_liste = $this->url('sbmpdf', [
@@ -28,9 +28,12 @@ $url_images = $this->url('sbminstall', [
 $url_edit_css = $this->url('sbminstall', [
     'action' => 'edit-css'
 ]);
-$url_edit_cleversms = $this->url('sbminstall', [
-    'action' => 'edit-clever-sms'
-]);
+if ($this->layout()->hassbmservicesms) {
+    $url_edit_servicesms = $this->url('sbminstall',
+        [
+            'action' => 'edit-' . $this->layout()->servicesms_name
+        ]);
+}
 $url_edit_client = $this->url('sbminstall', [
     'action' => 'edit-client'
 ]);
@@ -83,11 +86,13 @@ echo $this->ligneMenuAction('fam-bullet-go', [],
         'value' => 'Gestion des informations de l\'organisateur',
         'formaction' => $url_edit_client
     ]);
-echo $this->ligneMenuAction('fam-bullet-go', [],
-    [
-        'value' => 'Configuration de l\'API de CleverSMS Light',
-        'formaction' => $url_edit_cleversms
-    ]);
+if ($this->layout()->hassbmservicesms) {
+    echo $this->ligneMenuAction('fam-bullet-go', [],
+        [
+            'value' => 'Configuration de l\'API du service de SMS',
+            'formaction' => $url_edit_servicesms
+        ]);
+}
 echo $this->ligneMenuAction('fam-bullet-go', [
     'filename' => 'sbm.css'
 ],

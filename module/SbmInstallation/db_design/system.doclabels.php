@@ -15,8 +15,8 @@ use SbmBase\Model\StdLib;
 return [
     'name' => 'doclabels',
     'type' => 'system',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'structure' => [
         'fields' => [

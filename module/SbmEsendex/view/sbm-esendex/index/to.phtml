@@ -1,0 +1,92 @@
+<?php
+/**
+ * Liste des messages adressés à un destinataire
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendes/index
+ * @filesource to.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ */
+// var_dump(get_class_methods($this));
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'service-sms.css');
+$hiddens = [];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out'
+    ]
+];
+$url_voirBody = $this->url('sbmservicesms',
+    [
+        'action' => 'voir-body',
+        'page' => $this->page
+    ]);
+$viewhelper = $this->plugin('listeLigneActions');
+$fields = [
+    'status' => [
+        'label' => 'état',
+        'render' => function ($value, $id = null) {
+            return _($value);
+        }
+    ],
+    'deliveredat' => [
+        'label' => 'livré le',
+        'render' => function ($value, $id = null) {
+            return $value->format('d/m/Y H:i:s');
+        }
+    ],
+    'summary' => [
+        'label' => 'résumé',
+        'render' => null
+    ],
+    'bodyUri' => [
+        'label' => 'voir le message',
+        'render' => function ($uri, $id) use ($url_voirBody, $viewhelper) {
+            $hiddens = [
+                'bodyUri' => $uri
+            ];
+            $buttons = [
+                'voir' => [
+                    'class' => 'fam-magnifier',
+                    'formaction' => $url_voirBody,
+                    'title' => 'Voir le message'
+                ]
+            ];
+            return $viewhelper($id, $hiddens, $buttons);
+        }
+    ]
+];
+?>
+<h1>Liste des messages adressés à un destinataire</h1>
+<div id='service-sms-wrapper'>
+	<div id='service-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="service-sms-inner">
+		<table class="to">
+			<tr>
+			<?php $ligneId = 1;?>
+			<?php foreach ($fields as $def):?>
+		    	<th><?=$def['label'];?></th>
+			<?php endforeach;?>
+			</tr>
+			<?php foreach ($this->data as $oMessage):?>
+			<tr>
+				<?php foreach ($fields as $key => $def):?>
+				<?php
+        $value = $oMessage->{$key}();
+        if (! is_null($def['render'])) {
+            $value = $def['render']($value, $ligneId);
+        }
+        ?>
+		    		<td><?=$value;?></td>
+				<?php endforeach;?>
+			</tr>
+			<?php $ligneId++;?>
+			<?php endforeach;?>
+		</table>
+	</div>
+</div>

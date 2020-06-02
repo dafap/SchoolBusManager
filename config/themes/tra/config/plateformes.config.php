@@ -7,8 +7,8 @@
  * @filesource plateformes.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 déc. 2019
- * @version 2019-2.5.4
+ * @date 25 mai 2020
+ * @version 2020-2.6.0
  */
 
 // paiements en ligne
@@ -18,7 +18,7 @@ if (!defined('PLATEFORMEPAIEMENT')) {
 
 // envoi de SMS
 if (!defined('PLATEFORMESMS')) {
-    define('PLATEFORMESMS', 'CleverSms');
+    define('PLATEFORMESMS', 'Esendex');
 }
 
 // envoi de mails en masse

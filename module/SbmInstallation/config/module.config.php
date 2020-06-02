@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 2 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -48,6 +48,13 @@ return [
                         ]
                     ],
                     'edit-clever-sms' => [
+                        'allow' => [
+                            'roles' => [
+                                'admin'
+                            ]
+                        ]
+                    ],
+                    'edit-esendex' => [
                         'allow' => [
                             'roles' => [
                                 'admin'

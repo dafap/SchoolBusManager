@@ -1,0 +1,42 @@
+/**
+ * Feuille de style 
+ *
+ * 
+ * 
+ * @project sbm
+ * @package public/css/tra
+ * @filesource service-sms.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+
+div.sbm-label {
+	display: inline-block;
+	color: #444444;
+	width: 200px;
+}
+
+span.sbm-value {
+	color: black;
+	font-weight: bold;
+}
+
+li.sbm-separator {
+	list-style: none;
+	border-bottom: 1px solid #dddddd;
+}
+
+.to tr, .to th, .to td {
+	border: 1px solid gray;
+	padding: 2px 3px;
+}
+
+table.to {
+	margin-top: 1em;
+	margin-left: 1em;
+	border: 1px solid #dddddd;
+	border-collapse:collapse;
+}

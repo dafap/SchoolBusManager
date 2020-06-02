@@ -1,11 +1,11 @@
 <?php
 /**
- * Paramètres de configuration du module SbmCleverSms
+ * Paramètres de configuration du module SbmEsendex
  *
- * Requêtes basées sur l'API REST de Clever SMS Ligth (v2.1 du 17/08/2015)
+ * Requêtes basées sur l'API
  *
  * @project sbm
- * @package SbmCleverSms/config
+ * @package SbmEsendex/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -13,9 +13,9 @@
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
-use SbmCleverSms\Controller;
-use SbmCleverSms\Form;
-use SbmCleverSms\Model;
+use SbmEsendex\Controller;
+use SbmEsendex\Form;
+use SbmEsendex\Model;
 
 return [
     'acl' => [
@@ -31,24 +31,30 @@ return [
     ],
     'sbm' => [
         'servicesms' => [
-            'name' => 'clever-sms',
-            'api_url' => 'http://webserviceslight.clever.fr/api/',
+            'name' => 'esendex',
+            'api_url' => 'https://api.esendex.com/v1.0/messagedispatcher',
             'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs'),
-            'filename' => 'cleversms_error.log'
+            'filename' => 'esendex_error.log'
         ]
     ],
     'service_manager' => [
         'factories' => [
-            Model\CurlRequest::class => Model\CurlRequestFactory::class
+            Model\ApiSms::class => Model\ApiSmsFactory::class
         ]
     ],
     'db_manager' => [
         'invokables' => [
-            'Sbm\Db\ObjectData\CleverSms' => Model\Db\ObjectData\CleverSms::class
+            'Sbm\Db\ObjectData\EsendexBatch' => Model\Db\ObjectData\EsendexBatch::class,
+            'Sbm\Db\ObjectData\EsendexSms' => Model\Db\ObjectData\EsendexSms::class,
+            'Sbm\Db\ObjectData\EsendexTelephone' => Model\Db\ObjectData\EsendexTelephone::class
         ],
         'factories' => [
-            'Sbm\Db\Table\CleverSms' => Model\Db\Service\Table\CleverSms::class,
-            'Sbm\Db\TableGateway\CleverSms' => Model\Db\Service\TableGateway\TableGatewayCleverSms::class
+            'Sbm\Db\Table\EsendexBatches' => Model\Db\Service\Table\EsendexBatches::class,
+            'Sbm\Db\Table\EsendexSms' => Model\Db\Service\Table\EsendexSms::class,
+            'Sbm\Db\Table\EsendexTelephones' => Model\Db\Service\Table\EsendexTelephones::class,
+            'Sbm\Db\TableGateway\EsendexBatches' => Model\Db\Service\TableGateway\TableGatewayEsendexBatches::class,
+            'Sbm\Db\TableGateway\EsendexSms' => Model\Db\Service\TableGateway\TableGatewayEsendexSms::class,
+            'Sbm\Db\TableGateway\EsendexTelephones' => Model\Db\Service\TableGateway\TableGatewayEsendexTelephones::class
         ]
     ],
     'form_manager' => [
@@ -73,7 +79,7 @@ return [
                         'id' => '[0-9]+'
                     ],
                     'defaults' => [
-                        'module' => 'SbmCleverSms',
+                        'module' => 'SbmEsendex',
                         'controller' => Controller\IndexController::class,
                         'action' => 'index'
                     ]

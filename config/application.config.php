@@ -9,8 +9,8 @@
  * @filesource application.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2019
- * @version 2019-2.5.0
+ * @date 25 mai 2020
+ * @version 2020-2.6.0
  */
 return [
     'modules' => [
@@ -30,7 +30,7 @@ return [
         'SbmCartographie',
         'SbmMailChimp',
         'SbmAjax',
-        'SbmCleverSms'
+        'SbmEsendex'
     ],
     'module_listener_options' => [
         'module_paths' => [

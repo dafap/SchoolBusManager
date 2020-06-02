@@ -1,0 +1,87 @@
+<?php
+/**
+ * Liste des destinataires des SMS envoyés
+ *
+ * @project sbm
+ * @package
+ * @filesource destinataires.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'service-sms.css');
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$datas = $this->paginator->getCurrentItems();
+$url_retour = $this->url('sbmservicesms', [
+    'action' => 'index',
+    'page' => $this->page
+]);
+$url_to = $this->url('sbmservicesms', [
+    'action' => 'to',
+    'page' => $this->page
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$id = 1; // pour le listeLigneActions() du tableau
+?>
+<h1>Liste des destinataires des SMS envoyés</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+		<?=$this->flashMessenger()->render('success');?>
+		<?=$this->flashMessenger()->render('warning');?>
+		<?=$this->flashMessenger()->render('error');?>
+		<?=$this->flashMessenger()->render('info');?>
+		<?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner to">
+			<tbody>
+				<tr>
+					<th>Destinataire</th>
+					<th>Téléphone</th>
+					<th></th>
+				</tr>
+            <?php foreach ($datas as $row) :?>
+            <?php
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                $hiddens = [
+                    'telephone' => $row->telephone
+                ];
+                $buttons = [
+                    'to' => [
+                        'class' => 'fam-application-side-list',
+                        'formaction' => $url_to,
+                        'title' => 'Liste des messages adressés à ce destinataire'
+                    ]
+                ];
+                ?>
+            	<tr>
+					<td class="destinataire"><?=$row->destinataire;?></td>
+					<td class="telephone"><?=$this->telephone($row->telephone);?></td>
+					<td class="boutons">
+						<?=$this->listeLigneActions($id++, $hiddens, $buttons);?></td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+	</div>
+</div>

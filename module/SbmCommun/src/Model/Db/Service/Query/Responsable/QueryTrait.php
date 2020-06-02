@@ -7,7 +7,7 @@
  * @filesource QueryTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
+ * @date 31 mai 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -42,7 +42,7 @@ trait QueryTrait
             $this->joinScolarites()
                 ->where(
                 [
-                    'millesime' => $this->millesime,
+                    'sco.millesime' => $this->millesime,
                     'inscrit' => 1,
                     'res.communeId' => $communeId
                 ]));
@@ -62,7 +62,7 @@ trait QueryTrait
             $this->joinScolarites()
                 ->where(
                 [
-                    'millesime' => $this->millesime,
+                    'sco.millesime' => $this->millesime,
                     'inscrit' => 1,
                     'etablissementId' => $etablissementId
                 ]));
@@ -82,29 +82,9 @@ trait QueryTrait
             $this->joinScolarites()
                 ->where(
                 [
-                    'millesime' => $this->millesime,
+                    'sco.millesime' => $this->millesime,
                     'inscrit' => 1,
                     'classeId' => $classeId
-                ]));
-    }
-
-    /**
-     * Ne prend que les responsables qui ont des enfants scolarisés cette année scolaire,
-     * non rayés
-     *
-     * @param int $grilleTarif
-     *
-     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
-     */
-    public function getResponsablesGrilleTarif($grilleTarif)
-    {
-        return $this->renderResult(
-            $this->joinScolarites()
-                ->where(
-                [
-                    'millesime' => $this->millesime,
-                    'inscrit' => 1,
-                    'grilleTarifR1' => $grilleTarif
                 ]));
     }
 
@@ -122,7 +102,7 @@ trait QueryTrait
             $this->joinScolarites()
                 ->where(
                 [
-                    'millesime' => $this->millesime,
+                    'sco.millesime' => $this->millesime,
                     'inscrit' => 1,
                     'organismeId' => $organismeId
                 ]));
@@ -140,7 +120,7 @@ trait QueryTrait
     public function getResponsablesPointCircuit($circuitKeys)
     {
         $where = new Predicate();
-        $where->equalTo('millesime', $this->millesime)
+        $where->equalTo('aff.millesime', $this->millesime)
             ->equalTo('moment', $circuitKeys['moment'])
             ->nest()
             ->nest()
@@ -171,7 +151,7 @@ trait QueryTrait
     public function getResponsablesService($serviceKeys)
     {
         $where = new Predicate();
-        $where->equalTo('millesime', $this->millesime)
+        $where->equalTo('aff.millesime', $this->millesime)
             ->equalTo('moment', $serviceKeys['moment'])
             ->nest()
             ->nest()
@@ -201,7 +181,7 @@ trait QueryTrait
         return $this->renderResult(
             $this->joinServices()
                 ->where([
-                'millesime' => $this->millesime,
+                'aff.millesime' => $this->millesime,
                 'ligneId' => $ligneId
             ]));
     }
@@ -217,7 +197,7 @@ trait QueryTrait
     public function getResponsableStation($stationId)
     {
         $where = new Predicate();
-        $where->equalTo('millesime', $this->millesime)
+        $where->equalTo('aff.millesime', $this->millesime)
             ->nest()
             ->equalTo('station1Id', $stationId)->or->equalTo('station2Id', $stationId)->unnest();
         return $this->renderResult($this->joinAffectations()
@@ -237,7 +217,7 @@ trait QueryTrait
         return $this->renderResult(
             $this->joinServices()
                 ->where([
-                'millesime' => $this->millesime,
+                'aff.millesime' => $this->millesime,
                 'lotId' => $lotId
             ]));
     }
@@ -256,7 +236,7 @@ trait QueryTrait
             $this->joinServices()
                 ->where(
                 [
-                    'millesime' => $this->millesime,
+                    'aff.millesime' => $this->millesime,
                     'transporteurId' => $transporteurId
                 ]));
     }
@@ -280,6 +260,14 @@ trait QueryTrait
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
             ], 'aff.responsableId = res.responsableId', []);
+    }
+
+    private function joinAffectationsScolarites()
+    {
+        return $this->joinAffectations()->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', []);
     }
 
     private function joinServices()

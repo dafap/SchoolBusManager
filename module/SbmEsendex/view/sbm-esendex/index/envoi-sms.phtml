@@ -1,0 +1,79 @@
+<?php
+/**
+ * Page de saisie d'un SMS
+ *
+ * @project sbm
+ * @package SbmCleverSms/view/sbm-esendex/index
+ * @filesource envoi-sms.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 30 mai 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'envoi-sms.css');
+$this->jQuery();
+//$this->headScript()->appendFile($this->basePath('/js/sms-counter/sms_counter.min.js'));
+$this->themeJS('esendex','envoi-sms.js');
+$this->inlineScript()->captureStart();
+?>
+$('#sms-body').countSms('#sms-counter', 4);
+<?php
+$this->inlineScript()->captureEnd();
+if (empty($this->destinataires)) {
+    $liste = false;
+} else {
+    $liste = count((array) $this->destinataires) > 1;
+}
+$tels = [];
+foreach ($this->telephones as $value) {
+    $tels[] = $this->telephone($value);
+}
+?>
+<h1>Envoi d'un SMS par le service de transport</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+	<?php if ($liste):?>
+	    <p class="description">Voir la liste des destinataires en dessous
+			du formulaire.</p>
+	<?php else :?>
+	    <dl>
+			<dt>Destinataire</dt>
+			<dd><?= current($this->destinataires) . ' (' . implode(' ; ', $tels) . ')';?></dd>
+		</dl>
+	<?php endif;?>
+	</div>
+	<div id="fiche-inner">
+	<?= $this->form()->openTag($this->form);?>
+	<?php //= $this->formHidden($this->form->get('csrf'));?>
+	    <fieldset class="sbm-page1">
+			<div id="body-wrapper">
+			<?=$this->formRow($this->form->get('body'));?>
+			<div id="sms-body-msg">
+					<ul id="sms-counter">
+						<li>Encodage: <span class="encoding"></span></li>
+						<li>Longueur: <span class="length"></span></li>
+						<li>Nombre de crédits: <span class="messages"></span></li>
+						<li>Par unité de crédit: <span class="per_message"></span></li>
+						<li>Nb caractères restants: <span class="remaining"></span></li>
+					</ul>
+				</div>
+			</div>
+			<div>
+				<?= $this->formSubmit($this->form->get('submit'));?>
+				<?= $this->formSubmit($this->form->get('cancel'));?>
+			</div>
+		</fieldset>
+	<?php $this->form()->closeTag();?>
+	</div>
+	<div id="fiche-footer">
+	<?php if ($liste):?>
+	    <h3>Liste des destinataires</h3>
+		<ul>
+	    <?php foreach ($this->destinataires as $key => $to):?>
+	        <li><?= $to . ' (' . $key . ')';?></li>
+	    <?php endforeach;?>
+	    </ul>
+	<?php endif;?>
+	</div>
+</div>

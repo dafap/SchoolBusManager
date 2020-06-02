@@ -1,0 +1,168 @@
+<?php
+/**
+ * Liste des sms envoyés
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendex/index
+ * @filesource index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$datas = $this->paginator->getCurrentItems();
+$url_ici = $this->url('sbmservicesms', [
+    'action' => 'index',
+    'page' => $this->page
+]);
+$url_retour = $this->url('login', [
+    'action' => 'home'
+]);
+$url_account_info = $this->url('sbmservicesms',
+    [
+        'action' => 'account-info',
+        'page' => $this->page
+    ]);
+$url_rapports = $this->url('sbmservicesms',
+    [
+        'action' => 'liste-pdf',
+        'page' => $this->page
+    ]);
+$url_info = $this->url('sbmservicesms',
+    [
+        'action' => 'envoi-info',
+        'page' => $this->page
+    ]);
+$url_bilan = $this->url('sbmservicesms', [
+    'action' => 'bilan',
+    'page' => $this->page
+]);
+$url_delete = $this->url('sbmservicesms', [
+    'action' => 'suppr',
+    'page' => $this->page
+]);
+$url_reponses = $this->url('sbmservicesms',
+    [
+        'action' => 'reponses',
+        'page' => $this->page
+    ]);
+$url_destinataires = $this->url('sbmservicesms',
+    [
+        'action' => 'destinataires',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmservicesms', [
+        'action' => 'index'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'info' => [
+        'class' => 'fam-report-key',
+        'formaction' => $url_account_info,
+        'title' => 'consultation du compte'
+    ],
+    'rapports' => $menuImpression['content']
+];
+?>
+<h1>Liste des SMS envoyés</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?></div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner esendex">
+			<tbody>
+				<tr>
+					<th>Date</th>
+					<th>Nb<br>destinataires
+					</th>
+					<th>Nb<br>envois
+					</th>
+					<th>Texte</th>
+					<th></th>
+				</tr>
+            <?php foreach ($datas as $row) :?>
+            <?php
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                $hiddens = [
+                    'esendexbatchId' => $row->esendexbatchId,
+                    'batchid' => $row->batchid,
+                    'origine' => $url_ici
+                ];
+                $buttons = [
+                    /*
+                     * EN ATTENTE : uniquement pour les envois différés 'info' => [
+                     * 'class' => 'fam-report-magnify', 'formaction' => $url_info, 'title'
+                     * => 'infos sur cet envoi' ],
+                     */
+                    'bilan' => [
+                        'class' => 'fam-report',
+                        'formaction' => $url_bilan,
+                        'title' => 'bilan de cet envoi'
+                    ],
+                    'destinataires' => [
+                        'class' => 'fam-phone',
+                        'formaction' => $url_destinataires,
+                        'title' => 'liste des destinataires'
+                    ],
+                    /*'reponses' => [
+                        'class' => 'fam-basket-put',
+                        'formaction' => $url_reponses,
+                        'title' => 'réponses éventuelles'
+                    ],*/
+                    'services' => [
+                        'class' => 'fam-delete',
+                        'formaction' => $url_delete,
+                        'title' => 'supprimer'
+                    ]
+                ];
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="date">
+						<?=DateLib::formatDateTimeFromMysql($row->date);?></td>
+					<td class="nb-demandes align-right">
+						<?=$row->nb_demandes;?></td>
+					<td class="nb_envois align-right">
+						<?=$row->nb_envois;?></td>
+					<td class="body">
+						<?=$this->escapeHtml(substr($row->body,0,60));?>...</td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($row->esendexbatchId, $hiddens, $buttons);?></td>
+				</tr>
+            <?php endforeach;?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

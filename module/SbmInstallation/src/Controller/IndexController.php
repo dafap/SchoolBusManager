@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2020
+ * @date 2 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmInstallation\Controller;
@@ -825,6 +825,11 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('sbm-installation/index/edit-arrayn2idx.phtml');
     }
 
+    /**
+     * Envoi de SMS : paramères d'accès à l'API du fournisseur de service
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
     public function editCleverSmsAction()
     {
         $prg = $this->prg();
@@ -849,6 +854,41 @@ class IndexController extends AbstractActionController
                 'titrePage' => 'Configuration de l\'API de CleverSMS Light',
                 'theme' => $this->theme->getTheme(),
                 'config_client' => $this->theme->getConfigFile('cleversms.config.php'),
+                'labelButton' => 'Ajouter une ligne ',
+                'fieldsN2' => []
+            ]);
+        return $view->setTemplate('sbm-installation/index/edit-arrayn2idx.phtml');
+    }
+
+    /**
+     * Envoi de SMS : paramères d'accès à l'API du fournisseur de service
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function editEsendexAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        } elseif (array_key_exists('submit', $args)) {
+            $this->theme->setConfigFileN2Idx('esendex.config.php', $args, []);
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        }
+        $view = new ViewModel(
+            [
+                'titrePage' => 'Configuration de l\'API Esendex',
+                'theme' => $this->theme->getTheme(),
+                'config_client' => $this->theme->getConfigFile('esendex.config.php'),
                 'labelButton' => 'Ajouter une ligne ',
                 'fieldsN2' => []
             ]);

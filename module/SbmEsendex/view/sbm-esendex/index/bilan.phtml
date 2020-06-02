@@ -1,0 +1,42 @@
+<?php
+/**
+ * Bilan d'un lot d'envoi de SMS par Esendex
+ *
+ * @project sbm
+ * @package SbmEsendex/view/sbm-esendex/index
+ * @filesource bilan.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('esendex', 'service-sms.css');
+$hiddens = [];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out'
+    ]
+];
+?>
+<h1>Bilan d'un lot de messages envoyés</h1>
+<div id='service-sms-wrapper'>
+	<div id='service-sms-header'>
+		<div class="menu clearfix"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+	</div>
+	<div id="service-sms-inner">
+	<?php foreach ($this->data as $array):?>
+	    <?php
+    if ($array instanceof \SbmEsendex\Model\MessagesBatch) {
+        $array = $array->toArray();
+    }
+    ?>
+		<ul>
+		<?php foreach ($array as $label => $value):?>
+		    <li class="sbm-separator"><div class="sbm-label"><?=$label;?></div>
+				<span class="sbm-value"><?=$value;?></span></li>
+		<?php endforeach;?>
+		</ul>
+	<?php endforeach;?>
+	</div>
+</div>
