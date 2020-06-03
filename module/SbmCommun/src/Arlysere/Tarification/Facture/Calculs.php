@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 3 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -19,11 +19,12 @@ use SbmCommun\Model\Db\Sql\Predicate;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Literal;
-//use SbmBase\Model\StdLib;
 
+// use SbmBase\Model\StdLib;
 class Calculs extends AbstractQuery
 {
-//use \SbmCommun\Model\Traits\DebugTrait;
+
+    // use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      *
@@ -36,6 +37,12 @@ class Calculs extends AbstractQuery
      * @var int
      */
     private $responsableId;
+
+    /**
+     *
+     * @var bool
+     */
+    private $is_responsable;
 
     /**
      *
@@ -64,6 +71,7 @@ class Calculs extends AbstractQuery
     {
         if ($this->responsableId != $responsableId || $force || $this->resultats->isEmpty()) {
             $this->responsableId = $responsableId;
+            $this->is_responsable = $this->isResponsable();
             $this->arrayEleveId = $arrayEleveId ?: [
                 - 1
             ]; // pour compatibilité avec la clause IN
@@ -175,15 +183,15 @@ class Calculs extends AbstractQuery
      */
     private function analyseListeEleves()
     {
-        //$this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'analyse-liste.log');
+        // $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'),
+        // 'analyse-liste.log');
         for ($r = 1; $r <= 2; $r ++) {
             $where = new Where();
             $where->in('ele.eleveId', $this->arrayEleveId)->equalTo(
                 'responsable' . $r . 'Id', $this->responsableId);
             $select = $this->selectAbonnementsEleves($r, $where);
-            //$this->debugLog($this->getSqlString($select));
-            $this->getAbonnementsFratrie($r, 'liste',
-                $select);
+            // $this->debugLog($this->getSqlString($select));
+            $this->getAbonnementsFratrie($r, 'liste', $select);
         }
     }
 
@@ -218,7 +226,7 @@ class Calculs extends AbstractQuery
         \Zend\Db\Sql\Select $select): void
     {
         $abonnementsFratrie = $this->db_manager->get('Sbm\AbonnementsFratrie');
-        $abonnementsFratrie->resetEleves();
+        $abonnementsFratrie->resetEleves()->setDegressif($this->is_responsable);
         foreach ($this->renderResult($select) as $obj) {
             $abonnementsFratrie->addEleve($obj->getArrayCopy());
         }
@@ -327,5 +335,29 @@ class Calculs extends AbstractQuery
         $this->resultats->setPaiementsDetail(
             $tPaiements->fetchAll($where, 'datePaiement DESC')
                 ->toArray());
+    }
+
+    /**
+     * Indique si le responsableId de l'objet est un responsable. Sinon cela peut être un
+     * organisme, un gestionnaire, un administrateur, le sadmin ...
+     *
+     * @return bool
+     */
+    private function isResponsable(): bool
+    {
+        $select = $this->sql->select(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->join([
+            'usr' => $this->db_manager->getCanonicName('users', 'table')
+        ], 'usr.email=res.email', [])
+            ->columns([
+            'isResponsable' => new Literal('count(*) = 0')
+        ])
+            ->where(
+            (new Where())->literal('usr.categorieId <> 1')
+                ->equalTo('res.responsableId', $this->responsableId));
+        return $this->renderResult($select)->current()['isResponsable'] == 1;
     }
 }

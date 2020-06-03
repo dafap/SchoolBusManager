@@ -20,7 +20,7 @@
  * @filesource AbonnementsFratrie.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
+ * @date 3 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -75,6 +75,14 @@ class AbonnementsFratrie implements FactoryInterface
      */
     private $abonnements;
 
+    /**
+     * Infique si on doit appliquer un montant degressif. Sinon on applique le montant de
+     * seuil le plus bas.
+     *
+     * @var bool
+     */
+    private $degressif;
+
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         if (! ($serviceLocator instanceof DbManager)) {
@@ -86,6 +94,13 @@ class AbonnementsFratrie implements FactoryInterface
         $this->abonnements = [];
         $this->setMillesime();
         $this->setTarifs();
+        $this->setDegressif(true); // par défaut pour les responsables
+        return $this;
+    }
+
+    public function setDegressif(bool $degressif)
+    {
+        $this->degressif = $degressif;
         return $this;
     }
 
@@ -181,9 +196,11 @@ class AbonnementsFratrie implements FactoryInterface
             $array[] = new Abonnement($row['grille'], $row['reduit'],
                 $this->getTarifs($row['grille'], $row['reduit']), $row['eleveId']);
         }
-        sort($array);
-        for ($i = 0; $i < count($array); $i ++) {
-            $array[$i]->appliquerMontant($i + 1);
+        if ($this->degressif) {
+            sort($array);
+            for ($i = 0; $i < count($array); $i ++) {
+                $array[$i]->appliquerMontant($i + 1);
+            }
         }
         $this->abonnements = $array;
         return $this;
