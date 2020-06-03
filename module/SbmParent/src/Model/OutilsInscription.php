@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mai 2020
+ * @date 3 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Model;
@@ -50,6 +50,13 @@ class OutilsInscription
      * @var int
      */
     private $responsableId;
+
+    /**
+     * Identifiant de l'organisme si le responsable est de cette catégorie
+     *
+     * @var int
+     */
+    private $organismeId;
 
     /**
      *
@@ -103,6 +110,7 @@ class OutilsInscription
         $this->local_manager = $local_manager;
         $this->responsableId = $responsableId;
         $this->userId = $userId;
+        $this->organismeId = 0;
         $this->eleveId = $eleveId;
         $this->cr = [];
         $this->messages = [];
@@ -112,6 +120,13 @@ class OutilsInscription
             'responsable1' => null,
             'responsable2' => null
         ];
+    }
+
+    public function findOrganismeId()
+    {
+        $tUsersOrganismes = $this->local_manager->get('Sbm\DbManager')->get(
+            'Sbm\Db\Table\UsersOrganismes');
+        $this->organismeId = $tUsersOrganismes->getOrganismeId($this->userId);
     }
 
     /**
@@ -259,7 +274,8 @@ class OutilsInscription
                 'millesime' => $this->millesime,
                 'eleveId' => $this->eleveId,
                 'accordR1' => 1,
-                'accordR2' => 1
+                'accordR2' => 1,
+                'organismeId' => $this->organismeId
             ];
         } else {
             $array = [
@@ -275,8 +291,12 @@ class OutilsInscription
                 'subventionR1' => 0,
                 'subventionR2' => 0,
                 'accordR1' => 1,
-                'accordR2' => 1
+                'accordR2' => 1,
+                'organismeId' => $this->organismeId
             ];
+        }
+        if ($this->organismeId) {
+            $array['gratuit'] = 2;
         }
         $oData->exchangeArray(array_merge($data, $array));
         $this->cr['saveScolarite'] = $tScolarites->saveRecord($oData);

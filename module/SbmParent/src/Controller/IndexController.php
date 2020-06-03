@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2020
+ * @date 3 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -221,6 +221,17 @@ class IndexController extends AbstractActionController
             // prénom, dateN et responsable 1 (ou 2).
             // formga->isValid() n'est regardé que si hasGa.
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
+                if ($categorieId > 1 && $categorieId < 100) {
+                    try {
+                        $outils->findOrganismeId(); // c'est un organisme
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
+                        return $this->redirect()->toRoute('login', [
+                            'action' => 'logout'
+                        ]);
+                    }
+                }
                 // Enregistrement du responsable2 en premier (si on a le droit)
                 if ($hasGa) {
                     $responsable2Id = $outils->saveResponsable($formga->getData());
@@ -395,6 +406,17 @@ class IndexController extends AbstractActionController
              * hasGa.
              */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
+                if ($categorieId > 1 && $categorieId < 100) {
+                    try {
+                        $outils->findOrganismeId(); // c'est un organisme
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
+                        return $this->redirect()->toRoute('login', [
+                            'action' => 'logout'
+                        ]);
+                    }
+                }
                 // Enregistrement du responsable2 en premier (si on a le droit)
                 if ($hasGa) {
                     if ($owner) {
@@ -787,6 +809,17 @@ class IndexController extends AbstractActionController
                  * hasGa.
                  */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
+                    if ($categorieId > 1 && $categorieId < 100) {
+                        try {
+                            $outils->findOrganismeId(); // c'est un organisme
+                        } catch (\Exception $e) {
+                            $this->flashMessenger()->addErrorMessage(
+                                'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
+                            return $this->redirect()->toRoute('login', [
+                                'action' => 'logout'
+                            ]);
+                        }
+                    }
                     // Enregistrement du responsable2 en premier (si on a le droit)
                     if ($hasGa) {
                         if ($owner) {
