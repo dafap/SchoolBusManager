@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2020
+ * @date 4 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
@@ -2327,6 +2327,9 @@ class Tcpdf extends \TCPDF
     {
         if ($force || empty($this->data)) {
             // prépare les filtres pour le décodage des données (notamment booléennes)
+            $sans_photo = StdLib::concatPath(
+                SBM_BASE_PATH . $this->getConfig('document', 'url_path_images'),
+                $this->getConfig('document', 'image_blank', K_BLANK_IMAGE));
             $this->prepareFilters($descripteur);
             $this->data = [];
             if ($this->getRecordSourceType() == 'T') {
@@ -2347,6 +2350,8 @@ class Tcpdf extends \TCPDF
                                     if ($value) {
                                         $photosRow[$column['sublabel']][$rang] = '@' .
                                             stripslashes($value);
+                                    } else {
+                                        $photosRow[$column['sublabel']][$rang] = $sans_photo;
                                     }
                                     break;
                                 case 1:
@@ -2455,6 +2460,8 @@ class Tcpdf extends \TCPDF
                                                 if ($value) {
                                                     $photosRow[$idx][] = '@' .
                                                         stripslashes($value);
+                                                } else {
+                                                    $photosRow[$idx][] = $sans_photo;
                                                 }
                                                 break;
                                             case 1:
@@ -2657,6 +2664,10 @@ class Tcpdf extends \TCPDF
                 foreach (StdLib::getParam($idx, $photos, []) as $rang => $img) {
                     list ($x, $y, $w, $h, $type, $align, $resize) = array_values(
                         $label->parametresPhoto($rang));
+                    if ($img[0] != '@') {
+                        // c'est une image vide. Prendre son extension comme type
+                        $type = \TCPDF_IMAGES::getImageFileType($img);
+                    }
                     unset($resize); // TODO : ce paramètre n'est pas utilisé
                     $x += $origine[0];
                     $y += $origine[1];

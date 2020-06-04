@@ -8,7 +8,7 @@
  * @filesource system.docfields.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2020
+ * @date 4 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -88,8 +88,8 @@ return [
             'height' => 'float NOT NULL DEFAULT "7"', // hauteur des cellules d'écriture
                                                        // du field
                                                        // et du label
-            'photo_x' => 'int(11) NULL DEFAULT NULL',
-            'photo_y' => 'int(11) NULL DEFAULT NULL',
+            'photo_x' => 'int(11) NOT NULL DEFAULT "0"',
+            'photo_y' => 'int(11) NOT NULL DEFAULT "0"',
             'photo_w' => 'int(11) NOT NULL DEFAULT "0"',
             'photo_h' => 'int(11) NOT NULL DEFAULT "0"',
             'photo_type' => 'varchar(4) NOT NULL DEFAULT "JPEG"',
