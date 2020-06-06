@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 juin 2020
+ * @date 6 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
@@ -2400,7 +2400,8 @@ class Tcpdf extends \TCPDF
                             'not empty' => []
                         ]);
                     $expressions = $this->getParam('expression', []);
-                    if (! empty($criteres) || ! empty($expressions)) {
+                    $orderBy = $this->getOrderBy();
+                    if (! empty($criteres) || ! empty($expressions) || ! empty($orderBy)) {
                         $where = [];
                         foreach ($criteres as $key => $value) {
                             if (array_key_exists($key, $expressions))
@@ -2424,7 +2425,6 @@ class Tcpdf extends \TCPDF
                         foreach ($expressions as $expression) {
                             $where[] = $expression;
                         }
-                        $orderBy = $this->getOrderBy();
                         if (is_array($orderBy)) {
                             $orderBy = implode(', ', $orderBy);
                         }
