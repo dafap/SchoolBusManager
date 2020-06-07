@@ -3,14 +3,14 @@
  * Requêtes sur la table responsables pour ce module
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Model/Db/Service/Responsable
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2018
- * @version 2019-2.5.0
+ * @date 7 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAdmin\Model\Db\Service\Responsable;
 
@@ -25,18 +25,13 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Responsables implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     protected $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
 
     /**
      *
@@ -51,18 +46,6 @@ class Responsables implements FactoryInterface
     protected $sql;
 
     /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select            
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
-
-    /**
      * (non-PHPdoc)
      *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
@@ -75,29 +58,35 @@ class Responsables implements FactoryInterface
         }
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
     }
 
     public function getResponsablesSansCompte()
     {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectResponsablesSansCompte());
+        return $statement->execute();
+    }
+
+    protected function selectResponsablesSansCompte()
+    {
         $where = new Where();
         $where->isNull('u.userId')->isNotNull('r.email');
-        $select = $this->sql->select([
-            'r' => $this->db_manager->getCanonicName('responsables', 'table')
-        ])
-            ->columns([
-            'titre' => 'titre',
-            'nom' => 'nom',
-            'prenom' => 'prenom',
-            'email' => 'email'
-        ])
+        return $this->sql->select(
+            [
+                'r' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns(
+            [
+                'titre' => 'titre',
+                'nom' => 'nom',
+                'prenom' => 'prenom',
+                'email' => 'email'
+            ])
             ->join([
             'u' => $this->db_manager->getCanonicName('users', 'table')
         ], 'u.email = r.email', [], Select::JOIN_LEFT)
             ->where($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
     }
 }

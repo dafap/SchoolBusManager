@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 10 mai 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 use SbmGestion\Controller;
@@ -82,6 +82,7 @@ return [
             'Sbm\Db\Eleve\EffectifServices' => SbmGestionDbService\Eleve\EffectifServices::class,
             'Sbm\Db\Eleve\EffectifServicesEtablissements' => SbmGestionDbService\Eleve\EffectifServicesEtablissements::class,
             'Sbm\Db\Eleve\EffectifStations' => SbmGestionDbService\Eleve\EffectifStations::class,
+            'Sbm\Db\Eleve\EffectifStationsOrigine' => SbmGestionDbService\Eleve\EffectifStationsOrigine::class,
             'Sbm\Db\Eleve\EffectifStationsServices' => SbmGestionDbService\Eleve\EffectifStationsServices::class,
             'Sbm\Db\Eleve\EffectifTarifs' => SbmGestionDbService\Eleve\EffectifTarifs::class,
             'Sbm\Db\Eleve\EffectifTransporteurs' => SbmGestionDbService\Eleve\EffectifTransporteurs::class,

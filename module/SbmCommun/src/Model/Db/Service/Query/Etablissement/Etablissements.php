@@ -8,8 +8,8 @@
  * @filesource Etablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
- * @version 2019-2.5.0
+ * @date 5 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
@@ -35,7 +35,7 @@ class Etablissements extends AbstractQuery
         return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
-    private function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order = null)
     {
         $select = clone $this->sql->select();
         $select->from(

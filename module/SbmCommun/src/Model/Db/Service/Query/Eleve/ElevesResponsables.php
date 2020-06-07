@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 juin 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -108,7 +108,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->paginator($this->selectR2($where, $order));
     }
 
-    private function selectR2(Where $where, $order = null)
+    protected function selectR2(Where $where, $order = null)
     {
         $select = clone $this->select;
         $select->join(
@@ -162,10 +162,10 @@ class ElevesResponsables extends AbstractQuery
 
     public function paginatorScolaritesR2(Where $where, $order = null, $millesime = null)
     {
-        return $this->paginator($this->selectScolaritesR2($where, $order));
+        return $this->paginator($this->selectScolaritesR2($where, $order, $millesime));
     }
 
-    private function selectScolaritesR2(Where $where, $order = null, $millesime = null)
+    protected function selectScolaritesR2(Where $where, $order = null, $millesime = null)
     {
         if (is_null($millesime)) {
             $millesime = $this->millesime;
@@ -346,7 +346,8 @@ class ElevesResponsables extends AbstractQuery
     public function paginatorScolaritesEleveGroup(Where $where, $order = null,
         $millesime = null)
     {
-        return $this->paginator($this->selectScolaritesEleveGroup($where, $order));
+        return $this->paginator(
+            $this->selectScolaritesEleveGroup($where, $order, $millesime));
     }
 
     /**
@@ -357,7 +358,7 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesEleveGroup(Where $where, $order = null,
+    protected function selectScolaritesEleveGroup(Where $where, $order = null,
         $millesime = null)
     {
         // table de recherche du plus grand millesime pour chaque élève
@@ -524,7 +525,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
-    private function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('millesime', $this->millesime);
         $sql = new Sql($this->db_manager->getDbAdapter());
@@ -618,9 +619,10 @@ class ElevesResponsables extends AbstractQuery
         ], 'ori1.stationId=sco.stationIdR1', [
             'station_origineR1' => 'nom'
         ])
-            ->join([
-            'comori1' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'ori1.communeId=comori1.communeId',
+            ->join(
+            [
+                'comori1' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'ori1.communeId=comori1.communeId',
             [
                 'commune_origineR1' => 'nom',
                 'lacommune_origineR1' => 'alias',

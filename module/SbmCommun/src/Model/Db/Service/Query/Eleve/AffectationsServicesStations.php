@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -326,7 +326,7 @@ class AffectationsServicesStations extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('aff.millesime', $this->millesime);
         $select = clone $this->select;
@@ -539,7 +539,7 @@ class AffectationsServicesStations extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesR($where, $order = null)
+    protected function selectScolaritesR($where, $order = null)
     {
         $select = clone $this->select;
         $columns = $select->getRawState(Select::COLUMNS);
@@ -737,7 +737,7 @@ class AffectationsServicesStations extends AbstractQuery
         return $this->paginator($this->selectTelephonesPortables($where));
     }
 
-    private function selectTelephonesPortables(Where $where)
+    protected function selectTelephonesPortables(Where $where)
     {
         $selectBase = clone $this->select;
         $selectBase->join(
@@ -889,7 +889,7 @@ class AffectationsServicesStations extends AbstractQuery
      * @param int $eleveId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectHoraires(int $eleveId)
+    protected function selectHoraires(int $eleveId)
     {
         $where = new Where();
         $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.eleveId',
@@ -956,7 +956,7 @@ class AffectationsServicesStations extends AbstractQuery
      * @param int $eleveId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectLignes(int $eleveId)
+    protected function selectLignes(int $eleveId)
     {
         $where = new Where();
         $where->equalTo('aff.millesime', $this->millesime)->equalTo('aff.eleveId',

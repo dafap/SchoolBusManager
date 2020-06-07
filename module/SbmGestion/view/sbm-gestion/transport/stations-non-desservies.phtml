@@ -66,14 +66,15 @@ $stations = $this->paginator->getCurrentItems();
 					<th>Nom</th>
 					<th>Visible</th>
 					<th>Ouverte</th>
-					<th>Inscrits</th>
+					<th title="Nombre d'élèves transportés / Nombre de demandes">Inscrits</th>
 				</tr>
             <?php
 
             foreach ($stations as $station) :
                 ?>
             	<?php
-                $nbInscrits = $this->effectifStations->transportes($station['stationId']);
+                $nbInscrits = $this->effectifStations->demandes($station['stationId']);
+                $nbTransportes = $this->effectifStations->transportes($station['stationId']);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -132,7 +133,7 @@ $stations = $this->paginator->getCurrentItems();
 					<td class="ouverte">
 						<?=$station['ouverte'] ? 'Oui' : 'Non';?></td>
 					<td class="nbinscrits">
-						<?=$nbInscrits;?></td>
+						<?=$nbTransportes;?> / <?=$nbInscrits;?></td>
 					<td class="boutons">
                 		<?=$this->listeLigneActions($station['stationId'], $hiddens, $buttons);?>
 			        </td>

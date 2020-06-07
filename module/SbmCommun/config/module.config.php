@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 4 juin 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Arlysere;
@@ -228,6 +228,7 @@ return [
             'Sbm\Db\Query\ElevesDivers' => SbmCommun\Model\Db\Service\Query\Eleve\Divers::class,
             'Sbm\Db\Query\AffectationsServicesStations' => Query\Eleve\AffectationsServicesStations::class,
             'Sbm\Db\Query\Responsables' => Query\Responsable\Responsables::class,
+            'Sbm\Db\Query\Responsable\Attributs'=>Query\Responsable\Attributs::class,
             'Sbm\Db\Query\Responsable\Montants' => Query\Responsable\CalculMontant::class,
             'Sbm\Db\Query\Responsable\Emails' => Query\Responsable\Emails::class,
             'Sbm\Db\Query\Responsable\Telephones' => Query\Responsable\Telephones::class,

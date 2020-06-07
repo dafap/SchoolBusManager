@@ -10,7 +10,7 @@
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -40,15 +40,15 @@ class Divers extends AbstractQuery
      */
     public function paginatorScolaritesR($where, $order = null, $millesime = null)
     {
-        return $this->paginator($this->selectScolaritesR($where, $order));
+        return $this->paginator($this->selectScolaritesR($where, $order, $millesime));
     }
 
     public function getScolaritesR($where, $order = null, $millesime = null)
     {
-        return $this->renderResult($this->selectScolaritesR($where, $order));
+        return $this->renderResult($this->selectScolaritesR($where, $order, $millesime));
     }
 
-    private function selectScolaritesR($where, $order = null, $millesime = null)
+    protected function selectScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->sql->select(
             [

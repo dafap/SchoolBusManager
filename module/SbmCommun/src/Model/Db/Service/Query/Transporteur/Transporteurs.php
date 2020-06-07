@@ -9,7 +9,7 @@
  * @filesource Transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
+ * @date 5 juin 2019
  * @version 2019-2.5.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Transporteur;
@@ -38,7 +38,7 @@ class Transporteurs extends AbstractQuery
         return $this->renderResult($this->selectUserEmails($transporteurId, $order));
     }
 
-    private function selectUserEmails($transporteurId, $order)
+    protected function selectUserEmails($transporteurId, $order)
     {
         $select = $this->sql->select(
             [

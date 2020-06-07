@@ -7,7 +7,7 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
@@ -48,6 +48,15 @@ class Circuits extends AbstractQuery
      */
     public function getHoraires($circuitIdOuArrayLigneIdSensMomentOrdreStationId)
     {
+        return current(
+            iterator_to_array(
+                $this->renderResult(
+                    $this->selectHoraires(
+                        $circuitIdOuArrayLigneIdSensMomentOrdreStationId))));
+    }
+
+    protected function selectHoraires($circuitIdOuArrayLigneIdSensMomentOrdreStationId)
+    {
         /*
          * SELECT semaine, horaireA, horaireD FROM sbm_t_circuits AS cir WHERE
          * cir.circuitId = $circuitId
@@ -61,7 +70,7 @@ class Circuits extends AbstractQuery
                 'millesime' => $this->millesime
             ], $circuitIdOuArrayLigneIdSensMomentOrdreStationId);
         }
-        $select = $this->sql->select(
+        return $this->sql->select(
             [
                 'cir' => $this->db_manager->getCanonicName('circuits')
             ])
@@ -71,7 +80,6 @@ class Circuits extends AbstractQuery
             'horaireD'
         ])
             ->where($conditions);
-        return current(iterator_to_array($this->renderResult($select)));
     }
 
     /**
@@ -84,6 +92,17 @@ class Circuits extends AbstractQuery
      * @return array
      */
     public function complet(string $serviceId, $callback = null)
+    {
+        $result = iterator_to_array($this->renderResult($this->selectComplet($serviceId)));
+        if (is_callable($callback)) {
+            foreach ($result as &$arret) {
+                $arret = $callback($arret);
+            }
+        }
+        return $result;
+    }
+
+    protected function selectComplet(string $serviceId)
     {
         $service = $this->decodeServiceId($serviceId);
 
@@ -110,8 +129,8 @@ class Circuits extends AbstractQuery
             'commentaire1',
             'commentaire2'
         ];
-        $select = $this->sql->select();
-        $select->from([
+        return $this->sql->select()
+            ->from([
             'cir' => $this->db_manager->getCanonicName('circuits')
         ])
             ->join([
@@ -132,13 +151,6 @@ class Circuits extends AbstractQuery
             ->columns($columns)
             ->where($where)
             ->order($order);
-        $result = iterator_to_array($this->renderResult($select));
-        if (is_callable($callback)) {
-            foreach ($result as &$arret) {
-                $arret = $callback($arret);
-            }
-        }
-        return $result;
     }
 
     /**
@@ -157,7 +169,7 @@ class Circuits extends AbstractQuery
      * @param string $communeId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectServicesViaCommune(string $communeId)
+    protected function selectServicesViaCommune(string $communeId)
     {
         $where = new Where();
         $where->equalTo('cir.millesime', $this->millesime)->equalTo('sta.communeId',

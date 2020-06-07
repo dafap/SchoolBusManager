@@ -7,7 +7,7 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service;
@@ -17,22 +17,23 @@ use Zend\Db\Sql\Where;
 
 abstract class AbstractQuery
 {
+    use \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
-     * Transforme un tableau $filtre en Where
-     * Le tableau $filtre est composé des structures suivantes :<ul> <li>$key => $value
-     * qui sera traduit en equalTo($key, $value)</li> <li>'or' qui sera traduit en OR</li>
-     * <li>'and' qui sera traduit en AND</li> <li>'<' => [left, right, [leftType,
-     * rightType]) qui sera traduit en lessThan</li> <li>'>' => [left, right, [leftType,
-     * rightType]) qui sera traduit en greaterThan</li> <li>'=' => [left, right,
-     * [leftType, rightType]) qui sera traduit en equalTo</li> <li>'<=' => [left, right,
-     * [leftType, rightType]) qui sera traduit en lessThanOrEqualTo</li> <li>'>=' =>
-     * [left, right, [leftType, rightType]) qui sera traduit en greaterThanOrEqualTo</li>
-     * <li>'<>' => [left, right, [leftType, rightType]) qui sera traduit en
-     * notEqualTo</li> <li>'sauf' => $sous_filtre qui sera traduit en NOT predicate où
-     * predicate est la transformation du $sous_filtre. On peut remplacer 'sauf' par 'not'
-     * ou 'pas'</li> <li>$sous_filtre qui sera traduit en nest()->predicate->unnest() où
-     * predicate est la transformation du $sous_filtre</li></ul>
+     * Transforme un tableau $filtre en Where Le tableau $filtre est composé des
+     * structures suivantes :<ul> <li>$key => $value qui sera traduit en equalTo($key,
+     * $value)</li> <li>'or' qui sera traduit en OR</li> <li>'and' qui sera traduit en
+     * AND</li> <li>'<' => [left, right, [leftType, rightType]) qui sera traduit en
+     * lessThan</li> <li>'>' => [left, right, [leftType, rightType]) qui sera traduit en
+     * greaterThan</li> <li>'=' => [left, right, [leftType, rightType]) qui sera traduit
+     * en equalTo</li> <li>'<=' => [left, right, [leftType, rightType]) qui sera traduit
+     * en lessThanOrEqualTo</li> <li>'>=' => [left, right, [leftType, rightType]) qui sera
+     * traduit en greaterThanOrEqualTo</li> <li>'<>' => [left, right, [leftType,
+     * rightType]) qui sera traduit en notEqualTo</li> <li>'sauf' => $sous_filtre qui sera
+     * traduit en NOT predicate où predicate est la transformation du $sous_filtre. On
+     * peut remplacer 'sauf' par 'not' ou 'pas'</li> <li>$sous_filtre qui sera traduit en
+     * nest()->predicate->unnest() où predicate est la transformation du
+     * $sous_filtre</li></ul>
      *
      * @param Where $where
      * @param array $filtre

@@ -8,8 +8,8 @@
  * @filesource SecteursScolairesClgPu.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
- * @version 2019-2.5.0
+ * @date 5 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
@@ -46,7 +46,7 @@ class SecteursScolairesClgPu extends AbstractQuery
         return $this->paginator($this->selectSS($where, $order));
     }
 
-    private function selectSS($filtre, $order = [])
+    protected function selectSS($filtre, $order = [])
     {
         $where = new Where();
         $where->literal('eta.niveau = 4')->literal('eta.statut = 1');

@@ -4044,7 +4044,7 @@ class TransportController extends AbstractActionController
             return $prg;
         }
 
-        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStations');
+        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStationsOrigine');
         $effectifStations->init();
         return new ViewModel(
             [

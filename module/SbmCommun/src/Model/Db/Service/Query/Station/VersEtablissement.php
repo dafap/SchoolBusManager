@@ -7,7 +7,7 @@
  * @filesource VersEtablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
@@ -31,7 +31,7 @@ class VersEtablissement extends AbstractQuery
      * @param string $etablissementId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectStationsVers(string $etablissementId): Select
+    protected function selectStationsVers(string $etablissementId): Select
     {
         return $this->sql->select()
             ->from([
@@ -112,6 +112,13 @@ class VersEtablissement extends AbstractQuery
             throw new \sbmCommun\Model\Db\Exception\OutOfBoundsException(
                 "Coordonnées incorrectes : $message");
         }
+        return $this->renderResult(
+            $this->selectStationsProches($pointDomicile, $etablissementId, $limit));
+    }
+
+    protected function selectStationsProches(Point $pointDomicile, string $etablissementId,
+        int $limit)
+    {
         // calcul arrondi par excès à 5m près
         $sqlExpressionDistance = sprintf('ceil(sqrt(pow(x - %f, 2)+pow(y - %f, 2))/5)*5',
             $pointDomicile->getX(), $pointDomicile->getY());
@@ -139,11 +146,11 @@ class VersEtablissement extends AbstractQuery
         return $this->renderResult($this->selectStationsJumelles($stationId));
     }
 
-    private function selectStationsJumelles(int $station1Id)
+    protected function selectStationsJumelles(int $station1Id)
     {
         $where = new Where(null, Where::COMBINED_BY_OR);
         $where->equalTo('station1Id', $station1Id)->equalTo('station2Id', $station1Id);
-        $select = $this->sql->select()
+        return $this->sql->select()
             ->columns([
             'station1Id',
             'station2Id',
@@ -189,7 +196,5 @@ class VersEtablissement extends AbstractQuery
             'com2.nom',
             'sta2.nom'
         ]);
-        //die($this->getSqlString($select));
-        return $select;
     }
 }

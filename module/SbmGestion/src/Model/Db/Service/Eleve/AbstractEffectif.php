@@ -9,7 +9,7 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -24,12 +24,13 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 abstract class AbstractEffectif extends AbstractQuery implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $dbAdapter;
+    protected $db_manager;
 
     /**
      *
@@ -65,8 +66,8 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
             throw new Exception\ExceptionNoDbManager(
                 sprintf($message, gettype($db_manager)));
         }
+        $this->db_manager = $db_manager;
         $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $db_manager->getDbAdapter();
         $this->sql = new Sql($db_manager->getDbAdapter());
         foreach ([
             'affectations',
@@ -83,18 +84,6 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 'table');
         }
         return $this;
-    }
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
     protected function getFiltreDemandes(bool $sanspreinscrits)

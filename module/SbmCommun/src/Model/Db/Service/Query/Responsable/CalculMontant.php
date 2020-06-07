@@ -7,7 +7,7 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mars 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -59,10 +59,11 @@ class CalculMontant extends AbstractQuery
             $detailAbonnements = [];
             $montantAbonnements = 0;
             foreach ($effectifsParGrilleTarif as $row) {
-                $montantGrille = $tTarifs->getMontant($row['grilleCodeR1'], $row['quantite'], $this->millesime);
+                $montantGrille = $tTarifs->getMontant($row['grilleCodeR1'],
+                    $row['quantite'], $this->millesime);
                 $detailAbonnements[$row['grilleCodeR1']] = [
                     'grille' => $row['grilleTarifR1'],
-                    'reduction'=>$row['reductionR1'],
+                    'reduction' => $row['reductionR1'],
                     'quantite' => $row['quantite'],
                     'montant' => $montantGrille
                 ];
@@ -85,7 +86,7 @@ class CalculMontant extends AbstractQuery
      *            tableau d'identifiants d'élèves
      * @return \Zend\Db\Sql\Select
      */
-    private function selectEffectifsParGrilleTarif(int $responsableId, $aEleveid)
+    protected function selectEffectifsParGrilleTarif(int $responsableId, $aEleveid)
     {
         if (is_null($aEleveid)) {
             $where = new Where(null, Where::COMBINED_BY_OR);
@@ -161,7 +162,7 @@ class CalculMontant extends AbstractQuery
      * @param int $responsableId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectDuplicatasParEleve(int $responsableId)
+    protected function selectDuplicatasParEleve(int $responsableId)
     {
         $where = new Where(null, Where::COMBINED_BY_OR);
         $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',

@@ -3,11 +3,11 @@
  * Reqêtes nécessaires au portail des communes
  *
  * @project sbm
- * @package
+ * @package SbmPortail/src/Model/Db/Service/Query
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\Service\Query;
@@ -54,7 +54,7 @@ class Commune extends AbstractQuery
         return $this->paginator($this->selectLignes($where, $order));
     }
 
-    private function selectLignes(Where $where = null, array $order = [])
+    protected function selectLignes(Where $where = null, array $order = [])
     {
         if (is_null($where)) {
             $where = new Where();
@@ -109,7 +109,7 @@ class Commune extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectStations()
+    protected function selectStations()
     {
         return $this->sql->select()
             ->columns([
@@ -156,7 +156,7 @@ class Commune extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectEtablissements()
+    protected function selectEtablissements()
     {
         return $this->sql->select()
             ->columns([])

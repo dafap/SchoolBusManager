@@ -9,8 +9,8 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2019
- * @version 2019-2.5.0
+ * @date 5 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
@@ -77,7 +77,7 @@ class History extends AbstractQuery
      * @param int $paiementId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectPaiementsChanges(int $exercice, int $paiementId = null)
+    protected function selectPaiementsChanges(int $exercice, int $paiementId = null)
     {
         // sous requête 'les delete'
         $where1 = new Where();

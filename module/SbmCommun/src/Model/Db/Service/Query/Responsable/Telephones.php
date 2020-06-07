@@ -7,7 +7,7 @@
  * @filesource Telephones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -62,6 +62,11 @@ class Telephones extends AbstractQuery
      */
     public function getResponsablesGrilleTarif($keysgrille)
     {
+        return $this->renderResult($this->selectResponsablesGrilleTarif($keysgrille));
+    }
+
+    protected function selectResponsablesGrilleTarif($keysgrille)
+    {
         $on = new \Zend\Db\Sql\Expression(
             "IF(sco.demandeR2>0 AND sco.grilleTarifR2 = ?, res.responsableId=ele.responsable2Id,res.responsableId=ele.responsable1Id)",
             $keysgrille['grilleTarif']);
@@ -77,7 +82,7 @@ class Telephones extends AbstractQuery
             ->equalTo('sco.grilleTarifR2', $keysgrille['grilleTarif'])
             ->equalTo('sco.reductionR2', $keysgrille['reduit'])
             ->unnest();
-        $select = $this->sql->select()
+        return $this->sql->select()
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns([])
             ->from([
@@ -89,7 +94,7 @@ class Telephones extends AbstractQuery
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], $on, $this->getColumnsResponsable());
-        return $this->renderResult($select->where($where));
+            ], $on, $this->getColumnsResponsable())
+            ->where($where);
     }
 }

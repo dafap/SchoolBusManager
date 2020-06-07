@@ -47,6 +47,20 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     private $eleveId;
 
     /**
+     * Le primaire a un niveau < 4 ; le secondaire a un niveau >=4
+     *
+     * @var int
+     */
+    private $niveau;
+
+    /**
+     * DP = 0 ; interne = 1
+     *
+     * @var int
+     */
+    private $regime;
+
+    /**
      *
      * @var int
      */
@@ -86,6 +100,28 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         if ($this->hasDebugger()) {
             $this->debugLog($this->eleveId);
         }
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $niveau
+     * @return \SbmCommun\Arlysere\ChercheTrajet
+     */
+    public function setNiveau($niveau)
+    {
+        $this->niveau = $niveau;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $regime
+     * @return \SbmCommun\Arlysere\ChercheTrajet
+     */
+    public function setRegime($regime)
+    {
+        $this->regime = $regime;
         return $this;
     }
 

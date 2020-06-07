@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -100,6 +100,11 @@ class Responsables extends AbstractQuery
      */
     public function withNbElevesInscrits(Where $where, $order = null)
     {
+        return $this->renderResult($this->selectNbElevesInscrits($where, $order));
+    }
+
+    protected function selectNbElevesInscrits(Where $where, $order = null)
+    {
         $where->literal('inscrit = 1')
             ->nest()
             ->literal('paiementR1 = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')
@@ -120,7 +125,7 @@ class Responsables extends AbstractQuery
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $this->renderResult($select);
+        return $select;
     }
 
     public function getNbEnfantsInscrits($responsableId)
@@ -170,7 +175,7 @@ class Responsables extends AbstractQuery
      * @param array $order
      * @return \Zend\Db\Sql\Select
      */
-    private function selectResponsables($where, $order, $responsableId)
+    protected function selectResponsables($where, $order, $responsableId)
     {
         // préinscrits
         $preinscrits = new Predicate\ElevesPreinscrits($this->millesime);
@@ -197,13 +202,11 @@ class Responsables extends AbstractQuery
         ])
             ->where($gratuits());
         // en famille d'accueil
-        /*$enFA = new Predicate\ElevesEnFA($this->millesime);
-        $select4 = new Select();
-        $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
-            ->columns([
-            'eleveId'
-        ])
-            ->where($enFA());*/
+        /*
+         * $enFA = new Predicate\ElevesEnFA($this->millesime); $select4 = new Select();
+         * $select4->from($this->db_manager->getCanonicName('scolarites', 'table'))
+         * ->columns([ 'eleveId' ]) ->where($enFA());
+         */
         // avec duplicata
         $avecDuplicatas = new Predicate\ElevesAvecDuplicatas($this->millesime);
         $select5 = new Select();
@@ -266,11 +269,17 @@ class Responsables extends AbstractQuery
      */
     public function estDejaInscritCetteAnnee($nomSA, $prenomSA)
     {
+        return $this->renderResult($this->selectDejaInscritCetteAnnee($nomSA, $prenomSA))
+            ->current()['nbEnfants'] > 0;
+    }
+
+    protected function selectDejaInscritCetteAnnee($nomSA, $prenomSA)
+    {
         $where = new Where();
         $where->equalTo('res.nomSA', $nomSA)
             ->equalTo('res.prenomSA', $prenomSA)
             ->equalTo('sco.millesime', $this->millesime);
-        $select = $this->sql->select(
+        return $this->sql->select(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
@@ -286,6 +295,5 @@ class Responsables extends AbstractQuery
             'nbEnfants' => new Expression('count(sco.eleveId)')
         ])
             ->where($where);
-        return $this->renderResult($select)->current()['nbEnfants'] > 0;
     }
 }

@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
- * @version 2019-2.5.0
+ * @date 5 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
 
@@ -19,6 +19,7 @@ use Zend\Db\Sql\Where;
 
 class Statistiques extends AbstractQuery
 {
+
     /**
      * Modes de paiement
      *
@@ -32,19 +33,38 @@ class Statistiques extends AbstractQuery
 
     /**
      * Renvoie un tableau des sommes enregistrées par année scolaire et mode de paiement
-     * Si le millesime est donné, une seule année scolaire est renvoyée.
-     *
-     * SELECT libelle, sum(montant)
-     * FROM `sbm_t_paiements` p
-     * JOIN `sbm_v_libelles-modes-de-paiement` m ON m.code=p.codeModeDePaiement
-     * WHERE anneeScolaire='2014-2015'
-     * GROUP BY anneeScolaire, codeModeDePaiement
+     * Si le millesime est donné, une seule année scolaire est renvoyée. SELECT libelle,
+     * sum(montant) FROM `sbm_t_paiements` p JOIN `sbm_v_libelles-modes-de-paiement` m ON
+     * m.code=p.codeModeDePaiement WHERE anneeScolaire='2014-2015' GROUP BY anneeScolaire,
+     * codeModeDePaiement
      *
      * @param int $millesime
      *
      * @return array
      */
     public function getSumByAsMode($millesime = null)
+    {
+        $result = $this->renderResult($this->selectSumByAsMode($millesime));
+        $totalASMode = [];
+        $totalAS = [];
+        $totalGeneral = 0;
+        foreach ($result as $row) {
+            $totalASMode[$row['anneeScolaire']][$row['mode']] = $row['somme'];
+            if (isset($totalAS[$row['anneeScolaire']])) {
+                $totalAS[$row['anneeScolaire']] += $row['somme'];
+            } else {
+                $totalAS[$row['anneeScolaire']] = $row['somme'];
+            }
+            $totalGeneral += $row['somme'];
+        }
+        return [
+            'totalGeneral' => $totalGeneral,
+            'totalAS' => $totalAS,
+            'totalASMode' => $totalASMode
+        ];
+    }
+
+    protected function selectSumByAsMode($millesime = null)
     {
         $select = $this->sql->select(
             [
@@ -65,31 +85,13 @@ class Statistiques extends AbstractQuery
             'anneeScolaire',
             'libelle'
         ]);
-
         if (isset($millesime)) {
             $where = new Where();
             $as = $millesime . '-' . ($millesime + 1);
             $where->equalTo('anneeScolaire', $as);
             $select->where($where);
         }
-        $result = $this->renderResult($select);
-        $totalASMode = [];
-        $totalAS = [];
-        $totalGeneral = 0;
-        foreach ($result as $row) {
-            $totalASMode[$row['anneeScolaire']][$row['mode']] = $row['somme'];
-            if (isset($totalAS[$row['anneeScolaire']])) {
-                $totalAS[$row['anneeScolaire']] += $row['somme'];
-            } else {
-                $totalAS[$row['anneeScolaire']] = $row['somme'];
-            }
-            $totalGeneral += $row['somme'];
-        }
-        return [
-            'totalGeneral' => $totalGeneral,
-            'totalAS' => $totalAS,
-            'totalASMode' => $totalASMode
-        ];
+        return $select;
     }
 
     public function getSumByExerciceMode($millesime = null)

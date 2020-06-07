@@ -7,7 +7,7 @@
  * @filesource Services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Service;
@@ -28,7 +28,7 @@ class Services extends AbstractQuery
             $this->selectServicesGivenEtablissement($etablissementId));
     }
 
-    private function selectServicesGivenEtablissement($etablissementId)
+    protected function selectServicesGivenEtablissement($etablissementId)
     {
         $where = new Where();
         $where->equalTo('etablissementId', $etablissementId);
@@ -113,7 +113,7 @@ class Services extends AbstractQuery
                 $this->getServicesWithEtablissements()));
     }
 
-    private function selectServicesWithEtablissements()
+    protected function selectServicesWithEtablissements()
     {
         $select = $this->sql->select();
         return $select->from(

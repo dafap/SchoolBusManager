@@ -8,7 +8,7 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -38,6 +38,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbEnregistresByMillesime($millesime = null, $communeId = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbEnregistresByMillesime($millesime, $communeId)));
+    }
+
+    public function selectNbEnregistresByMillesime($millesime = null, $communeId = null)
+    {
         $where = new Where();
         $where->literal('sco.selection = 0'); // on supprime les élèves en attente
         if (isset($millesime)) {
@@ -59,11 +65,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -78,6 +83,12 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbInscritsByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbInscritsByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbInscritsByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -107,7 +118,7 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
+        return $select;
     }
 
     /**
@@ -123,6 +134,13 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbPreinscritsByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selectNbPreinscritsByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbPreinscritsByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -149,11 +167,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -166,6 +183,14 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbFamilleAccueilByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selectNbFamilleAccueilByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbFamilleAccueilByMillesime($millesime = null,
+        $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -190,11 +215,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -212,6 +236,13 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbRayesByMillesime($millesime = null, $inscrits = true,
+        $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbRayesByMillesime($millesime, $inscrits)));
+    }
+
+    protected function selectNbRayesByMillesime($millesime = null, $inscrits = true,
         $communeId = null)
     {
         $where = new Where();
@@ -244,11 +275,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -263,6 +293,14 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbGardeAlterneeByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selectNbGardeAlterneeByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbGardeAlterneeByMillesime($millesime = null,
+        $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -293,11 +331,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -313,6 +350,14 @@ class Statistiques extends AbstractQuery
      */
     public function getNbByMillesimeEtablissement($millesime = null, $communeId = null)
     {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selectNbByMillesimeEtablissement($millesime, $communeId)));
+    }
+
+    protected function selectNbByMillesimeEtablissement($millesime = null,
+        $communeId = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
@@ -322,7 +367,7 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        $select->from(
+        return $select->from(
             [
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
@@ -353,7 +398,6 @@ class Statistiques extends AbstractQuery
             'com.nom',
             'eta.nom'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -368,6 +412,12 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbByMillesimeClasse($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbByMillesimeClasse($millesime, $communeId)));
+    }
+
+    protected function selectNbByMillesimeClasse($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -398,12 +448,11 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId',
             'cla.nom'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -417,6 +466,13 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbMoins1KmByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selectNbMoins1KmByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbMoins1KmByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -442,11 +498,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -460,6 +515,12 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbDe1A3KmByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbDe1A3KmByMillesime($millesime, $communeId)));
+    }
+
+    protected function selectNbDe1A3KmByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -488,11 +549,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -506,6 +566,13 @@ class Statistiques extends AbstractQuery
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNb3kmEtPlusByMillesime($millesime = null, $communeId = null)
+    {
+        return iterator_to_array(
+            $this->renderResult(
+                $this->selctNb3kmEtPlusByMillesime($millesime, $communeId)));
+    }
+
+    protected function selctNb3kmEtPlusByMillesime($millesime = null, $communeId = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -532,11 +599,10 @@ class Statistiques extends AbstractQuery
                 'f' => $this->selectFiltreCommune($communeId)
             ], 'f.eleveId = sco.eleveId', []);
         }
-        $select->where($where)->group([
+        return $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     private function selectFiltreCommune($communeId)

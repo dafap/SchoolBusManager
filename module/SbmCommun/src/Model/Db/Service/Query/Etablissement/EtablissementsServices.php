@@ -10,7 +10,7 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
@@ -191,14 +191,19 @@ class EtablissementsServices extends AbstractQuery
      */
     public function paginatorES($where, $order = [])
     {
+        return $this->paginator($this->selectES($where, $order));
+    }
+    protected function selectES($where, $order = [])
+    {
         if (! $where instanceof Where) {
             $where = new Where($where);
         }
         $where->equalTo('rel.millesime', $this->millesime);
+        $select = clone $this->select;
         if ($order) {
-            $this->select->order($order);
+            $select->order($order);
         }
-        return $this->paginator($this->select->where($where));
+        return $select->where($where);
     }
 
     public function fetchAll($where, $order = [])
@@ -207,10 +212,11 @@ class EtablissementsServices extends AbstractQuery
             $where = $this->arrayToWhere($where);
         }
         $where->equalTo('rel.millesime', $this->millesime);
+        $select = clone $this->select;
         if ($order) {
-            $this->select->order($order);
+            $select->order($order);
         }
-        return $this->renderResult($this->select->where($where));
+        return $this->renderResult($select->where($where));
     }
 
     private function arrayToWhere($filtre = [])

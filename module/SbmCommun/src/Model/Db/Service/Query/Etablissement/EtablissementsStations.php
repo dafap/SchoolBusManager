@@ -10,7 +10,7 @@
  * @filesource EtablissementsStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
@@ -29,12 +29,11 @@ class EtablissementsStations extends AbstractQuery
                 'rel' => $this->db_manager->getCanonicName('etablissements-stations',
                     'table')
             ])
-            ->columns(
-            [
-                'etablissementId',
-                'stationId',
-                'rang'
-            ])
+            ->columns([
+            'etablissementId',
+            'stationId',
+            'rang'
+        ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -89,11 +88,12 @@ class EtablissementsStations extends AbstractQuery
             ])
             ->join([
             'comsta' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comsta.communeId = sta.communeId', [
-            'sta_commune' => 'nom',
-            'sta_lacommune'=>'alias',
-            'sta_laposte'=>'alias_laposte'
-        ]);
+        ], 'comsta.communeId = sta.communeId',
+            [
+                'sta_commune' => 'nom',
+                'sta_lacommune' => 'alias',
+                'sta_laposte' => 'alias_laposte'
+            ]);
     }
 
     /**
@@ -106,13 +106,19 @@ class EtablissementsStations extends AbstractQuery
      */
     public function paginatorES($where, $order = [])
     {
+        return $this->paginator($this->selectES($where, $order));
+    }
+
+    protected function selectES($where, $order = [])
+    {
         if (! $where instanceof Where) {
             $where = new Where($where);
         }
+        $select = clone $this->select;
         if ($order) {
-            $this->select->order($order);
+            $select->order($order);
         }
-        return $this->paginator($this->select->where($where));
+        return $this->paginator($select->where($where));
     }
 
     public function fetchAll($where, $order = [])
@@ -120,10 +126,11 @@ class EtablissementsStations extends AbstractQuery
         if (! $where instanceof Where) {
             $where = $this->arrayToWhere($where);
         }
+        $select = clone $this->select;
         if ($order) {
-            $this->select->order($order);
+            $select->order($order);
         }
-        return $this->renderResult($this->select->where($where));
+        return $this->renderResult($select->where($where));
     }
 
     private function arrayToWhere($filtre = [])

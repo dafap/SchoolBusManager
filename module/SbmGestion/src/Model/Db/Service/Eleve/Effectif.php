@@ -7,7 +7,7 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2020
+ * @date 5 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -30,15 +30,15 @@ class Effectif extends AbstractQuery implements FactoryInterface
 
     /**
      *
-     * @var integer
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $millesime;
+    private $db_manager;
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
+     * @var integer
      */
-    private $dbAdapter;
+    private $millesime;
 
     /**
      *
@@ -59,8 +59,8 @@ class Effectif extends AbstractQuery implements FactoryInterface
             throw new Exception\ExceptionNoDbManager(
                 sprintf($message, gettype($db_manager)));
         }
+        $this->db_manager = $db_manager;
         $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $db_manager->getDbAdapter();
         $this->tableName['affectations'] = $db_manager->getCanonicName('affectations',
             'table');
         $this->tableName['circuits'] = $db_manager->getCanonicName('circuits', 'table');
@@ -75,18 +75,6 @@ class Effectif extends AbstractQuery implements FactoryInterface
         $this->tableName['services'] = $db_manager->getCanonicName('services', 'table');
         $this->sql = new Sql($db_manager->getDbAdapter());
         return $this;
-    }
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
     /**
@@ -1012,13 +1000,13 @@ class Effectif extends AbstractQuery implements FactoryInterface
                         'aff.moment = s.moment',
                         'aff.ordreligne1 = s.ordre'
                     ]),
-                    implode(' AND ',
-                        [
-                            'aff.ligne2Id = s.ligneId',
-                            'aff.sensligne2 = s.sens',
-                            'aff.moment = s.moment',
-                            'aff.ordreligne2 = s.ordre'
-                        ])), [
+                implode(' AND ',
+                    [
+                        'aff.ligne2Id = s.ligneId',
+                        'aff.sensligne2 = s.sens',
+                        'aff.moment = s.moment',
+                        'aff.ordreligne2 = s.ordre'
+                    ])), [
                 'eleveId'
             ], Select::JOIN_LEFT)
             ->join([

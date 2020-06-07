@@ -496,6 +496,13 @@ class EleveController extends AbstractActionController
                 $odata = $form->getData();
                 $odata->millesime = Session::get('millesime');
                 $odata->internet = 0;
+                $qAttributs = $this->db_manager->get('Sbm\Db\Query\Responsable\Attributs');
+                $responsableId = $qAttributs->getResponsableId($eleveId);
+                $categorieId = $qAttributs->getCategorieId($responsableId);
+                if ($categorieId > 1 && $categorieId < 100) {
+                    $odata->gratuit = 2;
+                    $odata->organismeId = $qAttributs->getOrganismeId($responsableId);
+                }
                 $result = $tableScolarites->saveRecord($odata);
                 try {
                     if ($result['saveRecord']) {
@@ -803,6 +810,13 @@ class EleveController extends AbstractActionController
                 }
                 // enregistrement dans la table scolarites
                 $odata = $tScolarites->getObjData()->exchangeArray($dataValid);
+                $qAttributs = $this->db_manager->get('Sbm\Db\Query\Responsable\Attributs');
+                $responsableId = $qAttributs->getResponsableId($eleveId);
+                $categorieId = $qAttributs->getCategorieId($responsableId);
+                if ($categorieId > 1 && $categorieId < 100) {
+                    $odata->gratuit = 2;
+                    $odata->organismeId = $qAttributs->getOrganismeId($responsableId);
+                }
                 $aResult = $tScolarites->saveRecord($odata);
                 try {
                     if ($aResult['saveRecord']) {
