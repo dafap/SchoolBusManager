@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -4899,12 +4899,22 @@ class TransportController extends AbstractActionController
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
             $args = $prg;
-            Session::set('post', $args, $this->getSessionNamespace());
+            if (! array_key_exists('retour', $args)) {
+                Session::set('post', $args, $this->getSessionNamespace());
+            }
         }
         if ($pageRetour == - 1) {
             $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
         } else {
             Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        if (StdLib::getParam('op', $args, '') == 'cancel') {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => StdLib::getParam('action', $args, 'station-liste'),
+                    'page' => $pageRetour
+                ]);
         }
         $station1Id = StdLib::getParam('stationId', $args, - 1);
         if ($station1Id == - 1) {

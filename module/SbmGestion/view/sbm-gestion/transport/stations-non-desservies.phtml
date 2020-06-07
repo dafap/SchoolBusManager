@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/stations-non-desservies.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -45,6 +45,11 @@ $url_group = $this->url('sbmgestion/transport',
         'action' => 'station-group',
         'page' => $this->page,
         'id' => $this->id
+    ]);
+$url_jumelles = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-station',
+        'page' => $this->page
     ]);
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -102,7 +107,8 @@ $stations = $this->paginator->getCurrentItems();
                 }
                 $hiddens = [
                     'stationId' => $station['stationId'],
-                    'origine' => $url_origine
+                    'origine' => $url_origine,
+                    'action'=>'stations-non-desservies'
                 ];
                 $buttons = [
                     'modifier' => [
@@ -115,11 +121,17 @@ $stations = $this->paginator->getCurrentItems();
                         'formaction' => $url_delete,
                         'title' => 'supprimer'
                     ],
+                    'jumelles' => [
+                        'class' => 'fam-connect',
+                        'formaction' => $url_jumelles,
+                        'title' => sprintf('stations jumelles de la station %s - %s',
+                            $station['nom'], $station['lacommune'])
+                    ],
                     'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves de la station %s - %s', $station['nom'],
-                            $station['commune'])
+                            $station['lacommune'])
                     ]
                 ];
                 ?>

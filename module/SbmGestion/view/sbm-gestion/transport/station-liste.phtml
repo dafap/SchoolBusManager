@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -185,7 +185,8 @@ $actions = [
                 }
                 $hiddens = [
                     'stationId' => $station->stationId,
-                    'origine' => $url_origine
+                    'origine' => $url_origine,
+                    'action' => 'station-liste'
                 ];
                 $buttons = [
                     'modifier' => [
@@ -207,19 +208,19 @@ $actions = [
                         'class' => 'fam-table-relationship',
                         'formaction' => $url_relation,
                         'title' => sprintf('circuits desservant la station %s - %s',
-                            $station->nom, $station->commune)
+                            $station->nom, $station->lacommune)
                     ],
                     'jumelles' => [
                         'class' => 'fam-connect',
                         'formaction' => $url_jumelles,
                         'title' => sprintf('stations jumelles de la station %s - %s',
-                            $station->nom, $station->commune)
+                            $station->nom, $station->lacommune)
                     ],
                     'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves de la station %s - %s', $station->nom,
-                            $station->commune)
+                            $station->lacommune)
                     ]
                 ];
                 if ($this->layout()->hassbmservicesms) {
@@ -237,7 +238,7 @@ $actions = [
 					<?php endif; ?>
 					</td>
 					<td class="commune">
-						<?=$this->escapeHtml($station->commune);?></td>
+						<?=$this->escapeHtml($station->lacommune);?></td>
 					<td class="nom">
 						<?=$this->escapeHtml($station->nom);?></td>
 					<td class="complement">

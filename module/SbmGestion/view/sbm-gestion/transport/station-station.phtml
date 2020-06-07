@@ -8,7 +8,7 @@
  * @filesource station-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -28,7 +28,7 @@ $url_rapports = $this->url('sbmgestion/transport',
     ]);
 $url_retour = $this->url('sbmgestion/transport',
     [
-        'action' => 'station-liste',
+        'action' => 'station-station',
         'page' => $this->pageRetour
     ]);
 $url_delete = $this->url('sbmgestion/transport',
@@ -44,7 +44,7 @@ $url_group = $this->url('sbmgestion/transport',
         'id' => $this->pageRetour
     ]);
 // ne pas utiliser de guillement dans la chaine $js
-$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+$js_retour = 'window.document.getElementById(\'op\').value=\'cancel\';';
 
 $hiddens = [
     'station1Id' => $this->station->stationId,
