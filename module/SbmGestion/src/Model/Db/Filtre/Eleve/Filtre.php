@@ -10,7 +10,7 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
@@ -328,12 +328,19 @@ abstract class Filtre
         return [
             'inscrit' => 1,
             [
-                'station1Id' => $stationId,
+                [
+                    'stationIdR1' => $stationId,
+                    '>' => [
+                        'demandeR1',
+                        0
+                    ]
+                ],
                 'or',
                 [
-                    'station2Id' => $stationId,
-                    'isNotNull' => [
-                        'ligne2Id'
+                    'stationIdR2' => $stationId,
+                    '>' => [
+                        'demandeR2',
+                        0
                     ]
                 ]
             ]

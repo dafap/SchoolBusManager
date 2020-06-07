@@ -161,17 +161,16 @@ $actions = [
 					<th>Complément</th>
 					<th>Visible</th>
 					<th>Ouverte</th>
-					<th>Inscrits</th>
+					<th title="Nombre d'élèves transportés / Nombre de demandes">Inscrits</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
             <?php foreach ($stations as $station) :?>
             <?php
                 $pt = new Point($station->x, $station->y);
-                $ptOk = $this->projection->isValid($pt, 'station'); // stations et
-                                                                    // etablissements
-                                                                    // ont la même config
-                $nbInscrits = $this->effectifStations->transportes($station->stationId);
+                $ptOk = $this->projection->isValid($pt, 'station');
+                $nbInscrits = $this->effectifStations->demandes($station->stationId);
+                $nbTransportes = $this->effectifStations->transportes($station->stationId);
                 // construction des JS pour selection
                 $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
                     $station->stationId);
@@ -248,7 +247,7 @@ $actions = [
 					<td class="ouverte">
 						<?=$station->ouverte ? 'Oui' : 'Non';?></td>
 					<td class="nbinscrits">
-						<?=$nbInscrits;?></td>
+						<?=$nbTransportes;?> / <?=$nbInscrits;?></td>
 					<td class="centre selection">
 						<?=$this->renderCheckbox('selection', 'chk', $station->stationId, $station->selection)?>
 						</td>

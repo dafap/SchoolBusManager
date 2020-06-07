@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 7 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -4017,7 +4017,7 @@ class TransportController extends AbstractActionController
             $this->redirectToOrigin()->reset();
             return $this->redirect()->toRoute('sbmgestion/transport');
         }
-        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStations');
+        $effectifStations = $this->db_manager->get('Sbm\Db\Eleve\EffectifStationsOrigine');
         $effectifStations->init();
         return new ViewModel(
             [
@@ -4420,7 +4420,7 @@ class TransportController extends AbstractActionController
                     [
                         'nom',
                         'prenom'
-                    ], 'station'),
+                    ]),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),
