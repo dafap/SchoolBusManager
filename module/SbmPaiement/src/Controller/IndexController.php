@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2020
+ * @date 9 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Controller;
@@ -83,7 +83,7 @@ class IndexController extends AbstractActionController
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         // les expressions sont définies dans le plugin
-        $args = $this->initListe($table->criteres(), null, [],$table->getExpressions());
+        $args = $this->initListe($table->criteres(), null, [], $table->getExpressions());
         if ($args instanceof Response) {
             return $args;
         } elseif (array_key_exists('cancel', $args)) {
@@ -158,10 +158,17 @@ class IndexController extends AbstractActionController
 
     public function notificationAction()
     {
-        $message = $this->plugin_plateforme->notification($this->getRequest()
-            ->getPost(), $this->getRequest()
-            ->getServer()
-            ->get('REMOTE_ADDR'));
+        $is_post = $this->getRequest()->isPost();
+        $is_get = $this->getRequest()->isGet();
+        $message = $is_get || $is_post;
+        if ($message) {
+            $message = $this->plugin_plateforme->notification($is_post ? 'post' : 'get',
+                $is_post ? $this->getRequest()
+                    ->getPost() : $this->getRequest()
+                    ->getQuery(), $this->getRequest()
+                    ->getServer()
+                    ->get('REMOTE_ADDR'));
+        }
         if ($message === false) {
             return $this->getResponse()
                 ->setStatusCode(403)

@@ -7,7 +7,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mai 2020
+ * @date 9 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -499,19 +499,52 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     /**
      *
      * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\AbstractPlateforme::validNotification()
+     * @see \SbmPaiement\Plugin\AbstractPlateforme::validPostNotification()
      */
 
     /**
-     * Surcharge pour renvoyer une page vide
+     * Surcharge pour renvoyer une page vide et traiter les reconductions
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\AbstractPlateforme::notification()
      */
-    public function notification(Parameters $data, $remote_addr = '')
+    public function notification(string $method, Parameters $data, $remote_addr = '')
     {
         try {
-            parent::notification($data, $remote_addr);
+            if ($method == 'post') {
+                parent::notification($method, $data, $remote_addr);
+            } else {
+                // traitement de la reconduction
+                if ($this->isAuthorizedRemoteAdress($remote_addr)) {
+                    if ($this->validGetNotification($data)) {
+                        if (! isset($this->data))
+                            $this->data = $data;
+                        if ($this->validReconduction()) {
+                            // ici il n'y a rien à faire;
+                        } else {
+                            // ici il faut enregistrer l'incident, annuler des paiments et
+                            // marquer les fiches impayées
+                        }
+                    } else {
+                        $this->logError(Logger::ERR,
+                            'Notification de reconduction incorrecte', $data);
+                        $this->getEventManager()->trigger('notificationError', null, $data);
+                    }
+                } else {
+                    // log en WARN puis lance un évènement 'notificationForbidden'
+                    $this->logError(Logger::WARN,
+                        'Accès GET interdit: Adresse IP non autorisée',
+                        [
+                            $remote_addr,
+                            $data
+                        ]);
+                    $this->getEventManager()->trigger('notificationForbidden', null,
+                        [
+                            $remote_addr,
+                            $data
+                        ]);
+                }
+            }
         } catch (\Exception $e) {
             $this->logError(Logger::CRIT, $e->getMessage(), [
                 $e->getTraceAsString()
@@ -550,6 +583,19 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         return $ok;
     }
 
+    private function validGetNotification(Parameters $data)
+    {
+        $ok = $data->offsetExists('ETAT_PBX') && $data->offsetExists('erreur') &&
+            $data->offsetExists('ref') && $data->offsetExists('montant') &&
+            $data->offsetExists('sign');
+        if ($ok) {
+            // verif ETAT_PBX
+            $ok = $this->data->get('ETAT_PBX') == 'PBX_RECONDUCTION_ABT';
+            // verif signature
+        }
+        return $ok;
+    }
+
     protected function validPaiement()
     {
         if ($this->data->offsetExists('auto') && $this->data->get('erreur') == '00000') {
@@ -557,6 +603,18 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $this->enregistrePaybox();
         } else {
             $ok = false;
+        }
+        return $ok;
+    }
+
+    protected function validReconduction()
+    {
+        if ($this->data->offsetExists('auto') && $this->data->get('erreur') == '00000') {
+            $this->verifiePaiement();
+            $ok = true;
+        } else {
+            $ok = false;
+            $this->enregistreIncident();
         }
         return $ok;
     }
@@ -587,6 +645,23 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         } catch (\Exception $e) {
             $this->logError(Logger::CRIT, $e->getMessage());
         }
+    }
+
+    /**
+     * Pour les reconductions (abonnements) lorsqu'il n'y a pas d'erreur
+     */
+    protected function verifiePaiement()
+    {
+        ;
+    }
+
+    /**
+     * Pour les reconductions (abonnements) lorsqu'il y a une erreur (mettant fin à
+     * l'abonnement)
+     */
+    protected function enregistreIncident()
+    {
+        ;
     }
 
     /**

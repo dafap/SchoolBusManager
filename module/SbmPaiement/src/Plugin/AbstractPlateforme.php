@@ -14,7 +14,7 @@
  * @filesource AbstractPlateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mai 2020
+ * @date 9 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin;
@@ -256,7 +256,7 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
      * @return <b>string|false</b> renvoie false si l'adresse REMOTE_ADDR n'est pas
      *         autorisée
      */
-    public function notification(Parameters $data, $remote_addr = '')
+    public function notification(string $method, Parameters $data, $remote_addr = '')
     {
         $this->logError(Logger::NOTICE, $remote_addr, $data);
         unset($this->data);
