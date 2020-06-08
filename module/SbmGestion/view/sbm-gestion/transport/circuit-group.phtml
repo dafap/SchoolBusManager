@@ -8,10 +8,13 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
 $url_retour = $this->url('sbmgestion/transport',
     [
         'action' => $this->origine ?: 'circuit-liste',
@@ -104,9 +107,9 @@ $actions = [
 	</div>
 	<div id="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
-		<p>
-			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
-		</p>
+		<!-- p>
+			<em>Il y a < ?= $this->data->count(); ?> élèves.</em>
+		</p -->
 	</div>
 	<div id="liste-inner">
 		<table class="eleves">
@@ -121,7 +124,7 @@ $actions = [
 					<th>Etablissement</th>
 					<th>Classe</th>
 				</tr>
-			<?php foreach ($this->data as $row):?>
+			<?php foreach ($data as $row):?>
 			<?php
     $hiddens = [
         'eleveId' => $row['eleveId'],
@@ -181,8 +184,8 @@ $actions = [
 		</table>
 	</div>
 	<div id="liste-footer">
-		<p>
-			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
-		</p>
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
+		</div>
 	</div>
 </div>
