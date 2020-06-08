@@ -9,7 +9,7 @@
  * @filesource circuit-ligne.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -68,10 +68,10 @@ $actions = [
 					<th>Départ</th>
 					<th>Terminus</th>
 					<th>Via</th>
-					<th>Nb<br>services
+					<!-- th>Nb<br>services
 					</th>
 					<th>Nb élèves<br>transportés
-					</th>
+					</th-->
 					<th>Réservée<br>Internes
 					</th>
 					<th>Ouverte</th>
@@ -117,10 +117,10 @@ $actions = [
 						<?=$this->escapeHtml($ligne->extremite2);?></td>
 					<td class="via">
 						<?=$this->escapeHtml($ligne->via);?></td>
-					<td class="nbservices align-right">
+					<!-- td class="nbservices align-right">
 						<?=$nbServices;?></td>
 					<td class="nbinscrits align-right">
-						<?=$nbInscrits;?></td>
+						<?=$nbInscrits;?></td-->
 					<td class="centre internes">
 						<?=$ligne->internes ? 'Oui' : 'Non';?>
 						</td>
