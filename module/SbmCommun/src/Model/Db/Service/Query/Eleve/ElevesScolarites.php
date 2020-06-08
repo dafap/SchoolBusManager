@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -197,11 +197,13 @@ class ElevesScolarites extends AbstractQuery
 
     public function getEleveAdresse($eleveId, $trajet)
     {
-        $this->renderResult($this->selectEleveAdresse($eleveId, $trajet));
+        return $this->renderResult($this->selectEleveAdresse($eleveId, $trajet));
     }
 
     protected function selectEleveAdresse($eleveId, $trajet)
     {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
         $select = clone $this->select;
         $select->join(
             [
@@ -225,10 +227,9 @@ class ElevesScolarites extends AbstractQuery
                 'commune' => 'nom',
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
-            ]);
-        $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
-        return $select->where($where);
+            ])
+            ->where($where);
+        return $select;
     }
 
     public function getElevesInscrits(int $responsableId, int $categorieId = 1)
