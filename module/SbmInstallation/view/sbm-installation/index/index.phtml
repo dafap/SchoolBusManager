@@ -22,6 +22,9 @@ $url_dumpdoc = $this->url('sbminstall', [
 $url_tablealias = $this->url('sbminstall', [
     'action' => 'table-alias'
 ]);
+$url_requetes = $this->url('sbminstall', [
+    'action' => 'requetes'
+]);
 $url_version = $this->url('sbminstall', [
     'action' => 'version'
 ]);
@@ -83,6 +86,8 @@ $url_update_cacert = $this->url('sbminstall', [
 							de log</a></li>
 					<li><a href="<?=$url_tablealias;?>"><i class="fam-bullet-go"></i>Liste
 							des alias des tables</a></li>
+					<li><a href="<?=$url_requetes;?>"><i class="fam-bullet-go"></i>Liste
+							des requêtes</a></li>
 					<li><a href="<?=$url_dumpdoc;?>"><i class="fam-bullet-go"></i>Copie
 							des tables</a></li>
 					<li><a href="<?=$url_config;?>"><i class="fam-bullet-go"></i>Configuration

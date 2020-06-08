@@ -67,7 +67,7 @@ class IndexController extends AbstractActionController
         $fileNameSms = $this->hassbmservicesms ? strtolower($this->config_sms['filename']) : '';
         $fileSms = $this->hassbmservicesms ? StdLib::concatPath(
             $this->config_sms['path_filelog'], $fileNameSms) : '';
-        if ($this->hassbmservicesms && !file_exists($fileSms)) {
+        if ($this->hassbmservicesms && ! file_exists($fileSms)) {
             $fp = fopen($fileSms, 'w');
             fclose($fp);
         }
@@ -211,8 +211,7 @@ class IndexController extends AbstractActionController
         } elseif ($prg['fichier'] == 'sms') {
             $title = 'Contenu du fichier d\'erreur d\'envoi de SMS';
             $filename = $this->config_sms['filename'];
-            $filename = StdLib::concatPath($this->config_sms['path_filelog'],
-                $filename);
+            $filename = StdLib::concatPath($this->config_sms['path_filelog'], $filename);
         } else {
             $title = 'Contenu du fichier d\'erreur PHP';
             $filename = $this->error_log;
@@ -1324,6 +1323,25 @@ class IndexController extends AbstractActionController
             ]);
         $view->setTemplate('sbm-installation/index/file-content.phtml');
         return $view;
+    }
+
+    /**
+     * Aide : affichage des requêtes pour les documents Pdf
+     */
+    public function requetesAction()
+    {
+        $where = new \Zend\Db\Sql\Where();
+        // liste élèves
+        $order = [
+            'nom',
+            'prenom'
+        ];
+        $select_eleve_liste = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->getSqlString(
+            $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')
+                ->selectScolaritesR2($where, $order));
+        return new ViewModel([
+            'eleve_liste' => $select_eleve_liste
+        ]);
     }
 
     public function varEnvAction()

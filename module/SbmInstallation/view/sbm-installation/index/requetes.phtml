@@ -1,0 +1,41 @@
+<?php
+/**
+ * Description courte du fichier
+ *
+ * Description longue du fichier s'il y en a une
+ *
+ * @project sbm
+ * @package
+ * @filesource requetes.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$retour = $this->url("sbminstall");
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $retour,
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Affichages des requêtes utilisées dans les listes</h1>
+<div id="data-wrapper">
+	<div id="data-header" class="clearfix">
+		<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="wrapper-content">
+	<fielset class="sbm-page1"><dl><dt>Liste des élèves</dt><dd><?=$this->eleve_liste;?></dd></dl></fielset>
+	</div>
+</div>
