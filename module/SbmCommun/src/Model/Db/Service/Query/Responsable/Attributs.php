@@ -15,10 +15,10 @@
  * @filesource Attributs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
-namespace SbmCommun\Model\Db\Service\Responsable;
+namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery as ServiceAbstractQuery;
 use Zend\Db\Sql\Select;
