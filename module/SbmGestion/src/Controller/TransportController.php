@@ -4052,6 +4052,7 @@ class TransportController extends AbstractActionController
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->paginatorStationsNonDesservies(),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
+                'projection' => $this->cartographie_manager->get(Projection::class),
                 'effectifStations' => $effectifStations,
                 'page' => $this->params('page', 1),
                 'id' => $this->params('id', 1)
@@ -4704,13 +4705,8 @@ class TransportController extends AbstractActionController
                 ]);
         } else {
             $args = $prg;
-            if (array_key_exists('cancel', $args)) {
-                $this->flashMessenger()->addWarningMessage('Localisation abandonnée.');
-                return $this->redirect()->toRoute('sbmgestion/transport',
-                    [
-                        'action' => 'station-liste',
-                        'page' => $this->params('page', 1)
-                    ]);
+            if (! array_key_exists('submit', $args) && ! array_key_exists('cancel', $args)) {
+                Session::set('post', $args, $this->getSessionNamespace());
             }
             if (! array_key_exists('stationId', $args)) {
                 $this->flashMessenger()->addErrorMessage('Action  interdite');
@@ -4718,6 +4714,14 @@ class TransportController extends AbstractActionController
                     'action' => 'logout'
                 ]);
             }
+        }
+        if (array_key_exists('cancel', $args)) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => StdLib::getParam('action', $args, 'station-liste'),
+                    'page' => $this->params('page', 1)
+                ]);
         }
         $oDistanceMatrix = $this->cartographie_manager->get(
             GoogleMaps\DistanceMatrix::class);
@@ -4773,11 +4777,11 @@ class TransportController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation de la station est enregistrée.');
                 // $this->flashMessenger()->addWarningMessage('Attention ! Les distances
-                // des
-                // domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
+                // des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
+                $args = Session::get('post', [], $this->getSessionNamespace());
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
-                        'action' => 'station-liste',
+                        'action' => StdLib::getParam('action', $args, 'station-liste'),
                         'page' => $this->params('page', 1)
                     ]);
             }

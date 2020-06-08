@@ -8,16 +8,18 @@
  * @filesource view/sbm-gestion/transport/stations-non-desservies.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2020
+ * @date 8 juin 2020
  * @version 2020-2.6.0
  */
+use SbmCartographie\Model\Point;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_origine = $this->url('sbmgestion/transport',
     [
         'action' => 'stations-non-desservies',
         'page' => $this->page,
-        'id'=>$this->id
+        'id' => $this->id
     ]);
 $url_rapports = $this->url('sbmgestion/transport',
     [
@@ -45,6 +47,11 @@ $url_group = $this->url('sbmgestion/transport',
         'action' => 'station-group',
         'page' => $this->page,
         'id' => $this->id
+    ]);
+$url_localiser = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-localisation',
+        'page' => $this->page
     ]);
 $url_jumelles = $this->url('sbmgestion/transport',
     [
@@ -96,8 +103,11 @@ $stations = $this->paginator->getCurrentItems();
             foreach ($stations as $station) :
                 ?>
             	<?php
+                $pt = new Point($station->x, $station->y);
+                $ptOk = $this->projection->isValid($pt, 'station');
                 $nbInscrits = $this->effectifStations->demandes($station['stationId']);
-                $nbTransportes = $this->effectifStations->transportes($station['stationId']);
+                $nbTransportes = $this->effectifStations->transportes(
+                    $station['stationId']);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -108,13 +118,18 @@ $stations = $this->paginator->getCurrentItems();
                 $hiddens = [
                     'stationId' => $station['stationId'],
                     'origine' => $url_origine,
-                    'action'=>'stations-non-desservies'
+                    'action' => 'stations-non-desservies'
                 ];
                 $buttons = [
                     'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
+                    ],
+                    'localiser' => [
+                        'class' => $ptOk ? 'fam-map-magnify' : 'fam-map-add',
+                        'formaction' => $url_localiser,
+                        'title' => $ptOk ? 'position sur la carte' : 'position manquante'
                     ],
                     'supprimer' => [
                         'class' => 'fam-delete',
