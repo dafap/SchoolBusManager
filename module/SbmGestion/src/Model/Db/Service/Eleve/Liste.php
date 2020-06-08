@@ -152,6 +152,18 @@ class Liste extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
+    public function paginatorGroupParAffectations(int $millesime, array $filtre,
+        $order = [
+            'serviceId',
+            'nom',
+            'prenom'
+        ])
+    {
+        return new Paginator(
+            new DbSelect($this->selectGroupParAffectations($millesime, $filtre, $order),
+                $this->db_manager->getDbAdapter()));
+    }
+
     /**
      * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves. Le
      * sélect est filtré par le filtre donné. (utilisé dans queryGroup() et dans

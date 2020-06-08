@@ -4536,7 +4536,7 @@ class TransportController extends AbstractActionController
         $view = new ViewModel(
             [
 
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     $millesime,
                     FiltreEleve::byCircuit([
                         $ligneId,
@@ -4547,6 +4547,7 @@ class TransportController extends AbstractActionController
                         'nom',
                         'prenom'
                     ], 'station'),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'circuit' => $circuit,
                 'page' => $currentPage,
                 'circuitId' => $circuit->circuitId,
