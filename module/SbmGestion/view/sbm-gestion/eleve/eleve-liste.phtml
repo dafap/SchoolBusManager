@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 fév. 2019
- * @version 2019-2.4.7
+ * @date 9 juin 2020
+ * @version 2020-2.4.16
  */
 use SbmBase\Model\DateLib;
 
@@ -343,9 +343,8 @@ echo $this->flashMessenger()->render('default');
             if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
                 $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
             } else {
-                $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
-                     ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) ||
-                     ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
+				$rouge = ((max($eleve['distanceR1'], $eleve['distanceR2']) < 1.0 || $eleve['district'] == 0) && $eleve['derogation'] == 0) ||
+                 ($eleve['demandeR1'] + $eleve['demandeR2'] == 0);
             }
             if ($rouge) {
                 $tr_css .= ' alert';

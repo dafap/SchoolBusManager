@@ -20,8 +20,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 sept. 2018
- * @version 2018-2.4.5
+ * @date 9 juin 2020
+ * @version 2020-2.4.16
  */
 namespace SbmCommun\Model\Service;
 
@@ -627,7 +627,7 @@ class CalculDroits implements FactoryInterface
      */
     public function estEnAttente($row)
     {
-        return max($row['distanceR1'], $row['distanceR2']) < 1 ||
-            ($row['district'] == 0 && $row['derogation'] == 0);
+        return (max($row['distanceR1'], $row['distanceR2']) < 1 ||
+            $row['district'] == 0) && $row['derogation'] == 0;
     }
 }

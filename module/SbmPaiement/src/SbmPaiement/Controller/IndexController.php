@@ -8,14 +8,16 @@
  * 
  * Modification le 10 mars 2017 dans formulaireAction() pour tenir compte de la tarification anneeComplete
  * ou 3eme trimestre. Changement de style des array().
+ *
+ * Modification le 9 juin 2020 de la règle empéchant le paiement : la dérogation autorise le paiement
  * 
  * @project sbm
  * @package SbmPaiement/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 9 juin 2020
+ * @version 2020-2.4.16
  */
 namespace SbmPaiement\Controller;
 
@@ -65,11 +67,10 @@ class IndexController extends AbstractActionController
          * Fin de l'ajout VERSION 2.3.1
          */
         // ceux qui sont sélectionnés (selectionScolarite : selection dans table scolarites) sont mis en attente. Pas de paiement pour le moment.
-        // de même pour ceux qui sont à moins de 1 km et pour ceux qu sont hors district et sans dérogation
+        // de même pour ceux sans dérogation qui sont à moins de 1 km ou qui sont hors district
         foreach ($preinscrits as $row) {
             if (! $row['selectionScolarite'] &&
-                 ($row['distanceR1'] >= 1 || $row['distanceR2'] >= 1) &&
-                 ($row['district'] || $row['derogation'])) {
+                 ((max($row['distanceR1'], $row['distanceR2']) >= 1 && $row['district']) || $row['derogation'])) {
                 /**
                  * VERSION 2.3.1
                  */
