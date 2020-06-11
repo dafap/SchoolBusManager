@@ -1,0 +1,33 @@
+<?php
+/**
+ * Mes tests
+ *
+ *
+ * @project sbm
+ * @package SbmFront
+ * @filesource
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->jQuery('jquery.formatCurrency');
+//$this->themeJS('sbm-paiement','formulaire.js');
+?>
+<h1>DEBUG &amp; TESTS</h1>
+<div style="overflow: scroll;">
+	<h3>var_dump</h3>
+	<?php var_dump($this->obj);?>
+<h3>print_r</h3>
+	<pre>
+	<?php print_r($this->obj);?>
+</pre>
+
+</div>
+<?php
+if ($this->form) {
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+}
+?>
