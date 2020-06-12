@@ -7,8 +7,8 @@
  * @filesource gestion-config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2019
- * @version 2019-2.5.0
+ * @date 12 juin 2020
+ * @version 2020-2.5.7
  */
 echo $this->ligneMenuAction('fam-bullet-go',
     [
@@ -74,6 +74,14 @@ echo $this->ligneMenuAction('fam-bullet-go',
     ],
     [
         'value' => "Page de l'espace parent affichée lorsque les inscriptions sont closes",
+        'formaction' => $url_edit_page
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go',
+    [
+        'filename' => 'sbm-parent/index/zone-mio.inc.html'
+    ],
+    [
+        'value' => "Page de l'espace parent affichée lorsque l'adresse est dans une zone Mio",
         'formaction' => $url_edit_page
     ]);
 echo $this->ligneMenuAction('fam-bullet-go',

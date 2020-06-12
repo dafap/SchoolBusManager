@@ -32,8 +32,8 @@ $organisateur = implode('<br>',
         sprintf('<a href="%s" target="_blank">%s</a>', $this->accueil, $this->client['name']),
         implode('<br>', $this->client['adresse']),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
-        $this->telephone($this->client['telephone']),
-        $this->client['email']
+        sprintf('Téléphone : %s', $this->telephone($this->client['telephone'])),
+        sprintf('Contact Email : %s', $this->client['email'])
     ]);
 $etat = $this->calendar->getEtatDuSite();
 $membres = $this->communes->getListeMembre();

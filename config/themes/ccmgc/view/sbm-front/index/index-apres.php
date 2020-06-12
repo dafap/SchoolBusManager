@@ -23,8 +23,8 @@
  * @filesource index-apres.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2019
- * @version 2019-2.5.0
+ * @date 12 juin 2020
+ * @version 2020-2.5.7
  */
 $format = file_get_contents(__DIR__ . '/index-apres.inc.html');
 $organisateur = implode('<br>',
@@ -32,8 +32,8 @@ $organisateur = implode('<br>',
         sprintf('<a href="%s" target="_blank">%s</a>', $this->accueil, $this->client['name']),
         implode('<br>', $this->client['adresse']),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
-        $this->telephone($this->client['telephone']),
-        $this->client['email']
+        sprintf('Téléphone : %s', $this->telephone($this->client['telephone'])),
+        sprintf('Contact Email : %s', $this->client['email'])
     ]);
 $etat = $this->calendar->getEtatDuSite();
 $membres = $this->communes->getListeMembre();

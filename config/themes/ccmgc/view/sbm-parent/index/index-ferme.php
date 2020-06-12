@@ -35,11 +35,11 @@ $format = file_get_contents(__DIR__ . '/index-ferme.inc.html');
 $etat = $this->calendar->getEtatDuSite();
 $organisateur = implode('<br>',
     [
-        sprintf('<a href="%s">%s</a>', $this->accueil, $this->client['name']),
+        sprintf('<a href="%s" target="_blank">%s</a>', $this->accueil, $this->client['name']),
         implode('<br>', $this->client['adresse']),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
-        $this->telephone($this->client['telephone']),
-        $this->client['email']
+        sprintf('Téléphone : %s', $this->telephone($this->client['telephone'])),
+        sprintf('Contact Email : %s', $this->client['email'])
     ]);
 return sprintf($format, Session::get('as')['libelle'], $etat['dateDebut']->format('d/m/Y'),
     $etat['dateFin']->format('d/m/Y'), $etat['echeance']->format('d/m/Y'),
