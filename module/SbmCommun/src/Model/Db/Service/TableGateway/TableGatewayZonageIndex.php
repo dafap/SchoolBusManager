@@ -1,11 +1,11 @@
 <?php
 /**
- * Service donnant un Tablegateway pour la table 'zonage'
+ * Service donnant un Tablegateway pour la table 'zonage-index'
  * (à déclarer dans module.config.php)
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/TableGateway
- * @filesource TableGatewayZonage.php
+ * @filesource TableGatewayZonageIndex.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 11 juin 2020
@@ -13,16 +13,13 @@
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
-use SbmCommun\Model\Hydrator\Zonage as Hydrator;
-
-class TableGatewayZonage extends AbstractSbmTableGateway
+class TableGatewayZonageIndex extends AbstractSbmTableGateway
 {
 
     protected function init()
     {
-        $this->table_name = 'zonage';
+        $this->table_name = 'zonage-index';
         $this->type = 'table';
-        $this->data_object_alias = 'Sbm\Db\ObjectData\Zonage';
-        $this->hydrator = new Hydrator();
+        $this->data_object_alias = 'Sbm\Db\ObjectData\ZonageIndex';
     }
 }

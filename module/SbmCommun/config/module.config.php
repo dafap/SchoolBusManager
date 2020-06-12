@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2019
- * @version 2019-2.5.1
+ * @date 11 juin 2020
+ * @version 2020-2.5.4
  */
 use SbmCommun\Form;
 use SbmCommun\Form\View\Helper as ViewHelper;
@@ -70,6 +70,7 @@ return [
             'Sbm\Db\ObjectData\UserEtablissement' => ObjectData\UserEtablissement::class,
             'Sbm\Db\ObjectData\UserTransporteur' => ObjectData\UserTransporteur::class,
             'Sbm\Db\ObjectData\Zonage' => ObjectData\Zonage::class,
+            'Sbm\Db\ObjectData\ZonageIndex' => ObjectData\ZonageIndex::class,
             'Sbm\Db\SysObjectData\Calendar' => ObjectData\Sys\Calendar::class,
             'Sbm\Db\SysObjectData\Document' => ObjectData\Sys\Document::class,
             'Sbm\Db\SysObjectData\DocAffectation' => ObjectData\Sys\DocAffectation::class,
@@ -111,6 +112,7 @@ return [
             'Sbm\Db\Table\UsersEtablissements' => Table\UsersEtablissements::class,
             'Sbm\Db\Table\UsersTransporteurs' => Table\UsersTransporteurs::class,
             'Sbm\Db\Table\Zonage' => Table\Zonage::class,
+            'Sbm\Db\Table\ZonageIndex' => Table\ZonageIndex::class,
             'Sbm\Db\System\Calendar' => Table\Sys\Calendar::class,
             'Sbm\Db\System\Documents' => Table\Sys\Documents::class,
             'Sbm\Db\System\DocAffectations' => Table\Sys\DocAffectations::class,
@@ -149,6 +151,7 @@ return [
             'Sbm\Db\TableGateway\UsersEtablissements' => TableGateway\TableGatewayUsersEtablissements::class,
             'Sbm\Db\TableGateway\UsersTransporteurs' => TableGateway\TableGatewayUsersTransporteurs::class,
             'Sbm\Db\TableGateway\Zonage' => TableGateway\TableGatewayZonage::class,
+            'Sbm\Db\TableGateway\ZonageIndex' => TableGateway\TableGatewayZonageIndex::class,
             'Sbm\Db\SysTableGateway\Calendar' => TableGateway\Sys\TableGatewayCalendar::class,
             'Sbm\Db\SysTableGateway\Documents' => TableGateway\Sys\TableGatewayDocuments::class,
             'Sbm\Db\SysTableGateway\DocAffectations' => TableGateway\Sys\TableGatewayDocAffectations::class,

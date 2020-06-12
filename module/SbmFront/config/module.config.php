@@ -30,7 +30,7 @@ if (! defined('APPL_NAME')) {
     define('APPL_NAME', 'School Bus Manager');
 }
 
-return [
+$config = [
     'acl' => [
         'resources' => [
             'home' => [
@@ -265,3 +265,10 @@ return [
         ]
     ]
 ];
+if (getenv('APPLICATION_ENV') == 'development') {
+    // pour usage exclusif dans TestController en localhost
+    $config['db_manager']['factories'] = [
+        'Sbm\Sadmin\Dev\Requete' => \SbmFront\Dev\Requete::class
+    ];
+}
+return $config;

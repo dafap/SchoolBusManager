@@ -8,8 +8,8 @@
  * @filesource Zonage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2019
- * @version 2019-2.5.1
+ * @date 12 juin 2020
+ * @version 2020-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -73,7 +73,7 @@ class Zonage extends AbstractSbmTable
             'zonageId' => $zonageId,
             'selection' => $value
         ]);
-        parent::saveRecord($oData);
+        parent::updateRecord($oData);
     }
 
     /**
@@ -88,7 +88,7 @@ class Zonage extends AbstractSbmTable
             'zonageId' => $zonageId,
             'inscriptionenligne' => $value
         ]);
-        parent::saveRecord($oData);
+        parent::updateRecord($oData);
     }
 
     /**
@@ -103,7 +103,7 @@ class Zonage extends AbstractSbmTable
             'zonageId' => $zonageId,
             'paiementenligne' => $value
         ]);
-        parent::saveRecord($oData);
+        parent::updateRecord($oData);
     }
 }
 

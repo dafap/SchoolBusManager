@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 12 juin 2020
+ * @version 2020-2.5.4
  */
 namespace SbmCommun\Form;
 
@@ -2495,6 +2495,145 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'selection',
                 'required' => false
             ]
+        ];
+    }
+
+    private function formZonage()
+    {
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'communeId',
+                'attributes' => [
+                    'id' => 'critere-commune',
+                    'maxlength' => '45',
+                    'class' => 'sbm-width-45c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'empty_option' => 'Toutes',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'nomSA',
+                'attributes' => [
+                    'type' => 'text',
+                    'id' => 'critere-nom',
+                    'maxlength' => '30',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'inscriptionenligne',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Inscription en ligne',
+                    'label_attributes' => [
+                        'class' => ''
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'paiementenligne',
+                'attributes' => [
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Paiement en ligne',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sélectionnés',
+                    'label_attributes' => [
+                        'class' => ''
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+    }
+
+    private function formZonageSpecification()
+    {
+        return [
+            'communeId' => [
+                'name' => 'communeId',
+                'required' => false
+            ],'nomSA' => [
+                'name' => 'nomSA',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'StringTrim'
+                    ]
+                ]
+            ],
+            'inscriptionenligne' => [
+                'name' => 'inscriptionenligne',
+                'required' => false
+            ],
+            'paiementenligne' => [
+                'name' => 'paiementenligne',
+                'required' => false
+            ],
+            'selection' => [
+                'name' => 'selection',
+                'required' => false
+            ],
         ];
     }
 

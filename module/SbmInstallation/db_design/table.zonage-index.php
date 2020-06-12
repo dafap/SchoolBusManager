@@ -44,12 +44,11 @@ return [
         ],
         'foreign key' => [
             [
-                'key' => ['zonageId','communeId'],
+                'key' => 'zonageId',
                 'references' => [
                     'table' => 'zonage',
                     'fields' => [
-                        'zonageId',
-                        'communeId'
+                        'zonageId'
                     ],
                     'on' => [
                         'update' => 'CASCADE',

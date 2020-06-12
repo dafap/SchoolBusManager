@@ -7,27 +7,12 @@
  * @filesource zonage-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2019
- * @version 2019-2.5.1
+ * @date 12 juin 2020
+ * @version 2020-2.5.4
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$jsCallback = '';
-$jsTrigger = '';
-// modèle de jsCallback pour selection
-$modele = <<<EOT
-$("#chk%s%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'%szonage/zonageId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-
+$this->themeJS('gestion-transport', 'zonage-liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $rows = $this->paginator->getCurrentItems();
@@ -110,17 +95,6 @@ $actions = [
             foreach ($rows as $lieu) :
                 ?>
             <?php
-                // construction des JS pour selection, inscriptionenligne, paiementenligne
-                foreach ([
-                    'selection',
-                    'inscriptionenligne',
-                    'paiementenligne'
-                ] as $action) {
-                    $jsTrigger .= sprintf("$('#chk%s%d').trigger('change');\n", $action,
-                        $lieu->zonageId);
-                    $jsCallback .= sprintf("$modele\n", $action, $lieu->zonageId, $action,
-                        $lieu->zonageId);
-                }
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -140,6 +114,21 @@ $actions = [
                         'title' => 'supprimer'
                     ]
                 ];
+                $checkbox_inscriptionenligne = $this->renderCheckbox('inscriptionenligne',
+                    'chkinscriptionenligne' . $lieu->zonageId, $lieu->inscriptionenligne,
+                    [
+                        'data-id' => $lieu->zonageId
+                    ]);
+                $checkbox_paiementenligne = $this->renderCheckbox('paiementenligne',
+                    'chkpaiementenligne' . $lieu->zonageId, $lieu->paiementenligne,
+                    [
+                        'data-id' => $lieu->zonageId
+                    ]);
+                $checkbox_selection = $this->renderCheckbox('selection',
+                    'chkselection' . $lieu->zonageId, $lieu->selection,
+                    [
+                        'data-id' => $lieu->zonageId
+                    ]);
                 ?>
                 <tr class="petit <?=$css;?>">
 					<td class="commune">
@@ -149,12 +138,11 @@ $actions = [
 					<td class="nomSA">
 						<?=$this->escapeHtml($lieu->nomSA);?></td>
 					<td class="centre inscriptionenligne">
-						<?=$this->renderCheckbox('inscriptionenligne', 'chkinscriptionenligne' . $lieu->zonageId, $lieu->inscriptionenligne);?>
+						<?=$checkbox_inscriptionenligne;?></td>
 					<td class="centre paiementenligne">
-						<?=$this->renderCheckbox('paiementenligne', 'chkpaiementenligne' . $lieu->zonageId, $lieu->paiementenligne);?>
+						<?=$checkbox_paiementenligne;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chkselection' . $lieu->zonageId, $lieu->selection);?>
-					</td>
+						<?=$checkbox_selection;?></td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($lieu->zonageId, $hiddens, $buttons);?>
 					</td>
@@ -173,13 +161,3 @@ $actions = [
         </div>
 	</div>
 </div>
-<?php
-$this->headScript()->captureStart();
-?>
-$(function() {
-function triggerChange() {
-<?=$jsTrigger;?>}
-<?=$jsCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

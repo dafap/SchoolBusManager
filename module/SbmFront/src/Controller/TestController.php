@@ -57,53 +57,37 @@ class TestController extends AbstractActionController
         return $viewmodel;
     }
 
-    public function testAffectationAction()
+    public function zonageAction()
     {
         $cr = [];
-        $chercheTrajets = $this->db_manager->get('Sbm\ChercheTrajet');
-        $televes = $this->db_manager->get('Sbm\Db\Table\Eleves');
-        $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
-        $taffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
-        $rowset = $tscolarites->fetchAll((new Where())->notEqualTo('stationIdR1', 0));
+        // lecture de la table zonage et enregistrement dans la table sbm_t_zonage
+        $rowset = $this->db_manager->get('Sbm\Sadmin\Dev\Requete')->getZonage();
+        $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
+        $ozonage = $tzonage->getObjData();
         foreach ($rowset as $row) {
-            $responsableId = $televes->getRecord($row->eleveId)->responsable1Id;
-            for ($moment = 1; $moment <= 3; $moment ++) {
-
-                $chercheTrajets->setEtablissementId($row->etablissementId);
-                $chercheTrajets->setStationId($row->stationIdR1);
-                for ($i = 1, $trajetsPossibles = []; ! count($trajetsPossibles) && $i <= 4; $i ++) {
-                    $trajetsPossibles = $chercheTrajets->getTrajets($moment, $i);
-                }
-                $i --;
-                // DEBUG
-                $cr[$row->eleveId][$moment]['nb_circuits'] = $i;
-                $cr[$row->eleveId][$moment]['nb_trajets'] = count($trajetsPossibles);
-
-                if (count($trajetsPossibles)) {
-                    // @TODO: contrôle des places disponibles
-                    $trajet = current($trajetsPossibles);
-                    // DEBUG
-                    $cr[$row->eleveId][$moment]['trajet'] = $trajet;
-                    $oAffectation = $taffectations->getObjData();
-                    $oAffectation->millesime = $row->millesime;
-                    $oAffectation->eleveId = $row->eleveId;
-                    $oAffectation->trajet = 1;
-                    $oAffectation->moment = $moment;
-                    $oAffectation->responsableId = $responsableId;
-                    for ($j = 1; $j <= $i; $j ++) {
-                        $oAffectation->jours = $trajet["semaine_$j"];
-                        $oAffectation->correspondance = $j;
-                        $oAffectation->station1Id = $trajet["station1Id_$j"];
-                        $oAffectation->ligne1Id = $trajet["ligne1Id_$j"];
-                        $oAffectation->sensligne1 = $trajet["sensligne1_$j"];
-                        $oAffectation->ordreligne1 = $trajet["ordreligne1_$j"];
-                        $oAffectation->station2Id = $trajet["station2Id_$j"];
-                        // DEBUG
-                        $cr[$row->eleveId][$moment]['affectation'][$j] = $oAffectation->getArrayCopy();
-                        // @TODO: enregistre l'affectation
-                        $taffectations->saveRecord($oAffectation);
-                    }
-                }
+            $object = clone $ozonage;
+            $object->exchangeArray(
+                [
+                    'communeId' => $row['communeId'],
+                    'nom' => $row['nom']
+                ]);
+            $tzonage->saveRecord($object);
+        }
+        // lecture de la table sbm_t_zonage et enregistrement dans la table
+        // sbm_t_zonage-index
+        $tzonageIndex = $this->db_manager->get('Sbm\Db\Table\ZonageIndex');
+        $ozonageIndex = $tzonageIndex->getObjData();
+        $rowset = $tzonage->fetchAll();
+        foreach ($rowset as $row) {
+            foreach ($ozonageIndex->getMotsCles($row->nomSA) as $motcle) {
+                $object = clone $ozonageIndex;
+                $object->exchangeArray(
+                    [
+                        'zonageId' => $row->zonageId,
+                        'communeId' => $row->communeId,
+                        'mot' => $motcle
+                    ]);
+                $tzonageIndex->saveRecord($object);
             }
         }
         $cr[] = 'Terminé';
@@ -120,8 +104,8 @@ class TestController extends AbstractActionController
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
-        ->from('communaux')
-        ->columns([
+            ->from('communaux')
+            ->columns([
             'nom' => 'correspondant',
             'email' => 'mail'
         ]);
@@ -174,8 +158,8 @@ class TestController extends AbstractActionController
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
-        ->from('eleves')
-        ->columns(
+            ->from('eleves')
+            ->columns(
             [
                 'nom',
                 'nomSA',
@@ -189,40 +173,40 @@ class TestController extends AbstractActionController
             ])
             ->where((new Where())->equalTo('responsable1Id', 2070))
             ->order('responsable1Id');
-            $statement = $sql->prepareStatementForSqlObject($select);
-            $rowset = $statement->execute();
-            $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
-            $oEleve = $tEleves->getObjData();
-            // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
-            $error_msg = [];
-            foreach ($rowset as $row) {
-                $oEleve->exchangeArray(
-                    [
-                        'nom' => $row['nom'],
-                        'nomSA' => $row['nomSA'],
-                        'prenom' => $row['prenom'],
-                        'prenomSA' => $row['prenomSA'],
-                        'dateN' => $row['dateN'],
-                        'sexe' => $row['sexe'],
-                        'responsable1Id' => $row['responsable1Id'],
-                        'responsable2Id' => $row['responsable2Id'],
-                        'id_tra' => $row['id_tra']
-                    ]);
-                try {
-                    $tEleves->saveRecord($oEleve);
-                } catch (\Exception $e) {
-                    $error_msg[] = [
-                        $row['nomSA'],
-                        $e->getMessage()
-                    ];
-                }
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $oEleve = $tEleves->getObjData();
+        // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
+        $error_msg = [];
+        foreach ($rowset as $row) {
+            $oEleve->exchangeArray(
+                [
+                    'nom' => $row['nom'],
+                    'nomSA' => $row['nomSA'],
+                    'prenom' => $row['prenom'],
+                    'prenomSA' => $row['prenomSA'],
+                    'dateN' => $row['dateN'],
+                    'sexe' => $row['sexe'],
+                    'responsable1Id' => $row['responsable1Id'],
+                    'responsable2Id' => $row['responsable2Id'],
+                    'id_tra' => $row['id_tra']
+                ]);
+            try {
+                $tEleves->saveRecord($oEleve);
+            } catch (\Exception $e) {
+                $error_msg[] = [
+                    $row['nomSA'],
+                    $e->getMessage()
+                ];
             }
-            $error_msg[] = 'Terminé';
-            $viewmodel = new ViewModel([
-                'obj' => $error_msg,
-                'form' => null
-            ]);
-            $viewmodel->setTemplate('sbm-front/test/test.phtml');
-            return $viewmodel;
+        }
+        $error_msg[] = 'Terminé';
+        $viewmodel = new ViewModel([
+            'obj' => $error_msg,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
     }
 }

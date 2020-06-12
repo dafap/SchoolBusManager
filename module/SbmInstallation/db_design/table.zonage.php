@@ -50,6 +50,7 @@ return [
             'ZONAGE_NomSA' =>[
                 'unique' => true,
                 'fields' => [
+                    'communeId',
                     'nomSA'
                 ]
             ]

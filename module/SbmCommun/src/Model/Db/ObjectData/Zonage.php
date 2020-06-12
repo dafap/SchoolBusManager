@@ -1,6 +1,6 @@
 <?php
 /**
- * Objet contenant les données à manipuler pour la table Transporteurs
+ * Objet contenant les données à manipuler pour la table 'zonage'
  * (à déclarer dans module.config.php)
  *
  * @project sbm
@@ -8,8 +8,8 @@
  * @filesource Zonage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2019
- * @version 2019-2.5.1
+ * @date 11 juin 2020
+ * @version 2020-2.5.4
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
