@@ -61,34 +61,12 @@ class TestController extends AbstractActionController
     {
         $cr = [];
         // lecture de la table zonage et enregistrement dans la table sbm_t_zonage
-        $rowset = $this->db_manager->get('Sbm\Sadmin\Dev\Requete')->getZonage();
         $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
-        $ozonage = $tzonage->getObjData();
-        foreach ($rowset as $row) {
-            $object = clone $ozonage;
-            $object->exchangeArray(
-                [
-                    'communeId' => $row['communeId'],
-                    'nom' => $row['nom']
-                ]);
-            $tzonage->saveRecord($object);
-        }
-        // lecture de la table sbm_t_zonage et enregistrement dans la table
-        // sbm_t_zonage-index
-        $tzonageIndex = $this->db_manager->get('Sbm\Db\Table\ZonageIndex');
-        $ozonageIndex = $tzonageIndex->getObjData();
         $rowset = $tzonage->fetchAll();
+        $za = new \SbmCommun\Filter\ZoneAdresse();
         foreach ($rowset as $row) {
-            foreach ($ozonageIndex->getMotsCles($row->nomSA) as $motcle) {
-                $object = clone $ozonageIndex;
-                $object->exchangeArray(
-                    [
-                        'zonageId' => $row->zonageId,
-                        'communeId' => $row->communeId,
-                        'mot' => $motcle
-                    ]);
-                $tzonageIndex->saveRecord($object);
-            }
+            $row->nomSA = strtoupper($za->filter($row->nom));
+            $tzonage->saveRecord($row);
         }
         $cr[] = 'Terminé';
         $viewmodel = new ViewModel([

@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juin 2020
- * @version 2020-2.5.4
+ * @date 13 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmCommun\Form;
 
@@ -2613,12 +2613,13 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'communeId' => [
                 'name' => 'communeId',
                 'required' => false
-            ],'nomSA' => [
+            ],
+            'nomSA' => [
                 'name' => 'nomSA',
                 'required' => false,
                 'filters' => [
                     [
-                        'name' => 'StringTrim'
+                        'name' => '\SbmCommun\Filter\ZoneCritere'
                     ]
                 ]
             ],
@@ -2633,7 +2634,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             'selection' => [
                 'name' => 'selection',
                 'required' => false
-            ],
+            ]
         ];
     }
 

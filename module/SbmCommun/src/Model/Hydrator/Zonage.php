@@ -11,12 +11,12 @@
  * @filesource Zonage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2019
- * @version 2019-2.5.1
+ * @date 13 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmCommun\Model\Hydrator;
 
-use SbmCommun\Filter\SansAccent;
+use SbmCommun\Filter\ZoneAdresse;
 use SbmCommun\Model\Db\ObjectData\Zonage as ObjectData;
 
 class Zonage extends AbstractHydrator
@@ -38,10 +38,10 @@ class Zonage extends AbstractHydrator
         $calculate_fields = $object->getCalculateFields();
         foreach ($calculate_fields as $value) {
             if (substr($value, - 2) == 'SA') {
-                $sa = new SansAccent();
+                $za = new ZoneAdresse();
                 $index = substr($value, 0, strlen($value) - 2);
                 try {
-                    $object->$value = strtoupper($sa->filter($object->$index));
+                    $object->$value = strtoupper($za->filter($object->$index));
                 } catch (\SbmCommun\Model\Db\ObjectData\Exception\ExceptionInterface $e) {}
             }
         }
