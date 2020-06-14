@@ -8,14 +8,17 @@
  * @filesource ZonageIndex.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2020
+ * @date 14 juin 2020
  * @version 2020-2.5.4
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Literal;
+
 class ZonageIndex extends AbstractSbmTable
 {
-
 
     /**
      * Initialisation du transporteur
@@ -30,6 +33,23 @@ class ZonageIndex extends AbstractSbmTable
             'communeId',
             'mot'
         ];
+    }
+
+    public function selectIn(string $communeId, array $in): Select
+    {
+        $where = new Where();
+        $where->equalTo('communeId', $communeId)->in('mot', $in);
+        return $this->getTableGateway()
+            ->getSql()
+            ->select()
+            ->columns([
+            'zonageId',
+            'nb' => new Literal('count(*)')
+        ])
+            ->where($where)
+            ->group([
+            'zonageId'
+        ]);
     }
 }
 

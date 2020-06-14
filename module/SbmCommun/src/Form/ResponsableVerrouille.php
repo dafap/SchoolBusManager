@@ -7,8 +7,8 @@
  * @filesource ResponsableVerrouille.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 14 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmCommun\Form;
 
@@ -20,7 +20,7 @@ class ResponsableVerrouille implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new Responsable('responsable',
+        return new Responsable($serviceLocator->get('Sbm\DbManager'),
             [
                 'verrouille' => true,
                 'hassbmservicesms' => $serviceLocator->has('sbmservicesms')

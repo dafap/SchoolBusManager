@@ -7,8 +7,8 @@
  * @filesource ModifAdresseFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 14 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmParent\Form\Service;
 
@@ -21,7 +21,7 @@ class ModifAdresseFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new ModifAdresse('responsable',
+        return new ModifAdresse($serviceLocator->get('Sbm\DbManager'),
             [
                 'hassbmservicesms' => $serviceLocator->has('sbmservicesms')
             ]);

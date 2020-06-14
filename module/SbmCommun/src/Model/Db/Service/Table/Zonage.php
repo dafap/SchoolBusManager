@@ -8,15 +8,26 @@
  * @filesource Zonage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juin 2020
- * @version 2020-2.5.4
+ * @date 14 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 
 class Zonage extends AbstractSbmTable
 {
+
+    /**
+     * Structuré
+     * ['communeId'][md5(adresse)]['existe'=>...,'inscriptionenligne'=>...,'paiementenligne'=>...]
+     *
+     * @var array
+     */
+    private $attributes;
 
     /**
      * Initialisation du transporteur
@@ -27,6 +38,7 @@ class Zonage extends AbstractSbmTable
         $this->table_type = 'table';
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Zonage';
         $this->id_name = 'zonageId';
+        $this->attributes = [];
     }
 
     /**
@@ -104,6 +116,112 @@ class Zonage extends AbstractSbmTable
             'paiementenligne' => $value
         ]);
         parent::updateRecord($oData);
+    }
+
+    /**
+     * Renvoie un tableau d'identifiants des communes zonées
+     */
+    public function getCommunesZonees(): array
+    {
+        $result = [];
+        foreach ($this->getTableGateway()->selectWith(
+            $this->getTableGateway()
+                ->getSql()
+                ->select()
+                ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+                ->columns([
+                'communeId'
+            ])) as $row) {
+            $result[] = $row->communeId;
+        }
+        return $result;
+    }
+
+    public function getJoinWith(Select $subselect)
+    {
+        $t = $this->getTableGateway()->getTable();
+        return $this->getTableGateway()->selectWith(
+            $this->getTableGateway()
+                ->getSql()
+                ->select()
+                ->columns([
+                'nom'
+            ])
+                ->join([
+                's' => $subselect
+            ], "$t.zonageId = s.zonageId", [])
+                ->order('s.nb DESC'));
+    }
+
+    private function getAttributs(string $communeId, string $key, string $adresse): array
+    {
+        if (! StdLib::array_keys_exists([
+            $communeId,
+            $key
+        ], $this->attributes)) {
+            $result = [];
+            $where = new Where();
+            $where->equalTo('communeId', $communeId)->like('nomSA', $adresse);
+            $rowset = $this->fetchAll($where);
+            if ($rowset->count()) {
+                $inscriptionenligne = false;
+                $paiementenligne = false;
+                foreach ($rowset as $ozonage) {
+                    $inscriptionenligne |= $ozonage->inscriptionenligne;
+                    $paiementenligne |= $ozonage->paiementenligne;
+                }
+                $result = [
+                    'existe' => true,
+                    'inscriptionenligne' => $inscriptionenligne,
+                    'paiementenligne' => $paiementenligne
+                ];
+            } else {
+                $result = [
+                    'existe' => false,
+                    'inscriptionenligne' => false,
+                    'paiementenligne' => false
+                ];
+            }
+            $this->attributes[$communeId][$key] = $result;
+        }
+        return $this->attributes;
+    }
+
+    /**
+     * Indique le l'adresse est dans la table 'zonage'
+     *
+     * @param string $communeId
+     * @param string $adresse
+     * @return bool
+     */
+    public function isAdresseConnue(string $communeId, string $adresse): bool
+    {
+        $key = md5($adresse);
+        return StdLib::getParamR([
+            $communeId,
+            $key,
+            'existe'
+        ], $this->getAttributs($communeId, $key, $adresse), false);
+    }
+
+    public function isInscriptionEnLigne(string $communeId, string $adresse): bool
+    {
+        $key = md5($adresse);
+        return StdLib::getParamR([
+            $communeId,
+            $key,
+            'inscriptionenligne'
+        ], $this->getAttributs($communeId, $key, $adresse), false);
+    }
+
+    public function isPaiementEnLigne(string $communeId, string $adresse): bool
+    {
+        $key = md5($adresse);
+        return StdLib::getParamR([
+            $communeId,
+            $key,
+            'paiementenligne'
+        ], $this->getAttributs($communeId, $key, $adresse), false);
     }
 }
 

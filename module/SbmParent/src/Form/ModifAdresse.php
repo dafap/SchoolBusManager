@@ -10,17 +10,20 @@
  * @filesource ModifAdresse.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 14 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmParent\Form;
 
 use SbmBase\Model\StdLib;
+use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Form\AbstractSbmForm;
+use SbmCommun\Model\Traits\ValidFormResponsableTrait;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterface
 {
+    use ValidFormResponsableTrait;
 
     /**
      * Indicateur
@@ -29,11 +32,25 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
      */
     private $hassbmservicesms;
 
-    public function __construct($name = null, $options = [])
+    /**
+     *
+     * @var DbManager
+     */
+    private $db_manager;
+
+    /**
+     *
+     * @var array
+     */
+    private $communes_zonees;
+
+    public function __construct(DbManager $db_manager, $options = [])
     {
+        $this->db_manager = $db_manager;
+        $this->communes_zonees = [];
         $this->hassbmservicesms = StdLib::getParam('hassbmservicesms', $options, false);
         unset($options['hassbmservicesms']);
-        parent::__construct($name, $options);
+        parent::__construct('responsable', $options);
         $this->setAttribute('method', 'post');
         $this->init();
     }
@@ -307,47 +324,5 @@ class ModifAdresse extends AbstractSbmForm implements InputFilterProviderInterfa
                 'required' => false
             ]
         ];
-    }
-
-    public function isValid()
-    {
-        $result = parent::isValid();
-        // un des 3 numéros de téléphones doit être renseigné
-        if (empty($this->data['telephoneF']) && empty($this->data['telephoneP']) &&
-            empty($this->data['telephoneT'])) {
-            $result = false;
-            $element = $this->get('telephoneT');
-            $element->setMessages(
-                [
-                    'Vous devez indiquer au moins un numéro de téléphone où l\'on pourra vous joindre.'
-                ]);
-        } elseif ($this->hassbmservicesms) {
-            // si un numéro est renseigné, on doit dire s'il peut recevoir des SMS
-            if (! empty($this->data['telephoneF']) && ! isset($this->data['smsF'])) {
-                $result = false;
-                $element = $this->get('telephoneF');
-                $element->setMessages(
-                    [
-                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
-                    ]);
-            }
-            if (! empty($this->data['telephoneP']) && ! isset($this->data['smsP'])) {
-                $result = false;
-                $element = $this->get('telephoneP');
-                $element->setMessages(
-                    [
-                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
-                    ]);
-            }
-            if (! empty($this->data['telephoneT']) && ! isset($this->data['smsT'])) {
-                $result = false;
-                $element = $this->get('telephoneT');
-                $element->setMessages(
-                    [
-                        'Vous devez indiquer si le responsable accepte de recevoir des SMS sur ce numéro'
-                    ]);
-            }
-        }
-        return $result;
     }
 }
