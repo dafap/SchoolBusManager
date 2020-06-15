@@ -9,11 +9,43 @@
  * @date 8 mai 2019
  * @version 2019-2.5.0
  **/
+div#wrapper-editeur {
+	zoom: 1;
+}
 
+#wrapper-editeur fieldset.sbm-page1 {
+	float: left;
+	width: 800px;
+}
+
+#wrapper-editeur fieldset.sbm-page1.col2 {
+	width: 300px;
+}
+
+#wrapper-editeur .col2 ul {
+	padding-left: 15px;
+}
+
+#wrapper-editeur .col2 li {
+	list-style-type: square;
+	padding-left: 4em;
+	text-indent: -4em;
+}
+
+#wrapper-editeur textarea.file-content {
+	width: 100%;
+	height: 320px;
+}
+
+label.bloc {
+	display: block;
+	font-weight: bold;
+}
 
 #menugeneral-inner form {
 	display: inline-block;
 }
+
 /*--------- TOP-SITE -----------------*/
 #top-site {
 	height: 20px;
@@ -40,6 +72,7 @@
 	position: initial;
 	top: initial;
 }
+
 /*--------- Header -----------------*/
 #bandeau {
 	height: 195px;
@@ -49,9 +82,18 @@
 
 .page1 #header #bandeau {
 	background-image: url("/img/bandeau-sbm.png");
-	background-size: 100% 195px;
+        background-size: 100% 195px;
 	background-repeat: no-repeat;
 }
+
+div#bandeau div#as {
+	margin-top: 148px;
+	margin-left: 670px;
+	font-size: 3em;
+	font-weight: bold;
+	color: white;
+}
+
 /*-------- Footer -----------------*/
 #footer {
 	color: #666;
