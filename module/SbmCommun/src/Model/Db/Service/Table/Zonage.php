@@ -8,7 +8,7 @@
  * @filesource Zonage.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2020
+ * @date 15 juin 2020
  * @version 2020-2.5.7
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -29,6 +29,8 @@ class Zonage extends AbstractSbmTable
      */
     private $attributes;
 
+    private $liste_communes;
+
     /**
      * Initialisation du transporteur
      */
@@ -39,6 +41,7 @@ class Zonage extends AbstractSbmTable
         $this->table_gateway_alias = 'Sbm\Db\TableGateway\Zonage';
         $this->id_name = 'zonageId';
         $this->attributes = [];
+        $this->liste_communes = [];
     }
 
     /**
@@ -123,18 +126,20 @@ class Zonage extends AbstractSbmTable
      */
     public function getCommunesZonees(): array
     {
-        $result = [];
-        foreach ($this->getTableGateway()->selectWith(
-            $this->getTableGateway()
-                ->getSql()
-                ->select()
-                ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
-                ->columns([
-                'communeId'
-            ])) as $row) {
-            $result[] = $row->communeId;
+        if (! $this->liste_communes) {
+            $this->liste_communes = [];
+            foreach ($this->getTableGateway()->selectWith(
+                $this->getTableGateway()
+                    ->getSql()
+                    ->select()
+                    ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+                    ->columns([
+                    'communeId'
+                ])) as $row) {
+                $this->liste_communes[] = $row->communeId;
+            }
         }
-        return $result;
+        return $this->liste_communes;
     }
 
     public function getJoinWith(Select $subselect)

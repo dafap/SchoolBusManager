@@ -29,8 +29,8 @@ use SbmBase\Model\StdLib;
 
 return [
     'name' => 'zonage',
-    'drop' => true,
-    'edit_entity' => true,
+    'drop' => false,
+    'edit_entity' => false,
     'add_data' => false,
     'type' => 'table',
     'structure' => [

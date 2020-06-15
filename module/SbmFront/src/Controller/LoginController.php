@@ -172,11 +172,17 @@ class LoginController extends AbstractActionController
                             // page d'information indiquant que les inscriptions en ligne
                             // ne sont pas autorisées pour les parents de cette commune.
                             $commune = $responsable->commune;
-                            $message = <<<EOT
-Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas ouvert aux habitants
-de votre commune.
-EOT;
-                            $this->flashMessenger()->addErrorMessage($message);
+                            if ($responsable->zonage) {
+                                $message = strip_tags(
+                                    include $this->theme->getIncludeView(
+                                        'sbm-parent/index/zone-mio'));
+                            } else {
+                                $message = <<<EOT
+                                Vous ne pouvez pas inscrire vos enfants car ce service en ligne n'est pas 
+                                ouvert aux habitants de votre commune.
+                                EOT;
+                            }
+                            $this->flashMessenger()->addInfoMessage($message);
                             $this->logout();
                             return $this->redirect()->toRoute('home',
                                 [
@@ -189,9 +195,9 @@ EOT;
                             // le paiement en ligne n'est pas permi pour les parents de
                             // cette commune
                             $message = <<<EOT
-Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants
-de votre commune.'
-EOT;
+                            Vous pouvez préinscrire vos enfants mais le paiement en ligne n'est pas ouvert aux habitants
+                            de votre commune.'
+                            EOT;
                             $this->flashMessenger()->addInfoMessage($message);
                         }
                         // contrôle de position géographique
