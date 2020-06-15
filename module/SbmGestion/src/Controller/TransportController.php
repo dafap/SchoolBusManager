@@ -1646,7 +1646,8 @@ class TransportController extends AbstractActionController
     /**
      * Localisation d'un établissement sur la carte et enregistrement de ses coordonnées
      */
-    public function etablissementLocalisationAction($etablissementId = null, $currentPage = 1)
+    public function etablissementLocalisationAction($etablissementId = null,
+        $currentPage = 1)
     {
         if (is_null($etablissementId)) {
             $currentPage = $this->params('page', 1);
@@ -4273,7 +4274,13 @@ class TransportController extends AbstractActionController
      */
     public function zonageListeAction()
     {
-        $args = $this->initListe('zonage');
+        $args = $this->initListe('zonage',
+            function ($config, &$form) {
+                $form->get('communeId')
+                    ->setValueOptions(
+                    $config['db_manager']->get('Sbm\Db\Select\Communes')
+                        ->membres());
+            });
         if ($args instanceof Response) {
             return $args;
         }
@@ -4309,9 +4316,29 @@ class TransportController extends AbstractActionController
             case $r instanceof Response:
                 return $r;
                 break;
+            case 'success':
+                $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
+                $ozonage = $tzonage->getRecord(
+                    $tzonage->getTableGateway()
+                        ->getLastInsertValue());
+                $tzonageindex = $this->db_manager->get('Sbm\Db\Table\ZonageIndex');
+                foreach ($tzonageindex->getObjData()->getMotsCles($ozonage->nomSA) as $motcle) {
+                    $object = $tzonageindex->getObjData();
+                    try {
+                        $object->exchangeArray(
+                            [
+                                'zonageId' => $ozonage->zonageId,
+                                'communeId' => $ozonage->communeId,
+                                'mot' => $motcle
+                            ]);
+                        $tzonageindex->saveRecord($object);
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addWarningMessage(
+                            'Erreur d\'indexation de cet enregistrement.');
+                    }
+                }
             case 'error':
             case 'warning':
-            case 'success':
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
                         'action' => 'zonage-liste',
@@ -4349,9 +4376,36 @@ class TransportController extends AbstractActionController
             return $r;
         } else {
             switch ($r->getStatus()) {
+                case 'success':
+                    $zonageId = $r->getPost()['zonageId'];
+                    $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
+                    $ozonage = $tzonage->getRecord($zonageId);
+                    $tzonageindex = $this->db_manager->get('Sbm\Db\Table\ZonageIndex');
+                    try {
+                        $tzonageindex->deleteRecord([
+                            'zonageId' => $zonageId
+                        ]);
+                    } catch (\Exception $e) {
+                        $this->flashMessenger()->addWarningMessage(
+                            'Impossible de supprimer les anciens index.');
+                    }
+                    foreach ($tzonageindex->getObjData()->getMotsCles($ozonage->nomSA) as $motcle) {
+                        $object = $tzonageindex->getObjData();
+                        try {
+                            $object->exchangeArray(
+                                [
+                                    'zonageId' => $ozonage->zonageId,
+                                    'communeId' => $ozonage->communeId,
+                                    'mot' => $motcle
+                                ]);
+                            $tzonageindex->saveRecord($object);
+                        } catch (\Exception $e) {
+                            $this->flashMessenger()->addWarningMessage(
+                                'Erreur d\'indexation de cet enregistrement.');
+                        }
+                    }
                 case 'error':
                 case 'warning':
-                case 'success':
                     return $this->redirect()->toRoute('sbmgestion/transport',
                         [
                             'action' => 'zonage-liste',
@@ -4481,10 +4535,13 @@ class TransportController extends AbstractActionController
             $odata = $tzonage->getObjData();
             $odata->exchangeArray($value);
             $tzonage->saveRecord($odata);
-            $nb++;
+            $nb ++;
         }
-        $msg = sprintf('Nombre de lieux ajoutés : %d',$nb);
+        $msg = sprintf('Nombre de lieux ajoutés : %d', $nb);
         $this->flashMessenger()->addInfoMessage($msg);
-        return $this->redirect()->toRoute('sbmgestion/transport', ['action'=>'zonage-liste']);
+        return $this->redirect()->toRoute('sbmgestion/transport',
+            [
+                'action' => 'zonage-liste'
+            ]);
     }
 }

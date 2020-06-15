@@ -3,14 +3,14 @@
  * Permet d'enregistrer l'objet SbmFront\Responsable dans le service_manager
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmFront/Model/Service
  * @filesource ResponsableFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2018
- * @version 2018-2.4.0
+ * @date 15 juin 2020
+ * @version 2020-2.5.7
  */
 namespace SbmFront\Model\Responsable\Service;
 
@@ -25,9 +25,7 @@ class ResponsableFactory implements FactoryInterface
     {
         // die(var_dump($serviceLocator));
         $authenticate_by = $serviceLocator->get('SbmAuthentification\Authentication')->by();
-        $vue_responsable = $serviceLocator->get('Sbm\DbManager')->get(
-            'Sbm\Db\Vue\Responsables');
 
-        return new Responsable($authenticate_by, $vue_responsable);
+        return new Responsable($authenticate_by, $serviceLocator->get('Sbm\DbManager'));
     }
 }

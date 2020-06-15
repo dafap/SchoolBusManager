@@ -1,0 +1,27 @@
+<?php
+/**
+ * Suppression d'un endroit du zonage
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource zonage-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 août 2019
+ * @version 2019-2.5.1
+ */
+?>
+<h1>Suppression d'un lieu</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du lieu :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?= $this->escapeHtml($this->data->nom); ?></li>
+			<li><?= $this->escapeHtml($this->data->commune); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2019
- * @version 2019-2.5.0
+ * @date 11 juin 2020
+ * @version 2020-2.5.4
  */
 namespace SbmFront\Controller;
 
@@ -78,16 +78,6 @@ class IndexController extends AbstractActionController
                 'accueil' => $this->accueil,
                 'client' => $this->client,
                 'commune' => $this->params('id')
-            ]);
-    }
-
-    public function testAction()
-    {
-        $array = [];
-        // dump de l'objet 'obj'
-        return new ViewModel(
-            [
-                'obj' =>  $array
             ]);
     }
 }

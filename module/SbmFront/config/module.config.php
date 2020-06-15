@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 11 juin 2020
+ * @version 2020-2.5.4
  */
 use SbmFront\Controller;
 use SbmFront\Form;
@@ -30,7 +30,7 @@ if (! defined('APPL_NAME')) {
     define('APPL_NAME', 'School Bus Manager');
 }
 
-return [
+$config = [
     'acl' => [
         'resources' => [
             'home' => [
@@ -44,24 +44,6 @@ return [
                         'allow' => [
                             'roles' => [
                                 'parent'
-                            ]
-                        ]
-                    ],
-                    'test' => [
-                        'deny' => [
-                            'roles' => [
-                                'guest',
-                                'parent',
-                                'transporteur',
-                                'etablissement',
-                                'secretariat',
-                                'gestion',
-                                'admin'
-                            ]
-                        ],
-                        'allow' => [
-                            'roles' => [
-                                'sadmin'
                             ]
                         ]
                     ]
@@ -173,6 +155,13 @@ return [
                         ]
                     ]
                 ]
+            ],
+            'test' => [
+                'allow' => [
+                    'roles' => [
+                        'sadmin'
+                    ]
+                ]
             ]
         ]
     ],
@@ -228,13 +217,29 @@ return [
                         'action' => 'login'
                     ]
                 ]
+            ],
+            'test' => [
+                'type' => 'segment',
+                'options' => [
+                    'route' => '/test[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-f0-9]{32}'
+                    ],
+                    'defaults' => [
+                        'module' => __NAMESPACE__,
+                        'controller' => Controller\TestController::class,
+                        'action' => 'index'
+                    ]
+                ]
             ]
         ]
     ],
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
-            Controller\LoginController::class => Controller\Service\LoginControllerFactory::class
+            Controller\LoginController::class => Controller\Service\LoginControllerFactory::class,
+            Controller\TestController::class => Controller\Service\TestControllerFactory::class
         ]
     ],
     'view_helpers' => [
@@ -260,3 +265,10 @@ return [
         ]
     ]
 ];
+if (getenv('APPLICATION_ENV') == 'development') {
+    // pour usage exclusif dans TestController en localhost
+    $config['db_manager']['factories'] = [
+        'Sbm\Sadmin\Dev\Requete' => \SbmFront\Dev\Requete::class
+    ];
+}
+return $config;
