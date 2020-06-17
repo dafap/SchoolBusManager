@@ -8,7 +8,7 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 17 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Paiement;
@@ -72,7 +72,7 @@ class Statistiques extends AbstractQuery
             ]);
         $select->columns([
             'anneeScolaire',
-            'somme' => new Expression('sum(montant)')
+            'somme' => new Expression('sum(montant * mouvement)')
         ])
             ->join(
             [
