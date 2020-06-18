@@ -14,30 +14,14 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2020
+ * @date 18 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$jsCallback = '';
-$jsTrigger = '';
-// modele de jsCallback pour selection
-$modele = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxfinance/'+action+'selectionpaiement/paiementId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-    //alert(action);
-  });
-EOT;
-
+$this->themeJS('gestion-finance', 'paiement-liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $paiements = $this->paginator->getCurrentItems();
@@ -80,6 +64,16 @@ $url_detail = $this->url('sbmgestion/finance',
 $url_rectifications = $this->url('sbmgestion/finance',
     [
         'action' => 'paiement-rectifications',
+        'page' => $this->page
+    ]);
+$url_resiliation = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-resiliation',
+        'page' => $this->page
+    ]);
+$url_deselection = $this->url('sbmgestion/finance',
+    [
+        'action' => 'paiement-selection',
         'page' => $this->page
     ]);
 if ($this->h2) {
@@ -193,30 +187,33 @@ if ($this->h2) {
 					<th>Responsable</th>
 					<th>Montant</th>
 					<th>Caisse</th>
-					<th>Mode de paiement</th>
+					<th>Mode</th>
 					<th>Date de paiement</th>
 					<th>Date de valeur</th>
+					<th>Référence</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
         <?php foreach($paiements as $paiement): ?>
         <?php
-            // construction des JS pour selection
-            $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n",
-                $paiement->paiementId);
-            $jsCallback .= sprintf("$modele\n", $paiement->paiementId,
-                $paiement->paiementId);
             $r = $this->escapeHtml($paiement->responsable);
-            $m = $fmt->formatCurrency($paiement->montant * $paiement->mouvement, 'EUR');
+            $m_info = $fmt->formatCurrency($paiement->montant, 'EUR');
+            if ($paiement->mouvement) {
+                $m = $fmt->formatCurrency($paiement->montant * $paiement->mouvement, 'EUR');
+            } else {
+                $m = 'résilié';
+                $m_info .= " $m";
+            }
             $cs = $this->escapeHtml($paiement->caisse);
             $mp = $this->escapeHtml($paiement->modeDePaiement);
             $dp = DateLib::formatDateTimeFromMysql($paiement->datePaiement);
             $dv = DateLib::formatDateFromMysql($paiement->dateValeur);
             $title_voir = 'Année scolaire : ' . $paiement->anneeScolaire . "\n" .
                 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' .
-                $paiement->titulaire . "\n" . 'Banque : ' . $paiement->banque . "\n" .
-                'Référence : ' . $paiement->reference . "\n" . 'Date de dépôt : ' .
-                DateLib::formatDateTimeFromMysql($paiement->dateDepot);
+                $paiement->titulaire . "\n" . 'Montant : ' . $m_info . "\n" . 'Banque : ' .
+                $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" .
+                'Date de dépôt : ' . DateLib::formatDateTimeFromMysql(
+                    $paiement->dateDepot);
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" .
                 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" .
                 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" .
@@ -267,9 +264,14 @@ if ($this->h2) {
                     'onclick' => $js
                 ];
             }
-            $css = $this->cycle(["even", "odd"])->next();
-            if ($paiement->mouvement <0) {
+            $css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
+            if ($paiement->mouvement < 0) {
                 $css .= ' rouge';
+            } elseif ($paiement->mouvement == 0) {
+                $css .= ' barre';
             }
             ?>
                 <tr class="<?=$css;?>">
@@ -279,33 +281,53 @@ if ($this->h2) {
 					<td class="mode-de-paiement"><?= $mp;?></td>
 					<td class="date-paiement"><?= $dp;?></td>
 					<td class="date-valeur"><?= $dv; ?></td>
-					<td class="centre selection">
-					    <?= $this->renderCheckbox('selection', 'chk', $paiement->paiementId, $paiement->selection);?></td>
+					<td class="reference"><?= $this->escapeHtml(substr($paiement->reference, 0, 48));?></td>
+					<td class="centre selection"><?= $this->renderCheckbox('selection', 'chk', $paiement->paiementId, $paiement->selection); ?></td>
 					<td class="boutons">
 						<?= $this->listeLigneActions($paiement->paiementId, $hiddens, $buttons);?></td>
 				</tr>
-        <?php endforeach;?>
-    </tbody>
+        	<?php endforeach;?>
+    		</tbody>
 		</table>
 	</div>
+	<?php
+$hiddens_bas = [
+    'responsableId' => $this->responsableId,
+    'h2' => $this->h2,
+    'responsable' => $this->escapeHtml($this->responsable)
+];
+$actions_selection = [
+    'resiliation' => [
+        'class' => 'fam-money-delete',
+        'formaction' => $url_resiliation,
+        'title' => 'Résilier des abonnements ou annuler des encaissements'
+    ],
+    'deselection' => [
+        'class' => 'fam-basket-delete',
+        'formaction' => $url_deselection,
+        'title' => 'Tout décocher'
+    ]
+];
+?>
 	<div id="liste-footer">
-		<div class="pagination-wrapper clearfix"><?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="pagination-wrapper clearfix">
+			<div class="sbm-description float-left">Pour résilier des abonnements
+				ou annuler des encaissements, sélectionner les paiements concernés.</div>
+			<div class="selection">
+				Pour les fiches sélectionnées :
+				<div class="menu float-right">
+					<?=$this->listeZoneActions($hiddens_bas, $actions_selection,['name'=>'zoneselection', 'id'=> 'selection']);?>
+				</div>
+			</div>
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?>
+		</div>
 		<div class="criteres-wrapper">
         <?php if (! is_null($this->criteres_form)) :?>
             <?= $this->form()->openTag($this->criteres_form);?>
             <?= $this->formCollection($this->criteres_form, true);?>
             <?= $this->form()->closeTag();?>
+        <?php else:?>
         <?php endif;?>
         </div>
 	</div>
 </div>
-<?php
-$this->headScript()->captureStart();
-?>
-$(function() {
-function triggerChange() {
-<?= $jsTrigger;?>}
-<?= $jsCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

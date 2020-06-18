@@ -1,0 +1,75 @@
+<?php
+/**
+ * Ecran de confirmation de la suppression d'un paiement
+ *
+ * La suppression d'un paiement doit être archivée. Le motif de la suppression sera saisi.
+ *
+ * @project sbm
+ * @package module\SbmGestion\view\sbm-gestion\finance
+ * @filesource paiement-suppr.php
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 18 juin 2020
+ * @version 2020-2.6.0
+ */
+use SbmBase\Model\DateLib;
+
+$this->themeCss('sbm-gestion/finance', 'paiement-suppr.css');
+$this->jQuery();
+$this->themeJS('gestion-finance', 'paiement-suppr.js');
+$this->inlineScript()->captureStart();
+?>
+js_paiement_suppr.init();
+<?php
+$this->inlineScript()->captureEnd();
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+//$modeDePaiement = $this->escapeHtml(
+//    $this->libelles->getLibelle('modeDePaiement', $this->data->codeModeDePaiement));
+?>
+<h1>Résiliation d'encaissements</h1>
+<div id="suppression-wrapper" class="clearfix">
+	<fieldset>
+		<p>Vous avez demandé la résiliation des encaissements suivant :</p>
+		<div class="header-wrapper">
+			<table>
+				<tr>
+					<th>Responsable</th>
+					<th>Montant</th>
+					<th>Caisse</th>
+					<th>Mode</th>
+					<th>Date paiement</th>
+					<th>Date valeur</th>
+				</tr>
+				<?php foreach ($this->data as $row) :?>
+				<tr>
+					<td>
+						<?= $this->escapeHtml($this->responsable); ?></td>
+					<td class="align-right"><?= $fmt->formatCurrency($row->montant, 'EUR');?></td>
+					<td><?= $this->escapeHtml($this->libelles->getLibelle('caisse', $row->codeCaisse));?></td>
+					<td class="centre"><?= $this->escapeHtml($this->libelles->getLibelle('modeDePaiement', $row->codeModeDePaiement));?></td>
+					<td><?= DateLib::formatDateTimeFromMysql($row->datePaiement);?></td>
+					<td><?= DateLib::formatDateFromMysql($row->dateValeur);?></td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		</div>
+	</fieldset>
+	<fieldset>
+		<i>Pour confirmer, indiquez la nature des paiements concernés et éventuellement
+			cochez les élèves qui doivent être désabonnés, donnez la raison puis
+			cliquez sur le bouton de confirmation.</i>
+	    <?= $this->form()->openTag($form);?>
+	    <?= $this->formHidden($this->form->get('responsableId'));?>
+	    <div id="paiement-suppr-nature" class="row-inner">
+	    	<?= $this->formRow($this->form->get('natures'));?></div>
+		<div id="paiement-suppr-liste" class="row-inner">
+	    	<?= $this->formRow($this->form->get('eleveIds'));?></div>
+		<div id="paiement-suppr-note" class="row-inner"
+			style="vertical-align: top;">
+    	    <?= $this->formRow($this->form->get('note'));?></div>
+		<div id="paiement-suppr-buttons" class="row-inner">
+    	    <?= $this->formSubmit($this->form->get('submit'));?>
+     	    <?= $this->formSubmit($this->form->get('cancel'));?></div>
+	    <?= $this->form()->closeTag();?>
+	</fieldset>
+</div>

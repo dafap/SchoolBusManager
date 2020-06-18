@@ -163,7 +163,10 @@ class FinanceController extends AbstractActionController
         }
         // ouvrir la vue Sql
         $tablePaiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
-        $order = 'datePaiement DESC';
+        $order = [
+            'datePaiement DESC',
+            'dateValeur DESC'
+        ];
         // configuration du paginator
         $nb_paiements = $this->getPaginatorCountPerPage('nb_paiements', 15);
         if ($responsableId == - 1) {
@@ -354,6 +357,140 @@ class FinanceController extends AbstractActionController
                 'responsableId' => $prg['responsableId'],
                 'responsable' => $prg['responsable'],
                 'prg' => $prg
+            ]);
+    }
+
+    /**
+     * Permet de résilier un enregistrement ou des enregistrements de même référence à
+     * partir d'une date donnée (abonnements)
+     */
+    public function paiementResiliationAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || array_key_exists('cancel', $prg)) {
+            $this->flashMessenger()->addInfoMessage('Demande annulée.');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        // on détermine si le responsable est fixé ou sinon on sort
+        if (array_key_exists('h2', $prg)) {
+            Session::set('responsable_attributes',
+                [
+                    'h2' => $prg['h2'],
+                    'responsable' => $prg['responsable']
+                ], $this->getSessionNamespace());
+        } else {
+            $prg = array_merge($prg,
+                Session::get('responsable_attributes',
+                    [
+                        'h2' => false,
+                        'responsable' => ''
+                    ], $this->getSessionNamespace()));
+        }
+        $responsableId = StdLib::getParam('responsableId', $prg);
+        if (! $prg['h2'] || ! $responsableId) {
+            $this->flashMessenger()->addWarningMessage(
+                'Une résiliation se fait à partir de la fiche du responsable.');
+            return $this->redirect()->toRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $relationResponsableEleves = new Where(null, Where::COMBINED_BY_OR);
+        $relationResponsableEleves->equalTo('responsable1Id', $responsableId);
+        $form = $this->form_manager->get(Finances\FinancePaiementResiliation::class);
+        $form->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmgestion/finance',
+                [
+                    'action' => 'paiement-resiliation',
+                    'page' => $this->params('page', 1)
+                ]))
+            ->setValueOptions('eleveIds',
+            $this->db_manager->get('Sbm\Db\Select\Eleves')
+                ->elevesAbonnes($relationResponsableEleves));
+        $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        if (array_key_exists('submit', $prg)) { // suppression confirmée
+            $form->setData($prg);
+            if ($form->isValid()) {
+                $set = [
+                    'mouvement' => 0,
+                    'dateRefus' => DateLib::nowToMysql(),
+                    'note' => $prg['note']
+                ];
+                $this->db_manager->get('Sbm\Paiement\MarqueEleves')->setPaiement(
+                    StdLib::getParam('eleveIds', $prg, []), $responsableId, false);
+                $n = $tPaiements->getTableGateway()->update($set,
+                    [
+                        'selection' => 1,
+                        'responsableId' => $responsableId
+                    ]);
+                if ($n > 1) {
+                    $message = 'Les encaissements sélectionnés sont annulés.';
+                } else {
+                    $message = "L'encaissement sélectionné est annulé.";
+                }
+                $this->flashMessenger()->addSuccessMessage($message);
+                return $this->redirect()->toRoute('sbmgestion/finance',
+                    [
+                        'action' => 'paiement-liste',
+                        'page' => $this->params('page', 1)
+                    ]);
+            } else {
+                $prg['responsable'] = StdLib::getParam('responsable', $prg, '');
+            }
+        } else {
+            $form->setData([
+                'responsableId' => $responsableId
+            ]);
+        }
+        $relationResponsablePaiements = new Where();
+        $relationResponsablePaiements->equalTo('responsableId', $responsableId)->literal(
+            'selection = 1');
+        return new ViewModel(
+            [
+                'data' => $tPaiements->fetchAll($relationResponsablePaiements),
+                'form' => $form->prepare(),
+                'page' => $this->params('page', 1),
+                'responsableId' => $responsableId,
+                'responsable' => $prg['responsable'],
+                'libelles' => $this->db_manager->get('Sbm\Libelles')
+            ]);
+    }
+
+    public function paiementSelectionAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || ! array_key_exists('responsableId', $prg)) {
+            $this->flashMessenger()->addInfoMessage('Demande annulée.');
+        } else {
+            $responsableId = $prg['responsableId'];
+            $tPaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+            $n = $tPaiements->getTableGateway()->update([
+                'selection' => 0
+            ], [
+                'selection' => 1,
+                'responsableId' => $responsableId
+            ]);
+            if ($n > 1) {
+                $message = 'Les fiches sont décochées.';
+            } else {
+                $message = 'La fiche est décochée.';
+            }
+            $this->flashMessenger()->addSuccessMessage($message);
+        }
+        return $this->redirect()->toRoute('sbmgestion/finance',
+            [
+                'action' => 'paiement-liste',
+                'page' => $this->params('page', 1)
             ]);
     }
 
@@ -1061,7 +1198,7 @@ class FinanceController extends AbstractActionController
                 $args = $form1->getData();
                 $aKey = $sBordereaux->decode($args['bordereau']);
                 $n = $tPaiements->clotureDepot($aKey['dateBordereau'],
-                    $aKey['codeModeDePaiement'],5);
+                    $aKey['codeModeDePaiement'], 5);
                 $format = "Le bordereau de %s a été clôturé. Les %d paiements qu'il contient sont maintenant déposés en banque.";
                 $message = sprintf($format, $bordereauxEnCours[$args['bordereau']], $n);
                 $this->flashMessenger()->addSuccessMessage($message);
@@ -1071,10 +1208,9 @@ class FinanceController extends AbstractActionController
                     ]);
             }
         } else {
-            $form2->setData(
-                [
-                    'codeCaisse' => 1
-                ]);
+            $form2->setData([
+                'codeCaisse' => 1
+            ]);
         }
         if (substr($this->params('id', ''), - 5) == 'error') {
             if ($this->params('id', '1error') == '3error') {
@@ -1571,7 +1707,8 @@ class FinanceController extends AbstractActionController
             [
 
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
-                    Session::get('millesime'), [
+                    Session::get('millesime'),
+                    [
                         'grilleTarif' => $grilleTarifId,
                         'reduction' => $reduction
                     ], [

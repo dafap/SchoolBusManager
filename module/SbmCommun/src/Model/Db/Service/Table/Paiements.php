@@ -8,7 +8,7 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 18 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -166,7 +166,7 @@ class Paiements extends AbstractSbmTable
      */
     public function clotureDepot($dateBordereau, $codeModeDePaiement, $codeCaisseComptable)
     {
-        $dateDepot = datelib::nowToMysql();
+        $dateDepot = DateLib::nowToMysql();
         $where = new Where();
         $where->equalTo('codeModeDePaiement', $codeModeDePaiement)
             ->equalTo('dateBordereau', $dateBordereau)
@@ -340,6 +340,22 @@ class Paiements extends AbstractSbmTable
         ])->where($where);
         $result = $this->table_gateway->selectWith($select)->current();
         return $result->somme ?: 0;
+    }
+
+    /**
+     * Refus bancaire d'honorer un chèque ou un abonnement CB ou annulation de recette
+     *
+     * @param int $paiementId
+     */
+    public function annule(int $paiementId)
+    {
+        $oData = $this->getObjData();
+        $oData->exchangeArray([
+            'paiementId' => $paiementId,
+            'mouvement' => 0,
+            'dateRefus' => DateLib::nowToMysql()
+        ]);
+        $this->updateRecord($oData);
     }
 }
 

@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 7 juin 2020
+ * @date 18 juin 2020
  * @version 2020-2.6.0
  */
 use SbmGestion\Controller;
@@ -101,6 +101,7 @@ return [
             Form\Eleve\PriseEnChargePaiement::class => Form\Eleve\PriseEnChargePaiement::class,
             Form\Finances\BordereauRemiseValeurChoix::class => Form\Finances\BordereauRemiseValeurChoix::class,
             Form\Finances\BordereauRemiseValeurCreer::class => Form\Finances\BordereauRemiseValeurCreer::class,
+            Form\Finances\FinancePaiementResiliation::class => Form\Finances\FinancePaiementResiliation::class,
             Form\Finances\FinancePaiementSuppr::class => Form\Finances\FinancePaiementSuppr::class,
             Form\EtablissementServiceSuppr::class => Form\EtablissementServiceSuppr::class,
             Form\ModifHoraires::class => Form\ModifHoraires::class,
