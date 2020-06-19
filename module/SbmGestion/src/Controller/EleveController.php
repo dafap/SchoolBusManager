@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2020
+ * @date 19 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1694,7 +1694,7 @@ class EleveController extends AbstractActionController
         $projection = $this->cartographie_manager->get(Projection::class);
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
-        $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';
+        $nonLocalise = 'Not((x Between %f And %f) And (y Between %f And %f))';
         // formulaire des critères de recherche
         $criteres_form = new \SbmCommun\Form\CriteresForm('responsables');
         // initialiser le form pour les select ...
@@ -1711,7 +1711,6 @@ class EleveController extends AbstractActionController
         $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresResponsables(
             $criteres_form->getElementNames());
         $criteres_obj->setSansLocalisationCondition(
-
             sprintf($nonLocalise, $rangeX['gestion'][0], $rangeX['gestion'][1],
                 $rangeY['gestion'][0], $rangeY['gestion'][1]));
         if ($this->sbm_isPost) {
