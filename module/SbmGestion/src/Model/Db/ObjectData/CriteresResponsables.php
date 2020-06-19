@@ -15,8 +15,8 @@
  * @filesource CriteresResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 oct. 2019
- * @version 2019-2.5.1
+ * @date 19 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -401,7 +401,7 @@ class CriteresResponsables extends SbmCommunCriteres
             if ($pdf) {
                 return $where->literal('nbInscrits > 0');
             } else {
-                return $where->literal('count(ins.eleveId) > 0');
+                return $where->literal('count(inscritId) > 0');
             }
         } else {
             $where['criteres']['inscrits'] = 1;
@@ -423,7 +423,7 @@ class CriteresResponsables extends SbmCommunCriteres
             if ($pdf) {
                 return $where->literal('nbPreinscrits > 0');
             } else {
-                return $where->literal('count(pre.eleveId) > 0');
+                return $where->literal('count(preinscritId) > 0');
             }
         } else {
             $where['criteres']['preinscrits'] = 1;
