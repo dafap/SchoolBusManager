@@ -756,7 +756,7 @@ class EleveGestionController extends AbstractActionController
                         $expression[] = "dateExtraction = '$dateReprise'";
                         $where->equalTo('dateExtraction', $dateReprise);
                         break;
-                    case 'selection':
+                    case 'ele.selection':
                         // il s'agit ici de la colonne `selection` de la table `eleves`
                         $expression = [
                             "millesime = $millesime",
@@ -804,8 +804,8 @@ class EleveGestionController extends AbstractActionController
                     'form2' => $form2,
                     'lastDateCarte' => $lastDateCarte,
                     'dateDebut' => $dateDebut,
+                    //'natureCartes' => $tLibelles->getLibelle('NatureCartes', 2),
                     'page' => $this->params('page', 1),
-                    'natureCartes' => $tLibelles->getLibelle('NatureCartes', 2)
                 ]);
         } else {
             die();

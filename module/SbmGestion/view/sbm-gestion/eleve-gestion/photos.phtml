@@ -7,8 +7,8 @@
  * @filesource photos.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 19 juin 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
@@ -36,7 +36,7 @@ $this->inlineScript()->captureStart();
 js_date.montreDate();
 <?php $this->inlineScript()->captureEnd();?>
 <div id="fiche-wrapper">
-	<h1>Extraction des photos pour les <?= strtolower($this->natureCartes);?></h1>
+	<h1>Extraction des photos</h1>
 	<div id="fiche-header">
 		<div class="menu clearfix">
         <?php echo $this->listeZoneActions($hiddens, $actions);?>
@@ -52,9 +52,7 @@ js_date.montreDate();
 	    <fieldset class="sbm-page1">
 			<p>
 				Si vous souhaitez préparer une nouvelle extraction, cliquez sur le
-				bouton ci-dessous.<br>Attention ! Seuls les élèves qui sont affectés
-				sur un circuit nécessitant des <?= strtolower($this->natureCartes);?>
-				seront pris en compte.</p>
+				bouton ci-dessous.</p>
 			<div class="row-inner"><?php echo $this->formSubmit($this->form1->get('nouvelle')); ?></div>
 			<p>
 				Par la suite pour utiliser ce nouveau lot de photos, cochez <i>Dernière

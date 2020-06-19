@@ -8,7 +8,7 @@
  * @filesource Photos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 avr. 2020
+ * @date 19 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Photos;
@@ -114,19 +114,15 @@ class Photos
     {
         // préparation du WHERE
         $where = new Where();
-        $where->equalTo('millesime', $millesime);
+        $where->equalTo('aff.millesime', $millesime);
         $or = false;
         $predicate = null;
-        foreach ($this->codesNatureCartes[$naturecarte] as $code) {
-            if ($or) {
-                $predicate->OR;
-            } else {
-                $predicate = $where->nest;
-                $or = true;
-            }
-            $predicate->equalTo('s1.natureCarte', $code)->OR->equalTo('s2.natureCarte',
-                $code);
-        }
+        /*
+         * foreach ($this->codesNatureCartes[$naturecarte] as $code) { if ($or) {
+         * $predicate->OR; } else { $predicate = $where->nest; $or = true; }
+         * $predicate->equalTo('s1.natureCarte', $code)->OR->equalTo('s2.natureCarte',
+         * $code); }
+         */
         if ($or) {
             $predicate->unnest;
         }
@@ -152,9 +148,9 @@ class Photos
             ->join([
             's2' => $this->table_services
         ],
-            imlode(' AND ',
+            implode(' AND ',
                 [
-                    'aff.service2Id = s2.serviceId',
+                    'aff.ligne2Id = s2.ligneId',
                     'aff.sensligne2 = s2.sens',
                     'aff.moment = s2.moment',
                     'aff.ordreligne2 = s2.ordre'
