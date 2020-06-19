@@ -7,7 +7,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2020
+ * @date 19 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -19,6 +19,7 @@ use SbmPaiement\Plugin;
 use SbmPaiement\Plugin\Exception;
 use Zend\Log\Logger;
 use Zend\Stdlib\Parameters;
+use Zend\Db\Sql\Where;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
@@ -520,10 +521,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
                         if (! isset($this->data))
                             $this->data = $data;
                         if ($this->validReconduction()) {
-                            // ici il n'y a rien à faire;
+                            $this->logError(Logger::INFO, 'Reconduction OK', $data);
+                            $this->enregistrePaybox();
                         } else {
-                            // ici il faut enregistrer l'incident, annuler des paiments et
-                            // marquer les fiches impayées
+                            $this->logError(Logger::NOTICE,
+                                'Reconduction KO : ' . $this->error_msg, $data);
+                            $this->enregistreIncident();
                         }
                     } else {
                         $this->logError(Logger::ERR,
@@ -551,6 +554,26 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             ]);
         }
         return '';
+    }
+
+    /**
+     */
+    private function annulerAbonnement()
+    {
+    }
+
+    /**
+     * DEBUG (uniquement en local)
+     *
+     * {@inheritdoc}
+     * @see \SbmPaiement\Plugin\AbstractPlateforme::isAuthorizedRemoteAdress()
+     */
+    public function isAuthorizedRemoteAdress($remote_adress)
+    {
+        if (getenv('APPLICATION_ENV') == 'development') {
+            return true;
+        }
+        return parent::isAuthorizedRemoteAdress($remote_adress);
     }
 
     /**
@@ -590,7 +613,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $data->offsetExists('sign');
         if ($ok) {
             // verif ETAT_PBX
-            $ok = $this->data->get('ETAT_PBX') == 'PBX_RECONDUCTION_ABT';
+            $ok = $data->get('ETAT_PBX') == 'PBX_RECONDUCTION_ABT';
             // verif signature
         }
         return $ok;
@@ -622,11 +645,16 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     protected function enregistrePaybox()
     {
         $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        if ($this->data->offsetExists('auto')) {
+            $auto = $this->data->get('auto');
+        } else {
+            $auto = 'erreur ' . $this->data->get('erreur');
+        }
         $array = [
             'responsableId' => $this->getFromRefDet('responsableId'),
             'exercice' => $this->getFromRefDet('exercice'),
             'numero' => $this->getFromRefDet('numero'),
-            'auto' => $this->data->get('auto'),
+            'auto' => $auto,
             'montant' => $this->data->get('montant'),
             'ref' => $this->data->get('ref'),
             'idtrans' => $this->data->get('idtrans'),
@@ -661,7 +689,38 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     protected function enregistreIncident()
     {
-        ;
+        $ref = $this->data->get('ref');
+        // marque les abonnements comme impayés
+        $tappels = $this->db_manager->get('Sbm\Db\Table\Appels');
+        $resultset = $tappels->fetchAll([
+            'refdet' => $ref
+        ]);
+        $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $in = [];
+        foreach ($resultset as $appel) {
+            $in[] = $appel->eleveId;
+        }
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->in('eleveId', $in);
+        $set = [
+            'paiementR1' => 0
+        ];
+        $tscolarites->getTableGateway()->update($set, $where);
+        // résilie les échéances à partir de la datetrans
+        $datetrans = \DateTime::createFromFormat('dmY', $this->data->get('datetrans'))->format(
+            'Y-m-d');
+        $where = new Where();
+        $set = [
+            'dateRefus' => $datetrans,
+            'mouvement' => 0,
+            'note' => 'Abonnement résilié. Echéance refusée. Erreur n° ' .
+            $this->data->get('erreur')
+        ];
+        $where->like('reference', $ref)->greaterThanOrEqualTo('dateValeur', $datetrans);
+        $tpaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        $tpaiements->getTableGateway()->update($set, $where);
+        // enregistre la notification
+        $this->enregistrePaybox();
     }
 
     /**
