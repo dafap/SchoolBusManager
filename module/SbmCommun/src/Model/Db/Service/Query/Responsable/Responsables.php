@@ -8,7 +8,7 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 19 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -22,6 +22,58 @@ use Zend\Db\Sql\Where;
 class Responsables extends AbstractQuery
 {
 
+    private function columnsResponsable()
+    {
+        return [
+            'responsableId',
+            'selection',
+            'dateCreation',
+            'dateModification',
+            'nature',
+            'titre',
+            'nom',
+            'nomSA',
+            'prenom',
+            'prenomSA',
+            'titre2',
+            'nom2',
+            'nom2SA',
+            'prenom2',
+            'prenom2SA',
+            'adresseL1',
+            'adresseL2',
+            'adresseL3',
+            'codePostal',
+            'communeId',
+            'ancienAdresseL1',
+            'ancienAdresseL2',
+            'ancienAdresseL3',
+            'ancienCodePostal',
+            'ancienCommuneId',
+            'email',
+            'telephoneF',
+            'telephoneP',
+            'telephoneT',
+            'smsF',
+            'smsP',
+            'smsT',
+            'etiquette',
+            'demenagement',
+            'dateDemenagement',
+            'facture', // inutilisé
+            'grilleTarif', // inutilisé
+            'ribTit', // inutilisé
+            'ribDom', // inutilisé
+            'iban', // inutilisé
+            'bic', // inutilisé
+            'x',
+            'y',
+            'userId',
+            'id_tra', // inutilisé
+            'note'
+        ];
+    }
+
     protected function init()
     {
         $this->select = $this->sql->select()
@@ -29,55 +81,7 @@ class Responsables extends AbstractQuery
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
-            ->columns(
-            [
-                'responsableId' => 'responsableId',
-                'selection' => 'selection',
-                'dateCreation' => 'dateCreation',
-                'dateModification' => 'dateModification',
-                'nature' => 'nature',
-                'titre' => 'titre',
-                'nom' => 'nom',
-                'nomSA' => 'nomSA',
-                'prenom' => 'prenom',
-                'prenomSA' => 'prenomSA',
-                'titre2' => 'titre2',
-                'nom2' => 'nom2',
-                'nom2SA' => 'nom2SA',
-                'prenom2' => 'prenom2',
-                'prenom2SA' => 'prenom2SA',
-                'adresseL1' => 'adresseL1',
-                'adresseL2' => 'adresseL2',
-                'adresseL3' => 'adresseL3',
-                'codePostal' => 'codePostal',
-                'communeId' => 'communeId',
-                'ancienAdresseL1' => 'ancienAdresseL1',
-                'ancienAdresseL2' => 'ancienAdresseL2',
-                'ancienAdresseL3' => 'ancienAdresseL3',
-                'ancienCodePostal' => 'ancienCodePostal',
-                'ancienCommuneId' => 'ancienCommuneId',
-                'email' => 'email',
-                'telephoneF' => 'telephoneF',
-                'telephoneP' => 'telephoneP',
-                'telephoneT' => 'telephoneT',
-                'smsF' => 'smsF',
-                'smsP' => 'smsP',
-                'smsT' => 'smsT',
-                'etiquette' => 'etiquette',
-                'demenagement' => 'demenagement',
-                'dateDemenagement' => 'dateDemenagement',
-                'facture' => 'facture', // inutilisé
-                'grilleTarif' => 'grilleTarif', // inutilisé
-                'ribTit' => 'ribTit', // inutilisé
-                'ribDom' => 'ribDom', // inutilisé
-                'iban' => 'iban', // inutilisé
-                'bic' => 'bic', // inutilisé
-                'x' => 'x',
-                'y' => 'y',
-                'userId' => 'userId',
-                'id_tra' => 'id_tra', // inutilisé
-                'note' => 'note'
-            ])
+            ->columns($this->columnsResponsable())
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId=res.communeId',
@@ -165,7 +169,117 @@ class Responsables extends AbstractQuery
      */
     public function paginatorResponsables($where, $order = null, $responsableId = null)
     {
-        return $this->paginator($this->selectResponsables($where, $order, $responsableId));
+        // $select =$this->selectResponsables($where, $order, $responsableId);
+        // die($this->getSqlString($select));
+        return $this->paginator($this->unionResponsables($where, $order, $responsableId));
+    }
+
+    protected function unionResponsables($where, $order, $responsableId)
+    {
+        $select = new Select();
+        $select->columns(
+            array_merge($this->columnsResponsable(),
+                [
+                    'commune',
+                    'lacommune',
+                    'laposte',
+                    'nbEnfants' => new Expression('count(eleveId)'),
+                    'nbPreinscrits' => new Expression('count(preinscritId)'),
+                    'nbInscrits' => new Expression('count(inscritId)'),
+                    'nbGratuits' => new Expression('count(gratuitId)'),
+                    'nbDuplicata' => new Expression('sum(duplicata)')
+                ]))
+            ->from([
+            'tmp' => $this->unionSelect(1)
+                ->combine($this->unionSelect(2))
+        ])
+            ->group('responsableId')
+            ->order($order);
+        return $where->count() ? $select->having($where) : $select;
+    }
+
+    /**
+     *
+     * @param int $r
+     * @return \Zend\Db\Sql\Select
+     */
+    private function unionSelect(int $r): Select
+    {
+        $select = clone $this->select;
+        $select->join([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], sprintf('res.responsableId = ele.responsable%dId', $r), [
+            'eleveId'
+        ], $select::JOIN_LEFT)
+            ->join([
+            'pre' => $this->subselectPreinscrits()
+        ], 'ele.eleveId=pre.eleveId', [
+            'preinscritId' => 'eleveId'
+        ], $select::JOIN_LEFT)
+            ->join([
+            'ins' => $this->subselectInscrits()
+        ], 'ele.eleveId=ins.eleveId', [
+            'inscritId' => 'eleveId'
+        ], $select::JOIN_LEFT)
+            ->join([
+            'gra' => $this->subselectGratuits()
+        ], 'ele.eleveId=gra.eleveId', [
+            'gratuitId' => 'eleveId'
+        ], $select::JOIN_LEFT)
+            ->join([
+            'dup' => $this->subselectDuplicatas($r)
+        ], 'ele.eleveId=dup.eleveId', [
+            'duplicata' => sprintf('duplicataR%d', $r)
+        ], $select::JOIN_LEFT);
+        if ($r == 2) {
+            $select->where((new Where())->isNotNull('responsable2Id'));
+        }
+        return $select;
+    }
+
+    private function subselectPreinscrits()
+    {
+        $preinscrits = new Predicate\ElevesPreinscrits($this->millesime);
+        $select = new Select();
+        return $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($preinscrits());
+    }
+
+    private function subselectInscrits()
+    {
+        $payants = new Predicate\ElevesPayantsInscrits($this->millesime);
+        $select = new Select();
+        return $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($payants());
+    }
+
+    private function subselectGratuits()
+    {
+        $gratuits = new Predicate\ElevesGratuits($this->millesime);
+        $select = new Select();
+        return $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($gratuits());
+    }
+
+    private function subselectDuplicatas(int $r)
+    {
+        $avecDuplicatas = new Predicate\ElevesAvecDuplicatas($this->millesime);
+        $select = new Select();
+        return $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId',
+            'duplicataR' . $r
+        ])
+            ->where($avecDuplicatas($r));
     }
 
     /**
