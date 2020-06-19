@@ -11,7 +11,7 @@
  * @filesource facture.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 19 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -83,18 +83,27 @@ foreach ($facture->getResultats()->getAbonnementsDetail() as $abonnement) {
 }
 $encours = [];
 $paiementCB = [];
+$resilies = [];
+$resiliationCB = [];
 $aujourdhui = new \DateTime();
 foreach ($facture->getResultats()->getPaiementsDetail() as $paiement) {
     if ($paiement['caisse'] == 'Paybox') {
         $exercice = substr($paiement['reference'], 4, 4);
         $numero = substr($paiement['reference'], 22, 7);
-        $paiementCB[$paiement['reference']][] = [
-            'dateValeur' => $paiement['dateValeur'],
-            'montant' => $paiement['montant'],
-            'numero' => "$exercice-$numero"
-        ];
         $dv = \DateTime::createFromFormat('Y-m-d H:i:s', $paiement['dateValeur']);
-        if ($aujourdhui < $dv) {
+        if ($paiement['mouvement'] == 0) {
+            $resiliationCB[$paiement['reference']][] = [
+                'dateValeur' => $paiement['dateValeur'],
+                'montant' => $paiement['montant'],
+                'numero' => "$exercice-$numero"
+            ];
+            $resilies[$paiement['reference']] = $paiement['reference'];
+        } elseif ($aujourdhui < $dv) {
+            $paiementCB[$paiement['reference']][] = [
+                'dateValeur' => $paiement['dateValeur'],
+                'montant' => $paiement['montant'],
+                'numero' => "$exercice-$numero"
+            ];
             $encours[$paiement['reference']] = $paiement['reference'];
         }
     }
@@ -274,6 +283,22 @@ table.entete td {
    <?php $x = 0; $sep1 = [' = ', ' puis ', ' et ']; $sep2 = ['le', 'à M+1 le', 'à M+2 le'];?>
 <br>FACTURE n°
    <?php foreach ($paiementCB[$reference] as $paiement):?>
+   <?=$x ? '' : $paiement['numero'];?>
+   <?=$sep1[$x];?>
+   <?= $fmt->formatCurrency($paiement['montant'],'EUR');?> TTC
+   <?= $sep2[$x++]; ?>
+   <?= DateLib::formatDateFromMysql($paiement['dateValeur']);?>
+   <?php endforeach;?>
+<?php endforeach;?>
+</p>
+<?php endif;?>
+<?php if ($resilies):?>
+<p style="font-size: 8pt;">
+	<b>Abonnements Carte Bancaire résiliés</b>
+<?php foreach ($resilies as $reference) :?>
+   <?php $x = 0; $sep1 = [' = ', ' puis ', ' et ']; $sep2 = ['le', 'à M+1 le', 'à M+2 le'];?>
+<br>FACTURE n°
+   <?php foreach ($resiliationCB[$reference] as $paiement):?>
    <?=$x ? '' : $paiement['numero'];?>
    <?=$sep1[$x];?>
    <?= $fmt->formatCurrency($paiement['montant'],'EUR');?> TTC
