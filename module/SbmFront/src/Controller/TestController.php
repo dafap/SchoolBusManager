@@ -61,25 +61,193 @@ class TestController extends AbstractActionController
     public function phpOfficeAction()
     {
         $inputFileName = 'D:/dafap/Developpements Eclipse/arlysere/paiement en ligne/Export_transactions/Export_transactions_20200504-09450872566.xls';
-        //$helper->log('Loading file ' . pathinfo($inputFileName, PATHINFO_BASENAME) . ' using IOFactory to identify the format');
+        // $helper->log('Loading file ' . pathinfo($inputFileName, PATHINFO_BASENAME) . '
+        // using IOFactory to identify the format');
         $spreadsheet = IOFactory::load($inputFileName);
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, false);
 
-        /** Create a new Xls Reader  **/
-        //$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xml();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Slk();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Gnumeric();
-        //    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-        /** Load $inputFileName to a Spreadsheet Object  **/
-        //$spreadsheet = $reader->load($inputFileName);
+        /**
+         * Create a new Xls Reader *
+         */
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xml();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Slk();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Gnumeric();
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+        /**
+         * Load $inputFileName to a Spreadsheet Object *
+         */
+        // $spreadsheet = $reader->load($inputFileName);
 
-        //$error_msg[] = 'Terminé';
+        // $error_msg[] = 'Terminé';
         // dump de l'objet 'obj'
         $viewmodel = new ViewModel([
             'obj' => $sheetData,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
+    }
+
+    public function affectationsParEtablissementAction()
+    {
+        $this->initDebug();
+        $etablissementId = '0730466K';
+        $etablissement = 'école de Verrens-Arvey';
+        $this->debugLog("$etablissement : $etablissementId");
+        $compteur = 0;
+        for ($r = 1; $r <= 2; $r ++) {
+            $where = new Where();
+            $where->literal(sprintf('demandeR%d = 1', $r))
+                ->literal(sprintf('accordR%d = 1', $r))
+                ->literal('millesime = 2020')
+                ->equalTo('etablissementId', $etablissementId);
+            $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+            $sco = $tscolarites->getTableGateway()->getTable();
+            $stationId = sprintf('stationIdR%d', $r);
+            $joursTransport = sprintf('joursTransportR%d', $r);
+            $select = $tscolarites->getTableGateway()
+                ->getSql()
+                ->select()
+                ->join([
+                'ele' => $this->db_manager->getCanonicName('eleves')
+            ], "$sco.eleveId=ele.eleveId",
+                [
+                    'responsableId' => sprintf('responsable%dId', $r)
+                ])
+                ->where($where)
+            // ->limit(20)
+            //->offset(30)
+            ;
+            $resultset = $tscolarites->getTableGateway()->selectWith($select);
+            foreach ($resultset as $row) {
+                set_time_limit(90);
+                if (0 == ++ $compteur % 10) {
+                    $this->debugLog($compteur);
+                }
+                $this->db_manager->get('Sbm\ChercheTrajet')
+                    ->setEtablissementId($row->etablissementId)
+                    ->setStationId($row->{$stationId})
+                    ->setEleveId($row->eleveId)
+                    ->setJours($row->{$joursTransport})
+                    ->setTrajet($r)
+                    ->setResponsableId($row->responsableId)
+                    ->run();
+            }
+        }
+
+        $error_msg[] = 'Terminé';
+        // dump et print_r de l'objet 'obj'
+        $viewmodel = new ViewModel([
+            'obj' => $error_msg,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
+    }
+
+    public function affectationsParOrigineAction()
+    {
+        $this->initDebug();
+        $aCommunes = [
+            "La Giettaz" => "73123",
+            "Flumet" => "73114",
+            "Notre-Dame-de-Bellecombe" => "73186",
+            "Saint-Nicolas-la-Chapelle" => "73262",
+            "Crest-Voland" => "73094",
+            "Cohennoz" => "73088",
+            "Aiton" => "73007",
+            "Bonvillard" => "73048",
+            "Sainte-Hélène-sur-Isère" => "73241",
+            "Notre-Dame-des-Millières" => "73188",
+            "Monthion" => "73170",
+            "Grignon" => "73130",
+            "Hauteluce" => "73132",
+            "Villard-sur-Doron" => "73317",
+            "Beaufort" => "73034",
+            "Queige" => "73211",
+            "Feissons-sur-Isère" => "73112",
+            "Rognaix" => "73216",
+            "Cevins" => "73063",
+            "Saint-Paul-sur-Isère" => "73268",
+            "Esserts-Blay" => "73110",
+            "La Bâthie" => "73032",
+            "Tours-en-Savoie" => "73298",
+            "Grésy-sur-Isère" => "73129",
+            "Montailleur" => "73162",
+            "Saint-Vital" => "73283",
+            "Frontenex" => "73121",
+            "Tournon" => "73297",
+            "Cléry" => "73086",
+            "Verrens-Arvey" => "73312",
+            "Plancherine" => "73202",
+            "Mercury" => "73154",
+            "Pallud" => "73196",
+            "Allondaz" => "73014",
+            "Thénésol" => "73292",
+            "Césarches" => "73061",
+            "Venthon" => "73308",
+            "Marthod" => "73153",
+            "Ugine" => "73303",
+            "Gilly-sur-Isère" => "73124",
+            "Albertville" => "73011",
+            "La Léchère" => "73187",
+            "Megève" => "74173"
+        ];
+        $compteur = 0;
+        foreach ($aCommunes as $key => $communeId) {
+            $this->debugLog($key);
+            for ($r = 1; $r <= 2; $r ++) {
+                $where = new Where();
+                $where->literal(sprintf('demandeR%d = 1', $r))
+                    ->literal(sprintf('accordR%d = 1', $r))
+                    ->literal('millesime = 2020')
+                    ->equalTo('sta.communeId', $communeId);
+                $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+                $sco = $tscolarites->getTableGateway()->getTable();
+                $stationId = sprintf('stationIdR%d', $r);
+                $joursTransport = sprintf('joursTransportR%d', $r);
+                $select = $tscolarites->getTableGateway()
+                    ->getSql()
+                    ->select()
+                    ->join([
+                    'ele' => $this->db_manager->getCanonicName('eleves')
+                ], "$sco.eleveId=ele.eleveId",
+                    [
+                        'responsableId' => sprintf('responsable%dId', $r)
+                    ])
+                    ->join([
+                    'sta' => $this->db_manager->getCanonicName('stations')
+                ], "$sco.$stationId = sta.stationId", [])
+                    ->where($where);
+                // ->limit(20)
+                // ->offset(80)
+
+                $resultset = $tscolarites->getTableGateway()->selectWith($select);
+                foreach ($resultset as $row) {
+                    set_time_limit(90);
+                    if (0 == ++ $compteur % 10) {
+                        $this->debugLog($compteur);
+                    }
+                    $this->db_manager->get('Sbm\ChercheTrajet')
+                        ->setEtablissementId($row->etablissementId)
+                        ->setStationId($row->{$stationId})
+                        ->setEleveId($row->eleveId)
+                        ->setJours($row->{$joursTransport})
+                        ->setTrajet($r)
+                        ->setResponsableId($row->responsableId)
+                        ->run();
+                }
+            }
+            // break;
+        }
+
+        $error_msg[] = 'Terminé';
+        // dump et print_r de l'objet 'obj'
+        $viewmodel = new ViewModel([
+            'obj' => $error_msg,
             'form' => null
         ]);
         $viewmodel->setTemplate('sbm-front/test/test.phtml');
@@ -149,8 +317,8 @@ class TestController extends AbstractActionController
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
-        ->from('communaux')
-        ->columns([
+            ->from('communaux')
+            ->columns([
             'nom' => 'correspondant',
             'email' => 'mail'
         ]);
@@ -203,8 +371,8 @@ class TestController extends AbstractActionController
         $adapter = $this->db_manager->getDbAdapter();
         $sql = new \Zend\Db\Sql\Sql($adapter);
         $select = $sql->select()
-        ->from('eleves')
-        ->columns(
+            ->from('eleves')
+            ->columns(
             [
                 'nom',
                 'nomSA',
@@ -218,40 +386,40 @@ class TestController extends AbstractActionController
             ])
             ->where((new Where())->equalTo('responsable1Id', 2070))
             ->order('responsable1Id');
-            $statement = $sql->prepareStatementForSqlObject($select);
-            $rowset = $statement->execute();
-            $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
-            $oEleve = $tEleves->getObjData();
-            // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
-            $error_msg = [];
-            foreach ($rowset as $row) {
-                $oEleve->exchangeArray(
-                    [
-                        'nom' => $row['nom'],
-                        'nomSA' => $row['nomSA'],
-                        'prenom' => $row['prenom'],
-                        'prenomSA' => $row['prenomSA'],
-                        'dateN' => $row['dateN'],
-                        'sexe' => $row['sexe'],
-                        'responsable1Id' => $row['responsable1Id'],
-                        'responsable2Id' => $row['responsable2Id'],
-                        'id_tra' => $row['id_tra']
-                    ]);
-                try {
-                    $tEleves->saveRecord($oEleve);
-                } catch (\Exception $e) {
-                    $error_msg[] = [
-                        $row['nomSA'],
-                        $e->getMessage()
-                    ];
-                }
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $oEleve = $tEleves->getObjData();
+        // pour chaque enregistrement, préparer un objet zonage et l'enregistrer
+        $error_msg = [];
+        foreach ($rowset as $row) {
+            $oEleve->exchangeArray(
+                [
+                    'nom' => $row['nom'],
+                    'nomSA' => $row['nomSA'],
+                    'prenom' => $row['prenom'],
+                    'prenomSA' => $row['prenomSA'],
+                    'dateN' => $row['dateN'],
+                    'sexe' => $row['sexe'],
+                    'responsable1Id' => $row['responsable1Id'],
+                    'responsable2Id' => $row['responsable2Id'],
+                    'id_tra' => $row['id_tra']
+                ]);
+            try {
+                $tEleves->saveRecord($oEleve);
+            } catch (\Exception $e) {
+                $error_msg[] = [
+                    $row['nomSA'],
+                    $e->getMessage()
+                ];
             }
-            $error_msg[] = 'Terminé';
-            $viewmodel = new ViewModel([
-                'obj' => $error_msg,
-                'form' => null
-            ]);
-            $viewmodel->setTemplate('sbm-front/test/test.phtml');
-            return $viewmodel;
+        }
+        $error_msg[] = 'Terminé';
+        $viewmodel = new ViewModel([
+            'obj' => $error_msg,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
     }
 }
