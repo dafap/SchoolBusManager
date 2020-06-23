@@ -7,7 +7,7 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 22 juin 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -66,8 +66,9 @@ $actions = [
 	<div id="liste-inner">
 		<table class="liste-inner services">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th>Service</th>
+					<th>Description</th>
 					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
@@ -108,10 +109,12 @@ $actions = [
                     ]
                 ];
                 $id = $this->stationId . '|' . $serviceId?>
-                <tr class="<?=$css;?>">
+                <tr class="petit <?=$css;?>">
 					<td class="designation">
 						<?=$this->escapeHtml($designation);?></td>
-					<td class="aliascg">
+					<td class="description">
+					    <?= $service->ligneExtremite1 . ' - ' .$service->ligneExtremite2;?></td>
+					<td class="transporteur">
 						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="operateur">
 						<?=$this->escapeHtml($service->operateur);?></td>
