@@ -1,0 +1,66 @@
+<?php
+/**
+ * Formulaire d'envoi d'un fichier csv provenant du backOffice de SystemPay et contenant
+ * des transactions remisées
+ *
+ * Le formulaire demande le nom du fichier, s'il a une ligne d'entêtes de colonnes,
+ * quel est séparateur, quel est le délimiteur (s'il y en a un)
+ *
+ * @project sbm
+ * @package SbmPaiement/view/sbm-paiement/index
+ * @filesource rapprochement-csv.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 23 juin 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_retour = $this->url('sbmpaiement', [
+    'action' => 'liste'
+]);
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ]
+];
+$this->form->prepare();
+?>
+
+<h1>Envoi d'un fichier csv de transactions remisées</h1>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        	<?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<?= $this->formHidden($this->form->get('csrf'));?>
+        <fieldset class="sbm-page1">
+			<div id="rapprochement-file"
+				class="form-element row-inner rapprochement">
+            <?php $fileElement = $form->get('csvfile'); ?>
+            <?= $this->formLabel($fileElement); ?>
+            <?= $this->formFile($fileElement); ?>
+            <?= $this->formElementErrors($fileElement, $fileElement->getOption('error_attributes')); ?>
+            </div>
+			<div id="rapprochement-separator" class="row-inner rapprochement">
+				<?= $this->formRow($this->form->get('separator')); ?></div>
+			<div id="rapprochement-enclosure" class="row-inner rapprochement">
+				<?= $this->formRow($this->form->get('enclosure')); ?></div>
+			<div id="rapprochement-escape" class="row-inner rapprochement">
+				<?= $this->formRow($this->form->get('escape')); ?></div>
+			<div id="rapprochement-firstline" class="row-inner rapprochement">
+				<?= $this->formRow($this->form->get('firstline')); ?></div>
+			<div id="rapprochement-buttons" class="row-inner rapprochement">
+            	<?= $this->formSubmit($this->form->get('submit'));?>
+            	<?= $this->formSubmit($this->form->get('cancel'));?>
+            </div>
+		</fieldset>
+		<?= $this->form()->closeTag(); ?>
+    </div>
+	<div id="fiche-footer"></div>
+</div>

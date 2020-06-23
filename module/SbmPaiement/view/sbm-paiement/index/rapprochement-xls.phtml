@@ -1,18 +1,17 @@
 <?php
 /**
- * Formulaire d'envoi d'un fichier csv provenant du backOffice de SystemPay et contenant
- * des transactions remisées
+ * Formulaire d'envoi d'un fichier xls provenant du backOffice de la plateforme et contenant
+ * des transactions
  *
- * Le formulaire demande le nom du fichier, s'il a une ligne d'entêtes de colonnes, 
- * quel est séparateur, quel est le délimiteur (s'il y en a un) 
- * 
+ * Le formulaire demande le nom du fichier et s'il a une ligne d'entêtes de colonnes
+ *
  * @project sbm
  * @package SbmPaiement/view/sbm-paiement/index
- * @filesource rapprochement.phtml
+ * @filesource rapprochement-xls.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 23 juin 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmpaiement', [
@@ -29,7 +28,7 @@ $actions = [
 $this->form->prepare();
 ?>
 
-<h1>Envoi d'un fichier csv de transactions remisées</h1>
+<h1>Envoi d'un fichier xls de transactions</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
@@ -42,17 +41,11 @@ $this->form->prepare();
         <fieldset class="sbm-page1">
 			<div id="rapprochement-file"
 				class="form-element row-inner rapprochement">
-            <?php $fileElement = $form->get('csvfile'); ?>
+            <?php $fileElement = $form->get('xlsfile'); ?>
             <?= $this->formLabel($fileElement); ?>
             <?= $this->formFile($fileElement); ?>
             <?= $this->formElementErrors($fileElement, $fileElement->getOption('error_attributes')); ?>
             </div>
-			<div id="rapprochement-separator" class="row-inner rapprochement">
-				<?= $this->formRow($this->form->get('separator')); ?></div>
-			<div id="rapprochement-enclosure" class="row-inner rapprochement">
-				<?= $this->formRow($this->form->get('enclosure')); ?></div>
-			<div id="rapprochement-escape" class="row-inner rapprochement">
-				<?= $this->formRow($this->form->get('escape')); ?></div>
 			<div id="rapprochement-firstline" class="row-inner rapprochement">
 				<?= $this->formRow($this->form->get('firstline')); ?></div>
 			<div id="rapprochement-buttons" class="row-inner rapprochement">

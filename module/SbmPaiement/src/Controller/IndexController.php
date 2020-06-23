@@ -15,10 +15,10 @@ namespace SbmPaiement\Controller;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmPaiement\Form\UploadCsv;
 use SbmPaiement\Model\RapprochementCR;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
+use SbmPaiement\Form;
 
 class IndexController extends AbstractActionController
 {
@@ -234,7 +234,7 @@ class IndexController extends AbstractActionController
     {
         // formulaire d'upload servant à la fois à la saisie et à la validation
         $tmpuploads = $this->csv['path']['tmpuploads'];
-        $form = new UploadCsv('upload-form', [
+        $form = new Form\UploadXls('upload-form', [
             'tmpuploads' => $tmpuploads
         ]);
 
@@ -249,10 +249,7 @@ class IndexController extends AbstractActionController
                 return $this->redirect()->toRoute('sbmpaiement');
             }
             if ($form->isValid()) {
-                $data = $form->getData();
-                $cr = $this->plugin_plateforme->rapprochement(
-                    $data['csvfile']['tmp_name'], $data['firstline'], $data['separator'],
-                    $data['enclosure'], $data['escape']);
+                $cr = $this->plugin_plateforme->rapprochement($form->getData());
                 if (empty($cr)) {
                     $this->flashMessenger()->addInfoMessage(
                         'Tous les paiements sont présents.');
@@ -266,13 +263,14 @@ class IndexController extends AbstractActionController
             }
         } else {
             // ce n'est pas un post. Afficher le formulaire d'upload d'un fichier
-            $form->get('csvfile')->setMessages([]);
+            $form->get('xlsfile')->setMessages([]);
             $form->get('firstline')->setMessages([]);
             $form->setData($this->csv['parameters']);
         }
         $view = new ViewModel([
             'form' => $form
         ]);
+        $view->setTemplate('sbm-paiement/index/rapprochement-xls.phtml');
         return $view;
     }
 }

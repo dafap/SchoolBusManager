@@ -9,7 +9,7 @@
  * @filesource PlateformeInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2020
+ * @date 23 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin;
@@ -121,18 +121,13 @@ interface PlateformeInterface
     public function majnotification(array $args);
 
     /**
-     * Reçoit un fichier csv, vérifie que les lignes sont enregistrées dans la table
-     * plugin et renvoie un tableau des lignes absentes.
+     * Reçoit le résultat du formulaire de upload et renvoie un tableau des lignes
+     * absentes.
      *
-     * @param string $csvname
-     * @param bool $firstline
-     * @param string $separator
-     * @param string $enclosure
-     * @param string $escape
+     * @param array $data
      * @return array
      */
-    public function rapprochement(string $csvname, bool $firstline, string $separator,
-        string $enclosure, string $escape): array;
+    public function rapprochement(array $data): array;
 
     /**
      * Renvoie l'entête des lignes d'un compte-rendu d'un rapprochement (doit avoir autant

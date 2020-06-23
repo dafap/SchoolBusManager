@@ -12,14 +12,15 @@
  */
 namespace SbmPaiement\Plugin\PayBox;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Paiements\FactureInterface as Facture;
 use SbmFront\Model\Responsable\Responsable;
 use SbmPaiement\Plugin;
 use SbmPaiement\Plugin\Exception;
+use Zend\Db\Sql\Where;
 use Zend\Log\Logger;
 use Zend\Stdlib\Parameters;
-use Zend\Db\Sql\Where;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
@@ -831,14 +832,133 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      * PARTIE 3 : RAPPROCHEMENT DES PAIEMENTS AVEC LE BORDEREAU DE PAYBOX
      */
     /**
-     * TODO: à écrire lorsqu'on traitera l'action rapprochementAction()
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\PlateformeInterface::rapprochement()
      */
-    public function rapprochement(string $csvname, bool $firstline, string $separator,
-        string $enclosure, string $escape): array
+    public function rapprochement(array $data): array
     {
+        $xlsfile = $data['xlsfile']['tmp_name'];
+        $firstline = $data['firstline'];
+        $spreadsheet = IOFactory::load($xlsfile);
+        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        $cr = [];
+        $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        foreach ($sheetData as $ligne) {
+            if ($firstline) {
+                // première ligne d'en-tête
+                $firstline = false;
+                continue;
+            }
+            if ($ligne['G'] != 'Débit') {
+                // remboursement
+                continue;
+            }
+            if ($ligne['H'] == 'Refusée' && $ligne['U'] == '3D secure') {
+                // 3D secure refusé
+                continue;
+            }
+            if ($ligne['H'] == 'Acceptée' && $ligne['U'] == 'Abonnement') {
+                // abonnement accepté - vérifier que la référence du paiement est présente
+                $cas = 'abonnement';
+            } elseif ($ligne['U'] == 'Abonnement') {
+                // soit un abonnement refusé, soit un paiement accepté
+                $cas = 'résiliation';
+            } else {
+                $cas = 'paiement';
+            }
+            // transaction manquante ?
+            $date = \DateTime::createFromFormat('Y-m-d H:i:s', $ligne['C']);
+            $this->data = [
+                'montant' => $ligne['E'] * 100,
+                'ref' => $ligne['D'],
+                'idtrans' => $ligne['A'],
+                'datetrans' => $date->format('dmY'),
+                'heuretrans' => $date->format('H:i:s'),
+                'g3ds' => $ligne['V'],
+                'carte' => $ligne['J'],
+                'bin6' => '',
+                'bin2' => '',
+                'pays' => $ligne['L'],
+                'ip' => $ligne['K']
+            ];
+            $responsableId = $this->getFromRefDet('responsableId');
+            $exercice = $this->getFromRefDet('exercice'); // exercice, numero est la PK
+            $numero = $this->getFromRefDet('numero'); // numéro facture
+            switch ($cas) {
+                case 'abonnement':
+                    $where = new Where();
+                    $where->like('ref', $ligne['D'] . 'PBX_2MONT%');
+                    $resultset = $table->fetchAll($where);
+                    if ($resultset->count()) {
+                        // abonnement présent dans les tables
+                        continue 2;
+                    } else {
+                        // aller chercher la facture pour avoir le montant total à payer
+                        $this->data['auto'] = $ligne['AH'];
+                        $this->paiement3fois = true;
+                        $this->setFacture(
+                            $this->getDbManager()
+                                ->get('Sbm\Db\Table\Factures')
+                                ->getRecord(
+                                [
+                                    'exercice' => $exercice,
+                                    'numero' => $numero
+                                ]));
+                        $apayer = $this->getMontantAbonnement();
+                        $abonnement = $this->getFormulaireAbonnement();
+                        $abonnement['PBX_2MONT'] = sprintf('%010d', $apayer);
+                        foreach ($abonnement as $key => $value) {
+                            $this->data['ref'] .= $key . $value;
+                        }
+                    }
+                    $this->data = new Parameters($this->data);
+                    $this->enregistrePaybox();
+                    break;
+                case 'resiliation':
+                    $where = new Where();
+                    $where->like('ref', $ligne['D'] . 'PBX_2MONT%');
+                    $resultset = $table->fetchAll($where);
+                    if (! $resultset->count()) {
+                        // l'abonnement n'est pas présent donc rien à annuler
+                        continue 2;
+                    }
+                    if ($ligne['R']) {
+                        $this->data['erreur'] = $this->getErreurCode($ligne['R']);
+                    } else {
+                        $this->data['erreur'] = '?????';
+                    }
+                    $this->data['ref'] = $resultset->current()['ref'];
+                    $this->data = new Parameters($this->data);
+                    $this->enregistreIncident();
+                    break;
+                default:
+                    $resultset = $table->fetchAll([
+                        'idtrans' => $ligne['A']
+                    ]);
+                    if ($resultset->count()) {
+                        // transaction présente dans la table
+                        continue 2;
+                    }
+                    $this->data['auto'] = $ligne['AH'];
+                    $this->data = new Parameters($this->data);
+                    $this->enregistrePaybox();
+                    break;
+            }
+            $responsable = $this->getDbManager()
+                ->get('Sbm\Db\Table\Responsables')
+                ->getRecord($responsableId);
+            $cr[] = [
+                $cas,
+                $ligne['C'],
+                $ligne['E'],
+                $responsableId,
+                sprintf('%s %s', $responsable->nom, $responsable->prenom),
+                $ligne['D'],
+                $ligne['A']
+            ];
+        }
+        return $cr;
     }
 
     /**
@@ -893,8 +1013,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * Appelée par SbmPaiement\Controller\IndexConfroller::majnotificationAction() TODO: à
-     * écrire
+     * Appelée par SbmPaiement\Controller\IndexConfroller::majnotificationAction() Pas
+     * dans Paybox
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\PlateformeInterface::majnotification()
@@ -909,6 +1029,50 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     public function rapprochementCrHeader(): array
     {
+        $header = [];
+        $column = new \StdClass();
+        $column->label = 'Nature';
+        $column->align = 'L';
+        $column->width = 15;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Date';
+        $column->align = 'L';
+        $column->width = 20;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Montant';
+        $column->align = 'R';
+        $column->width = 15;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Id acheteur';
+        $column->align = 'L';
+        $column->width = 12;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Acheteur';
+        $column->align = 'L';
+        $column->width = 45;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Commande';
+        $column->align = 'L';
+        $column->width = 50;
+        $column->format = new Formatage();
+        $header[] = $column;
+        $column = new \StdClass();
+        $column->label = 'Transaction';
+        $column->align = 'L';
+        $column->width = 15;
+        $column->format = new Formatage();
+        $header[] = $column;
+        return $header;
     }
 
     /**
@@ -1007,5 +1171,44 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00199' => '00199: Autorisation refusée  incident domaine initiateur.',
             '99999' => '99999: Opération en attente de validation par l\'émetteur du moyen de paiement.'
         ];
+    }
+
+    private function getErreurCode(string $message): string
+    {
+        foreach ($this->getErreurMessages() as $code => $description) {
+            if (strpos($description, $message) !== false) {
+                return $code;
+            }
+        }
+        return '?????';
+    }
+}
+
+
+class Formatage
+{
+
+    public function __construct($callback = null)
+    {
+        $this->func_format($callback);
+    }
+
+    private function func_format($callbackOrData)
+    {
+        static $f;
+        if (is_null($callbackOrData)) {
+            $f = function ($data) {
+                return $data;
+            };
+        } elseif (is_callable($callbackOrData)) {
+            $f = $callbackOrData;
+        } else {
+            return $f($callbackOrData);
+        }
+    }
+
+    public function __invoke($data)
+    {
+        return $this->func_format($data);
     }
 }
