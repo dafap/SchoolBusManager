@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2020
+ * @date 22 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -287,7 +287,7 @@ $actions = [
                 $buttonsR1, [
                     'style' => 'display: inline;'
                 ]);
-            $itemR1 .= sprintf('<span title="%s">%s</span>', $eleve['communeR1'], $r);
+            $itemR1 .= sprintf('<span title="%s">%s</span>', $eleve['lacommuneR1'], $r);
             // responsable 2
             if ($eleve['responsable2Id']) {
                 $r = htmlspecialchars(
@@ -331,7 +331,7 @@ $actions = [
                     $buttonsR2, [
                         'style' => 'display: inline;'
                     ]);
-                $itemR2 .= sprintf('<span title="%s">%s</span>', $eleve['communeR2'], $r);
+                $itemR2 .= sprintf('<span title="%s">%s</span>', $eleve['lacommuneR2'], $r);
                 $ga = true;
                 $rowspan = ' rowspan="2"';
             } else {
@@ -441,7 +441,7 @@ $actions = [
 						<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsables"><?= $itemR1; ?></td>
 					<td class="commune">
-						<?= $this->escapeHtml($eleve['communeR1']);?></td>
+						<?= $this->escapeHtml($eleve['lacommuneR1']);?></td>
 					<td <?= $rowspan;?> class="etablissement">
 						<?= $this->escapeHtml($eleve['etablissement']);?> -
 						<?= $this->escapeHtml($eleve['lacommuneEtablissement']);?></td>
@@ -460,7 +460,7 @@ $actions = [
 				<?php if ($ga):?>
 				<tr class="petit <?= $tr_css;?>">
 					<td class="responsables"><?= $itemR2; ?></td>
-					<td class="commune"><?= $this->escapeHtml($eleve['communeR2']);?></td>
+					<td class="commune"><?= $this->escapeHtml($eleve['lacommuneR2']);?></td>
 					<td class="service"><?= $this->printServices($eleve['eleveId'], 2);?></td>
 					<td class="station"><?= $this->printStations($eleve['eleveId'], 2);?></td>
 				</tr>
