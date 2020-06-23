@@ -8,7 +8,7 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2020
+ * @date 23 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox\Db\Table;
@@ -151,6 +151,28 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
             ],
             [
                 'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'resiliation',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Résiliations',
+                    'label_attributes' => [
+                        'class' => ''
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ],
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
                     'type' => 'checkbox',
@@ -177,7 +199,8 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
     public function getExpressions()
     {
         return [
-            'mode' => "expression:IF(?='XXXXXX',auto='XXXXXX',auto<>'XXXXXX')"
+            'mode' => "expression:IF(?='XXXXXX',auto='XXXXXX',auto<>'XXXXXX')",
+            'resiliation' => "literal:auto LIKE 'erreur %'"
         ];
     }
     /**
