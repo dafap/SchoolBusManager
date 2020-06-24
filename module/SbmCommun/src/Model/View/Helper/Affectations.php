@@ -18,7 +18,7 @@ use SbmCommun\Model\Strategy\Semaine;
 
 class Affectations extends AbstractHelper
 {
-
+use \SbmCommun\Model\Traits\DebugTrait;
     const TR = '<tr>';
 
     const END_TR = '</tr>';
@@ -40,6 +40,7 @@ class Affectations extends AbstractHelper
 	<td class="next fifth">%s</td>
 	<td class="next sixth">%s</td>
 	<td class="next seventh">%s</td>
+	<td class="next eighth">%s</td>
 ';
 
     const I = '
@@ -60,20 +61,21 @@ class Affectations extends AbstractHelper
      */
     public function __invoke($trajet, $structure)
     {
+        $this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'), 'viewhelper-affectation.log');
         $render = '';
         if (isset($structure['annee_courante'])) {
             $render = '<table class="eleve-affectations annee-courante">';
-            foreach ($structure['annee_courante'] as $j => $affectationsParJours) {
-                // il faut décoder $j
-                $oSemaine = new Semaine();
-                $jours = $oSemaine->renderSemaine($j);
-                foreach ($affectationsParJours as $m => $affectationsMoment) {
-                    $moment = [
-                        1 => 'Matin',
-                        2 => 'Midi',
-                        3 => 'Soir'
-                    ][$m];
-                    foreach ($affectationsMoment as $rang => $affectation) {
+            foreach ($structure['annee_courante'] as $m => $affectationsMoment) {
+                $moment = [
+                    1 => 'Matin',
+                    2 => 'Midi',
+                    3 => 'Soir'
+                ][$m];
+                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
+                    foreach ($affectationsCorrespondance as $j => $affectation) {
+                        // il faut décoder $j
+                        $oSemaine = new Semaine();
+                        $jours = $oSemaine->renderSemaine($j);
                         $args = '/jours:' . $j;
                         $args .= '/moment:' . $m;
                         $args .= '/correspondance:' . $rang;
@@ -87,13 +89,14 @@ class Affectations extends AbstractHelper
                         $args .= '/ordreligne2:' . $affectation['ordreligne2'];
                         $render .= sprintf(self::TR . self::TD . self::I . self::END_TR,
                             $jours, $moment, $affectation['ligne1Id'],
-                            $affectation['station1'], $affectation['horaire'],
-                            $affectation['station2'], $affectation['ligne2Id'], $trajet,
+                            $affectation['station1'], $affectation['horaireD'],
+                            $affectation['station2'],
+                            $affectation['horaireA'], $affectation['ligne2Id'], $trajet,
                             $args, $trajet, $args);
                     }
                     unset($affectation);
                 }
-                unset($affectationsMoment);
+                unset($affectationsCorrespondance);
             }
             $render .= "\n</table>";
         }
@@ -111,10 +114,11 @@ class Affectations extends AbstractHelper
                         3 => 'Soir'
                     ][$m];
                     foreach ($affectationsMoment as $rang => $affectation) {
+                        $this->debugLog($affectation);
                         $render .= sprintf(self::TR . self::TD . self::END_TR, $jours,
                             $moment, $affectation['ligne1Id'], $affectation['station1'],
-                            $affectation['horaire'], $affectation['station2'],
-                            $affectation['ligne2Id']);
+                            $affectation['horaireD'], $affectation['station2'],
+                            $affectation['horaireA'], $affectation['ligne2Id']);
                     }
                     unset($affectation);
                 }

@@ -152,6 +152,11 @@ class AffectationsServicesStations extends AbstractQuery
             'commune2' => 'nom'
         ], $select::JOIN_LEFT)
             ->join([
+            'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
+            'horaire2' => 'horaireA'
+        ])
+            ->join([
             'lot1' => $this->db_manager->getCanonicName('lots', 'table')
         ], 'lign1.lotId = lot1.lotId', [
             'lot1_marche' => 'marche',
@@ -166,10 +171,10 @@ class AffectationsServicesStations extends AbstractQuery
             ->order(
             [
                 'trajet',
-                // semaine (de Services), remplace jours (Affectations) non traité
-                'semaine DESC',
                 'moment',
-                'correspondance'
+                'cir1.horaireA',
+                // semaine (de Services), remplace jours (Affectations) non traité
+                'semaine DESC'
             ]);
         $where = new Where();
         $where->equalTo('aff.millesime', $millesime)->and->equalTo('aff.eleveId', $eleveId);
@@ -602,11 +607,12 @@ class AffectationsServicesStations extends AbstractQuery
             ])
             ->join([
             'etacom' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = etacom.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'aliasCG',
-            'laposteEtablissement' => 'alias_laposte'
-        ])
+        ], 'eta.communeId = etacom.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'aliasCG',
+                'laposteEtablissement' => 'alias_laposte'
+            ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'sco.classeId=cla.classeId', [
