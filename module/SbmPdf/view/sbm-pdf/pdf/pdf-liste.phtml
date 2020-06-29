@@ -7,7 +7,7 @@
  * @filesource pdf-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2020
+ * @date 24 juin 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -127,7 +127,7 @@ $buttons = [
 	<div id="liste-inner">
 		<table class="liste-inner pdf">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th>Id</th>
 					<th>Nom</th>
 					<th>Source</th>
@@ -204,7 +204,7 @@ $buttons = [
                     'recordSource' => $doc->recordSource
                 ];
                 ?>
-                <tr class="<?=$this->cycle(["even","odd"])->next();?>">
+                <tr class="petit <?=$this->cycle(["even","odd"])->next();?>">
 					<td class="documentId"><?=$doc->documentId;?></td>
 					<td class="name"><?=$this->escapeHtml($doc->name);?></td>
 					<td class="recordSource">

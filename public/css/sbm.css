@@ -6,7 +6,7 @@
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 24 juin 2020
  * @version 2020-2.6.0
  **/
 @CHARSET "UTF-8";
@@ -141,7 +141,7 @@ i.fam-help:hover {
 }
 
 .rouge {
-	color:#ff0000;
+	color: #ff0000;
 }
 
 .barre {
@@ -484,7 +484,7 @@ div.menu ul.menubar ul li input {
 	border-color: #836738;
 }
 
-.flashMessenger ul.error,div.flashMessenger.error {
+.flashMessenger ul.error, div.flashMessenger.error {
 	color: #a94442;
 	background-color: #f2dede;
 	border-color: #a94442;
@@ -712,6 +712,10 @@ div#liste-inner table.eleves td.boutons {
 div#liste-inner table.pdf td.boutons {
 	min-width: 130px;
 }
+
+div#liste-inner table.pdf td.orderBy {
+	max-width: 180px;
+}
 /*-------------- Fiches -----------------------------*/
 div#fiche-header {
 	margin-bottom: 10px;
@@ -865,7 +869,8 @@ div.depot #fiche-inner input.submit {
 	width: 185px;
 }
 
-#fiche-inner #paiement input.submit, #fiche-inner #remboursement input.submit {
+#fiche-inner #paiement input.submit, #fiche-inner #remboursement input.submit
+	{
 	margin-top: 6px;
 	margin-left: 185px;
 }
