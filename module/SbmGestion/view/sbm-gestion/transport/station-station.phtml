@@ -8,7 +8,7 @@
  * @filesource station-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2020
+ * @date 29 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -93,7 +93,7 @@ $actions = [
 					<th>Commune</th>
 					<th>Station 2</th>
 					<th>Commune</th>
-					<th>Rang</th>
+					<th>Temps</th>
 					<th></th>
 				</tr>
             <?php
@@ -116,7 +116,7 @@ $actions = [
 					<td class="commune2">
 						<?=$this->escapeHtml($entity->sta2_lacommune);?></td>
 					<td class="temps">
-						<?=$entity->temps;?></td>
+						<?=\DateTime::createFromFormat('H:i:s', $entity->temps)->format('H:i:s');?></td>
 					<td class="boutons">
             <?php
                 $hiddens['station2Id'] = $entity->station2Id;

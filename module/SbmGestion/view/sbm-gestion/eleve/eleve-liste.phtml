@@ -351,13 +351,13 @@ $actions = [
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
-            /*if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) {
-                $rouge = $eleve['accordR1'] + $eleve['accordR2'] == 0;
-            } else {
-                $rouge = ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
-                    ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) ||
-                    ($eleve['distanceR1'] < 1.0 && $eleve['distanceR2'] < 1.0);
-            }*/
+            /*
+             * if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) { $rouge =
+             * $eleve['accordR1'] + $eleve['accordR2'] == 0; } else { $rouge =
+             * ($eleve['district'] == 0 && $eleve['derogation'] == 0) ||
+             * ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) || ($eleve['distanceR1'] <
+             * 1.0 && $eleve['distanceR2'] < 1.0); }
+             */
             $rouge = $eleve['demandeR1'] == 1 || $eleve['demandeR2'] == 1;
             if ($rouge) {
                 $tr_css .= ' alert';
@@ -369,9 +369,23 @@ $actions = [
                 $eleve['subventionR1'] == 1);
             $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 &&
                 $eleve['subventionR2'] == 1);
+            $affecte = ! is_null($eleve['affecteR1matin']);
+            $affecte &= !is_null($eleve['affecteR1soir']);
+            if ($eleve['niveau'] >= 4) {
+                $affecte &= !is_null($eleve['affecteR1midi']);
+            }
+            // ajouter la même chose pour R2 si nécessaire
+            if ($eleve['demandeR2']){
+                $affecte &= ! is_null($eleve['affecteR2matin']);
+                $affecte &= !is_null($eleve['affecteR2soir']);
+                if ($eleve['niveau'] >= 4) {
+                    $affecte &= !is_null($eleve['affecteR2midi']);
+                }
+            }
+            //=============================================
             $this->pictogrammes('init')
                 ->addPreinscrit(! $inscrit)
-                ->addSansAffectation($eleve['affecte'])
+                ->addSansAffectation($affecte)
                 ->addSansPhoto($eleve['sansphoto'])
                 ->addSansCarte($eleve['dateCarteR1'] < $this->dateDebut)
                 ->addDistanceZero($eleve['demandeR1'], $eleve['distanceR1'],

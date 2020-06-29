@@ -4049,7 +4049,6 @@ class TransportController extends AbstractActionController
         $effectifStations->init();
         return new ViewModel(
             [
-
                 'paginator' => $this->db_manager->get('Sbm\Db\Circuit\Liste')->paginatorStationsNonDesservies(),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_stations', 10),
                 'projection' => $this->cartographie_manager->get(Projection::class),

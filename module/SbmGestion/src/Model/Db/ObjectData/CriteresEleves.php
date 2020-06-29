@@ -15,7 +15,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 24 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -176,7 +176,7 @@ class CriteresEleves extends SbmCommunCriteres
     {
         $pageheader_string = [];
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'));
+        // $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where = $this->clauseNumero($where, true);
             $pageheader_string[] = sprintf('élève dont la carte porte le numéro %d',
@@ -713,8 +713,7 @@ class CriteresEleves extends SbmCommunCriteres
         if ($where instanceof Where) {
             return $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiementR1 = 1')->OR->literal(
-                'gratuit > 0')->unnest();
+                ->literal('paiementR1 = 1')->OR->literal('gratuit > 0')->unnest();
         } else {
             $where['criteres']['etat'] = 1;
             $where['expression']['etat'] = 'inscrit = 1 AND (paiementR1 = 1 OR gratuit > 0)';
@@ -1055,9 +1054,35 @@ class CriteresEleves extends SbmCommunCriteres
     {
         if ($where instanceof Where) {
             if ($pdf) {
-                return $where->isNull('eleveIdAffectation');
+                return $where->nest()->isNull('affecteR1matin')->or->isNull(
+                    'affecteR1soir')->or->nest()
+                    ->literal('niveau >= 4')
+                    ->isNull('affecteR1midi')
+                    ->unnest()->or->nest()
+                    ->literal('demandeR2 > 0')
+                    ->nest()
+                    ->isNull('affecteR2matin')->or->isNull('affecteR2soir')->or->nest()
+                    ->literal('niveau >= 4')
+                    ->isNull('affecteR2midi')
+                    ->unnest()
+                    ->unnest()
+                    ->unnest()
+                    ->unnest();
             } else {
-                return $where->isNull('aff.eleveId');
+                return $where->nest()->isNull('aff1R1.eleveId')->or->isNull(
+                    'aff3R1.eleveId')->or->nest()
+                    ->literal('cla.niveau >= 4')
+                    ->isNull('aff2R1.eleveId')
+                    ->unnest()->or->nest()
+                    ->literal('sco.demandeR2 > 0')
+                    ->nest()
+                    ->isNull('aff1R2.eleveId')->or->isnull('aff3R2.eleveId')->or->nest()
+                    ->literal('cla.niveau >= 4')
+                    ->isNull('aff2R2.eleveId')
+                    ->unnest()
+                    ->unnest()
+                    ->unnest()
+                    ->unnest();
             }
         } else {
             $where['criteres']['incomplet'] = 2;

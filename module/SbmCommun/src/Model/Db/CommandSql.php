@@ -8,8 +8,8 @@
  * @filesource CommandSql.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 29 juin 2020
+ * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db;
 
@@ -26,14 +26,14 @@ abstract class CommandSql
      *
      * @param \Zend\Db\Adapter\Adapter $dbadapter
      * @param array $structure
-     *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
-     *            
+     *            (description de la structure dans
+     *            SbmInstallation/config/db_design/README.txt)
      * @return string
      */
     public static function getSelectForCreateView($dbadapter, $prefix, $structure)
     {
-        self::isValidDbDesignStructureView($structure); // lance une exception si la structure
-                                                        // n'est pas bonne
+        self::isValidDbDesignStructureView($structure); // lance une exception si la
+                                                        // structure n'est pas bonne
         $sql = new Select();
         $table = StdLib::entityName($structure['from']['table'],
             array_key_exists('type', $structure['from']) ? $structure['from']['type'] : 'table',
@@ -42,7 +42,11 @@ abstract class CommandSql
             $structure['from']['alias'] => $table
         ] : $table;
         $sql->from($table);
-        $sql->columns(self::getColumnsFromDbDesignFields($structure['fields']));
+        if (strtolower(StdLib::getParam('quantifier', $structure,'') == 'distinct')) {
+            $sql->quantifier(Select::QUANTIFIER_DISTINCT);
+        }
+        $sql->columns(
+            self::getColumnsFromDbDesignFields($structure['fields']));
         if (array_key_exists('join', $structure)) {
             foreach ($structure['join'] as $join) {
                 $table = StdLib::entityName($join['table'],
@@ -84,8 +88,8 @@ abstract class CommandSql
      * Lance une exception si la structure n'est pas bonne
      *
      * @param array $structure
-     *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
-     *            
+     *            (description de la structure dans
+     *            SbmInstallation/config/db_design/README.txt)
      * @throws Exception\OutOfBoundsException
      *
      * @return boolean
@@ -116,7 +120,8 @@ abstract class CommandSql
      * Vérifie la validité de la structure définissant une liste de join
      *
      * @param array $join
-     *            (description de la structure dans SbmInstallation/config/db_design/README.txt)
+     *            (description de la structure dans
+     *            SbmInstallation/config/db_design/README.txt)
      * @return boolean
      */
     private static function isValidDbDesignJoin($joins)
@@ -146,10 +151,14 @@ abstract class CommandSql
      */
     private static function isValidDbDesignFields($fields)
     {
+        if (empty($fields)) {
+            return true;
+        }
         $ok = false;
         foreach ($fields as $field) {
-            $ok = array_key_exists('field', $field) || (array_key_exists('expression',
-                $field) && array_key_exists('alias', $field));
+            $ok = array_key_exists('field', $field) ||
+                (array_key_exists('expression', $field) &&
+                array_key_exists('alias', $field));
             if (! $ok) {
                 break;
             }

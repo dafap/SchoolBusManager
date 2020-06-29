@@ -15,6 +15,7 @@ namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Statistiques extends AbstractQuery
@@ -64,12 +65,15 @@ class Statistiques extends AbstractQuery
             ->columns([
             'responsableId' => 'responsable1Id'
         ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])
             ->where($where1);
         $where2 = new Where();
-        $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
+        $where2->equalTo('millesime', $this->millesime)
+            ->isNotNull('responsable2Id')
+            ->greaterThan('demandeR2', 0);
         $select2 = $this->sql->select();
         $select2->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -77,27 +81,18 @@ class Statistiques extends AbstractQuery
             ->columns([
             'responsableId' => 'responsable2Id'
         ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])
             ->where($where2);
-        $select1->combine($select2);
-        $select3 = $this->sql->select();
-        $select3->from([
-            'id' => $select1
-        ]);
-
-        $where = new Where();
-        $where->in('responsableId', $select3);
         return $this->sql->select()
-            ->from(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ])
             ->columns([
             'effectif' => new Expression('count(responsableId)')
         ])
-            ->where($where);
+            ->from([
+            'id' => $select1->combine($select2)
+        ]);
     }
 
     /**

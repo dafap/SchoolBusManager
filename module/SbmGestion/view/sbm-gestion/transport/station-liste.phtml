@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2020
+ * @date 29 juin 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -159,6 +159,7 @@ $actions = [
 					<th>Commune</th>
 					<th>Nom</th>
 					<th>Complément</th>
+					<th>Jumelle</th>
 					<th>Visible</th>
 					<th>Ouverte</th>
 					<th title="Nombre d'élèves transportés / Nombre de demandes">Inscrits</th>
@@ -243,6 +244,8 @@ $actions = [
 						<?=$this->escapeHtml($station->nom);?></td>
 					<td class="complement">
 						<?=$this->escapeHtml($station->alias);?></td>
+					<td class="jumelle">
+						<?=$station->jumelle ? 'Oui' : 'Non';?>
 					<td class="visible">
 						<?=$station->visible ? 'Oui' : 'Non';?></td>
 					<td class="ouverte">

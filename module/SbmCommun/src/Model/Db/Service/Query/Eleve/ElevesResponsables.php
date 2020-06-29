@@ -8,13 +8,14 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
+ * @date 24 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 
@@ -165,7 +166,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->paginator($this->selectScolaritesR2($where, $order, $millesime));
     }
 
-    protected function selectScolaritesR2(Where $where, $order = null, $millesime = null)
+    protected function selectScolaritesR2(Where $where, $order, $millesime)
     {
         if (is_null($millesime)) {
             $millesime = $this->millesime;
@@ -177,7 +178,7 @@ class ElevesResponsables extends AbstractQuery
             ->columns([
             'eleveId'
         ])
-            ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($where_appel);
         $where->equalTo('sco.millesime', $millesime);
         $select = clone $this->select;
@@ -246,7 +247,8 @@ class ElevesResponsables extends AbstractQuery
                 'etablissement' => new Expression(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'xeta' => 'x',
-                'yeta' => 'y'
+                'yeta' => 'y',
+                'niveauEtablissement' => 'niveau'
             ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
@@ -259,8 +261,22 @@ class ElevesResponsables extends AbstractQuery
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'cla.classeId = sco.classeId', [
+            'niveau' => 'niveau',
             'classe' => 'nom'
         ])
+            ->join([
+            'ori1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'ori1.stationId = sco.stationIdR1', [
+            'origine1' => 'nom'
+        ])
+            ->join([
+            'cor1' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cor1.communeId = ori1.communeId',
+            [
+                'communeOrigine1' => 'nom',
+                'lacommuneOrigine1' => 'alias',
+                'laposteOrigine1' => 'alias_laposte'
+            ])
             ->join([
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable2Id=r2.responsableId',
@@ -287,13 +303,68 @@ class ElevesResponsables extends AbstractQuery
                 'lacommuneR2' => 'alias',
                 'laposteR2' => 'alias_laposte'
             ], $select::JOIN_LEFT)
+            ->join([
+            'ori2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'ori2.stationId = sco.stationIdR2', [
+            'origine2' => 'nom'
+        ], $select::JOIN_LEFT)
+            ->join([
+            'cor2' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cor2.communeId = ori2.communeId',
+            [
+                'communeOrigine2' => 'nom',
+                'lacommuneOrigine2' => 'alias',
+                'laposteOrigine2' => 'alias_laposte'
+            ], $select::JOIN_LEFT)
             ->join(
+            [
+                $this->aliasEffectifAffectations(1) => $this->subselectAffectations(1)
+            ], $this->jointureEffectifAffectations(1),
+            [
+                'affecteR1matin' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(2) => $this->subselectAffectations(2)
+            ], $this->jointureEffectifAffectations(2),
+            [
+                'affecteR1midi' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3) => $this->subselectAffectations(3)
+            ], $this->jointureEffectifAffectations(3),
+            [
+                'affecteR1soir' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(1,2) => $this->subselectAffectations(1,2)
+            ], $this->jointureEffectifAffectations(1,2),
+            [
+                'affecteR2matin' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(2,2) => $this->subselectAffectations(2,2)
+            ], $this->jointureEffectifAffectations(2,2),
+            [
+                'affecteR2midi' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3,2) => $this->subselectAffectations(3,2)
+            ], $this->jointureEffectifAffectations(3,2),
+            [
+                'affecteR2soir' => 'eleveId'
+            ], $select::JOIN_LEFT)
+            /*->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
             ], 'aff.millesime = sco.millesime And aff.eleveId = sco.eleveId',
             [
                 'affecte' => new Expression('count(aff.eleveId) > 0')
-            ], $select::JOIN_LEFT)
+            ], $select::JOIN_LEFT)*/
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
@@ -316,8 +387,41 @@ class ElevesResponsables extends AbstractQuery
         $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
-        ;
         return $select->where($where);
+    }
+
+    /**
+     * SELECT DISTINCT millesime, eleveId FROM `sbm_t_affectations` WHERE moment=2 AND
+     * trajet=1
+     */
+    private function subselectAffectations(int $moment, int $trajet = 1): Select
+    {
+        $where = new Where();
+        $where->equalTo('moment', $moment)->equalTo('trajet', $trajet);
+        $select = new Select($this->db_manager->getCanonicName('affectations'));
+        return $select->columns([
+            'millesime',
+            'eleveId'
+        ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($where);
+    }
+
+    private function jointureEffectifAffectations(int $moment, int $trajet = 1): string
+    {
+        return sprintf('%1$s.millesime = sco.millesime And %1$s.eleveId = sco.eleveId',
+            $this->aliasEffectifAffectations($moment, $trajet));
+    }
+
+    private function aliasEffectifAffectations(int $moment, int $trajet = 1): string
+    {
+        return 'aff' . $moment . 'R' . $trajet;
+    }
+
+    private function expressionSqlEffectifAffectations(int $moment, int $trajet = 1): string
+    {
+        return sprintf('count(%s.eleveId) > 0',
+            $this->aliasEffectifAffectations($moment, $trajet));
     }
 
     /**
@@ -509,7 +613,7 @@ class ElevesResponsables extends AbstractQuery
         $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
-        //die($this->getSqlString($select));
+        // die($this->getSqlString($select));
         return $select->where($where);
     }
 

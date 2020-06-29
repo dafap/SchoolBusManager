@@ -8,7 +8,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juin 2020
+ * @date 28 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -184,7 +184,8 @@ class ElevesScolarites extends AbstractQuery
 
     public function getEleve($eleveId)
     {
-        return $this->renderResult($this->selectEleve($eleveId))->current();
+        return $this->renderResult($this->selectEleve($eleveId))
+            ->current();
     }
 
     protected function selectEleve($eleveId)
@@ -468,8 +469,23 @@ class ElevesScolarites extends AbstractQuery
 
     protected function selectInscritsNonAffectes()
     {
+
+        // composition du where à partir des élèves inscrits
+        $nonAffectes = new Predicate(
+            [
+                new PredicateEleve\PredicateDemandeNonTraitee(),
+                new PredicateEleve\PredicateAccordSansAffectation()
+            ], Predicate::COMBINED_BY_OR);
+        $elevesInscritsNonAffectes = new PredicateEleve\ElevesSansPreinscrits(
+            $this->millesime, 'sco', [
+                $nonAffectes
+            ], Predicate::COMBINED_BY_AND);
+        // Requête
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'sco.classeId = cla.classeId', [])
             ->join([
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId',
@@ -492,24 +508,68 @@ class ElevesScolarites extends AbstractQuery
             ])
             ->join(
             [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ],
-            'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime',
-            [], Select::JOIN_LEFT);
-        // composition du where à partir des élèves inscrits
-        $nonAffectes = new Predicate(
+                $this->aliasEffectifAffectations(1, 1) => $this->subselectAffectations(1,
+                    1)
+            ], $this->jointureEffectifAffectations(1, 1), [], Select::JOIN_LEFT)
+            ->join(
             [
-                new PredicateEleve\PredicateDemandeNonTraitee(),
-                new PredicateEleve\PredicateAccordSansAffectation()
-            ], Predicate::COMBINED_BY_OR);
-        $elevesInscritsNonAffectes = new PredicateEleve\ElevesSansPreinscrits(
-            $this->millesime, 'sco', [
-                $nonAffectes
-            ], Predicate::COMBINED_BY_AND);
-        return $select->where($elevesInscritsNonAffectes())->order([
+                $this->aliasEffectifAffectations(2, 1) => $this->subselectAffectations(2,
+                    1)
+            ], $this->jointureEffectifAffectations(2, 1), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3, 1) => $this->subselectAffectations(3,
+                    1)
+            ], $this->jointureEffectifAffectations(3, 1), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(1, 2) => $this->subselectAffectations(1,
+                    2)
+            ], $this->jointureEffectifAffectations(1, 2), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(2, 2) => $this->subselectAffectations(2,
+                    2)
+            ], $this->jointureEffectifAffectations(2, 2), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3, 2) => $this->subselectAffectations(3,
+                    2)
+            ], $this->jointureEffectifAffectations(3, 2), [], Select::JOIN_LEFT)
+            ->where($elevesInscritsNonAffectes())
+            ->order([
             'nom',
             'prenom'
         ]);
+        return $select;
+    }
+
+    /**
+     * SELECT DISTINCT millesime, eleveId FROM `sbm_t_affectations` WHERE moment=2 AND
+     * trajet=1
+     */
+    private function subselectAffectations(int $moment, int $trajet = 1): Select
+    {
+        $where = new Where();
+        $where->equalTo('moment', $moment)->equalTo('trajet', $trajet);
+        $select = new Select($this->db_manager->getCanonicName('affectations'));
+        return $select->columns([
+            'millesime',
+            'eleveId'
+        ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($where);
+    }
+
+    private function jointureEffectifAffectations(int $moment, int $trajet = 1): string
+    {
+        return sprintf('%1$s.millesime = sco.millesime And %1$s.eleveId = sco.eleveId',
+            $this->aliasEffectifAffectations($moment, $trajet));
+    }
+
+    private function aliasEffectifAffectations(int $moment, int $trajet = 1): string
+    {
+        return 'aff' . $moment . 'R' . $trajet;
     }
 
     public function getPreinscritsNonAffectes()
@@ -527,6 +587,9 @@ class ElevesScolarites extends AbstractQuery
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
             ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'sco.classeId = cla.classeId', [])
+            ->join([
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId',
             [
@@ -548,10 +611,34 @@ class ElevesScolarites extends AbstractQuery
             ])
             ->join(
             [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ],
-            'aff.eleveId=ele.eleveId AND aff.responsableId=r.responsableId AND aff.millesime=sco.millesime',
-            [], Select::JOIN_LEFT);
+                $this->aliasEffectifAffectations(1, 1) => $this->subselectAffectations(1,
+                    1)
+            ], $this->jointureEffectifAffectations(1, 1), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(2, 1) => $this->subselectAffectations(2,
+                    1)
+            ], $this->jointureEffectifAffectations(2, 1), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3, 1) => $this->subselectAffectations(3,
+                    1)
+            ], $this->jointureEffectifAffectations(3, 1), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(1, 2) => $this->subselectAffectations(1,
+                    2)
+            ], $this->jointureEffectifAffectations(1, 2), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(2, 2) => $this->subselectAffectations(2,
+                    2)
+            ], $this->jointureEffectifAffectations(2, 2), [], Select::JOIN_LEFT)
+            ->join(
+            [
+                $this->aliasEffectifAffectations(3, 2) => $this->subselectAffectations(3,
+                    2)
+            ], $this->jointureEffectifAffectations(3, 2), [], Select::JOIN_LEFT);
         // composition du where à partir des élèves préinscrits
         $nonAffectes = new Predicate(
             [

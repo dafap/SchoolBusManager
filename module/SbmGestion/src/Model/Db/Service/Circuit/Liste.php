@@ -7,7 +7,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 29 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
@@ -17,6 +17,7 @@ use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Literal;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Paginator\Paginator;
@@ -112,6 +113,13 @@ class Liste implements FactoryInterface
             'millesime' => Session::get('millesime')
         ]);
         return $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns(
+            [
+                Select::SQL_STAR,
+                'jumelle' => new Literal(
+                    '(ss1.station1Id IS NOT NULL) OR (ss2.station2Id IS NOT NULL)')
+            ])
             ->from([
             's' => $this->db_manager->getCanonicName('stations')
         ])
@@ -126,6 +134,12 @@ class Liste implements FactoryInterface
             ->join([
             'c' => $select1
         ], 's.stationId=c.stationId', [], Select::JOIN_LEFT)
+            ->join([
+            'ss1' => $this->db_manager->getCanonicName('stations-stations')
+        ], 'ss1.station1Id = s.stationId', [], Select::JOIN_LEFT)
+            ->join([
+            'ss2' => $this->db_manager->getCanonicName('stations-stations')
+        ], 'ss2.station2Id = s.stationId', [], Select::JOIN_LEFT)
             ->where(function ($where) {
             $where->isNull('c.stationId');
         })

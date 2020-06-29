@@ -164,6 +164,7 @@ class EleveGestionController extends AbstractActionController
                 ->setValueOptions('service1Id', $values_options2)
                 ->setValueOptions('service2Id', $values_options2);
         }
+        die(var_dump($args, $values_options2));
         if (array_key_exists('submit', $args)) {
             $formDecision->setData($args);
             if ($formDecision->isValid()) {
