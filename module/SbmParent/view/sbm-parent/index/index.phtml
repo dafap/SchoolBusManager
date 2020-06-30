@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2020
+ * @date 30 juin 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -440,18 +440,12 @@ $url_facture = $this->url('sbmdocument', [
                         'value' => 'Supprimer'
                     ]
                 ];
-                if ($this->responsable->paiementenligne) {
-                    $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement';
-                    $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
-                        $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
-                    $attenteTitle .= ' la liste des inscriptions &agrave; payer';
-                    $buttons['attente'] = [
-                        'class' => 'button ligne',
-                        'formaction' => $url_attente,
-                        'title' => $attenteTitle,
-                        'value' => $attenteValue
-                    ];
-                }
+                //if ($this->responsable->paiementenligne) {
+                    //$attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement';
+                    //$attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                    //$attenteTitle .= ' la liste des inscriptions &agrave; payer';
+                    //$buttons['attente'] = ['class' => 'button ligne','formaction' => $url_attente,'title' => $attenteTitle,'value' => $attenteValue];
+                //}
             } else {
                 $buttons = [];
             }
@@ -525,7 +519,7 @@ $url_facture = $this->url('sbmdocument', [
             ]
         ];
         if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
-            if ($enAttente) {
+            if (false /*$enAttente*/) {
                 $payerTitle = "valider et payer toutes les incriptions\nqui ne sont pas en attente.";
             } else {
                 $payerTitle = "valider et payer toutes les inscriptions\nde la liste des enfants pr&eacute;inscrits.";
