@@ -38,9 +38,10 @@ $this->jQuery('jquery-ui');
 $this->themeJS('sbm-parent', 'index.js');
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 // affichage des circuits, stations et horaires
+$date_site_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify(
+    '15 days ago');
 $avant_fin_aout = '';
-if ((new \DateTime()) <
-    (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')) {
+if ((new \DateTime()) < $date_site_fin_aout) {
     $avant_fin_aout = 'invisible';
 }
 // initialisation nécessaire pour le popup help-preinscrits-content
@@ -147,7 +148,8 @@ $url_facture = $this->url('sbmdocument', [
             $msg_reception_pass_preinscrit = sprintf($msg_reception_pass_preinscrit,
                 $dateFinReduction);
             $msg_circuit_horaire = <<<EOT
-            Les circuits et horaires seront consultables ici &agrave; partir du $date_horaires_cartes.
+            Les circuits et horaires seront consultables ici &agrave; partir 
+            du $date_site_fin_aout->format('d/m/Y').
             EOT;
             break;
         case $this->calendar::ETAT_APRES:
@@ -164,9 +166,8 @@ $url_facture = $this->url('sbmdocument', [
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
-            if ((new DateTime()) <
-                (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago')) {
-                $msg_circuit_horaire .= "&agrave; partir du $date_horaires_cartes et ";
+            if ((new DateTime()) < $date_site_fin_aout) {
+                $msg_circuit_horaire .= "&agrave; partir du $date_site_fin_aout->format('d/m/Y') et ";
             }
             $msg_circuit_horaire .= 'apr&egrave;s traitement de votre demande.';
             break;
@@ -264,8 +265,8 @@ $url_facture = $this->url('sbmdocument', [
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
                 '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['lacommuneEtablissement'] .
-                '</td>';
+            $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
+                $row['lacommuneEtablissement'] . '</td>';
             $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
                 sprintf('%s %s', $row['grilleTarifR1'],
                     $row['reductionR1'] ? 'R&eacute;duit' : 'Normal') . '</td>';
@@ -440,12 +441,15 @@ $url_facture = $this->url('sbmdocument', [
                         'value' => 'Supprimer'
                     ]
                 ];
-                //if ($this->responsable->paiementenligne) {
-                    //$attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement';
-                    //$attenteTitle = $row['selectionScolarite'] ? 'Remettre ' . $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
-                    //$attenteTitle .= ' la liste des inscriptions &agrave; payer';
-                    //$buttons['attente'] = ['class' => 'button ligne','formaction' => $url_attente,'title' => $attenteTitle,'value' => $attenteValue];
-                //}
+                // if ($this->responsable->paiementenligne) {
+                // $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' :
+                // 'Mettre en attente de paiement';
+                // $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
+                // $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                // $attenteTitle .= ' la liste des inscriptions &agrave; payer';
+                // $buttons['attente'] = ['class' => 'button ligne','formaction' =>
+                // $url_attente,'title' => $attenteTitle,'value' => $attenteValue];
+                // }
             } else {
                 $buttons = [];
             }
