@@ -11,7 +11,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2020
+ * @date 30 juin 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -313,6 +313,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         for ($i = 1; $i <= $nb_cir; $i ++) {
             $where->equalTo(sprintf('cir%dsta1.millesime', $i), $this->millesime)
                 ->equalTo(sprintf('cir%dsta1.moment', $i), $moment)
+                ->literal(sprintf('cir%dsta1.ouvert = 1', $i))
+                ->literal(sprintf('cir%dsta2.ouvert = 1', $i))
                 ->literal(sprintf('eta.jOuverture & cir%dsta1.semaine <>0', $i));
             if ($moment == 1) {
                 // départ de la station1 avant arrivée en station2

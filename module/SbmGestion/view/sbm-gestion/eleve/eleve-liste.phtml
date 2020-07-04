@@ -229,10 +229,8 @@ $actions = [
 			<tbody>
 				<tr>
 					<th></th>
-					<th>N°</th>
 					<th>Nom</th>
 					<th>Prénom</th>
-					<th>Né(e) le</th>
 					<th>Responsables</th>
 					<th>Commune</th>
 					<th>Établissement</th>
@@ -445,14 +443,10 @@ $actions = [
 					<td <?= $rowspan;?>>
 					<?= $this->pictogrammes();?>
                     </td>
-					<td <?= $rowspan;?> class="numero">
-						<?= $eleve['numero']; ?></td>
 					<td <?= $rowspan;?> class="nom">
 						<?= $this->escapeHtml($eleve['nom']); ?></td>
 					<td <?= $rowspan;?> class="prenom">
 						<?= $this->escapeHtml($eleve['prenom']); ?></td>
-					<td <?= $rowspan;?> class="dateN">
-						<?= DateLib::formatDateFromMysql($eleve['dateN']); ?></td>
 					<td class="responsables"><?= $itemR1; ?></td>
 					<td class="commune">
 						<?= $this->escapeHtml($eleve['lacommuneR1']);?></td>

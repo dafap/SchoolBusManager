@@ -145,12 +145,12 @@ class AffectationsServicesStations extends AbstractQuery
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'aff.station2Id = sta2.stationId', [
             'station2' => 'nom'
-        ], $select::JOIN_LEFT)
+        ], Select::JOIN_LEFT)
             ->join([
             'com2' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'sta2.communeId = com2.communeId', [
             'commune2' => 'nom'
-        ], $select::JOIN_LEFT)
+        ], Select::JOIN_LEFT)
             ->join([
             'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
         ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
@@ -989,5 +989,75 @@ class AffectationsServicesStations extends AbstractQuery
             'aff.moment'
         ]);
         return $select;
+    }
+
+    /**
+     * Renvoie les itinéraires d'un élève pour le trajet demandé
+     *
+     * @param int $eleveId
+     * @param int $trajet
+     *            1 pour R1 ; 2 pour R2
+     * @param int $millesime
+     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getItineraires(int $eleveId, int $trajet = 1, int $millesime = null): \Zend\Db\Adapter\Driver\ResultInterface
+    {
+        $where = new Where();
+        $where->equalTo('aff.millesime', $millesime ?: $this->millesime)
+            ->equalTo('aff.eleveId', $eleveId)
+            ->equalTo('aff.trajet', $trajet);
+        $select = $this->sql->select()
+            ->columns(
+            [
+                // 'jours', Non traité
+                'moment',
+                'correspondance',
+                'ligne1Id',
+                'semaine' => new Expression($this->getSqlSemaine('cir1.semaine & cir2.semaine'))
+            ])
+            ->from(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ])
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'aff.station1Id = sta1.stationId', [
+            'station1' => 'nom'
+        ])
+            ->join([
+            'com1' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'sta1.communeId = com1.communeId', [
+            'commune1' => 'nom'
+        ])
+            ->join([
+            'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir1'), [
+            'horaire1' => 'horaireA'
+        ])
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'aff.station2Id = sta2.stationId', [
+            'station2' => 'nom'
+        ])
+            ->join([
+            'com2' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'sta2.communeId = com2.communeId', [
+            'commune2' => 'nom'
+        ])
+            ->join([
+            'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
+            'horaire2' => 'horaireA'
+        ])
+            ->where($where)
+            ->order(
+            [
+                'trajet',
+                'moment',
+                'cir1.horaireA',
+                // semaine (de Circuit), remplace jours (Affectations) non traité
+                'cir1.semaine & cir2.semaine DESC'
+            ]);
+        return $this->renderResult($select);
     }
 }
