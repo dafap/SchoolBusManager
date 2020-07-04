@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
- * @version 2020-2.4.13
+ * @date 4 juil. 2020
+ * @version 2020-2.4.16
  */
 namespace SbmGestion\Controller;
 
@@ -2199,8 +2199,19 @@ class EleveController extends AbstractActionController
             $form = null;
         } else {
             try {
-                $tUsers->getRecordByEmail($responsable->email);
+                $user = $tUsers->getRecordByEmail($responsable->email);
                 $msg = 'Ce responsable a déjà un compte.';
+                if ($user->token) {
+                    $url_confirm = $this->url()->fromRoute('login',
+                        [
+                            'action' => 'confirm',
+                            'id' => $user->token
+                        ], [
+                            'force_canonical' => true
+                        ]);
+                    $msg .= '<p>Lien à communiquer pour entrer après demande de mot de passe : ';
+                    $msg .= $url_confirm . '</p>';
+                }
                 $form = null;
             } catch (\SbmCommun\Model\Db\Service\Table\Exception $e) {
                 $msg = '';

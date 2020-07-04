@@ -8,8 +8,8 @@
  * @filesource view/transport/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 3 juil. 2020
+ * @version 2020-2.4.16
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -49,6 +49,20 @@ $url_transport_transporteurs = $this->url('sbmgestion/transport',
         'page' => $this->page
     ]);
 $url_gestion = $this->url('sbmgestion');
+$url_users = $this->url('sbmadmin', [
+    'action' => 'user-liste'
+]);
+$url_secteurs_scolaires_liste = $this->url('sbmadmin',
+    [
+        'action' => 'secteur-scolaire-liste'
+    ]);
+$url_simulation_etablissement_liste = $this->url('sbmadmin',
+    [
+        'action' => 'simulation-etablissement-liste'
+    ]);
+$url_rpi_liste = $this->url('sbmadmin', [
+    'action' => 'rpi-liste'
+]);
 ?>
 <h1>Gestion du réseau de transport</h1>
 <div id="menugeneral-wrapper">
@@ -77,20 +91,25 @@ echo $this->flashMessenger()->render('default');
 	</div>
 	<div id="menugeneral-inner">
 		<ul>
-			<li><a href="<?php echo $url_transport_circuits; ?>"><i
-					class="fam-bullet-go"></i>Circuits</a></li>
-			<li><a href="<?php echo $url_transport_classes; ?>"><i
-					class="fam-bullet-go"></i>Classes</a></li>
-			<li><a href="<?php echo $url_transport_communes; ?>"><i
-					class="fam-bullet-go"></i>Communes</a></li>
-			<li><a href="<?php echo $url_transport_etablissements; ?>"><i
+			<li><a href="<?=$url_transport_circuits;?>"><i class="fam-bullet-go"></i>Circuits</a></li>
+			<li><a href="<?=$url_transport_classes;?>"><i class="fam-bullet-go"></i>Classes
+			</a></li>
+			<li><a href="<?=$url_transport_communes;?>"><i class="fam-bullet-go"></i>Communes</a></li>
+			<li><a href="<?=$url_transport_etablissements;?>"><i
 					class="fam-bullet-go"></i>Etablissements</a></li>
-			<li><a href="<?php echo $url_transport_services; ?>"><i
-					class="fam-bullet-go"></i>Services</a></li>
-			<li><a href="<?php echo $url_transport_stations; ?>"><i
-					class="fam-bullet-go"></i>Stations</a></li>
-			<li><a href="<?php echo $url_transport_transporteurs; ?>"><i
+			<li><a href="<?= $url_simulation_etablissement_liste; ?>"><i
+					class="fam-bullet-go"></i>Règles de correspondance pour le passage
+					dans un établissement de niveau supérieur</a></li>
+			<li><a href="<?= $url_rpi_liste; ?>"><i class="fam-bullet-go"></i>Gestion des RPI</a></li>
+			<li><a href="<?= $url_secteurs_scolaires_liste; ?>"><i
+					class="fam-bullet-go"></i>Gestion des secteurs scolaires des
+					collèges publics</a></li>
+			<li><a href="<?=$url_transport_services;?>"><i class="fam-bullet-go"></i>Services</a></li>
+			<li><a href="<?=$url_transport_stations;?>"><i class="fam-bullet-go"></i>Stations</a></li>
+			<li><a href="<?=$url_transport_transporteurs;?>"><i
 					class="fam-bullet-go"></i>Transporteurs</a></li>
+			<li><a href="<?= $url_users;?>"><i class="fam-bullet-go"></i>Comptes
+					des utilisateurs</a></li>
 		</ul>
 	</div>
 </div>

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.4.8
+ * @date 3 juil. 2020
+ * @version 2020-2.4.16
  */
 namespace SbmAdmin\Controller;
 
@@ -1331,6 +1331,129 @@ class IndexController extends AbstractActionController
                 'form' => $form->prepare(),
                 'page' => $currentPage
             ]);
+    }
+
+    /**
+     * Envoie un mail à un responsable. Reçoit en post les paramètres 'userId',
+     * 'utilisateur', 'email', 'origine' où origine est l'url de retour Eventuellement,
+     * reçoit 'sujet' et 'contenu' initialisant le formulaire
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function userMailAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $destinataire = Session::get('destinataire', [], $this->getSessionNamespace());
+            $args = [];
+        } else {
+            $args = $prg;
+            if (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+            }
+            if (array_key_exists('ecrire', $args) && array_key_exists('email', $args)) {
+                $destinataire = [
+                    'email' => $args['email'],
+                    'alias' => StdLib::getParam('utilisateur', $args)
+                ];
+                Session::set('destinataire', $destinataire, $this->getSessionNamespace());
+                unset($args['email'], $args['responsable']);
+            } else {
+                $destinataire = Session::get('destinataire', [],
+                    $this->getSessionNamespace());
+            }
+        }
+        if (empty($destinataire) || array_key_exists('cancel', $args)) {
+            $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (RedirectToOrigineException $e) {
+                $this->redirectToOrigin()->reset();
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
+            }
+        }
+        $form = $this->form_manager->get(FormMail::class);
+        if (array_key_exists('submit', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $data = $form->getData();
+                // préparation du corps
+                if ($data['body'] == strip_tags($data['body'])) {
+                    // c'est du txt
+                    $body = nl2br($data['body']);
+                } else {
+                    // c'est du html
+                    $body = $data['body'];
+                }
+                // préparation des paramètres d'envoi
+                $auth = $this->authenticate->by();
+                $user = $auth->getIdentity();
+                $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+                $mailTemplate = new MailTemplate(null, 'layout',
+                    [
+                        'file_name' => $logo_bas_de_mail,
+                        'path' => StdLib::getParam('path', $this->img),
+                        'img_attributes' => StdLib::getParamR(
+                            [
+                                'administrer',
+                                $logo_bas_de_mail
+                            ], $this->img),
+                        'client' => $this->client
+                    ]);
+                $params = [
+                    'to' => [
+                        [
+                            'email' => $destinataire['email'],
+                            'name' => $destinataire['alias'] ?: $destinataire['email']
+                        ]
+                    ],
+                    'bcc' => [
+                        [
+                            'email' => $user['email'],
+                            'name' => 'School bus manager'
+                        ]
+                    ],
+                    'subject' => $data['subject'],
+                    'body' => [
+                        'html' => $mailTemplate->render([
+
+                            'body' => $body
+                        ])
+                    ]
+                ];
+                // envoi du mail
+                $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                $this->getEventManager()->trigger('sendMail', null, $params);
+                $this->flashMessenger()->addInfoMessage(
+                    'Le message a été envoyé et une copie vous est adressée dans votre messagerie.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (RedirectToOrigineException $e) {
+                    $this->redirectToOrigin()->reset();
+                    return $this->redirect()->toRoute('login', [
+                        'action' => 'home-page'
+                    ]);
+                }
+            }
+        }
+        $form->setData([
+            'subject' => StdLib::getParam('sujet', $args, '')
+        ]);
+        $view = new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'destinataires' => [
+                    $destinataire
+                ],
+                'contenu' => StdLib::getParam('contenu', $args, '')
+            ]);
+        $view->setTemplate('sbm-mail/index/send.phtml');
+        return $view;
     }
 
     public function exportAction()

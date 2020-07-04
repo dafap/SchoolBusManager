@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 6 juin 2018
- * @version 2018-2.4.1
+ * @date 3 juil. 2020
+ * @version 2018-2.4.16
  */
 use SbmAdmin\Form;
 use SbmAdmin\Controller;
@@ -28,6 +28,169 @@ return [
                     'roles' => [
                         'admin',
                         'sadmin'
+                    ]
+                ],
+                'actions' => [
+                    'user-ajout' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-edit' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-etablissement' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-link' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-mail' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-pdf' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-prepare_nouveaux_comptes' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-suppr' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'user-transporteur' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'rpi-ajout' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'rpi-edit' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'rpi-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'rpi-pdf' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'rpi-suppr' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'secteur-scolaire-ajout' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'secteur-scolaire-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'secteur-scolaire-pdf' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'secteur-scolaire-suppr' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'simulation-etablissement-ajout' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'simulation-etablissement-liste' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'simulation-etablissement-pdf' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
+                    ],
+                    'simulation-etablissement-suppr' => [
+                        'allow' => [
+                            'roles' => [
+                                'gestion'
+                            ]
+                        ]
                     ]
                 ]
             ]
