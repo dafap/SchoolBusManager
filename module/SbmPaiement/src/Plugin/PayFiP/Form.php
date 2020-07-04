@@ -11,7 +11,7 @@
  * @date 7 mai 2019
  * @version 2019-2.5.0
  */
-SbmPaiement\Plugin\PayFiP;
+namespace SbmPaiement\Plugin\PayFiP;
 
 use Zend\Form\Form as ZendForm;
 
