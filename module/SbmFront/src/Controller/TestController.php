@@ -21,7 +21,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class TestController extends AbstractActionController
 {
-    use \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\DebugTrait, \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
      *
@@ -94,9 +94,11 @@ class TestController extends AbstractActionController
     public function affectationsParEtablissementAction()
     {
         $this->initDebug();
-        $etablissementId = '0730466K';
-        $etablissement = 'école de Verrens-Arvey';
+        $etablissementId = '0730769P';
+        $etablissement = 'Clg Beaufort';
         $this->debugLog("$etablissement : $etablissementId");
+        $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $taffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         $compteur = 0;
         for ($r = 1; $r <= 2; $r ++) {
             $where = new Where();
@@ -104,7 +106,6 @@ class TestController extends AbstractActionController
                 ->literal(sprintf('accordR%d = 1', $r))
                 ->literal('millesime = 2020')
                 ->equalTo('etablissementId', $etablissementId);
-            $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
             $sco = $tscolarites->getTableGateway()->getTable();
             $stationId = sprintf('stationIdR%d', $r);
             $joursTransport = sprintf('joursTransportR%d', $r);
@@ -117,24 +118,30 @@ class TestController extends AbstractActionController
                 [
                     'responsableId' => sprintf('responsable%dId', $r)
                 ])
-                ->where($where)
-            // ->limit(20)
-            //->offset(30)
-            ;
+                ->where($where);
+            // ->limit(10)
+            // ->offset(30);
             $resultset = $tscolarites->getTableGateway()->selectWith($select);
             foreach ($resultset as $row) {
                 set_time_limit(90);
                 if (0 == ++ $compteur % 10) {
                     $this->debugLog($compteur);
                 }
-                $this->db_manager->get('Sbm\ChercheTrajet')
-                    ->setEtablissementId($row->etablissementId)
-                    ->setStationId($row->{$stationId})
-                    ->setEleveId($row->eleveId)
-                    ->setJours($row->{$joursTransport})
-                    ->setTrajet($r)
-                    ->setResponsableId($row->responsableId)
-                    ->run();
+                if ($row->responsableId) {
+                    $taffectations->deleteResponsableId(2020, $row->eleveId,
+                        $row->responsableId);
+                    //$this->debugLog(
+                    //    'EleveId:' . $row->eleveId . ' - ResponsaableId: ' .
+                    //    $row->responsableId);
+                    $this->db_manager->get('Sbm\ChercheTrajet')
+                        ->setEtablissementId($row->etablissementId)
+                        ->setStationId($row->{$stationId})
+                        ->setEleveId($row->eleveId)
+                        ->setJours($row->{$joursTransport})
+                        ->setTrajet($r)
+                        ->setResponsableId($row->responsableId)
+                        ->run();
+                }
             }
         }
 
@@ -196,8 +203,12 @@ class TestController extends AbstractActionController
             "La Léchère" => "73187",
             "Megève" => "74173"
         ];
+        $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $taffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         $compteur = 0;
-        foreach ($aCommunes as $key => $communeId) {
+        foreach ([
+            'Grignon' => '73130'
+        ] as $key => $communeId) {
             $this->debugLog($key);
             for ($r = 1; $r <= 2; $r ++) {
                 $where = new Where();
@@ -205,7 +216,6 @@ class TestController extends AbstractActionController
                     ->literal(sprintf('accordR%d = 1', $r))
                     ->literal('millesime = 2020')
                     ->equalTo('sta.communeId', $communeId);
-                $tscolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
                 $sco = $tscolarites->getTableGateway()->getTable();
                 $stationId = sprintf('stationIdR%d', $r);
                 $joursTransport = sprintf('joursTransportR%d', $r);
@@ -231,6 +241,8 @@ class TestController extends AbstractActionController
                     if (0 == ++ $compteur % 10) {
                         $this->debugLog($compteur);
                     }
+                    $taffectations->deleteResponsableId(2020, $row->eleveId,
+                        $row->responsableId);
                     $this->db_manager->get('Sbm\ChercheTrajet')
                         ->setEtablissementId($row->etablissementId)
                         ->setStationId($row->{$stationId})
