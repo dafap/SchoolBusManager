@@ -15,7 +15,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -1054,12 +1054,17 @@ class CriteresEleves extends SbmCommunCriteres
     {
         if ($where instanceof Where) {
             if ($pdf) {
-                return $where->nest()->isNull('affecteR1matin')->or->isNull(
-                    'affecteR1soir')->or->nest()
+                return $where->nest()
+                    ->nest()
+                    ->literal('demandeR1 = 1')
+                    ->nest()
+                    ->isNull('affecteR1matin')->or->isNull('affecteR1soir')->or->nest()
                     ->literal('niveau >= 4')
                     ->isNull('affecteR1midi')
+                    ->unnest()
+                    ->unnest()
                     ->unnest()->or->nest()
-                    ->literal('demandeR2 > 0')
+                    ->literal('demandeR2 = 1')
                     ->nest()
                     ->isNull('affecteR2matin')->or->isNull('affecteR2soir')->or->nest()
                     ->literal('niveau >= 4')
@@ -1069,12 +1074,17 @@ class CriteresEleves extends SbmCommunCriteres
                     ->unnest()
                     ->unnest();
             } else {
-                return $where->nest()->isNull('aff1R1.eleveId')->or->isNull(
-                    'aff3R1.eleveId')->or->nest()
+                return $where->nest()
+                    ->nest()
+                    ->literal('sco.demandeR1 = 1')
+                    ->nest()
+                    ->isNull('aff1R1.eleveId')->or->isNull('aff3R1.eleveId')->or->nest()
                     ->literal('cla.niveau >= 4')
                     ->isNull('aff2R1.eleveId')
+                    ->unnest()
+                    ->unnest()
                     ->unnest()->or->nest()
-                    ->literal('sco.demandeR2 > 0')
+                    ->literal('sco.demandeR2 = 1')
                     ->nest()
                     ->isNull('aff1R2.eleveId')->or->isnull('aff3R2.eleveId')->or->nest()
                     ->literal('cla.niveau >= 4')
