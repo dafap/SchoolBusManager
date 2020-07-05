@@ -8,7 +8,7 @@
  * @filesource Scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -176,6 +176,29 @@ class Scolarites extends AbstractSbmTable
                 'millesime' => $millesime,
                 'eleveId' => $eleveId,
                 $champ => $accord
+            ]);
+        return parent::saveRecord($oData);
+    }
+
+    /**
+     * Marque 2 dans demandeRi (i=1 ou 2)
+     *
+     * @param int $millesime
+     *            Millesime sur lequel on travaille
+     * @param int $eleveId
+     *            identifiant d'un eleve
+     * @param string $trajet
+     *            1 ou 2
+     */
+    public function setDemandeTraitee($millesime, $eleveId, $trajet)
+    {
+        $champ = "demandeR$trajet";
+        $oData = $this->getObjData();
+        $oData->exchangeArray(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                $champ => 2
             ]);
         return parent::saveRecord($oData);
     }

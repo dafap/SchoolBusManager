@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -998,9 +998,9 @@ class AffectationsServicesStations extends AbstractQuery
      * @param int $trajet
      *            1 pour R1 ; 2 pour R2
      * @param int $millesime
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
+     * @return \Zend\Db\Adapter\Driver\ResultInterface|\Zend\Db\ResultSet\HydratingResultSet
      */
-    public function getItineraires(int $eleveId, int $trajet = 1, int $millesime = null): \Zend\Db\Adapter\Driver\ResultInterface
+    public function getItineraires(int $eleveId, int $trajet = 1, int $millesime = null)
     {
         $where = new Where();
         $where->equalTo('aff.millesime', $millesime ?: $this->millesime)
@@ -1032,7 +1032,7 @@ class AffectationsServicesStations extends AbstractQuery
             ->join([
             'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
         ], $this->jointureAffectationsCircuits(1, 'cir1'), [
-            'horaire1' => 'horaireA'
+            'horaire1' => new Expression('TIME_FORMAT(cir1.horaireA,"%H:%i")')
         ])
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
@@ -1047,7 +1047,7 @@ class AffectationsServicesStations extends AbstractQuery
             ->join([
             'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
         ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
-            'horaire2' => 'horaireA'
+            'horaire2' => new Expression('TIME_FORMAT(cir2.horaireA,"%H:%i")')
         ])
             ->where($where)
             ->order(

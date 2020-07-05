@@ -8,31 +8,16 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juin 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-liste.css');
-// gestion des checkbox selection
+// gestion des checkbox selection et demande
 $this->jQuery();
-$js_chkCallback = '';
-$js_chkTrigger = '';
-// selection
-$modele_chkTrigger = "$('#chk%d').trigger('change');\n";
-$modele_chkCallback = <<<EOT
-$("#chk%d").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxeleve/'+action+'selectioneleve/eleveId:%d',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });\n
-EOT;
+$this->themeJs('gestion-eleve', 'eleve-liste.js');
 
 // gestion du hidden op des formulaires de liste : les arguments sont id, suffixe de l'id,
 // valeur
@@ -236,8 +221,7 @@ $actions = [
 					<th>Établissement</th>
 					<th>Classe</th>
 					<th>Services</th>
-					<th>Arrêts</th>
-					<th>Sélect.</th>
+					<th>Sél.</th>
 					<th></th>
 				</tr>
         		<?php foreach($eleves as $eleve): ?>
@@ -337,10 +321,6 @@ $actions = [
                 $ga = false;
                 $rowspan = '';
             }
-            // selection
-            $js_chkTrigger .= sprintf($modele_chkTrigger, $eleve['eleveId']);
-            $js_chkCallback .= sprintf($modele_chkCallback, $eleve['eleveId'],
-                $eleve['eleveId']);
             // tr css
             $tr_css = $this->cycle([
                 "even",
@@ -368,19 +348,19 @@ $actions = [
             $inscrit |= ($eleve['demandeR2'] == 2 && $eleve['accordR2'] == 0 &&
                 $eleve['subventionR2'] == 1);
             $affecte = ! is_null($eleve['affecteR1matin']);
-            $affecte &= !is_null($eleve['affecteR1soir']);
+            $affecte &= ! is_null($eleve['affecteR1soir']);
             if ($eleve['niveau'] >= 4) {
-                $affecte &= !is_null($eleve['affecteR1midi']);
+                $affecte &= ! is_null($eleve['affecteR1midi']);
             }
             // ajouter la même chose pour R2 si nécessaire
-            if ($eleve['demandeR2']){
+            if ($eleve['demandeR2']) {
                 $affecte &= ! is_null($eleve['affecteR2matin']);
-                $affecte &= !is_null($eleve['affecteR2soir']);
+                $affecte &= ! is_null($eleve['affecteR2soir']);
                 if ($eleve['niveau'] >= 4) {
-                    $affecte &= !is_null($eleve['affecteR2midi']);
+                    $affecte &= ! is_null($eleve['affecteR2midi']);
                 }
             }
-            //=============================================
+            // =============================================
             $this->pictogrammes('init')
                 ->addPreinscrit(! $inscrit)
                 ->addSansAffectation($affecte)
@@ -438,6 +418,29 @@ $actions = [
             if ($inscrit || $eleve['appelNotifieOk']) {
                 unset($buttons['majNotification']);
             }
+            $itinerairesR1 = sprintf(
+                $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1),
+                $this->renderCheckbox('demande', 'traite', $eleve['eleveId'],
+                    $eleve['selectionEleve'],
+                    [
+                        'data-trajet' =>1,
+                        'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                    ]));
+            if ($ga) {
+                $itinerairesR2 = sprintf(
+                $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
+                $this->renderCheckbox('demande', 'traite', $eleve['eleveId'],
+                    $eleve['selectionEleve'],
+                    [
+                        'data-trajet' => 2,
+                        'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                    ]));
+            }
+            $checkbox_selection = $this->renderCheckbox('selection', 'chk',
+                $eleve['eleveId'], $eleve['selectionEleve'],
+                [
+                    'title' => 'Cocher pour sélectionner la fiche'
+                ]);
             ?>
                 <tr class="petit <?= $tr_css;?>">
 					<td <?= $rowspan;?>>
@@ -456,11 +459,9 @@ $actions = [
 					<td <?= $rowspan;?> class="classe">
 						<?= $this->escapeHtml($eleve['classe']);?></td>
 					<td class="service">
-						<?= $this->printServices($eleve['eleveId'], 1);?></td>
-					<td class="station">
-						<?= $this->printStations($eleve['eleveId'], 1);?></td>
+						<?= $itinerairesR1;?></td>
 					<td <?= $rowspan;?> class="centre selection">
-					<?=$this->renderCheckbox('selection', 'chk', $eleve['eleveId'], $eleve['selectionEleve']); ?>
+					<?= $checkbox_selection;?>
 					</td>
 					<td <?= $rowspan;?> class="boutons">
 						<?= $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);?></td>
@@ -469,8 +470,7 @@ $actions = [
 				<tr class="petit <?= $tr_css;?>">
 					<td class="responsables"><?= $itemR2; ?></td>
 					<td class="commune"><?= $this->escapeHtml($eleve['lacommuneR2']);?></td>
-					<td class="service"><?= $this->printServices($eleve['eleveId'], 2);?></td>
-					<td class="station"><?= $this->printStations($eleve['eleveId'], 2);?></td>
+					<td class="service"><?= $itinerairesR2;?></td>
 				</tr>
 					<?php endif;?>
         <?php endforeach;?>
@@ -495,13 +495,3 @@ $actions = [
 	    </div>
 	</div>
 </div>
-<?php
-$this->headScript()->captureStart();
-?>
-$(function() {
-function triggerChange() {
-<?= $js_chkTrigger;?>}
-<?= $js_chkCallback;?>
-});
-<?php
-$this->headScript()->captureEnd();

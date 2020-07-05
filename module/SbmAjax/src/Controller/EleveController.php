@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -650,6 +650,31 @@ class EleveController extends AbstractActionController
         }
 
         return $response;
+    }
+
+    /**
+     * Renvoie un cr success = 1 ou 0
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function demandetraiteeAction()
+    {
+        try {
+            $eleveId = $this->params('eleveId');
+            $trajet = $this->params('trajet');
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setDemandeTraitee(
+                Session::get('millesime'), $eleveId, $trajet);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
     }
 
     /**

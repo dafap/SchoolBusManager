@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 18 juin 2020
+ * @date 5 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmGestion\Controller;
@@ -258,7 +258,8 @@ return [
         'factories' => [
             'menuRapports' => ViewHelper\MenuRapports::class,
             'printServices' => ViewHelper\Services::class,
-            'printStations' => ViewHelper\Stations::class
+            'printStations' => ViewHelper\Stations::class,
+            'printItineraires' => ViewHelper\Itineraires::class
         ]
     ],
     'view_manager' => [
