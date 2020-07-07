@@ -8,10 +8,33 @@
  * @filesource station-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2020
+ * @date 6 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
+use SbmBase\Model\StdLib;
+
+class Temps
+{
+    use \SbmCommun\Model\Traits\DebugTrait;
+    public function __construct()
+    {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'station-station.log');
+    }
+    public function __invoke($temps)
+    {
+        $t = \DateTime::createFromFormat('H:i:s', $temps);
+        if ($t) {
+            return $t->format('i:s');
+        } else {
+            return '';
+        }
+    }
+    public function debug($temps)
+    {
+        $this->debugLog($temps);
+    }
+}
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
@@ -97,6 +120,7 @@ $actions = [
 					<th></th>
 				</tr>
             <?php
+            $format_temps = new Temps();
             foreach ($this->data as $entity) :
                 ?>
             	<?php
@@ -116,7 +140,7 @@ $actions = [
 					<td class="commune2">
 						<?=$this->escapeHtml($entity->sta2_lacommune);?></td>
 					<td class="temps">
-						<?=\DateTime::createFromFormat('H:i:s', $entity->temps)->format('H:i:s');?></td>
+						<?=$format_temps($entity->temps);?></td>
 					<td class="boutons">
             <?php
                 $hiddens['station2Id'] = $entity->station2Id;
