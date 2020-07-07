@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2020
+ * @date 7 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -774,10 +774,12 @@ class EleveController extends AbstractActionController
             $arrayServiceId['ligneId'], $arrayServiceId['sens'], $arrayServiceId['moment'],
             $arrayServiceId['ordre']);
         return $this->getResponse()->setContent(
-            Json::encode([
-                'data' => $stations,
-                'success' => 1
-            ]));
+            Json::encode(
+                [
+                    'data' => array_flip($stations), // échange key/value pour conserver
+                                                      // le tri
+                    'success' => 1
+                ]));
     }
 
     /**

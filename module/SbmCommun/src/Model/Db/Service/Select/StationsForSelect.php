@@ -14,7 +14,7 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2020
+ * @date 7 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -52,7 +52,7 @@ class StationsForSelect implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->table_name = $this->db_manager->getCanonicName('stations', 'vue');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
-        $libelle = new Literal('concat(commune, " - ", nom)');
+        $libelle = new Literal('CONCAT(commune, " - ", nom)');
         $this->columns = [
             'stationId',
             'libelle' => $libelle
@@ -128,6 +128,18 @@ class StationsForSelect implements FactoryInterface
         return $array;
     }
 
+    /**
+     * Afin de présenter les stations dans l'ordre alphabétique (commune - station) il
+     * faut trier le tableau selon les libellés. Or si on laisse la clé en numérique le
+     * tri est perdu lors du passage de PHP à JS en JSON.
+     *
+     * @param int $millesime
+     * @param string $ligneId
+     * @param int $sens
+     * @param int $moment
+     * @param int $ordre
+     * @return array tableau associatif stationId => libelle où stationId est modifiée
+     */
     public function surcircuit(int $millesime, string $ligneId, int $sens, int $moment,
         int $ordre = 0)
     {
@@ -139,22 +151,27 @@ class StationsForSelect implements FactoryInterface
         if ($ordre) {
             $where->equalTo('ordre', $ordre);
         }
-        $select = $this->sql->select();
-        $select->from([
+        $select = $this->sql->select()
+            ->from([
             'sta' => $this->table_name
         ])
-            ->columns($this->columns)
+            ->columns(
+            [
+                'stationId',
+                'libelle' => new Literal(
+                    'CONCAT_WS(" - ", commune, nom, TIME_FORMAT(horaireD, "%H:%i"))')
+            ])
             ->join([
             'cir' => $this->db_manager->getCanonicName('circuits', 'table')
         ], 'sta.stationId=cir.stationId', [])
-            ->where($where)
-            ->order($this->order);
+            ->where($where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
             $array[$row['stationId']] = $row['libelle'];
         }
+        asort($array);
         return $array;
     }
 

@@ -111,7 +111,7 @@ class ServicesForSelect implements FactoryInterface
         if ($moment) {
             $conditions['moment'] = $moment;
         }
-        $this->columns['libelle'] = new Literal($this->getSqlDesignationService('s.ligneId', 's.sens', 's.moment', 's.ordre'));
+        $this->columns['libelle'] = new Literal($this->getSqlChoixService('s.ligneId', 's.sens', 's.moment', 's.ordre', 's.semaine'));
         $select = $this->sql->select([
             's' => $this->table_name
         ])

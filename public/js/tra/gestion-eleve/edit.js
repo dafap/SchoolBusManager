@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
+ * @date 7 juil. 2020
  * @version 2020-2.6.0
  */
 
@@ -792,7 +792,7 @@ function affectation() {
 				$("#affectation-station1Id").empty();
 				$("#affectation-station2Id").empty();
 				if (dataJson.success) {
-					$.each(dataJson.data, function(k, d) {
+					$.each(dataJson.data, function(d, k) { // key/value échangées pour le conserver le tri
 						if (station1Id == k) {
 							$('#affectation-station1Id').append('<option value="'+k+'" selected>'+d+'</option>');
 						} else {

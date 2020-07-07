@@ -7,7 +7,7 @@
  * @filesource ExpressionSqlTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2020
+ * @date 7 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -77,27 +77,24 @@ trait ExpressionSqlTrait
      * @param string $ligneId
      * @param string $horaire
      * @param string $sens
-     * @param string $alias
+     * @param string $prefix
      * @return string
      */
     public function getSqlSemaineLigneHoraireSens(string $semaine = 'semaine',
         string $ligneId = 'ligneId', string $horaire = 'horaire', string $sens = 'sens',
-        string $alias = '')
+        string $prefix = '')
     {
-        if ($alias) {
-            $prefix = rtrim($alias, '.') . '.';
+        if ($prefix) {
+            $prefix = rtrim($prefix, '.') . '.';
         }
         $expr = implode(',',
             [
                 $this->getSqlSemaine($prefix . $semaine),
-                "' '",
                 $prefix . $ligneId,
-                "' '",
                 "DATE_FORMAT($prefix$horaire,'%H:%i')",
-                "' '",
                 $this->getSqlSens($prefix . $sens)
             ]);
-        return 'CONCAT(' . $expr . ')';
+        return 'CONCAT_WS(" ",' . $expr . ')';
     }
 
     public function getSqlDesignationService(string $ligneId = 'ligneId',
@@ -106,14 +103,47 @@ trait ExpressionSqlTrait
         $expr = implode(',',
             [
                 $ligneId,
-                "' - '",
                 $this->getSqlSens($sens),
-                "' - '",
                 $this->getSqlMoment($moment),
-                "' - '",
                 $this->getSqlOrdre($ordre)
             ]);
-        return 'CONCAT(' . $expr . ')';
+        return 'CONCAT_WS(" - ",' . $expr . ')';
+    }
+
+    /**
+     * Format du résultat : ligneId Moment Semaine Sens Ordre
+     *
+     * @param string $ligneId
+     *            nom de la colonne dans la table ou dans la requête
+     * @param string $sens
+     *            nom de la colonne dans la table ou dans la requête
+     * @param string $moment
+     *            nom de la colonne dans la table ou dans la requête
+     * @param string $ordre
+     *            nom de la colonne dans la table ou dans la requête
+     * @param string $semaine
+     *            nom de la colonne dans la table ou dans la requête
+     * @param string $prefix
+     *            alias de la table ou de la requête servant de préfixe aux noms de
+     *            colonne
+     * @return string Expression Sql
+     */
+    public function getSqlChoixService(string $ligneId = 'ligneId', string $sens = 'sens',
+        string $moment = 'moment', string $ordre = 'ordre', string $semaine = 'semaine',
+        string $prefix = '')
+    {
+        if ($prefix) {
+            $prefix = rtrim($prefix, '.') . '.';
+        }
+        $expr = implode(',',
+            [
+                $prefix . $ligneId,
+                $this->getSqlMoment($prefix . $moment),
+                $this->getSqlSens($prefix . $sens),
+                $this->getSqlOrdre($prefix . $ordre),
+                $this->getSqlSemaine($prefix . $semaine)
+            ]);
+        return 'CONCAT_WS(" ",' . $expr . ')';
     }
 
     public function getSqlEncodeServiceId(string $prefix = '')
