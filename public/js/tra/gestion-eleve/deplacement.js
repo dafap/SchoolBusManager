@@ -5,7 +5,7 @@
  * @filesource deplacement.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 $(function() {
@@ -34,8 +34,8 @@ $(function() {
 		});
 	}
 
-	$("#carteoption1").on('change', function() {
-		if ($(this).is(':checked')) {
+	$("input[name=carte]").on('change', function() {
+		if ($("#carteoption1").is(':checked')) {
 			$("div.row-inner.cartelot").show();
 		} else {
 			$("div.row-inner.cartelot").hide();
@@ -46,4 +46,6 @@ $(function() {
 		var valeur2 = $(this).val();
 		setStationsValueOptions(valeur1, valeur2);
 	});
+	
+	$("div.row-inner.cartelot").hide();
 });

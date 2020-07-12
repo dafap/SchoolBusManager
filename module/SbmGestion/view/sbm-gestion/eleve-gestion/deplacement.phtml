@@ -8,7 +8,7 @@
  * @filesource deplacement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -50,15 +50,22 @@ $actions = [
 	</div>
 	<div id="fiche-inner">
 		<?= $this->form()->openTag($this->form);?>
-		<fieldset class="wrapper service">
-        	<?php if ($this->verrouille):?>
-        	<?=$this->formHidden($form->get('moment'));?>
-        	<?=$this->formHidden($form->get('serviceinitial'));?>
-        	<?php else:?>
-        	<div class="wrapper-moment"><?=$this->formRow($form->get('moment'));?></div>
-			<div class="wrapper-serviceinitial"><?=$this->formRow($form->get('serviceinitial'));?></div>
-        	<?php endif;?>
-        	<div class="wrapper-servicefinal"><?=$this->formRow($form->get('servicefinal'));?></div>
+		<fieldset class="wrapper service clearfix">
+			<div class="col1 float-left">
+        	    <?php if ($this->verrouille):?>
+        	    <?=$this->formHidden($form->get('moment'));?>
+        	    <?=$this->formHidden($form->get('serviceinitial'));?>
+        	    <?php else:?>
+        	    <div class="wrapper-moment"><?=$this->formRow($form->get('moment'));?></div>
+				<div class="wrapper-serviceinitial">
+			        <?=$this->formRow($form->get('serviceinitial'));?></div>
+        	    <?php endif;?>
+        	    <div class="wrapper-servicefinal">
+        	        <?=$this->formRow($form->get('servicefinal'));?></div>
+			</div>
+			<div class="col2 float-left">
+				<div class="wrapper-nbmaxi"><?=$this->formRow($form->get('nbmaxi'));?></div>
+			</div>
 		</fieldset>
 		<div id="accordion">
 			<h3>Scolarité</h3>

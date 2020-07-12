@@ -78,10 +78,12 @@ class Deplacement extends AbstractQuery
     public function run(array $args)
     {
         $this->args = $args;
+        $nb_maxi = StdLib::getParam('nbmaxi', $args, PHP_INT_MAX);
         $this->serviceInitial = $this->decodeServiceId($this->args['serviceinitial']);
         $this->serviceFinal = $this->decodeServiceId($this->args['servicefinal']);
         $this->initEquivalenceStations();
         $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+        $nb = 0;
         foreach ($this->affectationsConcernees() as $affectation) {
             if (! $this->valideTroncon($affectation['station1Id'],
                 $affectation['station2Id'])) {
@@ -97,6 +99,9 @@ class Deplacement extends AbstractQuery
             }
             $tAffectations->deleteRecord($where);
             $tAffectations->saveRecord($objectAffectation);
+            if (++ $nb == $nb_maxi) {
+                break;
+            }
         }
     }
 

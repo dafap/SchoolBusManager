@@ -6,7 +6,7 @@
  * @filesource deplacement.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  **/
 @charset "UTF-8";
@@ -42,7 +42,7 @@ div label.first {
 	width: initial;
 }
 
-div.dateinscription label, label.service {
+div.dateinscription label, label.service, label.nbmaxi {
 	vertical-align: initial;
 	padding-top: initial;
 }

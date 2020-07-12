@@ -55,6 +55,25 @@ class Deplacement extends AbstractSbmForm implements InputFilterProviderInterfac
             ])
             ->add(
             [
+                'name' => 'nbmaxi',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'nbmaxi',
+                    'class' => 'nbmaxi',
+                    'title' => 'Laisser vide si vous ne voulez pas limiter le nombre d\'élèves à déplacer.'
+                ],
+                'options' => [
+                    'label' => 'Nombre maxi d\'élèves à déplacer',
+                    'label_attributes' => [
+                        'class' => 'label_class nbmaxi'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ])
+            ->add(
+            [
                 'name' => 'etablissementcommune',
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
@@ -452,6 +471,15 @@ class Deplacement extends AbstractSbmForm implements InputFilterProviderInterfac
                 'name' => 'servicefinal',
                 'required' => true
             ],
+            'nbmaxi' => [
+                'name' => 'nbmaxi',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'Digits'
+                    ]
+                ]
+            ],
             'etablissementcommune' => [
                 'name' => 'etablissementcommune',
                 'required' => false
@@ -478,7 +506,7 @@ class Deplacement extends AbstractSbmForm implements InputFilterProviderInterfac
             ],
             'stationId' => [
                 'name' => 'stationId',
-                'required' => false,
+                'required' => false
             ],
             'paiement' => [
                 'name' => 'paiement',
