@@ -19,7 +19,7 @@
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Tarification;
@@ -30,6 +30,7 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmBase\Model\StdLib;
 
 class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
 {
@@ -204,6 +205,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
      */
     protected function calculeReduction(int $eleveId)
     {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'calcule-reduction.log');
         $reduction = $this->periodeReduction($eleveId) ||
             $this->estPremiereInscription($eleveId) || $this->derogationObtenue($eleveId);
         if ($this->oScolarite) {
@@ -223,7 +225,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     {
         $this->readEleve($eleveId);
         if ($this->oScolarite) {
-            $dateInscription = \DateTime::createFromFormat('Y-m-d',
+            $dateInscription = \DateTime::createFromFormat('Y-m-d H:i:s',
                 $this->oScolarite->dateInscription);
             return $dateInscription <= $this->etatDuSite['echeance'];
         } else {
@@ -240,7 +242,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     {
         $this->readEleve($eleveId);
         if ($this->oEleve) {
-            $dateCreation = \DateTime::createFromFormat('Y-m-d',
+            $dateCreation = \DateTime::createFromFormat('Y-m-d H:i:s',
                 $this->oEleve->dateCreation);
             return $dateCreation > $this->etatDuSite['echeance'];
         } else {
