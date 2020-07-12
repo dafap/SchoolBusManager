@@ -1,0 +1,117 @@
+<?php
+/**
+ * Formulaire de sélection pour déplacer un groupe d'élèves d'un service sur un autre sans
+ * changement de point d'origine
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
+ * @filesource deplacement.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 juil. 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/eleve-gestion', 'deplacement.css');
+$this->jQuery('jquery-ui');
+$this->themeJS('gestion-eleve', 'deplacement.js');
+$this->inlineScript()->captureStart();
+?>
+$("#accordion").accordion();
+<?php
+$this->inlineScript()->captureEnd();
+// le formulaire doit avoir id="accordion" pour que ça marche
+// =============================================================================================
+$url_retour = $this->url('sbmgestion/gestioneleve',
+    [
+        'action' => 'deplacement',
+        'page' => $this->page
+    ]);
+$js = 'window.document.getElementById(\'op\').value=%s;';
+$hiddens = [];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => sprintf($js, "'retour'")
+    ]
+];
+?>
+<h1>Déplacement d'un groupe d'élèves</h1>
+<?php if ($this->verrouille):?>
+<h2>Depuis le service <?=$this->identifiantService;?></h2>
+<?php endif;?>
+<div id="fiche-wrapper">
+	<div id="fiche-header">
+		<div class="menu clearfix">
+        <?= $this->listeZoneActions($hiddens, $actions);?>
+        </div>
+	</div>
+	<div id="fiche-inner">
+		<?= $this->form()->openTag($this->form);?>
+		<fieldset class="wrapper service">
+        	<?php if ($this->verrouille):?>
+        	<?=$this->formHidden($form->get('moment'));?>
+        	<?=$this->formHidden($form->get('serviceinitial'));?>
+        	<?php else:?>
+        	<div class="wrapper-moment"><?=$this->formRow($form->get('moment'));?></div>
+			<div class="wrapper-serviceinitial"><?=$this->formRow($form->get('serviceinitial'));?></div>
+        	<?php endif;?>
+        	<div class="wrapper-servicefinal"><?=$this->formRow($form->get('servicefinal'));?></div>
+		</fieldset>
+		<div id="accordion">
+			<h3>Scolarité</h3>
+			<div class="accordion1">
+				<fieldset class="wrapper clearfix">
+					<div class="col1 float-left">
+						<div class="row-inner etablissementcommune">
+						<?=$this->formRow($form->get('etablissementcommune'));?></div>
+						<div class="row-inner etablissementniveau">
+						<?=$this->formRow($form->get('etablissementniveau'));?></div>
+						<div class="row-inner etablissementId">
+						<?=$this->formRow($form->get('etablissementId'));?></div>
+					</div>
+					<div class="col2 float-left">
+						<div class="row-inner regimeId">
+						<?=$this->formRow($form->get('regimeId'));?></div>
+						<div class="row-inner classeniveau">
+						<?=$this->formRow($form->get('classeniveau'));?></div>
+						<div class="row-inner classeId">
+						<?=$this->formRow($form->get('classeId'));?></div>
+					</div>
+				</fieldset>
+			</div>
+			<h3>Point d'origine</h3>
+			<div class="accordion2">
+				<fieldset class="wrapper">
+					<div class="row-inner stationId">
+						<?=$this->formRow($form->get('stationId'));?></div>
+				</fieldset>
+			</div>
+			<h3>État du dossier</h3>
+			<div class="accordion3">
+				<fieldset class="wrapper">
+					<div class="row-inner paiement">
+						<?=$this->formRow($form->get('paiement'));?></div>
+					<div class="row-inner carte">
+						<?=$this->formRow($form->get('carte'));?></div>
+					<div class="row-inner cartelot">
+						<?=$this->formRow($form->get('cartelot'));?></div>
+					<div class="row-inner dateinscription">
+						<?=$this->formRow($form->get('dateinscription'));?></div>
+				</fieldset>
+			</div>
+		</div>
+		<div id="pdf-edit-buttons" class="row-inner button">
+	    	<?= $this->formSubmit($this->form->get('submit')); ?>
+	    	<?= $this->formSubmit($this->form->get('cancel')); ?>
+        </div>
+        <?= $this->form()->closeTag(); ?>
+        <p class="sbm-description">
+			<i>Ctrl</i> + <i>Clic</i> pour sélectionner plusieurs valeurs dans
+			les listes.
+		</p>
+	</div>
+	<div id="fiche-footer"></div>
+</div>

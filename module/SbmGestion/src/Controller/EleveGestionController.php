@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -25,9 +25,11 @@ use SbmGestion\Form as FormGestion;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
+use SbmCommun\Model\Strategy;
 
 class EleveGestionController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     public function indexAction()
     {
@@ -37,6 +39,92 @@ class EleveGestionController extends AbstractActionController
             return $prg;
         }
         return new ViewModel();
+    }
+
+    public function deplacementAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('criteres', [], $this->getSessionNamespace());
+        } else {
+            $origine = StdLib::getParam('origine', $prg);
+            if ($origine) {
+                $this->redirectToOrigin()->setBack($origine);
+                $args = $prg;
+                $args['serviceinitial'] = $this->encodeServiceId($prg);
+                Session::set('criteres', $args, $this->getSessionNamespace());
+            } else {
+                if (StdLib::getParam('op', $prg, '') == 'retour' ||
+                    array_key_exists('cancel', $prg) ||
+                    ! array_key_exists('serviceinitial', $prg)) {
+                    $this->flashMessenger()->addWarningMessage(
+                        'Sortie sans déplacement d\'élèves.');
+                    try {
+                        return $this->redirectToOrigin()->back();
+                    } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                        return $this->redirect()->toRoute('sbmgestion/transport',
+                            [
+                                'action' => 'circuit-service',
+                                'page' => 1
+                            ]);
+                    }
+                }
+                $args = array_merge($prg, $this->decodeServiceId($prg['serviceinitial']));
+                //echo '<pre>';
+                //die(var_dump($args));
+            }
+        }
+        $form = new \SbmGestion\Form\Eleve\Deplacement();
+        $form->setValueOptions('servicefinal',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->deplacement($args['ligneId'], $args['sens'], $args['moment'],
+                $args['ordre']))
+            ->setValueOptions('etablissementcommune',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies())
+            ->setValueOptions('etablissementniveau', Strategy\Niveau::getNiveaux())
+            ->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('classeniveau', Strategy\Niveau::getNiveaux())
+            ->setValueOptions('classeId',
+            $this->db_manager->get('Sbm\Db\Select\Classes')
+                ->tout())
+            ->setValueOptions('cartelot',
+            $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                ->cartesPapier())
+            ->setData($args);
+        if (array_key_exists('submit', $args)) {
+            if ($form->isValid()) {
+                // traitement
+                $this->db_manager->get('Sbm\Affectations\Deplacement')->run($args);
+                // compte-rendu et sortie
+                $this->flashMessenger()->addSuccessMessage(
+                    'Déplacement des élèves effectué.');
+                try {
+                    return $this->redirectToOrigin()->back();
+                } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                    return $this->redirect()->toRoute('sbmgestion/transport',
+                        [
+                            'action' => 'circuit-service',
+                            'page' => 1
+                        ]);
+                }
+            } else {
+                echo '<pre>';
+                die(var_dump($form->getMessages()));
+            }
+        }
+        return new ViewModel(
+            [
+                'form' => $form->prepare(),
+                'moment' => StdLib::getParam('moment', $args),
+                'serviceinitial' => $this->encodeServiceId($args),
+                'verrouille' => true,
+                'identifiantService' => $this->identifiantService($args)
+            ]);
     }
 
     public function affecterListeAction()
@@ -508,13 +596,11 @@ class EleveGestionController extends AbstractActionController
                         $expression[] = '(paiementR1 = 1 OR gratuit > 0)';
                         $where->equalTo('inscrit', 1)
                             ->nest()
-                            ->equalTo('paiementR1', 1)->or->greaterThan(
-                            'gratuit', 0)->unnest();
+                            ->equalTo('paiementR1', 1)->or->greaterThan('gratuit', 0)->unnest();
                         break;
                     case 'preinscrits':
                         $where1 = new Where();
-                        $where1->equalTo('paiementR1', 1)->or->greaterThan(
-                            'gratuit', 0);
+                        $where1->equalTo('paiementR1', 1)->or->greaterThan('gratuit', 0);
                         $where->equalTo('inscrit', 1)->addPredicate(new Not($where1));
                         $expression[] = 'paiementR1 = 0';
                         $expression[] = 'gratuit = 0';
@@ -658,10 +744,9 @@ class EleveGestionController extends AbstractActionController
                 $call_pdf->setParam('documentId', $documentName)
                     ->setParam('where', $where)
                     ->setParam('criteres', [])
-                    ->setParam('expression',
-                    [
-                        'eleveId = ' . $args['eleveId']
-                    ])
+                    ->setParam('expression', [
+                    'eleveId = ' . $args['eleveId']
+                ])
                     ->setParam('position', $position)
                     ->setParam('filigrane', true)
                     ->setEndOfScriptFunction(
@@ -805,8 +890,8 @@ class EleveGestionController extends AbstractActionController
                     'form2' => $form2,
                     'lastDateCarte' => $lastDateCarte,
                     'dateDebut' => $dateDebut,
-                    //'natureCartes' => $tLibelles->getLibelle('NatureCartes', 2),
-                    'page' => $this->params('page', 1),
+                    // 'natureCartes' => $tLibelles->getLibelle('NatureCartes', 2),
+                    'page' => $this->params('page', 1)
                 ]);
         } else {
             die();

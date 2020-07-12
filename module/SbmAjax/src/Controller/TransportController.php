@@ -11,16 +11,18 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
+use SbmBase\Model\StdLib;
 
 class TransportController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     const ROUTE = 'sbmajaxtransport';
 
@@ -510,6 +512,55 @@ class TransportController extends AbstractActionController
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    public function getetablissementsbyniveauxAction()
+    {
+        ;
+    }
+
+    public function getetablissementsbycommunesAction()
+    {
+        ;
+    }
+
+    public function getclassesbyniveauxAction()
+    {
+        ;
+    }
+
+    /**
+     * Reçoit par GET les paramètres 'initial' et 'final'
+     *
+     * @param
+     *            initial est l'encodage d'un service
+     * @param
+     *            final est l'encodage d'un service, même moment que initial
+     * @return mixed
+     */
+    public function getstationsfordeplacementAction()
+    {
+        try {
+            $initial = $this->decodeServiceId($this->params('initial'));
+            $final = $this->decodeServiceId($this->params('final'));
+            $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
+            $stations = $queryStations->deplacement($initial['moment'],
+                $initial['ligneId'], $initial['sens'], $initial['ordre'],
+                $final['ligneId'], $final['sens'], $final['ordre']);
+            return $this->getResponse()->setContent(
+                Json::encode(
+                    [
+                        'data' => array_flip($stations), // échange key/value pour
+                                                          // conserver le tri
+                        'success' => 1
+                    ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([

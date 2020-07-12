@@ -86,6 +86,7 @@ return [
         'factories' => [
             'Sbm\Db\ObjectData\Responsable' => ObjectData\ResponsableFactory::class,
             'Sbm\ChercheTrajet' => Arlysere\ChercheTrajet::class,
+            'Sbm\Affectations\Deplacement' => Arlysere\Deplacement::class,
             'Sbm\GrilleTarifR1' => Arlysere\Tarification\GrilleTarifR1::class,
             'Sbm\GrilleTarifR2' => Arlysere\Tarification\GrilleTarifR2::class,
             'Sbm\AbonnementsFratrie' => Arlysere\Tarification\Facture\AbonnementsFratrie::class,

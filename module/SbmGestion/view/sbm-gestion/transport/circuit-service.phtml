@@ -9,29 +9,34 @@
  * @filesource circuit-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 avr. 2020
+ * @date 12 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $services = $this->paginator->getCurrentItems();
-$url_ouvrir = $this->url('sbmgestion/transport',
-    [
-        'action' => 'circuit-liste',
-    ]);
+$url_ouvrir = $this->url('sbmgestion/transport', [
+    'action' => 'circuit-liste'
+]);
 $url_rapports = $this->url('sbmgestion/transport',
     [
         'action' => 'circuit-service-pdf',
         'page' => $this->page
     ]);
+$url_deplacer = $this->url('sbmgestion/gestioneleve',
+    [
+        'action' => 'deplacement',
+        'page' => $this->page
+    ]);
 $route_ici = $this->url('sbmgestion/transport', [
     'action' => 'circuit-service'
 ]);
-$url_ici = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-service',
-    'page' => $this->page
-]);
+$url_ici = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-service',
+        'page' => $this->page
+    ]);
 $hiddens = [];
 $menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
     $hiddens);
@@ -70,37 +75,42 @@ $actions = [
 				</tr>
 				<?php foreach ($services as $service) :?>
 				<?php
-				$serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime,
-				    $service->ligneId, $service->sens, $service->moment, $service->ordre);
-				if ($this->effectifServices) {
-				    $nbInscrits = $this->effectifServices->transportes($service->ligneId,
-				        $service->sens, $service->moment, $service->ordre);
-				} else {
-				    $nbInscrits = 0;
-				}
-				$css = $this->cycle([
-				    "even",
-				    "odd"
-				])->next();
-				if ($service->nbPlaces < $nbInscrits) {
-				    $css .= ' exces';
-				}
-				$designationService = $service->designation();
-				$hiddens = [
-				    'ligneId' => $service->ligneId,
-				    'sens' => $service->sens,
-				    'moment' => $service->moment,
-				    'ordre' => $service->ordre,
-				    'origine' => $url_ici
-				];
-				$buttons = [
-				    'ouvrir' => [
-				        'class' => 'fam-book-open',
-				        'formaction' => $url_ouvrir,
-				        'title' => 'Détails du circuit ' . $designationService
-				    ]
-				];
-				?>
+        $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime, $service->ligneId,
+            $service->sens, $service->moment, $service->ordre);
+        if ($this->effectifServices) {
+            $nbInscrits = $this->effectifServices->transportes($service->ligneId,
+                $service->sens, $service->moment, $service->ordre);
+        } else {
+            $nbInscrits = 0;
+        }
+        $css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        if ($service->nbPlaces < $nbInscrits) {
+            $css .= ' exces';
+        }
+        $designationService = $service->designation();
+        $hiddens = [
+            'ligneId' => $service->ligneId,
+            'sens' => $service->sens,
+            'moment' => $service->moment,
+            'ordre' => $service->ordre,
+            'origine' => $url_ici
+        ];
+        $buttons = [
+            'ouvrir' => [
+                'class' => 'fam-book-open',
+                'formaction' => $url_ouvrir,
+                'title' => 'Détails du circuit ' . $designationService
+            ],
+            'deplacer' => [
+                'class' => 'fam-group-gear',
+                'formaction' => $url_deplacer,
+                'title' => 'Déplacer un groupe d\'élèves à sélectionner'
+            ]
+        ];
+        ?>
 				<tr class="petit <?=$css;?>">
 					<td class="designationService">
 						<?=$this->escapeHtml($designationService);?></td>

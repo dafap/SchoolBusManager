@@ -14,7 +14,7 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2020
+ * @date 9 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -27,6 +27,8 @@ use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use SbmBase\Model\Session;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Predicate\Predicate;
 
 class StationsForSelect implements FactoryInterface
 {
@@ -210,6 +212,60 @@ class StationsForSelect implements FactoryInterface
             foreach ($resultset as $row) {
                 $array[$row['stationId']] = $row['commune'] . ' - ' . $row['nom'];
             }
+        }
+        return $array;
+    }
+
+    public function deplacement($moment, $ligne1Id, $sens1, $ordre1, $ligne2Id, $sens2,
+        $ordre2)
+    {
+        $aff_stationId = $moment == 1 ? 'aff.station1Id' : 'aff.station2Id';
+        $where = new Where();
+        $where->equalTo('aff.millesime', Session::get('millesime'))
+            ->equalTo('aff.ligne1Id', $ligne1Id)
+            ->equalTo('aff.sensligne1', $sens1)
+            ->equalTo('aff.moment', $moment)
+            ->equalTo('aff.ordreligne1', $ordre1)
+            ->equalTo('cir.ligneId', $ligne2Id)
+            ->equalTo('cir.sens', $sens2)
+            ->equalTo('cir.ordre', $ordre2)
+            ->nest()
+            ->equalTo($aff_stationId, 'cir.stationId', Predicate::TYPE_IDENTIFIER,
+            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum1.station1Id', 'cir.stationId',
+            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
+            'jum1.station2Id', 'cir.stationId', Predicate::TYPE_IDENTIFIER,
+            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum2.station1Id', 'cir.stationId',
+            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
+            'jum2.station2Id', 'cir.stationId', Predicate::TYPE_IDENTIFIER,
+            Predicate::TYPE_IDENTIFIER)->unnest();
+        $select = $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns($this->columns)
+            ->from([
+            'sta' => $this->table_name
+        ])
+            ->join(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], "sta.stationId = $aff_stationId", [])
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], 'aff.millesime=cir.millesime AND aff.moment=cir.moment', [])
+            ->join(
+            [
+                'jum1' => $this->db_manager->getCanonicName('stations-stations', 'table')
+            ], "$aff_stationId = jum1.station1Id", [], Select::JOIN_LEFT)
+            ->join(
+            [
+                'jum2' => $this->db_manager->getCanonicName('stations-stations', 'table')
+            ], "$aff_stationId = jum2.station2Id", [], Select::JOIN_LEFT)
+            ->where($where)
+            ->order($this->order);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['stationId']] = $row['libelle'];
         }
         return $array;
     }

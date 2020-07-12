@@ -1,0 +1,48 @@
+/**
+ * Pour la page deplacement.phtml
+ * 
+ * @project sbm
+ * @package public/css/tra/sbm-gestion/eleve-gestion
+ * @filesource deplacement.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 juil. 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+
+fieldset.wrapper {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div.col1 {
+	width: 54.5%
+}
+
+div.col2 {
+	width: 45%
+}
+
+label.label_class {
+	display: inline-block;
+	vertical-align: top;
+	padding-top: 18px;
+	width: 250px;
+}
+
+div.regimeId label, div.paiement label, div.carte label {
+	vertical-align: initial;
+	padding-top: initial;
+	width: initial;
+}
+
+div label.first {
+	margin-left: 240px;
+	width: initial;
+}
+
+div.dateinscription label, label.service {
+	vertical-align: initial;
+	padding-top: initial;
+}
