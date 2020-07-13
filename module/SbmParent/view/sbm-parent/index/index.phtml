@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juin 2020
+ * @date 13 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -149,8 +149,10 @@ $url_facture = $this->url('sbmdocument', [
                 $dateFinReduction);
             $msg_circuit_horaire = <<<EOT
             Les circuits et horaires seront consultables ici &agrave; partir 
-            du $date_site_fin_aout->format('d/m/Y').
+            du %s.
             EOT;
+            $msg_circuit_horaire = sprintf($msg_circuit_horaire,
+                $date_site_fin_aout->format('d/m/Y'));
             break;
         case $this->calendar::ETAT_APRES:
             $votre_vos = ucfirst($votre_vos);
@@ -167,7 +169,8 @@ $url_facture = $this->url('sbmdocument', [
             EOT;
             $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
             if ((new DateTime()) < $date_site_fin_aout) {
-                $msg_circuit_horaire .= "&agrave; partir du $date_site_fin_aout->format('d/m/Y') et ";
+                $msg_circuit_horaire .= '&agrave; partir du ' .
+                    $date_site_fin_aout->format('d/m/Y') . ' et ';
             }
             $msg_circuit_horaire .= 'apr&egrave;s traitement de votre demande.';
             break;
