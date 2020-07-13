@@ -10,7 +10,7 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juil. 2020
+ * @date 13 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -121,7 +121,7 @@ class ServicesForSelect implements FactoryInterface
     public function desservent(string $etablissementId, int $moment = 0)
     {
         $conditions = [
-            'millesime' => $this->millesime,
+            's.millesime' => $this->millesime,
             'etablissementId' => $etablissementId
         ];
         if ($moment) {
