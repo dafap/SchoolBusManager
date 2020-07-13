@@ -15,7 +15,7 @@
  * @filesource Attributs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2020
+ * @date 13 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -166,7 +166,8 @@ class Attributs extends ServiceAbstractQuery
             ->join([
             'usr' => $this->db_manager->getCanonicName('users')
         ], 'res.email=usr.email', [
-            'userId'
+            'userId',
+            'categorieId'
         ], Select::JOIN_LEFT)
             ->join([
             'u2o' => $this->db_manager->getCanonicName('users-organismes')
