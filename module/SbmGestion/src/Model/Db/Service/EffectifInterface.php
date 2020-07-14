@@ -37,5 +37,5 @@ interface EffectifInterface
      *
      * @return void
      */
-    public function init(bool $sanspreinscrits = false);
+    //public function init(bool $sanspreinscrits = false);
 }

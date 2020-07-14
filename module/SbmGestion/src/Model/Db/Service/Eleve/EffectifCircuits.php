@@ -10,34 +10,44 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
 use SbmGestion\Model\Db\Service\EffectifInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
-class EffectifCircuits extends AbstractEffectif implements EffectifInterface
+interface SpecialEffectifInterface extends EffectifInterface
 {
 
-    public function init(bool $sanspreinscrits = false)
+    public function init(Where $where);
+}
+
+class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterface
+{
+    use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait;
+
+    public function init(Where $where)
     {
         $this->structure = [];
-
-        $rowset = $this->requete(1, $this->getConditions($sanspreinscrits));
+        $rowset = $this->requete($where);
+        $effectif_reel = 0;
+        $serviceId = '';
         foreach ($rowset as $row) {
-            $this->structure[$row['column']][1] = $row['effectif'];
-        }
-        $rowset = $this->requete(2, $this->getConditions($sanspreinscrits));
-        foreach ($rowset as $row) {
-            $this->structure[$row['column']][2] = $row['effectif'];
-        }
-        // total
-        foreach ($this->structure as &$value) {
-            $value = array_sum($value);
+            if ($row['serviceId'] != $serviceId) {
+                $serviceId = $row['serviceId'];
+                $effectif_reel = 0;
+            }
+            $effectif_reel += $row['montee'] - $row['descente'];
+            $this->structure[$row['circuitId']] = [
+                'montee' => $row['montee'],
+                'descente' => $row['descente'],
+                'effectif_reel' => $effectif_reel
+            ];
         }
         return $this->structure;
     }
@@ -59,77 +69,120 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
         return 'circuitId';
     }
 
-    /**
-     *
-     * @param int $rang
-     *            prend la valeur 1 ou 2 afin de faire la laison de l'enregistrement du
-     *            circuit sur les couples (station1Id, circuit1Id) ou (station2Id,
-     *            circuit2Id)
-     * @param array $conditions
-     *
-     * @return \Zend\Db\Adapter\Driver\ResultInterface
-     */
-    private function requete($rang, $conditions)
+    private function requete($conditions)
     {
-        $where = new Where();
-        $where->equalTo('c.millesime', $this->millesime);
-
-        $on = sprintf(
-            implode(' AND ',
-                [
-                    'c.millesime = a.millesime',
-                    'c.ligneId = a.ligne%1$dId',
-                    'c.sens = a.sensligne%1$d',
-                    'c.moment = a.moment',
-                    'c.ordre = a.ordreligne%1$d',
-                    'c.stationId = a.station%1$dId'
-                ]), $rang);
-
+        $designation = sprintf("CONCAT_WS(' ',%s,%s,%s,%s,%s,%s)", "c.ligneId",
+            $this->getSqlMoment('c.moment'), $this->getSqlSens('c.sens'),
+            "TIME_FORMAT(c.horaireD, '%H:%i')", $this->getSqlOrdre('c.ordre'),
+            $this->getSqlSemaine('c.semaine'));
         $select = $this->sql->select()
+            ->columns(
+            [
+                'circuitId',
+                'millesime',
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'stationId',
+                'service' => new Literal($designation),
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('c'))
+            ])
             ->from([
-            'c' => $this->tableNames['circuits']
+            'c' => $this->db_manager->getCanonicName('circuits')
         ])
             ->join([
-            'a' => $this->tableNames['affectations']
-        ], $on, [
-            'effectif' => new Expression('count(*)')
+            's' => $this->db_manager->getCanonicName('services')
+        ], $this->jointureService('c', 's'), [
+            'capacite' => 'nbPlaces'
         ])
             ->join([
-            's' => $this->tableNames['scolarites']
-        ], 's.millesime = a.millesime AND s.eleveId = a.eleveId', [])
-            ->columns([
-            'column' => $this->getIdColumn()
+            'st' => $this->db_manager->getCanonicName('stations')
+        ], 'c.stationId=st.stationId', [
+            'station' => 'nom'
         ])
-            ->where($this->arrayToWhere($where, $conditions))
-            ->group('circuitId');
-
+            ->join([
+            'co' => $this->db_manager->getCanonicName('communes')
+        ], 'co.communeId=st.communeId', [
+            'commune' => 'alias'
+        ])
+            ->join([
+            'a1' => $this->subselect(1)
+        ], $this->jointureCircuit(1), [
+            'montee' => new Literal('IFNULL(a1.effectif,0)')
+        ], Select::JOIN_LEFT)
+            ->join([
+            'a2' => $this->subselect(2)
+        ], $this->jointureCircuit(2),
+            [
+                'descente' => new Literal('IFNULL(a2.effectif,0)')
+            ], Select::JOIN_LEFT)
+            ->
+        // ->where($conditions)
+        order(
+            [
+                'c.millesime',
+                'c.ligneId',
+                'c.sens',
+                'c.moment',
+                'c.ordre',
+                'c.horaireD',
+                'passage'
+            ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
     /**
-     * Conditions adaptées à l'algorithme mis en oeuvre mais limité à une correspondance
-     * :<ul> <li>Pour une liaison sans correspondance, on regarde le couple (a.service1Id,
-     * a.station1Id)</li> <li>Pour une liaison avec correspondance, la correspondance est
-     * remarquée par la présence d'un a.service2Id. Dans ce cas, la station2Id du
-     * service1Id devient la station1Id du service2Id. On doit donc considérer le couple
-     * (a.service2Id, a.station2Id). On ne doit donc pas regarder les enregistrements
-     * éventuels ayant correspondance = 2</li></ul>
+     * Jointure entre les tables circuits et subselect (affectations)
      *
-     *
-     * @param bool $sanspreinscrits
-     *
-     * @return array
+     * @param int $md
+     *            1 pour montee, 2 pour descente
+     * @return string
      */
-    private function getConditions(bool $sanspreinscrits)
+    private function jointureCircuit(int $md): string
     {
-        // getFiltreDemande car on compte les élèves transportés mais sur tous les
-        // services, y
-        // compris sur les correspondances
-        $conditions = $this->getFiltreDemandes($sanspreinscrits);
-        // On ne prend que sur la correspondance 1 pour utiliser les couples
-        // (a.service1Id, a.station1Id) et éventuellement (a.service2Id, a.station2Id)
-        $conditions['a.correspondance'] = 1;
-        return $conditions;
+        $array = [
+            'a%1$d.millesime=c.millesime',
+            'a%1$d.ligne1Id=c.ligneId',
+            'a%1$d.sensligne1=c.sens',
+            'a%1$d.moment=c.moment',
+            'a%1$d.ordreligne1=c.ordre',
+            'a%1$d.station%1$dId=c.stationId'
+        ];
+        return sprintf(implode(' AND ', $array), $md);
+    }
+
+    /**
+     * Sous-requête de comptage des effectifs
+     *
+     * @param int $md
+     *            1 pour montee, 2 pour descente
+     * @return \Zend\Db\Sql\Select
+     */
+    private function subselect(int $md): Select
+    {
+        $stationId = sprintf('station%dId', $md);
+        return $this->sql->select()
+            ->columns(
+            [
+                'millesime',
+                'ligne1Id',
+                'sensligne1',
+                'moment',
+                'ordreligne1',
+                $stationId,
+                'effectif' => new Literal('count(eleveId)')
+            ])
+            ->from($this->db_manager->getCanonicName('affectations'))
+            ->group(
+            [
+                'millesime',
+                'ligne1Id',
+                'moment',
+                'sensligne1',
+                'ordreligne1',
+                $stationId
+            ]);
     }
 }

@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -21,6 +21,11 @@ $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $circuits = $this->paginator->getCurrentItems();
 
+if ($this->service->moment == 1) {
+    $depassement_autorise = $this->service->nbPlaces + 7;
+} else {
+    $depassement_autorise = $this->service->nbPlaces + 15;
+}
 $url_ajouter = $this->url('sbmgestion/transport',
     [
         'action' => 'circuit-ajout',
@@ -82,7 +87,7 @@ if ($this->categorieId < 250) {
     unset($actions['ajouter']);
 }
 ?>
-<h1>Liste des points d'arrêt du circuit <?=$this->service->designation();?></h1>
+<h1>Liste des points d'arrêt du circuit <?=$this->service->designation();?> (<?=$this->service->nbPlaces;?> places)</h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
@@ -111,6 +116,8 @@ if ($this->categorieId < 250) {
 					<?php endif;?>
 					<th class="horaire">Horaire</th>
 					<th class="jours" title="Jours de passage">Jours</th>
+					<th class="nbinscrits"><i class="fam-arrow-up"></i></th>
+					<th class="nbinscrits"><i class="fam-arrow-down"></i></th>
 					<th class="nbinscrits">Effectif</th>
 					<?php if ($this->categorieId >= 250) :?>
 					<th class="selection">Sélect.</th>
@@ -170,6 +177,13 @@ if ($this->categorieId < 250) {
                 "even",
                 "odd"
             ])->next();
+            if ($nbInscrits['effectif_reel'] > $this->service->nbPlaces) {
+                if ($nbInscrits['effectif_reel'] > $depassement_autorise) {
+                    $css .= ' exces';
+                } else {
+                    $css .= ' warning gras';
+                }
+            }
             $horaires = [
                 (new \DateTime($circuit->horaireA))->format('H:i'),
                 (new \DateTime($circuit->horaireD))->format('H:i')
@@ -208,7 +222,11 @@ if ($this->categorieId < 250) {
 					<td class="jours">
 						<?=$jours;?></td>
 					<td class="nbinscrits">
-						<?=$nbInscrits;?></td>
+						<?=$nbInscrits['montee'];?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits['descente'];?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits['effectif_reel'];?></td>
 					<?php if ($this->categorieId >= 250):?>
 					<td class="centre selection">
 						<?=$this->renderCheckbox('selection', 'chk', $circuit->circuitId, $circuit->selection)?>

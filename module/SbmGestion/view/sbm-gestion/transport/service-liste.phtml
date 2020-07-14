@@ -10,7 +10,7 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -107,6 +107,11 @@ $actions = [
             <?php foreach ($services as $service) :?>
             <?php
                 $serviceId = $service->encodeServiceId($service->getArrayCopy());
+                if ($service->moment == 1) {
+                    $depassement_autorise = $service->nbPlaces + 7;
+                } else {
+                    $depassement_autorise = $service->nbPlaces + 15;
+                }
                 if ($this->effectifServices) {
                     $nbInscrits = $this->effectifServices->transportes($service->ligneId,
                         $service->sens, $service->moment, $service->ordre);
@@ -117,8 +122,12 @@ $actions = [
                     "even",
                     "odd"
                 ])->next();
-                if ($service->nbPlaces < $nbInscrits) {
-                    $css .= ' exces';
+                if ($nbInscrits > $service->nbPlaces) {
+                    if ($nbInscrits > $depassement_autorise) {
+                        $css .= ' exces';
+                    } else {
+                        $css .= ' warning gras';
+                    }
                 }
                 $hiddens = [
                     'ligneId' => $service->ligneId,

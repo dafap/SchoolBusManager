@@ -9,7 +9,7 @@
  * @filesource circuit-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -77,6 +77,11 @@ $actions = [
 				<?php
         $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime, $service->ligneId,
             $service->sens, $service->moment, $service->ordre);
+        if ($service->moment == 1) {
+            $depassement_autorise = $service->nbPlaces + 7;
+        } else {
+            $depassement_autorise = $service->nbPlaces + 15;
+        }
         if ($this->effectifServices) {
             $nbInscrits = $this->effectifServices->transportes($service->ligneId,
                 $service->sens, $service->moment, $service->ordre);
@@ -87,8 +92,12 @@ $actions = [
             "even",
             "odd"
         ])->next();
-        if ($service->nbPlaces < $nbInscrits) {
-            $css .= ' exces';
+        if ($nbInscrits > $service->nbPlaces) {
+            if ($nbInscrits > $depassement_autorise) {
+                $css .= ' exces';
+            } else {
+                $css .= ' warning gras';
+            }
         }
         $designationService = $service->designation();
         $hiddens = [

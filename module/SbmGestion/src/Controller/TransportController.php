@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -92,7 +92,7 @@ class TransportController extends AbstractActionController
         }
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
-        $effectifCircuits->init();
+        $effectifCircuits->init($args['where']);
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
@@ -721,6 +721,67 @@ class TransportController extends AbstractActionController
         return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifCircuits'
+            ]);
+    }
+
+    /**
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function circuitLignePdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            [
+                'strict' => [
+                    'ligneId'
+                ]
+            ]
+        ];
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'lignes'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'circuit-ligne'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifLignes'
+            ]);
+    }
+
+    /**
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function circuitServicePdfAction()
+    {
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
+            [
+                'strict' => [
+                    'ligneId',
+                    'sens',
+                    'moment',
+                    'ordre'
+                ]
+            ]
+        ];
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'services'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'circuit-service'
+        ];
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifServices'
             ]);
     }
 
@@ -4776,7 +4837,8 @@ class TransportController extends AbstractActionController
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation de la station est enregistrée.');
                 // $this->flashMessenger()->addWarningMessage('Attention ! Les distances
-                // des domiciles des élèves à l\'établissement n\'ont pas été mises à jour.');
+                // des domiciles des élèves à l\'établissement n\'ont pas été mises à
+                // jour.');
                 $args = Session::get('post', [], $this->getSessionNamespace());
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
