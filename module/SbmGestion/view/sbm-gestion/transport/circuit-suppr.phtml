@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/finance/circuit-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 ?>
@@ -20,6 +20,7 @@
 			<li><?= $this->escapeHtml($this->data->designationService()); ?></li>
 			<li><?= $this->escapeHtml($this->data->station . ' - ' . $this->data->communeStation); ?></li>
 			<li>Passage n° <?= $this->data->passage; ?></li>
+			<li>Jours de fonctionnement : <?= $this->data->jours;?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>

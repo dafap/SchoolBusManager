@@ -10,7 +10,7 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juil. 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Select;
@@ -96,6 +96,7 @@ class ServicesForSelect implements FactoryInterface
     {
         $select = $this->sql->select($this->table_name);
         $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
+        $this->columns['jours'] = new Literal($this->getSqlSemaine());
         $select->columns($this->columns)
             ->where([
             'millesime' => $this->millesime
@@ -105,7 +106,8 @@ class ServicesForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
-            $array[$this->encodeServiceId($row)] = $row['libelle'];
+            $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
+                ')';
         }
         return $array;
     }

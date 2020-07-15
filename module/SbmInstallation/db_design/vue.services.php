@@ -9,7 +9,7 @@
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 use Zend\Db\Sql\Join;
@@ -65,6 +65,16 @@ return [
             ],
             [
                 'field' => 'commentaire'
+            ],
+            [
+                'expression' => [
+                    'value' => "CONCAT(IF(semaine & 1,'L','-')," .
+                    "IF(semaine & 2,'M','-')," . "IF(semaine & 4,'M','-')," .
+                    "IF(semaine & 8,'J','-')," . "IF(semaine & 16,'V','-')," .
+                    "IF(semaine & 32,'S','-')," . "IF(semaine & 64,'D','-'))",
+                    'type' => 'varchar(7)'
+                ],
+                'alias' => 'jours'
             ]
         ],
         'from' => [

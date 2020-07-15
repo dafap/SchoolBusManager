@@ -18,7 +18,7 @@
  * @filesource etablissement-service-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -46,8 +46,8 @@ if ($this->origine == 'service-etablissement') {
         'ordre' => $this->service->ordre,
         'origine' => $this->origine
     ];
-    $h1 = sprintf("Ajout d'un établissement desservi par le circuit <b>%s</b>",
-        $this->service->designation());
+    $h1 = sprintf("Ajout d'un établissement desservi par le circuit <b>%s</b> (%s)",
+        $this->service->designation(), $this->service->jours);
     $description1 = "l'établissement";
 } else {
     $hiddens = [

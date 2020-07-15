@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/finance/service-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 ?>
@@ -17,7 +17,8 @@
 	<p>Vous avez demandé la suppression du service :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?= $this->escapeHtml($this->designationService($this->data)); ?></li>
+			<li><?= $this->escapeHtml($this->designationService($this->data)); ?>
+				(<?=$this->data->jours;?>)</li>
 			<?php if ($this->data->alias):?>
 			<li><?= $this->escapeHtml($this->data->alias); ?></li>
 			<?php endif;?>

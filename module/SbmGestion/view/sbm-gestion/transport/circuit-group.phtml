@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/circuit-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -59,9 +59,9 @@ $url_add_photo = $this->url('sbmgestion/eleve',
 $hiddens = [
     'circuitId' => $this->circuitId,
     'ligneId' => $this->circuit->ligneId,
-    'sens'=>$this->circuit->sens,
-    'moment'=>$this->circuit->moment,
-    'ordre'=>$this->circuit->ordre,
+    'sens' => $this->circuit->sens,
+    'moment' => $this->circuit->moment,
+    'ordre' => $this->circuit->ordre,
     'stationId' => $this->circuit->stationId
 ];
 $menuImpression = $this->menuRapports(
@@ -92,7 +92,8 @@ $actions = [
 		<ul class="float-left">
 			<li>Circuit : <?= $this->escapeHtml($this->circuit->designationService()); ?></li>
 			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> -
-						<?= $this->escapeHtml($this->circuit->communeStation); ?></li>
+						<?= $this->escapeHtml($this->circuit->communeStation); ?>
+						(<?= $this->circuit->horaireD;?> les <?= $this->circuit->jours;?>)</li>
 			<li>Type d'arrêt : <?= $this->escapeHtml($this->circuit->typeArret); ?></li>
 			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
 			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>

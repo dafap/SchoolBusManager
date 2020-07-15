@@ -8,7 +8,7 @@
  * @filesource service-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -82,7 +82,8 @@ $actions = [
 
 ?>
 <h1>Liste des établissements desservis par
-<?=$codeService . '<br>' . $this->service->extremite1 . ' - ' . $this->service->extremite2;?>
+<?=$codeService;?> (<?=$this->service->jours;?>)<br>
+<?= $this->service->extremite1 . ' - ' . $this->service->extremite2;?>
 
 </h1>
 <div id="liste-wrapper">

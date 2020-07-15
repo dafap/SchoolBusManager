@@ -8,7 +8,7 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -97,8 +97,8 @@ $data = $this->paginator->getCurrentItems();
 				<tr>
 					<th>Code</th>
 					<th>Ligne</th>
+					<th>&nbsp;Jours&nbsp;</th>
 					<th>Transporteur</th>
-					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th>Descente</th>
@@ -131,10 +131,10 @@ $data = $this->paginator->getCurrentItems();
 						<?=$this->escapeHtml($codeService);?></td>
 					<td class="ligne">
 						<?=$this->escapeHtml($entity->ligne_extremite1) . ' - ' .$this->escapeHtml($entity->ligne_extremite2);?></td>
+					<td class="semaine">
+					    <?=$entity->serv_jours;?></td>
 					<td class="transporteur">
 						<?=$this->escapeHtml($entity->serv_transporteur);?></td>
-					<td class="operateur">
-						<?=$this->escapeHtml($entity->ligne_operateur);?></td>
 					<td class="nbplaces">
 						<?=$this->escapeHtml($entity->serv_nbPlaces);?></td>
 					<td class="nbinscrits">

@@ -9,7 +9,7 @@
  * @filesource circuit-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -73,6 +73,7 @@ $actions = [
 			<tbody>
 				<tr>
 					<th>Service</th>
+					<th>Jours</th>
 					<th>Transporteur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
@@ -133,6 +134,8 @@ $actions = [
 				<tr class="petit <?=$css;?>">
 					<td class="designationService">
 						<?=$this->escapeHtml($designationService);?></td>
+					<td class="semaine">
+						<?= $service->jours;?></td>
 					<td class="transporteur">
 						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="nbplaces">

@@ -10,7 +10,7 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
@@ -19,9 +19,11 @@ use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Literal;
 
 class EtablissementsServices extends AbstractQuery
 {
+    use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     protected function init()
     {
@@ -91,6 +93,7 @@ class EtablissementsServices extends AbstractQuery
                 'serv_actif' => 'actif',
                 'serv_visible' => 'visible',
                 'serv_semaine' => 'semaine',
+                'serv_jours' => new Literal($this->getSqlSemaine('ser.semaine')),
                 'serv_rang' => 'rang',
                 'serv_type' => 'type',
                 'serv_nbPlaces' => 'nbPlaces',

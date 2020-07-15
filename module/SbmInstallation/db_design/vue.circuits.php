@@ -9,7 +9,7 @@
  * @filesource vue.circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 use Zend\Db\Sql\Join;
@@ -86,6 +86,16 @@ return [
             ],
             [
                 'field' => 'commentaire2'
+            ],
+            [
+                'expression' => [
+                    'value' => "CONCAT(IF(cir.semaine & 1,'L','-')," .
+                    "IF(cir.semaine & 2,'M','-')," . "IF(cir.semaine & 4,'M','-')," .
+                    "IF(cir.semaine & 8,'J','-')," . "IF(cir.semaine & 16,'V','-')," .
+                    "IF(cir.semaine & 32,'S','-')," . "IF(cir.semaine & 64,'D','-'))",
+                    'type' => 'varchar(7)'
+                ],
+                'alias' => 'jours'
             ]
         ],
         'from' => [

@@ -5,10 +5,10 @@
  *
  * @project sbm
  * @package SbmGestion
- * @filesource view/sbm-gestion/transport/service-group.phtml
+ * @filesource view/sbm-gestion/transport/etablissement-service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -92,7 +92,8 @@ $oService = $this->service;
 			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
 		<?php endif;?>
 		<?php if (!empty($oService)) :?>
-			<li><?= $this->escapeHtml($this->designationService($this->service, '')); ?></li>
+			<li><?= $this->escapeHtml($this->designationService($this->service, '')); ?>
+			   (<?= $this->service->jours;?>)</li>
 			<?php if ($this->service->alias):?>
 			<li><?= $this->escapeHtml($this->service->alias); ?></li>
 			<?php endif;?>

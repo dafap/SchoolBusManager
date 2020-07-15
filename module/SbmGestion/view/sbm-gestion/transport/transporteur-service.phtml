@@ -7,7 +7,7 @@
  * @filesource transporteur-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mars 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -82,6 +82,7 @@ echo $this->escapeHtml($this->transporteur->nom);
 				<tr>
 					<th>Service</th>
 					<th>Alias</th>
+					<th>Jours</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
@@ -125,6 +126,8 @@ echo $this->escapeHtml($this->transporteur->nom);
 						<?=$this->escapeHtml($designation);?></td>
 					<td class="aliascg">
 						<?=$this->escapeHtml($service->alias);?></td>
+					<td class="semaine">
+						<?=$service->jours;?></td>
 					<td class="operateur">
 						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
