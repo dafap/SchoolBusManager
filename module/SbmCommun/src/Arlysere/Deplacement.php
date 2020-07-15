@@ -24,7 +24,7 @@
  * @filesource Deplacement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2020
+ * @date 15 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -32,6 +32,7 @@ namespace SbmCommun\Arlysere;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Traits;
+use SbmCommun\Model\Strategy\Semaine;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
@@ -81,6 +82,7 @@ class Deplacement extends AbstractQuery
         $nb_maxi = StdLib::getParam('nbmaxi', $args, PHP_INT_MAX);
         $this->serviceInitial = $this->decodeServiceId($this->args['serviceinitial']);
         $this->serviceFinal = $this->decodeServiceId($this->args['servicefinal']);
+        $semaine = $this->getSemaineServiceFinal();
         $this->initEquivalenceStations();
         $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         $nb = 0;
@@ -90,19 +92,34 @@ class Deplacement extends AbstractQuery
                 continue;
             }
             $this->changeService($affectation);
-            $objectAffectation = $tAffectations->getObjData()->exchangeArray($affectation);
+            $objectAffectation = $tAffectations->getObjData();
             // pour le deteRecord ne pas passer un ObjectDataInterface sinon on perdrait
             // le rend de la correspondance. $affectation est un ArrayObject.
             $where = new Where();
             foreach ($objectAffectation->getIdFieldName() as $field) {
                 $where->equalTo($field, $affectation[$field]);
             }
-            $tAffectations->deleteRecord($where);
-            $tAffectations->saveRecord($objectAffectation);
-            if (++ $nb == $nb_maxi) {
-                break;
+            try {
+                $tAffectations->deleteRecord($where);
+                $affectation['jours'] = $semaine;
+                $objectAffectation->exchangeArray($affectation);
+                $tAffectations->saveRecord($objectAffectation);
+                if (++ $nb == $nb_maxi) {
+                    break;
+                }
+            } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             }
         }
+    }
+
+    private function getSemaineServiceFinal()
+    {
+        $tService = $this->db_manager->get('Sbm\Db\Table\Services');
+        $id = $this->serviceFinal;
+        $id['millesime'] = $this->millesime;
+        $service = $tService->getRecord($id);
+        $strategy = new Semaine();
+        return $strategy->extract($service->semaine);
     }
 
     private function changeService(&$affectation)
