@@ -1,0 +1,216 @@
+<?php
+/**
+ * Page de consultation des inscrits sur un service
+ *
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource view/sbm-gestion/transport/service-group.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 14 juil. 2020
+ * @version 2020-2.6.0
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-gestion/eleve', 'eleve-liste.css');
+// gestion des checkbox selection et demande
+$this->jQuery();
+$this->themeJs('gestion-eleve', 'eleve-liste.js');
+
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-service',
+        'page' => $this->pageRetour
+    ]);
+$btn_retour = [
+    'class' => 'fam-door-out',
+    'formaction' => $url_retour,
+    'title' => 'Retour'
+];
+$url_edit = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'eleve-edit',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_mail = $this->url('sbmgestion/eleve', [
+    'action' => 'responsable-mail'
+]);
+$url_add_photo = $this->url('sbmgestion/eleve',
+    [
+        'action' => 'envoiphoto',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-service-group',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-service-group-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$hiddens = [
+    'ligneId' => $this->ligneId,
+    'sens' => $this->sens,
+    'moment' => $this->moment,
+    'ordre' => $this->ordre
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'service-group'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$btn_retour['onclick'] = $js_retour;
+
+$actions = [
+    'retour' => $btn_retour,
+    'rapports' => $menuImpression['content']
+];
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+$oEtablissement = $this->etablissement;
+$oService = $this->service;
+?>
+<h1><?= $this->h1;?></h1>
+<div id="liste-wrapper">
+	<div id="liste-title" class="clearfix">
+		<ul class="float-left">
+		<?php if (!empty($oEtablissement)) : ?>
+		    <li><?= $this->escapeHtml($this->etablissement->nom); ?></li>
+			<li><?= $this->escapeHtml($this->etablissement->commune); ?></li>
+		<?php endif;?>
+		<?php if (!empty($oService)) :?>
+			<li><?= $this->escapeHtml($this->designationService($this->service)); ?></li>
+			<?php if ($this->service->alias):?>
+			<li><?= $this->escapeHtml($this->service->alias); ?></li>
+			<?php endif;?>
+			<li><?= $this->escapeHtml($this->service->transporteur); ?></li>
+		<?php endif;?>
+		</ul>
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-header">
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em>Il y a <?= $this->paginator->getTotalItemCount(); ?> prises en charge.</em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr class="petit">
+					<th></th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Code postal</th>
+					<th>Commune</th>
+					<th>Etablissement</th>
+					<th>Classe</th>
+					<th>Service</th>
+					<th>Stations</th>
+					<th></th>
+				</tr>
+			<?php
+foreach ($data as $row) :
+    $this->pictogrammes('init')
+        ->addPreinscrit($row['paiementR1'] == 0 && $row['gratuit'] == 0)
+        ->addSansPhoto($row['sansphoto'])
+        ->addSansCarte($row['dateCarteR1'] < $this->dateDebut);
+    $hiddens = [
+        'eleveId' => $row['eleveId'],
+        'info' => $row['nom'] . ' ' . $row['prenom'],
+        'email' => $row['email'],
+        'responsable' => $row['responsable'],
+        'group' => $url_group
+    ];
+    $buttons = [
+        'modifier' => [
+            'class' => 'fam-pencil',
+            'formaction' => $url_edit,
+            'title' => 'Modifier'
+        ]
+    ];
+    if ($row['sansphoto']) {
+        $buttons['photo'] = [
+            'class' => 'fam-camera-add',
+            'formaction' => $url_add_photo,
+            'title' => 'Envoyer une photo'
+        ];
+    }
+    if (! empty($row['email'])) {
+        $buttons['ecrire'] = [
+            'class' => 'fam-email',
+            'formaction' => $url_mail,
+            'title' => 'Envoyer un email'
+        ];
+    }
+    $array_adresse = array_filter(
+        [
+            $row['adresseL1'],
+            $row['adresseL2'],
+            $row['adresseL3']
+        ]);
+    foreach ($array_adresse as &$ligne) {
+        $ligne = $this->escapeHtml($ligne);
+    }
+    $itinerairesR1 = sprintf(
+        $this->printItineraires($row['eleveId'], 1, $row['demandeR1'] == 1),
+        $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
+            [
+                'data-trajet' => 1,
+                'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+            ]));
+    if ($row['ga']) {
+        $rowspan = 2;
+        $itinerairesR2 = sprintf(
+            $this->printItineraires($row['eleveId'], 2, $row['demandeR2'] == 1),
+            $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
+                [
+                    'data-trajet' => 2,
+                    'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                ]));
+    }
+    $services1 = $this->printServices($row['eleveId'], 1);
+    $services2 = $this->printServices($row['eleveId'], 2);
+    $stations1 = $this->printStations($row['eleveId'], 1);
+    $stations2 = $this->printStations($row['eleveId'], 2);
+    ?>
+                <tr
+					class="petit <?= $this->cycle(["even","odd"])->next();?>">
+					<td><?= $this->pictogrammes();?></td>
+					<td><?= $this->escapeHtml($row['nom']);?></td>
+					<td><?= $this->escapeHtml($row['prenom']);?></td>
+					<td><?= implode('<br>', $array_adresse);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['etablissement']);?></td>
+					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
+					<td><?= $itinerairesR1;?></td>
+					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+				</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
+</div>

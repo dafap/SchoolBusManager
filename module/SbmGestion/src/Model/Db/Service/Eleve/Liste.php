@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -216,6 +216,8 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'ele.eleveId=sco.eleveId',
             [
                 'inscrit',
+                'demandeR1',
+                'demandeR2',
                 'paiementR1',
                 'paiementR2',
                 'fa',
@@ -251,6 +253,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
                 'adresseL2' => new Literal(
                     'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2 END'),

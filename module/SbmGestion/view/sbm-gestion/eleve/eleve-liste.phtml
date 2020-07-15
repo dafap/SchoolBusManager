@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2020
+ * @date 14 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -420,21 +420,19 @@ $actions = [
             }
             $itinerairesR1 = sprintf(
                 $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1),
-                $this->renderCheckbox('demande', 'traite', $eleve['eleveId'],
-                    $eleve['selectionEleve'],
+                $this->renderCheckbox('demande', 'traite', $eleve['eleveId'], 0,
                     [
-                        'data-trajet' =>1,
+                        'data-trajet' => 1,
                         'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
                     ]));
             if ($ga) {
                 $itinerairesR2 = sprintf(
-                $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
-                $this->renderCheckbox('demande', 'traite', $eleve['eleveId'],
-                    $eleve['selectionEleve'],
-                    [
-                        'data-trajet' => 2,
-                        'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
-                    ]));
+                    $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
+                    $this->renderCheckbox('demande', 'traite', $eleve['eleveId'], 0,
+                        [
+                            'data-trajet' => 2,
+                            'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                        ]));
             }
             $checkbox_selection = $this->renderCheckbox('selection', 'chk',
                 $eleve['eleveId'], $eleve['selectionEleve'],

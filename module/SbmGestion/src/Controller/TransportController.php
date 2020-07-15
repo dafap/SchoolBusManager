@@ -856,6 +856,77 @@ class TransportController extends AbstractActionController
     }
 
     /**
+     * renvoie la liste des élèves inscrits pour un service donné Reçoit en get : - id :
+     * pageRetour - page : page du paginateur interne Reçoit en post : - listeId - sens -
+     * moment - ordre - origine
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function circuitServiceGroupAction()
+    {
+        $pageRetour = $this->params('id', - 1);
+        $currentPage = $this->params('page', 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
+        if ($pageRetour == - 1) {
+            $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+        } else {
+            Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+        }
+        $millesime = Session::get('millesime');
+        $ligneId = StdLib::getParam('ligneId', $args, false);
+        $sens = StdLib::getParam('sens', $args, 0);
+        $moment = StdLib::getParam('moment', $args, 0);
+        $ordre = StdLib::getParam('ordre', $args, 0);
+        if (! $ligneId) {
+            $this->flashMessenger()->addErrorMessage('Action interdite.');
+            return $this->redirect()->toRoute('sbmgestion/transport',
+                [
+                    'action' => 'circuit-service',
+                    'page' => $pageRetour
+                ]);
+        }
+
+        return new ViewModel(
+            [
+
+                'h1' => 'Groupe des élèves inscrits sur un service',
+                'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
+                    Session::get('millesime'),
+                    FiltreEleve::byService($ligneId, $sens, $moment, $ordre),
+                    [
+                        'nom',
+                        'prenom'
+                    ], 'service'),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
+                'service' => $this->db_manager->get('Sbm\Db\Vue\Services')->getRecord(
+                    [
+                        'millesime' => $millesime,
+                        'ligneId' => $ligneId,
+                        'sens' => $sens,
+                        'moment' => $moment,
+                        'ordre' => $ordre
+                    ]),
+                'page' => $currentPage,
+                'pageRetour' => $pageRetour,
+                'ligneId' => $ligneId,
+                'sens' => $sens,
+                'moment' => $moment,
+                'ordre' => $ordre,
+                'origine' => StdLib::getParam('origine', $args, 'service-liste'),
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
+                    'Y-m-d')
+            ]);
+    }
+
+    /**
      * ================================ CLASSES ===============================
      */
 
