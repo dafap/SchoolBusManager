@@ -24,7 +24,7 @@
  * @filesource Deplacement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2020
+ * @date 16 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -207,7 +207,8 @@ class Deplacement extends AbstractQuery
             ->equalTo('aff.sensligne1', $this->serviceInitial['sens'])
             ->equalTo('aff.moment', $this->serviceInitial['moment'])
             ->equalTo('ordreligne1', $this->serviceInitial['ordre']);
-        if (is_array($this->args['stationId'])) {
+        if (array_key_exists('stationId', $this->args) &&
+            is_array($this->args['stationId'])) {
             $aff_station = $this->serviceInitial['moment'] == 1 ? 'aff.station1Id' : 'aff.station2Id';
             $where->in($aff_station, $this->args['stationId']);
         }

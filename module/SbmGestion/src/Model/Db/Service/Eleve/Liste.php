@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
+ * @date 16 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -35,7 +35,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $db_manager;
+    protected $db_manager;
 
     /**
      *
@@ -507,11 +507,43 @@ class Liste extends AbstractQuery implements FactoryInterface
      */
     protected function selectGroupByService(int $millesime, array $filtre, $order)
     {
-        return $this->selectGroup($millesime, $filtre, $order)->join(
+        $where = new Where();
+        $where->equalTo('sco.millesime', $millesime);
+        $select = $this->sql->select()
+            ->from([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'ele.eleveId=sco.eleveId',
+            [
+                'inscrit',
+                'demandeR1',
+                'demandeR2',
+                'paiementR1',
+                'paiementR2',
+                'fa',
+                'gratuit',
+                'dateCarteR1',
+                'dateCarteR2'
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId = eta.etablissementId', [
+                'etablissement' => 'nom'
+            ])
+            ->join([
+            'cla' => $this->db_manager->getCanonicName('classes', 'table')
+        ], 'sco.classeId = cla.classeId', [
+            'classe' => 'nom'
+        ])
+            ->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
             ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
             [
+                'trajet' => 'trajet',
                 'moment',
                 'ligneId' => 'ligne1Id',
                 'sens' => 'sensligne1',
@@ -522,7 +554,52 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'ligne2Id',
                 'sensligne2',
                 'ordreligne2'
-            ], SELECT::JOIN_LEFT);
+            ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'res.responsableId=aff.responsableId',
+            [
+                'email',
+                'responsable' => new Literal(
+                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+            ])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId=comres.communeId', [])
+            ->join([
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsco.communeId=sco.communeId', [], Select::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId = ele.eleveId',
+            [
+                'sansphoto' => new Expression(
+                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+            ], Select::JOIN_LEFT)
+            ->columns(
+            [
+                'eleveId',
+                'nom',
+                'prenom',
+                'sexe',
+                'ga' => new Literal('responsable2Id IS NOT NULL'),
+                'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
+                'adresseL2' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL2 ELSE sco.adresseL2 END'),
+                'adresseL3' => new Literal(
+                    'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE "" END'),
+                'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
+                'commune' => new Literal('IFNULL(comsco.alias, comres.alias)')
+            ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->where($this->arrayToWhere($where, $filtre));
+        if (! empty($order)) {
+            $select->order($order);
+        }
+        // die($this->getSqlString($select));
+        return $select;
     }
 
     /**

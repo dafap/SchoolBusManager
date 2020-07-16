@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2020
+ * @date 16 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -203,7 +203,7 @@ foreach ($data as $row) :
 					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td class="centre"><?= $this->escapeHtml($row['classe']);?></td>
-					<td><?= $itinerairesR1;?></td>
+					<td><?= $row['trajet'] == 1 ? $itinerairesR1 : $itinerairesR2;?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php endforeach;?>
