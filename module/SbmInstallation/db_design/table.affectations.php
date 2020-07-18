@@ -9,7 +9,7 @@
  * @filesource table.staffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 18 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -47,7 +47,8 @@ return [
             'trajet',
             'jours',
             'moment',
-            'correspondance'
+            'correspondance',
+            'sensligne1'
         ],
         'foreign key' => [
             [
