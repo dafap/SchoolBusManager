@@ -9,7 +9,7 @@
  * @filesource FinancePaiementResiliation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juin 2020
+ * @date 21 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Finances;
@@ -67,7 +67,7 @@ class FinancePaiementResiliation extends Form implements InputFilterProviderInte
 
         $this->add([
             'name'=>'eleveIds',
-            'type' => 'Zend\Form\Element\Multicheckbox',
+            'type' => 'Zend\Form\Element\MultiCheckbox',
             'attributes' => [],
             'options' => [
                 'label' => 'Cochez les abonnements à supprimer :',

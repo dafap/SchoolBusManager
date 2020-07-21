@@ -9,8 +9,8 @@
  * @filesource FinancePaiementSuppr.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2019
- * @version 2019-2.5.0
+ * @date 21 juil. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Finances;
 
@@ -67,7 +67,7 @@ class FinancePaiementSuppr extends Form implements InputFilterProviderInterface
 
         $this->add([
             'name'=>'eleveIds',
-            'type' => 'Zend\Form\Element\Multicheckbox',
+            'type' => 'Zend\Form\Element\MultiCheckbox',
             'attributes' => [],
             'options' => [
                 'label' => 'Cochez les abonnements à supprimer :',
