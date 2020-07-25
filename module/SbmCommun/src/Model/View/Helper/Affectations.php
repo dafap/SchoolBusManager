@@ -8,7 +8,7 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2020
+ * @date 21 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -18,7 +18,8 @@ use SbmCommun\Model\Strategy\Semaine;
 
 class Affectations extends AbstractHelper
 {
-use \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
+
     const TR = '<tr>';
 
     const END_TR = '</tr>';
@@ -61,16 +62,13 @@ use \SbmCommun\Model\Traits\DebugTrait;
      */
     public function __invoke($trajet, $structure)
     {
-        $this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'), 'viewhelper-affectation.log');
+        //$this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
+        //    'viewhelper-affectation.log');
+        $aMoments = $this->getMoment();
         $render = '';
         if (isset($structure['annee_courante'])) {
             $render = '<table class="eleve-affectations annee-courante">';
             foreach ($structure['annee_courante'] as $m => $affectationsMoment) {
-                $moment = [
-                    1 => 'Matin',
-                    2 => 'Midi',
-                    3 => 'Soir'
-                ][$m];
                 foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
                     foreach ($affectationsCorrespondance as $j => $affectation) {
                         // il faut décoder $j
@@ -88,11 +86,10 @@ use \SbmCommun\Model\Traits\DebugTrait;
                         $args .= '/sensligne2:' . $affectation['sensligne2'];
                         $args .= '/ordreligne2:' . $affectation['ordreligne2'];
                         $render .= sprintf(self::TR . self::TD . self::I . self::END_TR,
-                            $jours, $moment, $affectation['ligne1Id'],
+                            $jours, $aMoments[$m], $affectation['ligne1Id'],
                             $affectation['station1'], $affectation['horaireD'],
-                            $affectation['station2'],
-                            $affectation['horaireA'], $affectation['ligne2Id'], $trajet,
-                            $args, $trajet, $args);
+                            $affectation['station2'], $affectation['horaireA'],
+                            $affectation['ligne2Id'], $trajet, $args, $trajet, $args);
                     }
                     unset($affectation);
                 }
@@ -103,22 +100,14 @@ use \SbmCommun\Model\Traits\DebugTrait;
         if (isset($structure['annee_precedente'])) {
             $render .= '<span class="annee-precedente">Année précédente</span>';
             $render .= '<table class="eleve-affectations annee-precedente">';
-            foreach ($structure['annee_precedente'] as $j => $affectationsParJours) {
-                // il faut décoder $j
-                $jours = 'Lu Ma Me Je Ve'; // pour le moment je ne traite pas les jours
-                                           // différents
-                foreach ($affectationsParJours as $m => $affectationsMoment) {
-                    $moment = [
-                        1 => 'Matin',
-                        2 => 'Midi',
-                        3 => 'Soir'
-                    ][$m];
-                    foreach ($affectationsMoment as $rang => $affectation) {
-                        $this->debugLog($affectation);
+            foreach ($structure['annee_precedente'] as $m => $affectationsMoment) {
+                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
+                    foreach ($affectationsCorrespondance as $j => $affectation) {
                         $render .= sprintf(self::TR . self::TD . self::END_TR, $jours,
-                            $moment, $affectation['ligne1Id'], $affectation['station1'],
-                            $affectation['horaireD'], $affectation['station2'],
-                            $affectation['horaireA'], $affectation['ligne2Id']);
+                            $aMoments[$m], $affectation['ligne1Id'],
+                            $affectation['station1'], $affectation['horaireD'],
+                            $affectation['station2'], $affectation['horaireA'],
+                            $affectation['ligne2Id']);
                     }
                     unset($affectation);
                 }

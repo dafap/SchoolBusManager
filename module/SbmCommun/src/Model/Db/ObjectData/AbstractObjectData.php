@@ -8,7 +8,7 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource AbstractObjectData.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
+ * @date 19 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\ObjectData;
@@ -81,6 +81,14 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
      * @var array of string
      */
     private $calculate_fields = [];
+
+    /**
+     * Indispensable pour éviter les effets de bord
+     */
+    public function __clone()
+    {
+        $this->exchangeArray($this->dataSource);
+    }
 
     /**
      * Renvoie la donnée correspondant à la propriété indiquée. Lance une exception si le
@@ -450,10 +458,9 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
     /**
      * Lorsque $id est une chaine composée de plusieurs champs séparés par | la méthode
      * renvoie un tableau associatif conforme à l'id_field_name. Dans les autres cas, la
-     * méthode renvoie $id inchangé.
-     * Renvoie un id correct : - scalaire si id_field_name est un scalaire, - tableau
-     * associatif si id_field_name est un tableau On doit s'assurer avant que l'id est
-     * valide
+     * méthode renvoie $id inchangé. Renvoie un id correct : - scalaire si id_field_name
+     * est un scalaire, - tableau associatif si id_field_name est un tableau On doit
+     * s'assurer avant que l'id est valide
      *
      * @param int|string|array $id
      *
@@ -527,5 +534,34 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
         $commun1 = array_intersect_key($data1, $data2);
         $commun2 = array_intersect_key($data2, $data1);
         return $commun1 == $commun2;
+    }
+
+    /**
+     * return = false ou stop provoque un affichage Sans paramètre, renvoie une chaine
+     * contenant les infos sur les propriétés de l'objet
+     *
+     * @param boolean $return
+     * @param boolean $stop
+     * @return string
+     */
+    public function debug_dump($return = true, $stop = false)
+    {
+        $msg = "\ndataSource : " . print_r($this->dataSource, true) . "\nare_nullable : " .
+            print_r($this->are_nullable, true) . "\narray_mask : " .
+            print_r($this->array_mask, true) . "\ncalculate_fields : " .
+            print_r($this->calculate_fields, true) . "\nid_field_name : " .
+            print_r($this->id_field_name, true) . "\nmax_length_array : " .
+            print_r($this->max_length_array, true) . "\nobj_name : " .
+            print_r($this->obj_name, true);
+        echo '</pre>';
+        if (! $return || $stop) {
+            echo '<pre>' . $msg . '</pre>';
+        }
+        if ($stop) {
+            die();
+        }
+        if ($return) {
+            return $msg;
+        }
     }
 }

@@ -10,7 +10,7 @@
  * @filesource Deplacement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -423,6 +423,26 @@ class Deplacement extends AbstractSbmForm implements InputFilterProviderInterfac
                                 'id' => 'momentoption3'
                             ],
                             'label' => 'Soir',
+                            'label_attributes' => [
+                                'class' => 'momentoption'
+                            ]
+                        ],
+                        4 => [
+                            'value' => 4,
+                            'attributes' => [
+                                'id' => 'momentoption4'
+                            ],
+                            'label' => 'Après-midi',
+                            'label_attributes' => [
+                                'class' => 'momentoption'
+                            ]
+                        ],
+                        5 => [
+                            'value' => 5,
+                            'attributes' => [
+                                'id' => 'momentoption5'
+                            ],
+                            'label' => 'Dimanche soir',
                             'label_attributes' => [
                                 'class' => 'momentoption'
                             ]

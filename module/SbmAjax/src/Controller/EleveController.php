@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2020
+ * @date 22 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -19,6 +19,7 @@ use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
+use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Traits\ServiceTrait;
 use Zend\Json\Json;
 use Zend\Log\Logger;
@@ -222,9 +223,28 @@ class EleveController extends AbstractActionController
             ]));
         $form->setValueOptions('station1Id', $values_options1)
             ->setValueOptions('station2Id', $values_options1)
-            ->setValueOptions('service1Id', $values_options2)
-            ->setValueOptions('service2Id', $values_options2);
+            ->setValueOptions('service1Id', $values_options2);
+        // modif 18/07/2020 ->setValueOptions('service2Id', $values_options2);
         return $form;
+    }
+
+    private function getJoursOptions(array $aJoursPossibles = [])
+    {
+        $oSemaine = new Semaine();
+        $aSemaine = [];
+        foreach ($oSemaine::getJours() as $key => $value) {
+            $option = [
+                'label' => $value,
+                'value' => $key
+            ];
+            if (! in_array($key, $aJoursPossibles)) {
+                $option['attributes'] = [
+                    'onclick' => 'return false;'
+                ];
+            }
+            $aSemaine[] = $option;
+        }
+        return $aSemaine;
     }
 
     /**
@@ -239,12 +259,31 @@ class EleveController extends AbstractActionController
         $trajet = $this->params('trajet', 1);
         $station1Id = $this->params('station1Id', null);
         $station2Id = $this->params('station2Id', null);
+        $form = $this->getFormAffectationDecision($etablissementId, $trajet,
+            $this->params('op', '') == 'delete');
+        try {
+            $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+            $circuit = $tCircuits->getRecord(
+                [
+                    'millesime' => Session::get('millesime'),
+                    'ligneId' => $this->params('ligne1Id', 'xxxx'),
+                    'sens' => $this->params('sensligne1'),
+                    'moment' => $this->params('moment', '1'),
+                    'ordre' => $this->params('ordreligne1'),
+                    'stationId' => $station1Id ?: - 1
+                ]);
+            $aJours = $circuit->semaine;
+            $form->setValueOptions('jours', $this->getJoursOptions($aJours));
+        } catch (\Exception $e) {
+            $aJours = 31; // sera transformé dans form->setData()
+            $form->setValueOptions('jours', $this->getJoursOptions());
+        }
         $aData = [
             'millesime' => Session::get('millesime'),
             'etablissementId' => $etablissementId,
             'eleveId' => $this->params('eleveId', 0),
             'trajet' => $trajet,
-            'jours' => $this->params('jours', 31),
+            'jours' => $this->params('jours', $aJours),
             'moment' => $this->params('moment', '1'),
             'correspondance' => $this->params('correspondance', 1),
             'responsableId' => $this->params('responsableId', 0),
@@ -263,8 +302,7 @@ class EleveController extends AbstractActionController
                 'trajet' => $trajet,
                 'station1Id' => $station1Id,
                 'station2Id' => $station2Id,
-                'form' => $this->getFormAffectationDecision($etablissementId, $trajet,
-                    $aData['op'] == 'delete')->setData($aData),
+                'form' => $form->setData($aData),
                 'is_xmlhttprequest' => 1
             ]);
     }
@@ -292,6 +330,7 @@ class EleveController extends AbstractActionController
                 $form = $this->getFormAffectationDecision(
                     $request->getPost('etablissementId'), $request->getPost('trajet'),
                     $request->getPost('op') == 'delete')
+                    ->setValueOptions('jours', $this->getJoursOptions())
                     ->setData($request->getPost());
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
@@ -318,7 +357,7 @@ class EleveController extends AbstractActionController
                     try {
                         switch ($form->getData()['op']) {
                             case 'add':
-                                // ré-écrire saveRecord pour calculer le bon
+                                // insertRecord pour calculer le bon
                                 // correspondance
                                 $tAffectations->insertRecord($oData);
                                 $messages = 'Nouvelle affectation enregistrée.';
@@ -326,7 +365,9 @@ class EleveController extends AbstractActionController
                                     'Nouvelle affectation enregistrée.');
                                 break;
                             case 'edit':
-                                $tAffectations->updateRecord($oData);
+                                $oAncien = clone $oData;
+                                $oAncien->jours = $form->getData()['days'];
+                                $tAffectations->updateRecord($oAncien, $oData);
                                 $messages = 'Affectation modifiée.';
                                 $this->flashMessenger()->addSuccessMessage(
                                     'Affectation modifiée.');
@@ -778,6 +819,34 @@ class EleveController extends AbstractActionController
                 [
                     'data' => array_flip($stations), // échange key/value pour conserver
                                                       // le tri
+                    'success' => 1
+                ]));
+    }
+
+    public function getpossiblejoursAction()
+    {
+        $serviceId = $this->params('serviceId');
+        $arrayServiceId = $this->decodeServiceId($serviceId);
+        try {
+            $tServices = $this->db_manager->get('Sbm\Db\Table\Services');
+            $service = $tServices->getRecord(
+                [
+                    'millesime' => Session::get('millesime'),
+                    'ligneId' => $arrayServiceId['ligneId'],
+                    'sens' => $arrayServiceId['sens'],
+                    'moment' => $arrayServiceId['moment'],
+                    'ordre' => $arrayServiceId['ordre'],
+                ]);
+            $aJours = $service->semaine;
+            $possibleJours = $this->getJoursOptions($aJours);
+        } catch (\Exception $e) {
+            $aJours = 31;
+            $possibleJours = $this->getJoursOptions();
+        }
+        return $this->getResponse()->setContent(
+            Json::encode(
+                [
+                    'data' => $possibleJours,
                     'success' => 1
                 ]));
     }

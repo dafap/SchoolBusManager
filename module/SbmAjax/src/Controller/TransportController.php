@@ -11,7 +11,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2020
+ * @date 24 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -399,6 +399,38 @@ class TransportController extends AbstractActionController
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * Reçoit en GET les valeurs ligneId, sens et moment Renvoie le tableau des ordre non
+     * utiulisés dans l'intervalle [1 ; 16]
+     */
+    public function getordrevalueoptionsAction()
+    {
+        try {
+            $tServices = $this->db_manager->get('Sbm\Db\Table\Services');
+            $resultset = $tServices->fetchAll(
+                [
+                    'ligneId' => $this->params('ligneId'),
+                    'sens' => $this->params('sens'),
+                    'moment' => $this->params('moment')
+                ]);
+            $result = array_combine(range(1, 16), range(1, 16));
+            foreach ($resultset as $value) {
+                unset($result[$value->ordre]);
+            }
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => $result,
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([

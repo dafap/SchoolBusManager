@@ -7,7 +7,7 @@
  * @filesource ExpressionSqlTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -53,7 +53,7 @@ trait ExpressionSqlTrait
      */
     public function getSqlMoment(string $moment = 'moment', string $alias = '')
     {
-        return "CASE $moment WHEN 1 THEN 'Matin' WHEN 2 THEN 'Midi' ELSE 'Soir' END";
+        return "CASE $moment WHEN 1 THEN 'Matin' WHEN 2 THEN 'Midi' WHEN 3 THEN 'Soir' WHEN 4 THEN 'Après-midi' ELSE 'Dimanche Soir' END";
     }
 
     /**

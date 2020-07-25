@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -62,7 +62,7 @@ class AffectationsServicesStations extends AbstractQuery
      * @param int $trajet
      *            1 ou 2 selon que c'est le responsable n°1 ou n°2
      * @param int $moment
-     *            1 Matin, 2 Midi, 3 Soir
+     *            1 Matin, 2 Midi, 3 Soir, 4 Après-midi, 5 Dimanche soir
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function getServices(int $eleveId, int $responsableId, int $trajet = null,

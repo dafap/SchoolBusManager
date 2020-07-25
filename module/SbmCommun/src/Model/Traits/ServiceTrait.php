@@ -8,7 +8,7 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mars 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Traits;
@@ -67,22 +67,24 @@ trait ServiceTrait
      */
     public static function getMoment($data = 0)
     {
-        $ref = [
+        $aMoments = [
             1 => 'Matin',
             2 => 'Midi',
-            3 => 'Soir'
+            3 => 'Soir',
+            4 => 'Après-midi',
+            5 => 'Dimanche soir'
         ];
         if ($data) {
             if (is_array($data)) {
-                return $ref[$data['moment']];
+                return $aMoments[$data['moment']];
             } elseif (is_int($data)) {
-                return $ref[$data];
+                return $aMoments[$data];
             } else {
                 $msg = sprintf('Argument invalide : %s', $data);
                 throw new \SbmCommun\Model\Exception\InvalidArgumentException($msg);
             }
         }
-        return $ref;
+        return $aMoments;
     }
 
     /**

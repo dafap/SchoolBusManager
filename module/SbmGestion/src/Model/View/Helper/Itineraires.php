@@ -9,7 +9,7 @@
  * @filesource Itineraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\View\Helper;
@@ -17,6 +17,7 @@ namespace SbmGestion\Model\View\Helper;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\View\Helper\AbstractHelper;
+use SbmBase\Model\StdLib;
 
 class Itineraires extends AbstractHelper implements FactoryInterface
 {
@@ -88,15 +89,6 @@ class Itineraires extends AbstractHelper implements FactoryInterface
 
     private function moment(int $value): string
     {
-        switch ($value) {
-            case 1:
-                return 'Matin';
-            case 2:
-                return 'Midi';
-            case 3:
-                return 'Soir';
-            default:
-                return '';
-        }
+        return StdLib::getParam($value, $this->getMoment(), '');
     }
 }

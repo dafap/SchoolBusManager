@@ -6,7 +6,7 @@
  * @filesource service-fiche.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 24 juil. 2020
  * @version 2020-2.6.0
  **/
 div.p20 {
@@ -33,7 +33,7 @@ label.sbm-label-semaine {
 }
 
 label.sbm-label-radio {
-	width: 85px;
+	width: 135px;
 }
 textarea.sbm-note {
 	width: calc(100% - 160px);

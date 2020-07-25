@@ -17,6 +17,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterface
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     private $tableName;
 
@@ -110,27 +111,23 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
 
     private function formCircuits()
     {
-        $this->add(
-            [
-                'name' => 'ligneId',
-                'type' => 'hidden'
-            ]);
-        $this->add(
-            [
-                'name' => 'sens',
-                'type' => 'hidden'
-            ]);
-        $this->add(
-            [
-                'name' => 'moment',
-                'type' => 'hidden'
-            ]);
+        $this->add([
+            'name' => 'ligneId',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'sens',
+            'type' => 'hidden'
+        ]);
+        $this->add([
+            'name' => 'moment',
+            'type' => 'hidden'
+        ]);
 
-        $this->add(
-            [
-                'name' => 'ordre',
-                'type' => 'hidden'
-            ]);
+        $this->add([
+            'name' => 'ordre',
+            'type' => 'hidden'
+        ]);
         $this->add(
             [
                 'type' => 'text',
@@ -2092,11 +2089,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                         'class' => 'sbm-first'
                     ],
                     'empty_option' => 'Tous',
-                    'value_options' => [
-                        1 => 'Matin',
-                        2 => 'Midi',
-                        3 => 'Soir'
-                    ],
+                    'value_options' => $this->getMoment(),
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -2603,7 +2596,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     'empty_option' => 'Toutes',
                     'value_options' => [
                         '1' => 'Parent',
-                        '50'=>'Organisme',
+                        '50' => 'Organisme',
                         '110' => 'Transporteur',
                         '120' => 'Établissement scolaire',
                         '130' => 'Commune',

@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2020
+ * @date 22 juil. 2020
  * @version 2020-2.6.0
  */
 
@@ -811,6 +811,29 @@ function affectation() {
 			}
 		});
 	}
+	function setPossibleJours(valeur) {
+		$.ajax({
+			url: '/sbmajaxeleve/getpossiblejours/serviceId:'+valeur,
+			dataType: 'json',
+			success: function(dataJson) {
+				$.each(dataJson.data, function(idx, obj){
+					var chkbx = ":checkbox[value="+obj.value+"]";
+					var prop1 = "attributes";
+					var prop2 = "onclick";		
+					$(chkbx).removeAttr(prop2);			
+					if (prop1 in obj) {
+						if (prop2 in obj[prop1]) {
+							$(chkbx).prop('checked', false);
+							$(chkbx).attr(prop2, obj[prop1][prop2]);
+						}
+					} 
+				});
+			},
+			'error': function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status+" "+thrownError);
+			}
+		});
+	}
 	$('i[class="fam-help"').click(function() {
 		$("#formaffectation-help").show();
 	});
@@ -826,13 +849,18 @@ function affectation() {
 		}
 		var trajet = $(formaffectation+' input[name=trajet]').val();
 		var demande = 'demandeR'+trajet;
+		var jours = 0;
+		$(formaffectation+' input[type=checkbox]')
+		    .map(function(){if($(this).is(':checked')){jours += parseInt($(this).val());}});
 		var data = {
 				'csrf' : $(formaffectation+' input[name=csrf]').val(),
 				'etablissementId' : $(formaffectation+' input[name=etablissementId]').val(),
 				'eleveId' : $(formaffectation+' input[name=eleveId]').val(),
 				'millesime' : $(formaffectation+' input[name=millesime]').val(),
 				'trajet' : trajet,
-				'jours' : $(formaffectation+' input[name=jours]').val(),
+				'moment' : $(formaffectation+' input[name=moment]').val(),
+				'days' : $(formaffectation+' input[name=days]').val(),
+				'jours' : jours,
 				'sens' : $(formaffectation+' input[name=sens]').val(),
 				'correspondance' : $(formaffectation+' input[name=correspondance]').val(),
 				'responsableId' : $(formaffectation+' input[name=responsableId]').val(),
@@ -855,12 +883,14 @@ function affectation() {
 	$("#affectation-service1Id").on('change', function() {
 		var valeur = $(this).val();
 		setStationsValueOptions(valeur, null, null);
+		setPossibleJours(valeur);
 	});
 	return {
 		"init" : function(station1Id, station2Id, x, f, url) {
 			var valeur = $("#affectation-service1Id option:selected").val();
 			if (valeur) {
 				setStationsValueOptions(valeur, station1Id, station2Id);
+				setPossibleJours(valeur);
 			}
 			is_xmlhttprequest = x;
 			formaffectation = f;

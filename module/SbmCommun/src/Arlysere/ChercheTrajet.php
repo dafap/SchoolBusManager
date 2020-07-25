@@ -11,7 +11,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juin 2020
+ * @date 21 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -217,13 +217,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             $cr = [];
         }
         $trouve = [];
-        for ($moment = 1; $moment <= 3; $moment ++) {
+        for ($moment = 1; $moment <= 4; $moment ++) {
             $trouve[$moment] = false;
             // cherche des trajets avec le moins de correspondances possibles
             // (4 maxi)
             for ($i = 1, $trajetsPossibles = []; ! count($trajetsPossibles) && $i <= 4; $i ++) {
                 $trajetsPossibles = $this->getTrajets($moment, $i);
             }
+            $aller = $moment == 1 || $moment == 4 || $moment == 5;
             $i --;
             if ($this->hasDebugger()) {
                 $cr[$this->eleveId][$moment]['nb_circuits'] = $i;
@@ -246,7 +247,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 for ($j = 1; $j <= $i; $j ++) {
                     $oAffectation->jours = $trajet["semaine_$j"];
                     $oAffectation->correspondance = $j;
-                    if ($moment == 1) {
+                    if ($aller) {
                         $oAffectation->station1Id = $trajet["station1Id_$j"];
                         $oAffectation->station2Id = $trajet["station2Id_$j"];
                     } else {
@@ -279,13 +280,15 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
      * (matin) ou d'arrivée (midi, soir).
      *
      * @param int $moment
-     *            1 pour Matin, 2 pour Midi, 3 pour Soir
+     *            1 pour Matin, 2 pour Midi, 3 pour Soir, 4 pour Après-midi, 5 pour
+     *            Dimanche soir
      * @param int $nb_cir
      *            nombre de circuits sur le trajet
      * @return \Zend\Db\Sql\Where
      */
     private function getConditions(int $moment, int $nb_cir)
     {
+        $aller = $moment == 1 || $moment == 4 || $moment == 5;
         $where = (new Where())->equalTo('eta.etablissementId', $this->etablissementId)->equalTo(
             'cor1.station1Id', $this->stationId);
         // arrivée à l'établissement
@@ -308,6 +311,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 $where->greaterThan($left, $right, Where::TYPE_IDENTIFIER,
                     Where::TYPE_IDENTIFIER);
                 break;
+            case 4:
+                $left = sprintf('cir%dsta2.horaireA', $nb_cir);
+                $right = 'hAMidi';
+                $where->lessThan($left, $right, Where::TYPE_IDENTIFIER,
+                    Where::TYPE_IDENTIFIER);
+                break;
+            default: // pas de condition pour le dimanche soir
+                break;
         }
         // sur chaque circuit,
         for ($i = 1; $i <= $nb_cir; $i ++) {
@@ -316,7 +327,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 ->literal(sprintf('cir%dsta1.ouvert = 1', $i))
                 ->literal(sprintf('cir%dsta2.ouvert = 1', $i))
                 ->literal(sprintf('eta.jOuverture & cir%dsta1.semaine <>0', $i));
-            if ($moment == 1) {
+            if ($aller) {
                 // départ de la station1 avant arrivée en station2
                 $left = sprintf('cir%dsta1.horaireD', $i);
                 $right = sprintf('cir%dsta2.horaireA', $i);
@@ -332,7 +343,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         }
         // pour chaque correspondance,
         for ($i = 1; $i < $nb_cir; $i ++) {
-            if ($moment == 1) {
+            if ($aller) {
                 // arrivée en cir1sta2 avant départ de cir2sta1
                 $left = sprintf('cir%dsta2.horaireA', $i);
                 $right = sprintf('cir%dsta1.horaireD', $i + 1);
@@ -423,7 +434,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
      * défaut, trajet du matin sans correspondance.
      *
      * @param int $moment
-     *            1 Matin, 2 Midi, 3 Soir
+     *            1 Matin, 2 Midi, 3 Soir, 4 Après-midi, 5 Dimanche soir
      * @param int $nb_cir
      *            nombre de circuits
      */
@@ -446,11 +457,12 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         $ordre_corr = [];
         for ($i = $nb_cir; $i >= 1; $i --) {
             // $columns1 = [];
+            $aller = $moment == 1 || $moment == 4 || $moment == 5;
             $columns2 = [
                 "station2Id_$i" => 'stationId',
                 "horaireStation2_$i" => new Expression(
                     sprintf("DATE_FORMAT(cir%dsta2.", $i) .
-                    ($moment == 1 ? "horaireA" : "horaireD") . ",'%H:%i')")
+                    ($aller ? "horaireA" : "horaireD") . ",'%H:%i')")
             ];
             $columns1 = [
                 "sta1cor$i" => 'station1Id',
@@ -484,7 +496,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                 "ordreligne1_$i" => 'ordre',
                 "horaireStation1_$i" => new Expression(
                     sprintf("DATE_FORMAT(cir%dsta1.", $i) .
-                    ($moment == 1 ? "horaireD" : "horaireA") . ",'%H:%i')")
+                    ($aller ? "horaireD" : "horaireA") . ",'%H:%i')")
             ];
             // $columns3=["sta$x1"=>'stationId', "h$x1" => 'horaireD'];
             $select->join(
@@ -501,7 +513,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             ], $this->jointureCircuitCorrespondance($i), $columns1);
             $ordre[] = sprintf('ser%d.rang', $i);
         }
-        if ($moment == 1) {
+        if ($aller) {
             // partir le plus tard possible
             $ordre[] = 'cir1sta1.horaireD DESC';
         } else {

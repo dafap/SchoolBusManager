@@ -8,7 +8,7 @@
  * @filesource Service.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
+ * @date 20 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Form;
@@ -18,6 +18,7 @@ use Zend\InputFilter\InputFilterProviderInterface;
 
 class Service extends AbstractSbmForm implements InputFilterProviderInterface
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     /**
      * Permet de faire savoir à getInputFilterSpecification() si on est en modif (true) ou
@@ -100,11 +101,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label-radio'
                     ],
-                    'value_options' => [
-                        '1' => 'Matin',
-                        '2' => 'Midi',
-                        '3' => 'Soir'
-                    ],
+                    'value_options' => $this->getMoment(),
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]
@@ -116,7 +113,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
                     'id' => 'service-ordre',
-                    'class' => 'sbm-width-10c',
+                    'class' => 'sbm-width-10c'
                 ],
                 'options' => [
                     'label' => 'Ordre',
@@ -396,11 +393,7 @@ class Service extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label-radio'
                     ],
-                    'value_options' => [
-                        '1' => 'Matin',
-                        '2' => 'Midi',
-                        '3' => 'Soir'
-                    ],
+                    'value_options' => $this->getMoment(),
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]

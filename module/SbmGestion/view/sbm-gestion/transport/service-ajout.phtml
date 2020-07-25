@@ -8,11 +8,13 @@
  * @filesource view/sbm-gestion/transport/service-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 24 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/transport', 'service-fiche.css');
+$this->jQuery();
+$this->themeJS('gestion-transport','service-ajout.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/transport',
     [

@@ -15,7 +15,7 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mars 2020
+ * @date 21 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form;
@@ -25,6 +25,8 @@ use SbmCommun\Model\Traits\ServiceTrait;
 use SbmCommun\Model\Traits\DebugTrait;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterProviderInterface;
+use SbmCommun\Model\Strategy\Semaine;
+use SbmBase\Model\StdLib;
 
 class AffectationDecision extends Form implements InputFilterProviderInterface
 {
@@ -58,8 +60,8 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
     public function __construct($trajet, $phase)
     {
         // DEBUG
-        //$this->debugInitLog('/debug', 'ajax-formaffectationdecision');
-        //----------------------
+        // $this->debugInitLog('/debug', 'ajax-formaffectationdecision');
+        // ----------------------
         $this->trajet = $trajet;
         $this->phase = $phase;
         parent::__construct($phase == 1 ? 'decision-form' : 'affectation-form');
@@ -80,11 +82,12 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             'eleveId',
             'millesime',
             'trajet',
-            'jours',
             'moment',
             'correspondance',
             'responsableId',
             'demandeR' . $trajet,
+            'service2Id',
+            'days', // pour conserver l'original de jours
             'op'
         ] as $name) {
             $this->add([
@@ -328,20 +331,18 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             ]);
         $this->add(
             [
-                'name' => 'service2Id',
-                'type' => 'Zend\Form\Element\Select',
+                'name' => 'jours',
+                'type' => 'Zend\Form\Element\MultiCheckbox',
                 'attributes' => [
-                    'id' => 'affectation-service2Id',
-                    'class' => 'sbm-width-45c'
+                    'id' => 'affectation-jours',
+                    'class' => 'sbm-multicheckbox'
                 ],
                 'options' => [
-                    'label' => 'Correspondance',
+                    'label' => 'Jours d\'utilisation',
                     'label_attributes' => [
-                        'class' => 'sbm-form-auto'
+                        'class' => 'sbm-form-auto',
+                        'title' => 'Cochez les jours d\'utilisation'
                     ],
-                    'empty_option' => 'Choisissez un circuit',
-                    'allow_empty' => true,
-                    'disable_inarray_validator' => false,
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -363,6 +364,18 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             $fictif = $this->get('fictif');
             $fictif->setValue($data['district']);
         } else {
+            if (isset($data['jours'])) {
+                // pour conserver l'original dans 'days'
+                $semaine = new Semaine();
+                if (is_numeric($data['jours'])) {
+                    if (! isset($data['days'])) {
+                        $data['days'] = $data['jours'];
+                    }
+                    $data['jours'] = $semaine->hydrate($data['jours']);
+                } elseif (! isset($data['days'])) {
+                    $data['days'] = $semaine->extract($data['jours']);
+                }
+            }
             if (! isset($data['service1Id'])) {
                 $data['service1Id'] = $this->createServiceId(1, $data);
             }
@@ -391,16 +404,22 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
     {
         $data = parent::getData($flag);
         $arrayService1Id = $this->getServiceId(1, $data['service1Id']);
-        $arrayService2Id = $this->getServiceId(2, $data['service2Id']);
-        return array_merge($data, $arrayService1Id, $arrayService2Id);
+        $arrayService2Id = $this->getServiceId(2,
+            StdLib::getParam('service2Id', $data, '') ?: '');
+        $data = array_merge($data, $arrayService1Id, $arrayService2Id);
+        if (isset($data['jours']) && is_array($data['jours'])) {
+            $semaine = new Semaine();
+            $data['jours'] = $semaine->extract($data['jours']);
+        }
+        return $data;
     }
 
     private function getServiceId(int $n, string $serviceId)
     {
         $array = $this->decodeServiceId($serviceId);
-        if ($array) {
+        if (! empty($array)) {
             return [
-                sprintf('ligne%dId', $n) => $array['ligneId'],
+                sprintf('ligne%dId', $n) => $array['ligneId'] ?: null,
                 sprintf('sensligne%d', $n) => $array['sens'],
                 'moment' => $array['moment'],
                 sprintf('ordreligne%d', $n) => $array['ordre']
@@ -457,6 +476,10 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
             ];
         } else {
             return [
+                'jours' => [
+                    'name' => 'jours',
+                    'required' => true
+                ],
                 'station2Id' => [
                     'name' => 'station2Id',
                     'required' => false
