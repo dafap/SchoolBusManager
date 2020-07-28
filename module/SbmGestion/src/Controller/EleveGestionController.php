@@ -9,7 +9,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juil. 2020
+ * @date 28 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -551,13 +551,7 @@ class EleveGestionController extends AbstractActionController
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
-        $form1 = new Form\ButtonForm([],
-            [
-                'nouvelle' => [
-                    'class' => 'button default submit left-95px',
-                    'value' => 'Préparer une nouvelle édition'
-                ]
-            ]);
+        $form1 = new \SbmGestion\Form\NouveauLotDeCartes();
         $form2 = $this->form_manager->get(FormGestion\SelectionCartes::class);
         $form2->setValueOptions('dateReprise',
             $this->db_manager->get('Sbm\Db\Select\DatesCartes')
@@ -577,8 +571,9 @@ class EleveGestionController extends AbstractActionController
         $form2->setDocumentValueOptions($aLibellesImpressionCartes, $this->db_manager);
         // -------- fin de l'initialisation des documentId -------
         if (array_key_exists('nouvelle', $args)) {
+            //echo '<pre>';die(var_dump($args)); // <=================== DEBUG ==============
             $this->db_manager->get(\SbmGestion\Model\Cartes\Cartes::class)->nouveauLot(
-                $millesime, $dateDebut, 1);
+                $millesime, $dateDebut, $args['demande']);
             $form2->setValueOptions('dateReprise',
                 $this->db_manager->get('Sbm\Db\Select\DatesCartes')
                     ->cartesPapier());

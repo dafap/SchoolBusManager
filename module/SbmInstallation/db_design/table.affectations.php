@@ -47,8 +47,7 @@ return [
             'trajet',
             'jours',
             'moment',
-            'correspondance',
-            'sensligne1'
+            'correspondance'
         ],
         'foreign key' => [
             [

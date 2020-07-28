@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/service-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juil. 2020
+ * @date 25 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -124,8 +124,7 @@ $oService = $this->service;
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
-					<th>Service</th>
-					<th>Stations</th>
+					<th>Services</th>
 					<th></th>
 				</tr>
 			<?php
@@ -188,10 +187,6 @@ foreach ($data as $row) :
                     'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
                 ]));
     }
-    $services1 = $this->printServices($row['eleveId'], 1);
-    $services2 = $this->printServices($row['eleveId'], 2);
-    $stations1 = $this->printStations($row['eleveId'], 1);
-    $stations2 = $this->printStations($row['eleveId'], 2);
     ?>
                 <tr
 					class="petit <?= $this->cycle(["even","odd"])->next();?>">

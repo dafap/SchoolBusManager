@@ -1013,6 +1013,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'moment',
                 'correspondance',
                 'ligne1Id',
+                'jours' => new Expression($this->getSqlSemaine('aff.jours')),
                 'semaine' => new Expression($this->getSqlSemaine('cir1.semaine & cir2.semaine'))
             ])
             ->from(

@@ -11,7 +11,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juil. 2020
+ * @date 26 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere;
@@ -58,7 +58,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
      *
      * @var int
      */
-    private $regime;
+    private $regimeId;
 
     /**
      *
@@ -116,12 +116,12 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
 
     /**
      *
-     * @param int $regime
+     * @param int $regimeId
      * @return \SbmCommun\Arlysere\ChercheTrajet
      */
-    public function setRegime($regime)
+    public function setRegime($regimeId)
     {
-        $this->regime = $regime;
+        $this->regimeId = $regimeId;
         return $this;
     }
 
@@ -202,6 +202,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
                 'sbm_error.log');
         }
+        $this->niveau = -1;
+        $this->regimeId = -1;
     }
 
     /**

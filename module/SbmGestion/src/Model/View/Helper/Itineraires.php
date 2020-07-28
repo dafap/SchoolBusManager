@@ -9,7 +9,7 @@
  * @filesource Itineraires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2020
+ * @date 25 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\View\Helper;
@@ -78,7 +78,7 @@ class Itineraires extends AbstractHelper implements FactoryInterface
         }
         foreach ($resultset as $value) {
             $tr_content[] = self::TR .
-                sprintf($td, $value['semaine'], $this->moment($value['moment']),
+                sprintf($td, $value['jours'], $this->moment($value['moment']),
                     $value['ligne1Id'], $value['commune1'], $value['station1'],
                     $value['horaire1'], $value['commune2'], $value['station2'],
                     $value['horaire2'], $nb_itineraires) . self::END_TR;

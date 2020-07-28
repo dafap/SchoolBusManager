@@ -8,7 +8,7 @@
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 mai 2020
+ * @date 28 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
@@ -68,62 +68,48 @@ class Cartes
      * @param int $millesime
      * @param string $dateDebut
      *            date au format Y-m-d H:i:s
-     * @param int $natureCarte
+     * @param int $etatDemande
+     * @return int affected rows
      */
-    public function nouveauLot($millesime, $dateDebut, $natureCarte)
+    public function nouveauLot(int $millesime, string $dateDebut, int $etatDemande = 2)
     {
         $now = DateLib::nowToMysql();
-        $where = new Where();
-        $where->expression('millesime = ?', $millesime)
-            ->lessThan('dateCarteR1', $dateDebut)
-            ->in('eleveId', $this->selectNouveauLot($millesime, $natureCarte));
-
-        return $this->tScolarites->getTableGateway()->update([
-            'dateCarteR1' => $now
-        ], $where);
+        for ($cr = 0, $trajet = 1; $trajet <= 2; $trajet ++) {
+            $where = new Where();
+            $where->equalTo('millesime', $millesime)
+                ->lessThan('dateCarteR' . $trajet, $dateDebut)
+                ->expression('(demandeR' . $trajet . ' & ?) > 0', $etatDemande)
+                ->in('eleveId', $this->selectElevesAvecAffectations($millesime, $trajet));
+            $cr += $this->tScolarites->getTableGateway()->update(
+                [
+                    'dateCarteR' . $trajet => $now
+                ], $where);
+        }
+        return $cr;
     }
 
-    private function selectNouveauLot($millesime, $naturecarte)
+    /**
+     * Tous les élèves avec une ou plusieurs affectations
+     *
+     * @param int $millesime
+     * @param int $trajet
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectElevesAvecAffectations(int $millesime, int $trajet)
     {
         // préparation du WHERE
         $where = new Where();
-        $where->equalTo('aff.millesime', $millesime);
-        $or = false;
-        $predicate = null;
-        foreach ($this->codesNatureCartes[$naturecarte] as $code) {
-            if ($or) {
-                $predicate->OR;
-            } else {
-                $predicate = $where->nest;
-                $or = true;
-            }
-            $predicate->equalTo('s1.natureCarte', $code)->OR->equalTo('s2.natureCarte',
-                $code);
-        }
-        if ($or) {
-            $predicate->unnest;
-        }
-
+        $where->equalTo('aff.millesime', $millesime)->equalTo('trajet', $trajet);
         // préparation du SELECT DISTINCT
         $select = new Select();
-        $select->columns([
+        $select->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns([
             'eleveId'
         ])
             ->from([
             'aff' => $this->table_affectations
         ])
-            ->join([
-            's1' => $this->table_lignes
-        ],
-            'aff.millesime=s1.millesime AND aff.ligne1Id=s1.ligneId',
-            [])
-            ->join([
-            's2' => $this->table_lignes
-        ],
-            'aff.millesime=s2.millesime AND aff.ligne2Id=s2.ligneId',
-            [], Select::JOIN_LEFT)
-            ->where($where)
-            ->quantifier(Select::QUANTIFIER_DISTINCT);
+            ->where($where);
         return $select;
     }
 }
