@@ -15,7 +15,7 @@
  * @filesource Attributs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juil. 2020
+ * @date 29 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
@@ -178,6 +178,9 @@ class Attributs extends ServiceAbstractQuery
             'org' => $this->db_manager->getCanonicName('organismes')
         ], 'u2o.organismeId=org.organismeId', [
             'organisme' => 'nom'
-        ], Select::JOIN_LEFT);
+        ], Select::JOIN_LEFT)
+            ->where([
+            'responsableId' => $responsableId
+        ]);
     }
 }
