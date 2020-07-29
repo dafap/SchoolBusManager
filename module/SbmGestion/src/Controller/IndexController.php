@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 28 juil. 2020
+ * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
@@ -39,11 +39,13 @@ class IndexController extends AbstractActionController
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
         $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
+        $resultNbEnregistres = $statEleve->getNbEnregistresByMillesime($millesime);
+        $nbDpEnregistres = current($resultNbEnregistres)['effectif'];
+        $nbInternesEnregistres = next($resultNbEnregistres)['effectif'];
         return new ViewModel(
             [
-                
-                'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
+                'elevesDpEnregistres' => $nbDpEnregistres,
+                'elevesIntEnregistres' => $nbInternesEnregistres,
                 'elevesInscrits' => current(
                     $statEleve->getNbInscritsByMillesime($millesime))['effectif'],
                 'elevesInscritsRayes' => current(
@@ -62,6 +64,8 @@ class IndexController extends AbstractActionController
                     $statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
                 'eleves3kmEtPlus' => current(
                     $statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif'],
+                'elevesDistanceInconnue' => current(
+                    $statEleve->getNbDistanceInconnue($millesime))['effectif'],
                 'responsablesEnregistres' => current($statResponsable->getNbEnregistres())['effectif'],
                 'responsablesAvecEnfant' => current($statResponsable->getNbAvecEnfant())['effectif'],
                 'responsablesSansEnfant' => current($statResponsable->getNbSansEnfant())['effectif'],

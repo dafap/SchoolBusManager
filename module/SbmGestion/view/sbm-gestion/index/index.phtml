@@ -8,7 +8,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 28 juil. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -37,6 +37,10 @@ $pAS = $this->paiements['totalASMode'];
 $pMode = current($pAS);
 $pTotal = $this->paiements['totalGeneral'];
 
+$nbDistanceInconnue = ($this->elevesDpEnregistres ?: 0) +
+    ($this->elevesIntEnregistres ?: 0) - ($this->elevesMoins1km ?: 0) -
+    ($this->elevesDe1A3km ?: 0) - ($this->eleves3kmEtPlus ?: 0);
+
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 ?>
 <div id="tableau-de-bord" class="clearfix">
@@ -54,7 +58,14 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves enregistrés</td>
-					<td class="effectif"><?= $this->elevesEnregistres ?:0;?></td>
+					<td class="effectif">
+						<?= ($this->elevesDpEnregistres ?: 0) + ($this->elevesIntEnregistres ?: 0);?></td>
+				</tr>
+				<tr>
+					<td class="align-right">dont <?=$this->elevesDpEnregistres ?: 0;?> DP</td>
+				</tr>
+				<tr>
+					<td class="align-right">et <?=$this->elevesIntEnregistres ?: 0;?> Internes</td>
 				</tr>
 				<tr>
 					<td>Nombre d'abonnements payés</td>
@@ -74,15 +85,19 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 				</tr>
 				<tr>
 					<td>Nombre d'élèves à moins de 1 km</td>
-					<td class="effectif"><?= $this->elevesMoins1km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesMoins1km ?: 0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves de 1 à 3 km</td>
-					<td class="effectif"><?= $this->elevesDe1A3km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesDe1A3km ?: 0;?></td>
 				</tr>
 				<tr class="separateur">
 					<td>Nombre d'élèves à 3 km et plus</td>
-					<td class="effectif"><?= $this->eleves3kmEtPlus ?:0;?></td>
+					<td class="effectif"><?= $this->eleves3kmEtPlus ?: 0;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves non géolocalisés</td>
+					<td class="effectif"><?= $nbDistanceInconnue;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en garde alternée</td>
