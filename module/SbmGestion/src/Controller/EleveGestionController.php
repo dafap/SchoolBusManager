@@ -72,8 +72,8 @@ class EleveGestionController extends AbstractActionController
                     }
                 }
                 $args = array_merge($prg, $this->decodeServiceId($prg['serviceinitial']));
-                //echo '<pre>';
-                //die(var_dump($args));
+                // echo '<pre>';
+                // die(var_dump($args));
             }
         }
         $form = new \SbmGestion\Form\Eleve\Deplacement();
@@ -571,7 +571,8 @@ class EleveGestionController extends AbstractActionController
         $form2->setDocumentValueOptions($aLibellesImpressionCartes, $this->db_manager);
         // -------- fin de l'initialisation des documentId -------
         if (array_key_exists('nouvelle', $args)) {
-            //echo '<pre>';die(var_dump($args)); // <=================== DEBUG ==============
+            // echo '<pre>';die(var_dump($args)); // <=================== DEBUG
+            // ==============
             $this->db_manager->get(\SbmGestion\Model\Cartes\Cartes::class)->nouveauLot(
                 $millesime, $dateDebut, $args['demande']);
             $form2->setValueOptions('dateReprise',
@@ -606,13 +607,30 @@ class EleveGestionController extends AbstractActionController
                 switch ($args['selection']) {
                     case 'nouvelle':
                         $lastDateCarte = $this->db_manager->get('Sbm\Db\Table\Scolarites')->getLastDateCarte();
-                        $expression[] = "dateCarteR1 = '$lastDateCarte'";
-                        $where->equalTo('dateCarteR1', $lastDateCarte);
+                        $expression[] = "((dateCarteR1 = '$lastDateCarte' AND trajet=1) OR (dateCarteR2= '$lastDateCarte' AND trajet=2))";
+                        $where->nest()
+                            ->nest()
+                            ->equalTo('dateCarteR1', $lastDateCarte)
+                            ->literal('trajet=1')
+                            ->unnest()->or->nest()
+                            ->equalTo('dateCarteR2', $lastDateCarte)
+                            ->literal('trajet=2')
+                            ->unnest()
+                            ->unnest();
                         break;
                     case 'reprise':
                         $dateReprise = $args['dateReprise'];
                         $expression[] = "dateCarteR1 = '$dateReprise'";
-                        $where->equalTo('dateCarteR1', $dateReprise);
+                        $where->nest()
+                            ->nest()
+                            ->equalTo('dateCarteR1', $dateReprise)
+                            ->literal('trajet=1')
+                            ->unnest()->or->nest()
+                            ->equalTo('dateCarteR2', $dateReprise)
+                            ->literal('trajet=2')
+                            ->unnest()
+                            ->unnest();
+                        ;
                         break;
                     case 'selection':
                         // il s'agit ici de la colonne `selection` de la table `eleves`

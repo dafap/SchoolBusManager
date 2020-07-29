@@ -75,14 +75,14 @@ class SelectionCartes extends Form implements InputFilterProviderInterface
                     'value_options' => [
                         'inscrits' => [
                             'value' => 'inscrits',
-                            'label' => 'Inscrits',
+                            'label' => 'Abonnements payés',
                             'attributes' => [
                                 'id' => 'critereradio0'
                             ]
                         ],
                         'preinscrits' => [
                             'value' => 'preinscrits',
-                            'label' => 'Préinscrits',
+                            'label' => 'Abonnements impayés',
                             'attributes' => [
                                 'id' => 'critereradio1'
                             ]
