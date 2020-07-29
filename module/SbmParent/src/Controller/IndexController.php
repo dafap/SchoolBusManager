@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juin 2020
+ * @date 29 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
@@ -227,9 +227,10 @@ class IndexController extends AbstractActionController
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
-                        return $this->redirect()->toRoute('login', [
-                            'action' => 'logout'
-                        ]);
+                        return $this->redirect()->toRoute('login',
+                            [
+                                'action' => 'logout'
+                            ]);
                     }
                 }
                 // Enregistrement du responsable2 en premier (si on a le droit)
@@ -245,6 +246,9 @@ class IndexController extends AbstractActionController
                 $as = Session::get('as');
                 $data['dateDebut'] = $as['dateDebut'];
                 $data['dateFin'] = $as['dateFin'];
+                if (is_null($responsable2Id)) {
+                    $data['demandeR2'] = 0;
+                }
                 // Enregistre la scolarité
                 $outils->saveScolarite($data, 'inscription');
                 $outils->apresInscription('inscription');
@@ -412,9 +416,10 @@ class IndexController extends AbstractActionController
                     } catch (\Exception $e) {
                         $this->flashMessenger()->addErrorMessage(
                             'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
-                        return $this->redirect()->toRoute('login', [
-                            'action' => 'logout'
-                        ]);
+                        return $this->redirect()->toRoute('login',
+                            [
+                                'action' => 'logout'
+                            ]);
                     }
                 }
                 // Enregistrement du responsable2 en premier (si on a le droit)
@@ -433,7 +438,11 @@ class IndexController extends AbstractActionController
                     throw new \Exception('Arrêt du programme. Incohérence des données.');
                 }
                 // Enregistrement de sa scolarité
-                $outils->saveScolarite($form->getData(), 'edit');
+                $data = $form->getData();
+                if (is_null($responsable2Id)) {
+                    $data['demandeR2'] = 0;
+                }
+                $outils->saveScolarite($data, 'edit');
                 $outils->apresInscription('edit');
                 $cr = $outils->getMessages();
                 Session::remove('responsable2', $this->getSessionNamespace());
@@ -815,9 +824,10 @@ class IndexController extends AbstractActionController
                         } catch (\Exception $e) {
                             $this->flashMessenger()->addErrorMessage(
                                 'Ce compte d\'utilisateur devrait être associé à un organisme. Contactez le service.');
-                            return $this->redirect()->toRoute('login', [
-                                'action' => 'logout'
-                            ]);
+                            return $this->redirect()->toRoute('login',
+                                [
+                                    'action' => 'logout'
+                                ]);
                         }
                     }
                     // Enregistrement du responsable2 en premier (si on a le droit)
@@ -842,7 +852,11 @@ class IndexController extends AbstractActionController
                     $data['dateDebut'] = $as['dateDebut'];
                     $data['dateFin'] = $as['dateFin'];
                     $data['demandeR1'] = 1;
-                    $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
+                    if (is_null($responsable2Id)) {
+                        $data['demandeR2'] = 0;
+                    } else {
+                        $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
+                    }
                     // Enregistrement de sa scolarité
                     $outils->saveScolarite($data, 'reinscription');
                     $outils->apresInscription('reinscription');
