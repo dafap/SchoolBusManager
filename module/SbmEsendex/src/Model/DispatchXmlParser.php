@@ -59,25 +59,25 @@ class DispatchXmlParser extends Esendex\Parser\DispatchXmlParser implements
         $doc->addAttribute("xmlns", Esendex\Model\Api::NS);
         $doc->accountreference = $this->reference;
         $cmpt = 0;
+        $originator = $messages->getOriginator();
+        if ($originator != null) {
+            if (ctype_digit($originator)) {
+                if (strlen($originator) > 20)
+                    throw new ArgumentException("Numeric originator must be <= 20 digits");
+            } else {
+                if (strlen($originator) > 11)
+                    throw new ArgumentException(
+                        "Alphanumeric originator must <= 11 characters");
+                if (! preg_match("/^[a-zA-Z0-9\*\$\?\!\"\#\%\&_\-\,\.\s@'\+]{1,11}$/",
+                    $originator))
+                    throw new ArgumentException(
+                        "Alphanumeric originator contains invalid character(s)");
+            }
+            $doc->from = $originator;
+        }
         foreach ($messages as $message) {
             $cmpt ++;
             $error_msg = "Destinataire n° $cmpt :\n";
-            if ($message->originator() != null) {
-                if (ctype_digit($message->originator())) {
-                    if (strlen($message->originator()) > 20)
-                        throw new ArgumentException(
-                            $error_msg . "Numeric originator must be <= 20 digits");
-                } else {
-                    if (strlen($message->originator()) > 11)
-                        throw new ArgumentException(
-                            $error_msg . "Alphanumeric originator must <= 11 characters");
-                    if (! preg_match("/^[a-zA-Z0-9\*\$\?\!\"\#\%\&_\-\,\.\s@'\+]{1,11}$/",
-                        $message->originator()))
-                        throw new ArgumentException(
-                            $error_msg .
-                            "Alphanumeric originator contains invalid character(s)");
-                }
-            }
             if (strlen($message->recipient()) < 1)
                 throw new ArgumentException($error_msg . "Recipient is invalid");
             if ($message->validityPeriod() > 72)
@@ -88,8 +88,6 @@ class DispatchXmlParser extends Esendex\Parser\DispatchXmlParser implements
                 $doc->characterset = $message->characterSet();
 
             $child = $doc->addChild("message");
-            if ($message->originator() != null)
-                $child->from = $message->originator();
             $child->to = $message->recipient();
             $child->body = $message->body();
             $child->type = $message->type();
