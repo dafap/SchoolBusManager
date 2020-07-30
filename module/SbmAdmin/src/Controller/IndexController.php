@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 mai 2020
+ * @date 30 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
@@ -1792,7 +1792,7 @@ class IndexController extends AbstractActionController
                 $form->setData($prg);
                 if ($form->isValid()) {
                     $where = $form->whereResponsable();
-                    $resultset = $this->db_manager->get('Sbm\Db\Vue\Responsables')->fetchAll(
+                    $resultset = $this->db_manager->get('Sbm\Db\Query\Responsables')->withEffectifs(
                         $where, [
                             'commune',
                             'nom'

@@ -8,7 +8,7 @@
  * @filesource vue.eleve.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
+ * @date 30 juil. 2020
  * @version 2020-2.6.0
  */
 return [
@@ -188,28 +188,6 @@ return [
                         'field' => 'paiementenligne'
                     ]
                 ]
-            ],
-            [
-                'table' => 'eleves', // obligatoire mais peut être une vue
-                'type' => 'table', // optionnel, 'table' par défaut
-                'alias' => 'ele', // optionnel
-                'relation' => 'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id Or res.responsableId = ele.responsableFId', // obligatoire
-                'fields' => [
-                    [
-                        'expression' => [
-                            'value' => 'count(ele.eleveId)',
-                            'type' => 'bigint(21)'
-                        ],
-                        'alias' => 'nbEleves'
-                    ]
-                ],
-                'jointure' => \Zend\Db\Sql\Select::JOIN_LEFT
-            ]
-        ],
-        'group' => [
-            [
-                'table' => 'res',
-                'field' => 'responsableId'
             ]
         ],
         'order' => [
