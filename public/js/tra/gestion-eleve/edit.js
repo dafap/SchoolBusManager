@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juil. 2020
+ * @date 30 juil. 2020
  * @version 2020-2.6.0
  */
 
@@ -23,6 +23,44 @@ var js_edit = (function() {
 	var subventionR2;
 	var hasPhoto;
 	function majAbonnement() {
+	}
+	function majBlockAffectations(trajet) {
+		$('html', 'body').css('cursor', 'auto');
+		var args1 = 'eleveId:'+ELEVE_ID+'/identite:'+IDENTITE+'/trajet:'+trajet;
+		$.ajax({
+			url : '/sbmajaxeleve/blockaffectations/'+args1,
+			type : 'GET',
+			dataType : 'html',
+			success : function(data) {
+				var myid = '#block-affectationsr'+trajet;
+				$(myid).empty();
+				$(myid).append(data);
+				$('html', 'body').css('cursor', 'auto');
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status+" "+thrownError);
+				$('html', 'body').css('cursor', 'auto');
+			}
+		});
+		var args2 = 'eleveId:'+ELEVE_ID+'/trajet:'+trajet;
+		var args3 = "input[name=accordR"+trajet+"][type=hidden]";
+		$.ajax({
+			url : '/sbmajaxeleve/enableaccordbutton/'+args2,
+			dataType : 'json',
+			success : function(dataJson) {
+				var myid = "#eleve-accordR"+trajet;
+				if (dataJson.enable) {
+					$(myid).removeAttr('disabled');
+					$(args3).val(0);
+				} else {
+					$(myid).attr('disabled', 'disabled');
+					$(args3).val(1);
+				}
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert(xhr.status+" "+thrownError);
+			}
+		});
 	}
 	function estTropPres() {
 		return ($("#eleve-distanceR1").val() < 1) && ($("#eleve-distanceR2").val() < 1);
@@ -597,6 +635,37 @@ var js_edit = (function() {
 				}
 			});
 		});
+		$("#tabs").on('click',"i[data-button=btnsuppraffectations]",function(){
+			var trajet = $(this).attr('data-trajet');
+			var respid = '#eleve-responsable'+trajet+'Id';
+			$.confirm({
+				title: 'Confirmation',
+				content: 'Voulez-vous supprimer toutes les affectations ',
+				buttons: {
+					'oui': function(){
+						var href = '/sbmajaxeleve/suppraffectations/eleveId:' 
+							+ ELEVE_ID
+							+ '/responsableId:';
+						href = href.concat($(respid).val());
+						$.ajax({
+							url : href,
+							dataType : 'json',
+							success : function(data) {
+								majBlockAffectations(trajet);
+								if (data.success == 0) {
+									$.alert(data.cr);
+								}
+							},
+							error : function(xhr,ajaxOptions,thrownError) {
+								alert(xhr.status+' '+thrownError);
+							}
+						});
+					},
+					'non': function(){
+					}
+				}
+			});
+		});
 		$("#tabs").on('click',"i[data-button=btnaffectation]",function() {
 			var etablissementId = $("#eleve-etablissementId").val();
 			var trajet = $(this).attr('data-trajet');
@@ -718,42 +787,7 @@ var js_edit = (function() {
 			}
 		},
 		"majBlockAffectations" : function(trajet) {
-			$('html', 'body').css('cursor', 'auto');
-			var args1 = 'eleveId:'+ELEVE_ID+'/identite:'+IDENTITE+'/trajet:'+trajet;
-			$.ajax({
-				url : '/sbmajaxeleve/blockaffectations/'+args1,
-				type : 'GET',
-				dataType : 'html',
-				success : function(data) {
-					var myid = '#block-affectationsr'+trajet;
-					$(myid).empty();
-					$(myid).append(data);
-					$('html', 'body').css('cursor', 'auto');
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status+" "+thrownError);
-					$('html', 'body').css('cursor', 'auto');
-				}
-			});
-			var args2 = 'eleveId:'+ELEVE_ID+'/trajet:'+trajet;
-			var args3 = "input[name=accordR"+trajet+"][type=hidden]";
-			$.ajax({
-				url : '/sbmajaxeleve/enableaccordbutton/'+args2,
-				dataType : 'json',
-				success : function(dataJson) {
-					var myid = "#eleve-accordR"+trajet;
-					if (dataJson.enable) {
-						$(myid).removeAttr('disabled');
-						$(args3).val(0);
-					} else {
-						$(myid).attr('disabled', 'disabled');
-						$(args3).val(1);
-					}
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status+" "+thrownError);
-				}
-			});
+			majBlockAffectations(trajet);
 		},
 		"majPaiement" : function(gratuit) {
 			var libelle;

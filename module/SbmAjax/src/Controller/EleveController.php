@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juil. 2020
+ * @date 30 juil. 2020
  * @version 2020-2.6.0
  */
 namespace SbmAjax\Controller;
@@ -189,6 +189,29 @@ class EleveController extends AbstractActionController
                     array_merge($responsable->getArrayCopy(), [
                         'success' => 1
                     ])));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    public function suppraffectationsAction()
+    {
+        $millesime = Session::get('millesime');
+        $eleveId = $this->params('eleveId', 0);
+        $responsableId = $this->params('responsableId', 0);
+        try {
+            $tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
+            $affectedRows = $tAffectations->deleteResponsableId($millesime, $eleveId,
+                $responsableId);
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $affectedRows,
+                    'success' => 1
+                ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
                 Json::encode([
@@ -835,7 +858,7 @@ class EleveController extends AbstractActionController
                     'ligneId' => $arrayServiceId['ligneId'],
                     'sens' => $arrayServiceId['sens'],
                     'moment' => $arrayServiceId['moment'],
-                    'ordre' => $arrayServiceId['ordre'],
+                    'ordre' => $arrayServiceId['ordre']
                 ]);
             $aJours = $service->semaine;
             $possibleJours = $this->getJoursOptions($aJours);
@@ -844,11 +867,10 @@ class EleveController extends AbstractActionController
             $possibleJours = $this->getJoursOptions();
         }
         return $this->getResponse()->setContent(
-            Json::encode(
-                [
-                    'data' => $possibleJours,
-                    'success' => 1
-                ]));
+            Json::encode([
+                'data' => $possibleJours,
+                'success' => 1
+            ]));
     }
 
     /**

@@ -9,8 +9,8 @@
  * @filesource jquery.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 déc. 2019
- * @version 2019-2.5.4
+ * @date 30 juil. 2020
+ * @version 2020-2.6.0
  */
 return [
     'jquery' => [
@@ -38,6 +38,15 @@ return [
         'mode' => 'append',
         'js' => [
             0 => 'js/jquery-cookie.master/jquery.cookie.js'
+        ]
+    ],
+    'jquery-confirm' => [
+        'mode' => 'append',
+        'css' => [
+            0 => 'js/jquery-confirm-v3.3.4/dist/jquery-confirm.min.css'
+        ],
+        'js' => [
+            0 => 'js/jquery-confirm-v3.3.4/dist/jquery-confirm.min.js'
         ]
     ]
 ];

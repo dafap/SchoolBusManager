@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
+ * @date 30 juil. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -50,7 +50,7 @@ $url_euro = $this->url('sbmgestion/finance', [
 ]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-edit.css');
-$this->jQuery('jquery-ui');
+$this->jQuery(['jquery-ui', 'jquery-confirm']);
 $this->themeJS('gestion-eleve', 'edit.js');
 $this->themeJS('commun', 'checkallbox.js');
 $this->headScript()->captureStart();
@@ -265,13 +265,16 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 							</div>
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3 id="h3-affectationsr1">
-									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+									Affectations<i class="fam-car-key"
 										title="Recherche automatique des circuits pour <?= $this->identite;?>"
 										data-button="btnchercheraffectations" data-trajet="1"
-										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+										data-href="/op:auto"></i><i class="fam-car-add"
 										title="Ajouter un circuit pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="1"
-										data-href="/op:add"></i>
+										data-href="/op:add"></i><i class="fam-car-delete"
+										title="Supprimer tous les circuits pour <?= $this->identite;?>"
+										data-button="btnsuppraffectations" data-trajet="1"
+										data-href="/op:remove"></i>
 								</h3>
 								<?php if (isset($this->structAffectations[1])) : ?>
 									<?= $this->affectations(1, $this->structAffectations[1]);?>
@@ -322,13 +325,16 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 							</div>
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3 id="h3-affectationsr2">
-									Affectations&nbsp;&nbsp;&nbsp;&nbsp;<i class="fam-car-key"
+									Affectations<i class="fam-car-key"
 										title="Recherche automatique des circuits pour <?= $this->identite;?>"
 										data-button="btnchercheraffectations" data-trajet="2"
-										data-href="/op:auto"></i>&nbsp;&nbsp;<i class="fam-car-add"
+										data-href="/op:auto"></i><i class="fam-car-add"
 										title="Ajouter une affectation pour <?= $this->identite;?>"
 										data-button="btnaffectation" data-trajet="2"
-										data-href="/op:add"></i>
+										data-href="/op:add"></i><i class="fam-car-delete"
+										title="Supprimer tous les circuits pour <?= $this->identite;?>"
+										data-button="btnsuppraffectations" data-trajet="2"
+										data-href="/op:remove"></i>
 								</h3>
 								<?php if (isset($this->structAffectations[2])) :?>
 									<?= $this->affectations(2, $this->structAffectations[2]);?>
