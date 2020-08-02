@@ -18,14 +18,14 @@
  * - responsablesHorsZone
  * - responsablesDemenagement
  * - paiements
- * 
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/index
  * @filesource org-index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 fév. 2019
- * @version 2019-2.5.0
+ * @date 2 août 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -45,6 +45,10 @@ $url_carte_etablissements = $this->url('sbmportail',
     [
         'action' => 'tr-carte-etablissements'
     ]);
+
+$nbDistanceInconnue = ($this->elevesDpEnregistres ?: 0) +
+    ($this->elevesIntEnregistres ?: 0) - ($this->elevesMoins1km ?: 0) -
+    ($this->elevesDe1A3km ?: 0) - ($this->eleves3kmEtPlus ?: 0);
 ?>
 <div id="tableau-de-bord" class="clearfix">
 	<div class="flashMessenger float-right">
@@ -61,35 +65,46 @@ $url_carte_etablissements = $this->url('sbmportail',
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves enregistrés</td>
-					<td class="effectif"><?= $this->elevesEnregistres ?:0;?></td>
+					<td class="effectif">
+						<?= ($this->elevesDpEnregistres ?: 0) + ($this->elevesIntEnregistres ?: 0);?></td>
 				</tr>
 				<tr>
-					<td>Nombre d'élèves inscrits</td>
+					<td class="align-right">dont <?=$this->elevesDpEnregistres ?: 0;?> DP</td>
+				</tr>
+				<tr>
+					<td class="align-right">et <?=$this->elevesIntEnregistres ?: 0;?> Internes</td>
+				</tr>
+				<tr>
+					<td>Nombre d'abonnements payés</td>
 					<td class="effectif"><?= $this->elevesInscrits ?:0;?></td>
 				</tr>
 				<tr>
-					<td>Nombre d'élèves préinscrits</td>
+					<td>Nombre d'abonnements payés puis rayés</td>
+					<td class="effectif"><?= $this->elevesInscritsRayes ?:0;?></td>
+				</tr>
+				<tr>
+					<td>Nombre de demandes non payées</td>
 					<td class="effectif"><?= $this->elevesPreinscrits ?:0;?></td>
 				</tr>
 				<tr class="separateur">
-					<td>Nombre d'élèves rayés</td>
-					<td class="effectif"><?= $this->elevesRayes ?:0;?></td>
+					<td>Nombre de demandes non payées puis rayés</td>
+					<td class="effectif"><?= $this->elevesPreinscritsRayes ?:0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves à moins de 1 km</td>
-					<td class="effectif"><?= $this->elevesMoins1km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesMoins1km ?: 0;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves de 1 à 3 km</td>
-					<td class="effectif"><?= $this->elevesDe1A3km ?:0;?></td>
+					<td class="effectif"><?= $this->elevesDe1A3km ?: 0;?></td>
 				</tr>
 				<tr class="separateur">
 					<td>Nombre d'élèves à 3 km et plus</td>
-					<td class="effectif"><?= $this->eleves3kmEtPlus ?:0;?></td>
+					<td class="effectif"><?= $this->eleves3kmEtPlus ?: 0;?></td>
 				</tr>
-				<tr>
-					<td>Nombre d'élèves en famille d'accueil</td>
-					<td class="effectif"><?= $this->elevesFamilleAcceuil ?:0;?></td>
+				<tr class="separateur">
+					<td>Nombre d'élèves non géolocalisés</td>
+					<td class="effectif"><?= $nbDistanceInconnue;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en garde alternée</td>

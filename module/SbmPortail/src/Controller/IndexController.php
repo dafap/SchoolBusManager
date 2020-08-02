@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 2 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -114,15 +114,21 @@ class IndexController extends AbstractActionController
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
         $millesime = Session::get('millesime');
+        $resultNbEnregistres = $statEleve->getNbEnregistresByMillesime($millesime);
+        $nbDpEnregistres = current($resultNbEnregistres)['effectif'];
+        $nbInternesEnregistres = next($resultNbEnregistres)['effectif'];
         return new ViewModel(
             [
-                'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
+                'elevesDpEnregistres' => $nbDpEnregistres,
+                'elevesIntEnregistres' => $nbInternesEnregistres,
                 'elevesInscrits' => current(
                     $statEleve->getNbInscritsByMillesime($millesime))['effectif'],
+                'elevesInscritsRayes' => current(
+                    $statEleve->getNbRayesByMillesime($millesime, true))['effectif'],
                 'elevesPreinscrits' => current(
                     $statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
-                'elevesRayes' => current($statEleve->getNbRayesByMillesime($millesime))['effectif'],
+                'elevesPreinscritsRayes' => current(
+                    $statEleve->getNbRayesByMillesime($millesime, false))['effectif'],
                 'elevesFamilleAcceuil' => current(
                     $statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
                 'elevesGardeAlternee' => current(
@@ -133,6 +139,8 @@ class IndexController extends AbstractActionController
                     $statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
                 'eleves3kmEtPlus' => current(
                     $statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif'],
+                'elevesDistanceInconnue' => current(
+                    $statEleve->getNbDistanceInconnue($millesime))['effectif'],
                 'responsablesEnregistres' => current($statResponsable->getNbEnregistres())['effectif'],
                 'responsablesAvecEnfant' => current($statResponsable->getNbAvecEnfant())['effectif'],
                 'responsablesSansEnfant' => current($statResponsable->getNbSansEnfant())['effectif'],
@@ -190,7 +198,7 @@ class IndexController extends AbstractActionController
             }
         }
         // formulaire des critères de recherche
-        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        $criteres_form = new \SbmPortail\Form\CriteresOrgForm();
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
@@ -198,15 +206,12 @@ class IndexController extends AbstractActionController
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
-            ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->tout())
-            ->setValueOptions('stationId',
-            $this->db_manager->get('Sbm\Db\Select\Stations')
-                ->toutes());
+            ->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies());
 
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresOrg(
             $criteres_form->getElementNames(), false);
 
         if ($this->sbm_isPost) {
@@ -224,12 +229,11 @@ class IndexController extends AbstractActionController
 
         $categorie = 200;
         $where = $criteres_obj->getWhereForEleves();
-        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->paginatorScolaritesR(
+        $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
             $where, [
                 'nom',
                 'prenom'
             ]);
-
         return new ViewModel(
             [
                 'categorie' => $categorie,
@@ -249,8 +253,8 @@ class IndexController extends AbstractActionController
             ]);
         }
 
-        $criteres_form = new \SbmPortail\Form\CriteresForm();
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+        $criteres_form = new \SbmPortail\Form\CriteresOrgForm();
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresOrg(
             $criteres_form->getElementNames(), false);
         $criteres = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
         if (! empty($criteres)) {
@@ -263,8 +267,8 @@ class IndexController extends AbstractActionController
             ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
             ->setParam('where', $where)
             ->setData(
-            $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
-                ->getScolaritesR($where, [
+            $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')
+                ->withScolaritesR2($where, [
                 'nom',
                 'prenom'
             ]))
@@ -288,34 +292,24 @@ class IndexController extends AbstractActionController
             'Établissement' => 'etablissement',
             'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe',
-            'R1 Identité' => 'responsable1',
-            'R1 Adresse ligne 1' => 'adresseR1L1',
-            'R1 Adresse ligne 2' => 'adresseR1L2',
-            'R1 Commune' => 'communeR1',
+            'R1 Identité' => 'responsable1NomPrenom',
+            'R1 Adresse ligne 1' => 'adresseL1R1',
+            'R1 Adresse ligne 2' => 'adresseL2R1',
+            'R1 Adresse ligne 3' => 'adresseL3R1',
+            'R1 Commune' => 'lacommuneR1',
             'R1 Téléphone 1' => 'telephoneFR1',
             'R1 Téléphone 2' => 'telephonePR1',
             'R1 Téléphone 3' => 'telephoneTR1',
             'R1 email' => 'emailR1',
-            'R1 Service' => 'service1R1',
-            'R1 Station Montée' => 'station1r1',
-            'R1 Commune station montée' => 'communeStation1r1',
-            'R1 Station Descente' => 'station2r1',
-            'R1 Commune station descente' => 'communeStation2r1',
-            'R1 Correspondance' => 'service2R1',
-            'R2 Identité' => 'responsable2',
-            'R2 Adresse ligne 1' => 'adresseR2L1',
-            'R2 Adresse ligne 2' => 'adresseR2L2',
-            'R2 Commune' => 'communeR2',
+            'R2 Identité' => 'responsable2NomPrenom',
+            'R2 Adresse ligne 1' => 'adresseL1R2',
+            'R2 Adresse ligne 2' => 'adresseL2R2',
+            'R2 Adresse ligne 3' => 'adresseL3R2',
+            'R2 Commune' => 'lacommuneR2',
             'R2 Téléphone 1' => 'telephoneFR2',
             'R2 Téléphone 2' => 'telephonePR2',
             'R2 Téléphone 3' => 'telephoneTR2',
-            'R2 email' => 'emailR2',
-            'R2 Service' => 'service1R2',
-            'R2 Station Montée' => 'station1r2',
-            'R2 Commune station montée' => 'communeStation1r2',
-            'R2 Station Descente' => 'station2r2',
-            'R2 Commune station descente' => 'communeStation2r2',
-            'R2 Correspondance' => 'service2R2'
+            'R2 email' => 'emailR2'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -336,7 +330,7 @@ class IndexController extends AbstractActionController
         // reprise des critères
         $criteres = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
         // formulaire des critères de recherche
-        $criteres_form = new \SbmPortail\Form\CriteresForm();
+        $criteres_form = new \SbmPortail\Form\CriteresOrgForm();
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
@@ -344,14 +338,11 @@ class IndexController extends AbstractActionController
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
-            ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->tout())
-            ->setValueOptions('stationId',
-            $this->db_manager->get('Sbm\Db\Select\Stations')
-                ->toutes());
+            ->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->desservies());
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresOrg(
             $criteres_form->getElementNames(), false);
         $criteres_form->setData($criteres);
         if ($criteres_form->isValid()) {
@@ -360,7 +351,7 @@ class IndexController extends AbstractActionController
         // lancement de la requête selon la catégorie de l'utilisateur
         $where = $criteres_obj->getWhereForEleves();
         try {
-            $result = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getScolaritesR(
+            $result = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
                 $where, [
                     'nom',
                     'prenom'
@@ -392,6 +383,10 @@ class IndexController extends AbstractActionController
 
     public function orgCircuitsAction()
     {
+        $this->flashMessenger()->addErrorMessage('Procédure ' . __METHOD__ . ' à écrire.');
+        return $this->redirect()->toRoute('login', [
+            'action' => 'home-page'
+        ]);
         try {
             $services = $this->db_manager->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
             $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');

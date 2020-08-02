@@ -9,7 +9,7 @@
  * @filesource org-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 2 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -54,7 +54,7 @@ $url_rapports = $this->url('sbmportail', [
     'action' => 'org-pdf',
     'page' => $this->page
 ]);
-$url_download=$this->url('sbmportail',
+$url_download = $this->url('sbmportail',
     [
         'action' => 'org-eleves-download',
         'page' => $this->page
@@ -99,87 +99,70 @@ $actions = [
 		<table class="eleves">
 			<tbody>
 				<tr>
-					<th>N° carte</th>
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th>Adresse</th>
 					<th>Responsables</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
-					<th>Circuits</th>
-					<th>Arrêts</th>
-					<th>État</th>
+					<th>Services</th>
+					<th>Abonnement</th>
 				</tr>
-        <?php foreach($eleves as $eleve): ?>
-        <?php
-            $r = [];
-            $circuits = [];
-            $arrets = [];
-            if ($eleve['responsable1']) {
-                $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable1']), ENT_QUOTES,
-                    'utf-8', false);
-                $circuitR1 = $eleve['service1R1'];
-                if ($eleve['service2R1']) {
-                    $circuitR1 .= '<br/>' . $eleve['service2R1'];
-                }
-                $arretR1 = $eleve['station1r1'];
-                if ($eleve['station2r1']) {
-                    $arretR1 .= '<br/>' . $eleve['station2r1'];
-                }
-                $circuits[] = $circuitR1;
-                $arrets[] = $arretR1;
-            }
-            if ($eleve['responsable2']) {
-                $r[] = htmlspecialchars(
-                    str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES,
-                    'utf-8', false);
-                $circuitR2 = $eleve['service1IdR2'];
-                if ($eleve['service2IdR2']) {
-                    $circuitR2 .= '<br/>' . $eleve['service2IdR2'];
-                }
-                $arretR2 = $eleve['station1r2'];
-                if ($eleve['station2r2']) {
-                    $arretR2 .= '<br/>' . $eleve['station2r2'];
-                }
-                $circuits[] = $circuitR2;
-                $arrets[] = $arretR2;
-            }
-            $nbResponsables = count($r);
-            $tr_css = $this->cycle([
-                "even",
-                "odd"
-            ])->next();
-            // adresses
-            $adresseR1 = implode('<br>',
-                array_filter(
-                    array_unique(
-                        [
-                            $eleve['adresseR1L1'],
-                            $eleve['adresseR1L2'],
-                            $eleve['lacommuneR1']
-                        ])));
-            $adresseR2 = implode('<br>',
-                array_filter(
-                    array_unique(
-                        [
-                            $eleve['adresseR2L1'],
-                            $eleve['adresseR2L2'],
-                            $eleve['lacommuneR2']
-                        ])));
-            if (! $eleve['inscrit']) {
-                $tr_css .= ' barre';
-            }
-            if ($eleve['paiementR1'] || $eleve['gratuit'] > 0) {
-                $message = 'Inscrit';
-            } else {
-                $message = 'Préinscrit';
-            }
-            ?>
-                <tr class="petit <?= $tr_css;?>">
-					<td class="numero align-right"
-						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?= $eleve['numero']; ?></td>
+				<?php foreach($eleves as $eleve): ?>
+				<?php
+        $r = [];
+        if ($eleve['responsable1NomPrenom']) {
+            $r[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        if ($eleve['responsable2NomPrenom']) {
+            $r[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        $nbResponsables = count($r);
+        $tr_css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        // adresses
+        $adresseR1 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseL1R1'],
+                        $eleve['adresseL2R1'],
+                        $eleve['adresseL3R1'],
+                        $eleve['lacommuneR1']
+                    ])));
+        $adresseR2 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseL1R2'],
+                        $eleve['adresseL2R2'],
+                        $eleve['adresseL3R2'],
+                        $eleve['lacommuneR2']
+                    ])));
+        $ga = (bool) $eleve['responsable2Id'];
+        $itinerairesR1 = sprintf(
+            $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1), '');
+        if ($ga) {
+            $itinerairesR2 = sprintf(
+                $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
+                '');
+        }
+        if (! $eleve['inscrit']) {
+            $tr_css .= ' barre';
+        }
+        if ($eleve['paiementR1'] || $eleve['gratuit'] == 1) {
+            $message = 'Payé';
+        } else {
+            $message = 'Impayé';
+        }
+        ?>
+        		<tr class="petit <?= $tr_css;?>">
 					<td class="nom"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['nom']); ?></td>
@@ -196,21 +179,20 @@ $actions = [
 					<td class="classe"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['classe']);?></td>
-					<td><?= $circuits[0];?></td>
-					<td><?= $arrets[0];?></td>
+					<td class="service"><?= $itinerairesR1;?></td>
 					<td class="centre"><?= $message;?></td>
 					<?php if ($nbResponsables == 2) :?>
 				</tr>
 				<tr class="petit <?= $tr_css;?>">
 					<td class="adresse"><?= $adresseR2; ?></td>
 					<td><?= $r[1]; ?></td>
-					<td><?= $circuits[1];?></td>
-					<td><?= $arrets[1];?></td>
+					<td><?= $itinerairesR2;?></td>
 					<?php endif;?>
-				</tr>
-        <?php endforeach;?>
+        		</tr>
+				<?php endforeach;?>
 			</tbody>
 		</table>
+		<p class="sbm-description"></p>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">

@@ -9,7 +9,7 @@
  * @filesource com-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
+ * @date 1 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -52,7 +52,7 @@ try {
     return; // fin du catch (affichage d'une page d'erreur)
 }
 $avant_fin_aout = '';
-$date_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago');
+$date_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify('15 days ago');
 if ((new \DateTime()) < $date_fin_aout) {
     $avant_fin_aout = 'invisible';
     $message_circuits = sprintf(
@@ -164,6 +164,13 @@ $actions = [
                         $eleve['adresseL3R2'],
                         $eleve['lacommuneR2']
                     ])));
+        $itinerairesR1 = sprintf(
+            $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1), '');
+        if ($ga) {
+            $itinerairesR2 = sprintf(
+                $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
+                '');
+        }
         if (! $eleve['inscrit']) {
             $tr_css .= ' barre';
         }
