@@ -5,7 +5,7 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
+ * @date 4 août 2020
  * @version 2020-2.6.0
  */
 
@@ -851,15 +851,16 @@ function affectation() {
 			dataType: 'json',
 			success: function(dataJson) {
 				$.each(dataJson.data, function(idx, obj){
-					var chkbx = ":checkbox[value="+obj.value+"]";
+					var chkbx = 'input[name="jours[]"][type=checkbox][value='+obj.value+']';
 					var prop1 = "attributes";
 					var prop2 = "onclick";		
-					$(chkbx).removeAttr(prop2);			
+					$(chkbx).removeAttr(prop2);		
+					$(chkbx).prop('checked', true);	
 					if (prop1 in obj) {
 						if (prop2 in obj[prop1]) {
 							$(chkbx).prop('checked', false);
 							$(chkbx).attr(prop2, obj[prop1][prop2]);
-						}
+						}			
 					} 
 				});
 			},
