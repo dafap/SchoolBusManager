@@ -8,7 +8,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2020
+ * @date 4 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -388,7 +388,6 @@ class ElevesResponsables extends AbstractQuery
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
         $select->where($where);
-        //die($this->getSqlString($select));
         return $select;
     }
 

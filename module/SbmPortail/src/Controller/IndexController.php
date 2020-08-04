@@ -260,18 +260,18 @@ class IndexController extends AbstractActionController
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        $where = $criteres_obj->getWhereForEleves();
+        $where = $criteres_obj->getWherePdfForEleves();
         $documentId = 'List élèves portail organisateur';
 
         $this->RenderPdfService->setParam('documentId', $documentId)
             ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
             ->setParam('where', $where)
-            ->setData(
+            /*->setData(
             $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')
                 ->withScolaritesR2($where, [
                 'nom',
                 'prenom'
-            ]))
+            ]))*/
             ->setEndOfScriptFunction(
             function () {
                 $this->flashMessenger()

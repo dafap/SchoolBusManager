@@ -7,7 +7,7 @@
  * @filesource CriteresOrg.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2020
+ * @date 4 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -185,7 +185,7 @@ class CriteresOrg extends SbmCommunCriteres
         if ($this->sanspreinscrits) {
             $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiementR1 = 1')->or->literal('gratuit > 0')->unnest();
+                ->literal('paiementR1 = 1')->or->literal('gratuit = 1')->unnest();
         } else {
             $where->literal('inscrit = 1');
         }
@@ -208,6 +208,10 @@ class CriteresOrg extends SbmCommunCriteres
         }
         if (! empty($this->data['classeId'])) {
             $where->equalTo('classeId', $this->data['classeId']);
+        }
+        if (! empty($this->data['communeId'])) {
+            $where->nest()->equalTo('communeR1Id', $this->data['communeId'])->or->equalTo(
+                'communeR2Id', $this->data['communeId'])->unnest();
         }
         return $where;
     }
