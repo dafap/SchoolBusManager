@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2020
+ * @date 4 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -18,6 +18,7 @@ use SbmCommun\Model\Traits\ExpressionSqlTrait;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\Predicate;
 
 class AffectationsServicesStations extends AbstractQuery
 {
@@ -1005,7 +1006,9 @@ class AffectationsServicesStations extends AbstractQuery
         $where = new Where();
         $where->equalTo('aff.millesime', $millesime ?: $this->millesime)
             ->equalTo('aff.eleveId', $eleveId)
-            ->equalTo('aff.trajet', $trajet);
+            ->equalTo('aff.trajet', $trajet)
+            ->lessThan('cir1.horaireD', 'cir2.horaireA', Predicate::TYPE_IDENTIFIER,
+            Predicate::TYPE_IDENTIFIER);
         $select = $this->sql->select()
             ->columns(
             [
@@ -1014,7 +1017,8 @@ class AffectationsServicesStations extends AbstractQuery
                 'correspondance',
                 'ligne1Id',
                 'jours' => new Expression($this->getSqlSemaine('aff.jours')),
-                'semaine' => new Expression($this->getSqlSemaine('cir1.semaine & cir2.semaine'))
+                'semaine' => new Expression(
+                    $this->getSqlSemaine('cir1.semaine & cir2.semaine'))
             ])
             ->from(
             [
@@ -1032,9 +1036,10 @@ class AffectationsServicesStations extends AbstractQuery
         ])
             ->join([
             'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], $this->jointureAffectationsCircuits(1, 'cir1'), [
-            'horaire1' => new Expression('TIME_FORMAT(cir1.horaireA,"%H:%i")')
-        ])
+        ], $this->jointureAffectationsCircuits(1, 'cir1'),
+            [
+                'horaire1' => new Expression('TIME_FORMAT(cir1.horaireA,"%H:%i")')
+            ])
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
         ], 'aff.station2Id = sta2.stationId', [
@@ -1047,9 +1052,10 @@ class AffectationsServicesStations extends AbstractQuery
         ])
             ->join([
             'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], $this->jointureAffectationsCircuits(1, 'cir2', 2), [
-            'horaire2' => new Expression('TIME_FORMAT(cir2.horaireA,"%H:%i")')
-        ])
+        ], $this->jointureAffectationsCircuits(1, 'cir2', 2),
+            [
+                'horaire2' => new Expression('TIME_FORMAT(cir2.horaireA,"%H:%i")')
+            ])
             ->where($where)
             ->order(
             [
