@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juil. 2020
+ * @date 5 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -193,20 +193,22 @@ class Liste extends AbstractQuery implements FactoryInterface
     {
         $where = new Where();
         $where->equalTo('sco.millesime', $millesime);
-
         $select = $this->sql->select()
             ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ],
-            'res.responsableId=ele.responsable1Id OR res.responsableId=ele.responsable2Id',
+            ->join([
+            'res' => $this->subSelectR1R2()
+        ], 'res.eleveId=ele.eleveId',
             [
                 'email',
-                'responsable' => new Literal(
-                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+                'responsable',
+                'responsable2',
+                'adresseL12',
+                'adresseL22',
+                'adresseL32',
+                'codePostal2',
+                'commune2'
             ])
             ->join([
             'comres' => $this->db_manager->getCanonicName('communes', 'table')
@@ -264,12 +266,54 @@ class Liste extends AbstractQuery implements FactoryInterface
             ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($this->arrayToWhere($where, $filtre));
-
         if (! empty($order)) {
             $select->order($order);
         }
         // die($this->getSqlString($select));
         return $select;
+    }
+
+    private function subSelectR1R2(): Select
+    {
+        $subcolumnseleves = [
+            'eleveId'
+        ];
+        $subtableeleves = [
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ];
+        return $this->sql->select()
+            ->columns($subcolumnseleves)
+            ->from($subtableeleves)
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'ele.responsable1Id = res.responsableId', $this->subColumnsResponsables(1))
+            ->join(
+            [
+                're2' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'ele.responsable2Id = re2.responsableId', $this->subColumnsResponsables(2),
+            Select::JOIN_LEFT)
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 're2.communeId = com.communeId', [
+            'commune2' => 'alias'
+        ], Select::JOIN_LEFT);
+    }
+
+    private function subColumnsResponsables(int $trajet): array
+    {
+        $second = $trajet == 1 ? '' : '2';
+        $subcolumnsresponsables = [
+            'email' . $second => 'email',
+            'responsable' . $second => new Literal(
+                'CONCAT(res.titre, " ", res.nom, " ", res.prenom)'),
+            'adresseL1' . $second => 'adresseL1',
+            'adresseL2' . $second => 'adresseL2',
+            'adresseL3' . $second => 'adresseL3',
+            'codePostal' . $second => 'codePostal',
+            'communeId' . $second => 'communeId'
+        ];
+        return $subcolumnsresponsables;
     }
 
     protected function selectGroupByScolariteResponsable(int $millesime,
@@ -287,6 +331,8 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'ele.eleveId=sco.eleveId',
             [
                 'inscrit',
+                'demandeR1',
+                'demandeR2',
                 'paiementR1',
                 'paiementR2',
                 'fa',
@@ -403,6 +449,8 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'e.eleveId=s.eleveId',
             [
                 'inscrit',
+                'demandeR1',
+                'demandeR2',
                 'paiementR1',
                 'paiementR2',
                 'fa',
@@ -425,11 +473,17 @@ class Liste extends AbstractQuery implements FactoryInterface
             'a' => $this->affectations($millesime)
         ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', [])
             ->join([
-            'r' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'r.responsableId=a.responsableId',
+            'r' => $this->subSelectR1R2()
+        ], 'r.eleveId=e.eleveId',
             [
                 'email',
-                'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
+                'responsable',
+                'responsable2',
+                'adresseL12',
+                'adresseL22',
+                'adresseL32',
+                'codePostal2',
+                'commune2'
             ])
             ->join([
             'c' => $this->db_manager->getCanonicName('communes', 'table')
@@ -479,6 +533,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(s.adresseL1, r.adresseL1)'),
                 'adresseL2' => new Literal(
                     'CASE WHEN s.adresseL1 IS NULL THEN r.adresseL2 ELSE s.adresseL2 END'),
@@ -555,14 +610,18 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'sensligne2',
                 'ordreligne2'
             ])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'res.responsableId=aff.responsableId',
+            ->join([
+            'res' => $this->subSelectR1R2()
+        ], 'res.eleveId=ele.eleveId',
             [
                 'email',
-                'responsable' => new Literal(
-                    'CONCAT(res.titre, " ", res.nom, " ", res.prenom)')
+                'responsable',
+                'responsable2',
+                'adresseL12',
+                'adresseL22',
+                'adresseL32',
+                'codePostal2',
+                'commune2'
             ])
             ->join([
             'comres' => $this->db_manager->getCanonicName('communes', 'table')

@@ -8,7 +8,7 @@
  * @filesource view/sbm-gestion/transport/etablissement-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juil. 2020
+ * @date 5 août 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -111,8 +111,7 @@ $data = $this->paginator->getCurrentItems();
 					<th>Commune</th>
 					<th>Etablissement</th>
 					<th>Classe</th>
-					<th>Circuits</th>
-					<th>Stations</th>
+					<th>Services</th>
 					<th></th>
 				</tr>
 			<?php
@@ -167,6 +166,15 @@ foreach ($data as $row) :
             ]));
     if ($row['ga']) {
         $rowspan = ' rowspan="2"';
+        $array_adresse2 = array_filter(
+            [
+                $row['adresseL12'],
+                $row['adresseL22'],
+                $row['adresseL32']
+            ]);
+        foreach ($array_adresse2 as &$ligne) {
+            $ligne = $this->escapeHtml($ligne);
+        }
         $itinerairesR2 = sprintf(
             $this->printItineraires($row['eleveId'], 2, $row['demandeR2'] == 1),
             $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
@@ -182,16 +190,21 @@ foreach ($data as $row) :
 					<td<?=$rowspan;?>><?= $this->pictogrammes();?></td>
 					<td<?=$rowspan;?>><?= $this->escapeHtml($row['nom']);?></td>
 					<td<?=$rowspan;?>><?= $this->escapeHtml($row['prenom']);?></td>
-					<td<?=$rowspan;?>><?= implode('<br>', $array_adresse);?></td>
-					<td<?=$rowspan;?>><?= $this->escapeHtml($row['codePostal']);?></td>
-					<td<?=$rowspan;?>><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= implode('<br>', $array_adresse);?></td>
+					<td><?= $this->escapeHtml($row['codePostal']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
 					<td<?=$rowspan;?>><?= $this->escapeHtml($row['etablissement']);?></td>
 					<td<?=$rowspan;?> class="centre"><?= $this->escapeHtml($row['classe']);?></td>
 					<td><?=$itinerairesR1;?></td>
 					<td<?=$rowspan;?>><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
 				</tr>
 				<?php if ($rowspan):?>
-				<tr class="petit <?= $this->cycle(["even","odd"]);?>"><td><?=$itinerairesR2;?></td></tr>
+				<tr class="petit <?= $this->cycle(["even","odd"]);?>">
+					<td><?= implode('<br>', $array_adresse2);?></td>
+					<td><?= $this->escapeHtml($row['codePostal2']);?></td>
+					<td><?= $this->escapeHtml($row['commune2']);?></td>
+					<td><?=$itinerairesR2;?></td>
+				</tr>
 				<?php endif;?>
                 <?php endforeach;?>
 			</tbody>
