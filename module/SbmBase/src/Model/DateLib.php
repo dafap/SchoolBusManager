@@ -7,7 +7,7 @@
  * @filesource DateLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 avr. 2020
+ * @date 5 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmBase\Model;
@@ -207,10 +207,14 @@ class DateLib
         return $nom_jour_fr[$num_jour] . ' ' . $jour . ' ' . $mois_fr[$mois] . ' ' . $annee;
     }
 
-    public static function formatHoraire(string $t)
+    public static function formatHoraire(string $t = null)
     {
-        $h = DateTime::createFromFormat('H:i:s', $t);
-        return $h->format('H:i');
+        if ($t) {
+            $h = DateTime::createFromFormat('H:i:s', $t);
+            return $h->format('H:i');
+        } else {
+            return '';
+        }
     }
 
     public static function datePlus1Mois()
