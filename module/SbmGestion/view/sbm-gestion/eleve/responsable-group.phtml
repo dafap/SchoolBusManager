@@ -8,7 +8,7 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
+ * @date 6 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -43,12 +43,6 @@ $url_duplicata = $this->url('sbmgestion/gestioneleve',
 $url_edit = $this->url('sbmgestion/eleve',
     [
         'action' => 'eleve-edit',
-        'page' => $this->page
-    ]);
-
-$url_reprendre = $this->url('sbmgestion/eleve',
-    [
-        'action' => 'eleve-en-attente',
         'page' => $this->page
     ]);
 $url_raye = $this->url('sbmgestion/eleve',
@@ -102,7 +96,6 @@ $actions = [
         'title' => 'Ajouter'
     ]
 ];
-// die(var_dump($this->responsable));
 if (! empty($email)) {
     $actions['ecrire'] = [
         'class' => 'fam-email',
@@ -147,50 +140,83 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
 	<div id="liste-inner">
 	<?php foreach ($this->data['eleves'] as $key => $liste) : ?>
 		<?php if ($liste->count()) : ?>
-			<?php
-
-        switch ($key) :
+		<?php
+        switch ($key) {
             case 'resp1':
                 ?>
-			          <h3>Liste des élèves ayant <?=$personne;?> pour responsable
-			1</h3>
+			    <h3>Liste des élèves ayant <?=$personne;?> pour responsable 1</h3>
 			    <?php
                 break;
             case 'resp2':
                 ?>
-                      <h3>Liste des élèves ayant <?=$personne;?> pour
-			responsable 2</h3>
+                <h3>Liste des élèves ayant <?=$personne;?> pour responsable 2</h3>
 			    <?php
                 break;
             case 'fact':
                 ?>
-                      <h3>Liste des élèves ayant <?=$personne;?> pour
-			responsable financier</h3>
+                <h3>Liste des élèves ayant <?=$personne;?> pour responsable financier</h3>
 			    <?php
                 break;
-        endswitch
-        ;
+        }
         ?>
 			    <p>Il y a <?= $liste->count(); ?> élève<?= $liste->count() > 1 ? 's' : ''; ?>.</p>
 		<table class="libelles">
 			<tbody>
-				<tr>
+				<tr class="petit">
 					<th></th>
 					<th>Nom</th>
 					<th>Prénom</th>
 					<th class="centre">Inscrit<br>en
 					</th>
-					<th>Etablissement scolaire</th>
+					<th>Garde alternée</th>
+					<th>Établissement scolaire</th>
 					<th>Classe</th>
 					<th>Tarif</th>
 					<th>Services</th>
-					<th>Garde alternée</th>
 					<th class="centre">Réinscription<br>prévue
 					</th>
 					<th></th>
 				</tr>
-			    <?php foreach ($liste as $row) : ?>
-			    <?php
+			<?php foreach ($liste as $row) : ?>
+			<?php
+            switch ($key) {
+                case 'resp1':
+                    $tarif = $row['grilleTarifR1'] . ' ' .
+                        $this->reductionTarif($row['reductionR1']);
+                    $itineraires = sprintf(
+                        $this->printItineraires($row['eleveId'], 1, $row['demandeR1'] == 1),
+                        $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
+                            [
+                                'data-trajet' => 1,
+                                'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                            ]));
+                    $autreResp = $this->data['fnc_ga']($row['responsable2Id']);
+                    break;
+                case 'resp2':
+                    $tarif = $row['grilleTarifR2'] . ' ' .
+                        $this->reductionTarif($row['reductionR2'], 2);
+                    $itineraires = sprintf(
+                        $this->printItineraires($row['eleveId'], 2, $row['demandeR2'] == 1),
+                        $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
+                            [
+                                'data-trajet' => 2,
+                                'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                            ]));
+                    $autreResp = $this->data['fnc_ga']($row['responsable1Id']);
+                    break;
+                default:
+                    $tarif = $row['grilleTarifR1'] . ' ' .
+                        $this->reductionTarif($row['reductionR1']);
+                    $itineraires = sprintf(
+                        $this->printItineraires($row['eleveId'], 1, $row['demandeR1'] == 1),
+                        $this->renderCheckbox('demande', 'traite', $row['eleveId'], 0,
+                            [
+                                'data-trajet' => 1,
+                                'title' => 'Cochez pour marquer la fiche `traitée` si les itinéraires sont bons'
+                            ]));
+                    $autreResp = $this->data['fnc_ga']($row['responsable2Id']);
+                    break;
+            }
             $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
             if (array_key_exists('mailchimp', $row)) {
@@ -238,17 +264,8 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                 $this->pictogrammes('init')
                     ->addPreinscrit($row['inscrit'] == 1 && ! $inscrit)
                     ->addSansPhoto($row['sansphoto'])
-                    ->addEnAttente($row['enAttente'])
                     ->addSansCarte($row['dateCarteR1'] < $this->dateDebut);
-                if ($row['enAttente']) {
-                    unset($buttons['majNotification'], $buttons['addphoto'],
-                        $buttons['duplicata']);
-                    $buttons['modifier'] = [
-                        'class' => 'fam-pencil-add',
-                        'formaction' => $url_reprendre,
-                        'title' => 'Reprendre cet enfant mis en attente'
-                    ];
-                } elseif ($inscrit || $row['appelNotifieOk']) {
+                if ($inscrit || $row['appelNotifieOk']) {
                     unset($buttons['majNotification']);
                 }
                 $tr_css = 'noir';
@@ -278,19 +295,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                 'responsableId' => $this->responsableId,
                 'eleveId' => $row['eleveId']
             ];
-            $services = [];
-            foreach ($this->data['fnc_affectations']($row['eleveId']) as $affectation) {
-
-                $services[$this->designationService($affectation, 1)] = $this->designationService(
-                    $affectation, 1);
-                if (! empty($affectation['ligne2Id'])) {
-                    $services[$this->designationService($affectation, 2)] = $this->designationService(
-                        $affectation, 2);
-                }
-            }
-            if ($row['enAttente']) {
-                $reinscription = 'En attente';
-            } elseif ($nePasRelancer) {
+            if ($nePasRelancer) {
                 $url_change_reinscription = $this->url('sbmgestion/eleve',
                     [
                         'action' => 'eleve-reinscription-oui',
@@ -325,11 +330,11 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
 					<td colspan="5">Non inscrit</td>
 				<?php else : ?>
 					<td><?= $row['millesime']?></td>
+					<td><?= $autreResp;?></td>
 					<td><?= $row['etablissement'];?> - <?= $row['lacommuneEtablissement'];?></td>
 					<td class="centre"><?= $row['classe'];?></td>
-					<td><?= $row['grilleTarifR1'];?> <?= $this->reductionTarif($row['reductionR1']);?></td>
-					<td><?= implode(' / ', $services);?></td>
-					<td><?= $this->data['fnc_ga']($key == 'resp1' ? $row['responsable2Id'] : $row['responsable1Id']);?></td>
+					<td><?= $tarif;?></td>
+					<td><?= $itineraires;?></td>
 				<?php endif;?>
 					<td class="centre"><?= $reinscription; ?></td>
 					<td><?= $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>

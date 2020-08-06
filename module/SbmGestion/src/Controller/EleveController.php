@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
+ * @date 6 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1998,11 +1998,6 @@ class EleveController extends AbstractActionController
         $data['eleves']['resp1'] = $tableEleves->duResponsable1($responsableId);
         $data['eleves']['resp2'] = $tableEleves->duResponsable2($responsableId);
         $data['eleves']['fact'] = $tableEleves->duResponsableFinancier($responsableId);
-        $data['fnc_affectations'] = function ($eleveId) use ($controller, $responsableId) {
-            return $controller->db_manager->get(
-                'Sbm\Db\Query\AffectationsServicesStations')->getServices($eleveId,
-                $responsableId);
-        };
         $data['fnc_ga'] = function ($responsableId) use ($controller) {
             if (is_null($responsableId)) {
                 return '';

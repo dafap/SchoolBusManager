@@ -37,7 +37,7 @@ class Itineraires extends AbstractHelper implements FactoryInterface
      * @var string
      */
     const TD = '
-	<td class="first semaine">%s</td>
+	<td class="first semaine" style="white-space: nowrap;">%s</td>
 	<td class="next second moment">%s</td>
 	<td class="next third ligne">%s</td>
 	<td class="next fourth station" title="%s">%s</td>
