@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -261,17 +261,12 @@ class IndexController extends AbstractActionController
             $criteres_obj->exchangeArray($criteres);
         }
         $where = $criteres_obj->getWherePdfForEleves();
-        $documentId = 'List élèves portail organisateur';
-
-        $this->RenderPdfService->setParam('documentId', $documentId)
+        $this->RenderPdfService->setParam('documentId',
+            $this->getRequest()
+                ->getPost('documentId'))
+            ->setParam('docaffectationId', $this->params('id', false))
             ->setParam('layout', 'sbm-pdf/layout/org-pdf.phtml')
             ->setParam('where', $where)
-            /*->setData(
-            $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')
-                ->withScolaritesR2($where, [
-                'nom',
-                'prenom'
-            ]))*/
             ->setEndOfScriptFunction(
             function () {
                 $this->flashMessenger()

@@ -9,7 +9,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 use SbmPortail\Controller;
@@ -40,7 +40,7 @@ return [
             'sbmportail' => [
                 'type' => 'segment',
                 'options' => [
-                    'route' => '/portail[/:action[/:page][/:id]]',
+                    'route' => '/portail[/:action[/:page][/:id][/id/:id]]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'page' => '[0-9]+',
