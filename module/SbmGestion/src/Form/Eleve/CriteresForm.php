@@ -7,7 +7,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -143,8 +143,8 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                         'inscription' => [
                             'label' => 'état de l\'inscription',
                             'options' => [
-                                '1' => 'Incrits',
-                                '2' => 'Préinscrits'
+                                '1' => 'Payés',
+                                '2' => 'Impayés'
                             ]
                         ],
                         'fiche' => [

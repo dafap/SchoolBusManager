@@ -15,7 +15,7 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mars 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\View\Helper;
@@ -63,7 +63,7 @@ class Pictogrammes extends AbstractHelper
     public function addPreinscrit($preinscrit)
     {
         if ($preinscrit) {
-            $this->pictogrammes[] = '<i class="fam-tag-orange" title="Préinscrit"></i>';
+            $this->pictogrammes[] = '<i class="fam-tag-orange" title="Impayé"></i>';
         }
         return $this;
     }

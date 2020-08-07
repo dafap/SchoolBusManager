@@ -13,7 +13,7 @@
  * @filesource org-pdf.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -120,9 +120,9 @@ table.eleves td.centre {
                 $tr_css .= ' barre';
             }
             if ($eleve['paiementR1'] || $eleve['gratuit'] > 0) {
-                $message = 'Inscrit';
+                $message = 'Payé';
             } else {
-                $message = 'Préinscrit';
+                $message = 'Impayé';
             }
             ?>
         <tr class="<?= $tr_css;?>">
