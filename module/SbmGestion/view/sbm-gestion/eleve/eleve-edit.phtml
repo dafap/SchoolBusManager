@@ -8,7 +8,7 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -196,7 +196,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
             echo '<span class="orange gras">Impayé</span>';
             break;
         default:
-            $this->data['etat'];
+            echo $this->data['etat'];
             break;
     }
     ?>
