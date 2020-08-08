@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
+ * @date 7 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -96,7 +96,10 @@ class TransportController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
-                    $args['where']),
+                    $args['where'], [
+                        'horaireD',
+                        'horaireA'
+                    ]),
                 'effectifCircuits' => $effectifCircuits,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
