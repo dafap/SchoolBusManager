@@ -10,7 +10,7 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
+ * @date 8 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -127,6 +127,7 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'c.moment',
                 'c.ordre',
                 'c.horaireD',
+                'c.horaireA',
                 'passage'
             ]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
