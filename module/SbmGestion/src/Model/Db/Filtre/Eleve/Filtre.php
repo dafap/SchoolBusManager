@@ -39,12 +39,16 @@ abstract class Filtre
      * @param bool $inscrit
      *            si true alors ne renvoie que les élèves inscrits sinon renvoie aussi les
      *            préinscrits
+     * @param bool $montee
+     *            par défaut (true) filtre les élèves qui montent (station1Id), sinon
+     *            (false) ceux qui descendent
      * @throws \SbmGestion\Model\Db\Service\Exception
      *
      * @return array : tableau structuré pour la méthode
      *         \SbmGestion\Model\Db\Service\Eleve\Liste::arrayToWhere()
      */
-    public static function byCircuit($args, $stationId = null, $inscrit = false)
+    public static function byCircuit($args, $stationId = null, $inscrit = false,
+        $montee = true)
     {
         if (is_array($args)) {
             if (array_key_exists('ligneId', $args) && array_key_exists('sens', $args) &&
@@ -79,55 +83,55 @@ abstract class Filtre
             throw new Exception(__METHOD__ . ' : Premier paramètre de type incorrect.');
         }
         if ($inscrit) {
-            return [
-                'inscrit' => 1,
-                [
-                    'paiementR1' => 1,
-                    'or',
-                    '>' => [
-                        'gratuit',
-                        0
-                    ]
-                ],
-                [
+            if ($montee) {
+                return [
+                    'inscrit' => 1,
                     [
-                        'ligne1Id' => $ligneId,
-                        'sensligne1' => $sens,
-                        'moment' => $moment,
-                        'ordreligne1' => $ordre,
-                        'station1Id' => $stationId
+                        'paiementR1' => 1,
+                        'or',
+                        'gratuit' => 1
                     ],
-                    'or',
+                    'ligne1Id' => $ligneId,
+                    'sensligne1' => $sens,
+                    'moment' => $moment,
+                    'ordreligne1' => $ordre,
+                    'station1Id' => $stationId
+                ];
+            } else {
+                return [
+                    'inscrit' => 1,
                     [
-                        'ligne2Id' => $ligneId,
-                        'sensligne2' => $sens,
-                        'moment' => $moment,
-                        'ordreligne2' => $ordre,
-                        'station2Id' => $stationId
-                    ]
-                ]
-            ];
+                        'paiementR1' => 1,
+                        'or',
+                        'gratuit' => 1
+                    ],
+                    'ligne1Id' => $ligneId,
+                    'sensligne1' => $sens,
+                    'moment' => $moment,
+                    'ordreligne1' => $ordre,
+                    'station2Id' => $stationId
+                ];
+            }
         } else {
-            return [
-                'inscrit' => 1,
-                [
-                    [
-                        'ligne1Id' => $ligneId,
-                        'sensligne1' => $sens,
-                        'moment' => $moment,
-                        'ordreligne1' => $ordre,
-                        'station1Id' => $stationId
-                    ],
-                    'or',
-                    [
-                        'ligne2Id' => $ligneId,
-                        'sensligne2' => $sens,
-                        'moment' => $moment,
-                        'ordreligne2' => $ordre,
-                        'station2Id' => $stationId
-                    ]
-                ]
-            ];
+            if ($montee) {
+                return [
+                    'inscrit' => 1,
+                    'ligne1Id' => $ligneId,
+                    'sensligne1' => $sens,
+                    'moment' => $moment,
+                    'ordreligne1' => $ordre,
+                    'station1Id' => $stationId
+                ];
+            } else {
+                return [
+                    'inscrit' => 1,
+                    'ligne1Id' => $ligneId,
+                    'sensligne1' => $sens,
+                    'moment' => $moment,
+                    'ordreligne1' => $ordre,
+                    'station2Id' => $stationId
+                ];
+            }
         }
     }
 
