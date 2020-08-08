@@ -9,7 +9,7 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 8 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -94,10 +94,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 [
                     'paiementR1' => 1,
                     'or',
-                    '>' => [
-                        'gratuit',
-                        0
-                    ]
+                    'gratuit' => 1
                 ]
             ];
         } else {
@@ -116,10 +113,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 [
                     'paiementR1' => 1,
                     'or',
-                    '>' => [
-                        'gratuit',
-                        0
-                    ]
+                    'gratuit' => 1
                 ],
                 'correspondance' => 1,
                 [
@@ -178,6 +172,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
         return sprintf(
             implode(' AND ',
                 [
+                    'a.millesime = ser.millesime',
                     'a.ligne%1$dId = ser.ligneId',
                     'a.sensligne%1$d = ser.sens',
                     'a.moment = ser.moment',

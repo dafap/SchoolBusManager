@@ -31,6 +31,19 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
 {
     use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait;
 
+    private $sanspreinscrits = false;
+
+    /**
+     * Appeler cette méthode avant la méthode init()
+     *
+     * @param bool $sp
+     */
+    public function setSanspreinscrits(bool $sp)
+    {
+        $this->sanspreinscrits = $sp;
+        return $this;
+    }
+
     public function init(Where $where)
     {
         $this->structure = [];
@@ -117,9 +130,8 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
             [
                 'descente' => new Literal('IFNULL(a2.effectif,0)')
             ], Select::JOIN_LEFT)
-            ->
-        // ->where($conditions)
-        order(
+            ->where($conditions)
+            ->order(
             [
                 'c.millesime',
                 'c.ligneId',
@@ -164,7 +176,7 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
     private function subselect(int $md): Select
     {
         $stationId = sprintf('station%dId', $md);
-        return $this->sql->select()
+        $select = $this->sql->select()
             ->columns(
             [
                 'millesime',
@@ -173,9 +185,11 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'moment',
                 'ordreligne1',
                 $stationId,
-                'effectif' => new Literal('count(eleveId)')
+                'effectif' => new Literal('count(aff.eleveId)')
             ])
-            ->from($this->db_manager->getCanonicName('affectations'))
+            ->from([
+            'aff' => $this->db_manager->getCanonicName('affectations')
+        ])
             ->group(
             [
                 'millesime',
@@ -185,5 +199,21 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'ordreligne1',
                 $stationId
             ]);
+        if ($this->sanspreinscrits) {
+            $condition = new Where();
+            $condition->nest()
+                ->literal('aff.trajet = 1')
+                ->literal('sco.paiementR1 = 1')
+                ->unnest()->or->nest()
+                ->literal('aff.trajet = 2')
+                ->literal('sco.reductionR2 = 0')
+                ->literal('sco.paiementR2 = 1')
+                ->unnest();
+            $select->join([
+                'sco' => $this->db_manager->getCanonicName('scolarites')
+            ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
+                ->where($condition);
+        }
+        return $select;
     }
 }

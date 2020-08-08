@@ -10,7 +10,7 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 août 2020
+ * @date 8 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -585,14 +585,25 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'sco.etablissementId = eta.etablissementId', [
-                'etablissement' => 'nom'
-            ])
+            ], 'sco.etablissementId = eta.etablissementId', [])
+            ->join([
+            'etacom' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'eta.communeId = etacom.communeId', [])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ])
+            ->join([
+            'ori1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sco.stationIdR1 = ori1.stationId', [
+            'origine1' => 'nom'
+        ])
+            ->join([
+            'ori2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sco.stationIdR2 = ori2.stationId', [
+            'origine2' => 'nom'
+        ], Select::JOIN_LEFT)
             ->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
@@ -650,7 +661,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'adresseL3' => new Literal(
                     'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE "" END'),
                 'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
-                'commune' => new Literal('IFNULL(comsco.alias, comres.alias)')
+                'commune' => new Literal('IFNULL(comsco.alias, comres.alias)'),
+                'etablissement' => new Literal('CONCAT_WS(" ", eta.nom, LEFT(replace(replace(replace(etacom.alias,"NOTRE DAME", "ND"),"SAINT","ST")," SUR ","/"),12))')
             ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($this->arrayToWhere($where, $filtre));

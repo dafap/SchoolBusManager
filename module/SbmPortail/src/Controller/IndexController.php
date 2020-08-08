@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2020
+ * @date 8 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -877,6 +877,7 @@ class IndexController extends AbstractActionController
                 $transporteurId)->nom;
             $services = $this->db_manager->get('Sbm\Db\Table\Services')->fetchAll(
                 [
+                    'millesime' => session::get('millesime'),
                     'transporteurId' => $transporteurId
                 ]);
             $effectifTransporteurs = $this->db_manager->get(
@@ -1117,7 +1118,7 @@ class IndexController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             $args = Session::get('post', false, $this->getSessionNamespace());
-            if ($args === false || ! array_key_exists('serviceId', $args)) {
+            if ($args === false || ! array_key_exists('ligneId', $args)) {
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
                 ]);
@@ -1128,23 +1129,37 @@ class IndexController extends AbstractActionController
                 Session::set('post', $args, $this->getSessionNamespace());
             }
         }
-        $serviceId = $args['serviceId'];
+        $arrayServiceId = [
+            'ligneId' => ($ligneId = $args['ligneId']),
+            'sens' => ($sens = $args['sens']),
+            'moment' => ($moment = $args['moment']),
+            'ordre' => ($ordre = $args['ordre'])
+        ];
         $where = new Where();
-        $where->equalTo('millesime', Session::get('millesime'))->equalTo('serviceId',
-            $serviceId);
+        $where->equalTo('c.millesime', Session::get('millesime'))
+            ->equalTo('c.ligneId', $ligneId)
+            ->equalTo('c.sens', $sens)
+            ->equalTo('c.moment', $moment)
+            ->equalTo('c.ordre', $ordre);
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
-        $effectifCircuits->init(true);
+        $effectifCircuits->setSanspreinscrits($this->transporteur_sanspreinscrits)->init(
+            $where, true);
+        // pour la liste
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->equalTo('ligneId', $ligneId)
+            ->equalTo('sens', $sens)
+            ->equalTo('moment', $moment)
+            ->equalTo('ordre', $ordre);
         return new ViewModel(
             [
                 'service' => $this->db_manager->get('Sbm\Db\Table\Services')->getRecord(
-                    $serviceId),
+                    $arrayServiceId),
                 'effectifCircuits' => $effectifCircuits,
-                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
-                    $where, [
-                        'm1'
+                'data' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->fetchAll($where,
+                    [
+                        'horaireA'
                     ]),
-                'count_per_page' => $this->getPaginatorCountPerPage('nb_circuits', 10),
-                'page' => $this->params('page', 1),
                 'origine' => StdLib::getParam('origine', $args)
             ]);
     }
@@ -1170,17 +1185,34 @@ class IndexController extends AbstractActionController
         }
         $circuitId = $args['circuitId'];
         $circuit = $this->db_manager->get('Sbm\Db\Vue\Circuits')->getRecord($circuitId);
+        $arrayServiceId = [
+            'ligneId' => $circuit->ligneId,
+            'sens' => $circuit->sens,
+            'moment' => $circuit->moment,
+            'ordre' => $circuit->ordre
+        ];
         return new ViewModel(
             [
-                'data' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
-                    Session::get('millesime'),
-                    FiltreEleve::byCircuit($circuit->serviceId, $circuit->stationId),
-                    [
-                        'nom',
-                        'prenom'
-                    ]),
+                'data' => [
+                    'montee' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
+                        Session::get('millesime'),
+                        FiltreEleve::byCircuit($arrayServiceId, $circuit->stationId,
+                            $this->transporteur_sanspreinscrits, true),
+                        [
+                            'nom',
+                            'prenom'
+                        ], 'service'),
+                    'descente' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->queryGroup(
+                        Session::get('millesime'),
+                        FiltreEleve::byCircuit($arrayServiceId, $circuit->stationId,
+                            $this->transporteur_sanspreinscrits, false),
+                        [
+                            'nom',
+                            'prenom'
+                        ], 'service')
+                ],
                 'circuit' => $circuit,
-                'serviceId' => $args['serviceId'],
+                // 'serviceId' => $args['serviceId'],
                 'page' => $this->params('page', 1)
             ]);
     }

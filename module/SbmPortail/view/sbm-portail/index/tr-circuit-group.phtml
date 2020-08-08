@@ -7,8 +7,8 @@
  * @filesource tr-circuit-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 8 août 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmportail',
@@ -18,7 +18,10 @@ $url_retour = $this->url('sbmportail',
     ]);
 $hiddens = [
     'circuitId' => $this->circuit->circuitId,
-    'serviceId' => $this->serviceId
+    'ligneId' => $this->circuit->ligneId,
+    'sens' => $this->circuit->sens,
+    'moment' => $this->circuit->moment,
+    'ordre' => $this->circuit->ordre
 ];
 $actions = [
     'retour' => [
@@ -27,52 +30,78 @@ $actions = [
         'title' => 'Retour'
     ]
 ];
+$count_montee = $this->data['montee']->count();
+$pluriel_montee = $count_montee > 1 ? 'élèves qui montent' : 'élève qui monte';
+$count_descente = $this->data['descente']->count();
+$pluriel_descente = $count_descente > 1 ? 'élèves qui descendent' : 'élève qui descend';
+;
+$bilan = '<em>Il y a %d %s et %d %s.</em>';
 ?>
 <h1>Groupe des élèves inscrits sur un point d'arrêt d'un circuit</h1>
 <div id="liste-wrapper">
 	<div id="liste-title">
 		<ul>
-			<li>Circuit : <?= $this->escapeHtml($this->circuit->serviceId); ?></li>
+			<li>Circuit : <?= $this->circuit->designationService(); ?></li>
 			<li>Arrêt : <?= $this->escapeHtml($this->circuit->station);?> -
 				<?= $this->escapeHtml($this->circuit->communeStation);?></li>
 			<li>Emplacement : <?= $this->escapeHtml($this->circuit->emplacement); ?></li>
-			<li>Commentaire aller : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
-			<li>Commentaire retour : <?= $this->escapeHtml($this->circuit->commentaire2); ?></li>
+			<li>Commentaire : <?= $this->escapeHtml($this->circuit->commentaire1); ?></li>
 		</ul>
 	</div>
 	<div id="liste-header">
 		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
 		<p>
-			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
+			<?= str_replace(' 0 ', ' aucun ', sprintf($bilan, $count_descente, $pluriel_descente, $count_montee, $pluriel_montee));?>
 		</p>
 	</div>
 	<div id="liste-inner">
-		<table class="eleves">
-			<tbody>
-				<tr>
-					<th>Nom</th>
-					<th>Prénom</th>
-					<th>Adresse</th>
-					<th>Adresse</th>
-					<th>Code postal</th>
-					<th>Commune</th>
-					<th>Etablissement</th>
-					<th>Classe</th>
-				</tr>
-				<?php foreach ($this->data as $row) :?>
+	<?php foreach(['descendent'=>'descente','montent' => 'montee'] as $label => $sens):?>
+	    <?php if ($this->data[$sens]->count()):?>
+	    <h3>Élèves qui <?= $label;?></h3>
+		<div id="liste-<?=$sens;?>">
+			<table class="eleves">
+				<tbody>
+					<tr>
+						<th>Nom</th>
+						<th>Prénom</th>
+						<th>Adresse</th>
+						<th>Commune</th>
+						<th>Etablissement</th>
+						<th>Classe</th>
+						<th>Origine</th>
+					</tr>
+				<?php foreach ($this->data[$sens] as $row) :?>
+				<?php
+				if ($row['trajet'] == 1) {
+				    $adresse = implode(' / ',array_filter([$row['adresseL1'], $row['adresseL2']]));
+				    $commune = $row['commune'];
+				    $origine = $row['origine1'];
+				} else {
+				    $adresse = implode(' ; ',array_filter([$row['adresseL12'], $row['adresseL22']]));
+				    $commune = $row['commune2'];
+				    $origine = $row['origine2'];
+				}
+				?>
     			<tr class="<?= $this->cycle(["even","odd"])->next()?>">
-    				<?php foreach ($row as $item) :?>
-        			<td><?= $item;?></td>
-    				<?php endforeach;?>
+    				<td><?=$row['nom'];?></td>
+    				<td><?=$row['prenom'];?></td>
+    				<td><?=$adresse;?></td>
+    				<td><?=$commune;?>
+    				<td><?=$row['etablissement'];?></td>
+    				<td><?=$row['classe'];?></td>
+    				<td><?=$origine;?></td>
     			</tr>
 				<?php endforeach;?>
 
 			</tbody>
-		</table>
+			</table>
+		</div>
+	    <?php endif;?>
+	<?php endforeach;?>
 	</div>
 	<div id="liste-footer">
 		<p>
-			<em>Il y a <?= $this->data->count(); ?> élèves.</em>
+			<?= sprintf($bilan, $count_descente, $pluriel_descente, $count_montee, $pluriel_montee);?>
 		</p>
 	</div>
 </div>

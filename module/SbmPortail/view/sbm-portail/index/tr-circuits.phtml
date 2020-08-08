@@ -7,14 +7,14 @@
  * @filesource tr-circuits.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 8 août 2020
+ * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
-$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
-$this->paginator->setCurrentPageNumber($this->page);
-$circuits = $this->paginator->getCurrentItems();
+// $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+// $this->paginator->setCurrentPageNumber($this->page);
+$circuits = $this->data; // ->paginator->getCurrentItems();
 
 $url_group = $this->url('sbmportail',
     [
@@ -34,8 +34,7 @@ $actions = [
     ]
 ];
 ?>
-<h1>Détail du circuit <?=$this->escapeHtml($this->service->serviceId);?> -
-	<?=$this->escapeHtml($this->service->nom);?></h1>
+<h1>Détail du circuit <?=$this->escapeHtml($this->service->designation());?></h1>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left">
@@ -57,14 +56,15 @@ $actions = [
 					<th>Commune</th>
 					<th>Emplacement</th>
 					<th colspan="2">Commentaire</th>
-					<th class="horaire">Matin</th>
-					<th class="horaire">Soir</th>
-					<th class="horaire">Mercredi</th>
-					<th class="nbinscrits">Inscrits</th>
+					<th class="horaire">Arrivée</th>
+					<th class="horaire">Départ</th>
+					<th class="nbinscrits">Montée</th>
+					<th class="nbinscrits">Descente</th>
+					<th class="nbinscrits">Effectif</th>
 					<th></th>
 				</tr>
             <?php
-
+            $effectif = 0;
             foreach ($circuits as $circuit) :
                 ?>
             	<?php
@@ -72,10 +72,18 @@ $actions = [
                     $nbInscrits = $this->effectifCircuits->transportes(
                         $circuit->circuitId);
                 } else {
-                    $nbInscrits = 0;
+                    $nbInscrits = [
+                        'montee' => 0,
+                        'descente' => 0
+                    ];
                 }
+                $effectif += $nbInscrits['montee'] - $nbInscrits['descente'];
+                // echo '<pre>';var_dump($nbInscrits, $effectif);echo '</pre>';
                 $hiddens = [
-                    'serviceId' => $circuit->serviceId,
+                    'ligneId' => $circuit->ligneId,
+                    'sens' => $circuit->sens,
+                    'moment' => $circuit->moment,
+                    'ordre' => $circuit->ordre,
                     'circuitId' => $circuit->circuitId
                 ];
                 $buttons = [
@@ -83,7 +91,7 @@ $actions = [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
                         'title' => sprintf('élèves du circuit %s à l\'arrêt %s',
-                            $circuit->serviceId, $circuit->station)
+                            $circuit->designationService(), $circuit->station)
                     ]
                 ];
                 ?>
@@ -98,25 +106,23 @@ $actions = [
 						<?=$this->escapeHtml($circuit->commentaire1);?></td>
 					<td class="commentaire2">
 						<?=$this->escapeHtml($circuit->commentaire2);?></td>
-					<td class="horaire"><?=$circuit->m1;?></td>
-					<td class="horaire"><?=$circuit->s1;?></td>
-					<td class="horaire"><?=$circuit->s2;?></td>
-					<td class="nbinscrits"><?=$nbInscrits;?></td>
+					<td class="horaire"><?=$circuit->horaireA;?></td>
+					<td class="horaire"><?=$circuit->horaireD;?></td>
+					<td class="nbinscrits"><?=$nbInscrits['montee'];?></td>
+					<td class="nbinscrits"><?=$nbInscrits['descente'];?></td>
+					<td class="nbinscrits"><?=$effectif;?></td>
 					<td class="boutons">
              			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?>
 				</td>
 				</tr>
-            <?php
-            endforeach
-            ;
-            ?>
+            <?php endforeach;?>
             </tbody>
 		</table>
 
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">
-			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
+			<?php //=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
 		</div>
 	</div>
 </div>

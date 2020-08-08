@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2020
+ * @date 8 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -92,7 +92,13 @@ class TransportController extends AbstractActionController
         }
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
-        $effectifCircuits->init($args['where']);
+        $where = new Where();
+        $where->equalTo('c.millesime', Session::get('millesime'))
+            ->equalTo('c.ligneId', $args['post']['ligneId'])
+            ->equalTo('c.sens', $args['post']['sens'])
+            ->equalTo('c.moment', $args['post']['moment'])
+            ->equalTo('c.ordre', $args['post']['ordre']);
+        $effectifCircuits->setSanspreinscrits(false)->init($where);
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
