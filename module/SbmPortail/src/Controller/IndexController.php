@@ -13,11 +13,12 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
+ * @date 9 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -26,7 +27,7 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController
+class IndexController extends AbstractActionController implements CategoriesInterface
 {
     use \SbmCommun\Model\Traits\DebugTrait;
 
@@ -62,26 +63,26 @@ class IndexController extends AbstractActionController
         // pour le moment, j'utilise la même entrée pour tous les rôles.
         // Le filtre programmé va limiter la vue aux données concernant l'utilisateur
         switch ($auth->getCategorieId()) {
-            case 110:
+            case self::TRANSPORTEUR_ID:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
                 ]);
                 break;
-            case 120:
+            case self::ETABLISSEMENT_ID:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'et-index'
                 ]);
                 break;
-            case 130:
+            case self::COMMUNE_ID:
                 return $this->redirect()->toRoute('sbmportail',
                     [
                         'action' => 'com-index'
                     ]);
                 break;
-            case 200:
-            case 253:
-            case 254:
-            case 255:
+            case self::SECRETARIAT_ID:
+            case self::GESTION_ID:
+            case self::ADMINISTRATEUR_ID:
+            case self::SUPER_ADMINISTRATEUR_ID:
                 return $this->redirect()->toRoute('sbmportail',
                     [
                         'action' => 'org-index'
@@ -154,7 +155,7 @@ class IndexController extends AbstractActionController
     public function orgElevesAction()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -226,8 +227,6 @@ class IndexController extends AbstractActionController
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
-
-        $categorie = 200;
         $where = $criteres_obj->getWhereForEleves();
         $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
             $where, [
@@ -236,7 +235,6 @@ class IndexController extends AbstractActionController
             ]);
         return new ViewModel(
             [
-                'categorie' => $categorie,
                 'paginator' => $paginator,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
@@ -247,7 +245,7 @@ class IndexController extends AbstractActionController
     public function orgPdfAction()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -317,7 +315,7 @@ class IndexController extends AbstractActionController
         }
         // contrôle de l'identité de l'utilisateur
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -405,7 +403,7 @@ class IndexController extends AbstractActionController
     private function initCommune()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() != 130) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() != self::COMMUNE_ID) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -542,7 +540,6 @@ class IndexController extends AbstractActionController
             ]);
         return new ViewModel(
             [
-                'categorie' => 130,
                 'commune' => $commune['nom'],
                 'paginator' => $paginator,
                 'page' => $this->params('page', 1),
@@ -907,8 +904,8 @@ class IndexController extends AbstractActionController
     public function trElevesAction()
     {
         $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < 100 ||
-            $auth->getCategorieId() >= 130) {
+        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::TRANSPORTEUR_ID ||
+            $auth->getCategorieId() > self::ETABLISSEMENT_ID) {
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
@@ -955,47 +952,56 @@ class IndexController extends AbstractActionController
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
-            ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $categorie = $auth->getCategorieId();
-        if ($categorie == 110) {
-            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        $arrayCriteres = [];
+        $categorieId = $auth->getCategorieId();
+        if ($categorieId == self::TRANSPORTEUR_ID) {
+            $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
+                $userId);
+            $criteres_form->setValueOptions('serviceId',
+                $this->db_manager->get('Sbm\Db\Select\Services')
+                    ->par($transporteurId));
+            $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresTransporteur(
+                $criteres_form->getElementNames(), $this->transporteur_sanspreinscrits);
         } else {
-            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+            $criteres_form->setValueOptions('serviceId',
+                $this->db_manager->get('Sbm\Db\Select\Services')
+                    ->tout());
+            $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+                $criteres_form->getElementNames(), $this->etablissement_sanspreinscrits);
         }
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames(), $sanspreinscrits);
         if ($this->sbm_isPost) {
             $criteres_form->setData($args);
             if ($criteres_form->isValid()) {
-                $criteres_obj->exchangeArray($criteres_form->getData());
+                $arrayCriteres = $criteres_form->getData();
+                $criteres_obj->exchangeArray($arrayCriteres);
             }
         }
         // récupère les données de la session si le post n'a pas été validé dans le
         // formulaire (pas de post ou invalide)
         if (! $criteres_form->hasValidated() && ! empty($args)) {
             $criteres_obj->exchangeArray($args);
-            $criteres_form->setData($criteres_obj->getArrayCopy());
+            $arrayCriteres = $criteres_obj->getArrayCopy();
+            $criteres_form->setData($arrayCriteres);
         }
-        switch ($categorie) {
-            case 2:
+        switch ($categorieId) {
+            case self::TRANSPORTEUR_ID:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce
                 // transporteur
                 try {
-                    $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
-                        $userId);
-                    $where = $criteres_obj->getWhere()
-                        ->nest()
-                        ->equalTo('ser1.transporteurId', $right)->or->equalTo(
-                        'ser2.transporteurId', $right)->unnest();
-                    $paginator = $this->db_manager->get(
-                        'Sbm\Db\Query\AffectationsServicesStations')->paginatorScolaritesR(
-                        $where, [
+                    $query = $this->db_manager->get('Sbm\Portail\Transporteur\Query')->setTransporteurId(
+                        $transporteurId);
+                    if (array_key_exists('serviceId', $arrayCriteres)) {
+                        $query->setServiceId($arrayCriteres['serviceId']);
+                    }
+                    if (array_key_exists('stationId', $arrayCriteres)) {
+                        $query->setStationId($arrayCriteres['stationId']);
+                    }
+                    $paginator = $query->paginator($criteres_obj->getWhere(),
+                        [
                             'nom',
                             'prenom'
                         ]);
@@ -1012,7 +1018,7 @@ class IndexController extends AbstractActionController
                     }
                 }
                 break;
-            case 3:
+            case self::ETABLISSEMENT_ID:
                 // Filtre les résultats pour n'afficher que ce qui concerne cet
                 // établissement
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
@@ -1038,7 +1044,7 @@ class IndexController extends AbstractActionController
         }
         return new ViewModel(
             [
-                'categorie' => $categorie,
+                'categorieId' => $categorieId,
                 'paginator' => $paginator,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 10),
@@ -1062,8 +1068,8 @@ class IndexController extends AbstractActionController
         $userId = $auth->getUserId();
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
-        $categorie = $auth->getCategorieId();
-        if ($categorie == 110) {
+        $categorieId = $auth->getCategorieId();
+        if ($categorieId == self::TRANSPORTEUR_ID) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -1074,8 +1080,8 @@ class IndexController extends AbstractActionController
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        switch ($categorie) {
-            case 2:
+        switch ($categorieId) {
+            case self::TRANSPORTEUR_ID:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                     $userId);
                 $where = $criteres_obj->getWherePdf()
@@ -1084,7 +1090,7 @@ class IndexController extends AbstractActionController
                     $right)->unnest();
                 $documentId = 'List élèves portail transporteur';
                 break;
-            case 3:
+            case self::ETABLISSEMENT_ID:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                     $userId);
                 $where = $criteres_obj->getWherePdf()->equalTo('etablissementId', $right);
@@ -1242,29 +1248,35 @@ class IndexController extends AbstractActionController
             ]);
         }
         $userId = $auth->getUserId();
-        $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
+        $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
             $userId);
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
-        $categorie = $auth->getCategorieId();
-        if ($categorie == 110) {
+        $categorieId = $auth->getCategorieId();
+        if ($categorieId == self::TRANSPORTEUR_ID) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
         }
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresTransporteur(
             $criteres_form->getElementNames(), $sanspreinscrits);
         $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         if (! empty($criteres)) {
             $criteres_obj->exchangeArray($criteres);
         }
-        $where = $criteres_obj->getWhere()
-            ->nest()
-            ->equalTo('ser1.transporteurId', $right)->or->equalTo('ser2.transporteurId',
-            $right)->unnest();
-
-        $resultset = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getTelephonesPortables(
-            $where);
+        $query = $this->db_manager->get('Sbm\Portail\Transporteur\Query')->setTransporteurId(
+            $transporteurId);
+        if (array_key_exists('serviceId', $criteres)) {
+            if ($criteres['serviceId']) {
+                $query->setServiceId($criteres['serviceId']);
+            }
+        }
+        if (array_key_exists('stationId', $criteres)) {
+            if ($criteres['stationId']) {
+                $query->setStationId($criteres['stationId']);
+            }
+        }
+        $resultset = $query->getTelephonesPortables($criteres_obj->getWhere());
         $data = iterator_to_array($resultset);
         if (! empty($data)) {
             $fields = array_keys(
@@ -1278,7 +1290,7 @@ class IndexController extends AbstractActionController
                 'Il n\'y a pas de données correspondant aux critères indiqués.');
             return $this->redirect()->toRoute('sbmportail',
                 [
-                    'action' => $auth->getCategorieId() < 200 ? 'tr-eleves' : 'org-eleves',
+                    'action' => $auth->getCategorieId() < self::SECRETARIAT_ID ? 'tr-eleves' : 'org-eleves',
                     'page' => $this->params('page', 1)
                 ]);
         }
@@ -1291,25 +1303,19 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $columns = [
-            'Nom' => 'nom',
-            'Prénom' => 'prenom',
+            'Nom' => 'nomSA',
+            'Prénom' => 'prenomSA',
             'R Identité' => 'responsable',
             'R Adresse ligne 1' => 'adresseL1',
             'R Adresse ligne 2' => 'adresseL2',
             'R Adresse ligne 3' => 'adresseL3',
-            'R Commune' => 'laposte',
+            'R Commune' => 'commune',
             'R Téléphone 1' => 'telephoneF',
             'R Téléphone 2' => 'telephoneP',
             'R Téléphone 3' => 'telephoneT',
+            'Pt Origine' => 'origine',
             'Établissement' => 'etablissement',
-            'Commune de l\'établissement' => 'lacommuneEtablissement',
-            'Classe' => 'classe',
-            'Service' => 'service1',
-            'Station Montée' => 'station1',
-            'Commune station montée' => 'communeStation1',
-            'Station Descente' => 'station2',
-            'Commune station descente' => 'communeStation2',
-            'Correspondance' => 'ligne2Id'
+            'Classe' => 'classe'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -1346,39 +1352,54 @@ class IndexController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $categorie = $auth->getCategorieId();
-        if ($categorie == 110) {
-            $sanspreinscrits = $this->transporteur_sanspreinscrits;
+        $categorieId = $auth->getCategorieId();
+        if ($categorieId == self::TRANSPORTEUR_ID) {
+            $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
+                $userId);
+            $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresTransporteur(
+                $criteres_form->getElementNames(), $this->transporteur_sanspreinscrits);
         } else {
-            $sanspreinscrits = $this->etablissement_sanspreinscrits;
+            $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
+                $criteres_form->getElementNames(), $this->etablissement_sanspreinscrits);
         }
-        $criteres_obj = new \SbmPortail\Model\Db\ObjectData\Criteres(
-            $criteres_form->getElementNames(), $sanspreinscrits);
-
         $criteres_form->setData($criteres);
         if ($criteres_form->isValid()) {
             $criteres_obj->exchangeArray($criteres_form->getData());
         }
         // lancement de la requête selon la catégorie de l'utilisateur
         try {
-            switch ($categorie) {
-                case 2:
+            switch ($categorieId) {
+                case self::TRANSPORTEUR_ID:
                     // Filtre les résultats pour n'afficher que ce qui concerne ce
                     // transporteur
-                    $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
-                        $userId);
-                    $where = $criteres_obj->getWhere()
-                        ->nest()
-                        ->equalTo('ser1.transporteurId', $right)->or->equalTo(
-                        'ser2.transporteurId', $right)->unnest();
-                    $result = $this->db_manager->get(
-                        'Sbm\Db\Query\AffectationsServicesStations')->getScolaritesR(
-                        $where, [
-                            'nom',
-                            'prenom'
-                        ]);
+                    try {
+                        $query = $this->db_manager->get('Sbm\Portail\Transporteur\Query')->setTransporteurId(
+                            $transporteurId);
+                        if (array_key_exists('serviceId', $arrayCriteres)) {
+                            $query->setServiceId($arrayCriteres['serviceId']);
+                        }
+                        if (array_key_exists('stationId', $arrayCriteres)) {
+                            $query->setStationId($arrayCriteres['stationId']);
+                        }
+                        $result = $query->getScolaritesR($criteres_obj->getWhere(),
+                            [
+                                'nom',
+                                'prenom'
+                            ]);
+                    } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+                        $this->flashMessenger()->addErrorMessage(
+                            'Votre compte n\'est pas associé à un transporteur. Contactez le service des transports scolaires');
+                        try {
+                            return $this->redirectToOrigin()->back();
+                        } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                            return $this->redirect()->toRoute('sbmportail',
+                                [
+                                    'action' => 'tr-index'
+                                ]);
+                        }
+                    }
                     break;
-                case 3:
+                case self::ETABLISSEMENT_ID:
                     // Filtre les résultats pour n'afficher que ce qui concerne cet
                     // établissement
                     $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(

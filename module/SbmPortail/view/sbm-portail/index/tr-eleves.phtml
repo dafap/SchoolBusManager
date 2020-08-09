@@ -7,7 +7,7 @@
  * @filesource tr-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2020
+ * @date 9 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -67,7 +67,7 @@ $url_telephones = $this->url('sbmportail',
         'action' => 'tr-extraction-telephones',
         'page' => $this->page
     ]);
-$url_download=$this->url('sbmportail',
+$url_download = $this->url('sbmportail',
     [
         'action' => 'tr-eleves-download',
         'page' => $this->page
@@ -79,13 +79,13 @@ $actions = [
         'class' => 'fam-door-out',
         'formaction' => $url_ici,
         'title' => 'Retour'
-    ],
+    ],/*
     'rapports' => [
         'class' => 'fam-printer',
         'formaction' => $url_rapports,
         'title' => 'Liste à imprimer',
         'formtarget' => '_blank'
-    ],
+    ],*/
     'download' => [
         'class' => 'fam-cloud-download',
         'formaction' => $url_download,
@@ -93,7 +93,7 @@ $actions = [
         'title' => 'Extraction de la liste dans un fichier'
     ]
 ];
-if ($this->categorie == 2) {
+if ($this->categorieId == \SbmAuthentification\Model\CategoriesInterface::TRANSPORTEUR_ID) {
     $actions['telephones'] = [
         'class' => 'fam-telephone',
         'formaction' => $url_telephones,
@@ -117,38 +117,19 @@ if ($this->categorie == 2) {
 		<table class="eleves">
 			<tbody>
 				<tr>
-					<th>N° carte</th>
-					<th>Nom</th>
-					<th>Prénom</th>
-					<th>Adresse</th>
+					<th>Elève</th>
 					<th>Responsables</th>
 					<th>Téléphone</th>
+					<th>Adresse</th>
+					<th>Origine</th>
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
-					<th>Circuits</th>
-					<th>Arrêts</th>
+					<th>Services</th>
 				</tr>
         <?php foreach($eleves as $eleve): ?>
         	<?php
-            $r = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']),
+            $resp = htmlspecialchars(str_replace(' ', '&nbsp;', $eleve['responsable']),
                 ENT_QUOTES, 'utf-8', false);
-            $itemR1 = $this->listeLigneActions($eleve['eleveId'] . 'r1',
-                [
-                    'responsableId' => $eleve['responsableId'],
-                    'info' => $r,
-                    'origine' => $url_ici
-                ],
-                [
-                    'r1' => [
-                        'class' => 'fam-magnifier',
-                        'formaction' => $url_responsable,
-                        'title' => 'Voir sa fiche',
-                        'onclick' => sprintf($js_op, $eleve['eleveId'], 'r1', 'voir r1')
-                    ]
-                ], [
-                    'style' => 'display: inline;'
-                ]);
-            $itemR1 = $r;
             $tr_css = $this->cycle([
                 "even",
                 "odd"
@@ -174,31 +155,22 @@ if ($this->categorie == 2) {
             if (! $eleve['inscrit']) {
                 $tr_css .= ' barre';
             }
-            // circuit
-            $circuit = $eleve['service1'];
-            if (! empty($eleve['ligne2Id']))
-                $circuit .= '<br/>' . $eleve['ligne2Id'];
-            // arrêt
-            $arret = $eleve['station1'];
-            if (! empty($eleve['station2']))
-                $arret .= '<br/>' . $eleve['station2'];
+            $itineraires = $this->printItineraires($eleve['eleveId'], $eleve['trajet'],
+                false, $eleve['millesime']);
             ?>
          <tr class="petit <?= $tr_css;?>">
-					<td class="numero align-right"><?= $eleve['numero']; ?></td>
 					<td class="nom">
-						<?= $this->escapeHtml($eleve['nom']); ?></td>
-					<td class="nom">
-						<?= $this->escapeHtml($eleve['prenom']); ?></td>
+						<?= $this->escapeHtml($eleve['eleve']); ?></td>
+					<td class="responsable"><?= $resp; ?></td>
+					<td class="telephones"><?= $telephones;?></td>
 					<td class="adresse">
 						<?= $adresse; ?></td>
-					<td class="responsables"><?= $itemR1; ?></td>
-					<td class="telephones"><?= $telephones;?></td>
+					<td><?= $this->escapeHtml($eleve['origine']);?></td>
 					<td class="etablissement">
 						<?= $this->escapeHtml($eleve['etablissement'] /*. ' - ' . $eleve['lacommuneEtablissement']*/);?></td>
 					<td class="classe">
 						<?= $this->escapeHtml($eleve['classe']);?></td>
-					<td><?= $circuit;?></td>
-					<td><?= $arret;?></td>
+					<td><?= $itineraires;?></td>
 				</tr>
         <?php endforeach;?>
     </tbody>
