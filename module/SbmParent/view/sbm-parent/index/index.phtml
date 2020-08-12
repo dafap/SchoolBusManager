@@ -22,7 +22,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juil. 2020
+ * @date 12 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\DateLib;
@@ -138,8 +138,7 @@ $url_facture = $this->url('sbmdocument', [
             l'adresse indiqu&eacute;e &agrave; partir du $date_horaires_cartes.
             EOT;
             $msg_reception_pass_preinscrit = <<<EOT
-            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez transmis une photo 
-            d'identit&eacute; de l'&eacute;l&egrave;ve et <span id="help-payer" class="orange" 
+            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez <span id="help-payer" class="orange" 
             title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
             L'inscription doit &ecirc;tre r&eacute;gl&eacute;e avant le %s pour obtenir une place 
             d&eacute;finitive sur le circuit et recevoir le PASS MOBILIT&Eacute; JUNIOR par la poste 
@@ -161,8 +160,7 @@ $url_facture = $this->url('sbmdocument', [
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_reception_pass_preinscrit = <<<EOT
-            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez transmis une photo 
-            d'identit&eacute; de l'&eacute;l&egrave;ve et <span id="help-payer" class="orange" 
+            Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez <span id="help-payer" class="orange" 
             title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
             Vous pourrez le retirer au Point Info Bus apr&egrave;s
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
@@ -181,7 +179,7 @@ $url_facture = $this->url('sbmdocument', [
             break;
     }
     $msg_photo_manquante = <<<EOT
-    Veuillez transmettre une photo d'identit&eacute; r&eacute;cente pour obtenir la carte de transport.
+    Pensez à coller une photo d'identit&eacute; r&eacute;cente sur le PASS ANNUEL JUNIOR.
     EOT;
     ?>
 <div id="parent-wrapper">
@@ -197,8 +195,7 @@ $url_facture = $this->url('sbmdocument', [
 						<th>&Eacute;tablissement scolaire</th>
 						<th>Commune</th>
 						<th>Tarif</th>
-						<th class="<?=$avant_fin_aout;?>">Circuit</th>
-						<th class="<?=$avant_fin_aout;?>">Arr&ecirc;t</th>
+						<th class="<?=$avant_fin_aout;?>">Itinéraires</th>
 						<th></th>
 					</tr>
 <?php
@@ -209,72 +206,10 @@ $url_facture = $this->url('sbmdocument', [
                 'enfant' => $row['prenom'] . ' ' . $row['nom']
             ];
             $photo_manquante |= ! $row['hasphoto'];
-            $reseau = $this->affectations->getCorrespondances($row['eleveId']);
-            $nbAffectations = $reseau->count();
-            $circuit = $station = $entity = [];
-            $msgphoto = $row['hasphoto'] ? '' : 'Pas de photo';
-            if ($nbAffectations) {
-                // construction des tableaux $entity, $station et $circuit sans doublons
-                foreach ($reseau as $transport) {
-                    $service_transporteur = $transport['service1'] . ' - ' .
-                        $transport['transporteur1'];
-                    $station_commune = $transport['station1'] . ' - ' .
-                        $transport['commune1'];
-                    $circuitId = $transport['circuit1Id'];
-                    $key = md5(
-                        sprintf('%s;%s;%d', $service_transporteur, $station_commune,
-                            $circuitId));
-                    $entity[$key] = $service_transporteur;
-                    $station[$key] = $station_commune;
-                    $circuit[$key] = $circuitId;
-                    $correspondance = ! empty($transport['ligne2Id']) ||
-                        ! empty($transport['station2Id']);
-                    if ($correspondance) {
-                        if (! empty($transport['ligne2Id'])) {
-                            $service_transporteur = $transport['service2'] . ' - ' .
-                                $transport['transporteur2'];
-                        } else {
-                            $service_transporteur = '';
-                        }
-                        if (! empty($transport['station2Id'])) {
-                            $station_commune = $transport['station2'] . ' - ' .
-                                $transport['commune2'];
-                        } else {
-                            $station_commune = '';
-                        }
-                        if (! empty($transport['circuit2Id'])) {
-                            $circuitId = $transport['circuit2Id'];
-                        } else {
-                            $circuitId = 0;
-                        }
-                        $key = md5(
-                            sprintf('%s;%s;%d', $service_transporteur, $station_commune,
-                                $circuitId));
-                        $entity[$key] = $service_transporteur;
-                        $station[$key] = $station_commune;
-                        $circuit[$key] = $circuitId;
-                    }
-                }
-                $entity = array_values($entity);
-                $station = array_values($station);
-                $circuit = array_values($circuit);
-            }
             $css = $this->cycle([
                 "odd",
                 "even"
             ])->next();
-            // identité, scolarité : lignes 1 à 4
-            $colonne1_5 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
-                '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
-                $row['lacommuneEtablissement'] . '</td>';
-            $colonne1_5 .= '<td %s' . $nbAffectations . '>' .
-                sprintf('%s %s', $row['grilleTarifR1'],
-                    $row['reductionR1'] ? 'R&eacute;duit' : 'Normal') . '</td>';
-            // on prépare le code HTML avant pour ajuster les "rowspan", les boutons
-            // et les hiddens si nécessaire
             $boutons_ligne = [
                 'horaires' => [
                     'class' => 'button ligne',
@@ -290,93 +225,19 @@ $url_facture = $this->url('sbmdocument', [
             if ($avant_fin_aout) {
                 unset($boutons_ligne['horaires']);
             }
-            $nbCircuits = count($circuit);
-            switch ($nbCircuits) {
-                case 0:
-                    if ($row['hasphoto']) {
-                        // pas de bouton, pas d'affectation donc pas d'horaire
-                        $code_boutons = '';
-                    } else {
-                        // bouton photo et pas d'horaire
-                        unset($boutons_ligne['horaires']);
-                        $code_boutons = $this->listeLigneActions($row['eleveId'],
-                            $hiddens_ligne, $boutons_ligne);
-                    }
-                    $colonne1_5 = str_replace(' %s' . $nbAffectations, '', $colonne1_5);
-                    $ligneHtml = '<tr class="petit ' . $css . '">' . $colonne1_5;
-                    $ligneHtml .= sprintf('<td class="%1$s"></td><td class="%1$s"></td>',
-                        $avant_fin_aout); // affectation
-                    $ligneHtml .= "<td>$code_boutons</td><td class=\"alert\">$msgphoto</td></tr>\n";
-                    break;
-                case 1:
-                    if (empty($circuit[0])) {
-                        // il y a des points d'arrêt mais pas de circuit donc pas
-                        // d'horaire
-                        unset($boutons_ligne['horaires']);
-                    }
-                    if ($row['hasphoto']) {
-                        unset($boutons_ligne['photo']);
-                        if (empty($circuit[0])) {
-                            $code_boutons = '';
-                        } else {
-                            // bouton horaires
-                            $code_boutons = $this->listeLigneActions($row['eleveId'],
-                                $hiddens_ligne, $boutons_ligne);
-                        }
-                    } else {
-                        // au moins le bouton photo
-                        $code_boutons = $this->listeLigneActions($row['eleveId'],
-                            $hiddens_ligne, $boutons_ligne);
-                    }
-                    $colonne1_5 = str_replace(' %s' . $nbAffectations, '', $colonne1_5);
-                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_5; // identité,
-                                                                            // scolarité
-                    $ligneHtml .= '<td class="' . $avant_fin_aout . '">' . $entity[0] .
-                        '</td><td class="' . $avant_fin_aout . '">' . $station[0] . '</td>';
-                    $ligneHtml .= '<td>' . $code_boutons .
-                        "</td><td class=\"alert\">$msgphoto</td></tr>\n";
-                    break;
-                default:
-                    $colonne1_5 = str_replace('%s' . $nbAffectations,
-                        'rowspan="' . $nbCircuits . '"', $colonne1_5);
-                    $lignesTableau = [];
-                    for ($i = 0; $i < $nbCircuits; $i ++) {
-                        $lignesTableau[$i] = '<tr class="petit ' . $css . '">' .
-                            $colonne1_5;
-                        $lignesTableau[$i] .= '<td class="' . $avant_fin_aout . '">' .
-                            $entity[$i] . '</td><td class="' . $avant_fin_aout . '">' .
-                            $station[$i] . '</td>';
-                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et
-                        // les hiddens
-                        if ($i > 0) {
-                            $lignesTableau[$i] .= "</tr>\n";
-                        }
-                        $colonne1_5 = '';
-                    }
-                    // pour terminer la ligne 0
-                    if (empty($hiddens_ligne)) {
-                        if ($row['hasphoto']) {
-                            // pas de bouton
-                            $lignesTableau[0] .= "<td></td><td class=\"alert\">$msgphoto</td></tr>\n";
-                        }
-                    } else {
-                        if ($row['hasphoto']) {
-                            // bouton `Horaires`
-                            unset($boutons_ligne['photo']);
-                        }
-                    }
-                    if (empty($hiddens_ligne) && $row['hasphoto']) {
-                    } else {
-                        $code_boutons = $this->listeLigneActions($row['eleveId'],
-                            $hiddens_ligne, $boutons_ligne);
-                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' .
-                            $code_boutons .
-                            "</td><td class=\"alert\"rowspan=\"$nbCircuits\">$msgphoto</td></tr>\n";
-                    }
-                    $ligneHtml = implode('', $lignesTableau);
-                    break;
+            if ($row['hasphoto']) {
+                unset($boutons_ligne['photo']);
+                $msgphoto = '';
+            } else {
+                $msgphoto = ' <span class="alert">Pas de photo</span>';
             }
-            echo $ligneHtml;
+            $ligneHtml = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="%s">%s</td><td>%s</td><td>%s</td></tr>';
+            $tarif = $row['grilleTarifR1'] . '<br>' .
+                ($row['reductionR1'] ? 'Réduit' : 'Normal');
+            echo sprintf($ligneHtml, 'petit ' . $css, $row['nom'], $row['prenom'],
+                $row['etablissement'], $row['lacommuneEtablissement'], $tarif,
+                $avant_fin_aout, $this->printItineraires($row['eleveId'], 1), $msgphoto,
+                $this->listeLigneActions($row['eleveId'], $hiddens_ligne, $boutons_ligne));
         }
         ?>
 </tbody>

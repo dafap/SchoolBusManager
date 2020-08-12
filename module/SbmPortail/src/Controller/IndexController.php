@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2020
+ * @date 12 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -376,24 +376,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function orgCircuitsAction()
     {
-        $this->flashMessenger()->addErrorMessage('Procédure ' . __METHOD__ . ' à écrire.');
-        return $this->redirect()->toRoute('login', [
-            'action' => 'home-page'
-        ]);
-        try {
-            $services = $this->db_manager->get('Sbm\Db\Query\Services')->paginatorServicesWithEtablissements();
-            $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
-            $effectifServices->init();
-        } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
-            $services = [];
-            $effectifServices = null;
-        }
-        return new ViewModel(
-            [
-                'paginator' => $services,
-                'effectifServices' => $effectifServices,
-                'page' => $this->params('page', 1)
-            ]);
+        return $this->redirect()->toUrl(
+            'https://www.tra-mobilite.com/fiches-horaires-tra-mobilite/');
     }
 
     /**
@@ -1364,7 +1348,10 @@ class IndexController extends AbstractActionController implements CategoriesInte
         }
         $criteres_form->setData($criteres);
         if ($criteres_form->isValid()) {
-            $criteres_obj->exchangeArray($criteres_form->getData());
+            $arrayCriteres = $criteres_form->getData();
+            $criteres_obj->exchangeArray($arrayCriteres);
+        } else {
+            $arrayCriteres = $criteres;
         }
         // lancement de la requête selon la catégorie de l'utilisateur
         try {

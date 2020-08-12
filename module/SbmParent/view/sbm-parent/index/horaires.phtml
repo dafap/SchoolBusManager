@@ -9,7 +9,7 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2020
+ * @date 12 août 2020
  * @version 2020-2.6.0
  */
 $this->themeCss('sbm-parent/index', 'horaires.css');
@@ -20,7 +20,9 @@ $url_horaires = $this->url('sbmdocument', [
 $nomenclatureMoments = [
     1 => 'Aller Matin',
     3 => 'Retour Soir',
-    2 => 'Retour Midi'
+    2 => 'Retour Midi',
+    4 => 'Aller Après-midi',
+    5 => 'Aller Dimanche soir'
 ];
 $h3contentG = [];
 $h3contentD = [];
@@ -54,6 +56,7 @@ foreach ($this->circuits as $circuit) {
 	</div>
 	<div id=fiche-inner>
 <?php foreach ($nomenclatureMoments as $moment => $legend):?>
+    <?php if (count($data[$moment])):?>
 		<fieldset class="sbm-page1">
 			<legend><?=$legend;?></legend>
 			<div class="clearfix">
@@ -72,11 +75,11 @@ foreach ($this->circuits as $circuit) {
 					</tr>
 	                <?php foreach($data[$moment] as $circuit) :?>
 	                <?php
-        $css = $this->cycle([
-            'odd',
-            'even'
-        ])->next();
-        ?>
+            $css = $this->cycle([
+                'odd',
+                'even'
+            ])->next();
+            ?>
 	                <tr class="<?=$css;?>">
 						<td><?=implode('</td><td>', $circuit);?></td>
 					</tr>
@@ -84,11 +87,12 @@ foreach ($this->circuits as $circuit) {
 				</tbody>
 			</table>
 		</fieldset>
+	<?php endif;?>
 <?php endforeach;?>
 		<div class="left-95px top-6px">
 			<form method="post" action="<?=$url_retour;?>">
 				<input type="submit" class="default" name="horaires"
-					value="Imprimer" formaction="<?=$url_horaires;?>"
+					value="Télécharger" formaction="<?=$url_horaires;?>"
 					formtarget="_blank"> <input type="submit" class="default"
 					name="cancel" value="Retour">
 			</form>
