@@ -3,14 +3,14 @@
  * Affiche la liste des champs d'une liste de diffusion
  *
  * Reçoit les attributs 'fields' et 'liste_info'
- * 
+ *
  * @project sbm
  * @package SbmMailChimp/view/sbm-mail-chimp/index
  * @filesource fields-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 oct. 2018
- * @version 2019-2.5.0
+ * @date 25 août 2020
+ * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
 
@@ -64,7 +64,7 @@ if ($url_creer) {
     $actions['creer'] = [
         'class' => 'fam-add',
         'formaction' => $url_creer,
-        'title' => 'Créer une nouvelle liste de diffusion'
+        'title' => 'Créer un nouveau champ'
     ];
 }
 $this->source->setItemCountPerPage(20);

@@ -7,7 +7,7 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 25 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmMailChimp\Model\Db\Service;
@@ -134,8 +134,16 @@ class Users implements FactoryInterface
                 'TERM' => new Expression(
                     'IFNULL(`term`.`userId`, 0) / IFNULL(`term`.`userId`, 1)'),
                 'HORSTERM' => new Expression(
-                    'IFNULL(`horsterm`.`userId`, 0) / IFNULL(`horsterm`.`userId`, 1)')
+                    'IFNULL(`horsterm`.`userId`, 0) / IFNULL(`horsterm`.`userId`, 1)'),
+                'PAYE' => new Expression('IF(ISNULL(p.userId), 0, 1)'),
+                'IMPAYE' => new Expression('IF(ISNULL(i.userId), 0, 1)')
             ])
+            ->join([
+            'p' => $this->usrPaye()
+        ], 'p.userId = usr.userId', [], Select::JOIN_LEFT)
+            ->join([
+            'i' => $this->usrImpaye()
+        ], 'i.userId = usr.userId', [], Select::JOIN_LEFT)
             ->join([
             'res' => $sub_select
         ], 'usr.email = res.email', [], Select::JOIN_LEFT)
@@ -281,5 +289,109 @@ class Users implements FactoryInterface
         ], 'c4.classeId = s4.classeId', [])
             ->where($where);
         return $select;
+    }
+
+    private function usrPaye()
+    {
+        return $this->sql->select(
+            [
+                'u' => $this->db_manager->getCanonicName('users', 'table')
+            ])
+            ->columns([
+                'userId'
+            ])
+            ->join([
+                'res' => $this->subRespPaye()
+            ], 'res.email = u.email', []);
+    }
+
+    private function subRespPaye()
+    {
+        return $this->subPartRespPaye(1)->combine($this->subPartRespPaye(2));
+    }
+
+    /**
+     * SELECT email FROM `sbm_t_responsables` AS r JOIN `sbm_t_eleves` AS e ON
+     * r.responsableId = e.responsable1Id JOIN `sbm_t_scolarites` AS s ON s.eleveId =
+     * e.eleveId WHERE s.millesime=2020 AND s.paiementR1 = 1 AND s.demandeR1 > 0
+     */
+    private function subPartRespPaye(int $r)
+    {
+        $jointureRE = sprintf('r.responsableId = e.responsable%dId', $r);
+        $condition = new Where();
+        $condition->equalTo('s.millesime', $this->millesime)
+        ->literal("s.paiementR$r = 1")
+        ->literal("s.demandeR$r > 0");
+        return $this->sql->select(
+            [
+                'r' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns([
+                'email'
+            ])
+            ->join([
+                'e' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], $jointureRE, [])
+            ->join([
+                's' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'e.eleveId = s.eleveId', [])
+            ->where($condition);
+    }
+
+    /**
+     * SELECT DISTINCT `userId` FROM `sbm_t_users` AS u JOIN ( SELECT email FROM
+     * `sbm_t_responsables` AS r1 JOIN `sbm_t_eleves` AS e1 ON r1.responsableId =
+     * e1.responsable1Id JOIN `sbm_t_scolarites` AS s1 ON s1.eleveId = e1.eleveId WHERE
+     * s1.millesime=2020 AND s1.paiementR1 = 0 AND demandeR1 > 0 UNION SELECT email FROM
+     * `sbm_t_responsables` AS r2 JOIN `sbm_t_eleves` AS e2 ON r2.responsableId =
+     * e2.responsable1Id JOIN `sbm_t_scolarites` AS s2 ON s2.eleveId = e2.eleveId WHERE
+     * s2.millesime=2020 AND s2.paiementR2 = 0 AND demandeR2 > 0 ) AS res ON res.email =
+     * u.email
+     */
+    private function usrImpaye()
+    {
+        return $this->sql->select(
+            [
+                'u' => $this->db_manager->getCanonicName('users', 'table')
+            ])
+            ->columns([
+            'userId'
+        ])
+            ->join([
+            'res' => $this->subRespImpaye()
+        ], 'res.email = u.email', []);
+    }
+
+    private function subRespImpaye()
+    {
+        return $this->subPartRespImpaye(1)->combine($this->subPartRespImpaye(2));
+    }
+
+    /**
+     * SELECT email FROM `sbm_t_responsables` AS r JOIN `sbm_t_eleves` AS e ON
+     * r.responsableId = e.responsable1Id JOIN `sbm_t_scolarites` AS s ON s.eleveId =
+     * e.eleveId WHERE s.millesime=2020 AND s.paiementR1 = 0 AND s.demandeR1 > 0
+     */
+    private function subPartRespImpaye(int $r)
+    {
+        $jointureRE = sprintf('r.responsableId = e.responsable%dId', $r);
+        $condition = new Where();
+        $condition->equalTo('s.millesime', $this->millesime)
+            ->literal("s.paiementR$r = 0")
+            ->literal("s.demandeR$r > 0");
+        return $this->sql->select(
+            [
+                'r' => $this->db_manager->getCanonicName('responsables', 'table')
+            ])
+            ->columns([
+            'email'
+        ])
+            ->join([
+            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], $jointureRE, [])
+            ->join([
+            's' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'e.eleveId = s.eleveId', [])
+            ->where($condition);
     }
 }
