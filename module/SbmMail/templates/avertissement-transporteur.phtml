@@ -4,7 +4,7 @@
  * lorsqu'il y a des modifications d'inscriptions les concernant.
  *
  * Ce modèle doit recevoir les variables suivantes :
- * - services : tableau des serviceId sur lesquels il y a des modifications
+ * - services : tableau des services sur lesquels il y a des modifications
  * - url_portail : url du portail des transporteurs
  *
  * @project sbm
@@ -12,7 +12,7 @@
  * @filesource avertissement-transporteur.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2020
+ * @date 14 août 2020
  * @version 2020-2.6.0
  */
 if (count($this->services) == 1) {
@@ -22,11 +22,11 @@ if (count($this->services) == 1) {
 }
 ?>
 <p>Bienvenue au réseau TRA MOBILITÉ.</p>
-<p>Des modifications ont été enregistrées dans les inscriptions des
+<p>Des modifications ont été enregistrées dans les abonnements au PASS ANNUEL JUNIOR des
 	enfants inscrits sur <?= $lescircuits;?> :</p>
 <ul>
-<?php foreach ($this->services as $serviceId) :?>
-    <li><?= $serviceId;?></li>
+<?php foreach ($this->services as $designation) :?>
+    <li><?= $designation;?></li>
 <?php endforeach;?>
 </ul>
 <p>
