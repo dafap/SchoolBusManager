@@ -21,8 +21,8 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
- * @version 2019-2.5.0
+ * @date 26 août 2020
+ * @version 2020-2.6.0
  */
 namespace SbmMail\Model;
 
@@ -201,7 +201,7 @@ class EnvoiMail implements ListenerAggregateInterface
             $htmlPart->setType(Mime\Mime::TYPE_HTML);
             $htmlPart->setCharset($encoding);
             if (empty($bodyinfo['text'])) {
-                $bodyinfo['text'] = strip_tags($bodyinfo['html']);
+                $bodyinfo['text'] = strip_tags(html_entity_decode($bodyinfo['html']));
             }
         } elseif (empty($bodyinfo['text'])) {
             throw new Exception(
@@ -213,6 +213,7 @@ class EnvoiMail implements ListenerAggregateInterface
         // on place obligatoirement un message en text
         $textPart = new Mime\Part($bodyinfo['text']);
         $textPart->setType(Mime\Mime::TYPE_TEXT);
+        $textPart->setCharset($encoding);
         // et les fichiers joints
         $attaches = [];
         $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
