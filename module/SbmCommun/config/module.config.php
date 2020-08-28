@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 juin 2020
+ * @date 14 août 2020
  * @version 2020-2.6.0
  */
 use SbmCommun\Arlysere;
@@ -94,6 +94,7 @@ return [
             'Sbm\Facture' => Arlysere\Tarification\Facture\Facture::class,
             'Sbm\FactureSet' => Arlysere\Tarification\Facture\FactureSet::class,
             'Sbm\Paiement\MarqueEleves' => Arlysere\Paiements\MarqueEleves::class,
+            'Sbm\Paiement\AbonnementsResilies' => Arlysere\Paiements\AbonnementsResilies::class,
 
             'Sbm\Db\Table\Affectations' => Table\Affectations::class,
             'Sbm\Db\Table\Appels' => Table\Appels::class,

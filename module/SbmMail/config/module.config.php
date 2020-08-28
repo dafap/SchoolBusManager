@@ -9,7 +9,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 avr. 2020
+ * @date 26 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -32,6 +32,13 @@ return [
                 ],
                 'actions' => [
                     'last-day-changes' => [
+                        'allow' => [
+                            'roles' => [
+                                'guest'
+                            ]
+                        ]
+                    ],
+                    'paiements-resilies' => [
                         'allow' => [
                             'roles' => [
                                 'guest'

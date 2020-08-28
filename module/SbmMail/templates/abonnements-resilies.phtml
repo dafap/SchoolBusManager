@@ -1,0 +1,67 @@
+<?php
+/**
+ * Modèle de courrier pour avertir les responsables que leur abonnement de paiement par CB a été résilié
+ * et les invitant à régulariser leur situation.
+ *
+ * Ce modèle doit recevoir les variables suivantes :
+ * - responsable : tableau des données du responsable
+ * - detail : ArrayObject dont les clés sont :
+ *            'responsableId', 'datePaiement', 'dateRefus', 'nbEcheances', 'datesEcheances', 'montantTotal'
+ * - url_portail : url du portail des parents
+ *
+ * @project sbm
+ * @package
+ * @filesource abonnements-resilies.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 août 2020
+ * @version 2020-2.6.0
+ */
+switch ($this->responsable['titre']) {
+    case 'M.':
+        $titre = 'Monsieur';
+        break;
+    case 'Mme':
+    case 'Mlle':
+        $titre = 'Madame';
+        break;
+    case 'Dr':
+        $titre = 'Docteur';
+        break;
+    case 'Me':
+        $titre = 'Maître';
+        break;
+    case 'Pr':
+        $titre = 'Professeur';
+        break;
+    default:
+        $titre = 'Madame ou Monsieur';
+        break;
+}
+$destinataire = sprintf('%s %s %s',
+    $responsable['titre'] == 'Asso' ? 'Association' : $titre, $this->responsable['nom'],
+    $this->responsable['prenom']);
+if ($this->detail['nbEcheances'] == 1) {
+    $resiliation = "l'échéance du " . $this->detail['datesEcheances'];
+} else {
+    $resiliation = 'les échéances des ' . $this->detail['datesEcheances'];
+}
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+?>
+<p>&Agrave; l'attention de <?=$destinataire;?></p>
+<hr>
+<p><?=$titre;?>,</p>
+
+<p>Le <?=$this->detail['datePaiement'];?> vous avez souhaité payer les abonnements PASS ANNUEL JUNIOR de vos enfants en trois fois par carte bancaire. Or votre banque a rejeté l'échéance du <?=$this->detail['dateRefus'];?> et a résilié <?=$resiliation;?>.</p>
+<p>Aussi, sauf erreur ou omission de notre part, vous nous devez la somme de <?=$fmt->formatCurrency($this->detail['montantTotal'], 'EUR');?>.</p>
+<p>Nous sommes soucieux qu'un problème ait pu retarder votre paiement.</p>
+<p>Par conséquent, nous vous demandons de bien vouloir régulariser cette situation dans un délai de 5 jours ouvrés maximum en nous adressant le règlement de votre dû en espèces ou par chèque à l'ordre de <b>Transdev Albertville</b> :</p>
+<ul>
+	<li>en vous présentant au Point Info Bus, Place de la Gare à Albertville durant les horaires d’ouverture</li>
+	<li>ou en envoyant votre chèque par voie postale à Transdev Albertville, Place de la Gare, 73200 Albertville</li>
+</ul>
+<p>Dans le cas où votre règlement aurait été adressé entre temps, nous vous prions de ne pas tenir compte de la présente.</p>
+<p>Restant à votre disposition pour tout renseignement complémentaire et vous remerciant par avance.</p>
+<p>Nous vous prions d'agréer, <?=$titre;?>, l’expression de nos salutations distinguées.</p>
+
+<p>Le service client</p>

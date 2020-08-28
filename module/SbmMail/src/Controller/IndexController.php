@@ -11,8 +11,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 28 août 2020
+ * @version 2020-2.6.0
  */
 namespace SbmMail\Controller;
 
@@ -27,6 +27,7 @@ use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      * Par défaut, page d'envoi d'un message au service de transport. (à configurer dans
@@ -108,6 +109,96 @@ class IndexController extends AbstractActionController
     }
 
     /**
+     * Sélection des paiements par CB avec des abonnements résiliés par Paybox Envoi d'un
+     * mail de relance Enregistrement de l'envoi dans une table (maxi 3 relances) Un CRON
+     * exécutera cette tâche une fois par semaine.
+     */
+    public function paiementsResiliesAction()
+    {
+        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
+        $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
+        $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
+        $mailTemplate = new MailTemplate('abonnements-resilies', 'layout',
+            [
+                'file_name' => $logo_bas_de_mail,
+                'path' => StdLib::getParam('path', $this->img),
+                'img_attributes' => StdLib::getParamR(
+                    [
+                        'administrer',
+                        $logo_bas_de_mail
+                    ], $this->img),
+                'client' => $this->client
+            ]);
+        try {
+            $millesime = $tCalendar->getDefaultMillesime();
+            $aboResilies = $this->db_manager->get('Sbm\Paiement\AbonnementsResilies')
+                ->setMillesime($millesime)
+                ->run();
+            $controle = [];
+            foreach ($aboResilies as $detail) {
+                $responsableId = $detail['responsableId'];
+                $odata = $tResponsables->getRecord($responsableId);
+                $email = $odata->email;
+                $cc = StdLib::getParam('destinataires', $this->mail_config);
+                $to = [];
+                if (! empty($email)) {
+                    $to[$email] = [
+                        'email' => $email,
+                        'name' => $odata->titre . ' ' . $odata->nom . ' ' . $odata->prenom
+                    ];
+                }
+                if (empty($to))
+                    continue;
+                $echeances = $detail['nbEcheances'] > 1 ? 'échéances en date des' : 'échéance en date du';
+                $controle[] = sprintf(
+                    '%s %s (%s) - %d %s %s pour un montant dû de %.2f €', $odata->nom,
+                    $odata->prenom, $odata->email, $detail['nbEcheances'], $echeances,
+                    $detail['datesEcheances'], $detail['montantTotal']);
+                $params = [
+                    'to' => array_values($to),
+                    'cc' => $cc,
+                    'subject' => 'Facture en attente de règlement',
+                    'body' => [
+                        'html' => $mailTemplate->render(
+                            [
+                                'responsable' => $odata->getArrayCopy(),
+                                'detail' => $detail,
+                                'url_portail' => $this->url()
+                                    ->fromRoute('sbmportail', [
+                                    'action' => 'tr-index'
+                                ], [
+                                    'force_canonical' => true
+                                ])
+                            ])
+                    ]
+                ];
+                $this->getEventManager()->addIdentifiers('SbmMail\Send');
+                $this->getEventManager()->trigger('sendMail', null, $params);
+            }
+            // $controle est un tableau contenant les noms prénoms emails et sommes dues
+            // des personnes à qui on adresse une relance
+            if (empty($controle)) {
+                $message = "Durant la dernière semaine, il n'y a pas eu de résiliation d'abonnement par CB. Par conséquent, aucun mail de relance n'a été envoyé.";
+            } else {
+                $message = "<pre>\nSuite à des résiliations d'abonnement par CB qui ont eu lieu durant la dernière semaine un email de relance a été adressé aux personnes suivantes :";
+                foreach ($controle as $value) {
+                    $message .= "\n - $value";
+                }
+                $message .= "\n</pre>\n";
+            }
+        } catch (\Exception $e) {
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                'sbm_error.log');
+            $this->debugLog($e->getMessage());
+            $this->debugTrace();
+            $message = "Le système de relances pour les abonnements résiliés a échoué.";
+        }
+        return $this->getResponse()
+            ->setContent($message)
+            ->setStatusCode(200);
+    }
+
+    /**
      * Envoie des mails aux transporteurs lorsque des changements ont lieu dans les
      * inscriptions des enfants qu'ils transportent (nouvelle affectation, changement
      * d'affectation, suppression d'une affectation ou élève rayé) Cette tâche doit être
@@ -127,16 +218,29 @@ class IndexController extends AbstractActionController
             $changes = $history->getLastDayChanges('affectations', $millesime);
             if ($changes instanceof \Traversable) {
                 foreach ($changes as $affectation) {
+                    $arrayId = explode('|', $affectation['id_txt']);
                     $log = explode('|', $affectation['log']);
-                    if (count($log) >= 4) {
-                        $oservice = $services->getRecord($log[3]);
+                    if (count($log) >= 6) {
+                        $arrayServiceId = [
+                            'ligneId' => $log[3],
+                            'sens' => $log[4],
+                            'moment' => $arrayId[4],
+                            'ordre' => $log[5]
+                        ];
+                        $oservice = $services->getRecord($arrayServiceId);
                         // enregistrement sans doublon
-                        $destinataires[$oservice->transporteurId][$oservice->lotId] = $oservice->lotId;
+                        $destinataires[$oservice->transporteurId][$oservice->getEncodeServiceId()] = $oservice->designation();
                     }
-                    if (count($log) == 6) {
-                        $oservice = $services->getRecord($log[5]);
+                    if (count($log) == 10) {
+                        $arrayServiceId = [
+                            'ligneId' => $log[7],
+                            'sens' => $log[8],
+                            'moment' => $arrayId[4],
+                            'ordre' => $log[9]
+                        ];
+                        $oservice = $services->getRecord($arrayServiceId);
                         // enregistrement sans doublon
-                        $destinataires[$oservice->transporteurId][$oservice->lotId] = $oservice->lotId;
+                        $destinataires[$oservice->transporteurId][$oservice->getEncodeServiceId()] = $oservice->designation();
                     }
                 }
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
