@@ -7,7 +7,7 @@
  * @filesource CriteresCommuneForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
+ * @date 27 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Form;
@@ -15,11 +15,15 @@ namespace SbmPortail\Form;
 use SbmCommun\Form\CriteresForm as SbmCommunCriteresForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterProviderInterface
+class CriteresCommuneForm extends SbmCommunCriteresForm implements
+    InputFilterProviderInterface
 {
 
-    public function __construct()
+    private $choixCommune;
+
+    public function __construct(array $arrayCommunes = [])
     {
+        $this->choixCommune = count($arrayCommunes) > 1;
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
 
@@ -93,6 +97,25 @@ class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterPr
                     ]
                 ]
             ]);
+        if ($this->choixCommune) {
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Select',
+                    'name' => 'communeId',
+                    'attributes' => [
+                        'id' => 'critere-communeId',
+                        'class' => 'sbm-width-30c'
+                    ],
+                    'options' => [
+                        'label' => 'Commune',
+                        'empty_option' => 'Tout',
+                        'value_options' => $arrayCommunes,
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
+        }
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -103,6 +126,9 @@ class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterPr
                 ],
                 'options' => [
                     'label' => 'Etablissement',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
                     'empty_option' => 'Tout',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -140,7 +166,7 @@ class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterPr
 
     public function getInputFilterSpecification()
     {
-        return [
+        $array = [
             'numero' => [
                 'name' => 'numero',
                 'required' => false,
@@ -177,6 +203,10 @@ class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterPr
                     ]
                 ]
             ],
+            'communeId' => [
+                'name' => 'communeId',
+                'required' => false
+            ],
             'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
@@ -186,5 +216,9 @@ class CriteresCommuneForm extends SbmCommunCriteresForm implements InputFilterPr
                 'required' => false
             ]
         ];
+        if (! $this->choixCommune) {
+            unset($array['communeId']);
+        }
+        return $array;
     }
 }

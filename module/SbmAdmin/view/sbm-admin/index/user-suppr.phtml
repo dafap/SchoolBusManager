@@ -9,21 +9,26 @@
  * @filesource user-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
-$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+use SbmAuthentification\Model\CategoriesInterface;
 $acategories = [
-    255 => 'Administrateur',
-    254 => 'Administrateur',
-    253 => 'Gestionnaire',
-    200 => 'Secrétariat',
-    130 => 'Commune',
-    120 => 'Etablissement',
-    110 => 'Transporteur',
-    50 => 'Organisme',
-    1 => 'Parent'
+    CategoriesInterface::SUPER_ADMINISTRATEUR_ID => 'Administrateur',
+    CategoriesInterface::ADMINISTRATEUR_ID => 'Administrateur',
+    CategoriesInterface::GESTION_ID => 'Gestionnaire',
+    CategoriesInterface::SECRETARIAT_ID => 'Secrétariat',
+    CategoriesInterface::GR_COMMUNES_ID => 'Groupement de communes',
+    CategoriesInterface::COMMUNE_ID => 'Commune',
+    CategoriesInterface::GR_ETABLISSEMENTS_ID => 'Groupement d\'établissements',
+    CategoriesInterface::ETABLISSEMENT_ID => 'Etablissement',
+    CategoriesInterface::GR_TRANSPORTEURS_ID => 'Groupement de transporteurs',
+    CategoriesInterface::TRANSPORTEUR_ID => 'Transporteur',
+    CategoriesInterface::ORGANISME_ID => 'Organisme',
+    CategoriesInterface::PARENT_ID => 'Parent'
 ];
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_retour = $this->url('sbmadmin', [
     'action' => 'user-liste',
     'page' => $this->page

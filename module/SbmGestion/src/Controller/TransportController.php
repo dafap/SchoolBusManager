@@ -8,11 +8,12 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
@@ -165,7 +166,8 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_lignes', 15),
                 'criteres_form' => $critere_form,
-                'admin' => $auth->getCategorieId() > 253,
+                'admin' => $auth->getCategorieId() >=
+                CategoriesInterface::ADMINISTRATEUR_ID,
                 'as' => $as,
                 'circuitsVides' => $lignesVides
             ]);
@@ -2951,7 +2953,8 @@ class TransportController extends AbstractActionController
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_lignes', 15),
                 'criteres_form' => $args['form'],
-                'admin' => $auth->getCategorieId() > 253,
+                'admin' => $auth->getCategorieId() >=
+                CategoriesInterface::ADMINISTRATEUR_ID,
                 'as' => $as,
                 'circuitsVides' => $lignesVides
             ]);

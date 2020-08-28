@@ -7,14 +7,14 @@
  * Les autorisations sont basées sur la hiérarchie du nom de la route.
  * Par exemple: deny sur gestion entraine deny sur gestion/eleve::eleve-liste
  * Par contre: deny sur gestion et allow sur gestion/eleve::eleve-liste est possible
- * 
+ *
  * @project sbm
  * @package SbmAuthentification/Permissions
  * @filesource AclRoutes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 sept. 2018
- * @version 2019-2.5.0
+ * @date 28 août 2020
+ * @version 2020-2.6.0
  */
 namespace SbmAuthentification\Permissions;
 
@@ -28,6 +28,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AclRoutes implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
      * Rôle par défaut
@@ -61,8 +62,8 @@ class AclRoutes implements FactoryInterface
     protected $authenticationService;
 
     /**
-     * Route vers laquelle on redirige si les accès ne sont pas valides
-     * (dépend de la catégorie de l'utilisateur ou prend la valeur par défaut)
+     * Route vers laquelle on redirige si les accès ne sont pas valides (dépend de la
+     * catégorie de l'utilisateur ou prend la valeur par défaut)
      *
      * @var string
      */
@@ -77,7 +78,6 @@ class AclRoutes implements FactoryInterface
 
     /**
      * Création du service
-     *
      * (non-PHPdoc)
      *
      * @see \Zend\ServiceManager\FactoryInterface::createService()
@@ -100,7 +100,12 @@ class AclRoutes implements FactoryInterface
             array_key_exists('redirectTo', $this->acl_config)) {
             $key = $this->authenticationService->getCategorieId();
             if (array_key_exists($key, $this->roleId)) {
-                $this->redirectTo = $this->acl_config['redirectTo'][$this->roleId[$key]];
+                $role = $this->roleId[$key];
+                while (! is_null($role) &&
+                    ! array_key_exists($role, $this->acl_config['redirectTo'])) {
+                    $role = $this->acl_config['roles'][$role];
+                }
+                $this->redirectTo = $this->acl_config['redirectTo'][$role];
                 return $this;
             }
         }
@@ -121,7 +126,8 @@ class AclRoutes implements FactoryInterface
                 $role = $this->roleId[$this->authenticationService->getCategorieId()];
             }
 
-            // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par défaut, ou une
+            // Si l'utilisateur n'est pas autorisé, on le redirige vers la page par
+            // défaut, ou une
             // autre page si elle a été spécifiée
             // dans le fichier de configuration
             $matchedRouteName = $e->getRouteMatch()->getMatchedRouteName();
@@ -139,6 +145,9 @@ class AclRoutes implements FactoryInterface
      */
     private function redirect(MvcEvent $e, $route)
     {
+        if (empty($route)) {
+            $route = self::DEFAULT_REDIRECT_TO;
+        }
         $url = $e->getRouter()->assemble([], [
             'name' => $route
         ]);
@@ -150,8 +159,8 @@ class AclRoutes implements FactoryInterface
     }
 
     /**
-     * Le nom de la resource est matchedRouteName::action
-     * On va construire toutes les resources parents avec leurs droits
+     * Le nom de la resource est matchedRouteName::action On va construire toutes les
+     * resources parents avec leurs droits
      *
      * @param \Zend\Mvc\Router\RouteMatch $routeMatch
      * @return mixed
@@ -170,7 +179,8 @@ class AclRoutes implements FactoryInterface
             $resourceNameParts[] = $routePart;
             $resourceName = implode('/', $resourceNameParts);
             $this->acl->addResource($resourceName, $parentName);
-            // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas été
+            // Par défaut, on interdit l'accès à toute ressource dont l'ACL racine n'a pas
+            // été
             // défini
             if (is_null($parentName) && ! array_key_exists($routePart, $resources)) {
                 $this->acl->deny(self::DEFAULT_ROLE, $routePart);

@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2020
+ * @date 27 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -27,7 +27,7 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController implements CategoriesInterface
+class IndexController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
 
@@ -54,35 +54,32 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function indexAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
         // pour le moment, j'utilise la même entrée pour tous les rôles.
         // Le filtre programmé va limiter la vue aux données concernant l'utilisateur
-        switch ($auth->getCategorieId()) {
-            case self::TRANSPORTEUR_ID:
+        switch ($this->authenticate->by('email')->getCategorieId()) {
+            case CategoriesInterface::TRANSPORTEUR_ID:
+            case CategoriesInterface::GR_TRANSPORTEURS_ID:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'tr-index'
                 ]);
                 break;
-            case self::ETABLISSEMENT_ID:
+            case CategoriesInterface::ETABLISSEMENT_ID:
+            case CategoriesInterface::GR_ETABLISSEMENTS_ID:
                 return $this->redirect()->toRoute('sbmportail', [
                     'action' => 'et-index'
                 ]);
                 break;
-            case self::COMMUNE_ID:
+            case CategoriesInterface::COMMUNE_ID:
+            case CategoriesInterface::GR_COMMUNES_ID:
                 return $this->redirect()->toRoute('sbmportail',
                     [
                         'action' => 'com-index'
                     ]);
                 break;
-            case self::SECRETARIAT_ID:
-            case self::GESTION_ID:
-            case self::ADMINISTRATEUR_ID:
-            case self::SUPER_ADMINISTRATEUR_ID:
+            case CategoriesInterface::SECRETARIAT_ID:
+            case CategoriesInterface::GESTION_ID:
+            case CategoriesInterface::ADMINISTRATEUR_ID:
+            case CategoriesInterface::SUPER_ADMINISTRATEUR_ID:
                 return $this->redirect()->toRoute('sbmportail',
                     [
                         'action' => 'org-index'
@@ -154,13 +151,6 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function orgElevesAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -244,13 +234,6 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function orgPdfAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-
         $criteres_form = new \SbmPortail\Form\CriteresOrgForm();
         $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresOrg(
             $criteres_form->getElementNames(), false);
@@ -312,13 +295,6 @@ class IndexController extends AbstractActionController implements CategoriesInte
                 $aTelephoneIndexes[] = $idx;
             }
             $idx ++;
-        }
-        // contrôle de l'identité de l'utilisateur
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::SECRETARIAT_ID) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
         }
         // reprise des critères
         $criteres = Session::get('post', [], $this->getSessionNamespace('org-eleves'));
@@ -384,78 +360,88 @@ class IndexController extends AbstractActionController implements CategoriesInte
      *
      * @return \Zend\Http\Response|array
      */
-    private function initCommune()
+    private function initCommunes()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() != self::COMMUNE_ID) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         try {
-            $communeId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
-                $userId);
-            $commune = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
-                $communeId)->alias;
+            switch ($this->authenticate->by('email')->getCategorieId()) {
+                case CategoriesInterface::COMMUNE_ID:
+                    $communeId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+                        $userId);
+                    $result[$communeId] = $this->db_manager->get('Sbm\Db\Table\Communes')->getRecord(
+                        $communeId)->alias;
+                    break;
+                case CategoriesInterface::GR_COMMUNES_ID:
+                    $result = [];
+                    $userCommuneId = $this->db_manager->get('Sbm\Db\Table\UsersCommunes')->getCommuneId(
+                        $userId);
+                    $arrayCommuneId = $this->db_manager->get('Sbm\Db\Table\RpiCommunes')->getCommuneIds(
+                        $userCommuneId);
+                    foreach ($arrayCommuneId as $communeId) {
+                        $result[$communeId] = $this->db_manager->get(
+                            'Sbm\Db\Table\Communes')->getRecord($communeId)->alias;
+                    }
+                    break;
+            }
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
+            $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
+                'sbm_error.log');
+            $this->debugLog($e->getMessage());
+            $this->debugLog($e->getTrace());
             return $this->redirect()->toRoute('login', [
                 'action' => 'home-page'
             ]);
         }
-        return [
-            'userId' => $userId,
-            'communeId' => $communeId,
-            'nom' => $commune
-        ];
+        return $result;
     }
 
     public function comIndexAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $millesime = Session::get('millesime');
+        $data = [];
+        foreach ($arrayCommunes as $communeId => $lacommune) {
+            $data[$communeId] = [
+                'lacommune' => $lacommune,
+                'elevesEnregistres' => current(
+                    $statEleve->getNbEnregistresByMillesime($millesime, $communeId))['effectif'],
+                'elevesInscrits' => current(
+                    $statEleve->getNbInscritsByMillesime($millesime, $communeId))['effectif'],
+                'elevesPreinscrits' => current(
+                    $statEleve->getNbPreinscritsByMillesime($millesime, $communeId))['effectif'],
+                'elevesRayes' => current(
+                    $statEleve->getNbRayesByMillesime($millesime, true, $communeId))['effectif'],
+                'elevesFamilleAcceuil' => current(
+                    $statEleve->getNbFamilleAccueilByMillesime($millesime, $communeId))['effectif'],
+                'elevesGardeAlternee' => current(
+                    $statEleve->getNbGardeAlterneeByMillesime($millesime, $communeId))['effectif'],
+                'elevesMoins1km' => current(
+                    $statEleve->getNbMoins1KmByMillesime($millesime, $communeId))['effectif'],
+                'elevesDe1A3km' => current(
+                    $statEleve->getNbDe1A3KmByMillesime($millesime, $communeId))['effectif'],
+                'eleves3kmEtPlus' => current(
+                    $statEleve->getNb3kmEtPlusByMillesime($millesime, $communeId))['effectif']
+            ];
+        }
         return new ViewModel(
             [
-                'commune' => $commune['nom'],
-                'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime,
-                        $commune['communeId']))['effectif'],
-                'elevesInscrits' => current(
-                    $statEleve->getNbInscritsByMillesime($millesime, $commune['communeId']))['effectif'],
-                'elevesPreinscrits' => current(
-                    $statEleve->getNbPreinscritsByMillesime($millesime,
-                        $commune['communeId']))['effectif'],
-                'elevesRayes' => current(
-                    $statEleve->getNbRayesByMillesime($millesime, true,
-                        $commune['communeId']))['effectif'],
-                'elevesFamilleAcceuil' => current(
-                    $statEleve->getNbFamilleAccueilByMillesime($millesime,
-                        $commune['communeId']))['effectif'],
-                'elevesGardeAlternee' => current(
-                    $statEleve->getNbGardeAlterneeByMillesime($millesime,
-                        $commune['communeId']))['effectif'],
-                'elevesMoins1km' => current(
-                    $statEleve->getNbMoins1KmByMillesime($millesime, $commune['communeId']))['effectif'],
-                'elevesDe1A3km' => current(
-                    $statEleve->getNbDe1A3KmByMillesime($millesime, $commune['communeId']))['effectif'],
-                'eleves3kmEtPlus' => current(
-                    $statEleve->getNb3kmEtPlusByMillesime($millesime,
-                        $commune['communeId']))['effectif']
+                'data' => $data,
+                'commune' => implode(' ou ', array_values($arrayCommunes))
             ]);
     }
 
     /**
-     * Présente la liste des élèves de la commune
+     * Présente la liste des élèves de la ou des communes
      */
     public function comElevesAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -489,7 +475,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             }
         }
         // formulaire des critères de recherche
-        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm($arrayCommunes);
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
@@ -512,11 +498,21 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $criteres_obj->exchangeArray($args);
             $criteres_form->setData($criteres_obj->getArrayCopy());
         }
-        $where = $criteres_obj->getWhereForEleves();
-        $where = $criteres_obj->getWhere()
-            ->nest()
-            ->equalTo('r1.communeId', $commune['communeId'])->or->equalTo('r2.communeId',
-            $commune['communeId'])->unnest();
+        $where = $criteres_obj->getWhere();
+        $or = false;
+        foreach (array_keys($arrayCommunes) as $communeId) {
+            if ($or) {
+                $where->or;
+            } else {
+                $where = $where->nest();
+                $or = true;
+            }
+            $where->equalTo('r1.communeId', $communeId)->or->equalTo('r2.communeId',
+                $communeId);
+        }
+        if ($or) {
+            $where = $where->unnest();
+        }
         $paginator = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->paginatorScolaritesR2(
             $where, [
                 'nom',
@@ -524,7 +520,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             ]);
         return new ViewModel(
             [
-                'commune' => $commune['nom'],
+                'commune' => implode(' ou ', array_values($arrayCommunes)),
                 'paginator' => $paginator,
                 'page' => $this->params('page', 1),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
@@ -537,9 +533,9 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function comElevesDownloadAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -582,7 +578,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
         // reprise des critères
         $criteres = Session::get('post', [], $this->getSessionNamespace('com-eleves'));
         // formulaire des critères de recherche
-        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm($arrayCommunes);
         // initialiser le form pour les select ...
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
@@ -598,11 +594,21 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $criteres_obj->exchangeArray($criteres_form->getData());
         }
         // lancement de la requête selon la catégorie de l'utilisateur
-        $where = $criteres_obj->getWhereForEleves();
-        $where = $criteres_obj->getWhere()
-            ->nest()
-            ->equalTo('r1.communeId', $commune['communeId'])->or->equalTo('r2.communeId',
-            $commune['communeId'])->unnest();
+        $where = $criteres_obj->getWhere();
+        $or = false;
+        foreach (array_keys($arrayCommunes) as $communeId) {
+            if ($or) {
+                $where->or;
+            } else {
+                $where = $where->nest();
+                $or = true;
+            }
+            $where->equalTo('r1.communeId', $communeId)->or->equalTo('r2.communeId',
+                $communeId);
+        }
+        if ($or) {
+            $where = $where->unnest();
+        }
         try {
             $result = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
                 $where, [
@@ -639,11 +645,11 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function comPdfAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
-        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm();
+        $criteres_form = new \SbmPortail\Form\CriteresCommuneForm($arrayCommunes);
         $criteres_form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
                 ->desservis())
@@ -658,11 +664,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $criteres_obj->exchangeArray($criteres_form->getData());
         }
         $documentId = 'List élèves portail commune';
-        $where = $criteres_obj->getWhereForEleves();
-        $where = $criteres_obj->getWherePdf()
-            ->nest()
-            ->equalTo('communeIdR1', $commune['communeId'])->or->equalTo('communeIdR2',
-            $commune['communeId'])->unnest();
+        $where = $criteres_obj->getWherePdf($arrayCommunes);
         $call_pdf = $this->RenderPdfService;
         if ($docaffectationId = $this->params('id', false)) {
             $call_pdf->setParam('docaffectationId', $docaffectationId);
@@ -683,9 +685,9 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function comCarteEtablissementsAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -704,7 +706,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     ->getScheme(),
                 'ptEtablissements' => $this->db_manager->get('Sbm\Portail\Commune\Query')
                     ->setProjection($this->projection)
-                    ->setCommuneId($commune['communeId'])
+                    ->setCommuneId(array_keys($arrayCommunes))
                     ->etablissementsPourCarte(),
                 'config' => StdLib::getParam('etablissement', $this->config_cartes),
                 'url_api' => $this->url_api
@@ -719,9 +721,9 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function comCarteStationsAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $prg = $this->prg();
         if ($prg instanceof Response) {
@@ -741,7 +743,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     ->getScheme(),
                 'ptStations' => $this->db_manager->get('Sbm\Portail\Commune\Query')
                     ->setProjection($this->projection)
-                    ->setCommuneId($commune['communeId'])
+                    ->setCommuneId(array_keys($arrayCommunes))
                     ->stationsPourCarte(),
                 'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
@@ -756,9 +758,9 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function comCircuitsAction()
     {
-        $commune = $this->initCommune();
-        if ($commune instanceof \Zend\Http\Response) {
-            return $commune;
+        $arrayCommunes = $this->initCommunes();
+        if ($arrayCommunes instanceof \Zend\Http\Response) {
+            return $arrayCommunes;
         }
         $args = $this->initListe('lignes');
         if ($args instanceof Response) {
@@ -774,7 +776,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
         $viewhelper = new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Portail\Commune\Query')
-                    ->setCommuneId($commune['communeId'])
+                    ->setCommuneId(array_keys($arrayCommunes))
                     ->paginatorLignes($args['where'], [
                     'actif DESC',
                     'ligneId'
@@ -785,7 +787,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                 'admin' => false,
                 'millesime' => $millesime,
                 'as' => $as,
-                'commune' => $commune['nom']
+                'commune' => implode(' ou ', array_values($arrayCommunes))
             ]);
         $viewhelper->setTemplate('sbm-portail/index/com-ligne.phtml');
         return $viewhelper;
@@ -798,13 +800,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function etIndexAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         try {
             $etablissementId = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                 $userId);
@@ -844,13 +840,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function trIndexAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         try {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
@@ -887,14 +877,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function trElevesAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < self::TRANSPORTEUR_ID ||
-            $auth->getCategorieId() > self::ETABLISSEMENT_ID) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
@@ -941,8 +924,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
                 ->toutes());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $arrayCriteres = [];
-        $categorieId = $auth->getCategorieId();
-        if ($categorieId == self::TRANSPORTEUR_ID) {
+        $categorieId = $this->authenticate->by('email')->getCategorieId();
+        if ($categorieId == CategoriesInterface::TRANSPORTEUR_ID) {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
             $criteres_form->setValueOptions('serviceId',
@@ -972,7 +955,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $criteres_form->setData($arrayCriteres);
         }
         switch ($categorieId) {
-            case self::TRANSPORTEUR_ID:
+            case CategoriesInterface::TRANSPORTEUR_ID:
                 // Filtre les résultats pour n'afficher que ce qui concerne ce
                 // transporteur
                 try {
@@ -1002,7 +985,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     }
                 }
                 break;
-            case self::ETABLISSEMENT_ID:
+            case CategoriesInterface::ETABLISSEMENT_ID:
                 // Filtre les résultats pour n'afficher que ce qui concerne cet
                 // établissement
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
@@ -1043,17 +1026,11 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function trPdfAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
-        $categorieId = $auth->getCategorieId();
-        if ($categorieId == self::TRANSPORTEUR_ID) {
+        $categorieId = $this->authenticate->by('email')->getCategorieId();
+        if ($categorieId == CategoriesInterface::TRANSPORTEUR_ID) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -1065,7 +1042,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $criteres_obj->exchangeArray($criteres);
         }
         switch ($categorieId) {
-            case self::TRANSPORTEUR_ID:
+            case CategoriesInterface::TRANSPORTEUR_ID:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                     $userId);
                 $where = $criteres_obj->getWherePdf()
@@ -1074,7 +1051,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     $right)->unnest();
                 $documentId = 'List élèves portail transporteur';
                 break;
-            case self::ETABLISSEMENT_ID:
+            case CategoriesInterface::ETABLISSEMENT_ID:
                 $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(
                     $userId);
                 $where = $criteres_obj->getWherePdf()->equalTo('etablissementId', $right);
@@ -1225,19 +1202,13 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function trExtractionTelephonesAction()
     {
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
             $userId);
 
         $criteres_form = new \SbmPortail\Form\CriteresForm();
-        $categorieId = $auth->getCategorieId();
-        if ($categorieId == self::TRANSPORTEUR_ID) {
+        $categorieId = $this->authenticate->by('email')->getCategorieId();
+        if ($categorieId == CategoriesInterface::TRANSPORTEUR_ID) {
             $sanspreinscrits = $this->transporteur_sanspreinscrits;
         } else {
             $sanspreinscrits = $this->etablissement_sanspreinscrits;
@@ -1274,7 +1245,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
                 'Il n\'y a pas de données correspondant aux critères indiqués.');
             return $this->redirect()->toRoute('sbmportail',
                 [
-                    'action' => $auth->getCategorieId() < self::SECRETARIAT_ID ? 'tr-eleves' : 'org-eleves',
+                    'action' => $this->authenticate->by('email')
+                        ->getCategorieId() < CategoriesInterface::SECRETARIAT_ID ? 'tr-eleves' : 'org-eleves',
                     'page' => $this->params('page', 1)
                 ]);
         }
@@ -1311,13 +1283,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $idx ++;
         }
         // contrôle de l'identité de l'utilisateur
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity()) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
-        $userId = $auth->getUserId();
+        $userId = $this->authenticate->by('email')->getUserId();
         // reprise des critères
         $criteres = Session::get('post', [], $this->getSessionNamespace('tr-eleves'));
         // formulaire des critères de recherche
@@ -1336,8 +1302,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());
         // créer un objectData qui contient la méthode getWhere() adhoc
-        $categorieId = $auth->getCategorieId();
-        if ($categorieId == self::TRANSPORTEUR_ID) {
+        $categorieId = $this->authenticate->by('email')->getCategorieId();
+        if ($categorieId == CategoriesInterface::TRANSPORTEUR_ID) {
             $transporteurId = $this->db_manager->get('Sbm\Db\Table\UsersTransporteurs')->getTransporteurId(
                 $userId);
             $criteres_obj = new \SbmPortail\Model\Db\ObjectData\CriteresTransporteur(
@@ -1356,7 +1322,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
         // lancement de la requête selon la catégorie de l'utilisateur
         try {
             switch ($categorieId) {
-                case self::TRANSPORTEUR_ID:
+                case CategoriesInterface::TRANSPORTEUR_ID:
                     // Filtre les résultats pour n'afficher que ce qui concerne ce
                     // transporteur
                     try {
@@ -1386,7 +1352,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                         }
                     }
                     break;
-                case self::ETABLISSEMENT_ID:
+                case CategoriesInterface::ETABLISSEMENT_ID:
                     // Filtre les résultats pour n'afficher que ce qui concerne cet
                     // établissement
                     $right = $this->db_manager->get('Sbm\Db\Table\UsersEtablissements')->getEtablissementId(

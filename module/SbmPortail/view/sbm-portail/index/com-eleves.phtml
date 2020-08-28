@@ -9,7 +9,7 @@
  * @filesource com-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2020
+ * @date 26 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -31,7 +31,7 @@ try {
 } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
     // affichage d'une page d'erreur
     ?>
-<h1>Liste des élèves de la commune <?=$article?><?=$this->commune;?></h1>
+<h1>Liste des élèves résidant à <?=$this->commune;?></h1>
 <div id="liste-wrapper">
 	<div id="liste-inner">
 		<pre>

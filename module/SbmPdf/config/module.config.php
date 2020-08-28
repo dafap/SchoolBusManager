@@ -7,7 +7,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 15 avr. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 use SbmPdf\Controller;
@@ -78,9 +78,6 @@ return [
                     'org-pdf' => [
                         'allow' => [
                             'roles' => [
-                                'transporteur',
-                                'etablissement',
-                                'commune',
                                 'secretariat',
                                 'gestion'
                             ]

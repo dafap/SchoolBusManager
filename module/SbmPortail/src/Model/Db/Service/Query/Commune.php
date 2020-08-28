@@ -7,7 +7,7 @@
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 26 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\Service\Query;
@@ -24,7 +24,7 @@ class Commune extends AbstractQuery
      *
      * @var string
      */
-    private $communeId;
+    private $arrayCommuneId;
 
     private $projection;
 
@@ -34,12 +34,12 @@ class Commune extends AbstractQuery
 
     /**
      *
-     * @param string $communeId
+     * @param array $arrayCommuneId
      * @return self
      */
-    public function setCommuneId(string $communeId): self
+    public function setCommuneId(array $arrayCommuneId): self
     {
-        $this->communeId = $communeId;
+        $this->arrayCommuneId = $arrayCommuneId;
         return $this;
     }
 
@@ -62,8 +62,8 @@ class Commune extends AbstractQuery
         if (!$order) {
             $order = ['lig.ligneId'];
         }
-        $where->equalTo('lig.millesime', $this->millesime)->equalTo('sta.communeId',
-            $this->communeId);
+        $where->equalTo('lig.millesime', $this->millesime)->in('sta.communeId',
+            $this->arrayCommuneId);
         return $this->sql->select()
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns([])
@@ -131,7 +131,7 @@ class Commune extends AbstractQuery
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
             ])
-            ->where((new Where())->equalTo('sta.communeId', $this->communeId));
+            ->where((new Where())->in('sta.communeId', $this->arrayCommuneId));
     }
 
     /**
@@ -199,6 +199,6 @@ class Commune extends AbstractQuery
             ])
             ->where(
             (new Where())->equalTo('millesime', $this->millesime)
-                ->equalTo('com.communeId', $this->communeId));
+                ->in('com.communeId', $this->arrayCommuneId));
     }
 }

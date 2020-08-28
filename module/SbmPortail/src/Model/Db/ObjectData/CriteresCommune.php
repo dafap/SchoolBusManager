@@ -7,7 +7,7 @@
  * @filesource CriteresCommune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
+ * @date 27 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -67,6 +67,10 @@ class CriteresCommune extends SbmCommunCriteres
             $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->or->like(
                 'r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
+        if (! empty($this->data['communeId'])) {
+            $where->nest()->equalTo('r1.communeId', $this->data['communeId'])->or->equalTo(
+                'r2.communeId', $this->data['communeId'])->unnest();
+        }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('sco.etablissementId', $this->data['etablissementId']);
         }
@@ -109,6 +113,23 @@ class CriteresCommune extends SbmCommunCriteres
         }
         if (! empty($this->data['responsable'])) {
             $where->like('responsable', $this->data['responsable'] . '%');
+        }
+        if (! empty($this->data['communeId'])) {
+            $where->nest()->equalTo('communeIdR1', $this->data['communeId'])->or->equalTo(
+                'communeIdR2', $this->data['communeId'])->unnest();
+        } else {
+            $or = false;
+            foreach (array_keys($descripteur) as $communeId) {
+                if ($or) {
+                    $where->or;
+                } else {
+                    $where = $where->nest();
+                    $or = true;
+                }
+                $where->equalTo('communeIdR1', $communeId)->or->equalTo('communeIdR2',
+                    $communeId);
+            }
+            $where = $where->unnest();
         }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('etablissementId', $this->data['etablissementId']);
@@ -155,6 +176,10 @@ class CriteresCommune extends SbmCommunCriteres
             $where->nest()->like('r1.nomSA', $this->data['responsable'] . '%')->or->like(
                 'r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
+        if (! empty($this->data['communeId'])) {
+            $where->nest()->equalTo('r1.communeId', $this->data['communeId'])->or->equalTo(
+                'r2.communeId', $this->data['communeId'])->unnest();
+        }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('sco.etablissementId', $this->data['etablissementId']);
         }
@@ -198,6 +223,23 @@ class CriteresCommune extends SbmCommunCriteres
         if (! empty($this->data['responsable'])) {
             $where->nest()->like('responsable1', $this->data['responsable'] . '%')->or->like(
                 'responsable2', $this->data['responsable'] . '%')->unnest();
+        }
+        if (! empty($this->data['communeId'])) {
+            $where->nest()->equalTo('communeIdR1', $this->data['communeId'])->or->equalTo(
+                'communeIdR2', $this->data['communeId'])->unnest();
+        } else {
+            $or = false;
+            foreach (array_keys($descripteur) as $communeId) {
+                if ($or) {
+                    $where->or;
+                } else {
+                    $where = $where->nest();
+                    $or = true;
+                }
+                $where->equalTo('communeIdR1', $communeId)->or->equalTo('communeIdR2',
+                    $communeId);
+            }
+            $where = $where->unnest();
         }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('etablissementId', $this->data['etablissementId']);

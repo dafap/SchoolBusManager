@@ -7,7 +7,7 @@
  * @filesource users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\StdLib;
@@ -51,23 +51,7 @@ return [
             'datePreviousLogin' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'adresseIp' => 'varchar(16) NOT NULL DEFAULT ""',
             'previousIp' => 'varchar(16) NOT NULL DEFAULT ""',
-            'categorieId' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // 1: parent,
-                                                                          // 50:
-                                                                          // organisme,
-                                                                          // 110:
-                                                                          // transporteur,
-                                                                          // 120:
-                                                                          // etablissement,
-                                                                          // 130:
-                                                                          // commune, 200:
-                                                                          // secretariat
-                                                                          // 253:
-                                                                          // gestionnaire,
-                                                                          // 254:
-                                                                          // administrateur,
-                                                                          // 255:
-                                                                          // superviseur
-                                                                          // sadmin
+            'categorieId' => 'tinyint(1) UNSIGNED NOT NULL DEFAULT "1"', // SbmAuthentification\Model\CategoriesInterface
             'titre' => 'varchar(20) NOT NULL DEFAULT "M."',
             'nom' => 'varchar(30) NOT NULL',
             'prenom' => 'varchar(30) NOT NULL DEFAULT ""',

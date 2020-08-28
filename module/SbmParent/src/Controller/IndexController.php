@@ -9,12 +9,13 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juil. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmParent\Controller;
 
 use SbmBase\Model\Session;
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -51,7 +52,7 @@ class IndexController extends AbstractActionController
 
     private function controleEtatDuSite()
     {
-        if ($this->authenticate->by()->getCategorieId() < 255) {
+        if ($this->authenticate->by()->getCategorieId() < CategoriesInterface::SUPER_ADMINISTRATEUR_ID) {
             $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
             if (! $tCalendar->getEtatDuSite()['inscription']) {
                 throw new \Exception('Inscriptions fermées');
@@ -152,7 +153,7 @@ class IndexController extends AbstractActionController
                                     $format_telephone($responsable->telephoneT)
                                 ]))
                     ]),
-                'sadmin' => $this->authenticate->by()->getCategorieId() == 255
+                'sadmin' => $this->authenticate->by()->getCategorieId() == CategoriesInterface::SUPER_ADMINISTRATEUR_ID
             ]);
     }
 

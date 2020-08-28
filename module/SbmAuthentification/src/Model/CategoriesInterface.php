@@ -27,13 +27,25 @@ interface CategoriesInterface
 
     const ROLE_TRANSPORTEUR = 'transporteur';
 
+    const GR_TRANSPORTEURS_ID = 115;
+
+    const ROLE_GR_TRANSPORTEURS = 'gr_transporteurs';
+
     const ETABLISSEMENT_ID = 120;
 
-    const ROLE_ETABLISSEMENT = 120;
+    const ROLE_ETABLISSEMENT = 'etablissement';
+
+    const GR_ETABLISSEMENTS_ID = 125;
+
+    const ROLE_GR_ETABLISSEMENTS = 'gr_etablissements';
 
     const COMMUNE_ID = 130;
 
     const ROLE_COMMUNE = 'commune';
+
+    const GR_COMMUNES_ID = 135;
+
+    const ROLE_GR_COMMUNES = 'gr_communes';
 
     const SECRETARIAT_ID = 200;
 

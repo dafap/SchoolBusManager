@@ -9,7 +9,7 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Controller;
@@ -116,13 +116,6 @@ class DocumentController extends AbstractActionController
             return $prg;
         }
         $args = $prg ?: [];
-        // on doit être authentifié
-        $auth = $this->authenticate->by('email');
-        if (! $auth->hasIdentity() || $auth->getCategorieId() < 200) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'home-page'
-            ]);
-        }
         // formulaire des critères de recherche
         $criteres_form = new \SbmPortail\Form\CriteresForm();
         // initialiser le form pour les select ...

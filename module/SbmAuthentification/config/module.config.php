@@ -14,33 +14,40 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
+use SbmAuthentification\Model\CategoriesInterface;
 return [
     'acl' => [
         // association entre une categorieId (table users) et un rôle
         'roleId' => [
-            1 => 'parent',
-            50 => 'organisme',
-            110 => 'transporteur',
-            120 => 'etablissement',
-            130 => 'commune',
-            200 => 'secretariat',
-            253 => 'gestion',
-            254 => 'admin',
-            255 => 'sadmin'
+            CategoriesInterface::PARENT_ID => 'parent',
+            CategoriesInterface::ORGANISME_ID => 'organisme',
+            CategoriesInterface::TRANSPORTEUR_ID => 'transporteur',
+            CategoriesInterface::GR_TRANSPORTEURS_ID => 'gr_transporteurs',
+            CategoriesInterface::ETABLISSEMENT_ID => 'etablissement',
+            CategoriesInterface::GR_ETABLISSEMENTS_ID => 'gr_etablissements',
+            CategoriesInterface::COMMUNE_ID => 'commune',
+            CategoriesInterface::GR_COMMUNES_ID => 'gr_communes',
+            CategoriesInterface::SECRETARIAT_ID => 'secretariat',
+            CategoriesInterface::GESTION_ID => 'gestion',
+            CategoriesInterface::ADMINISTRATEUR_ID => 'admin',
+            CategoriesInterface::SUPER_ADMINISTRATEUR_ID => 'sadmin'
         ],
         // hiérarchie des rôles
         'roles' => [
             'guest' => null,
             'transporteur' => 'guest',
+            'gr_transporteurs' => 'transporteur',
             'etablissement' => 'guest',
-            'commune'=> 'guest',
+            'gr_etablissements' => 'etablissement',
+            'commune' => 'guest',
+            'gr_communes' => 'commune',
             'secretariat' => 'guest',
             'parent' => 'guest',
             'organisme' => 'parent',
-            'gestion' => 'parent',
+            'gestion' => 'organisme',
             'admin' => 'gestion',
             'sadmin' => 'admin'
         ],

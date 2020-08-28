@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Controller;
@@ -18,6 +18,7 @@ use SbmAdmin\Form as FormAdmin;
 use SbmAdmin\Model\Db\Service\Libelle\Liste;
 use SbmAdmin\Model\Db\Service\Responsable\Responsables;
 use SbmAdmin\Model\Db\Service\User\Users;
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
@@ -31,7 +32,7 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController
+class IndexController extends AbstractActionController implements CategoriesInterface
 {
 
     public function indexAction()
@@ -1142,16 +1143,19 @@ class IndexController extends AbstractActionController
         // récupère la fiche de l'user
         $user = $this->db_manager->get('Sbm\Db\Table\Users')->getRecord($args['userId']);
         switch ($user->categorieId) {
-            case 50:
+            case self::ORGANISME_ID:
                 return $this->linkOrganismes($args, $user);
                 break;
-            case 110:
+            case self::TRANSPORTEUR_ID:
+            case self::GR_TRANSPORTEURS_ID:
                 return $this->linkTransporteur($args, $user);
                 break;
-            case 120:
+            case self::ETABLISSEMENT_ID:
+            case self::GR_ETABLISSEMENTS_ID:
                 return $this->linkEtablissement($args, $user);
                 break;
-            case 130:
+            case self::COMMUNE_ID:
+            case self::GR_COMMUNES_ID:
                 return $this->linkCommunes($args, $user);
                 break;
             default:

@@ -7,11 +7,12 @@
  * @filesource User.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 30 avr. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmAdmin\Form;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
@@ -152,14 +153,17 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
                     ],
                     'empty_option' => 'Quelle catégorie ?',
                     'value_options' => [
-                        '1' => 'Parent',
-                        '50' => 'Organisme',
-                        '110' => 'Transporteur',
-                        '120' => 'Établissement scolaire',
-                        '130' => 'Commune',
-                        '200' => 'Secrétariat',
-                        '253' => 'Gestionnaire',
-                        '254' => 'Administrateur'
+                        CategoriesInterface::PARENT_ID => 'Parent',
+                        CategoriesInterface::ORGANISME_ID => 'Organisme',
+                        CategoriesInterface::TRANSPORTEUR_ID => 'Transporteur',
+                        CategoriesInterface::GR_TRANSPORTEURS_ID => 'Groupe de transporteurs',
+                        CategoriesInterface::ETABLISSEMENT_ID => 'Établissement scolaire',
+                        CategoriesInterface::GR_ETABLISSEMENTS_ID => 'Groupe d\'établissements scolaires',
+                        CategoriesInterface::COMMUNE_ID => 'Commune',
+                        CategoriesInterface::GR_COMMUNES_ID => 'Groupe de communes',
+                        CategoriesInterface::SECRETARIAT_ID => 'Organisateur',
+                        CategoriesInterface::GESTION_ID => 'Gestionnaire',
+                        CategoriesInterface::ADMINISTRATEUR_ID => 'Administrateur'
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -325,9 +329,8 @@ class User extends AbstractSbmForm implements InputFilterProviderInterface
     }
 
     /**
-     * Initialise la propriété userId pour le validateur avant d'appeler la méthode standard
-     *
-     * (non-PHPdoc]
+     * Initialise la propriété userId pour le validateur avant d'appeler la méthode
+     * standard (non-PHPdoc]
      *
      * @see \Zend\Form\Form::setData(]
      */

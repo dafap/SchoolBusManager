@@ -58,6 +58,36 @@ class TestController extends AbstractActionController
         return $viewmodel;
     }
 
+    /**
+     * Permet de construire le tableau des acl à placer dans module.config.php dans la clé
+     * 'actions' sans en oublier. Il suffit ensuite d'ajouter les autorisations pour
+     * chacune des actions
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function majAclPortailAction()
+    {
+        $this->initDebug();
+        $translate = new \Zend\Filter\Word\CamelCaseToDash();
+        $class_name = 'SbmPortail\Controller\IndexController';
+        $f = new \ReflectionClass($class_name);
+        $arrayActions = [];
+        foreach ($f->getMethods() as $m) {
+            if (strpos($m->name, 'Action') && $m->class == $class_name) {
+                $action = strtolower(
+                    $translate->filter(str_replace('Action', '', $m->name)));
+                $arrayActions[] = sprintf("'%s'=>['allow'=>['roles'=>[]]]", $action);
+            }
+        }
+        $error_msg = implode(",\n", $arrayActions);
+        $viewmodel = new ViewModel([
+            'obj' => $error_msg,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
+    }
+
     public function phpOfficeAction()
     {
         $inputFileName = 'D:/dafap/Developpements Eclipse/arlysere/paiement en ligne/Export_transactions/Export_transactions_20200504-09450872566.xls';
@@ -130,9 +160,9 @@ class TestController extends AbstractActionController
                 if ($row->responsableId) {
                     $taffectations->deleteResponsableId(2020, $row->eleveId,
                         $row->responsableId);
-                    //$this->debugLog(
-                    //    'EleveId:' . $row->eleveId . ' - ResponsaableId: ' .
-                    //    $row->responsableId);
+                    // $this->debugLog(
+                    // 'EleveId:' . $row->eleveId . ' - ResponsaableId: ' .
+                    // $row->responsableId);
                     $this->db_manager->get('Sbm\ChercheTrajet')
                         ->setEtablissementId($row->etablissementId)
                         ->setStationId($row->{$stationId})

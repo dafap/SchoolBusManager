@@ -7,11 +7,12 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmFront\Controller;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
@@ -160,7 +161,7 @@ class LoginController extends AbstractActionController
         $auth = $this->authenticate->by('email');
         if ($auth->hasIdentity()) {
             switch ($auth->getCategorieId()) {
-                case 1:
+                case CategoriesInterface::PARENT_ID:
                     try {
                         try {
                             $responsable = $this->responsable->get();
@@ -224,27 +225,30 @@ class LoginController extends AbstractActionController
                     Session::set('home', 'sbmparentconfig', 'layout');
                     return $this->redirect()->toRoute('sbmparent');
                     break;
-                case 50:
+                case CategoriesInterface::ORGANISME_ID:
                     Session::set('home', 'sbmparentconfig', 'layout');
                     return $this->redirect()->toRoute('sbmparent');
                     break;
-                case 110:
-                case 120:
-                case 130:
-                case 200:
+                case CategoriesInterface::COMMUNE_ID:
+                case CategoriesInterface::GR_COMMUNES_ID:
+                case CategoriesInterface::ETABLISSEMENT_ID:
+                case CategoriesInterface::GR_ETABLISSEMENTS_ID:
+                case CategoriesInterface::TRANSPORTEUR_ID:
+                case CategoriesInterface::GR_TRANSPORTEURS_ID:
+                case CategoriesInterface::SECRETARIAT_ID:
                     Session::set('home', 'sbmportail', 'layout');
                     return $this->redirect()->toRoute('sbmportail',
                         [
                             'action' => 'index'
                         ]);
                     break;
-                case 253:
+                case CategoriesInterface::GESTION_ID:
                     Session::set('home', 'sbmgestion/config', 'layout');
                     return $this->redirect()->toRoute('sbmgestion');
-                case 254:
+                case CategoriesInterface::ADMINISTRATEUR_ID:
                     Session::set('home', 'sbmadmin', 'layout');
                     return $this->redirect()->toRoute('sbmadmin');
-                case 255:
+                case CategoriesInterface::SUPER_ADMINISTRATEUR_ID:
                     Session::set('home', 'sbminstall', 'layout');
                     return $this->redirect()->toRoute('sbminstall');
                 default:

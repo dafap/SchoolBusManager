@@ -8,19 +8,23 @@
  * @filesource user-liste.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
+use SbmAuthentification\Model\CategoriesInterface;
 $acategories = [
-    255 => 'Administrateur',
-    254 => 'Administrateur',
-    253 => 'Gestionnaire',
-    200 => 'Secrétariat',
-    130 => 'Commune',
-    120 => 'Etablissement',
-    110 => 'Transporteur',
-    50 => 'Organisme',
-    1 => 'Parent'
+    CategoriesInterface::SUPER_ADMINISTRATEUR_ID => 'Administrateur',
+    CategoriesInterface::ADMINISTRATEUR_ID => 'Administrateur',
+    CategoriesInterface::GESTION_ID => 'Gestionnaire',
+    CategoriesInterface::SECRETARIAT_ID => 'Secrétariat',
+    CategoriesInterface::GR_COMMUNES_ID => 'Groupement de communes',
+    CategoriesInterface::COMMUNE_ID => 'Commune',
+    CategoriesInterface::GR_ETABLISSEMENTS_ID => 'Groupement d\'établissements',
+    CategoriesInterface::ETABLISSEMENT_ID => 'Etablissement',
+    CategoriesInterface::GR_TRANSPORTEURS_ID => 'Groupement de transporteurs',
+    CategoriesInterface::TRANSPORTEUR_ID => 'Transporteur',
+    CategoriesInterface::ORGANISME_ID => 'Organisme',
+    CategoriesInterface::PARENT_ID => 'Parent'
 ];
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -176,15 +180,15 @@ $actions = [
 					<td class="categorieId">
 						<?= $this->escapeHtml($acategories[$user->categorieId]); ?></td>
 					<td class="tokenalive centre">
-						<?= $user->categorieId == 255 ? '' : ($user->tokenalive ? 'Oui' : ''); ?></td>
+						<?= $user->categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID ? '' : ($user->tokenalive ? 'Oui' : ''); ?></td>
 					<td class="confirme centre">
-						<?= $user->categorieId == 255 ? '' : ($user->confirme ? '' : 'Non'); ?></td>
+						<?= $user->categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID ? '' : ($user->confirme ? '' : 'Non'); ?></td>
 					<td class="active centre">
-						<?= $user->categorieId == 255 ? '' : ($user->active ? '' : 'Non'); ?></td>
+						<?= $user->categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID ? '' : ($user->active ? '' : 'Non'); ?></td>
 					<td class="selection centre">
-						<?= $user->categorieId == 255 ? '' : $this->renderCheckbox('selection', 'chk', $user->userId, $user->selection)?></td>
+						<?= $user->categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID ? '' : $this->renderCheckbox('selection', 'chk', $user->userId, $user->selection)?></td>
 					<td class="boutons">
-            			<?= $user->categorieId == 255 ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);?>
+            			<?= $user->categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID ? '' : $this->listeLigneActions($hiddens['userId'], $hiddens, $buttons);?>
 				    </td>
 				</tr>
         <?php endforeach;?>

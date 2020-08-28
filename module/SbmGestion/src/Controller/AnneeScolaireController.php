@@ -8,17 +8,18 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
+ * @date 28 août 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmGestion\Form\Simulation;
 use SbmGestion\Form\DupliquerReseau;
+use SbmGestion\Form\Simulation;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
@@ -141,7 +142,7 @@ class AnneeScolaireController extends AbstractActionController
                 'as_libelle' => $as_libelle,
                 'millesime' => $millesime,
                 'table' => $table_calendar->getMillesime($millesime),
-                'admin' => $auth->getCategorieId() > 253,
+                'admin' => $auth->getCategorieId() > CategoriesInterface::GESTION_ID,
                 'circuitsVides' => $circuitsVides
             ]);
     }
