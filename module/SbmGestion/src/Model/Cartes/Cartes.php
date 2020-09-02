@@ -8,7 +8,7 @@
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2020
+ * @date 2 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Cartes;
@@ -77,6 +77,7 @@ class Cartes
         for ($cr = 0, $trajet = 1; $trajet <= 2; $trajet ++) {
             $where = new Where();
             $where->equalTo('millesime', $millesime)
+                ->literal('inscrit = 1')
                 ->lessThan('dateCarteR' . $trajet, $dateDebut)
                 ->expression('(demandeR' . $trajet . ' & ?) > 0', $etatDemande)
                 ->in('eleveId', $this->selectElevesAvecAffectations($millesime, $trajet));
