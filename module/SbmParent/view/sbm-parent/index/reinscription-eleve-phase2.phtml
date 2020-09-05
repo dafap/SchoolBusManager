@@ -15,7 +15,7 @@
  * @filesource reinscription-eleve-phase2.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
+ * @date 5 sept. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -164,10 +164,10 @@ $sexe = $this->form->get('sexe')->getValue() == 1 ? 'masculin' : 'féminin';
 						<div class="zone col21">
 							<div id="wrapper-radio-col2" class="table2cols">
 							<?php if ($this->categorieId == 1):?>
-								<div id="wrapper-ga" class="bloc-wrapper zone fit-content">
+								<div id="wrapper-ga" class="bloc-wrapper zone">
 								<?=$this->formRow($this->form->get('ga'));?></div>
 							<?php else:?>
-								<div id="wrapper-ap" class="bloc-wrapper zone fit-content">
+								<div id="wrapper-ap" class="bloc-wrapper zone">
 								<?=$this->formRow($this->form->get('ap'));?>
 								<?=$this->formHidden($this->form->get('ga'));?></div>
 							<?php endif;?>

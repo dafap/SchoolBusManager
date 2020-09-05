@@ -6,7 +6,7 @@
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juin 2020
+ * @date 5 sept. 2020
  * @version 2020-2.6.0
  **/
 @CHARSET "UTF-8";
@@ -241,9 +241,6 @@ div.semaine {
 	width: 600px;
 }
 
-div.fit-content {
-	width: fit-content;
-}
 /*-------- Erreurs -------------*/
 div#error_wrapper {
 	width: 100%;
