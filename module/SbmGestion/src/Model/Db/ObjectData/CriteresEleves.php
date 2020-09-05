@@ -15,7 +15,7 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2020
+ * @date 5 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Model\Db\ObjectData;
@@ -51,6 +51,9 @@ class CriteresEleves extends SbmCommunCriteres
         }
         if (! empty($this->data['prenomSA'])) {
             $where = $this->clausePrenomSA($where);
+        }
+        if (! empty($this->data['dateCarte'])) {
+            $where = $this->clauseDateCarte($where);
         }
         if (! empty($this->data['responsable'])) {
             $where = $this->clauseResponsable($where);
@@ -191,6 +194,12 @@ class CriteresEleves extends SbmCommunCriteres
             $where = $this->clausePrenomSA($where, true);
             $pageheader_string[] = sprintf('élèves dont le prénom commence par %s',
                 $this->data['prenomSA']);
+        }
+        if (! empty($this->data['dateCarte'])) {
+            $where = $this->clauseDateCarte($where, true);
+            $dt = new \DateTime($this->data['dateCarte']);
+            $pageheader_string[] = sprintf('élèves du lot de cartes du %s',
+                $dt->format('d/m/Y H:i:s'));
         }
         if (! empty($this->data['responsable'])) {
             $where = $this->clauseResponsable($where, true);
@@ -380,6 +389,12 @@ class CriteresEleves extends SbmCommunCriteres
             $where = $this->clausePrenomSA($where, true);
             $pageheader_string[] = sprintf('élèves dont le prénom commence par %s',
                 $this->data['prenomSA']);
+        }
+        if (! empty($this->data['dateCarte'])) {
+            $where = $this->clauseDateCarte($where, true);
+            $dt = new \DateTime($this->data['dateCarte']);
+            $pageheader_string[] = sprintf('élèves du lot de cartes du %s',
+                $dt->format('d/m/Y H:i:s'));
         }
         if (! empty($this->data['responsable'])) {
             $where = $this->clauseResponsable($where, true);
@@ -591,6 +606,40 @@ class CriteresEleves extends SbmCommunCriteres
             }
         } else {
             $where['criteres']['prenomSA'] = $this->data['prenomSA'] . '%';
+            return $where;
+        }
+    }
+
+    private function clauseDateCarte($where, $pdf = false)
+    {
+        if ($where instanceof Where) {
+            if ($pdf) {
+                return $where->nest()->equalTo('dateCarteR1', $this->data['dateCarte'])->or->equalTo(
+                    'dateCarteR2', $this->data['dateCarte'])->unnest();
+            } else {
+                return $where->nest()->equalTo('sco.dateCarteR1', $this->data['dateCarte'])->or->equalTo(
+                    'sco.dateCarteR2', $this->data['dateCarte'])->unnest();
+            }
+        } else {
+            $where['criteres']['dateCarte'] = [
+                'operator' => 'OR',
+                'parts' => [
+                    [
+                        'operator' => '=',
+                        'parts' => [
+                            'dateCarteR1',
+                            '"' . $this->data['dateCarte'] . '"'
+                        ]
+                    ],
+                    [
+                        'operator' => '=',
+                        'parts' => [
+                            'dateCarteR2',
+                            '"' . $this->data['dateCarte'] . '"'
+                        ]
+                    ]
+                ]
+            ];
             return $where;
         }
     }

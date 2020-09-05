@@ -7,7 +7,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2020
+ * @date 5 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Form\Eleve;
@@ -49,7 +49,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'attributes' => [
                     'id' => 'critere-nomSA',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Nom',
@@ -65,10 +65,26 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'attributes' => [
                     'id' => 'critere-prenomSA',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Prénom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'dateCarte',
+                'attributes' => [
+                    'id' => 'critere-date-carte'
+                ],
+                'options' => [
+                    'label' => 'Lot de cartes',
+                    'label_attributes' => [],
+                    'empty_option' => 'Non précisé',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -81,7 +97,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'attributes' => [
                     'id' => 'critere-responsable',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Responsable',
@@ -99,7 +115,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                 'name' => 'etablissementId',
                 'attributes' => [
                     'id' => 'critere-etablissementId',
-                    'class' => 'sbm-width-30c'
+                    'class' => 'sbm-width-40c'
                 ],
                 'options' => [
                     'label' => 'Etablissement',
@@ -244,7 +260,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                     'empty_option' => 'Tout',
                     'value_options' => [
                         '1' => 'Garde alternée',
-                        //'2' => 'Famille d\'accueil',
+                        // '2' => 'Famille d\'accueil',
                         '3' => 'Dérogation accordée',
                         '4' => 'Non ayants droit acceptés'
                     ],
@@ -352,6 +368,10 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
             'particularite' => [
                 'name' => 'particularite',
                 'required' => false
+            ],
+            'dateCarte' => [
+                'name' => 'dateCarte',
+                'required' => 'false'
             ],
             'selection' => [
                 'name' => 'selection',

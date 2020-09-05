@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 août 2020
+ * @date 5 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -56,8 +56,7 @@ class EleveController extends AbstractActionController
             return $prg;
         } elseif ($prg === false) {
             // ce n'était pas un post. Prendre les paramètres éventuellement dans la
-            // session (cas
-            // du paginator ou de F5 )
+            // session (cas du paginator ou de F5 )
             $this->sbm_isPost = false;
             $args = Session::get('post', [], $this->getSessionNamespace());
         } else {
@@ -94,7 +93,10 @@ class EleveController extends AbstractActionController
                 ->desservis())
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
-                ->tout());
+                ->tout())
+            ->setValueOptions('dateCarte',
+            $this->db_manager->get('Sbm\Db\Select\DatesCartes')
+                ->cartesPapier());
         // créer un objectData qui contient la méthode getWhere() adhoc
         $criteres_obj = new \SbmGestion\Model\Db\ObjectData\CriteresEleves(
             $criteres_form->getElementNames());
