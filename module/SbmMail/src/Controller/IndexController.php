@@ -11,7 +11,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
+ * @date 8 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmMail\Controller;
@@ -135,6 +135,7 @@ class IndexController extends AbstractActionController
                 ->setMillesime($millesime)
                 ->run();
             $controle = [];
+            $totalResilies = 0;
             foreach ($aboResilies as $detail) {
                 $responsableId = $detail['responsableId'];
                 $odata = $tResponsables->getRecord($responsableId);
@@ -154,6 +155,7 @@ class IndexController extends AbstractActionController
                     '%s %s (%s) - %d %s %s pour un montant dû de %.2f €', $odata->nom,
                     $odata->prenom, $odata->email, $detail['nbEcheances'], $echeances,
                     $detail['datesEcheances'], $detail['montantTotal']);
+                $totalResilies += $detail['montantTotal'];
                 $params = [
                     'to' => array_values($to),
                     'cc' => $cc,
@@ -184,7 +186,8 @@ class IndexController extends AbstractActionController
                 foreach ($controle as $value) {
                     $message .= "\n - $value";
                 }
-                $message .= "\n</pre>\n";
+                $message .= sprintf("\nPour un montant total de %.2f €.\n</pre>\n",
+                    $totalResilies);
             }
         } catch (\Exception $e) {
             $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
