@@ -9,7 +9,7 @@
  * @filesource com-eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2020
+ * @date 7 sept. 2020
  * @version 2020-2.6.0
  */
 use SbmBase\Model\Session;
@@ -166,6 +166,7 @@ $actions = [
                     ])));
         $itinerairesR1 = sprintf(
             $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1), '');
+        $ga = ((bool) $eleve['responsable2Id']) && ($eleve['demandeR2'] > 0);
         if ($ga) {
             $itinerairesR2 = sprintf(
                 $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),

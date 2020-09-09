@@ -9,7 +9,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 août 2020
+ * @date 9 sept. 2020
  * @version 2020-2.6.0
  */
 use SbmPortail\Controller;
@@ -175,7 +175,8 @@ return [
                         'allow' => [
                             'roles' => [
                                 'transporteur',
-                                'etablissement'
+                                'etablissement',
+                                'secretariat'
                             ]
                         ]
                     ],
@@ -183,7 +184,8 @@ return [
                         'allow' => [
                             'roles' => [
                                 'transporteur',
-                                'etablissement'
+                                'etablissement',
+                                'secretariat'
                             ]
                         ]
                     ],
@@ -286,6 +288,7 @@ return [
     'db_manager' => [
         'factories' => [
             'Sbm\Portail\Commune\Query' => \SbmPortail\Model\Db\Service\Query\Commune::class,
+            'Sbm\Portail\Secretariat\Query' => \SbmPortail\Model\Db\Service\Query\Secretariat::class,
             'Sbm\Portail\Transporteur\Query' => \SbmPortail\Model\Db\Service\Query\Transporteur::class
         ]
     ],

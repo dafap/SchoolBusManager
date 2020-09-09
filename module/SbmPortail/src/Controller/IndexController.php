@@ -13,7 +13,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 août 2020
+ * @date 9 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Controller;
@@ -285,7 +285,9 @@ class IndexController extends AbstractActionController
             'R2 Téléphone 1' => 'telephoneFR2',
             'R2 Téléphone 2' => 'telephonePR2',
             'R2 Téléphone 3' => 'telephoneTR2',
-            'R2 email' => 'emailR2'
+            'R2 email' => 'emailR2',
+            'ServicesR1' => 'servicesR1',
+            'ServicesR2' => 'servicesR2'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -320,12 +322,13 @@ class IndexController extends AbstractActionController
         // lancement de la requête selon la catégorie de l'utilisateur
         $where = $criteres_obj->getWhereForEleves();
         try {
-            $result = $this->db_manager->get('Sbm\Db\Query\ElevesResponsables')->withScolaritesR2(
-                $where, [
+            $result = $this->db_manager->get('Sbm\Portail\Secretariat\Query')->get($where,
+                [
                     'nom',
                     'prenom'
                 ]);
         } catch (\Exception $e) {
+            throw new \Exception('Erreur dans ' . __METHOD__, 0, $e);
             die('Erreur dans ' . __METHOD__);
         }
         // et construction d'un tabeau des datas
@@ -967,7 +970,7 @@ class IndexController extends AbstractActionController
                     if (array_key_exists('stationId', $arrayCriteres)) {
                         $query->setStationId($arrayCriteres['stationId']);
                     }
-                    $paginator = $query->paginator($criteres_obj->getWhere(),
+                    $paginator = $query->paginatorTr($criteres_obj->getWhere(),
                         [
                             'nom',
                             'prenom'
