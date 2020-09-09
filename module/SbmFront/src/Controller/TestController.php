@@ -44,6 +44,12 @@ class TestController extends AbstractActionController
 
     public function indexAction()
     {
+        $result = [];
+        foreach ($this->db_manager->get(\SbmFront\Factory\Test\Query\Test::class)->get() as $row) {
+            foreach ($row as $key => $value) {
+                $result[$key] = $value;
+            }
+        }
         $this->initDebug();
         $error_msg[] = $this->auth->getIdentity();
         $error_msg[] = $this->auth->getCategorieId();
@@ -51,7 +57,7 @@ class TestController extends AbstractActionController
         $error_msg[] = 'Terminé';
         // dump et print_r de l'objet 'obj'
         $viewmodel = new ViewModel([
-            'obj' => $error_msg,
+            'obj' => $result,
             'form' => null
         ]);
         $viewmodel->setTemplate('sbm-front/test/test.phtml');
