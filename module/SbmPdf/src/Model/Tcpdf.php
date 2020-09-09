@@ -13,7 +13,7 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 juin 2020
+ * @date 7 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPdf\Model;
@@ -957,7 +957,7 @@ class Tcpdf extends \TCPDF
         if ($this->last_page_docheader && $this->section_document == self::SECTION_DOCBODY &&
             $this->PageNo() == $this->last_page_docheader) {
             $this->last_page_docheader = 0;
-            $this->setPrintFooter($this->config['document']['pagefooter']);
+            $this->setPrintFooter($this->getConfig('document', 'pagefooter', true));
         }
 
         // met à jour les index previous
@@ -1547,7 +1547,10 @@ class Tcpdf extends \TCPDF
             // index des sauts de page
             $idx_nl = $idx_page = [];
             for ($i = 0; $i < count($columns); $i ++) {
-                if ($columns[$i]['nl']) {
+                if (StdLib::getParamR([
+                    $i,
+                    'nl'
+                ], $columns, false)) {
                     $idx_nl[] = $i;
                 }
                 $idx_page[$i] = null;
@@ -1566,8 +1569,12 @@ class Tcpdf extends \TCPDF
                 }
                 if ($nl) {
                     $this->templateDocBodyMethod1Tfoot(
-                        $this->data['index'][1]['nl']['debut'],
-                        $this->data['index'][1]['current'] - 1);
+                        StdLib::getParamR([
+                            'index',
+                            1,
+                            'nl',
+                            'debut'
+                        ], $this->data, 0), $this->data['index'][1]['current'] - 1);
                     $this->data['index'][1]['nl']['debut'] = $this->data['index'][1]['current'];
                     $this->AddPage();
                     $this->configGraphicSectionTable('thead');
@@ -1618,7 +1625,13 @@ class Tcpdf extends \TCPDF
         }
 
         // tfoot
-        $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut']);
+        $this->templateDocBodyMethod1Tfoot(
+            StdLib::getParamR([
+                'index',
+                1,
+                'nl',
+                'debut'
+            ], $this->data, 0));
 
         $this->Cell($sum_width * $ratio, 0, '', 'T');
     }
@@ -2158,56 +2171,6 @@ class Tcpdf extends \TCPDF
         }
     }
 
-    private function getDataCalculTotal($key)
-    {
-        $function = $this->data['calculs'][1][$key]['function'];
-        $column = $this->data['calculs'][1][$key]['column'];
-        $column --; // indexation des colonnes à partir de 0
-        switch ($function) {
-            case 'somme':
-                $result = 0;
-                for ($j = 0; $j < $this->data['count'][1]; $j ++) {
-                    $valeur = $this->data[1][$j][$column];
-                    if (is_numeric($valeur)) {
-                        $result += $valeur;
-                    }
-                }
-                break;
-            case 'max':
-                $result = - PHP_INT_MAX;
-                for ($j = 0; $j < $this->data['count'][1]; $j ++) {
-                    $valeur = $this->data[1][$j][$column];
-                    if (is_numeric($valeur) && $valeur > $result) {
-                        $result = $valeur;
-                    }
-                }
-                break;
-            case 'min':
-                $result = PHP_INT_MAX;
-                for ($j = 0; $j < $this->data['count'][1]; $j ++) {
-                    $valeur = $this->data[1][$j][$column];
-                    if (is_numeric($valeur) && $valeur < $result) {
-                        $result = $valeur;
-                    }
-                }
-                break;
-            case 'moyenne':
-                $tmp_somme = 0;
-                for ($j = 0, $tmp_nombre = 0; $j < $this->data['count'][1]; $j ++, $tmp_nombre ++) {
-                    $valeur = $this->data[1][$j][$column];
-                    if (is_numeric($valeur)) {
-                        $tmp_somme += $valeur;
-                    }
-                }
-                $result = $tmp_somme / $tmp_nombre;
-                break;
-            default:
-                $result = - PHP_INT_MAX;
-                break;
-        }
-        return $result;
-    }
-
     // =======================================================================================================
     // Modèle pour imprimer des étiquettes
     //
@@ -2238,8 +2201,8 @@ class Tcpdf extends \TCPDF
         $descripteur = $label->descripteurData();
         $page_vide = true;
         foreach ($this->getDataForEtiquettes($descripteur) as $etiquetteData) {
-            $lignes = $etiquetteData['lignes'];
-            $photos = $etiquetteData['photos'];
+            $lignes = StdLib::getParam('lignes', $etiquetteData, []);
+            $photos = StdLib::getParam('photos', $etiquetteData, []);
             $page_vide = false;
             // partie graphique
             $origine = [
@@ -2270,9 +2233,18 @@ class Tcpdf extends \TCPDF
                 $this->SetXY($x, $y);
                 for ($j = 0; $j < count(StdLib::getParam($idx, $lignes, [])); $j ++, next(
                     $lignes[$idx])) {
-                    $this->setStyle($descripteur[$idx][$j]['style']);
+                    $this->setStyle(
+                        StdLib::getParamR([
+                            $idx,
+                            $j,
+                            'style'
+                        ], $descripteur, 'data'));
                     $txt = current($lignes[$idx]);
-                    $txtLabel = $descripteur[$idx][$j]['label'];
+                    $txtLabel = StdLib::getParamR([
+                        $idx,
+                        $j,
+                        'label'
+                    ], $descripteur, '');
                     if (! empty($txtLabel)) {
                         $this->Cell($label->wLab($j), $label->hCell($j), $txtLabel, 0, 0,
                             $label->alignLab($j), 0, '', $label->stretchLab($j));
@@ -3156,7 +3128,10 @@ class Tcpdf extends \TCPDF
             // index des sauts de page
             $idx_nl = $idx_page = [];
             for ($i = 0; $i < count($columns); $i ++) {
-                if ($columns[$i]['nl']) {
+                if (StdLib::getParamR([
+                    $i,
+                    'nl'
+                ], $columns, false)) {
                     $idx_nl[] = $i;
                 }
                 $idx_page[$i] = null;
@@ -3176,8 +3151,12 @@ class Tcpdf extends \TCPDF
                 }
                 if ($nl) {
                     $this->templateDocBodyMethod1Tfoot(
-                        $this->data['index'][1]['nl']['debut'],
-                        $this->data['index'][1]['current'] - 1);
+                        StdLib::getParamR([
+                            'index',
+                            1,
+                            'nl',
+                            'debut'
+                        ], $this->data, 0), $this->data['index'][1]['current'] - 1);
                     $this->data['index'][1]['nl']['debut'] = $this->data['index'][1]['current'];
                     $this->AddPage();
                     $this->configGraphicSectionTable('thead');
@@ -3229,7 +3208,13 @@ class Tcpdf extends \TCPDF
         }
 
         // tfoot
-        $this->templateDocBodyMethod1Tfoot($this->data['index'][1]['nl']['debut']);
+        $this->templateDocBodyMethod1Tfoot(
+            StdLib::getParamR([
+                'index',
+                1,
+                'nl',
+                'debut'
+            ], $this->data, 0));
 
         $this->Cell($sum_width * $ratio, 0, '', 'T');
     }
