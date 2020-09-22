@@ -12,8 +12,8 @@
  * @filesource send.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
- * @version 2019-2.5.0
+ * @date 21 sept. 2020
+ * @version 2020-2.6.0
  */
 $this->jQuery();
 $this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
@@ -63,8 +63,12 @@ $liste = count($this->destinataires) > 1;
 	<?php if ($liste):?>
 	    <h3>Liste des destinataires</h3>
 		<ul>
-	    <?php foreach ($this->destinataires as $to):?>
+	    <?php foreach ($this->destinataires as $email => $to):?>
+	        <?php if (is_array($to)):?>
 	        <li><?= $to['titre'] . ' ' . $to['nom'] . ' ' . $to['prenom'] . ' (' . $to['email'] . ')';?></li>
+	        <?php else:?>
+	        <li><?= $to . ' (' . $email . ')'; ?></li>
+	        <?php endif;?>
 	    <?php endforeach;?>
 	    </ul>
 	<?php endif;?>

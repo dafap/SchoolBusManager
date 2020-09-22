@@ -8,7 +8,7 @@
  * @filesource responsable-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2020
+ * @date 21 sept. 2020
  * @version 2020-2.6.0
  */
 use SbmCartographie\Model\Point;
@@ -98,6 +98,13 @@ if ($this->layout()->hassbmservicesms) {
                 'page' => $this->page
             ]),
         'title' => 'Envoyer un SMS à tous les responsables sélectionnés'
+    ];
+}
+if ($this->sadmin) {
+    $actions_selection['mail'] = [
+        'class' => 'fam-email',
+        'formaction' => $this->url('SbmMail', ['action' => 'envoi-groupe']),
+        'title' => 'Envoyer un mail aux responsables sélectionnés (sadmin uniquement)'
     ];
 }
 $url_retour = $this->url('sbmgestion');

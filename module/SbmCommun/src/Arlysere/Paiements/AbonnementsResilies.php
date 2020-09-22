@@ -1,15 +1,13 @@
 <?php
 /**
- * Description courte du fichier
- *
- * Description longue du fichier s'il y en a une
+ * Recherche les abonnements résiliés non soldés
  *
  * @project sbm
- * @package
+ * @package SbmCommun\src\Arlysere\Paiements
  * @filesource AbonnementsResilies.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2020
+ * @date 21 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Arlysere\Paiements;
@@ -35,7 +33,16 @@ class AbonnementsResilies extends AbstractQuery
 
     public function run()
     {
-        return $this->renderResult($this->selectAbonnementsResilies());
+        $resultset = $this->renderResult($this->selectAbonnementsResilies());
+        $oCalculs = $this->db_manager->get('Sbm\Facture\Calculs');
+        $array = [];
+        foreach ($resultset as $row) {
+            $solde = $oCalculs->getResultats($row['responsableId'], [], true)->getSolde();
+            if ($solde > 0) {
+                $array[] = $row;
+            }
+        }
+        return $array;
     }
 
     /**

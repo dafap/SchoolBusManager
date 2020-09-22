@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 sept. 2020
+ * @date 21 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -1736,7 +1736,9 @@ class EleveController extends AbstractActionController
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_responsables', 10),
                 'criteres_form' => $criteres_form,
                 'projection' => $this->cartographie_manager->get(Projection::class),
-                'oResponsable' => $this->db_manager->get('Sbm\Db\Table\Responsables')->getObjData()
+                'oResponsable' => $this->db_manager->get('Sbm\Db\Table\Responsables')->getObjData(),
+                'sadmin' => $this->authenticate->by()->getCategorieId() ==
+                \SbmAuthentification\Model\CategoriesInterface::SUPER_ADMINISTRATEUR_ID
             ]);
     }
 

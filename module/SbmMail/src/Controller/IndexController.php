@@ -11,7 +11,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 sept. 2020
+ * @date 21 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmMail\Controller;
@@ -381,11 +381,12 @@ class IndexController extends AbstractActionController
             ]));
         $view = new ViewModel(
             [
+                'theme' => $this->theme,
                 'form' => $form,
                 'destinataires' => $aTo,
                 'emails' => array_keys($aTo)
             ]);
-        return $view->setTemplate('sbm-mail/index/index.phtml');
+        return $view->setTemplate('sbm-mail/index/send.phtml');
     }
 
     public function envoiGroupeSendAction()
@@ -420,8 +421,6 @@ class IndexController extends AbstractActionController
                 $body = $data['body'];
             }
             // préparation des paramètres d'envoi
-            $auth = $this->authenticate->by();
-            $user = $auth->getIdentity();
             $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
             $mailTemplate = new MailTemplate(null, 'layout',
                 [
@@ -439,7 +438,7 @@ class IndexController extends AbstractActionController
                 'bcc' => $destinataires,
                 'to' => [
                     [
-                        'email' => $user['email'],
+                        'email' => $this->user['email'],
                         'name' => 'School bus manager'
                     ]
                 ],
