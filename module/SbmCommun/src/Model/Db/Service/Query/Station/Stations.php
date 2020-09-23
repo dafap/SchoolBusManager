@@ -8,16 +8,19 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use Zend\Db\Sql\Literal;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Stations extends AbstractQuery
 {
+    use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     protected function init()
     {
@@ -35,9 +38,16 @@ class Stations extends AbstractQuery
         return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
-    protected function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order): Select
     {
-        $where->equalTo('millesime', $this->millesime);
+        if (is_array($order)) {
+            $order = str_replace('commune', 'com.nom', $order);
+            $order = array_merge($order, [
+                'ligneId',
+                'horaireD'
+            ]);
+        }
+        // $where->equalTo('millesime', $this->millesime);
         $select = clone $this->sql->select();
         $select->from([
             'sta' => $this->db_manager->getCanonicName('stations', 'table')
@@ -45,21 +55,88 @@ class Stations extends AbstractQuery
             ->columns([
             'nom',
             'x',
-            'y'
+            'y',
+            'ouverte'
         ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'sta.communeId=com.communeId', [
-            'commune' => 'nom'
+            'codePostal',
+            'lacommune' => 'alias'
         ])
             ->join([
             'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], 'cir.stationId = sta.stationId', [
-            'serviceId'
-        ]);
+        ], 'cir.stationId = sta.stationId',
+            [
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
+                'service' => new Literal(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireD'
+            ], Select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
         }
         return $select->where($where);
+    }
+
+    public function getArrayDesserteStations(Where $where = null, $order = null)
+    {
+        if (is_null($where)) {
+            $where = new Where();
+        }
+        $where->nest()->isNull('millesime')->or->equalTo('millesime', $this->millesime)->unnest();
+        $resultset = $this->renderResult($this->selectDesserteStations($where, $order));
+        $keysService = [
+            'serviceId',
+            'service',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre',
+            'passage',
+            'horaireD'
+        ];
+        $array = [];
+        foreach ($resultset as $row) {
+            $row->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+            $arStation = $row->getArrayCopy();
+            $arService = [];
+            foreach ($keysService as $key) {
+                $arService[$key] = $row->{$key};
+                unset($arStation[$key]);
+            }
+            $aoService = new \ArrayObject($arService, \ArrayObject::ARRAY_AS_PROPS);
+            if (array_key_exists($row->stationId, $array)) {
+                // ajout du service et de l'horaire
+                $array[$row->stationId]->services[] = $aoService;
+            } else {
+                // création d'un élément
+                $arStation['services'][] = $aoService;
+                $array[$row->stationId] = new \ArrayObject($arStation,
+                    \ArrayObject::ARRAY_AS_PROPS);
+            }
+        }
+        return $array;
+    }
+
+    protected function selectDesserteStations(Where $where, $order): Select
+    {
+        if (! $order) {
+            $order = [];
+        }
+        return $this->selectLocalisation($where, $order)->columns(
+            [
+                'stationId',
+                'nom',
+                'alias',
+                'x',
+                'y',
+                'ouverte'
+            ]);
     }
 }

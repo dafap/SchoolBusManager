@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmGestion\Controller;
@@ -4409,30 +4409,9 @@ class TransportController extends AbstractActionController
         }
         $table = $this->db_manager->get('Sbm\Db\Table\Stations');
         // même configuration de carte que pour les etablissements
-        $configCarte = StdLib::getParam('station',
-            $this->cartographie_manager->get('cartes'));
-        $oDistanceMatrix = $this->cartographie_manager->get(
-            GoogleMaps\DistanceMatrix::class);
-        $formCarte = new Form\LatLng(
-            [
-                'phase' => 1,
-                'lat' => [
-                    'id' => 'lat'
-                ],
-                'lng' => [
-                    'id' => 'lng'
-                ]
-            ],
-            [
-                'submit' => [
-                    'class' => 'button default submit left-95px',
-                    'value' => 'Enregistrer la localisation'
-                ],
-                'cancel' => [
-                    'class' => 'button default cancel left-10px',
-                    'value' => 'Abandonner'
-                ]
-            ], $configCarte['valide']);
+        $outilLocalisation = new \SbmGestion\Model\Localisation\Station(
+            $this->cartographie_manager);
+        $formCarte = $outilLocalisation->getForm(true, 'ajout');
         if ($isPost1 || $isPost2) {
             $form = $this->form_manager->get(Form\Station::class);
             $form->setValueOptions('communeId',
@@ -4452,12 +4431,9 @@ class TransportController extends AbstractActionController
                             'page' => $currentPage
                         ]);
                 }
-                // transforme les coordonnées
-                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
-                // initialise le formulaire de la station
-                $geocode = $this->cartographie_manager->get(GoogleMaps\Geocoder::class);
-                $lieu = $geocode->reverseGeocoding($args['lat'], $args['lng']);
+                // transforme les coordonnées et initialise le formulaire de la station
+                $point = $outilLocalisation->getPointEnXYZ($args['lat'], $args['lng']);
+                $lieu = $outilLocalisation->getLieu($args['lat'], $args['lng']);
                 $form->setData(
                     [
                         'communeId' => $this->db_manager->get('Sbm\Db\Table\Communes')
@@ -4504,12 +4480,11 @@ class TransportController extends AbstractActionController
                         'action' => 'station-ajout',
                         'page' => $this->params('page', $currentPage)
                     ]));
-            $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
+            $tStations = $this->db_manager->get('Sbm\Db\Query\Stations');
             $ptStations = [];
-            foreach ($tStations->fetchAll() as $station) {
-                $pt = new Point($station->x, $station->y);
-                $pt->setAttribute('station', $station);
-                $ptStations[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
+            foreach ($tStations->getArrayDesserteStations() as $station) {
+                $pt = $outilLocalisation->getPointEnRGF93($station->x, $station->y);
+                $ptStations[] = $pt->setAttribute('station', $station);
             }
             $view = new ViewModel(
                 [
@@ -4517,13 +4492,15 @@ class TransportController extends AbstractActionController
                         ->getUri()
                         ->getScheme(),
                     'form' => $formCarte->prepare(),
-                    'description' => '<b>Nouvelle station</b>',
+                    'description' => [
+                        'station' => '<b>Nouvelle station</b>',
+                        'services' => []
+                    ],
                     'station' => [
                         'Création d\'une nouvelle station'
                     ],
                     'ptStations' => $ptStations,
-                    'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
-                    'config' => $configCarte
+                    'outil' => $outilLocalisation
                 ]);
             $view->setTemplate('sbm-gestion/transport/station-localisation.phtml');
         }
@@ -4866,48 +4843,17 @@ class TransportController extends AbstractActionController
                     'page' => $this->params('page', 1)
                 ]);
         }
-        $oDistanceMatrix = $this->cartographie_manager->get(
-            GoogleMaps\DistanceMatrix::class);
         $stationId = $args['stationId'];
         $tStations = $this->db_manager->get('Sbm\Db\Table\Stations');
-        // même configuration de carte que pour les etablissements
-        $configCarte = StdLib::getParam('station',
-            $this->cartographie_manager->get('cartes'));
-        $form = new Form\LatLng(
-            [
-                'stationId' => [
-                    'id' => 'stationId'
-                ],
-                'lat' => [
-                    'id' => 'lat'
-                ],
-                'lng' => [
-                    'id' => 'lng'
-                ]
-            ],
-            [
-                'submit' => [
-                    'class' => 'button default submit left-95px',
-                    'value' => 'Enregistrer la localisation'
-                ],
-                'cancel' => [
-                    'class' => 'button default cancel left-10px',
-                    'value' => 'Abandonner'
-                ]
-            ], $configCarte['valide']);
-        $form->setAttribute('action',
-            $this->url()
-                ->fromRoute('sbmgestion/transport',
-                [
-                    'action' => 'station-localisation',
-                    'page' => $this->params('page', 1)
-                ]));
+        $outilLocalisation = new \SbmGestion\Model\Localisation\Station(
+            $this->cartographie_manager);
+        $formCarte = $outilLocalisation->getForm(
+            StdLib::getParam('action', $args, false) == 'station-liste', 'localisation');
         if (array_key_exists('submit', $args)) {
-            $form->setData($args);
-            if ($form->isValid()) {
+            $formCarte->setData($args);
+            if ($formCarte->isValid()) {
                 // transforme les coordonnées
-                $pt = new Point($args['lng'], $args['lat'], 0, 'degré');
-                $point = $oDistanceMatrix->getProjection()->gRGF93versXYZ($pt);
+                $point = $outilLocalisation->getPointEnXYZ($args['lat'], $args['lng']);
                 // enregistre dans la fiche station
                 $oData = $tStations->getObjData();
                 $oData->exchangeArray(
@@ -4919,9 +4865,6 @@ class TransportController extends AbstractActionController
                 $tStations->saveRecord($oData);
                 $this->flashMessenger()->addSuccessMessage(
                     'La localisation de la station est enregistrée.');
-                // $this->flashMessenger()->addWarningMessage('Attention ! Les distances
-                // des domiciles des élèves à l\'établissement n\'ont pas été mises à
-                // jour.');
                 $args = Session::get('post', [], $this->getSessionNamespace());
                 return $this->redirect()->toRoute('sbmgestion/transport',
                     [
@@ -4930,59 +4873,33 @@ class TransportController extends AbstractActionController
                     ]);
             }
         }
-        $station = $tStations->getRecord($stationId);
-        // préparer le nom de la commune selon les règes de la méthode
-        // GoogleMaps\Geocoder::geocode
-        $commune = $this->db_manager->get('Sbm\Db\table\Communes')->getRecord(
-            $station->communeId);
-        $sa = new \SbmCommun\Filter\SansAccent();
-        $lacommune = $sa->filter($commune->alias);
-        $description = '<b>' . $station->nom . '</b></br>' . $commune->codePostal . ' ' .
-            $lacommune;
-        if ($station->x == 0.0 && $station->y == 0.0) {
-            // essayer de localiser par l'adresse avant de présenter la carte
-            $array = $this->cartographie_manager->get(GoogleMaps\Geocoder::class)->geocode(
-                $station->nom, $commune->codePostal, $lacommune);
-            $pt = new Point($array['lng'], $array['lat'], 0, 'degré');
-            $pt->setLatLngRange($configCarte['valide']['lat'],
-                $configCarte['valide']['lng']);
-            if (! $pt->isValid()) {
-                $pt->setLatitude($configCarte['centre']['lat']);
-                $pt->setLongitude($configCarte['centre']['lng']);
-            }
-        } else {
-            $point = new Point($station->x, $station->y);
-            $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
-        }
-        $form->setData(
+        $formCarte->setAttribute('action',
+            $this->url()
+                ->fromRoute('sbmgestion/transport',
+                [
+                    'action' => 'station-localisation',
+                    'page' => $this->params('page', 1)
+                ]));
+        $outilLocalisation->initCurrentStation($stationId);
+        $formCarte->setData(
             [
                 'stationId' => $stationId,
-                'lat' => $pt->getLatitude(),
-                'lng' => $pt->getLongitude()
+                'lat' => $outilLocalisation->getCentreLat(),
+                'lng' => $outilLocalisation->getCentreLng()
             ]);
-        $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
-        $ptStations = [];
-        foreach ($tStations->fetchAll() as $autreStation) {
-            if ($autreStation->stationId != $stationId) {
-                $pt = new Point($autreStation->x, $autreStation->y);
-                $pt->setAttribute('station', $autreStation);
-                $ptStations[] = $oDistanceMatrix->getProjection()->xyzVersgRGF93($pt);
-            }
-        }
         return new ViewModel(
             [
                 'scheme' => $this->getRequest()
                     ->getUri()
                     ->getScheme(),
-                'form' => $form->prepare(),
-                'description' => $description,
-                'station' => [
-                    $station->nom,
-                    $commune->codePostal . ' ' . $commune->nom
+                'form' => $formCarte->prepare(),
+                'description' => [
+                    'station' => $outilLocalisation->getCurrentStationDescription(),
+                    'services' => $outilLocalisation->getCurrentStationServices()
                 ],
-                'ptStations' => $ptStations,
-                'url_api' => $this->cartographie_manager->get('google_api_browser')['js'],
-                'config' => $configCarte
+                'station' => $outilLocalisation->getCurrentStationArray(),
+                'ptStations' => $outilLocalisation->getPtStations(),
+                'outil' => $outilLocalisation
             ]);
     }
 

@@ -9,7 +9,7 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 fév. 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmCartographie\Controller;
@@ -89,9 +89,9 @@ class CarteController extends AbstractActionController
                 return $this->redirect()->toRoute('home');
             }
         }
-        $tStations = $this->db_manager->get('Sbm\Db\Vue\Stations');
+        $tStations = $this->db_manager->get('Sbm\Db\Query\Stations');
         $ptStations = [];
-        foreach ($tStations->fetchAll() as $station) {
+        foreach ($tStations->getArrayDesserteStations() as $station) {
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
             $ptStations[] = $this->projection->xyzVersgRGF93($pt);

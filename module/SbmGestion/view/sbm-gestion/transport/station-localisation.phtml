@@ -9,49 +9,85 @@
  * @filesource station-localisation.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 // mise en place des JS de googleMaps
-$this->headScript()->appendFile($this->url_api);
+$this->headScript()->appendFile($this->outil->getUrlApi());
 $this->themeJS('commun', 'localisation.js');
 $this->themeJS('commun', 'StyledMarker.js');
 // préparation du script
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
-    $e = $pt->getAttribute('station');
-    if ($e->ouverte) {
+    $station = $pt->getAttribute('station');
+    $d = [
+        '<b>' . $this->escapeHtml($station->nom) . '</b>',
+        $this->escapeHtml($station->alias),
+        implode(' ', [
+            $station->codePostal,
+            $station->lacommune
+        ])
+    ];
+    $desservie = false;
+    $aServices = [];
+    foreach ($station->services as $service) {
+        if ($service->ligneId) {
+            $aServices[] = explode(' ', $service->service);
+            $desservie = true;
+        }
+    }
+    if ($desservie && $station->ouverte) {
         $color = "#00ff00";
         $nature = "ouverte";
+    } elseif ($station->ouverte) {
+        $color = "ffff00";
+        $nature = "non desservie";
     } else {
         $color = "#ff0000";
         $nature = "fermée";
     }
-    $d = [
-        '<b>' . $this->escapeHtml($e->nom) . '</b>',
-        $this->escapeHtml($e->alias),
-        implode(' ', [
-            $e->codePostal,
-            $e->commune
-        ])
-    ];
     $d[] = 'Station ' . $nature;
+    if (count($aServices)) {
+        $table = '<table>';
+        foreach ($aServices as $ligne) {
+            $table .= '<tr><td>' . implode('</td><td>', $ligne) . '</td></tr>';
+        }
+        $table .= '</table>';
+    } else {
+        $table = '';
+    }
     $aMarkers[] = [
         'lat' => $pt->getLatitude(),
         'lng' => $pt->getLongitude(),
         'color' => $color,
         'text' => 'S',
-        'title' => $e->nom,
-        'info' => implode('<br>', array_filter($d))
+        'title' => $station->nom,
+        'info' => implode('<br>', array_filter($d)) . $table
     ];
+}
+$description = $this->description['station'];
+if (count($this->description['services'])) {
+    $table = '<table>';
+    $hasServices = false;
+    foreach ($this->description['services'] as $service) {
+        if ($service->ligneId) {
+            $aServices = explode(' ', $service->service);
+            $table .= '<tr><td>' . implode('</td><td>', $aServices) . '</td></tr>';
+            $hasServices = true;
+        }
+    }
+    $table .= '</table>';
+    if ($hasServices) {
+        $description .= $table;
+    }
 }
 // lancement du script (sera affiché dans le layout à la fin de la page)
 $this->inlineScript()->captureStart();
 ?>
-const CENTRE_LAT = <?= $this->config['centre']['lat'];?>;
-const CENTRE_LNG = <?= $this->config['centre']['lng'];?>;
-const INI_ZOOM = <?= $this->config['zoom'];?>;
-initialiser("<?=$this->scheme;?>","point d'arrêt","<?= $this->description;?>",<?= json_encode($aMarkers);?>);
+const CENTRE_LAT = <?= $this->outil->getCentreLat();?>;
+const CENTRE_LNG = <?= $this->outil->getCentreLng();?>;
+const INI_ZOOM = <?= $this->outil->getZoom(2);?>;
+initialiser("<?=$this->scheme;?>","point d'arrêt","<?= $description;?>",<?= json_encode($aMarkers);?>);
 <?php
 $this->inlineScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
@@ -68,11 +104,13 @@ $this->inlineScript()->captureEnd();
 		</div>
 		<div class="float-right left-10px" style="max-width: 700px;">
 			<?= $this->form($this->form); ?>
+			<?php if ($this->form->has('submit')):?>
 			<p class="sbm-description">
 				Cliquez sur la carte à l'emplacement de la station puis cliquez sur
 				le bouton <b>'Enregistrer la localisation'</b>.<br>Utilisez le zoom
 				pour plus de précision.
 			</p>
+			<?php endif;?>
 		</div>
 
 	</div>

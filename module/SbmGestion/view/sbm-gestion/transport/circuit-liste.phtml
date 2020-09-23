@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -46,13 +46,34 @@ $url_modifhoraires = $this->url('sbmgestion/transport',
         'action' => 'circuit-modif-horaires',
         'page' => $this->page
     ]);
+$url_edit = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-edit',
+        'page' => $this->page
+    ]);
+$url_delete = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-suppr',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmgestion/transport',
+    [
+        'action' => 'circuit-group',
+        'id' => $this->page
+    ]);
+$url_localiser = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-localisation',
+        'page' => $this->page
+    ]);
+$action_ici = 'circuit-liste';
 $url_ici = $this->url('sbmgestion/transport',
     [
-        'action' => 'circuit-liste',
+        'action' => $action_ici,
         'page' => $this->page
     ]);
 $route_ici = $this->url('sbmgestion/transport', [
-    'action' => 'circuit-liste'
+    'action' => $action_ici
 ]);
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms',
@@ -128,30 +149,22 @@ if ($this->categorieId < 250) {
         	<?php
             $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
             if ($this->categorieId >= 250) {
-                $url_edit = $this->url('sbmgestion/transport',
-                    [
-                        'action' => 'circuit-edit',
-                        'page' => $this->page
-                    ]);
-                $url_delete = $this->url('sbmgestion/transport',
-                    [
-                        'action' => 'circuit-suppr',
-                        'page' => $this->page
-                    ]);
-                $url_group = $this->url('sbmgestion/transport',
-                    [
-                        'action' => 'circuit-group',
-                        'id' => $this->page
-                    ]);
                 $hiddens = [
                     'circuitId' => $circuit->circuitId,
-                    'origine' => $url_ici
+                    'stationId' => $circuit->stationId,
+                    'origine' => $url_ici,
+                    'action' => $action_ici
                 ];
                 $buttons = [
                     'modifier' => [
                         'class' => 'fam-pencil',
                         'formaction' => $url_edit,
                         'title' => 'modifier'
+                    ],
+                    'localiser' => [
+                        'class' => 'fam-map-magnify',
+                        'formaction' => $url_localiser,
+                        'title' => 'position sur la carte'
                     ],
                     'supprimer' => [
                         'class' => 'fam-delete',

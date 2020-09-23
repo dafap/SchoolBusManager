@@ -12,7 +12,7 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2020
+ * @date 23 sept. 2020
  * @version 2020-2.6.0
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -25,30 +25,48 @@ $this->themeJS('commun', 'StyledMarker.js');
 $i = 0;
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
-    $e = $pt->getAttribute('station');
-    if ($e->ouverte) {
+    $station = $pt->getAttribute('station');
+    $d = [
+        '<b>' . $this->escapeHtml($station->nom) . '</b>',
+        $this->escapeHtml($station->alias),
+        implode(' ', [
+            $station->codePostal,
+            $station->lacommune
+        ])
+    ];
+    $desservie = false;
+    $aServices = [];
+    foreach ($station->services as $service) {
+        if ($service->ligneId) {
+            $aServices[] = explode(' ', $service->service);
+            $desservie = true;
+        }
+    }
+    if ($desservie && $station->ouverte) {
         $color = "#00ff00";
         $nature = "ouverte";
+    } elseif ($station->ouverte) {
+        $color = "ffff00";
+        $nature = "non desservie";
     } else {
         $color = "#ff0000";
         $nature = "fermée";
     }
-    $d = [
-        '<b>' . $this->escapeHtml($e->nom) . '</b>',
-        $this->escapeHtml($e->alias),
-        implode(' ', [
-            $e->codePostal,
-            $e->lacommune
-        ])
-    ];
     $d[] = 'Station ' . $nature;
+    if (count($aServices)) {
+        $table = '<table>';
+        foreach ($aServices as $ligne) {
+            $table .= '<tr><td>' . implode('</td><td>', $ligne) . '</td></tr>';
+        }
+        $table .= '</table>';
+    }
     $aMarkers[] = [
         'lat' => $pt->getLatitude(),
         'lng' => $pt->getLongitude(),
         'color' => $color,
         'text' => 'S',
-        'title' => $e->nom,
-        'info' => implode('<br>', array_filter($d))
+        'title' => $station->nom,
+        'info' => implode('<br>', array_filter($d)) . $table
     ];
 }
 // lancement du script
