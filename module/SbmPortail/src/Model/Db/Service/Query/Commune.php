@@ -7,18 +7,20 @@
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2020
+ * @date 24 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\Service\Query;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
 use SbmCartographie\Model\Point;
 
 class Commune extends AbstractQuery
 {
+    use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     /**
      *
@@ -59,8 +61,10 @@ class Commune extends AbstractQuery
         if (is_null($where)) {
             $where = new Where();
         }
-        if (!$order) {
-            $order = ['lig.ligneId'];
+        if (! $order) {
+            $order = [
+                'lig.ligneId'
+            ];
         }
         $where->equalTo('lig.millesime', $this->millesime)->in('sta.communeId',
             $this->arrayCommuneId);
@@ -95,8 +99,38 @@ class Commune extends AbstractQuery
     public function stationsPourCarte()
     {
         $resultset = $this->renderResult($this->selectStations());
+        $keysService = [
+            'serviceId',
+            'service',
+            'ligneId',
+            'sens',
+            'moment',
+            'ordre',
+            'passage',
+            'horaireD'
+        ];
+        $arrayStations = [];
+        foreach ($resultset as $row) {
+            $row->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+            $arStation = $row->getArrayCopy();
+            $arService = [];
+            foreach ($keysService as $key) {
+                $arService[$key] = $row->{$key};
+                unset($arStation[$key]);
+            }
+            $aoService = new \ArrayObject($arService, \ArrayObject::ARRAY_AS_PROPS);
+            if (array_key_exists($row->stationId, $arrayStations)) {
+                // ajout du service et de l'horaire
+                $arrayStations[$row->stationId]->services[] = $aoService;
+            } else {
+                // création d'un élément
+                $arStation['services'][] = $aoService;
+                $arrayStations[$row->stationId] = new \ArrayObject($arStation,
+                    \ArrayObject::ARRAY_AS_PROPS);
+            }
+        }
         $ptStations = [];
-        foreach ($resultset as $station) {
+        foreach ($arrayStations as $station) {
             $station->setFlags(\ArrayObject::ARRAY_AS_PROPS);
             $pt = new Point($station->x, $station->y);
             $pt->setAttribute('station', $station);
@@ -113,6 +147,7 @@ class Commune extends AbstractQuery
     {
         return $this->sql->select()
             ->columns([
+            'stationId',
             'x',
             'y',
             'nom',
@@ -131,7 +166,25 @@ class Commune extends AbstractQuery
                 'lacommune' => 'alias',
                 'laposte' => 'alias_laposte'
             ])
-            ->where((new Where())->in('sta.communeId', $this->arrayCommuneId));
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], 'cir.stationId = sta.stationId',
+            [
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
+                'service' => new Literal(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireD'
+            ], Select::JOIN_LEFT)
+            ->where(
+            (new Where())->in('sta.communeId', $this->arrayCommuneId)
+                ->nest()
+                ->isNull('millesime')->or->equalTo('millesime', $this->millesime)
+                ->unnest());
     }
 
     /**
