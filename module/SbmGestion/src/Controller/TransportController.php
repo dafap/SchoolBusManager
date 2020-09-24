@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 sept. 2020
- * @version 2020-2.6.0
+ * @date 24 sept. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmGestion\Controller;
 
@@ -199,8 +199,8 @@ class TransportController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
-        $args['where']->equalTo('millesime', $millesime)->equalTo('ligneId',
-            $args['post']['ligneId']);
+        $ligneId = $args['post']['ligneId'];
+        $args['where']->equalTo('millesime', $millesime)->equalTo('ligneId', $ligneId);
         $effectifServices = $this->db_manager->get('Sbm\Db\Eleve\EffectifServices');
         $effectifServices->init();
         return new ViewModel(
@@ -211,6 +211,7 @@ class TransportController extends AbstractActionController
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_services', 15),
                 'criteres_form' => $args['form'],
                 'effectifServices' => $effectifServices,
+                'ligneId' => $ligneId,
                 'as' => $as
             ]);
     }
