@@ -243,7 +243,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'fa',
                 'gratuit',
                 'dateCarteR1',
-                'dateCarteR2'
+                'dateCarteR2',
+                'reductionR2'
             ])
             ->join(
             [
@@ -273,6 +274,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'numero',
                 'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
                 'adresseL2' => new Literal(
@@ -612,7 +614,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'fa',
                 'gratuit',
                 'dateCarteR1',
-                'dateCarteR2'
+                'dateCarteR2',
+                'reductionR2'
             ])
             ->join(
             [
@@ -686,6 +689,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'numero',
                 'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
                 'adresseL2' => new Literal(
