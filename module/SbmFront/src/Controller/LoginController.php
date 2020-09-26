@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 24 sept. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmFront\Controller;
 
@@ -237,10 +237,7 @@ class LoginController extends AbstractActionController
                 case CategoriesInterface::GR_TRANSPORTEURS_ID:
                 case CategoriesInterface::SECRETARIAT_ID:
                     Session::set('home', 'sbmportail', 'layout');
-                    return $this->redirect()->toRoute('sbmportail',
-                        [
-                            'action' => 'index'
-                        ]);
+                    return $this->redirect()->toRoute('sbmportail');
                     break;
                 case CategoriesInterface::GESTION_ID:
                     Session::set('home', 'sbmgestion/config', 'layout');

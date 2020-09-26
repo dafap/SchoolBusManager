@@ -7,7 +7,7 @@
  * @filesource Transporteur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2020
+ * @date 7 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\Service\Query;
@@ -79,9 +79,9 @@ class Transporteur extends AbstractQuery
         return $this->renderResult($this->selectScolaritesR($where));
     }
 
-    public function paginator(Where $where)
+    public function paginatorTr(Where $where)
     {
-        return parent::paginator($this->selectScolaritesR($where));
+        return $this->paginator($this->selectScolaritesR($where));
     }
 
     /**

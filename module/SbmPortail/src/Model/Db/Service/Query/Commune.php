@@ -91,6 +91,66 @@ class Commune extends AbstractQuery
             ->order($order);
     }
 
+    public function paginatorCircuits(Where $where, array $order = [])
+    {
+        $this->addStrategy('semaine',
+            $this->db_manager->get('Sbm\Db\Table\Circuits')
+                ->getStrategie('semaine'));
+        return $this->paginator($this->selectCircuits($where, $order));
+    }
+
+    protected function selectCircuits(Where $where = null, array $order = []): Select
+    {
+        if (is_null($where)) {
+            $where = new Where();
+        }
+        $where->equalTo('cir.millesime', $this->millesime);
+        if (! $order) {
+            $order = [
+                'horaireD',
+                'horaireA'
+            ];
+        }
+        return $this->sql->select()
+            ->columns(
+            [
+                'station' => 'nom',
+                'stationAlias' => 'alias',
+                'communeIdStation' => 'communeId',
+                'stationOuverte' => 'ouverte'
+            ])
+            ->from([
+            'sta' => $this->db_manager->getCanonicName('stations')
+        ])
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes')
+        ], 'com.communeId = sta.communeId',
+            [
+                'communeStation' => 'nom',
+                'lacommuneStation' => 'alias',
+                'laposteStation' => 'alias_laposte'
+            ])
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits')
+        ], 'cir.stationId = sta.stationId',
+            [
+                'circuitId',
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireA',
+                'horaireD',
+                'semaine',
+                'stationId',
+                'emplacement',
+                'circuitOuvert' => 'ouvert'
+            ])
+            ->where($where)
+            ->order($order);
+    }
+
     /**
      * Renvoie un tableau de points
      *

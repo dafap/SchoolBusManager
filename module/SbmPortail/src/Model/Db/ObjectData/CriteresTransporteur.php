@@ -7,7 +7,7 @@
  * @filesource CriteresTransporteur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2020
+ * @date 7 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -18,6 +18,7 @@ use Zend\Db\Sql\Where;
 
 class CriteresTransporteur extends SbmCommunCriteres
 {
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     /**
      *
@@ -64,6 +65,18 @@ class CriteresTransporteur extends SbmCommunCriteres
         }
         if (! empty($this->data['classeId'])) {
             $where->equalTo('sco.classeId', $this->data['classeId']);
+        }
+        if (! empty($this->data['serviceId'])) {
+            list ($ligneId, $sens, $moment, $ordre) = $this->decodeServiceId(
+                $this->data['serviceId']);
+            $where->equalTo('sub.ligne1Id', $ligneId);
+            $where->equalTo('sub.sensligne1', $sens);
+            $where->equalTo('sub.moment', $moment);
+            $where->equalTo('sub.ordreligne1', $ordre);
+        }
+        if (! empty($this->data['stationId'])) {
+            $where->nest()->equalTo('sub.station1Id', $this->data['stationId'])->or->equalTo(
+                'sub.station2Id', $this->data['stationId'])->unnest();
         }
         return $where;
     }

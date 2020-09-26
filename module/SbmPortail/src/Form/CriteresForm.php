@@ -1,7 +1,7 @@
 <?php
 /**
  * Formulaire des critères de recherche des élèves pour le portail
- * 
+ *
  * @project sbm
  * @package SbmPortail/Form
  * @filesource CriteresForm.php

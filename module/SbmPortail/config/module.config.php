@@ -9,7 +9,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2020
+ * @date 24 sept. 2020
  * @version 2020-2.6.0
  */
 use SbmPortail\Controller;
@@ -20,237 +20,46 @@ return [
             'sbmportail' => [
                 'allow' => [
                     'roles' => [
-                        'gestion'
+                        'gestion',
+                        'commune',
+                        'etablissement',
+                        'secretariat',
+                        'transporteur'
                     ]
                 ],
-                'actions' => [
-                    'index' => [
-                        'allow' => [
+                'child_resources' => [
+                    'commune' => [
+                        'deny' => [
                             'roles' => [
-                                'transporteur',
                                 'etablissement',
-                                'commune',
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'retour' => [
-                        'allow' => [
-                            'roles' => [
-                                'guest'
-                            ]
-                        ]
-                    ],
-                    'org-index' => [
-                        'allow' => [
-                            'roles' => [
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'org-eleves' => [
-                        'allow' => [
-                            'roles' => [
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'org-pdf' => [
-                        'allow' => [
-                            'roles' => [
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'org-eleves-download' => [
-                        'allow' => [
-                            'roles' => [
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'org-circuits' => [
-                        'allow' => [
-                            'roles' => [
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'com-index' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-eleves' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-eleves-download' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-pdf' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-carte-etablissements' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-carte-stations' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'com-circuits' => [
-                        'allow' => [
-                            'roles' => [
-                                'commune'
-                            ]
-                        ]
-                    ],
-                    'et-index' => [
-                        'allow' => [
-                            'roles' => [
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-index' => [
-                        'allow' => [
-                            'roles' => [
+                                'secretariat',
                                 'transporteur'
                             ]
                         ]
                     ],
-                    'tr-eleves' => [
-                        'allow' => [
+                    'etablissement' => [
+                        'deny' => [
                             'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-pdf' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-circuits' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-circuit-group' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-carte-etablissements' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement',
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'tr-carte-stations' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement',
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'tr-extraction-telephones' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'tr-eleves-download' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement'
-                            ]
-                        ]
-                    ],
-                    'modif-compte' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement',
                                 'commune',
-                                'secretariat'
+                                'secretariat',
+                                'transporteur'
                             ]
                         ]
                     ],
-                    'localisation' => [
-                        'allow' => [
+                    'organisateur' => [
+                        'deny' => [
                             'roles' => [
-                                'transporteur',
-                                'etablissement',
                                 'commune',
-                                'secretariat'
+                                'etablissement',
+                                'transporteur'
                             ]
                         ]
                     ],
-                    'mdp-change' => [
-                        'allow' => [
+                    'transporteur' => [
+                        'deny' => [
                             'roles' => [
-                                'transporteur',
-                                'etablissement',
                                 'commune',
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'email-change' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
                                 'etablissement',
-                                'commune',
-                                'secretariat'
-                            ]
-                        ]
-                    ],
-                    'message' => [
-                        'allow' => [
-                            'roles' => [
-                                'transporteur',
-                                'etablissement',
-                                'commune',
                                 'secretariat'
                             ]
                         ]
@@ -261,27 +70,93 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class
+            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
+            Controller\CommuneController::class => Controller\Service\CommuneControllerFactory::class,
+            Controller\EtablissementController::class => Controller\Service\EtablissementControllerFactory::class,
+            Controller\OrganisateurController::class => Controller\Service\OrganisateurControllerFactory::class,
+            Controller\PortailController::class => Controller\Service\PortailControllerFactory::class,
+            Controller\TransporteurController::class => Controller\Service\TransporteurControllerFactory::class
         ]
     ],
     'router' => [
         'routes' => [
             'sbmportail' => [
-                'type' => 'segment',
+                'type' => 'literal',
                 'options' => [
-                    'route' => '/portail[/:action[/:page][/:id][/id/:id]]',
-                    'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'page' => '[0-9]+',
-                        'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
-                    ],
+                    'route' => '/portail',
                     'defaults' => [
                         'module' => 'SbmPortail',
-                        'controller' => Controller\IndexController::class,
-                        'action' => 'index'
+                        'controller' => Controller\PortailController::class,
+                        'action' => 'dispatch'
                     ]
                 ],
-                'may_terminate' => true
+                'may_terminate' => true,
+                'child_routes' => [
+                    'commune' => [
+                        'type' => 'segment',
+                        'options' => [
+                            'route' => '/commune[/:action[/page/:page][/id/:id]]',
+                            'constraints' => [
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+',
+                                'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
+                            ],
+                            'defaults' => [
+                                'module' => 'SbmPortail',
+                                'controller' => Controller\CommuneController::class,
+                                'action' => 'index'
+                            ]
+                        ]
+                    ],
+                    'etablissement' => [
+                        'type' => 'segment',
+                        'options' => [
+                            'route' => '/etablissement[/:action[/:page][/:id][/id/:id]]',
+                            'constraints' => [
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+',
+                                'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
+                            ],
+                            'defaults' => [
+                                'module' => 'SbmPortail',
+                                'controller' => Controller\EtablissementController::class,
+                                'action' => 'index'
+                            ]
+                        ]
+                    ],
+                    'organisateur' => [
+                        'type' => 'segment',
+                        'options' => [
+                            'route' => '/organisateur[/:action[/:page][/:id][/id/:id]]',
+                            'constraints' => [
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+',
+                                'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
+                            ],
+                            'defaults' => [
+                                'module' => 'SbmPortail',
+                                'controller' => Controller\OrganisateurController::class,
+                                'action' => 'index'
+                            ]
+                        ]
+                    ],
+                    'transporteur' => [
+                        'type' => 'segment',
+                        'options' => [
+                            'route' => '/transporteur[/:action[/:page][/:id][/id/:id]]',
+                            'constraints' => [
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'page' => '[0-9]+',
+                                'id' => '[a-zA-Z0-9][a-zA-Z0-9_-]*'
+                            ],
+                            'defaults' => [
+                                'module' => 'SbmPortail',
+                                'controller' => Controller\TransporteurController::class,
+                                'action' => 'index'
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ]
     ],

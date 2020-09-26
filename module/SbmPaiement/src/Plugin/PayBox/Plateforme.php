@@ -7,7 +7,7 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
+ * @date 15 sept. 2020
  * @version 2020-2.6.0
  */
 namespace SbmPaiement\Plugin\PayBox;
@@ -24,6 +24,14 @@ use Zend\Stdlib\Parameters;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
+    use \SbmCommun\Model\Traits\DebugTrait;
+
+    /**
+     * Type modifié le 9/9/2020
+     *
+     * @var Refdet
+     */
+    private $refdet;
 
     /**
      *
@@ -42,12 +50,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      * @var string
      */
     private $idOp;
-
-    /**
-     *
-     * @var string
-     */
-    private $refdet;
 
     /**
      *
@@ -117,7 +119,46 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         $this->nbEnfants = 0;
         $this->sel = 'eclipse';
         $this->paiement3fois = false;
-        $this->clearRefDet();
+        $this->refdet = new Refdet($this->getAbonnementConfig());
+    }
+
+    /**
+     * Retourne le tableau des paramètres à inclure dans PBX_CMD pour définir un
+     * abonnement
+     *
+     * @return array
+     */
+    private function getAbonnementConfig()
+    {
+        return $this->getParam([
+            'formulaire',
+            'abonnement'
+        ]);
+    }
+
+    /**
+     * Retourne la valeur de la variable si son nom est donné sinon le tableau des
+     * variables
+     *
+     * @param string $name
+     *            Valable pour les variables du formulaire de nom PBX_DEVISE, PBX_RETOUR,
+     *            PBX_HASH et PBX_RUF1
+     * @return string|array
+     */
+    private function getVariablesConfig(string $name = null)
+    {
+        if ($name) {
+            return $this->getParam([
+                'formulaire',
+                'variables',
+                $name
+            ]);
+        } else {
+            return $this->getParam([
+                'formulaire',
+                'variables'
+            ]);
+        }
     }
 
     /*
@@ -125,6 +166,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
 
     /**
+     * Appelée par la méthode SbmPaiement\Controller\IndexController::formulaireAction()
      * Récupère le responsable en session
      *
      * {@inheritdoc}
@@ -137,6 +179,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
+     * Appelée par la méthode SbmPaiement\Controller\IndexController::formulaireAction()
      * Uniquement si $nb vaut 3
      *
      * @param int $nb
@@ -149,6 +192,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
+     * Appelée par la méthode SbmPaiement\Controller\IndexController::formulaireAction()
+     * Récupère la facture ou la génère si nécessaire puis initialise l'objet refdet
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\PlateformeInterface::prepare()
@@ -168,23 +213,20 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $this->elevesIds[] = $row['eleveId'];
         }
         $this->nbEnfants = count($this->elevesIds);
+        $this->refdet->setMillesime($this->getMillesime())
+            ->setExercice($this->getExercice())
+            ->setFactureNumero($this->facture->getNumero())
+            ->setResponsableId($this->responsable->responsableId)
+            ->setNbEnfants($this->nbEnfants)
+            ->setPaiement3fois($this->paiement3fois)
+            ->setAbonnementMontant($this->getMontantAbonnement());
         return $this;
     }
 
     /**
-     * Initialise la propriété facture
-     *
-     * @param \SbmCommun\Model\Paiements\FactureInterface $facture
-     * @return \SbmPaiement\Plugin\PayBox\Plateforme
-     */
-    public function setFacture(Facture $facture)
-    {
-        $this->facture = $facture;
-        return $this;
-    }
-
-    /**
-     * Appelée par la méthode SbmPaiement\Controller\IndesController::formulaireAction()
+     * Appelée par la méthode SbmPaiement\Controller\IndexController::formulaireAction()
+     * Prépare les hiddens du formulaire d'appel Donne un UniqueId Enregistre l'appel dans
+     * la table appels
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\PlateformeInterface::initPaiement()
@@ -208,13 +250,42 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * Prépare les paramètres d'appel de la procédure creerPaiementSecurise du web service
+     * Appelée dans la vue formulaire.phtml du plugin : Prépare et renvoie le formulaire
+     * d'appel de la plateforme chargé des valeurs à envoyer.
+     *
+     * {@inheritdoc}
+     * @see \SbmPaiement\Plugin\PlateformeInterface::getForm()
+     */
+    public function getForm()
+    {
+        $form = new Formulaire('Formulaire', [
+            'hiddens' => array_keys($this->variables)
+        ]);
+        $form->setAttribute('action', $this->getUrl())
+            ->setData($this->variables);
+        return $form;
+    }
+
+    /**
+     * Initialise la propriété facture
+     *
+     * @param \SbmCommun\Model\Paiements\FactureInterface $facture
+     * @return \SbmPaiement\Plugin\PayBox\Plateforme
+     */
+    public function setFacture(Facture $facture)
+    {
+        $this->facture = $facture;
+        return $this;
+    }
+
+    /**
+     * Prépare les hiddens du formulaire d'appel
      *
      * @return array
      */
     private function prepareAppel()
     {
-        $this->variables = $this->getFormulaireConfigVariables();
+        $this->variables = $this->getVariablesConfig();
         $mode = $this->getParam('mode');
         $cle = $this->getParam([
             'identifiant',
@@ -278,6 +349,17 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
+     * Renvoie un uniqueId : le timestamp sur 10 caractères
+     *
+     * {@inheritdoc}
+     * @see \SbmPaiement\Plugin\PlateformeInterface::getUniqueId()
+     */
+    public function getUniqueId(array $params)
+    {
+        return sprintf('%010d', time());
+    }
+
+    /**
      * Exemple : string(38) "20202021201906131259590000001000000201" ou string(90)
      * "20202021201906131259590000001000000201PBX_2MONT0000000300PBX_NBPAIE02PBX_FREQ01PBX_QUAND00"
      *
@@ -285,25 +367,32 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function getRefDet()
     {
-        if (! $this->refdet) {
-            $cmd = sprintf("%4d%4s%14s%07d%07d%02d", $this->millesime, $this->exercice,
-                date('YmdHis'), $this->facture->getNumero(),
-                $this->responsable->responsableId, $this->nbEnfants);
-            if ($this->paiement3fois) {
-                $abonnement = $this->getFormulaireAbonnement();
-                $abonnement['PBX_2MONT'] = sprintf('%010d', $this->getMontantAbonnement());
-                foreach ($abonnement as $key => $value) {
-                    $cmd .= $key . $value;
-                }
-            }
-            $this->refdet = $cmd;
+        return $this->refdet->getRefdet();
+    }
+
+    /**
+     * Enregistre l'appel à paiement de cet object dans la table appels
+     */
+    private function enregistreAppel()
+    {
+        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
+        $odata = $tAppels->getObjData();
+        foreach ($this->elevesIds as $eleveId) {
+            $odata->exchangeArray(
+                [
+                    'refdet' => $this->getRefDet(),
+                    'idOp' => $this->idOp,
+                    'responsableId' => $this->responsable->responsableId,
+                    'eleveId' => $eleveId,
+                    'montant' => $this->getMontantCentimes()
+                ]);
+            $tAppels->saveRecord($odata);
         }
-        return $this->refdet;
     }
 
     private function clearRefDet()
     {
-        $this->refdet = '';
+        $this->refdet->clearRefdet();
     }
 
     /**
@@ -336,54 +425,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $this->getMontantCentimes();
         }
         return $this->montantAbonnement;
-    }
-
-    /**
-     * Renvoie le timestamp sur 10 caractères
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::getUniqueId()
-     */
-    public function getUniqueId(array $params)
-    {
-        return sprintf('%010d', time());
-    }
-
-    /**
-     * Enregistre l'appel à paiement de cet object
-     */
-    private function enregistreAppel()
-    {
-        $tAppels = $this->db_manager->get('Sbm\Db\Table\Appels');
-        $odata = $tAppels->getObjData();
-        foreach ($this->elevesIds as $eleveId) {
-            $odata->exchangeArray(
-                [
-                    'refdet' => $this->getRefDet(),
-                    'idOp' => $this->idOp,
-                    'responsableId' => $this->responsable->responsableId,
-                    'eleveId' => $eleveId,
-                    'montant' => $this->getMontantCentimes()
-                ]);
-            $tAppels->saveRecord($odata);
-        }
-    }
-
-    /**
-     * Prépare le formulaire d'appel de la plateforme et charge les valeurs à envoyer.
-     * Cette méthode est appelée dans la view formulaire.phtml du plugin.
-     *
-     * {@inheritdoc}
-     * @see \SbmPaiement\Plugin\PlateformeInterface::getForm()
-     */
-    public function getForm()
-    {
-        $form = new Formulaire('Formulaire', [
-            'hiddens' => array_keys($this->variables)
-        ]);
-        $form->setAttribute('action', $this->getUrl())
-            ->setData($this->variables);
-        return $form;
     }
 
     /**
@@ -436,7 +477,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * PARTIE 2 : NOTIFICATION DE PAIEMENT MISE AU POINT JUSQU'ICI
+     * PARTIE 2 : NOTIFICATION DE PAIEMENT
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
 
@@ -453,46 +494,44 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function getFromRefDet(string $part)
     {
-        $refdet = $this->data['ref'];
+        $this->refdet->clearRefdet();
+        $this->refdet->setRefdet($this->data['ref']);
         switch ($part) {
             case 'millesime':
-                $result = substr($refdet, 0, 4);
+                $result = $this->refdet->getMillesime();
                 break;
             case 'exercice':
-                $result = substr($refdet, 4, 4);
+                $result = $this->refdet->getExercice();
                 break;
             case 'date':
-                $result = substr($refdet, 8, 14);
+                $result = $this->refdet->getDate();
                 break;
             case 'numero':
-                $result = substr($refdet, 22, 7);
+                $result = $this->refdet->getFactureNumero();
                 break;
             case 'responsableId':
-                $result = substr($refdet, 29, 7);
+                $result = $this->refdet->getResponsableId();
                 break;
             case 'nbEnfants':
-                $result = substr($refdet, 36, 2);
+                $result = $this->refdet->getNbEnfants();
                 break;
             case 'PBX_2MONT':
-                if (strlen($refdet) == 90 && strpos($refdet, 'PBX_2MONT')) {
-                    $result = substr($refdet, 47, 10);
-                } else {
-                    $result = '';
-                }
+                $result = $this->refdet->getAbonnementMontant();
+                break;
+            case 'PBX_NBPAIE':
+                $result = $this->refdet->getAbonnementNbPaiements();
+                break;
+            case 'PBX_FREQ':
+                $result = $this->refdet->getAbonnementFrequence();
+                break;
+            case 'PBX_QUAND':
+                $result = $this->refdet->getAbonnementQuand();
+                break;
+            case 'PBX_DELAIS':
+                $result = $this->refdet->getAbonnementDelais();
                 break;
             default:
-                $abonnement = $this->getFormulaireAbonnement();
-                if (array_key_exists($part, $abonnement)) {
-                    if (strlen($refdet) == 90) {
-                        $pos = strpos($refdet, $part) + strlen($part);
-                        $len = $part == 'PBX_DELAIS' ? 3 : 2;
-                        $result = substr($refdet, $pos, $len);
-                    } else {
-                        $result = '';
-                    }
-                } else {
-                    throw new Exception('Clé inconnue dans refdet.');
-                }
+                throw new Exception('Clé inconnue dans refdet.');
                 break;
         }
         return $result;
@@ -505,7 +544,9 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
 
     /**
-     * Surcharge pour renvoyer une page vide et traiter les reconductions
+     * Surcharge pour renvoyer une page vide et traiter les reconductions Attention ! Les
+     * notifications de paiement sont reçues en POST et les notifications d'échéances
+     * d'abonnement sont reçues en GET.
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\AbstractPlateforme::notification()
@@ -514,13 +555,15 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     {
         try {
             if ($method == 'post') {
+                // traitement d'un paiement
                 parent::notification($method, $data, $remote_addr);
             } else {
-                // traitement de la reconduction
+                // traitement de l'échéance d'un abonnement
                 if ($this->isAuthorizedRemoteAdress($remote_addr)) {
                     if ($this->validGetNotification($data)) {
-                        if (! isset($this->data))
+                        if (! isset($this->data)) {
                             $this->data = $data;
+                        }
                         if ($this->validReconduction()) {
                             $this->logError(Logger::INFO, 'Reconduction OK', $data);
                             $this->enregistrePaybox();
@@ -607,6 +650,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         return $ok;
     }
 
+    /**
+     * Uniquement pour la reconduction d'un abonnement
+     *
+     * @param \Zend\Stdlib\Parameters $data
+     * @return boolean
+     */
     private function validGetNotification(Parameters $data)
     {
         $ok = $data->offsetExists('ETAT_PBX') && $data->offsetExists('erreur') &&
@@ -634,13 +683,9 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     protected function validReconduction()
     {
         if ($this->data->offsetExists('auto') && $this->data->get('erreur') == '00000') {
-            $this->verifiePaiement();
-            $ok = true;
-        } else {
-            $ok = false;
-            $this->enregistreIncident();
+            return $this->verifiePaiement();
         }
-        return $ok;
+        return false;
     }
 
     protected function enregistrePaybox()
@@ -651,10 +696,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         } else {
             $auto = 'erreur ' . $this->data->get('erreur');
         }
+        $this->refdet->clearRefdet();
+        $this->refdet->setRefdet($this->data->get('ref'));
         $array = [
-            'responsableId' => $this->getFromRefDet('responsableId'),
-            'exercice' => $this->getFromRefDet('exercice'),
-            'numero' => $this->getFromRefDet('numero'),
+            'responsableId' => $this->refdet->getResponsableId(),
+            'exercice' => $this->refdet->getExercice(),
+            'numero' => $this->refdet->getFactureNumero(),
             'auto' => $auto,
             'montant' => $this->data->get('montant'),
             'ref' => $this->data->get('ref'),
@@ -681,7 +728,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     protected function verifiePaiement()
     {
-        ;
+        return true;
     }
 
     /**
@@ -733,16 +780,18 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     protected function prepareData()
     {
-        $responsableId = (int) $this->getFromRefDet('responsableId');
-        $millesime = (int) $this->getFromRefDet('millesime');
+        $this->refdet->clearRefdet();
+        $this->refdet->setRefdet($this->data['ref']);
+        $responsableId = (int) $this->refdet->getResponsableId();
+        $millesime = (int) $this->refdet->getMillesime();
         $ladateP = \DateTime::createFromFormat('dmYH:i:s',
             $this->data['datetrans'] . $this->data['heuretrans']);
-        $exercice = (int) $this->getFromRefDet('exercice');
-        // $numeroF = (int) $this->getFromRefDet('numero');
-        // $nbEnfants = (int) $this->getFromRefDet('nbEnfants');
-        $pbx_2mont = (int) $this->getFromRefDet('PBX_2MONT');
+        $exercice = (int) $this->refdet->getExercice();
+        // $numeroF = (int) $this->refdet->getFactureNumero();
+        // $nbEnfants = (int) $this->refdet->getNbEnfants();
+        $pbx_2mont = $this->refdet->getAbonnementMontant();
         try {
-            $pbx_nbpaie = (int) $this->getFromRefDet('PBX_NBPAIE');
+            $pbx_nbpaie = (int) $this->refdet->getAbonnementNbPaiements();
         } catch (Exception $e) {
             $pbx_nbpaie = 0;
         }
@@ -838,15 +887,21 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function rapprochement(array $data): array
     {
+        $this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
+            'rapprochement.log');
+        $this->debugClear();
         $xlsfile = $data['xlsfile']['tmp_name'];
         $firstline = $data['firstline'];
         $spreadsheet = IOFactory::load($xlsfile);
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
         $cr = [];
         $table = $this->getDbManager()->get('SbmPaiement\Plugin\Table');
+        $num_line = 0;
         foreach ($sheetData as $ligne) {
+            $num_line ++;
             if ($firstline) {
                 // première ligne d'en-tête
+                $this->validFirstLine($ligne);
                 $firstline = false;
                 continue;
             }
@@ -867,8 +922,12 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             } else {
                 $cas = 'paiement';
             }
+            // Attention, affectation pour $date
+            if (! $date = \DateTime::createFromFormat('Y-m-d H:i:s', $ligne['C'])) {
+                throw new Exception(
+                    'Mauvais format de date & heure en colonne C, ligne ' . $num_line);
+            }
             // transaction manquante ?
-            $date = \DateTime::createFromFormat('Y-m-d H:i:s', $ligne['C']);
             $this->data = [
                 'montant' => $ligne['E'] * 100,
                 'ref' => $ligne['D'],
@@ -883,6 +942,33 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
                 'ip' => $ligne['K']
             ];
             $responsableId = $this->getFromRefDet('responsableId');
+            try {
+                $responsable = $this->getDbManager()
+                    ->get('Sbm\Db\Table\Responsables')
+                    ->getRecord($responsableId);
+                $suivi = [
+                    $cas,
+                    $ligne['C'],
+                    $ligne['E'],
+                    $responsableId,
+                    sprintf('%s %s', $responsable->nom, $responsable->prenom),
+                    $ligne['D'],
+                    $ligne['A']
+                ];
+            } catch (\Exception $e) {
+                $suivi = [
+                    $cas,
+                    $ligne['C'],
+                    $ligne['E'],
+                    $responsableId,
+                    'Responsable manquant',
+                    $ligne['D'],
+                    $ligne['A']
+                ];
+                $this->debugLog($suivi);
+                $cr[] = $suivi;
+                continue; // pas d'enregistrement dans ce cas
+            }
             $exercice = $this->getFromRefDet('exercice'); // exercice, numero est la PK
             $numero = $this->getFromRefDet('numero'); // numéro facture
             switch ($cas) {
@@ -906,7 +992,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
                                     'numero' => $numero
                                 ]));
                         $apayer = $this->getMontantAbonnement();
-                        $abonnement = $this->getFormulaireAbonnement();
+                        $abonnement = $this->getAbonnementConfig();
                         $abonnement['PBX_2MONT'] = sprintf('%010d', $apayer);
                         foreach ($abonnement as $key => $value) {
                             $this->data['ref'] .= $key . $value;
@@ -945,20 +1031,36 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
                     $this->enregistrePaybox();
                     break;
             }
-            $responsable = $this->getDbManager()
-                ->get('Sbm\Db\Table\Responsables')
-                ->getRecord($responsableId);
-            $cr[] = [
-                $cas,
-                $ligne['C'],
-                $ligne['E'],
-                $responsableId,
-                sprintf('%s %s', $responsable->nom, $responsable->prenom),
-                $ligne['D'],
-                $ligne['A']
-            ];
+            $cr[] = $suivi;
         }
+        $this->debugLog($cr);
         return $cr;
+    }
+
+    private function validFirstLine(array $line)
+    {
+        $references = [
+            'A' => 'Num. transaction',
+            'C' => 'Date & Heure',
+            'D' => 'Référence commande',
+            'E' => 'Montant',
+            'G' => 'Type de transaction',
+            'H' => 'Statut de la transaction',
+            'J' => 'Moyen de paiement',
+            'K' => 'Pays IP',
+            'L' => 'Pays Porteur',
+            'R' => 'Motif refus',
+            'U' => "Type d'appel",
+            'V' => 'Statut 3DS',
+            'AH' => 'Num. autorisation'
+        ];
+        foreach ($references as $column => $titre) {
+            if (! array_key_exists($column, $line) || $line[$column] != $titre) {
+                $message = 'Mauvais format de fichier : incohérence en colonne ' . $column .
+                    '. On attendait ' . $titre;
+                throw new Exception($message);
+            }
+        }
     }
 
     /**
@@ -971,45 +1073,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
     public function checkPaiement()
     {
-    }
-
-    /**
-     * Retourne la valeur de la variable si son nom est donné sinon le tableau des
-     * variables
-     *
-     * @param string $name
-     *            Valable pour les variables du formulaire de nom PBX_DEVISE, PBX_RETOUR,
-     *            PBX_HASH et PBX_RUF1
-     * @return string|array
-     */
-    private function getFormulaireConfigVariables(string $name = null)
-    {
-        if ($name) {
-            return $this->getParam([
-                'formulaire',
-                'variables',
-                $name
-            ]);
-        } else {
-            return $this->getParam([
-                'formulaire',
-                'variables'
-            ]);
-        }
-    }
-
-    /**
-     * Retourne le tableau des paramètres à inclure dans PBX_CMD pour définir un
-     * abonnement
-     *
-     * @return array
-     */
-    private function getFormulaireAbonnement()
-    {
-        return $this->getParam([
-            'formulaire',
-            'abonnement'
-        ]);
     }
 
     /**
@@ -1136,7 +1199,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00119' => '00119: Autorisation refusée  répéter la transaction ultérieurement.',
             '00120' => '00120: Autorisation refusée  réponse erronée (erreur dans le domaine serveur).',
             '00124' => '00124: Autorisation refusée  mise à jour de fichier non supportée.',
-            '00125' => '00125: Autorisation refusée  impossible de localiser l‟enregistrement dans le fichier.',
+            '00125' => '00125: Autorisation refusée  impossible de localiser l\'enregistrement dans le fichier.',
             '00126' => '00126: Autorisation refusée  enregistrement dupliqué, ancien enregistrement remplacé.',
             '00127' => '00127: Autorisation refusée  erreur en « edit » sur champ de mise à jour fichier.',
             '00128' => '00128: Autorisation refusée  accès interdit au fichier.',
@@ -1167,7 +1230,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             '00194' => '00194: Autorisation refusée  demande dupliquée.',
             '00196' => '00196: Autorisation refusée  mauvais fonctionnement du système.',
             '00197' => '00197: Autorisation refusée  échéance de la temporisation de surveillance globale.',
-            '00198' => '00198: Autorisation refusée  serveur innaccessible.',
+            '00198' => '00198: Autorisation refusée  serveur inaccessible.',
             '00199' => '00199: Autorisation refusée  incident domaine initiateur.',
             '99999' => '99999: Opération en attente de validation par l\'émetteur du moyen de paiement.'
         ];
@@ -1183,7 +1246,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         return '?????';
     }
 }
-
 
 class Formatage
 {

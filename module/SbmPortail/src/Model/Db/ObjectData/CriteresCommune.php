@@ -80,6 +80,14 @@ class CriteresCommune extends SbmCommunCriteres
         return $where;
     }
 
+    public function getPredicates()
+    {
+        $where = $this->getWhere();
+        echo '<pre>';
+        var_dump($where->getPredicates(), $where->getExpressionData());
+        die(__METHOD__);
+    }
+
     /**
      * Prépare et renvoie un Where à partir des données de l'objet. Le tableau
      * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
