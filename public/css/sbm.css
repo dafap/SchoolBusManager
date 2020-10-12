@@ -1,3 +1,4 @@
+@charset "utf-8";
 /**
  * Feuille de style des pages de l'application
  * 
@@ -6,10 +7,9 @@
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 sept. 2020
- * @version 2020-2.6.0
+ * @date 12 oct. 2020
+ * @version 2020-2.6.1
  **/
-@CHARSET "UTF-8";
 
 html {
 	background: #E5E0D4;
@@ -291,6 +291,7 @@ div.table-page1 div.row {
 
 div.table-page1 div.column1 {
 	display: table-cell;
+	vertical-align: top;
 	border-right: 10px solid white;
 }
 
