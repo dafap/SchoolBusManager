@@ -10,8 +10,8 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mars 2020
- * @version 2020-2.6.0
+ * @date 28 sept. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -164,6 +164,24 @@ class Circuits extends AbstractSbmTable implements EffectifInterface
             'horaireA' => $ocircuit->horaireA,
             'horaireD' => $ocircuit->horaireD
         ];
+    }
+
+    public function getStationIds(int $circuitId): array
+    {
+        $ocircuit = $this->getRecord($circuitId);
+        $resultset = $this->fetchAll(
+            [
+                'millesime' => $ocircuit->millesime,
+                'ligneId' => $ocircuit->ligneId,
+                'sens' => $ocircuit->sens,
+                'moment' => $ocircuit->moment,
+                'ordre' => $ocircuit->ordre
+            ]);
+        $array = [];
+        foreach ($resultset as $row) {
+            $array[] = $row->stationId;
+        }
+        return $array;
     }
 }
 

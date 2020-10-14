@@ -11,14 +11,13 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 juil. 2020
- * @version 2020-2.6.0
+ * @date 30 sept. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
-use SbmBase\Model\StdLib;
 
 class TransportController extends AbstractActionController
 {
@@ -296,6 +295,54 @@ class TransportController extends AbstractActionController
             $etablissementId = $this->params('etablissementId');
             $this->db_manager->get('Sbm\Db\Table\Etablissements')->setDesservie(
                 $etablissementId, 0);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - cocher la case sélection des lots
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function checkselectionligneAction()
+    {
+        try {
+            $ligneId = $this->params('ligneId');
+            $this->db_manager->get('Sbm\Db\Table\Lignes')->setSelection(
+                Session::get('millesime'), $ligneId, 1);
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
+        } catch (\Exception $e) {
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
+        }
+    }
+
+    /**
+     * ajax - décocher la case sélection des lots
+     *
+     * @method GET
+     * @return \Zend\Stdlib\ResponseInterface
+     */
+    public function uncheckselectionligneAction()
+    {
+        try {
+            $ligneId = $this->params('ligneId');
+            $this->db_manager->get('Sbm\Db\Table\Lignes')->setSelection(
+                Session::get('millesime'), $ligneId, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));

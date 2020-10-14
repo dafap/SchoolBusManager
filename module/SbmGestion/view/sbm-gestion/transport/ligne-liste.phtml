@@ -10,29 +10,14 @@
  * @filesource ligne-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2020
- * @version 2020-2.6.0
+ * @date 30 sept. 2020
+ * @version 2020-2.6.1
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$jsCallback = '';
-$jsTrigger = '';
-// modèle de jsCallback pour selection
-$modele = <<<EOT
-$("#chk%s").change(function() {
-    var action = ($(this).is(':checked'))?'check':'uncheck';
-    $.ajax({
-				url : '/sbmajaxtransport/'+action+'selectionligne/ligneId:%s',
-				success : function(data) {},
-				error : function(xhr, ajaxOptions, thrownError) {
-					alert(xhr.status + " " + thrownError);
-				}
-			});
-  });
-EOT;
-
+$this->ThemeJs('gestion-transport', 'ligne-liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $lignes = $this->paginator->getCurrentItems();
@@ -89,6 +74,7 @@ $actions = [
         'title' => 'Nouvelle ligne'
     ]
 ];
+$hasVia = false;
 ?>
 <h1>Liste des lignes de l'année scolaire en cours</h1>
 <div id="liste-wrapper">
@@ -113,7 +99,7 @@ $actions = [
 					<th>Lot</th>
 					<th>Départ</th>
 					<th>Terminus</th>
-					<th>Via</th>
+					<th class="via">Via</th>
 					<th>Nb<br>services
 					</th>
 					<th>Nb élèves<br>transportés
@@ -138,8 +124,6 @@ $actions = [
                     $nbInscrits = 0;
                 }
                 // construction des JS pour selection
-                $jsTrigger .= sprintf("$('#chk%s').trigger('change');\n", $ligne->ligneId);
-                $jsCallback .= sprintf("$modele\n", $ligne->ligneId, $ligne->ligneId);
                 $css = $this->cycle([
                     "even",
                     "odd"
@@ -175,6 +159,9 @@ $actions = [
                         'formaction' => $url_sms,
                         'title' => 'Envoyer un SMS'
                     ];
+                }
+                if ($ligne->via) {
+                    $hasVia = true;
                 }
                 ?>
                 <tr class="petit <?=$css;?>">
@@ -221,12 +208,8 @@ $actions = [
 	</div>
 </div>
 <?php
-$this->headScript()->captureStart();
+$this->inlineScript()->captureStart();
 ?>
-$(function() {
-function triggerChange() {
-<?=$jsTrigger;?>}
-<?=$jsCallback;?>
-});
+js_ligne.via(<?=$hasVia ? 1 : 0;?>);
 <?php
-$this->headScript()->captureEnd();
+$this->inlineScript()->captureEnd();

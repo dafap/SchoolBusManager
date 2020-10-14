@@ -9,10 +9,12 @@
  * @filesource circuit-ligne.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juin 2020
- * @version 2020-2.6.0
+ * @date 30 sept. 2020
+ * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->JQuery();
+$this->themeJs('gestion-transport','circuit-ligne.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $lignes = $this->paginator->getCurrentItems();
@@ -45,6 +47,7 @@ $actions = [
     ],
     'rapports' => $menuImpression['content']
 ];
+$hasVia = false;
 ?>
 <h1>Circuits de l'année scolaire <?=$this->as;?></h1>
 <h2>Liste des lignes</h2>
@@ -67,7 +70,7 @@ $actions = [
 					<th>Opérateur</th>
 					<th>Départ</th>
 					<th>Terminus</th>
-					<th>Via</th>
+					<th class="via">Via</th>
 					<!-- th>Nb<br>services
 					</th>
 					<th>Nb élèves<br>transportés
@@ -105,6 +108,9 @@ $actions = [
             'title' => 'Services de la ligne ' . $ligne->ligneId
         ]
     ];
+    if ($ligne->via) {
+        $hasVia = true;
+    }
     ?>
 				<tr class="petit <?=$css;?>">
 					<td class="ligneid">
@@ -145,3 +151,9 @@ $actions = [
         </div>
 	</div>
 </div>
+<?php
+$this->inlineScript()->captureStart();
+?>
+js_lignes.via(<?=$hasVia ? 1 : 0;?>);
+<?php
+$this->inlineScript()->captureEnd();

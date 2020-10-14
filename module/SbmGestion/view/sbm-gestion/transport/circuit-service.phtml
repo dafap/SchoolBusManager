@@ -9,8 +9,8 @@
  * @filesource circuit-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2020
- * @version 2020-2.6.0
+ * @date 28 sept. 2020
+ * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -75,6 +75,8 @@ $actions = [
 					<th>Service</th>
 					<th>Jours</th>
 					<th>Transporteur</th>
+					<th>De</th>
+					<th>Vers</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th></th>
@@ -130,6 +132,13 @@ $actions = [
                 'title' => 'élèves inscrits sur le circuit ' . $designationService
             ]
         ];
+        if ($service->sens == 1) {
+            $de = $service->extremite1;
+            $vers = $service->extremite2;
+        } else {
+            $de = $service->extremite2;
+            $vers = $service->extremite1;
+        }
         ?>
 				<tr class="petit <?=$css;?>">
 					<td class="designationService">
@@ -138,9 +147,15 @@ $actions = [
 						<?= $service->jours;?></td>
 					<td class="transporteur">
 						<?=$this->escapeHtml($service->transporteur);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($de);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($vers);?></td>
 					<td class="nbplaces">
-						<?=$this->escapeHtml($service->nbPlaces);?></td>
-					<td class="nbinscrits">
+
+
+						<?=$this->escapeHtml($service->nbPlaces);?></td><td
+						class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($serviceId, $hiddens, $buttons);?></td>
