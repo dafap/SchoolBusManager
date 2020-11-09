@@ -1,6 +1,6 @@
 <?php
 /**
- * Carte des stations
+ * Carte des stations pour envoi sans le layout
  *
  * Affichage des stations décrites dans $this->ptStations qui est un tableau de Point
  * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés décimaux.
@@ -14,11 +14,46 @@
  * @date 9 nov. 2020
  * @version 2020-2.6.1
  */
+use SbmBase\Model\StdLib;
+
+$appl_name = 'School Bus Manager';
+echo $this->doctype();
+?>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<base href="<?= $this->basePath(); ?>" />
+<?php
+echo $this->headTitle('SBM ' . $appl_name)
+    ->setSeparator(' - ')
+    ->setAutoEscape(false);
+echo $this->headMeta()
+    ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+    ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ->setName('author', 'Alain Pomirol - DAFAP Informatique')
+    ->setName('generator', 'ZendFramework 2')
+    ->setName('language', 'fr') . PHP_EOL;
+?>
+</head>
+<body>
+<?php
+// les fichiers css du layout
+$this->headLink(
+    [
+        'rel' => 'shortcut icon',
+        'type' => 'image/vnd.microsoft.icon',
+        'href' => $this->basePath('/img/favicon.ico')
+    ]);
+$this->headLink()->appendStylesheet($this->basePath('/css/sbm.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/tra/sbm.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/sbm-ie.css'), 'all', 'IE', []);
+//=================== DEBUT DE LA COPIE DE stations.phtml
+// on a supprimé le titre et le bouton de sortie et on a fixé la largeur à 100%
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headStyle()->captureStart();
 ?>
 #carte-inner {
-    width: 90%;
+    width: 100%;
     height: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -108,22 +143,9 @@ carte.init(<?=$carte_init_parametres;?>);
 <?php
 $this->headScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
-$hiddens = [
-'origine' => $this->origine
-];
-$actions = [
-    'cancel' => [
-        'class' => 'fam-door-out',
-        'title' => 'Retour'
-    ]
-];
 ?>
-<h1>Points d'arrêt</h1>
 <div id="carte-wrapper">
 	<div id="carte-header" class="clearfix">
-		<div class="menu float-left">
-		<?= $this->listeZoneActions($hiddens,$actions);?>
-		</div>
 		<div id="choix" class="float-right">
 			Cochez ou décochez pour choisir les points d'arrêt affichées : <input name="stationcheckbox"
 				type="checkbox" checked value="ouvert">Ouverts <input
@@ -141,3 +163,18 @@ $actions = [
 
 	</div>
 </div>
+<?php
+//======================== FIN DE LA COPIE DE stations.phtml
+
+
+
+echo $this->headLink();
+// les styles css définis dans cette page
+echo $this->headStyle();
+// les fichiers de script
+echo $this->headScript();
+// les scripts à lancer
+echo $this->inlineScript();
+?>
+</body>
+</html>

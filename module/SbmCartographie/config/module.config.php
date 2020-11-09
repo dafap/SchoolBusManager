@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 28 fév. 2020
- * @version 2020-2.6.0
+ * @date 9 nov. 2020
+ * @version 2020-2.6.1
  */
 use SbmCartographie\Controller;
 use SbmCartographie\GoogleMaps\DistanceMatrix;
@@ -39,6 +39,13 @@ return [
                         ]
                     ],
                     'stations' => [
+                        'allow' => [
+                            'roles' => [
+                                'guest'
+                            ]
+                        ]
+                    ],
+                    'stations-frame' => [
                         'allow' => [
                             'roles' => [
                                 'guest'

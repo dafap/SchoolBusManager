@@ -9,13 +9,13 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2020
+ * @date 9 nov. 2020
  * @version 2020-2.6.1
  */
 namespace SbmCartographie\Controller;
 
-use SbmBase\Model\StdLib;
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
@@ -108,5 +108,12 @@ class CarteController extends AbstractActionController
                 'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);
+    }
+
+    public function stationsFrameAction()
+    {
+        $r = $this->stationsAction()
+            ->setTerminal(true);
+        return $r;
     }
 }

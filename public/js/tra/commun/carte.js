@@ -1,63 +1,104 @@
 /**
- * Présente une carte avec une liste de marqueurs : aucune action sur cette carte.
- * La carte est centrée en CENTRE_LAT, CENTRE_LNG et le eoom est INI_ZOO. 
- * Ces constantes doivent être définies.
- * 
+ * Objet jQuery qui gère une carte avec des données présentées par des marqueurs cliquables pour afficher
+ * leurs propriétés. Les données sont structurées sous forme de couches. Un multicheckbox commande la
+ * visibilité de chaque couche.
+ * USAGE : carte.init(<liste des paramètes>).icon(part1,part2); // icon() est optionnel
+ *
+ * Pour changer les icones des marqueurs :
+ * - le dossier des images est dans url_icon_path (sans le scheme)
+ * - le fichier image (png) est dans la propriété icon du lieu à marquer
+ *
+ * Cet objet a trois propriétés 'init', 'icon' et 'trace'
+ * 'init' : 
+ *     initialise l'objet en passant dans l'ordre les paramètres suivants :
+ *     - myCheckboxName : nom du 'multicheckbox' qui commande l'apparition des différentes couches
+ *     - myDiv : nom de la DIV qui contiendra la carte
+ *     - myScheme : 'http' ou 'https'
+ *     - myLatCentre : latitude du centre de la carte
+ *     - myLngCentre : longitude du centre de la carte
+ *     - myZoom : zoom à appliquer au chargement
+ *     - myTMarkers : tableau associatif des couches
+ * 'iconpath' :
+ *     permet de modifier les icones utilisés pour les pointeurs. Le scheme d'accès doit être celui du site.
+ *     - url : début de l'url commençant par :// et se terminant par / (path de la ressource)
+ *     Le nom du fichier d'un icone est passé dans la propriété 'icon' décrivant le lieu à marquer.
+ * 'trace' :
+ *     construit et trace la carte avec les données correspondantes aux couches choisies. Pas de paramètre.
+ * Cet objet est mis en place par l'évènement 'load' de la fenêtre window. Il est initialisé dans la page html.
+ *
+ * Les couches sont structurées de la manière suivante :
+ *     - les valeurs des checkbox du multicheckbox sont les noms des couches
+ *     - le tableau myTtMarkers a pour clés les noms des couches
+ *       § Chaque couche est représentée dans myTMarkers par un tableau indexé (à partir de 0).
+ *       § Chaque élément d'une couche présente les propriétés suivantes :
+ *         - icon : fichier image du marqueur dans la librairie utilisée
+ *         - lat : latitude du lieu
+ *         - lng : longitude du lieu
+ *         - title : info sur la carte au survol du marqueur
+ *         - info : informations structurées en html à afficher sur clic d'un marqueur dans une fenêtre
+ *
  * @project sbm
- * @filesource localisation.js
+ * @filesource carte.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 04 juin 2019
- * @version 2019-2.5.0
+ * @date 6 oct. 2020
+ * @version 2020-2.6.1
  */
-function initialiser(scheme,tMarkers) {
-    // initialisation des paramètres de la carte
-    var options = {
-        'center': new google.maps.LatLng(CENTRE_LAT, CENTRE_LNG),
-        'zoom': INI_ZOOM,
-        //'mapTypeId': google.maps.MapTypeId.ROADMAP
-        mapTypeId: "OSM",
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            mapTypeIds: [
-                "OSM",
-                //google.maps.MapTypeId.ROADMAP, 
-                //google.maps.MapTypeId.SATELLITE, 
-                google.maps.MapTypeId.HYBRID, 
-                google.maps.MapTypeId.TERRAIN
-            ],
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-        },
-        streetViewControl: true
-    };
-    var oCarte = new google.maps.Map(document.getElementById('carte-inner'), options);
-    // define OSM map type pointing at the OpenStreetMap tile server
-    oCarte.mapTypes.set("OSM", new google.maps.ImageMapType({
-        getTileUrl: function(coord, zoom) {
-            return scheme+"://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-        },
-        tileSize: new google.maps.Size(256,256),
-        name: "Carte",
-        maxZoom: 18,
-        opacity: 1,
-        alt: "Carte OpenStreetMap"
-    }));
-    // info bulle
-    var oInfo = new google.maps.InfoWindow();
-    // placement des markers
-    for (var i = 0; i < tMarkers.length; i++) {
-        var optionsMarker = {
-            'styleIcon': new StyledIcon(StyledIconTypes.BUBBLE,{color:tMarkers[i].color,text:tMarkers[i].text}),
-            'map': oCarte,
-            'position': new google.maps.LatLng( tMarkers[i].lat, tMarkers[i].lng),
-            'numero': i,
-            'title': tMarkers[i].title
-        }
-        var oMarker = new StyledMarker(optionsMarker);        
-        // listeners
-        google.maps.event.addListener(oMarker, 'click', function(data) {
-            oInfo.setContent(tMarkers[this.numero].info);
-            oInfo.open(this.getMap(), this);
-        });
-    }
-}
+var carte = function() {
+	const url_icon_path_default = "://maps.google.com/mapfiles/ms/micons/";
+	var checkboxName, div, scheme, lat_centre, lng_centre, zoom, tMarkers, map, markerGroups;
+	var url_icon_path;
+	function ajoutGroup(nomCouche) {
+		var infowindow = new google.maps.InfoWindow();
+		markerGroups.set(nomCouche, map);
+		for (var i = 0; i < tMarkers[nomCouche].length; i++) {
+			marker = new google.maps.Marker({
+				position: new google.maps.LatLng(tMarkers[nomCouche][i].lat, tMarkers[nomCouche][i].lng),
+				title: tMarkers[nomCouche][i].title,
+				icon: scheme + url_icon_path + tMarkers[nomCouche][i].icon,
+				couche: nomCouche,
+				numero: i
+			});
+			marker.bindTo('map', markerGroups, nomCouche);
+			// info windows
+			google.maps.event.addListener(marker, 'click', (function(marker) {
+				return function() {
+					infowindow.setContent(tMarkers[marker.couche][marker.numero].info);
+					infowindow.open(map, marker);
+				}
+			})(marker, nomCouche, i));
+		}
+	}
+	return {
+		init: function(myCheckboxName, myDiv, myScheme, myLatCentre, myLngCentre, myZoom, myTMarkers) {
+			checkboxName = myCheckboxName;
+			div = myDiv;
+			scheme = myScheme;
+			lat_centre = myLatCentre;
+			lng_centre = myLngCentre;
+			zoom = myZoom;
+			tMarkers = myTMarkers;
+			url_icon_path = url_icon_path_default;
+			return this;
+		},
+		iconpath: function(url){
+			url_icon_path = url;
+			return this;
+		},
+		trace: function() {
+			var mapOptions = {
+				zoom: zoom,
+				center: new google.maps.LatLng(lat_centre, lng_centre)
+			};
+			map = new google.maps.Map(document.getElementById(div), mapOptions);
+			markerGroups = new google.maps.MVCObject();
+			for (var key in tMarkers) { ajoutGroup(key); }
+			// lien avec le multicheckbox de filtrage
+			var chk = 'input[name=' + checkboxName + ']';
+			$(chk).on('click init-' + checkboxName, function() {
+				markerGroups.set(this.value, (this.checked) ? map : null)
+			}).trigger('init-' + checkboxName);
+		}
+	}
+}();
+google.maps.event.addDomListener(window, 'load', carte.trace);  
