@@ -11,7 +11,7 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2020
+ * @date 13 nov. 2020
  * @version 2020-2.6.1
  */
 use SbmBase\Model\StdLib;
@@ -44,16 +44,20 @@ $this->headLink(
         'type' => 'image/vnd.microsoft.icon',
         'href' => $this->basePath('/img/favicon.ico')
     ]);
-$this->headLink()->appendStylesheet($this->basePath('/css/sbm.css'));
+// $this->headLink()->appendStylesheet($this->basePath('/css/sbm.css'));
 $this->headLink()->appendStylesheet($this->basePath('/css/tra/sbm.css'));
 $this->headLink()->appendStylesheet($this->basePath('/css/sbm-ie.css'), 'all', 'IE', []);
-//=================== DEBUT DE LA COPIE DE stations.phtml
+// =================== DEBUT DE LA COPIE DE stations.phtml
 // on a supprimé le titre et le bouton de sortie et on a fixé la largeur à 100%
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headStyle()->captureStart();
 ?>
+#carte-wrapper {
+	font-family: Roboto;
+	color: #7a7a7a;
+}
 #carte-inner {
-    width: 100%;
+    width: 790px;
     height: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -63,10 +67,25 @@ $this->headStyle()->captureStart();
 #choix {
 	margin-right: 5em;
 }
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+.float-right {
+	float: right;
+}
+.sbm-description {
+	font-size: 12px;
+}
+.sbm-description ul {
+	list-style: none;
+}
+
 <?php
 $this->headStyle()->captureEnd();
 $legende = [];
-$format_legende = '<span style="background-color: %s; font-weight: bold;">En %s</span> le%4$s point%4$s d\'arrêt %s';
+$format_legende = '<span style="color: %s; background-color: %s; font-weight: bold;">&nbsp;En %s&nbsp;</span> le%5$s point%5$s d\'arrêt %s';
 $i = 0;
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
@@ -88,23 +107,26 @@ foreach ($this->ptStations as $pt) {
         }
     }
     if ($desservie && $station->ouverte) {
-        $color = "green";
+        $color = "white";
+        $bgrcolor = "limegreen";
         $icon = "green-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'vert', 'ouverts', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert', 'ouverts', 's');
         $text = 'O';
         $nature = "ouverte";
         $index = 'ouvert';
     } elseif ($station->ouverte) {
-        $color = "yellow";
+        $color = "#7a7a7a";
+        $bgrcolor = "yellow";
         $icon = "yellow-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'jaune', 'non desservis', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune', 'non desservis', 's');
         $text = 'N';
         $nature = "non desservie";
         $index = "nonDesservi";
     } else {
-        $color = "red";
+        $color = "white";
+        $bgrcolor = "red";
         $icon = "red-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'rouge', 'fermés', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge', 'fermés', 's');
         $text = 'F';
         $nature = "fermée";
         $index = "ferme";
@@ -145,28 +167,25 @@ $this->headScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 ?>
 <div id="carte-wrapper">
-	<div id="carte-header" class="clearfix">
-		<div id="choix" class="float-right">
-			Cochez ou décochez pour choisir les points d'arrêt affichées : <input name="stationcheckbox"
-				type="checkbox" checked value="ouvert">Ouverts <input
-				name="stationcheckbox" type="checkbox" checked value="ferme">Fermés
-			<input name="stationcheckbox" type="checkbox" checked
-				value="nonDesservi">Non desservis
+		<div id="carte-header" class="clearfix">
+			<div id="choix" class="float-right">
+				Cochez ou décochez pour choisir les points d'arrêt affichées : <input
+					name="stationcheckbox" type="checkbox" checked value="ouvert">Ouverts
+				<input name="stationcheckbox" type="checkbox" checked value="ferme">Fermés
+				<input name="stationcheckbox" type="checkbox" checked
+					value="nonDesservi">Non desservis
+			</div>
+		</div>
+		<div id="carte-inner"></div>
+		<div class="float-right right-10px sbm-description">
+			<ul>
+				<li><?= implode('</li><li>', $legende) ?></li>
+			</ul>
+
 		</div>
 	</div>
-	<div id="carte-inner">
-	</div>
-	<div class="float-right right-10px sbm-description">
-		<ul>
-			<li><?= implode('</li><li>', $legende) ?></li>
-		</ul>
-
-	</div>
-</div>
 <?php
-//======================== FIN DE LA COPIE DE stations.phtml
-
-
+// ======================== FIN DE LA COPIE DE stations.phtml
 
 echo $this->headLink();
 // les styles css définis dans cette page

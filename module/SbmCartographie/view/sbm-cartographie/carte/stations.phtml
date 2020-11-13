@@ -11,7 +11,7 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2020
+ * @date 13 nov. 2020
  * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -31,7 +31,7 @@ $this->headStyle()->captureStart();
 <?php
 $this->headStyle()->captureEnd();
 $legende = [];
-$format_legende = '<span style="background-color: %s; font-weight: bold;">En %s</span> le%4$s point%4$s d\'arrêt %s';
+$format_legende = '<span style="color: %s; background-color: %s; font-weight: bold;">&nbsp;En %s&nbsp;</span> le%5$s point%5$s d\'arrêt %s';
 $i = 0;
 $aMarkers = [];
 foreach ($this->ptStations as $pt) {
@@ -53,23 +53,26 @@ foreach ($this->ptStations as $pt) {
         }
     }
     if ($desservie && $station->ouverte) {
-        $color = "green";
+        $color = "white";
+        $bgrcolor = "limegreen";
         $icon = "green-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'vert', 'ouverts', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert', 'ouverts', 's');
         $text = 'O';
         $nature = "ouverte";
         $index = 'ouvert';
     } elseif ($station->ouverte) {
-        $color = "yellow";
+        $color = "#7a7a7a";
+        $bgrcolor = "yellow";
         $icon = "yellow-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'jaune', 'non desservis', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune', 'non desservis', 's');
         $text = 'N';
         $nature = "non desservie";
         $index = "nonDesservi";
     } else {
-        $color = "red";
+        $color = "white";
+        $bgrcolor = "red";
         $icon = "red-dot.png";
-        $legende[$color] = sprintf($format_legende, $color, 'rouge', 'fermés', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge', 'fermés', 's');
         $text = 'F';
         $nature = "fermée";
         $index = "ferme";
@@ -135,7 +138,7 @@ $actions = [
 	<div id="carte-inner">
 	</div>
 	<div class="float-right right-10px sbm-description">
-		<ul>
+		<ul style="list-style: none;">
 			<li><?= implode('</li><li>', $legende) ?></li>
 		</ul>
 
