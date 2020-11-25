@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2020
- * @version 2020-2.6.0
+ * @date 16 nov. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -30,20 +30,29 @@ class Statistiques extends AbstractQuery
      *
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
+     *            d'index 0 /** Renvoie le tableau statistiques des élèves enregistrés à
+     *            une distance de 1 km à moins de 3km par millesime
+     * @param int $millesime
+     *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
-     * @param string $communeId
-     *            Si communeId est donné, on ne compte que les élèves de la commune
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbEnregistresByMillesime($millesime = null, $communeId = null)
+    public function getNbEnregistresByMillesime(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbEnregistresByMillesime($millesime, $communeId)));
+                $this->selectNbEnregistresByMillesime($millesime, $nature, $id)));
     }
 
-    public function selectNbEnregistresByMillesime($millesime = null, $communeId = null)
+    public function selectNbEnregistresByMillesime(int $millesime = null,
+        string $nature = '', $id = null)
     {
         $where = new Where();
         if (isset($millesime)) {
@@ -60,10 +69,25 @@ class Statistiques extends AbstractQuery
                 'regimeId',
                 'effectif' => new Expression('count(sco.eleveId)')
             ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime',
@@ -79,17 +103,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbInscritsByMillesime($millesime = null, $communeId = null)
+    public function getNbInscritsByMillesime(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbInscritsByMillesime($millesime, $communeId)));
+                $this->selectNbInscritsByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbInscritsByMillesime($millesime = null, $communeId = null)
+    protected function selectNbInscritsByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -107,10 +137,25 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         $select->where($where)->group([
             'millesime'
@@ -127,17 +172,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbPreinscritsByMillesime($millesime = null, $communeId = null)
+    public function getNbPreinscritsByMillesime(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbPreinscritsByMillesime($millesime, $communeId)));
+                $this->selectNbPreinscritsByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbPreinscritsByMillesime($millesime = null, $communeId = null)
+    protected function selectNbPreinscritsByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -155,10 +206,25 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
@@ -171,18 +237,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbFamilleAccueilByMillesime($millesime = null, $communeId = null)
+    public function getNbFamilleAccueilByMillesime(int $millesime = null,
+        string $nature = '', $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbFamilleAccueilByMillesime($millesime, $communeId)));
+                $this->selectNbFamilleAccueilByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbFamilleAccueilByMillesime($millesime = null,
-        $communeId = null)
+    protected function selectNbFamilleAccueilByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')->literal('fa = 1');
@@ -200,10 +271,25 @@ class Statistiques extends AbstractQuery
                 'regimeId',
                 'effectif' => new Expression('count(sco.eleveId)')
             ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime',
@@ -222,18 +308,23 @@ class Statistiques extends AbstractQuery
      * @param string $inscrits
      *            si true alors on ne compte que les inscrits rayés, sinon on ne compte
      *            que les préinscrits
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
     public function getNbRayesByMillesime($millesime = null, $inscrits = true,
-        $communeId = null)
+        string $nature = '', $id = null)
     {
         return iterator_to_array(
-            $this->renderResult($this->selectNbRayesByMillesime($millesime, $inscrits)));
+            $this->renderResult(
+                $this->selectNbRayesByMillesime($millesime, $inscrits, $nature, $id)));
     }
 
-    protected function selectNbRayesByMillesime($millesime = null, $inscrits = true,
-        $communeId = null)
+    protected function selectNbRayesByMillesime($millesime, $inscrits, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 0');
@@ -256,10 +347,25 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
@@ -274,18 +380,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbGardeAlterneeByMillesime($millesime = null, $communeId = null)
+    public function getNbGardeAlterneeByMillesime(int $millesime = null,
+        string $nature = '', $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbGardeAlterneeByMillesime($millesime, $communeId)));
+                $this->selectNbGardeAlterneeByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbGardeAlterneeByMillesime($millesime = null,
-        $communeId = null)
+    protected function selectNbGardeAlterneeByMillesime($millesime, $nature, $id = null)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -310,10 +421,25 @@ class Statistiques extends AbstractQuery
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ], 'ele.eleveId = sco.eleveId', []);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime',
@@ -329,18 +455,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbByMillesimeEtablissement($millesime = null, $communeId = null)
+    public function getNbByMillesimeEtablissement(int $millesime = null,
+        string $nature = '', $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbByMillesimeEtablissement($millesime, $communeId)));
+                $this->selectNbByMillesimeEtablissement($millesime, $nature, $id)));
     }
 
-    protected function selectNbByMillesimeEtablissement($millesime = null,
-        $communeId = null)
+    protected function selectNbByMillesimeEtablissement($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -350,7 +481,7 @@ class Statistiques extends AbstractQuery
             $where->equalTo('millesime', $millesime);
         }
         $select = $this->sql->select();
-        return $select->from(
+        $select->from(
             [
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
@@ -370,17 +501,33 @@ class Statistiques extends AbstractQuery
             [
                 'etablissement' => new Expression('concat(com.alias, " - ", eta.nom)')
             ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
-        $select->where($where)->group([
-            'millesime',
-            'regimeId',
-            'com.nom',
-            'eta.nom'
-        ]);
+        return $select->where($where)->group(
+            [
+                'millesime',
+                'regimeId',
+                'com.nom',
+                'eta.nom'
+            ]);
     }
 
     /**
@@ -391,16 +538,23 @@ class Statistiques extends AbstractQuery
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbByMillesimeClasse($millesime = null, $communeId = null)
+    public function getNbByMillesimeClasse(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
-            $this->renderResult($this->selectNbByMillesimeClasse($millesime, $communeId)));
+            $this->renderResult(
+                $this->selectNbByMillesimeClasse($millesime, $nature, $id)));
     }
 
-    protected function selectNbByMillesimeClasse($millesime = null, $communeId = null)
+    protected function selectNbByMillesimeClasse($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -425,10 +579,25 @@ class Statistiques extends AbstractQuery
         ], 'sco.classeId = cla.classeId', [
             'classe' => 'nom'
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime',
@@ -444,17 +613,23 @@ class Statistiques extends AbstractQuery
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbMoins1KmByMillesime($millesime = null, $communeId = null)
+    public function getNbMoins1KmByMillesime($millesime = null, string $nature = "",
+        $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selectNbMoins1KmByMillesime($millesime, $communeId)));
+                $this->selectNbMoins1KmByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbMoins1KmByMillesime($millesime = null, $communeId = null)
+    protected function selectNbMoins1KmByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -474,10 +649,25 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
@@ -491,16 +681,23 @@ class Statistiques extends AbstractQuery
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbDe1A3KmByMillesime($millesime = null, $communeId = null)
+    public function getNbDe1A3KmByMillesime(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
-            $this->renderResult($this->selectNbDe1A3KmByMillesime($millesime, $communeId)));
+            $this->renderResult(
+                $this->selectNbDe1A3KmByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selectNbDe1A3KmByMillesime($millesime = null, $communeId = null)
+    protected function selectNbDe1A3KmByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -521,10 +718,25 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
@@ -538,17 +750,23 @@ class Statistiques extends AbstractQuery
      * @param int $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNb3kmEtPlusByMillesime($millesime = null, $communeId = null)
+    public function getNb3kmEtPlusByMillesime(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
             $this->renderResult(
-                $this->selctNb3kmEtPlusByMillesime($millesime, $communeId)));
+                $this->selectNb3kmEtPlusByMillesime($millesime, $nature, $id)));
     }
 
-    protected function selctNb3kmEtPlusByMillesime($millesime = null, $communeId = null)
+    protected function selectNb3kmEtPlusByMillesime($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -573,23 +791,54 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
         ]);
     }
 
-    public function getNbDistanceInconnue($millesime = null, $communeId = null)
+    /**
+     * Renvoie le tableau statistiques des élèves enregistrés dont on n'a pas pu calculer
+     * la distance du domicile à l'établissement
+     *
+     * @param int $millesime
+     *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
+     *            d'index 0
+     * @param string $nature
+     *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
+     *            valeurs sont assimilées à 'secretariat'
+     * @param string $id
+     *            idenntifiant correspondant à la nature indiquée
+     * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
+     *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
+     */
+    public function getNbDistanceInconnue(int $millesime = null, string $nature = '',
+        $id = null)
     {
         return iterator_to_array(
-            $this->renderResult($this->selectNbDistanceInconnue($millesime, $communeId)));
+            $this->renderResult($this->selectNbDistanceInconnue($millesime, $nature, $id)));
     }
 
-    protected function selectNbDistanceInconnue($millesime = null, $communeId = null)
+    protected function selectNbDistanceInconnue($millesime, $nature, $id)
     {
         $where = new Where();
         $where->literal('inscrit = 1')
@@ -610,17 +859,32 @@ class Statistiques extends AbstractQuery
             'millesime',
             'effectif' => new Expression('count(sco.eleveId)')
         ]);
-        if ($communeId) {
-            $select->join([
-                'f' => $this->selectFiltreCommune($communeId)
-            ], 'f.eleveId = sco.eleveId', []);
+        if ($nature) {
+            switch ($nature) {
+                case 'commune':
+                    $select->join([
+                        'f' => $this->selectFiltreCommune($id)
+                    ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                case 'etablissement':
+                    $where->equalTo('sco.etablissementId', $id);
+                    break;
+                case 'transporteur':
+                    $select->join(
+                        [
+                            'f' => $this->selectFiltreTransporteur($id, $millesime)
+                        ], 'f.eleveId = sco.eleveId', []);
+                    break;
+                default: // secretariat (pas de filtre)
+                    break;
+            }
         }
         return $select->where($where)->group([
             'millesime'
         ]);
     }
 
-    private function selectFiltreCommune($communeId)
+    private function selectFiltreCommune(string $communeId)
     {
         return $this->sql->select()
             ->columns([
@@ -634,5 +898,34 @@ class Statistiques extends AbstractQuery
         ], 'r.responsableId = e.responsable1Id OR r.responsableId=e.responsable2Id')
             ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
             ->where((new Where())->equalTo('communeId', $communeId));
+    }
+
+    private function selectFiltreTransporteur(int $transporteurId, int $millesime)
+    {
+        return $this->sql->select()
+            ->columns([
+            'eleveId'
+        ])
+            ->from([
+            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        ])
+            ->join([
+            'a' => $this->db_manager->getCanonicName('affectations', 'table')
+        ], 'e.eleveId = a.eleveId', [])
+            ->join([
+            's' => $this->db_manager->getCanonicName('services', 'table')
+        ],
+            implode(' AND ',
+                [
+                    's.millesime = a.millesime',
+                    's.ligneId = a.ligne1Id',
+                    's.sens = a.sensligne1',
+                    's.moment = a.moment',
+                    's.ordre = a.ordreligne1'
+                ]), [])
+            ->quantifier(\Zend\Db\Sql\Select::QUANTIFIER_DISTINCT)
+            ->where(
+            (new Where())->equalTo('a.millesime', $millesime)
+                ->equalTo('s.transporteurId', $transporteurId));
     }
 }

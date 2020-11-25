@@ -7,12 +7,12 @@
  * @filesource doclabels.inc.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2020
- * @version 2020-2.6.0
+ * @date 22 oct. 2020
+ * @version 2020-2.6.1
  */
 return [
-    0 => [
-        'sublabel' => 0,
+        'documentId' => null, // à compléter
+        'sublabel' => 0, // numéroté à partir de 0
         'filigrane' => '',
         'margin_left' => "0", // marge de gauche du la planche (0 mm par défaut)
         'margin_top' => "8", // marge du haut de la planche d'étiquettes (8 mm par
@@ -38,5 +38,4 @@ return [
                                // de 1mm séparés de 2mm
         'border_width' => "0.3", // épaisseur du trait (0.3 mmm par défaut)
         'border_color' => "000000"
-    ]
 ];

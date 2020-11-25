@@ -2,15 +2,19 @@
 /**
  * Controller principal du module SbmGestion
  *
+ * Attention !
+ * Ce Controller est enregistré dans le Router sous la clé 'gestioneleve'
+ *
  * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
+ *
  *
  * @project sbm
  * @package SbmGestion/Controller
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2020
- * @version 2020-2.6.0
+ * @date 21 oct. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmGestion\Controller;
 
@@ -26,10 +30,11 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 use SbmCommun\Model\Strategy;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class EleveGestionController extends AbstractActionController
 {
-    use \SbmCommun\Model\Traits\ServiceTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
 
     public function indexAction()
     {
@@ -908,6 +913,235 @@ class EleveGestionController extends AbstractActionController
                 ]);
         } else {
             die();
+        }
+    }
+
+    /**
+     * Cette méthode reçoit en POST les paramètres eleveId, eleveName, origine,
+     * responsableId et op.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function correspondantAction()
+    {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'),
+            'correspondant.log');
+        $prg = $this->prg();
+        $arret = false;
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false || array_key_exists('retour', $prg)) {
+            $args = Session::get('post', false, $this->getSessionNamespace());
+            if (! $args) {
+                $arret = true;
+                $flashMessengerMessage = 'Action formellement interdite !';
+                $flashMessengerNS = FlashMessenger::NAMESPACE_ERROR;
+            }
+        } else {
+            $args = $prg;
+            if (array_key_exists('cancel', $args)) {
+                $arret = true;
+                $flashMessengerMessage = '';
+                $flashMessengerNS = FlashMessenger::NAMESPACE_SUCCESS;
+            } elseif (array_key_exists('origine', $args)) {
+                $this->redirectToOrigin()->setBack($args['origine']);
+                unset($args['origine']);
+                Session::set('post', $args, $this->getSessionNamespace());
+            }
+        }
+        // sortie propre
+        if ($arret) {
+            Session::remove('post', $this->getSessionNamespace());
+            try {
+                return $this->redirectToOrigin()->back();
+            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
+                return $this->homePage($flashMessengerMessage, $flashMessengerNS);
+            }
+        }
+        $eleveId = StdLib::getParam('eleveId', $args, 0);
+        $resultset = $this->db_manager->get('Sbm\Db\Table\Invites')->fetchAll(
+            [
+                'millesime' => Session::get('millesime'),
+                'eleveId' => $eleveId
+            ]);
+        return new ViewModel(
+            [
+                'data' => $resultset,
+                'eleve' => StdLib::getParam('eleveNom', $args),
+                'eleveId' => $eleveId
+            ]);
+    }
+
+    /**
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function correspondantAjoutAction()
+    {
+        $form = $this->form_manager->get(Form\Correspondant::class);
+        $form->setValueOptions('nationalite',
+            \SbmCommun\Model\Nationalites::getNationalites());
+        $params = [
+            'data' => [
+                'table' => 'invites',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Invites'
+            ],
+            'form' => $form
+        ];
+        $r = $this->addData($params, function ($args) {
+            return $args['eleve'];
+        }, function ($args) use ($form) {
+            $form->initialise($args['eleveId']);
+        });
+        switch ($r) {
+            case $r instanceof Response:
+                return $r;
+                break;
+            case 'error':
+            case 'warning':
+            case 'success':
+                return $this->redirect()->toRoute('sbmgestion/gestioneleve',
+                    [
+                        'action' => 'correspondant'
+                    ]);
+                break;
+            default:
+                return new ViewModel([
+                    'form' => $form->prepare(),
+                    'eleve' => $r
+                ]);
+                break;
+        }
+    }
+
+    /**
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function correspondantEditAction()
+    {
+        $form = $this->form_manager->get(Form\Correspondant::class);
+        $form->setValueOptions('nationalite',
+            \SbmCommun\Model\Nationalites::getNationalites());
+        $params = [
+            'data' => [
+                'table' => 'invites',
+                'type' => 'table',
+                'alias' => 'Sbm\Db\Table\Invites',
+                'id' => 'inviteId'
+            ],
+            'form' => $form
+        ];
+        $r = $this->editData($params, function ($args) {
+            return $args['eleve'];
+        }, function ($args) use ($form) {
+            $form->initialise($args['eleveId']);
+        });
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/gestioneleve',
+                        [
+                            'action' => 'correspondant'
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'eleve' => $r->getResult()
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Reçoit le paramètre POST inviteId Envoie la variable data à la vue. C'est un objet
+     * présentant les propriétés 'nom' et 'prenom'.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function correspondantSupprAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $form = new Form\ButtonForm([
+            'id' => null
+        ],
+            [
+                'supproui' => [
+                    'class' => 'confirm default',
+                    'value' => 'Confirmer'
+                ],
+                'supprnon' => [
+                    'class' => 'confirm default',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        $params = [
+            'data' => [
+                'alias' => 'Sbm\Db\Table\Invites',
+                'id' => 'inviteId'
+            ],
+            'form' => $form
+        ];
+
+        try {
+            $r = $this->supprData($params,
+                function ($id, $tableClasses) {
+                    return [
+                        'id' => $id,
+                        'data' => $tableClasses->getRecord($id)
+                    ];
+                });
+        } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+            $this->flashMessenger()->addWarningMessage(
+                'Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
+            return $this->redirect()->toRoute('sbmgestion/gestioneleve',
+                [
+                    'action' => 'correspondant',
+                    'page' => $currentPage
+                ]);
+        }
+
+        if ($r instanceof Response) {
+            return $r;
+        } else {
+            switch ($r->getStatus()) {
+                case 'error':
+                case 'warning':
+                case 'success':
+                    return $this->redirect()->toRoute('sbmgestion/gestioneleve',
+                        [
+                            'action' => 'correspondant',
+                            'page' => $currentPage
+                        ]);
+                    break;
+                default:
+                    return new ViewModel(
+                        [
+                            'form' => $form->prepare(),
+                            'page' => $currentPage,
+                            'data' => StdLib::getParam('data', $r->getResult()),
+                            'inviteId' => StdLib::getParam('id', $r->getResult())
+                        ]);
+                    break;
+            }
+        }
+    }
+
+    public function correspondantPassAction()
+    {
+        $prg = $this->prg('/document/pass-temporaire', true);
+        if ($prg instanceof Response) {
+            return $prg;
+        } else {
+            return $this->homePage();
         }
     }
 }

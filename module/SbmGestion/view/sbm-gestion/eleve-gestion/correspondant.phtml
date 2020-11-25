@@ -1,0 +1,144 @@
+<?php
+/**
+ * Liste des correspondants d'un élève permettant la gestion :
+ * ajout, modification, suppression, impression du PASS PEMPORAIRE
+ *
+ * Cette vue reçoit les variables data et eleve
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
+ * @filesource correspondant.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 oct. 2020
+ * @version 2020-2.6.1
+ */
+use SbmBase\Model\DateLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$url_ici = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'correspondant'
+]);
+$url_ajouter = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'correspondant-ajout'
+]);
+$url_edit = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'correspondant-edit'
+]);
+$url_delete = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'correspondant-suppr'
+]);
+$url_pass = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'correspondant-pass'
+]);
+$hiddens = [
+    'eleveId' => $this->eleveId,
+    'eleve' => $this->eleve,
+];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_ici,
+        'title' => 'Retour'
+    ],
+    'ajouter' => [
+        'class' => 'fam-add',
+        'formaction' => $url_ajouter,
+        'title' => 'Ajouter un correspondant'
+    ]
+];
+?>
+<h1>Correspondants de <?= $this->eleve;?></h1>
+<div class="groupe-wrapper">
+	<div class="header-wrapper">
+		<div id="liste-header" class="clearfix">
+			<div class="menu float-left"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+			<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+			</div>
+		</div>
+	</div>
+	<div class="liste-wrapper">
+		<div class="zone-actions"></div>
+		<div id="liste-inner">
+			<table class="eleves">
+				<tbody>
+					<tr>
+						<th>Nom</th>
+						<th>Prénom</th>
+						<th>Séjour</th>
+						<th>du</th>
+						<th>au</th>
+						<th></th>
+					</tr>
+					<?php foreach ($this->data as $correspondant) :?>
+					<?php
+        $tr_css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        $df = DateTime::createFromFormat('Y-m-d', $correspondant->dateFin);
+        $df->modify('+1 day');
+        $aujourdhui = new DateTime();
+        $hiddens = [
+            'inviteId' => $correspondant->inviteId,
+            'eleveId' => $this->eleveId,
+            'eleve' => $this->eleve
+        ];
+        $infoCorrespondant = $correspondant->nom . ' ' . $correspondant->prenom;
+        $buttons = [
+            'modifier' => [
+                'class' => 'fam-pencil',
+                'formaction' => $url_edit,
+                'title' => 'Modifier la fiche de ' . $infoCorrespondant
+            ],
+            'supprimer' => [
+                'class' => 'fam-delete',
+                'formaction' => $url_delete,
+                'title' => 'Supprimer la fiche de ' . $infoCorrespondant
+            ],
+            'pass' => [
+                'class' => 'fam-vcard-add',
+                'formaction' => $url_pass,
+                'formtarget' => '_blank',
+                'title' => 'Impression du PASS TEMPORAIRE pour ' . $infoCorrespondant
+            ]
+        ];
+        if ($correspondant->demande == 0) {
+            $tr_css .= ' barre';
+            unset($buttons['pass']);
+        }
+        if ($aujourdhui >= $df) {
+            $tr_css .= ' gris';
+            unset($buttons['pass']);
+        } elseif ($correspondant->demande == 1) {
+            $tr_css .= ' orange';
+            unset($buttons['pass']);
+        }
+        $menu = $this->listeLigneActions($correspondant->inviteId, $hiddens, $buttons);
+
+        ?>
+					<tr class="<?= $tr_css;?>">
+						<td><?=$this->escapeHtml($correspondant->nom);?></td>
+						<td><?=$this->escapeHtml($correspondant->prenom);?></td>
+						<td><?=$this->escapeHtml($correspondant->identifiantSejour);?></td>
+						<td><?=DateLib::formatDateFromMysql($correspondant->dateDebut);?></td>
+						<td><?=DateLib::formatDateFromMysql($correspondant->dateFin);?></td>
+						<td><?=$menu;?></td>
+					</tr>
+					<?php endforeach;?>
+				</tbody>
+			</table>
+		</div>
+		<div class="liste-footer">
+		<p class="sbm-description"><span class="orange">En orange</span> les demandes non traitées.</p>
+		<p class="sbm-description"><span class="barre">Rayé</span> les demandes refusées.</p>
+		<p class="sbm-description"><span class="gris">En gris</span> les demandes dont le séjour est terminé.</p>
+		</div>
+	</div>
+
+</div>

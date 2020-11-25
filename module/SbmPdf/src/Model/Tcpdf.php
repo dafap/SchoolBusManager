@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 sept. 2020
- * @version 2020-2.6.0
+ * @date 28 oct. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmPdf\Model;
 
@@ -157,8 +157,6 @@ class Tcpdf extends \TCPDF
      */
     public function setParams($params = [])
     {
-        global $l;
-
         if (array_key_exists('data', $params)) {
             $this->setData($params['data']);
             unset($params['data']);
@@ -196,9 +194,10 @@ class Tcpdf extends \TCPDF
         $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__) . '/lang/' . PDF_LANG . '.php')) {
-            require_once (dirname(__FILE__) . '/lang/' . PDF_LANG . '.php');
-            $this->setLanguageArray($l);
+        $fileLanguage = StdLib::concatPath(StdLib::findParentPath(__DIR__, 'lang'),
+            PDF_LANG . '.php');
+        if (@is_file($fileLanguage)) {
+            $this->pdf->setLanguageArray(require $fileLanguage);
         }
 
         // set default monospaced font

@@ -2,13 +2,13 @@
 // ============================================================+
 // File name : ita.php
 // Begin : 2004-03-03
-// Last Update : 2010-10-26
+// Last Update : 2020-10-28
 //
 // Description : Language module for TCPDF
 // (contains translated texts)
 // Italian
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Italian
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'it';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'pagina';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

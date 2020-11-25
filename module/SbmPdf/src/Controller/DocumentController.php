@@ -15,6 +15,7 @@
 namespace SbmPdf\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
@@ -93,6 +94,23 @@ class DocumentController extends AbstractActionController
                     ->addSuccessMessage("Édition d'une facture.");
             })
             ->run();
+    }
+
+    public function passTemporaireAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            die ('bizare !');
+            return $this->homePage();
+        } elseif (! $prg || ! ($inviteId = StdLib::getParam('inviteId', $prg, false))) {
+            return $this->homePage();
+        }
+        $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
+        $qrcodeNiveau = 'QRCODE,Q';
+        $qrcodeMessage = 'ABOARSCO00018';
+        $imagePassJunior = file_get_contents(
+            StdLib::concatPath($imagePath, 'passTemporaireJunior.svg'));
+
     }
 
     /**

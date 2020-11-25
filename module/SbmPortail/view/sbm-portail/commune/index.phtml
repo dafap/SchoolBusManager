@@ -3,23 +3,33 @@
  * Page d'accueil du portail pour les communes
  *
  * Les variables définies dans cette vue sont :
- * - commune : nom de la commune
- * - elevesEnregistres
- * - elevesInscrits
- * - elevesPreinscrits
- * - elevesRayes
- * - elevesFamilleAcceuil
- * - elevesGardeAlternee
- * - elevesMoins1km
- * - elevesDe1A3km
- * - eleves3kmEtPlus
+ * - data : tableau associatif décrit ci-dessous
+ * - communes : nom de la (ou des) commune(s)
+ *
+ * Description du tableau data
+ * - communeId => tableau des statistiques pour cette commune
+ *
+ * Contenu d'un tableau de statistiques :
+ * - 'lacommune' => $lacommune,
+ * - 'elevesDpEnregistres',
+ * - 'elevesIntEnregistres',
+ * - 'elevesEnregistres',
+ * - 'elevesInscrits',
+ * - 'elevesInscritsRayes',
+ * - 'elevesPreinscrits',
+ * - 'elevesPreinscritsRayes',
+ * - 'elevesFamilleAcceuil',
+ * - 'elevesGardeAlternee',
+ * - 'elevesMoins1km',
+ * - 'elevesDe1A3km',
+ * - 'eleves3kmEtPlus'
  *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/commune
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
+ * @date 14 nov. 2020
  * @version 2020-2.6.1
  */
 use SbmBase\Model\StdLib;
@@ -48,10 +58,19 @@ $url_carte_etablissements = $this->url('sbmportail/commune',
 		<?=$this->flashMessenger()->render('info');?>
 		<?=$this->flashMessenger()->render('default');?>
     </div>
-	<h1>Portail des communes : <?=$this->commune;?></h1>
+	<h1>Portail des communes : <?=$this->communes;?></h1>
 	<div class="float-left">
 		<h2>Quelques chiffres</h2>
 		<?php foreach($this->data as $commune):?>
+		<?php
+    $elevesEnregistres = StdLib::getParam('elevesEnregistres', $commune, 0);
+    $nbInternes = StdLib::getParam('elevesIntEnregistres', $commune, 0);
+    $elevesMoins1km = StdLib::getParam('elevesMoins1km', $commune, 0);
+    $elevesDe1A3km = StdLib::getParam('elevesDe1A3km', $commune, 0);
+    $eleves3kmEtPlus = StdLib::getParam('eleves3kmEtPlus', $commune, 0);
+    $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
+        $eleves3kmEtPlus;
+    ?>
 		<?php if (count($this->data) > 1 && array_key_exists('lacommune', $commune)):?>
 		<h3><?=$commune['lacommune']?></h3>
 		<?php endif;?>
@@ -59,31 +78,51 @@ $url_carte_etablissements = $this->url('sbmportail/commune',
 			<tbody>
 				<tr>
 					<td>Nombre d'élèves enregistrés</td>
-					<td class="effectif"><?=StdLib::getParam('elevesEnregistres',$commune, 0);?></td>
+					<td class="effectif"><?=$elevesEnregistres;?></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					dont <?=StdLib::getParam('elevesDpEnregistres', $commune, 0);?> DP</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					et <?=$nbInternes;?> interne <?=$nbInternes > 1 ? 's' : '';?></td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>Nombre d'abonnements payés</td>
 					<td class="effectif"><?=StdLib::getParam('elevesInscrits',$commune, 0);?></td>
 				</tr>
 				<tr>
+					<td class="align-right">
+						dont <?= StdLib::getParam('elevesInscritsRayes',$commune, 0);?>
+						abonnements payés puis rayés</td>
+					<td></td>
+				</tr>
+				<tr>
 					<td>Nombre de demandes non payées</td>
 					<td class="effectif"><?=StdLib::getParam('elevesPreinscrits',$commune, 0);?></td>
 				</tr>
 				<tr class="separateur">
-					<td>Nombre d'élèves rayés</td>
-					<td class="effectif"><?=StdLib::getParam('elevesRayes',$commune, 0);?></td>
+					<td>Nombre de demandes non payées puis rayées</td>
+					<td class="effectif"><?=StdLib::getParam('elevesPreinscritsRayes',$commune, 0);?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves à moins de 1 km</td>
-					<td class="effectif"><?=StdLib::getParam('elevesMoins1km',$commune, 0);?></td>
+					<td class="effectif"><?=$elevesMoins1km;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves de 1 à 3 km</td>
-					<td class="effectif"><?=StdLib::getParam('elevesDe1A3km',$commune, 0);?></td>
+					<td class="effectif"><?=$elevesDe1A3km;?></td>
 				</tr>
 				<tr class="separateur">
 					<td>Nombre d'élèves à 3 km et plus</td>
-					<td class="effectif"><?=StdLib::getParam('eleves3kmEtPlus',$commune, 0);?></td>
+					<td class="effectif"><?=$eleves3kmEtPlus;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves non géolocalisés</td>
+					<td class="effectif"><?= $nbDistanceInconnue;?></td>
 				</tr>
 				<tr>
 					<td>Nombre d'élèves en garde alternée</td>

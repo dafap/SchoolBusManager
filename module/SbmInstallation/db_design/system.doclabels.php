@@ -7,8 +7,8 @@
  * @filesource system.doclabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 mai 2020
- * @version 2020-2.6.0
+ * @date 22 oct. 2020
+ * @version 2020-2.6.1
  */
 use SbmBase\Model\StdLib;
 
@@ -20,7 +20,7 @@ return [
     'add_data' => false,
     'structure' => [
         'fields' => [
-            'doclabelId' => 'int(11) NOT NULL AUTO_INCREMENT',
+            //'doclabelId' => 'int(11) NOT NULL AUTO_INCREMENT',
             'documentId' => 'int(11) NOT NULL',
             'sublabel'=>'int(11) NOT NULL DEFAULT "0"',
             'filigrane' => 'varchar(40) NOT NULL DEFAULT ""',
@@ -59,7 +59,8 @@ return [
             'border_color' => 'varchar(20) NOT NULL DEFAULT "000000"'
         ],
         'primary_key' => [
-            'doclabelId'
+            'documentId',
+            'sublabel'
         ],
         'foreign key' => [
             [
@@ -75,7 +76,7 @@ return [
                     ]
                 ]
             ]
-        ],
+        ],/*
         'keys'=>[
             'documentIdSublabel' => [
                 'unique' => true,
@@ -84,7 +85,7 @@ return [
                     'sublabel'
                 ]
             ]
-        ],
+        ],*/
         'engine' => 'InnoDb',
         'charset' => 'utf8mb4',
         'collate' => 'utf8mb4_unicode_ci'

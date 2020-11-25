@@ -7,40 +7,28 @@
  * @filesource CommuneController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2020
+ * @date 2 oct. 2020
  * @version 2020-2.6.1
  */
 namespace SbmPortail\Controller;
 
-use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
-use Zend\Db\Sql\Where;
-use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\ViewModel;
-use SbmPortail\Model\User\Commune as UserFeatures;
-use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use SbmPortail\Form\CriteresCommuneForm as CriteresForm;
 use SbmPortail\Model\Db\ObjectData\CriteresCommune as CriteresObject;
+use SbmPortail\Model\User\Commune as UserFeatures;
+use Zend\Db\Sql\Where;
+use Zend\Http\PhpEnvironment\Response;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use Zend\View\Model\ViewModel;
 
 class CommuneController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
 
     private $sansimpayes = false;
-
-    private function homePage(string $message = '',
-        string $namespace = FlashMessenger::NAMESPACE_SUCCESS)
-    {
-        if ($message) {
-            $this->flashMessenger()->addMessage($message, $namespace);
-        }
-        return $this->redirect()->toRoute('login', [
-            'action' => 'home-page'
-        ]);
-    }
 
     /**
      * Page d'accueil du portail des communes
@@ -58,7 +46,7 @@ class CommuneController extends AbstractActionController
         return new ViewModel(
             [
                 'data' => $userFeatures->tableauStatistique(),
-                'commune' => $userFeatures->listeDesNoms()
+                'communes' => $userFeatures->listeDesNoms()
             ]);
     }
 
@@ -267,10 +255,9 @@ class CommuneController extends AbstractActionController
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Eleve\Liste')->paginatorGroup(
                     Session::get('millesime'),
-                    FiltreEleve::byService(
-                    $result['post']['ligneId'], $result['post']['sens'],
-                        $result['post']['moment'], $result['post']['ordre']),
-                    [
+                    FiltreEleve::byService($result['post']['ligneId'],
+                        $result['post']['sens'], $result['post']['moment'],
+                        $result['post']['ordre']), [
                         'nom',
                         'prenom'
                     ], 'service', $result['criteres_obj']->getWhere()),

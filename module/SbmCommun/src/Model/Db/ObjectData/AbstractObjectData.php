@@ -16,6 +16,7 @@ namespace SbmCommun\Model\Db\ObjectData;
 use ArrayIterator;
 use Iterator;
 use IteratorAggregate;
+use SbmCommun\Model\Db\ObjectData\Exception\OutOfBoundsException;
 
 abstract class AbstractObjectData implements ObjectDataInterface, \Countable
 {
@@ -492,7 +493,12 @@ abstract class AbstractObjectData implements ObjectDataInterface, \Countable
         if (is_array($this->getIdFieldName())) {
             $id = [];
             foreach ($this->getIdFieldName() as $item) {
-                $id[$item] = $data_array[$item];
+                if (array_key_exists($item, $data_array)) {
+                    $id[$item] = $data_array[$item];
+                } else {
+                    throw new OutOfBoundsException(
+                        "Index $item manquant dans \n" . print_r($data_array, true));
+                }
             }
             return $id;
         } else {

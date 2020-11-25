@@ -111,6 +111,7 @@ $buttons = [
             	<?php
                 $hiddens['documentId'] = $row->documentId;
                 $hiddens['sublabel'] = $row->sublabel;
+                $doclabelId = sprintf("%d.%d", $row->documentId, $row->sublabel); // remplace $row->doclabelId
                 ?>
                 <tr class="<?= $this->cycle(["even", "odd"])->next();?>">
 					<td class="sublabel"><?= $row->sublabel + 1;?></td>
@@ -122,7 +123,7 @@ $buttons = [
 					<td class="cols-number"><?= $row->cols_number; ?></td>
 					<td class="filigrane"><?= $row->filigrane; ?></td>
 					<td class="boutons">
-                		<?=$this->listeLigneActions($row->doclabelId,$hiddens,$buttons);?>
+                		<?=$this->listeLigneActions($doclabelId,$hiddens,$buttons); // remplace $row->doclabelId?>
 				    </td>
 				</tr>
         	<?php endforeach;?>

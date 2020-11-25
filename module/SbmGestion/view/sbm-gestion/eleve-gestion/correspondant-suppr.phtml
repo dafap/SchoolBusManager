@@ -1,0 +1,31 @@
+<?php
+/**
+ * Page de suppression de l'inscription d'un correspondant
+ *
+ * Cette vue reçoit les variables suivantes :
+ * data
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve-gestion
+ * @filesource correspondant-suppr.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 oct. 2020
+ * @version 2020-2.6.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+?>
+<h1>Suppression d'une station</h1>
+<div id="suppr-wrapper">
+	<p>Vous avez demandé la suppression du correspondant :</p>
+	<div class="header-wrapper">
+		<ul>
+			<li><?= $this->escapeHtml($this->data->nom); ?>
+				<?= $this->escapeHtml($this->data->prenom); ?></li>
+		</ul>
+	</div>
+	<p>Confirmez-vous ?</p>
+    <?= $this->form()->openTag($form);?>
+    <?= $this->formCollection($form);?>
+    <?= $this->form()->closeTag();?>
+</div>

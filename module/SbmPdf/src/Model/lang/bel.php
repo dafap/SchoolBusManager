@@ -2,13 +2,13 @@
 // ============================================================+
 // File name : bel.php
 // Begin : 2010-10-26
-// Last Update : 2010-10-26
+// Last Update : 2020-10-28
 //
 // Description : Language module for TCPDF
 // (contains translated texts)
 // Basque
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -26,19 +26,19 @@
  * @since 2010-10-26
  */
 
-// Basque
-global $l;
+// Belarus
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 
 $l['a_meta_charset'] = 'UTF-8';
 $l['a_meta_dir'] = 'ltr';
-$l['a_meta_language'] = 'be';
+$l['a_meta_language'] = 'by';
 
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'старонкі';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

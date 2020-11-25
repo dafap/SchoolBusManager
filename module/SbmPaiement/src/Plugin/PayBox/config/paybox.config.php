@@ -56,7 +56,7 @@ return [
     ],
     'extraction' => [
         'columns' => [
-            'type_transaction' => G,
+            'type_transaction' => 'G',
             'statut_translation' => 'H',
             'date_heure' => 'C',
             'reference-commande' => 'D',

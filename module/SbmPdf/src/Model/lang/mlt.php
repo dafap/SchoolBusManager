@@ -2,13 +2,13 @@
 // ============================================================+
 // File name : mlt.php
 // Begin : 2004-03-03
-// Last Update : 2010-10-26
+// Last Update : 2020-10-28
 //
 // Description : Language module for TCPDF
 // (contains translated texts)
 // Maltese
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Maltese
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'mt';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'paġna';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

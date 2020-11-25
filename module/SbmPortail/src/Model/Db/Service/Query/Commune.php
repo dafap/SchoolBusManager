@@ -1,14 +1,14 @@
 <?php
 /**
- * Reqêtes nécessaires au portail des communes
+ * Requêtes nécessaires au portail des communes
  *
  * @project sbm
  * @package SbmPortail/src/Model/Db/Service/Query
  * @filesource Commune.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
- * @version 2020-2.6.0
+ * @date 12 nov. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmPortail\Model\Db\Service\Query;
 

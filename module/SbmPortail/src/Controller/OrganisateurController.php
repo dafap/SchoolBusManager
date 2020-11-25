@@ -7,12 +7,13 @@
  * @filesource OrganisateurController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
+ * @date 2 oct. 2020
  * @version 2020-2.6.1
  */
 namespace SbmPortail\Controller;
 
 use SbmAuthentification\Model\CategoriesInterface;
+use SbmCartographie\Model\Point;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -21,23 +22,13 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
+use SbmPortail\Model\User\Organisateur as UserFeatures;
 
 class OrganisateurController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
 
     private $sansimpayes = true;
-
-    private function homePage(string $message = '',
-        string $namespace = FlashMessenger::NAMESPACE_SUCCESS)
-    {
-        if ($message) {
-            $this->flashMessenger()->addMessage($message, $namespace);
-        }
-        return $this->redirect()->toRoute('login', [
-            'action' => 'home-page'
-        ]);
-    }
 
     /**
      * Page d'accueil du portail des établissements
@@ -46,17 +37,31 @@ class OrganisateurController extends AbstractActionController
      */
     public function IndexAction()
     {
-        ;
+        try {
+            $userFeatures = new UserFeatures($this->categorieId, $this->userId,
+                $this->db_manager);
+        } catch (\Exception $e) {
+            return $this->homePage('Entrée interdite.', FlashMessenger::NAMESPACE_ERROR);
+        }
+        return new ViewModel([
+            'data' => $userFeatures->tableauStatistique()
+        ]);
     }
 
     public function carteEtablissementsAction()
     {
-        ;
+        $this->redirectToOrigin()->setBack('/portail/organisateur');
+        return $this->redirect()->toRoute('sbmcarte', [
+            'action' => 'etablissements'
+        ]);
     }
 
     public function carteStationsAction()
     {
-        ;
+        $this->redirectToOrigin()->setBack('/portail/organisateur');
+        return $this->redirect()->toRoute('sbmcarte', [
+            'action' => 'stations'
+        ]);
     }
 
     public function lignesAction()

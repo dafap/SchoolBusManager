@@ -1,0 +1,40 @@
+/**
+ * Feuille de style 
+ *
+ * 
+ * 
+ * @project sbm
+ * @package public/css/
+ * @filesource eleve-ajout.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 oct. 2020
+ * @version 2020-2.6.0
+ **/
+@charset "UTF-8";
+.label-180 label {
+	display:inline-block;
+	width: 180px;
+}
+label.note {
+	vertical-align: top;
+}
+#fiche-inner fieldset.sbm-page1 fieldset legend:after {
+	color: #f78042;
+	content: "*";
+}
+#fiche-inner label.sbm-label-radio {
+	width: 85px;
+}
+#fiche-inner label.sbm-label-radio:after {
+	content: none;
+}
+div#inner-motifRefus {
+	display: none;
+	padding-left: 15px;
+	width: 50%;
+}
+textarea {
+	width:99.5%;
+	border-radius: 4px 4px 4px 4px;
+}

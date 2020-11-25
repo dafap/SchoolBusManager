@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 août 2020
- * @version 2020-2.6.0
+ * @date 20 oct. 2020
+ * @version 2020-2.6.1
  */
 use SbmCommun\Arlysere;
 use SbmCommun\Form;
@@ -53,6 +53,7 @@ return [
             'Sbm\Db\ObjectData\EtablissementService' => ObjectData\EtablissementService::class,
             'Sbm\Db\ObjectData\EtablissementStation' => ObjectData\EtablissementStation::class,
             'Sbm\Db\ObjectData\Facture' => ObjectData\Facture::class,
+            'Sbm\Db\ObjectData\Invite' => ObjectData\Invite::class,
             'Sbm\Db\ObjectData\Ligne' => ObjectData\Ligne::class,
             'Sbm\Db\ObjectData\Lot' => ObjectData\Lot::class,
             'Sbm\Db\ObjectData\Organisme' => ObjectData\Organisme::class,
@@ -107,6 +108,7 @@ return [
             'Sbm\Db\Table\EtablissementsServices' => Table\EtablissementsServices::class,
             'Sbm\Db\Table\EtablissementsStations' => Table\EtablissementsStations::class,
             'Sbm\Db\Table\Factures' => Table\Factures::class,
+            'Sbm\Db\Table\Invites' => Table\Invites::class,
             'Sbm\Db\Table\Lignes' => Table\Lignes::class,
             'Sbm\Db\Table\Lots' => Table\Lots::class,
             'Sbm\Db\Table\Organismes' => Table\Organismes::class,
@@ -149,6 +151,7 @@ return [
             'Sbm\Db\TableGateway\EtablissementsServices' => TableGateway\TableGatewayEtablissementsServices::class,
             'Sbm\Db\TableGateway\EtablissementsStations' => TableGateway\TableGatewayEtablissementsStations::class,
             'Sbm\Db\TableGateway\Factures' => TableGateway\TableGatewayFactures::class,
+            'Sbm\Db\TableGateway\Invites' => TableGateway\TableGatewayInvites::class,
             'Sbm\Db\TableGateway\Lignes' => TableGateway\TableGatewayLignes::class,
             'Sbm\Db\TableGateway\Lots' => TableGateway\TableGatewayLots::class,
             'Sbm\Db\TableGateway\Organismes' => TableGateway\TableGatewayOrganismes::class,
@@ -261,6 +264,7 @@ return [
             Form\Circuit::class => Form\Circuit::class,
             Form\Classe::class => Form\Classe::class,
             Form\Commune::class => Form\Commune::class,
+            Form\Correspondant::class => Form\Correspondant::class,
             Form\Etablissement::class => Form\Etablissement::class,
             Form\Ligne::class => Form\Ligne::class,
             Form\Lot::class => Form\Lot::class,

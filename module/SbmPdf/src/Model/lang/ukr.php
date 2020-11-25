@@ -8,7 +8,7 @@
 // (contains translated texts)
 // Ukrainian
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Russian
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'ua';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'сторінка';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

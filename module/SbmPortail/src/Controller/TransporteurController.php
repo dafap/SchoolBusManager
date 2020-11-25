@@ -7,7 +7,7 @@
  * @filesource TransporteurController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
+ * @date 14 nov. 2020
  * @version 2020-2.6.1
  */
 namespace SbmPortail\Controller;
@@ -27,17 +27,6 @@ class TransporteurController extends AbstractActionController
     use \SbmCommun\Model\Traits\DebugTrait;
 
     private $sansimpayes = true;
-
-    private function homePage(string $message = '',
-        string $namespace = FlashMessenger::NAMESPACE_SUCCESS)
-    {
-        if ($message) {
-            $this->flashMessenger()->addMessage($message, $namespace);
-        }
-        return $this->redirect()->toRoute('login', [
-            'action' => 'home-page'
-        ]);
-    }
 
     /**
      * Page d'accueil du portail des établissements

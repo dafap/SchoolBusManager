@@ -18,6 +18,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Db\Sql\Where;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use TCPDF;
 
 class TestController extends AbstractActionController
 {
@@ -44,12 +45,129 @@ class TestController extends AbstractActionController
 
     public function indexAction()
     {
-        $result = [];
-        foreach ($this->db_manager->get(\SbmFront\Factory\Test\Query\Test::class)->get() as $row) {
-            foreach ($row as $key => $value) {
-                $result[$key] = $value;
-            }
+        $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
+        $qrcodeNiveau = 'QRCODE,Q';
+        $qrcodeMessage1 = 'https://www.tra-mobilite/plan-temps-reel/';
+        $qrcodeMessage2 = 'ABOARSCO00018';
+        $imagePassJunior = file_get_contents(
+            StdLib::concatPath($imagePath, 'pass-provisoire-A4.svg'));
+        $du = '16/11/2020';
+        $au = '31/11/2020';
+        $beneficiaire_nom = 'MANDRET';
+        $beneficiaire_prenom = 'LIV';
+        // $chez = 'MASSON Juliette';
+        $eleve_nom = "";
+        $eleve_prenom = "";
+        $eleve_numero = 91107;
+        $adresseL1 = '311 MONTÉE DE LA PIGERIE';
+        $adresseL2 = '';
+        $codePostal = '73790';
+        $commune = 'TOURS EN SAVOIE';
+        $etablissement = 'LYCEE JEAN MOULIN - ALBERTVILLE';
+        $origine = 'CHEF-LIEU (TOURS EN SAVOIE)';
+        $services_matin = 'L6';
+        $services_midi = 'L6';
+        $services_soir = 'L6';
+        $responsable_titre = "M.";
+        $responsable_nom = "MANDRET";
+        $responsable_prenom = "YANN";
+        if ($eleve_nom == '') {
+            $imagePassJunior = str_replace('chez', '', $imagePassJunior);
         }
+        $imagePathJunior = sprintf('@' . $imagePassJunior, $responsable_titre,
+            $responsable_nom, $responsable_prenom, $adresseL1, $adresseL2, $codePostal,
+            $commune, $du, $au, $eleve_numero, $beneficiaire_nom, $beneficiaire_prenom,
+            $eleve_nom, $eleve_prenom, $etablissement, $origine, $services_matin,
+            $services_midi, $services_soir);
+        $qrcodeStyle = [
+            'border' => 0,
+            'vpadding' => 'auto',
+            'hpadding' => 'auto',
+            'fgcolor' => [
+                0,
+                0,
+                0
+            ],
+            'bgcolor' => false, // array(255,255,255)
+            'module_width' => 1, // width of a single module in points
+            'module_height' => 1 // height of a single module in points
+        ];
+
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
+            false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Alain POMIROL, DAFAP Informatique');
+        $pdf->SetTitle('PASS TEMPORAIRE JUNIOR');
+        $pdf->SetSubject('School Bus Manager');
+        $pdf->SetKeywords('TCPDF, PDF, PASS, ARLYSERE, School Bus Manager');
+
+        /*
+         * $pdf->setHeaderFont(Array( PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN ));
+         * $pdf->setFooterFont(Array( PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA ));
+         */
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        //$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(0, 0, 0,true);
+        $pdf->SetAutoPageBreak(TRUE, 0);
+        // $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        // $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        // $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->AddPage();
+        $pdf->ImageSVG($imagePathJunior,0,0,210,297);
+        $pdf->write2DBarcode($qrcodeMessage1, $qrcodeNiveau, 181.3, 5.2, 24, 24,
+            $qrcodeStyle, 'N');
+        $pdf->write2DBarcode($qrcodeMessage2, $qrcodeNiveau, 161.3, 217.2, 24, 24,
+             $qrcodeStyle, 'N');
+        $pdf->AddPage();
+        $pdf->ImageSVG(StdLib::concatPath($imagePath, 'pass-provisoire-verso-A4.svg'),0,0,210,297);
+        // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'logo.svg'), 15, 20, '', 35);
+        // $pdf->ImageSVG($imagePathJunior, 110, 20, '', 54);
+        // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'bas-de-page.svg'), 10, 266,
+        // 190);
+        // $pdf->write2DBarcode($qrcodeMessage, $qrcodeNiveau, 165.8, 21.8, 25, 25,
+        // $qrcodeStyle, 'N');
+        // =============
+        // $pdf->setY(75);
+        // $pdf->SetFont('helvetica', '', 16);
+        // $pdf->Write(0, $qrcodeNiveau);
+        // =============
+        /*
+         * $y = 95; $pdf->setY($y); $pdf->SetFont('helvetica', 'B', 24); $pdf->Write(0,
+         * sprintf("PASS TEMPORAIRE JUNIOR\nValable du %s au %s", $du, $au), '', false,
+         * 'C'); $y +=35; $pdf->setY($y); $pdf->SetFont('helvetica', '', 16);
+         * $pdf->Write(0, 'Bénéficiaire'); $y += 10; $pdf->setY($y); $pdf->Write(0, 'Nom
+         * :'); $pdf->setX(50); $pdf->SetFont('helvetica', 'B', 16); $pdf->Write(0,
+         * $beneficiaire_nom); $y +=6; $pdf->setY($y); $pdf->SetFont('helvetica', '', 16);
+         * $pdf->Write(0, 'Prénom :'); $pdf->setX(50); $pdf->SetFont('helvetica', 'B',
+         * 16); $pdf->Write(0, $beneficiaire_prenom); $pdf->SetFont('helvetica', '', 12);
+         * $y +=22; $pdf->setY($y); $pdf->Write(0, 'Hébergé chez :'); $pdf->setX(77);
+         * $pdf->SetFont('helvetica', 'B', 12); $pdf->Write(0, $chez); $y +=6;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 12); $pdf->Write(0, 'Adresse
+         * :'); $pdf->SetFont('helvetica', 'B', 12); foreach (array_filter( [ $adresseL1,
+         * $adresseL2, sprintf('%s %s', $codePostal, $commune) ]) as $value) {
+         * $pdf->SetY($y); $pdf->setX(77); $pdf->Write(0, $value); $y += 6; } $y += 16;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Point de
+         * montée :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0,
+         * $origine); $y += 6; $pdf->setY($y); $pdf->SetFont('helvetica', '', 13);
+         * $pdf->Write(0, 'Établissement scolaire :'); $pdf->setX(77);
+         * $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0, $etablissement); $y += 22;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Services de
+         * transport :'); $y += 6; $pdf->setXY(40, $y); $pdf->SetFont('helvetica', '',
+         * 13); $pdf->Write(0, 'Matin :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B',
+         * 13); $pdf->Write(0, $services_matin); $y += 6; $pdf->setXY(40, $y);
+         * $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Mercredi midi :');
+         * $pdf->setX(77); $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0,
+         * $services_midi); $y += 6; $pdf->setXY(40, $y); $pdf->SetFont('helvetica', '',
+         * 13); $pdf->Write(0, 'Soir :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B',
+         * 13); $pdf->Write(0, $services_soir);
+         */
+        return $pdf->Output('passTemporaireJunior.pdf', 'D');
+        die();
+
         $this->initDebug();
         $error_msg[] = $this->auth->getIdentity();
         $error_msg[] = $this->auth->getCategorieId();
@@ -57,7 +175,7 @@ class TestController extends AbstractActionController
         $error_msg[] = 'Terminé';
         // dump et print_r de l'objet 'obj'
         $viewmodel = new ViewModel([
-            'obj' => $result,
+            'obj' => $error_msg,
             'form' => null
         ]);
         $viewmodel->setTemplate('sbm-front/test/test.phtml');

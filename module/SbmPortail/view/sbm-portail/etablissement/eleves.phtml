@@ -9,6 +9,216 @@
  * @filesource eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
+ * @date 15 nov. 2020
  * @version 2020-2.6.1
  */
+use SbmBase\Model\Session;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+try {
+    $eleves = $this->paginator->getCurrentItems();
+} catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
+    // affichage d'une page d'erreur
+    ?>
+<h1>Liste des élèves de <?=$this->etablissement;?></h1>
+<div id="liste-wrapper">
+	<div id="liste-inner">
+		<pre>
+	  <?= $e->getMessage();?>
+	</pre>
+	</div>
+	<div id="liste-footer">
+		<div class="criteres-wrapper">
+		<?php if (! is_null($this->criteres_form)) :?>
+        	<?= $this->form()->openTag($this->criteres_form);?>
+        	<?= $this->formCollection($this->criteres_form, true);?>
+        	<?= $this->form()->closeTag();?>
+        <?php endif;?>
+        </div>
+	</div>
+</div>
+<?php
+    return;
+} // fin du catch (affichage d'une page d'erreur)
+$avant_fin_aout = '';
+$date_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify('15 days ago');
+if ((new \DateTime()) < $date_fin_aout) {
+    $avant_fin_aout = 'invisible';
+    $message_circuits = sprintf(
+        'Les circuits et les stations seront publiées à partir du %s',
+        $date_fin_aout->format('d/m/Y'));
+} else {
+    $message_circuits = '';
+}
+// url_retour pour utiliser le redirectToOrigine
+$url_retour = $this->url('sbmportail/etablissement', [
+    'action' => 'index'
+]);
+$url_rapports = $this->url('sbmportail/etablissement',
+    [
+        'action' => 'eleves-pdf',
+        'page' => $this->page
+    ]);
+$url_download = $this->url('sbmportail/etablissement',
+    [
+        'action' => 'eleves-download',
+        'page' => $this->page
+    ]);
+$action_ici = 'eleves';
+$url_ici = $this->url('sbmportail/etablissement',
+    [
+        'action' => $action_ici,
+        'page' => $this->page
+    ]);
+$route_ici = $this->url('sbmportail/etablissement', [
+    'action' => $action_ici
+]);
+$hiddens = [];
+$menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
+    $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        // 'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Extraction de la liste dans un fichier'
+    ]
+];
+?>
+<h1>Liste des élèves de <?=$this->etablissement;?></h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+			<?= $this->listeZoneActions($hiddens, $actions);?>
+		</div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr>
+					<th>N° carte</th>
+					<th>Nom</th>
+					<th>Prénom</th>
+					<th>Adresse</th>
+					<th>Responsables</th>
+					<?php if ($this->nbEtablissements > 1):?>
+					<th>Etablissement scolaire</th>
+					<?php endif;?>
+					<th>Classe</th>
+					<th class="<?=$avant_fin_aout;?>">Circuits</th>
+				</tr>
+				<?php foreach($eleves as $eleve): ?>
+				<?php
+        $responsables = [];
+        $circuits = [];
+        $arrets = [];
+        if ($eleve['responsable1NomPrenom']) {
+            $responsables[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable1NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        if ($eleve['responsable2NomPrenom']) {
+            $responsables[] = htmlspecialchars(
+                str_replace(' ', '&nbsp;', $eleve['responsable2NomPrenom']), ENT_QUOTES,
+                'utf-8', false);
+        }
+        $nbResponsables = count($responsables);
+        $tr_css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        // adresses
+        $adresseR1 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseL1Elv'],
+                        $eleve['adresseL2Elv'],
+                        $eleve['adresseL3Elv'],
+                        $eleve['lacommuneElv']
+                    ])));
+        $adresseR2 = implode('<br>',
+            array_filter(
+                array_unique(
+                    [
+                        $eleve['adresseL1R2'],
+                        $eleve['adresseL2R2'],
+                        $eleve['adresseL3R2'],
+                        $eleve['lacommuneR2']
+                    ])));
+        $itinerairesR1 = sprintf(
+            $this->printItineraires($eleve['eleveId'], 1, $eleve['demandeR1'] == 1), '');
+        $ga = ((bool) $eleve['responsable2Id']) && ($eleve['demandeR2'] > 0);
+        if ($ga) {
+            $itinerairesR2 = sprintf(
+                $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
+                '');
+        }
+        if (! $eleve['inscrit']) {
+            $tr_css .= ' barre';
+        }
+        ?>
+        		<tr class=" r1 petit <?= $tr_css;?>">
+					<td class="numero align-right"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $eleve['numero']; ?></td>
+					<td class="nom"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['nom_eleve']); ?></td>
+					<td class="prenom"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['prenom_eleve']); ?></td>
+					<td class="adresse">
+					<?= $adresseR1; ?></td>
+					<td class="responsables">
+					<?= $responsables[0]; ?></td>
+					<?php if ($this->nbEtablissements > 1) : ?>
+					<td class="etablissement"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['etablissement']);?></td>
+					<?php endif;?>
+					<td class="classe"
+						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
+					<?= $this->escapeHtml($eleve['classe']);?></td>
+					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR1;?></td>
+					<?php if ($nbResponsables == 2) :?>
+				</tr>
+				<tr class="r2 petit <?= $tr_css;?>">
+					<td class="adresse"><?= $adresseR2; ?></td>
+					<td><?= $responsables[1]; ?></td>
+					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR2;?></td>
+					<?php endif;?>
+        		</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+		<p class="sbm-description"><?=$message_circuits;?></p>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+		<div class="criteres-wrapper">
+		<?php if (! is_null($this->criteres_form)) :?>
+    		<?= $this->form()->openTag($this->criteres_form);?>
+    		<?= $this->formCollection($this->criteres_form, true);?>
+    		<?= $this->form()->closeTag();?>
+    	<?php endif;?>
+	    </div>
+	</div>
+</div>

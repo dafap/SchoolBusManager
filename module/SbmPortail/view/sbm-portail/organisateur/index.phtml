@@ -1,14 +1,189 @@
 <?php
 /**
- * Page d'accueil du portail pour les communes
+ * Page d'accueil du portail pour les organisateurs
  *
  * Les variables définies dans cette vue sont :
+ * - data : tableau associatif décrit ci-dessous
+ *
+ * Description du tableau data
+ * - eleves => tableau de statistiques pour les élèves
+ * - responsables => tableau de statistiques pour les responsables
+ *
+ * Contenu du tableau de statistiques pour les élèves:
+ * - 'elevesDpEnregistres',
+ * - 'elevesIntEnregistres',
+ * - 'elevesEnregistres',
+ * - 'elevesInscrits',
+ * - 'elevesInscritsRayes',
+ * - 'elevesPreinscrits',
+ * - 'elevesPreinscritsRayes',
+ * - 'elevesFamilleAcceuil',
+ * - 'elevesGardeAlternee',
+ * - 'elevesMoins1km',
+ * - 'elevesDe1A3km',
+ * - 'eleves3kmEtPlus'
+ *
+ * Contenu du tableau de statistiques pour les responsables:
+ * - 'responsablesEnregistres',
+ * - 'responsablesAvecEnfant',
+ * - 'responsablesSansEnfant',
+ * - 'responsablesHorsZone',
+ * - 'responsablesDemenagement'
  *
  * @project sbm
  * @package SbmPortain/view/sbm-portail/organisateur
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
+ * @date 3 oct. 2020
  * @version 2020-2.6.1
  */
+use SbmBase\Model\StdLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleves = $this->url('sbmportail/organisateur', [
+    'action' => 'eleves'
+]);
+$url_circuits = $this->url('sbmportail/organisateur', [
+    'action' => 'lignes'
+]);
+$url_carte_stations = $this->url('sbmportail/organisateur',
+    [
+        'action' => 'carte-stations'
+    ]);
+$url_carte_etablissements = $this->url('sbmportail/organisateur',
+    [
+        'action' => 'carte-etablissements'
+    ]);
+
+$elevesEnregistres = StdLib::getParam('elevesEnregistres', $this->data['eleves'], 0);
+$nbInternes = StdLib::getParam('elevesIntEnregistres', $this->data['eleves'], 0);
+$elevesMoins1km = StdLib::getParam('elevesMoins1km', $this->data['eleves'], 0);
+$elevesDe1A3km = StdLib::getParam('elevesDe1A3km', $this->data['eleves'], 0);
+$eleves3kmEtPlus = StdLib::getParam('eleves3kmEtPlus', $this->data['eleves'], 0);
+$nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
+    $eleves3kmEtPlus;
+?>
+<div id="tableau-de-bord" class="clearfix">
+	<div class="flashMessenger float-right">
+		<?= $this->flashMessenger()->render('success');?>
+		<?= $this->flashMessenger()->render('warning');?>
+		<?= $this->flashMessenger()->render('error');?>
+		<?= $this->flashMessenger()->render('info');?>
+		<?= $this->flashMessenger()->render('default');?>
+    </div>
+	<h1>Portail de l'organisateur</h1>
+	<div class="float-left">
+		<h2>Quelques chiffres</h2>
+		<table class="bleu float-left">
+			<tbody>
+				<tr>
+					<td>Nombre d'élèves enregistrés</td>
+					<td class="effectif"><?=$elevesEnregistres;?></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					dont <?=StdLib::getParam('elevesDpEnregistres', $this->data['eleves'], 0);?> DP</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					et <?=$nbInternes;?> interne <?=$nbInternes > 1 ? 's' : '';?></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Nombre d'abonnements payés</td>
+					<td class="effectif"><?=StdLib::getParam('elevesInscrits',$this->data['eleves'], 0);?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'abonnements payés puis rayés</td>
+					<td class="effectif"><?= StdLib::getParam('elevesInscritsRayes',$this->data['eleves'], 0);?></td>
+				</tr>
+				<tr>
+					<td>Nombre de demandes non payées</td>
+					<td class="effectif"><?=StdLib::getParam('elevesPreinscrits',$this->data['eleves'], 0);?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre de demandes non payées puis rayés</td>
+					<td class="effectif"><?=StdLib::getParam('elevesPreinscritsRayes',$this->data['eleves'], 0);?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves à moins de 1 km</td>
+					<td class="effectif"><?=$elevesMoins1km;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves de 1 à 3 km</td>
+					<td class="effectif"><?=$elevesDe1A3km;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves à 3 km et plus</td>
+					<td class="effectif"><?=$eleves3kmEtPlus;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves non géolocalisés</td>
+					<td class="effectif"><?= $nbDistanceInconnue;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves en garde alternée</td>
+					<td class="effectif"><?=StdLib::getParam('elevesGardeAlternee',$this->data['eleves'], 0);?></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="float-left">
+			<table class="rose ">
+				<tbody>
+					<tr>
+						<td>Nombre de responsables</td>
+						<td class="effectif">
+						<?=StdLib::getParam('responsablesEnregistres',$this->data['responsables'], 0);?>
+						</td>
+					</tr>
+					<tr>
+						<td>Nombre de responsables ayant inscrit des enfants</td>
+						<td class="effectif">
+						<?=StdLib::getParam('responsablesAvecEnfant',$this->data['responsables'], 0);?>
+						</td>
+					</tr>
+					<tr class="separateur">
+						<td>Nombre de responsables sans enfant inscrit</td>
+						<td class="effectif">
+						<?=StdLib::getParam('responsablesSansEnfant',$this->data['responsables'], 0);?>
+						</td>
+					</tr>
+					<tr class="separateur">
+						<td>Nombre de responsables résidant hors périmètre</td>
+						<td class="effectif">
+						<?=StdLib::getParam('responsablesHorsZone',$this->data['responsables'], 0);?>
+						</td>
+					</tr>
+					<tr>
+						<td>Nombre de responsables ayant déménagé</td>
+						<td class="effectif">
+						<?=StdLib::getParam('responsablesDemenagement',$this->data['responsables'], 0);?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div id="menugeneral" class="float-right">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?= $url_circuits;?>" target="_blank"><i
+						class="fam-bullet-go"></i>Circuits et horaires</a></li>
+				<li><a href="<?= $url_commune; ?>" target="_blank"><i
+						class="fam-bullet-go"></i>Portail d'une commune</a></li>
+				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
+						des points d'arrêts</a></li>
+				<li><a href="<?= $url_carte_etablissements; ?>"><i
+						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
+			</ul>
+		</div>
+	</div>
+</div>

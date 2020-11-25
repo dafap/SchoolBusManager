@@ -3,12 +3,12 @@
  * Formulaire des critères de recherche des élèves pour le portail des communes
  *
  * @project sbm
- * @package SbmPortail/Form
+ * @package SbmPortail/src/Form
  * @filesource CriteresCommuneForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 août 2020
- * @version 2020-2.6.0
+ * @date 16 nov. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmPortail\Form;
 

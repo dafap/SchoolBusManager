@@ -8,7 +8,7 @@
 // (contains translated texts)
 // Japanese
 //
-// Author: Nicola Asuni - Translation by redcocker
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique) - Translation by redcocker
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Japanese
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'ja';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'ページ';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+
