@@ -1,68 +1,73 @@
 {
-	"name": "dafap/sbm",
-	"description": "School Bus Manager, software",
-	"version": "2.2.0",
-	"authors": [
-		{
-			"name": "Dafap",
-			"email": "dafap@dafap.fr",
-			"homepage": "https://www.dafap.fr"
+	"name" : "dafap/sbm",
+	"description" : "School Bus Manager, software",
+	"version" : "2.2.0",
+	"authors" : [{
+			"name" : "Dafap",
+			"email" : "dafap@dafap.fr",
+			"homepage" : "https://www.dafap.fr"
 		}
 	],
-	"support": {
-		"email": "sbm@dafap.fr"
+	"support" : {
+		"email" : "sbm@dafap.fr"
 	},
-	"keywords": [
+	"keywords" : [
 		"transport",
 		"school",
 		"framework",
 		"zf2"
 	],
-	"homepage": "https://www.dafap.fr/",
-	"license": "BSD-3-Clause",
-	"time": "2014-09-01",
-	"require": {
-		"atukai/at-php-settings": "dev-master",
-		"php": ">=5.6",
-		"zendframework/zendframework": "~2.5",
-		"drewm/mailchimp-api": "^2.1",
-		"zendframework/zftool": "dev-master",
-		"tecnickcom/tcpdf": "~6.2"
+	"homepage" : "https://www.dafap.fr/",
+	"license" : "BSD-3-Clause",
+	"time" : "2014-09-01",
+	"require" : {
+		"atukai/at-php-settings" : "dev-master",
+		"php" : ">=5.6",
+		"zendframework/zendframework" : "~2.5",
+		"drewm/mailchimp-api" : "^2.1",
+		"tecnickcom/tcpdf" : "~6.2"
 	},
-	"require-dev": {
-		"zendframework/zend-developer-tools": "dev-master"
+	"require-dev" : {
+		"zendframework/zend-developer-tools" : "dev-master"
 	},
-	"minimum-stability": "stable",
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "https://packages.zendframework.com/"
+	"minimum-stability" : "stable",
+	"repositories" : [{
+			"type" : "composer",
+			"url" : "https://packages.zendframework.com/"
 		}
 	],
-	"prefer-stable": true,
-	"config": {
-		"process-timeout": 5000,
-		"use-include-path": false,
-		"github-protocols": [
+	"prefer-stable" : true,
+	"config" : {
+		"process-timeout" : 5000,
+		"use-include-path" : false,
+		"github-protocols" : [
 			"git",
 			"https",
 			"http"
 		],
-		"vendor-dir": "vendor"
+		"vendor-dir" : "vendor"
 	},
-	"autoload": {
-		"classmap": [
+	"autoload" : {
+		"classmap" : [
 			"vendor/tecnickcom/tcpdf"
 		],
-		"psr-4": {
-			"SbmAuthentification\\" : "module/SbmAuthentification/src","SbmAjax\\":"module/SbmAjax/src",
-			"SbmCartographie\\" : "module/SbmCartographie/src","SbmBase\\":"module/SbmBase/src",
-			"SbmAdmin\\" : "module/SbmAdmin/src","SbmCommun\\":"module/SbmCommun/src",
-			"SbmFront\\" : "module/SbmFront/src","SbmGestion\\":"module/SbmGestion/src",
-			"SbmInstallation\\" : "module/SbmInstallation/src","SbmMail\\":"module/SbmMail/src",
-			"SbmMailChimp\\" : "module/SbmMailChimp/src","SbmPaiement\\":"module/SbmPaiement/src",
-			"SbmParent\\" : "module/SbmParent/src","SbmPdf\\":"module/SbmPdf/src",
-			"SbmPortail\\" : "module/SbmPortail/src","SbmCleverSms\\":"module/SbmCleverSms/src"
+		"psr-4" : {
+			"SbmAuthentification\\" : "module/SbmAuthentification/src",
+			"SbmAjax\\" : "module/SbmAjax/src",
+			"SbmCartographie\\" : "module/SbmCartographie/src",
+			"SbmBase\\" : "module/SbmBase/src",
+			"SbmAdmin\\" : "module/SbmAdmin/src",
+			"SbmCommun\\" : "module/SbmCommun/src",
+			"SbmFront\\" : "module/SbmFront/src",
+			"SbmGestion\\" : "module/SbmGestion/src",
+			"SbmInstallation\\" : "module/SbmInstallation/src",
+			"SbmMail\\" : "module/SbmMail/src",
+			"SbmMailChimp\\" : "module/SbmMailChimp/src",
+			"SbmPaiement\\" : "module/SbmPaiement/src",
+			"SbmParent\\" : "module/SbmParent/src",
+			"SbmPdf\\" : "module/SbmPdf/src",
+			"SbmPortail\\" : "module/SbmPortail/src",
+			"SbmCleverSms\\" : "module/SbmCleverSms/src"
 		}
 	}
 }
