@@ -3,7 +3,7 @@
  * Factory permettant d'enregistrer une instance de DistanceMatrix dans le service manager
  *
  * Incompatible avec ZF3 - revoir createService() en remplaçant par __invoke()
- * 
+ *
  * @project sbm
  * @package SbmCartographie/GoogleMaps/Service
  * @filesource DistanceMatrixFactory.php
@@ -26,10 +26,10 @@ class DistanceMatrixFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $cartographie = $serviceLocator->get('cartographie');
-        $projection = str_replace('ProjectionInterface', 
+        $projection = str_replace('ProjectionInterface',
             StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
-        $google_api_distanceMatrix = StdLib::getParam('distancematrix', 
+        $google_api_distanceMatrix = StdLib::getParam('distancematrix',
             $serviceLocator->get('google_api_serveur'));
         return new DistanceMatrix(new $projection($nzone), $google_api_distanceMatrix);
     }

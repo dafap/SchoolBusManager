@@ -1,9 +1,10 @@
 <?php
 /**
- * Permet d'enregistrer l'objet SbmCartographie\GoogleMaps\Geocoder dans le service_manager
+ * Permet d'enregistrer l'objet SbmCartographie\GoogleMaps\Geocoder dans le
+ * service_manager
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmCartographie/GoogleMaps/Service
  * @filesource GeocoderFactory.php
@@ -26,7 +27,7 @@ class GeocoderFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $cartographie = $serviceLocator->get('cartographie');
-        $projection = str_replace('ProjectionInterface', 
+        $projection = str_replace('ProjectionInterface',
             StdLib::getParam('system', $cartographie), ProjectionInterface::class);
         $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $google_api = $serviceLocator->get('google_api_serveur');

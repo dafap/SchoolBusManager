@@ -25,7 +25,7 @@ $url_suppr = $this->url('sbmadmin',
     ]);
 $hiddens = [
     'userId' => $this->user->userId,
-    'organismeId' => $this->organisme ? $this->organisme->organismeId : null,
+    'organismeId' => $this->organisme ? $this->organisme->organismeId : null
 ];
 $actions = [
     'retour' => [
@@ -77,7 +77,7 @@ if ($this->organisme === false) {
 					class="row-inner ajout">
             <?=$this->formRow($this->form->get('organismeId'));?>
             </div>
-			<div id="classe-ajout-buttons" class="row-inner ajout">
+				<div id="classe-ajout-buttons" class="row-inner ajout">
 			    <?=$this->formSubmit($this->form->get('submit'));?>
 			    <?=$this->formSubmit($this->form->get('cancel'));?>
 			</div>

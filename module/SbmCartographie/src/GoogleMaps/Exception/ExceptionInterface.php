@@ -1,7 +1,7 @@
 <?php
 /**
  * Exception déclenchée par les classes de namespace SbmCartographie\GoogleMaps\...
- * 
+ *
  * @project sbm
  * @package SbmCartographie/GoogleMaps/Exception
  * @filesource ExceptionInterface.php

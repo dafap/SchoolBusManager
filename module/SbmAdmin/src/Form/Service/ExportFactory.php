@@ -4,8 +4,8 @@
  *
  * Compatibilité ZF3
  * usage :
- *   $form = $sm->get('SbmAdmin\Form\Export')->getForm('eleve');
- * 
+ * $form = $sm->get('SbmAdmin\Form\Export')->getForm('eleve');
+ *
  * @project sbm
  * @package SbmAdmin/Form/Service
  * @filesource ExportFactory.php

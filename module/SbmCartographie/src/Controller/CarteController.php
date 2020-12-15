@@ -112,8 +112,7 @@ class CarteController extends AbstractActionController
 
     public function stationsFrameAction()
     {
-        $r = $this->stationsAction()
-            ->setTerminal(true);
+        $r = $this->stationsAction()->setTerminal(true);
         return $r;
     }
 }

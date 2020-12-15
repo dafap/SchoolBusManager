@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmAdmin\Form;
 
@@ -19,6 +19,7 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmCartographie\ConvertSystemGeodetic\Projection\SelectOptions;
 
 class Export extends AbstractSbmForm implements InputFilterProviderInterface
 {
@@ -58,6 +59,25 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         }
         $this->add(
             [
+                'name' => 'projectionId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'projectionId',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Choix du système géographique',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => SelectOptions::getOptions(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ])
+            ->add(
+            [
                 'type' => 'submit',
                 'name' => 'submit',
                 'attributes' => [
@@ -65,8 +85,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'button default submit left-95px',
                     'value' => 'Extraire les données'
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'submit',
                 'name' => 'cancel',
@@ -889,5 +909,11 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             $where->equalTo('sta.ouverte', $data['ouverte']);
         }
         return $where;
+    }
+
+    public function getProjection()
+    {
+        $data = $this->getData();
+        return SelectOptions::getProjection($data['projectionId']);
     }
 }

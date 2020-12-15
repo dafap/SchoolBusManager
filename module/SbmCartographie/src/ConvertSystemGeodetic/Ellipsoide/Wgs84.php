@@ -14,6 +14,7 @@ namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
 class Wgs84 extends Ellipsoide
 {
+
     function __construct()
     {
         $this->setA(6378137.0);

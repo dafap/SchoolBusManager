@@ -1,9 +1,11 @@
 <?php
 /**
- * Exception déclenchée par une classe des namespaces SbmCartographie\ConvertSystemGeodetic\...
- * 
- * Exception émise pour indiquer des erreurs d'intervalle lors de l'exécution du programme. 
- * Normalement, cela signifie qu'il y a une erreur arithmétique autre qu'un débordement. 
+ * Exception déclenchée par une classe des namespaces
+ * SbmCartographie\ConvertSystemGeodetic\...
+ *
+ * Exception émise pour indiquer des erreurs d'intervalle lors de l'exécution du
+ * programme.
+ * Normalement, cela signifie qu'il y a une erreur arithmétique autre qu'un débordement.
  * C'est l'équivalent en cours d'exécution de DomainException.
  *
  * @project sbm

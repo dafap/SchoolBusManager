@@ -60,7 +60,8 @@ class Geocoder
     }
 
     /**
-     * Demande la longitude et la latitude d'une adresse postale. Renvoie un tableau
+     * Demande la longitude et la latitude d'une adresse postale.
+     * Renvoie un tableau
      * contenant la longitude, la latitude et l'adresse formatée trouvée (pour contrôle
      * visuel). Si l'adresse n'est pas trouvée, longitude et latitude sont zéro et
      * l'adresse est : 'pas trouvé'

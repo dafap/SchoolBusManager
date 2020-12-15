@@ -3,7 +3,7 @@
  * Génère un form manager donnat accès aux services du module SbmCartographie
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model/Service
  * @filesource CartographieManager.php

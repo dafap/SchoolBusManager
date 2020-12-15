@@ -14,6 +14,7 @@ namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
 class InternationalHayford1909 extends Ellipsoide
 {
+
     function __construct()
     {
         $this->setA(6378388.0);

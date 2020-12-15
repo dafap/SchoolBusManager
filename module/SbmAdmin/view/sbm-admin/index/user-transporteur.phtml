@@ -75,40 +75,40 @@ if ($this->transporteur === false) {
 					class="row-inner ajout">
             <?= $this->formRow($this->form->get('transporteurId'));?>
             </div>
-			<div id="classe-ajout-buttons" class="row-inner ajout">
+				<div id="classe-ajout-buttons" class="row-inner ajout">
 			    <?= $this->formSubmit($this->form->get('submit'));?>
 			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
-		</fieldset>
+			</fieldset>
     	<?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="sbm-page1">
-			<legend>Transporteur</legend>
-			<div>
-				<div class="label">Nom</div>
+				<legend>Transporteur</legend>
+				<div>
+					<div class="label">Nom</div>
 				<?= $this->transporteur->nom; ?></div>
-			<div>
-				<div class="label">Adresse</div>
+				<div>
+					<div class="label">Adresse</div>
 				<?= $this->transporteur->adresse1; ?></div>
-			<div>
-				<div class="label">Adresse</div>
+				<div>
+					<div class="label">Adresse</div>
 				<?= $this->transporteur->adresse2; ?></div>
-			<div>
-				<div class="label">Localité</div>
+				<div>
+					<div class="label">Localité</div>
 				<?= $this->transporteur->codePostal;?>
 				<?= $this->transporteur->lacommune; ?></div>
-			<div>
-				<div class="label">Téléphone</div>
+				<div>
+					<div class="label">Téléphone</div>
 				<?= $this->telephone($this->transporteur->telephone); ?></div>
-			<div>
-				<div class="label">Fax</div>
+				<div>
+					<div class="label">Fax</div>
 				<?= $this->telephone($this->transporteur->fax); ?></div>
-			<div>
-				<div class="label">Email</div>
+				<div>
+					<div class="label">Email</div>
 				<?= $this->transporteur->email; ?></div>
-			<div>
-				<div class="label">SIRET</div>
+				<div>
+					<div class="label">SIRET</div>
 				<?= $this->transporteur->siret; ?></div>
-		</fieldset>
+			</fieldset>
 <?php endif;?>
         </div>
 	</div>

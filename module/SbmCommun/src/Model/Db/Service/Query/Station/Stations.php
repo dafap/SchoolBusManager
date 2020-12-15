@@ -8,8 +8,8 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 sept. 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
@@ -49,7 +49,8 @@ class Stations extends AbstractQuery
         }
         // $where->equalTo('millesime', $this->millesime);
         $select = clone $this->sql->select();
-        $select->from([
+        $select->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->from([
             'sta' => $this->db_manager->getCanonicName('stations', 'table')
         ])
             ->columns([
@@ -77,11 +78,12 @@ class Stations extends AbstractQuery
                 'ordre',
                 'passage',
                 'horaireD'
-            ], Select::JOIN_LEFT);
+            ], Select::JOIN_LEFT)
+            ->where($where);
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $select->where($where);
+        return $select;
     }
 
     public function getArrayDesserteStations(Where $where = null, $order = null)

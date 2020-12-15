@@ -65,7 +65,7 @@ return [
                             ]
                         ]
                     ],
-                    'user-mail' =>[
+                    'user-mail' => [
                         'allow' => [
                             'roles' => [
                                 'gestion'

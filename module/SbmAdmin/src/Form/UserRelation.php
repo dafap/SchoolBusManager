@@ -1,8 +1,10 @@
 <?php
 /**
- * Formulaire de saisie d'une relation entre un user et un établissement ou un transporteur
+ * Formulaire de saisie d'une relation entre un user et un établissement ou un
+ * transporteur
  *
- * Selon le paramètre passé au constructeur on présentera un select etablissementId ou transporteurId
+ * Selon le paramètre passé au constructeur on présentera un select etablissementId ou
+ * transporteurId
  *
  * @project sbm
  * @package SbmAdmin/Form
@@ -30,7 +32,7 @@ class UserRelation extends AbstractSbmForm
             throw new DomainException(
                 "Les valeurs autorisées sont 'commune', 'etablissement', 'organisme ou 'transporteur'.");
         }
-        $choix = $name == 'commune' ? 'Choisissez une commune': 'Choisissez un ' . $name;
+        $choix = $name == 'commune' ? 'Choisissez une commune' : 'Choisissez un ' . $name;
         parent::__construct($name);
         $this->setAttribute('method', 'post');
         $this->add([

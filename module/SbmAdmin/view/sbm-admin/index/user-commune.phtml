@@ -75,30 +75,30 @@ if ($this->commune === false) {
 					class="row-inner ajout">
             <?= $this->formRow($this->form->get('communeId'));?>
             </div>
-			<div id="classe-ajout-buttons" class="row-inner ajout">
+				<div id="classe-ajout-buttons" class="row-inner ajout">
 			    <?= $this->formSubmit($this->form->get('submit'));?>
 			    <?= $this->formSubmit($this->form->get('cancel')); ?></div>
-		</fieldset>
+			</fieldset>
     	<?= $this->form()->closeTag();?>
 <?php else :?>
         <fieldset id="user" class="sbm-page1">
-			<legend>Commune</legend>
-			<div>
-				<div class="label">Nom</div>
+				<legend>Commune</legend>
+				<div>
+					<div class="label">Nom</div>
 				<?= $this->commune->alias; ?></div>
-			<div>
-				<div class="label">Code postal</div>
+				<div>
+					<div class="label">Code postal</div>
 				<?= $this->commune->codePostal;?></div>
-			<div>
-				<div class="label">Code INSEE</div>
+				<div>
+					<div class="label">Code INSEE</div>
 				<?= $this->commune->communeId; ?></div>
-			<div>
-				<div class="label">Arlysère</div>
+				<div>
+					<div class="label">Arlysère</div>
 				<?= $this->commune->membre ? 'Oui' : 'Non'; ?></div>
-			<div>
-				<div class="label">Desservie</div>
+				<div>
+					<div class="label">Desservie</div>
 				<?= $this->commune->desservie ? 'Oui' : 'Non'; ?></div>
-		</fieldset>
+			</fieldset>
 <?php endif;?>
         </div>
 	</div>

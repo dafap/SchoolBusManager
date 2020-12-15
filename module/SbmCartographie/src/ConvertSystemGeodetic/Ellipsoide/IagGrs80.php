@@ -12,9 +12,10 @@
  */
 namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
-class IagGrs80 extends Ellipsoide 
+class IagGrs80 extends Ellipsoide
 {
-    function __construct() 
+
+    function __construct()
     {
         $this->setA(6378137.0);
         $this->setF(298.257222101);

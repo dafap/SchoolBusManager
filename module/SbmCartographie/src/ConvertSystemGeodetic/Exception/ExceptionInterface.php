@@ -1,7 +1,8 @@
 <?php
 /**
- * Exception déclenchée par les classes de namespace SbmCartographie\ConvertSystemGeodetic\...
- * 
+ * Exception déclenchée par les classes de namespace
+ * SbmCartographie\ConvertSystemGeodetic\...
+ *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Exception
  * @filesource ExceptionInterface.php

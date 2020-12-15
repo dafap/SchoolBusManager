@@ -2,7 +2,7 @@
 /**
  * Ecriture d'un tableau des classes d'un établissement dans une fiche rpi
  *
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Model/View/Helper
  * @filesource RpiClasses.php
@@ -22,7 +22,8 @@ class RpiClasses extends AbstractHelper
      * @param array $aetablissement
      *            structure décrivant un établissement.
      *            Les index sont 'etablissementId', 'nom', 'commune, 'classes'.
-     *            L'index 'classes' est un tableau qui contient la liste des classes ('classeId',
+     *            L'index 'classes' est un tableau qui contient la liste des classes
+     *            ('classeId',
      *            'nom')
      *            
      * @return string
@@ -44,14 +45,15 @@ class RpiClasses extends AbstractHelper
                 ], 'classe'));
         foreach ($aclasses as $classe) {
             $html .= '<tr><td>' . $classe['nom'] . '</td>';
-            $html .= '<td class="bouton">' . $this->btnSuppr(
-                [
-                    'classeId' => $classe['classeId'],
-                    'classe' => $classe['nom'],
-                    'etablissementId' => $etablissementId,
-                    'etablissement' => urlencode($nom),
-                    'commune' => urlencode($commune)
-                ], $classe['nom']) . '</td></tr>';
+            $html .= '<td class="bouton">' .
+                $this->btnSuppr(
+                    [
+                        'classeId' => $classe['classeId'],
+                        'classe' => $classe['nom'],
+                        'etablissementId' => $etablissementId,
+                        'etablissement' => urlencode($nom),
+                        'commune' => urlencode($commune)
+                    ], $classe['nom']) . '</td></tr>';
         }
         return $html;
     }

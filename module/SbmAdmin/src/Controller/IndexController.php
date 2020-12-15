@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmAdmin\Controller;
 
@@ -1558,7 +1558,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
     }
 
     /**
-     * Envoie un mail à un responsable. Reçoit en post les paramètres 'userId',
+     * Envoie un mail à un responsable.
+     * Reçoit en post les paramètres 'userId',
      * 'utilisateur', 'email', 'origine' où origine est l'url de retour Eventuellement,
      * reçoit 'sujet' et 'contenu' initialisant le formulaire
      *
@@ -1700,6 +1701,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    $projection = $this->projection;
+                    $proj_demande = $form->getProjection();
                     $where = $form->whereEleve();
                     if ($prg['lot']) {
                         $resultset = $this->db_manager->get(
@@ -1720,9 +1723,116 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     if (! empty($data)) {
                         $fields = array_keys(
                             is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        if (in_array('X', $fields)) {
+                            $fields[] = 'Longitude';
+                            $fields[] = 'Latitude';
+                        }
+                        if (in_array('x_eleve', $fields)) {
+                            $fields[] = 'LngEleve';
+                            $fields[] = 'LatEleve';
+                        }
+                        if (in_array('x_etablissement', $fields)) {
+                            $fields[] = 'LngEtablissement';
+                            $fields[] = 'LatEtablissement';
+                        }
+                        if (in_array('x_responsable', $fields)) {
+                            $fields[] = 'LngResponsable';
+                            $fields[] = 'LatResponsable';
+                        }
+                        if (in_array('x_responsable1', $fields)) {
+                            $fields[] = 'LngResponsable1';
+                            $fields[] = 'LatResponsable1';
+                        }
+                        if (in_array('x_responsable2', $fields)) {
+                            $fields[] = 'LngResponsable2';
+                            $fields[] = 'LatResponsable2';
+                        }
+                        if (in_array('x_origineR1', $fields)) {
+                            $fields[] = 'LngOrigineR1';
+                            $fields[] = 'LatOrigineR1';
+                        }
+                        if (in_array('x_origineR2', $fields)) {
+                            $fields[] = 'LngOrigineR2';
+                            $fields[] = 'LatOrigineR2';
+                        }
                         return $this->csvExport('eleves.csv', $fields, $data,
-                            function ($item) {
-                                return is_array($item) ? $item : $item->getArrayCopy();
+                            function ($item) use ($projection, $proj_demande) {
+                                $record = is_array($item) ? $item : $item->getArrayCopy();
+                                $transforme = function ($x, $y) use ($projection,
+                                $proj_demande) {
+                                    $pt = new \SbmCartographie\Model\Point($x, $y);
+                                    $pt = $projection->xyzVersgRGF93($pt);
+                                    $array = [];
+                                    $array['longitude'] = $pt->getLongitude();
+                                    $array['latitude'] = $pt->getLatitude();
+                                    $pt = $proj_demande->gRGF93VersXYZ($pt);
+                                    $array['x'] = $pt->getX();
+                                    $array['y'] = $pt->getY();
+                                    return $array;
+                                };
+                                if (array_key_exists('X', $record)) {
+                                    $coordonnes = $transforme($record['X'], $record['Y']);
+                                    $record['X'] = $coordonnes['x'];
+                                    $record['Y'] = $coordonnes['y'];
+                                    $record['Longitude'] = $coordonnes['longitude'];
+                                    $record['Latitude'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_eleve', $record)) {
+                                    $coordonnes = $transforme($record['X'], $record['Y']);
+                                    $record['x_eleve'] = $coordonnes['x'];
+                                    $record['y_eleve'] = $coordonnes['y'];
+                                    $record['Lng_eleve'] = $coordonnes['longitude'];
+                                    $record['Lat_eleve'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_etablissement', $record)) {
+                                    $coordonnes = $transforme($record['x_etablissement'],
+                                        $record['y_etablissement']);
+                                    $record['x_etablissement'] = $coordonnes['x'];
+                                    $record['y_etablissement'] = $coordonnes['y'];
+                                    $record['Lng_etablissement'] = $coordonnes['longitude'];
+                                    $record['Lat_etablissement'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_responsable', $record)) {
+                                    $coordonnes = $transforme($record['x_responsable'],
+                                        $record['y_responsable']);
+                                    $record['x_responsable'] = $coordonnes['x'];
+                                    $record['y_responsable'] = $coordonnes['y'];
+                                    $record['Lng_responsable'] = $coordonnes['longitude'];
+                                    $record['Lat_responsable'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_responsable1', $record)) {
+                                    $coordonnes = $transforme($record['x_responsable1'],
+                                        $record['y_responsable1']);
+                                    $record['x_responsable1'] = $coordonnes['x'];
+                                    $record['y_responsable1'] = $coordonnes['y'];
+                                    $record['Lng_responsable1'] = $coordonnes['longitude'];
+                                    $record['Lat_responsable1'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_responsable2', $record)) {
+                                    $coordonnes = $transforme($record['x_responsable2'],
+                                        $record['y_responsable2']);
+                                    $record['x_responsable2'] = $coordonnes['x'];
+                                    $record['y_responsable2'] = $coordonnes['y'];
+                                    $record['Lng_responsable2'] = $coordonnes['longitude'];
+                                    $record['Lat_responsable2'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_origineR1', $record)) {
+                                    $coordonnes = $transforme($record['x_origineR1'],
+                                        $record['y_origineR1']);
+                                    $record['x_origineR1'] = $coordonnes['x'];
+                                    $record['y_origineR1'] = $coordonnes['y'];
+                                    $record['Lng_origineR1'] = $coordonnes['longitude'];
+                                    $record['Lat_origineR1'] = $coordonnes['latitude'];
+                                }
+                                if (array_key_exists('x_origineR2', $record)) {
+                                    $coordonnes = $transforme($record['x_origineR2'],
+                                        $record['y_origineR2']);
+                                    $record['x_origineR2'] = $coordonnes['x'];
+                                    $record['y_origineR2'] = $coordonnes['y'];
+                                    $record['Lng_origineR2'] = $coordonnes['longitude'];
+                                    $record['Lat_origineR2'] = $coordonnes['latitude'];
+                                }
+                                return $record;
                             });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
@@ -1753,6 +1863,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    $projection = $this->projection;
+                    $proj_demande = $form->getProjection();
                     $where = $form->whereEtablissement();
                     $resultset = $this->db_manager->get('Sbm\Db\Query\Etablissements')->getLocalisation(
                         $where, [
@@ -1763,9 +1875,20 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     if (! empty($data)) {
                         $fields = array_keys(
                             is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        $fields[] = 'Longitude';
+                        $fields[] = 'Latitude';
                         return $this->csvExport('etablissements.csv', $fields, $data,
-                            function ($item) {
-                                return is_array($item) ? $item : $item->getArrayCopy();
+                            function ($item) use ($projection, $proj_demande) {
+                                $record = is_array($item) ? $item : $item->getArrayCopy();
+                                $pt = new \SbmCartographie\Model\Point($record['x'],
+                                    $record['y']);
+                                $pt = $projection->xyzVersgRGF93($pt);
+                                $record['longitude'] = $pt->getLongitude();
+                                $record['latitude'] = $pt->getLatitude();
+                                $pt = $proj_demande->gRGF93VersXYZ($pt);
+                                $record['x'] = $pt->getX();
+                                $record['y'] = $pt->getY();
+                                return $record;
                             });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
@@ -1795,6 +1918,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    $projection = $this->projection;
+                    $proj_demande = $form->getProjection();
                     $where = $form->whereResponsable();
                     $resultset = $this->db_manager->get('Sbm\Db\Query\Responsables')->withEffectifs(
                         $where, [
@@ -1805,9 +1930,20 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     if (! empty($data)) {
                         $fields = array_keys(
                             is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        $fields[] = 'Longitude';
+                        $fields[] = 'Latitude';
                         return $this->csvExport('responsables.csv', $fields, $data,
-                            function ($item) {
-                                return is_array($item) ? $item : $item->getArrayCopy();
+                            function ($item) use ($projection, $proj_demande) {
+                                $record = is_array($item) ? $item : $item->getArrayCopy();
+                                $pt = new \SbmCartographie\Model\Point($record['x'],
+                                    $record['y']);
+                                $pt = $projection->xyzVersgRGF93($pt);
+                                $record['longitude'] = $pt->getLongitude();
+                                $record['latitude'] = $pt->getLatitude();
+                                $pt = $proj_demande->gRGF93VersXYZ($pt);
+                                $record['x'] = $pt->getX();
+                                $record['y'] = $pt->getY();
+                                return $record;
                             });
                     } else {
                         $this->flashMessenger()->addInfoMessage(
@@ -1837,6 +1973,8 @@ class IndexController extends AbstractActionController implements CategoriesInte
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    $projection = $this->projection;
+                    $proj_demande = $form->getProjection();
                     $where = $form->whereStation();
                     $resultset = $this->db_manager->get('Sbm\Db\Query\Stations')->getLocalisation(
                         $where, [
@@ -1847,9 +1985,20 @@ class IndexController extends AbstractActionController implements CategoriesInte
                     if (! empty($data)) {
                         $fields = array_keys(
                             is_array(current($data)) ? current($data) : current($data)->getArrayCopy());
+                        $fields[] = 'Longitude';
+                        $fields[] = 'Latitude';
                         return $this->csvExport('stations.csv', $fields, $data,
-                            function ($item) {
-                                return is_array($item) ? $item : $item->getArrayCopy();
+                            function ($item) use ($projection, $proj_demande) {
+                                $record = is_array($item) ? $item : $item->getArrayCopy();
+                                $pt = new \SbmCartographie\Model\Point($record['x'],
+                                    $record['y']);
+                                $pt = $projection->xyzVersgRGF93($pt);
+                                $record['longitude'] = $pt->getLongitude();
+                                $record['latitude'] = $pt->getLatitude();
+                                $pt = $proj_demande->gRGF93VersXYZ($pt);
+                                $record['x'] = $pt->getX();
+                                $record['y'] = $pt->getY();
+                                return $record;
                             });
                     } else {
                         $this->flashMessenger()->addInfoMessage(

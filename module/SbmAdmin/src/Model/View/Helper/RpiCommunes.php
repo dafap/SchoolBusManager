@@ -1,12 +1,12 @@
 <?php
 /**
  * Ecriture d'un tableau des communes dans une fiche rpi
- * 
+ *
  * L'aide de vue utilise la variable de vue $rpiId. Si elle n'existe pas (appel depuis
  * le controller) ou si elle est nulle, $rpiId est remplacée par '?'. A charge pour
  * l'utilisateur de remplacer ce ? par la valeur convenable.
  *
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Model/View/Helper
  * @filesource RpiCommunes.php
@@ -38,12 +38,13 @@ class RpiCommunes extends AbstractHelper
             ], 'commune'));
         foreach ($acommunes as $commune) {
             $html .= '<tr><td>' . $commune['nom'] . '</td>';
-            $html .= '<td class="bouton">' . $this->btnSuppr(
-                [
-                    'rpiId' => $rpiId ?: '?',
-                    'communeId' => $commune['communeId'],
-                    'commune' => urlencode($commune['nom'])
-                ], $commune['nom']) . '</td></tr>';
+            $html .= '<td class="bouton">' .
+                $this->btnSuppr(
+                    [
+                        'rpiId' => $rpiId ?: '?',
+                        'communeId' => $commune['communeId'],
+                        'commune' => urlencode($commune['nom'])
+                    ], $commune['nom']) . '</td></tr>';
         }
         return $html;
     }

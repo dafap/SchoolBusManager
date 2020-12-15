@@ -1,6 +1,7 @@
 <?php
 /**
- * Vue du module SbmAdmin, controller IndexController, affichant la liste des libelles de l'application
+ * Vue du module SbmAdmin, controller IndexController, affichant la liste des libelles de
+ * l'application
  *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
@@ -16,20 +17,20 @@ $retour = $this->url('sbmadmin', [
     'action' => 'libelle-liste',
     'page' => $this->page
 ]);
-$url_rapports = $this->url('sbmadmin',
-    [
-        'action' => 'libelle-group-pdf'
-    ]);
+$url_rapports = $this->url('sbmadmin', [
+    'action' => 'libelle-group-pdf'
+]);
 $hiddens = [
-    'nature' => $this->nature,
-    //'code' => $this->code
+    'nature' => $this->nature
+    // 'code' => $this->code
 ];
 $menuImpression = $this->menuRapports(
     $this->url('sbmadmin', [
         'action' => 'libelle-group'
     ]), $url_rapports, 'fam-printer', null, $hiddens);
-$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de 'documentId'
-// ne pas utiliser de guillement dans la chaine $js
+$hiddens = $menuImpression['hiddens']; // mise à jour si nécessaire par l'ajout de
+                                       // 'documentId'
+                                       // ne pas utiliser de guillement dans la chaine $js
 $js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
 $actions = [
     'retour' => [
@@ -38,7 +39,7 @@ $actions = [
         'title' => 'Retour',
         'onclick' => $js_retour
     ],
-    'rapports' => $menuImpression['content'],
+    'rapports' => $menuImpression['content']
 ];
 ?>
 <h1>Libellés de même nature</h1>

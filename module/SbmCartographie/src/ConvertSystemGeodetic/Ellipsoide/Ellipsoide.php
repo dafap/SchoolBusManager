@@ -3,12 +3,12 @@
  * Classe de calcul des éléments d'une ellipsoïde
  *
  * On doit définir le grand axe a et au choix :
- *  - soit le petit axe b
- *  - soit l'inverse de l'aplatissement
+ * - soit le petit axe b
+ * - soit l'inverse de l'aplatissement
  *
- *  On peut également donner l'excentricité.
+ * On peut également donner l'excentricité.
  *
- *  Ce qui n'est pas donné sera calculé.
+ * Ce qui n'est pas donné sera calculé.
  *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Ellipsoide

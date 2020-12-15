@@ -2,8 +2,8 @@
 /**
  * Requêtes sur la table users pour ce module
  *
- * Compatibilité ZF3 
- * 
+ * Compatibilité ZF3
+ *
  * @project sbm
  * @package SbmAdmin/Model/Db/Service/User
  * @filesource Users.php

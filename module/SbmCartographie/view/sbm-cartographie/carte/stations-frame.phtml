@@ -3,7 +3,8 @@
  * Carte des stations pour envoi sans le layout
  *
  * Affichage des stations décrites dans $this->ptStations qui est un tableau de Point
- * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés décimaux.
+ * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés
+ * décimaux.
  * Des cases à cocher permettent de sélectionner l'affichage.
  *
  * @project sbm
@@ -110,7 +111,8 @@ foreach ($this->ptStations as $pt) {
         $color = "white";
         $bgrcolor = "limegreen";
         $icon = "green-dot.png";
-        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert', 'ouverts', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert',
+            'ouverts', 's');
         $text = 'O';
         $nature = "ouverte";
         $index = 'ouvert';
@@ -118,7 +120,8 @@ foreach ($this->ptStations as $pt) {
         $color = "#7a7a7a";
         $bgrcolor = "yellow";
         $icon = "yellow-dot.png";
-        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune', 'non desservis', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune',
+            'non desservis', 's');
         $text = 'N';
         $nature = "non desservie";
         $index = "nonDesservi";
@@ -126,7 +129,8 @@ foreach ($this->ptStations as $pt) {
         $color = "white";
         $bgrcolor = "red";
         $icon = "red-dot.png";
-        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge', 'fermés', 's');
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge',
+            'fermés', 's');
         $text = 'F';
         $nature = "fermée";
         $index = "ferme";
