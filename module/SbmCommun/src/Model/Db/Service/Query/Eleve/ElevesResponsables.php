@@ -1,6 +1,7 @@
 <?php
 /**
- * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs responsables
+ * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs
+ * responsables
  *
  *
  * @project sbm
@@ -8,8 +9,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -723,9 +724,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'ori1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'ori1.stationId=sco.stationIdR1', [
-            'station_origineR1' => 'nom'
-        ])
+        ], 'ori1.stationId=sco.stationIdR1',
+            [
+                'station_origineR1' => 'nom',
+                'x_origineR1' => 'x',
+                'y_origineR1' => 'y'
+            ])
             ->join(
             [
                 'comori1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -762,9 +766,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'ori2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'ori2.stationId=sco.stationIdR2', [
-            'station_origineR2' => 'nom'
-        ], $select::JOIN_LEFT)
+        ], 'ori2.stationId=sco.stationIdR2',
+            [
+                'station_origineR2' => 'nom',
+                'x_origineR2' => 'x',
+                'y_origineR2' => 'y'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'comori2' => $this->db_manager->getCanonicName('communes', 'table')
@@ -773,10 +780,11 @@ class ElevesResponsables extends AbstractQuery
                 'commune_origineR2' => 'nom',
                 'lacommune_origineR2' => 'alias',
                 'laposte_origineR2' => 'alias_laposte'
-            ], $select::JOIN_LEFT);
+            ], $select::JOIN_LEFT)
+            ->where($where);
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $select->where($where);
+        return $select;
     }
 }

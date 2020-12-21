@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -473,7 +473,7 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'ligne2_operateur' => 'operateur',
                 'ligne2_internes' => 'internes'
-            ])
+            ], Select::JOIN_LEFT)
             ->join([
             'lot2' => $this->db_manager->getCanonicName('lots', 'table')
         ], 'lign2.lotId = lot2.lotId', [
@@ -501,11 +501,12 @@ class AffectationsServicesStations extends AbstractQuery
             'com2' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'sta2.communeId = com2.communeId', [
             'commune2' => 'nom'
-        ], $select::JOIN_LEFT);
+        ], $select::JOIN_LEFT)
+            ->where($where);
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $select->where($where);
+        return $select;
     }
 
     /**
@@ -537,7 +538,8 @@ class AffectationsServicesStations extends AbstractQuery
 
     /**
      * Renvoie les scolarités et responsables, avec affectations s'il y en a, pour toutes
-     * les années scolaires. Pour travailler sur une année particulière, l'indiquer dans
+     * les années scolaires.
+     * Pour travailler sur une année particulière, l'indiquer dans
      * le paramètre $where
      *
      * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
