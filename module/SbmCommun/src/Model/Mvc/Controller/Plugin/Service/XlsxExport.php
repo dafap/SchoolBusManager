@@ -7,16 +7,16 @@
  * @package SbmCommun/src/Model/Mvc/Controller/Plugin/Service
  * @filesource XlsxExport.php
  * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)require_once __DIR__ . '/../../../../../../../../vendor/autoload.php';require_once __DIR__ . '/../../../../../../../../vendor/autoload.php';
- * @date 5 déc. 2020
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 21 déc. 2020
  * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
-use Zend\Http\PhpEnvironment\Response;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use SbmCommun\Model\Mvc\Controller\Plugin\Exception;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use SbmCommun\Model\Mvc\Controller\Plugin\Exception\InvalidArgumentException;
+use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 class XlsxExport extends AbstractPlugin
@@ -35,6 +35,12 @@ class XlsxExport extends AbstractPlugin
     private $has_column_headers;
 
     /**
+     *
+     * @var array
+     */
+    private $column_descriptors;
+
+    /**
      * Taille maxi de mémoire avant d'utiliser un fichier temporaire pour la sortie
      *
      * @var int
@@ -48,12 +54,21 @@ class XlsxExport extends AbstractPlugin
      */
     private $file_name;
 
-    public function __invoke(string $file_name = '', array $column_headers = [],
+    public function __invoke(string $file_name = '', array $column_descriptors = [],
         $data = null, callable $func = null, array $params = [], string $sheet_title = '')
     {
         $this->tailleMBs = 2 * 1024 * 1024; // 2 Mo
         $this->spreadsheet = new Spreadsheet();
+        $this->column_descriptors = $column_descriptors;
         $this->has_column_headers = false;
+        $column_headers = [];
+        foreach ($column_descriptors as $descriptor) {
+            if (! is_array($descriptor) || ! array_key_exists('label', $descriptor)) {
+                $column_headers = [];
+                break;
+            }
+            $column_headers[] = $descriptor['label'];
+        }
         if (func_num_args() == 0) {
             return $this;
         } elseif (func_num_args() == 1) {
@@ -124,6 +139,25 @@ class XlsxExport extends AbstractPlugin
             $columnIndex = 0;
             foreach ($record as $key => $value) {
                 $columnIndex ++;
+                if ($rang == 1) {
+                    // configuration des colonnes
+                    if (array_key_exists('autosize',
+                        $this->column_descriptors[$columnIndex - 1])) {
+                        $activeSheet->getColumnDimensionByColumn($columnIndex)->setAutoSize(
+                            $this->column_descriptors[$columnIndex - 1]['autosize']);
+                    } elseif (array_key_exists('width',
+                        $this->column_descriptors[$columnIndex - 1])) {
+                        $activeSheet->getColumnDimensionByColumn($columnIndex)->setWidth(
+                            $this->column_descriptors[$columnIndex - 1]['width']);
+                    }
+                }
+                if (array_key_exists('wraptext',
+                    $this->column_descriptors[$columnIndex - 1])) {
+                    $activeSheet->getStyleByColumnAndRow($columnIndex, $rang)
+                        ->getAlignment()
+                        ->setWrapText(
+                        $this->column_descriptors[$columnIndex - 1]['wraptext']);
+                }
                 if (is_callable($func)) {
                     $value = $func($key, $value);
                 }
@@ -132,7 +166,7 @@ class XlsxExport extends AbstractPlugin
                 }
             }
         } else {
-            throw new Exception('La ligne est de type incorrect.');
+            throw new InvalidArgumentException('La ligne est de type incorrect.');
         }
     }
 
@@ -167,7 +201,7 @@ class XlsxExport extends AbstractPlugin
                 $this->setRow($rang, $record, $func);
             }
         } else {
-            throw new Exception('Les données sont de type incorrect.');
+            throw new InvalidArgumentException('Les données sont de type incorrect.');
         }
         return $this;
     }
@@ -205,7 +239,7 @@ class XlsxExport extends AbstractPlugin
                 str_replace('"', '\\"', $this->file_name) . '.xlsx"'
             ]);
         $writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
-        $fp = fopen("php://temp/maxmemory:$this->tailleMBs", 'r+');
+        $fp = fopen("php://temp/maxmemory:$this->tailleMBs", 'wb+');
         $writer->save($fp);
         rewind($fp);
         $response->setContent(stream_get_contents($fp));
