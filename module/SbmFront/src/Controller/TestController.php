@@ -51,26 +51,26 @@ class TestController extends AbstractActionController
         $qrcodeMessage2 = 'ABOARSCO00018';
         $imagePassJunior = file_get_contents(
             StdLib::concatPath($imagePath, 'pass-provisoire-A4.svg'));
-        $du = '16/11/2020';
-        $au = '31/11/2020';
-        $beneficiaire_nom = 'MANDRET';
-        $beneficiaire_prenom = 'LIV';
+        $du = '14/12/2020';
+        $au = '28/12/2020';
+        $beneficiaire_nom = 'HAEYAERT';
+        $beneficiaire_prenom = 'ELEA';
         // $chez = 'MASSON Juliette';
         $eleve_nom = "";
         $eleve_prenom = "";
-        $eleve_numero = 91107;
-        $adresseL1 = '311 MONTÉE DE LA PIGERIE';
+        $eleve_numero = 75433; // stagiaire => supérieur à 99991
+        $adresseL1 = '31 RUE AIMÉ ET EUGÉNIE COTTON';
         $adresseL2 = '';
-        $codePostal = '73790';
-        $commune = 'TOURS EN SAVOIE';
-        $etablissement = 'LYCEE JEAN MOULIN - ALBERTVILLE';
-        $origine = 'CHEF-LIEU (TOURS EN SAVOIE)';
-        $services_matin = 'L6';
-        $services_midi = 'L6';
-        $services_soir = 'L6';
-        $responsable_titre = "M.";
-        $responsable_nom = "MANDRET";
-        $responsable_prenom = "YANN";
+        $codePostal = '73540';
+        $commune = 'LA BATHIE';
+        $etablissement = 'COLLÈGE PIERRE GRANGE - ALBERTVILLE';
+        $origine = 'CIMETIÈRE (LA BATHIE)';
+        $services_matin = '535';
+        $services_midi = '535';
+        $services_soir = '535';
+        $responsable_titre = "Mme";
+        $responsable_nom = "DELFORGE";
+        $responsable_prenom = "LUCILE";
         if ($eleve_nom == '') {
             $imagePassJunior = str_replace('chez', '', $imagePassJunior);
         }
@@ -109,21 +109,22 @@ class TestController extends AbstractActionController
         $pdf->setPrintFooter(false);
 
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        //$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->SetMargins(0, 0, 0,true);
+        // $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(0, 0, 0, true);
         $pdf->SetAutoPageBreak(TRUE, 0);
         // $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         // $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
         // $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
         $pdf->AddPage();
-        $pdf->ImageSVG($imagePathJunior,0,0,210,297);
+        $pdf->ImageSVG($imagePathJunior, 0, 0, 210, 297);
         $pdf->write2DBarcode($qrcodeMessage1, $qrcodeNiveau, 181.3, 5.2, 24, 24,
             $qrcodeStyle, 'N');
         $pdf->write2DBarcode($qrcodeMessage2, $qrcodeNiveau, 161.3, 217.2, 24, 24,
-             $qrcodeStyle, 'N');
+            $qrcodeStyle, 'N');
         $pdf->AddPage();
-        $pdf->ImageSVG(StdLib::concatPath($imagePath, 'pass-provisoire-verso-A4.svg'),0,0,210,297);
+        $pdf->ImageSVG(StdLib::concatPath($imagePath, 'pass-provisoire-verso-A4.svg'), 0,
+            0, 210, 297);
         // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'logo.svg'), 15, 20, '', 35);
         // $pdf->ImageSVG($imagePathJunior, 110, 20, '', 54);
         // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'bas-de-page.svg'), 10, 266,
@@ -184,7 +185,8 @@ class TestController extends AbstractActionController
 
     /**
      * Permet de construire le tableau des acl à placer dans module.config.php dans la clé
-     * 'actions' sans en oublier. Il suffit ensuite d'ajouter les autorisations pour
+     * 'actions' sans en oublier.
+     * Il suffit ensuite d'ajouter les autorisations pour
      * chacune des actions
      *
      * @return \Zend\View\Model\ViewModel
@@ -525,7 +527,8 @@ class TestController extends AbstractActionController
     }
 
     /**
-     * Méthode prête pour donner un numéro aux élèves. La renommer testAction pour qu'elle
+     * Méthode prête pour donner un numéro aux élèves.
+     * La renommer testAction pour qu'elle
      * fonctionne. Si elle est trop longue, rajouter des ->limit(xxx) au select. Au
      * préalable, vider la table sbm_t_eleves et ré-initialiser AUTO_INCREMENT par : ALTER
      * TABLE `sbm_t_responsables` AUTO_INCREMENT = 1;
