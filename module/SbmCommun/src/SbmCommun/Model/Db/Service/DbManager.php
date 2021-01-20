@@ -9,8 +9,8 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 août 2016
- * @version 2016-2.2.0
+ * @date 20 jan. 2021
+ * @version 2021-2.2.17
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -367,7 +367,7 @@ class DbManager extends ServiceManager implements FactoryInterface
     private function structureTable($tableName, $type = 'table')
     {
         if (! $this->existsTable($tableName, $type)) {
-            throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ? 'vue' : $type == 'table' ? 'table' : 'table système', $tableName), 3778);
+            throw new Exception(sprintf("Il n'y a pas de %s du nom de %s dans la base de données.", $type == 'vue' ? 'vue' : ($type == 'table' ? 'table' : 'table système'), $tableName), 3778);
         }
         $result = [];
         foreach ($this->getColumns($tableName, $type) as $column) {
