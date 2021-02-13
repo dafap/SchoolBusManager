@@ -197,7 +197,7 @@ class Tcpdf extends \TCPDF
         $fileLanguage = StdLib::concatPath(StdLib::findParentPath(__DIR__, 'lang'),
             PDF_LANG . '.php');
         if (@is_file($fileLanguage)) {
-            $this->pdf->setLanguageArray(require $fileLanguage);
+            $this->setLanguageArray(require $fileLanguage);
         }
 
         // set default monospaced font
