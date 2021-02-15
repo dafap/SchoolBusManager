@@ -1,7 +1,7 @@
 <?php
 /**
  * Gestion de la table système `doctables`
- * 
+ *
  * (à déclarer dans module.config.php)
  *
  * @project sbm
@@ -9,8 +9,8 @@
  * @filesource DocTables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2019
- * @version 2019-2.5.0
+ * @date 15 fév. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -45,14 +45,14 @@ class DocTables extends AbstractSbmTable
      *            identifiant du document
      * @param int $ordinal_table
      *            numéro de la table dans le document
-     *            
+     *
      * @throws Exception\RuntimeException s'il n'y a pas d'enregistrement pour de $documentId
-     *        
-     * @param array $documentId
+     *
+     * @return array
      *            ['thead' => enregistrement, 'tbody' => enregistrement, 'tfoot' =>
      *            enregistrement] où enregistrement est un tableau
      */
-    public function getConfig($documentId, $ordinal_table)
+    public function getConfig(int $documentId, int $ordinal_table = 1)
     {
         $where = "documentId = $documentId AND ordinal_table = $ordinal_table";
         $resultset = $this->fetchAll($where);
