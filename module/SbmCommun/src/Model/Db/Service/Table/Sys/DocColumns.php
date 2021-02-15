@@ -3,14 +3,14 @@
  * Gestion de la table système `doccolumns`
  *
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package package_name
  * @filesource DocColumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
- * @version 2019-2.5.0
+ * @date 15 fév. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -32,6 +32,7 @@ class DocColumns extends AbstractSbmTable
     }
 
     /**
+     * Renvoie la description des champs des datas de ce document
      *
      * @param int $documentId
      * @param int $ordinal_table
@@ -40,7 +41,7 @@ class DocColumns extends AbstractSbmTable
      *
      * @return array
      */
-    public function getConfig($documentId, $ordinal_table)
+    public function getConfig(int $documentId, int $ordinal_table = 1): array
     {
         $where = "documentId = $documentId AND ordinal_table = $ordinal_table";
         $resultset = $this->fetchAll($where, 'ordinal_position');
