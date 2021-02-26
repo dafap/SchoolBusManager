@@ -13,8 +13,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2020
- * @version 2020-2.6.0
+ * @date 26 fév. 2021
+ * @version 2021-2.6.0
  */
 namespace SbmPortail\Controller;
 
@@ -970,7 +970,7 @@ class IndexController extends AbstractActionController
                     if (array_key_exists('stationId', $arrayCriteres)) {
                         $query->setStationId($arrayCriteres['stationId']);
                     }
-                    $paginator = $query->paginatorTr($criteres_obj->getWhere(),
+                    $paginator = $query->paginator($criteres_obj->getWhere(),
                         [
                             'nom',
                             'prenom'
