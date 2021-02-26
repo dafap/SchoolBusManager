@@ -9,7 +9,7 @@
  * communiquées par le portail.
  *
  * @project sbm
- * @package SbmPortail/Controller
+ * @package SbmPortail/src/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
