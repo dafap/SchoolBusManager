@@ -53,8 +53,6 @@ class TransporteurController extends AbstractActionController
         ;
     }
 
-
-
     public function lignesPdfAction()
     {
         ;
@@ -67,7 +65,6 @@ class TransporteurController extends AbstractActionController
 
     public function servicesAction()
     {
-
         $millesime = Session::get('millesime');
         $as = $millesime . '-' . ($millesime + 1);
         return new ViewModel(

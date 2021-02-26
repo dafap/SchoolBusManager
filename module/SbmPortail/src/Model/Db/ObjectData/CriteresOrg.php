@@ -32,7 +32,8 @@ class CriteresOrg extends SbmCommunCriteres
     }
 
     /**
-     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * On filtre sur le millesime en cours.
+     * La propriété `data` est un tableau de la forme
      * :<dl> <dt>array (size=10)</dt> <dd>'numero' => string '' (length=0)</dd>
      * <dd>'nomSA' => string '' (length=0)</dd> <dd>'responsableSA' => string ''
      * (length=0)</dd> <dd>'etablissementId' => string '' (length=0)</dd> <dd>'classeId'
@@ -77,7 +78,8 @@ class CriteresOrg extends SbmCommunCriteres
     }
 
     /**
-     * Prépare et renvoie un Where à partir des données de l'objet. Le tableau
+     * Prépare et renvoie un Where à partir des données de l'objet.
+     * Le tableau
      * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
      * champs ...]</li> <li>'expressions' => [liste de champs]</li></ul> En fait, cette
      * méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le
@@ -120,7 +122,8 @@ class CriteresOrg extends SbmCommunCriteres
     }
 
     /**
-     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * On filtre sur le millesime en cours.
+     * La propriété `data` est un tableau de la forme
      * :<dl> <dt>array (size=10)</dt> <dd>'numero' => string '' (length=0)</dd>
      * <dd>'nomSA' => string '' (length=0)</dd> <dd>'responsableSA' => string ''
      * (length=0)</dd> <dd>'etablissementId' => string '' (length=0)</dd> <dd>'classeId'
@@ -169,7 +172,8 @@ class CriteresOrg extends SbmCommunCriteres
     }
 
     /**
-     * Prépare et renvoie un Where à partir des données de l'objet. Le tableau
+     * Prépare et renvoie un Where à partir des données de l'objet.
+     * Le tableau
      * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
      * champs ...]</li> <li>'expressions' => [liste de champs]</li></ul> En fait, cette
      * méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le

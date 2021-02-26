@@ -15,7 +15,7 @@ namespace SbmPortail\Form;
 use SbmCommun\Form\CriteresForm as SbmCommunCriteresForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresCommuneForm extends SbmCommunCriteresForm implements
+class CriteresCommuneForm extends SbmCommunCriteresForm implements 
     InputFilterProviderInterface
 {
 

@@ -59,7 +59,7 @@ $services = $this->paginator->getCurrentItems();
         foreach ($services as $service) :
             ?>
         <?php
-        $serviceId =$service['serviceId'];
+            $serviceId = $service['serviceId'];
             if (method_exists($this->effectifServices, 'transportes')) {
                 $nbInscrits = $this->effectifServices->transportes($serviceId);
             } else {

@@ -1,0 +1,28 @@
+[25-Feb-2021 00:02:01 Europe/Paris] PHP Notice:  Trying to access array offset on value of type bool in C:\www\SchoolBusManager\module\SbmGestion\src\Controller\IndexController.php on line 58
+[25-Feb-2021 00:02:01 Europe/Paris] PHP Stack trace:
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   1. {main}() C:\www\SchoolBusManager\public\index.php:0
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   2. Zend\Mvc\Application->run() C:\www\SchoolBusManager\public\index.php:38
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   3. Zend\EventManager\EventManager->triggerEventUntil() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Application.php:348
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   4. Zend\EventManager\EventManager->triggerListeners() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:280
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   5. call_user_func:{C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527}() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   6. Zend\Mvc\DispatchListener->onDispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   7. SbmGestion\Controller\IndexController->dispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\DispatchListener.php:135
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   8. Zend\EventManager\EventManager->triggerEventUntil() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Controller\AbstractController.php:131
+[25-Feb-2021 00:02:01 Europe/Paris] PHP   9. Zend\EventManager\EventManager->triggerListeners() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:280
+[25-Feb-2021 00:02:01 Europe/Paris] PHP  10. call_user_func:{C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527}() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 00:02:01 Europe/Paris] PHP  11. SbmGestion\Controller\IndexController->onDispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 00:02:01 Europe/Paris] PHP  12. SbmGestion\Controller\IndexController->indexAction() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Controller\AbstractActionController.php:87
+[25-Feb-2021 08:08:44 Europe/Paris] PHP Notice:  Trying to access array offset on value of type bool in C:\www\SchoolBusManager\module\SbmGestion\src\Controller\IndexController.php on line 58
+[25-Feb-2021 08:08:44 Europe/Paris] PHP Stack trace:
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   1. {main}() C:\www\SchoolBusManager\public\index.php:0
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   2. Zend\Mvc\Application->run() C:\www\SchoolBusManager\public\index.php:38
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   3. Zend\EventManager\EventManager->triggerEventUntil() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Application.php:348
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   4. Zend\EventManager\EventManager->triggerListeners() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:280
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   5. call_user_func:{C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527}() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   6. Zend\Mvc\DispatchListener->onDispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   7. SbmGestion\Controller\IndexController->dispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\DispatchListener.php:135
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   8. Zend\EventManager\EventManager->triggerEventUntil() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Controller\AbstractController.php:131
+[25-Feb-2021 08:08:44 Europe/Paris] PHP   9. Zend\EventManager\EventManager->triggerListeners() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:280
+[25-Feb-2021 08:08:44 Europe/Paris] PHP  10. call_user_func:{C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527}() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 08:08:44 Europe/Paris] PHP  11. SbmGestion\Controller\IndexController->onDispatch() C:\www\SchoolBusManager\vendor\zendframework\zend-eventmanager\src\EventManager.php:527
+[25-Feb-2021 08:08:44 Europe/Paris] PHP  12. SbmGestion\Controller\IndexController->indexAction() C:\www\SchoolBusManager\vendor\zendframework\zend-mvc\src\Controller\AbstractActionController.php:87

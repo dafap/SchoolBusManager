@@ -140,7 +140,7 @@ class Etablissement extends AbstractQuery
             }
             $result[$row->communeId]['options'][$row->stationId] = $row->station;
         }
-        //echo '<pre>';die(var_dump($result));
+        // echo '<pre>';die(var_dump($result));
         return $result;
     }
 
@@ -332,7 +332,8 @@ class Etablissement extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau de points. Stations permettant d'atteindre l'établissement.
+     * Renvoie un tableau de points.
+     * Stations permettant d'atteindre l'établissement.
      *
      * @return array
      */
@@ -342,7 +343,8 @@ class Etablissement extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau de points. Etablissements à montrer.
+     * Renvoie un tableau de points.
+     * Etablissements à montrer.
      *
      * @return array
      */

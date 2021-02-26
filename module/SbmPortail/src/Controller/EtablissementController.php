@@ -27,7 +27,7 @@ use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class EtablissementController extends AbstractActionController
 {
-    use \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait,  \SbmCommun\Model\Traits\DebugTrait;
 
     private $sansimpayes = true;
 
@@ -172,7 +172,75 @@ class EtablissementController extends AbstractActionController
 
     public function elevesDownloadAction()
     {
-        ;
+        $result = $this->prepareListeEleves('eleves',
+            function () {
+                return $this->redirect()
+                    ->toRoute('sbmportail/etablissement', [
+                    'action' => 'index'
+                ]);
+            });
+        if ($result instanceof Response) {
+            return $result;
+        }
+        $data = [];
+        foreach ($result['userFeatures']->getQuery()->listeEleves(
+            $result['criteres_obj']->getWhere(), [
+                'ele.nom',
+                'ele.prenom'
+            ]) as $record) {
+            $data[] = $this->exportEleve($record);
+        }
+        return $this->xlsxExport('eleve',
+            [
+                [
+                    'label' => 'Numéro',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Nom',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Prénom',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Etablissement',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Classe',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Responsable1',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Adresse1',
+                    'width' => 41,
+                    'wraptext' => true
+                ],
+                [
+                    'label' => 'Circuits1',
+                    'width' => 120,
+                    'wraptext' => true
+                ],
+                [
+                    'label' => 'Responsable2',
+                    'autosize' => true
+                ],
+                [
+                    'label' => 'Adresse2',
+                    'width' => 41,
+                    'wraptext' => true
+                ],
+                [
+                    'label' => 'Circuits2',
+                    'width' => 120,
+                    'wraptext' => true
+                ]
+            ], $data, null, [], 'Eleves');
     }
 
     private function prepareListeEleves(string $sessionNameSpace, callable $fncBack)
@@ -233,5 +301,64 @@ class EtablissementController extends AbstractActionController
             'criteres_form' => $criteres_form,
             'criteres_obj' => $criteres_obj
         ];
+    }
+
+    private function exportEleve($record)
+    {
+        $adresseR1 = implode("\r\n",
+            array_filter(
+                array_unique(
+                    [
+                        $record['adresseL1Elv'],
+                        $record['adresseL2Elv'],
+                        $record['adresseL3Elv'],
+                        $record['lacommuneElv']
+                    ])));
+        $adresseR2 = implode("\r\n",
+            array_filter(
+                array_unique(
+                    [
+                        $record['adresseL1R2'],
+                        $record['adresseL2R2'],
+                        $record['adresseL3R2'],
+                        $record['lacommuneR2']
+                    ])));
+        $circuits1 = $this->itineraires($record['eleveId'], 1);
+        $circuits2 = $this->itineraires($record['eleveId'], 2);
+        return [
+            'numero' => $record['numero'],
+            'nom_eleve' => $record['nom_eleve'],
+            'prenom_eleve' => $record['prenom_eleve'],
+            'etablissement' => $record['etablissement'],
+            'classe' => $record['classe'],
+            'responsable1NomPrenom' => $record['responsable1NomPrenom'],
+            'adresseR1' => $adresseR1,
+            'circuits1' => $circuits1,
+            'responsable2NomPrenom' => $record['responsable2NomPrenom'],
+            'adresseR2' => $adresseR2,
+            'circuits2' => $circuits2
+        ];
+    }
+
+    private function itineraires($eleveId, $trajet)
+    {
+        $resultset = $this->db_manager->get('Sbm\Db\Query\AffectationsServicesStations')->getItineraires(
+            $eleveId, $trajet);
+        $content = [];
+        foreach ($resultset as $value) {
+            $content[] = implode("    ",
+                [
+                    $value['jours'],
+                    StdLib::getParam($value['moment'], $this->getMoment(), ''),
+                    $value['ligne1Id'],
+                    $value['commune1'],
+                    $value['station1'],
+                    $value['horaire1'],
+                    $value['commune2'],
+                    $value['station2'],
+                    $value['horaire2']
+                ]);
+        }
+        return implode("\r\n", $content);
     }
 }

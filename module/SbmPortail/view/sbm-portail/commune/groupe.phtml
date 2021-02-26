@@ -87,7 +87,7 @@ $hiddens = $menuImpression['hiddens'];
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
-        //'formaction' => $url_retour,
+        // 'formaction' => $url_retour,
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
@@ -134,13 +134,13 @@ $actions = [
         $arrets = [];
         if ($eleve['responsable']) {
             $responsables[] = htmlspecialchars(
-                str_replace(' ', '&nbsp;', $eleve['responsable']), ENT_QUOTES,
-                'utf-8', false);
+                str_replace(' ', '&nbsp;', $eleve['responsable']), ENT_QUOTES, 'utf-8',
+                false);
         }
         if ($eleve['responsable2']) {
             $responsables[] = htmlspecialchars(
-                str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES,
-                'utf-8', false);
+                str_replace(' ', '&nbsp;', $eleve['responsable2']), ENT_QUOTES, 'utf-8',
+                false);
         }
         $nbResponsables = count($responsables);
         $tr_css = $this->cycle([

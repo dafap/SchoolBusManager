@@ -113,7 +113,7 @@ $actions = [
 				</tr>
         <?php foreach ($circuits as $circuit) :?>
         	<?php
-        	$circuit->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+            $circuit->setFlags(\ArrayObject::ARRAY_AS_PROPS);
             $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
             $css = $this->cycle([
                 "even",

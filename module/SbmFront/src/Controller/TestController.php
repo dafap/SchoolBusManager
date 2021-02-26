@@ -51,26 +51,26 @@ class TestController extends AbstractActionController
         $qrcodeMessage2 = 'ABOARSCO00018';
         $imagePassJunior = file_get_contents(
             StdLib::concatPath($imagePath, 'pass-provisoire-A4.svg'));
-        $du = '14/12/2020';
-        $au = '28/12/2020';
-        $beneficiaire_nom = 'HAEYAERT';
-        $beneficiaire_prenom = 'ELEA';
+        $du = '21/02/2021';
+        $au = '10/03/2021';
+        $beneficiaire_nom = 'YAHOU';
+        $beneficiaire_prenom = 'MILENA';
         // $chez = 'MASSON Juliette';
         $eleve_nom = "";
         $eleve_prenom = "";
-        $eleve_numero = 75433; // stagiaire => supérieur à 99991
-        $adresseL1 = '31 RUE AIMÉ ET EUGÉNIE COTTON';
+        $eleve_numero = 32951; // stagiaire => supérieur à 99991
+        $adresseL1 = '3 RUE DES TILLEULS';
         $adresseL2 = '';
-        $codePostal = '73540';
-        $commune = 'LA BATHIE';
-        $etablissement = 'COLLÈGE PIERRE GRANGE - ALBERTVILLE';
-        $origine = 'CIMETIÈRE (LA BATHIE)';
-        $services_matin = '535';
-        $services_midi = '535';
-        $services_soir = '535';
+        $codePostal = '73460';
+        $commune = 'FRONTENEX';
+        $etablissement = 'LYCÉE JEANNE D\'ARC - ALBERTVILLE';
+        $origine = 'MAIRIE CENTRE (FRONTENEX)';
+        $services_matin = '704';
+        $services_midi = '701';
+        $services_soir = '704 ou 701 le Me';
         $responsable_titre = "Mme";
-        $responsable_nom = "DELFORGE";
-        $responsable_prenom = "LUCILE";
+        $responsable_nom = "YAHOU";
+        $responsable_prenom = "DIANE";
         if ($eleve_nom == '') {
             $imagePassJunior = str_replace('chez', '', $imagePassJunior);
         }

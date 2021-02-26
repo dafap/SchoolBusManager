@@ -165,7 +165,7 @@ class Etablissement
         return implode(' ou ', array_values($this->arrayEtablissements));
     }
 
-    public function getNbEtablissements() : int
+    public function getNbEtablissements(): int
     {
         return count($this->arrayEtablissements);
     }

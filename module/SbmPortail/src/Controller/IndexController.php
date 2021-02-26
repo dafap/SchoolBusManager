@@ -684,7 +684,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Présente la carte des établissements fréquentés par les élèves inscrits pour le
-     * millesime en cours. On peut ouvrir la fiche de l'établissement.
+     * millesime en cours.
+     * On peut ouvrir la fiche de l'établissement.
      */
     public function comCarteEtablissementsAction()
     {
@@ -720,7 +721,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Présente la carte des stations de la commune, en indiquant pour chacune d'elles les
-     * circuits qui la desservent. On peut ouvrir la fiche d'une station.
+     * circuits qui la desservent.
+     * On peut ouvrir la fiche d'une station.
      */
     public function comCarteStationsAction()
     {

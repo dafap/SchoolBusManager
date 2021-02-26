@@ -23,7 +23,9 @@ class PortailControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_controller = [
-            'categorieId' => $sm->get('SbmAuthentification\Authentication')->by('email')->getCategorieId()
+            'categorieId' => $sm->get('SbmAuthentification\Authentication')
+                ->by('email')
+                ->getCategorieId()
         ];
         return new PortailController($config_controller);
     }

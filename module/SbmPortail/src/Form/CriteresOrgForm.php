@@ -15,7 +15,8 @@ namespace SbmPortail\Form;
 use SbmCommun\Form\CriteresForm as SbmCommunCriteresForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProviderInterface
+class CriteresOrgForm extends SbmCommunCriteresForm implements 
+    InputFilterProviderInterface
 {
 
     public function __construct()
@@ -207,7 +208,7 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
             'communeId' => [
                 'name' => 'communeId',
                 'required' => false
-            ],
+            ]
         ];
     }
 }

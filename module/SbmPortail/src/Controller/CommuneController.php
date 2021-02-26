@@ -52,7 +52,8 @@ class CommuneController extends AbstractActionController
 
     /**
      * Présente la carte des établissements fréquentés par les élèves inscrits pour le
-     * millesime en cours. On peut ouvrir la fiche de l'établissement.
+     * millesime en cours.
+     * On peut ouvrir la fiche de l'établissement.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -88,7 +89,8 @@ class CommuneController extends AbstractActionController
 
     /**
      * Présente la carte des stations de la commune, en indiquant pour chacune d'elles les
-     * circuits qui la desservent. On peut ouvrir la fiche d'une station.
+     * circuits qui la desservent.
+     * On peut ouvrir la fiche d'une station.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
      */
@@ -231,7 +233,8 @@ class CommuneController extends AbstractActionController
     }
 
     /**
-     * Reçoit en POST les paramètres 'ligneId', 'sens', 'moment' et 'ordre'. . Le numéro
+     * Reçoit en POST les paramètres 'ligneId', 'sens', 'moment' et 'ordre'.
+     * . Le numéro
      * de la page de la liste d'origine est dans le paramètre GET 'id' et le numéro de la
      * page de la liste d'élèves générée par cette action est dans le paramètre GET 'page'
      *
@@ -356,7 +359,8 @@ class CommuneController extends AbstractActionController
     }
 
     /**
-     * Reçoit en POST le paramètre 'circuitId'. Le numéro de la page de la liste d'origine
+     * Reçoit en POST le paramètre 'circuitId'.
+     * Le numéro de la page de la liste d'origine
      * est dans le paramètre GET 'id' et le numéro de la page de la liste d'élèves générée
      * par cette action est dans le paramètre GET 'page'
      *

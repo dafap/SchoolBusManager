@@ -86,8 +86,7 @@ class Organisateur
             'elevesPreinscritsRayes' => current(
                 $statEleve->getNbRayesByMillesime($this->millesime, false))['effectif'],
             'elevesFamilleAcceuil' => current(
-                $statEleve->getNbFamilleAccueilByMillesime($this->millesime,
-                    $communeId))['effectif'],
+                $statEleve->getNbFamilleAccueilByMillesime($this->millesime, $communeId))['effectif'],
             'elevesGardeAlternee' => current(
                 $statEleve->getNbGardeAlterneeByMillesime($this->millesime))['effectif'],
             'elevesMoins1km' => current(
@@ -102,10 +101,8 @@ class Organisateur
             'responsablesEnregistres' => current($statResponsable->getNbEnregistres())['effectif'],
             'responsablesAvecEnfant' => current($statResponsable->getNbAvecEnfant())['effectif'],
             'responsablesSansEnfant' => current($statResponsable->getNbSansEnfant())['effectif'],
-            'responsablesHorsZone' => current(
-                $statResponsable->getNbCommuneNonMembre())['effectif'],
-            'responsablesDemenagement' => current(
-                $statResponsable->getNbDemenagement())['effectif']
+            'responsablesHorsZone' => current($statResponsable->getNbCommuneNonMembre())['effectif'],
+            'responsablesDemenagement' => current($statResponsable->getNbDemenagement())['effectif']
         ];
         return $data;
     }

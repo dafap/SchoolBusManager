@@ -2,17 +2,17 @@
 /**
  * Aide de vue permettant de préparer le tableau 'menu des rapports'
  *
- * (à déclarer dans module.config.php)
- * 
+ * (déclaré dans module.config.php sous la clé 'menuRapports')
+ *
  * @project sbm
  * @package SbmGestion/Model/View/Helper
  * @filesource MenuRapports.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 fév. 2019
- * @version 2019-2.5.0
+ * @date 13 fév. 2021
+ * @version 2021-2.6.1
  */
-namespace SbmGestion\Model\View\Helper;
+namespace SbmPdf\Model\View\Helper;
 
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -67,17 +67,17 @@ class MenuRapports extends AbstractHelper implements FactoryInterface
                 'formtarget' => '_blank'
             ];
         }
-        // die(var_dump($content));
         if (count($content) == 1) {
-            $hiddens['documentId'] = $affectation->libelle;
+            $item = current($content);
+            $hiddens['documentId'] = $item['value'];
             return [
                 'hiddens' => $hiddens,
                 'content' => [
                     'class' => $class,
-                    'formaction' => $formaction . '/id/' . $affectation->docaffectationId,
+                    'formaction' => $item['formaction'],
                     'value' => $value,
-                    'title' => $affectation->libelle,
-                    'formtarget' => '_blank'
+                    'title' => $item['value'],
+                    'formtarget' => $item['formtarget']
                 ]
             ];
         } else {
