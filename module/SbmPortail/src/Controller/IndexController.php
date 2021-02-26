@@ -2,7 +2,7 @@
 /**
  * Controller du portail ouvert aux invités en consultation
  *
- * transporteur, etablissement, secretariat
+ * transporteur, etablissement, commune, secretariat
  *
  * Modifier l'initialisation des propriétés `transporteur_sanspreinscrits` et
  * `etablissement_sanspreinscrits` selon convenance pour adapter les données
