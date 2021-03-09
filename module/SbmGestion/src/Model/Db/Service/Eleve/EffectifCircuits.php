@@ -10,8 +10,8 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
- * @version 2020-2.6.0
+ * @date 9 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -199,8 +199,9 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'ordreligne1',
                 $stationId
             ]);
+        $condition = new Where();
+        $condition->literal('sco.inscrit = 1');
         if ($this->sanspreinscrits) {
-            $condition = new Where();
             $condition->nest()
                 ->literal('aff.trajet = 1')
                 ->literal('sco.paiementR1 = 1')
@@ -209,11 +210,12 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 ->literal('sco.reductionR2 = 0')
                 ->literal('sco.paiementR2 = 1')
                 ->unnest();
-            $select->join([
-                'sco' => $this->db_manager->getCanonicName('scolarites')
-            ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
-                ->where($condition);
         }
+        $select->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites')
+        ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
+            ->where($condition);
+
         return $select;
     }
 }
