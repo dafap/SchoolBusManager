@@ -7,12 +7,12 @@
  * @filesource file-content.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->themeCss('sbm-installation', 'file-content.css');
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->tinymce();
 if ($this->type == 'html') {
     $this->headScript()->captureStart();
     ?>
@@ -22,11 +22,11 @@ tinymce.init({
     menubar : false,
     //statusbar: false,
      plugins: [
-    'advlist autolink lists link image charmap print preview anchor textcolor noneditable',
-    'searchreplace visualblocks code fullscreen save',
-    'insertdatetime media table contextmenu paste code wordcount'
+    'advlist anchor autolink charmap emoticons hr image link lists noneditable',
+    'preview print searchreplace visualblocks code fullscreen save',
+    'insertdatetime media table paste code wordcount'
     ],
-    toolbar: 'insert | undo redo | formatselect | fontselect fontsizeselect forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link | removeformat | preview | code',
+    toolbar: 'undo redo | formatselect fontselect fontsizeselect forecolor backcolor removeformat | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link anchor | hr charmap emoticons | fullscreen  preview print | visualblocks | code',
  });
     <?php
     $this->headScript()->captureEnd();

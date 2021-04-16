@@ -4,15 +4,17 @@
  *
  * Ce formulaire est composé de boutons radios et de boutons submit
  * Il reçoit en paramètres un tableau ['nbcols' => nbcols, 'nbrows' => nbrows]
- * où nbcols est le nombre de colonnes dans la planche d'étiquettes et nbrows est le nombre de lignes
- * 
+ * où nbcols est le nombre de colonnes dans la planche d'étiquettes et nbrows est le
+ * nombre de lignes
+ * 31/03/2021 : Ajout du bouton 'Pass provisoire'
+ *
  * @project sbm
  * @package SbmGestion/Form
  * @filesource PlancheEtiquettesForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 fév. 2019
- * @version 2019-2.5.0
+ * @date 31 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Form;
 
@@ -97,12 +99,22 @@ class PlancheEtiquettesForm extends Form
                 'type' => 'submit',
                 'name' => 'submit',
                 'attributes' => [
-                    'value' => 'Lancer l\'édition',
+                    'value' => 'Éditer le duplicata',
                     'class' => 'button default submit left-95px',
                     'formtarget' => '_blank'
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
+            [
+                'type' => 'submit',
+                'name' => 'pass-provisoire',
+                'attributes' => [
+                    'value' => 'Éditer le PASS PROVISOIRE',
+                    'class' => 'button default cancel',
+                    'formtarget' => '_blank'
+                ]
+            ])
+            ->add(
             [
                 'type' => 'submit',
                 'name' => 'cancel',

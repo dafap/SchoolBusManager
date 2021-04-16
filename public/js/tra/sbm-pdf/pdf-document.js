@@ -60,7 +60,12 @@ var js_document_edit = (function() {
 						language : "fr_FR",
 						menubar : false,
 						statusbar : false,
-						plugins : "advlist autolink autoresize charmap code hr insertdatetime nonbreaking searchreplace spellchecker table textcolor wordcount",
+						plugins: [
+    'advlist anchor autolink charmap emoticons hr image link lists noneditable',
+    'preview print searchreplace visualblocks code fullscreen save',
+    'insertdatetime media table paste code wordcount'
+    ],
+    toolbar: 'undo redo | formatselect fontselect fontsizeselect forecolor backcolor removeformat | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link anchor | hr charmap emoticons | fullscreen  preview print | visualblocks | code',
 						autoresize_min_height : 300,
 						autoresize_max_height : 400,
 						insertdatetime_formats : [ "%d/%m/%Y", "%H:%M" ],

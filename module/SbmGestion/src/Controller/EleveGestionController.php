@@ -5,7 +5,8 @@
  * Attention !
  * Ce Controller est enregistré dans le Router sous la clé 'gestioneleve'
  *
- * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
+ * Méthodes utilisées pour gérer la localisation des responsables et la création des
+ * cartes de transport
  *
  *
  * @project sbm
@@ -13,8 +14,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 1 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Controller;
 
@@ -194,7 +195,8 @@ class EleveGestionController extends AbstractActionController
     }
 
     /**
-     * Le paramètre 'op' de POST prend les valeurs 1 ou 2. 1 : entrée dans le processus
+     * Le paramètre 'op' de POST prend les valeurs 1 ou 2.
+     * 1 : entrée dans le processus
      * d'affectation. On prépare un formulaire formDecision et les points ptElv et ptEta 2
      * : sortie par post du formulaire formDecision - cancel : retour à affecter-liste -
      * submit : traitement du formulaire, enregistrement de la décision et passage au
@@ -748,7 +750,9 @@ class EleveGestionController extends AbstractActionController
                     ]
                 ]
             ]);
-        if (array_key_exists('submit', $args)) {
+        $isDuplicata = array_key_exists('submit', $args);
+        $isPassProvisoire = array_key_exists('pass-provisoire', $args);
+        if ($isDuplicata || $isPassProvisoire) {
             $form->setData($args);
             if ($form->isValid()) {
                 $position = array_combine([
@@ -758,25 +762,34 @@ class EleveGestionController extends AbstractActionController
                 $where = new Where();
                 $where->equalTo('millesime', $millesime)->equalTo('eleveId',
                     $args['eleveId']);
-                $call_pdf = $this->RenderPdfService;
-                $call_pdf->setParam('documentId', $documentName)
-                    ->setParam('where', $where)
-                    ->setParam('criteres', [])
-                    ->setParam('expression', [
-                    'eleveId = ' . $args['eleveId']
-                ])
-                    ->setParam('position', $position)
-                    ->setParam('filigrane', true)
-                    ->setEndOfScriptFunction(
-                    function () use ($millesime, $args) {
-                        if (empty($args['gratuit'])) {
-                            $this->db_manager->get('Sbm\Db\Table\Scolarites')
-                                ->addDuplicata($millesime, $args['eleveId']);
-                        }
-                        $this->flashMessenger()
-                            ->addSuccessMessage("Édition d'un duplicata.");
-                    })
-                    ->renderPdf();
+                if ($isDuplicata) {
+                    $call_pdf = $this->RenderPdfService;
+                    $call_pdf->setParam('documentId', $documentName)
+                        ->setParam('where', $where)
+                        ->setParam('criteres', [])
+                        ->setParam('expression', [
+                        'eleveId = ' . $args['eleveId']
+                    ])
+                        ->setParam('position', $position)
+                        ->setParam('filigrane', true)
+                        ->setEndOfScriptFunction(
+                        function () use ($millesime, $args) {
+                            if (empty($args['gratuit'])) {
+                                $this->db_manager->get('Sbm\Db\Table\Scolarites')
+                                    ->addDuplicata($millesime, $args['eleveId']);
+                            }
+                            $this->flashMessenger()
+                                ->addSuccessMessage("Édition d'un duplicata.");
+                        })
+                        ->renderPdf();
+                } else {
+                    $data = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getDataForDuplicata(
+                        Session::get('millesime'), $args['eleveId'])->current()->getArrayCopy();
+                    $data['du'] = date('d/m/Y');
+                    $data['au'] = date('d/m/Y', strtotime('+15 days'));
+                    $passProvisoire = new \SbmPdf\Model\PassProvisoire();
+                    return $passProvisoire->render($data);
+                }
             }
         }
         if ($vue) {
@@ -1062,7 +1075,8 @@ class EleveGestionController extends AbstractActionController
     }
 
     /**
-     * Reçoit le paramètre POST inviteId Envoie la variable data à la vue. C'est un objet
+     * Reçoit le paramètre POST inviteId Envoie la variable data à la vue.
+     * C'est un objet
      * présentant les propriétés 'nom' et 'prenom'.
      *
      * @return \Zend\View\Model\ViewModel

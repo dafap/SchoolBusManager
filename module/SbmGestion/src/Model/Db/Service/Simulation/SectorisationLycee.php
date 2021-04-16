@@ -1,17 +1,17 @@
 <?php
 /**
  * Règle de sectorisation pour les lycées
- * 
+ *
  * Ici, un seul lycée doit être marqué comme secteur scolaire.
  * A modifier lorsqu'il existe plusieurs lycées.
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Simulation
  * @filesource SectorisationLycee.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
- * @version 2019-2.5.0
+ * @date 16 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
@@ -43,7 +43,7 @@ class SectorisationLycee
     {
         $tEtablissements = $this->db_manager->get('Sbm\Db\Table\Etablissements');
         $where = new Where();
-        $where->equalTo('niveau', Niveau::CODE_NIVEAU_SECOND_CYCLE)->notEqualTo(
+        $where->expression('niveau & ? <> 0', Niveau::CODE_NIVEAU_SECOND_CYCLE)->notEqualTo(
             'rattacheA', '');
         $result = $tEtablissements->fetchAll($where);
         if ($result->count() == 1) {
@@ -58,4 +58,3 @@ class SectorisationLycee
         throw new Exception($msg);
     }
 }
- 

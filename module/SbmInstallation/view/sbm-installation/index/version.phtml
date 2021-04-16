@@ -1,6 +1,6 @@
 <?php
 /**
- * Affiche les versions des logiciels 
+ * Affiche les versions des logiciels
  * - SchoolBusManager (définie dans Sbminstallation/config/version.inc.php)
  * - PHP
  * - bibliothèque GD
@@ -8,14 +8,14 @@
  * - JQuery
  * - TCPDF
  * et vérifie éventuellement s'il y a une version plus récente.
- * 
+ *
  * @project sbm
  * @package SbmInstallation\view
  * @filesource version.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 fév. 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
 use SbmBase\Model\DateLib;
@@ -42,7 +42,7 @@ function versionTcpdfGitHub()
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->tinymce();
 $this->headScript()->captureStart();
 ?>
 function initMap() {

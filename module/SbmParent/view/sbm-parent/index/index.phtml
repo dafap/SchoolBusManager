@@ -22,15 +22,15 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2020
- * @version 2020-2.6.0
+ * @date 7 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Paiements\GrilleTarifInterface;
 
 // Nomenclature
-$rendez_vous = 'POINT INFO BUS';
+$rendez_vous = 'AGENCE TRA MOBILIT&Eacute';
 // ================================================================================
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'index.css');
@@ -156,13 +156,13 @@ $url_facture = $this->url('sbmdocument', [
         case $this->calendar::ETAT_APRES:
             $votre_vos = ucfirst($votre_vos);
             $msg_reception_pass_inscrit = <<<EOT
-            $votre_vos PASS ANNUEL JUNIOR $sera_seront &agrave; retirer au Point Info Bus apr&egrave;s
+            $votre_vos PASS ANNUEL JUNIOR $sera_seront &agrave; retirer à l'AGENCE TRA MOBILIT&Eacute apr&egrave;s
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_reception_pass_preinscrit = <<<EOT
             Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez <span id="help-payer" class="orange" 
             title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
-            Vous pourrez le retirer au Point Info Bus apr&egrave;s
+            Vous pourrez le retirer à l'AGENCE TRA MOBILIT&Eacute apr&egrave;s
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
@@ -462,7 +462,7 @@ $url_facture = $this->url('sbmdocument', [
 					uniquement sur le site internet au moment de l'inscription.</li>
 				<li><strong>Par ch&egrave;que <span class="orange">**</span></strong>
 					&agrave; libeller &agrave; <strong>TRANSDEV ALBERTVILLE</strong>.</li>
-				<li><strong>En esp&egrave;ces,</strong> au POINT INFO BUS, Place de
+				<li><strong>En esp&egrave;ces,</strong> à l'AGENCE TRA MOBILIT&Eacute, Place de
 					la Gare &agrave; Albertville durant les heures d'ouverture.</li>
 			</ul>
 			<div style="display: table;">
@@ -478,7 +478,7 @@ $url_facture = $this->url('sbmdocument', [
 						<span class="orange">**</span>
 					</div>
 					<div style="display: table-cell">
-						Facilit&eacute; de paiement en 3 fois : contacter le POINT INFO
+						Facilit&eacute; de paiement en 3 fois : contacter l'AGENCE TRA MOBILIT&Eacute
 						BUS<br>IMPORTANT : mentionner au dos du ch&egrave;que :
 						<ul>
 							<li>le nom du responsable l&eacute;gal</li>

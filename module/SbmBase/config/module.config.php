@@ -76,8 +76,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
 use SbmBase\Model\View\Helper;
@@ -114,11 +114,15 @@ return [
             'themeJS' => helper\ThemeJs::class,
             'themeCss' => helper\ThemeCss::class,
             'themecss' => helper\ThemeCss::class,
+            'tinyMce' => helper\Tinymce::class,
+            'tinymce' => helper\Tinymce::class
         ],
         'factories' => [
             Helper\JQuery::class => Helper\JQueryFactory::class,
             Helper\ThemeCss::class=>Helper\ThemeCssFactory::class,
-            Helper\ThemeJs::class=>Helper\ThemeJsFactory::class
+            Helper\ThemeJs::class=>Helper\ThemeJsFactory::class,
+            Helper\Tinymce::class=>Helper\TinymceFactory::class,
+
         ]
     ]
 ];

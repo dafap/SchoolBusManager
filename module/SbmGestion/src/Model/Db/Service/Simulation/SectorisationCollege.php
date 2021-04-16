@@ -10,8 +10,8 @@
  * @filesource SectorisationCollege.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 16 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
@@ -112,6 +112,6 @@ class SectorisationCollege
             ->columns([
             'communeId' => 'communeId',
             'commune' => 'nom'
-        ])->where->equalTo('eleveId', $this->eleveId);
+        ])->where((new Where())->equalTo('eleveId', $this->eleveId));
     }
 }
