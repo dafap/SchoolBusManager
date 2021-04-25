@@ -8,8 +8,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2020
- * @version 2020-2.6.0
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -32,6 +32,9 @@ $url_gest_statistiques = $this->url('sbmgestion/statistiques');
 $url_gest_mailchimp = $this->url('sbmmailchimp');
 $url_gest_servicesms = $this->url('sbmservicesms');
 $url_gest_parametre = $this->url('sbmgestion/config');
+$url_pass_provisoires = $this->url('sbmgestion/gestioneleve', [
+    'action' => 'invite'
+]);
 
 $pAS = $this->paiements['totalASMode'];
 $pMode = current($pAS);
@@ -174,12 +177,14 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 			<ul>
 				<li><a href="<?= $url_gest_eleves; ?>"><i class="fam-bullet-go"></i>Gestion
 						des élèves</a></li>
-				<li><a href="<?= $url_gest_responsables; ?>"><i
-						class="fam-bullet-go"></i>Gestion des responsables</a></li>
+				<li><a href="<?=$url_gest_responsables;?>"><i class="fam-bullet-go"></i>Gestion
+						des responsables</a></li>
 				<li><a href="<?= $url_gest_finance; ?>"><i class="fam-bullet-go"></i>Gestion
 						financière</a></li>
 				<li><a href="<?= $url_gest_transport; ?>"><i class="fam-bullet-go"></i>Gestion
 						du réseau de transport</a></li>
+				<li><a href="<?=$url_pass_provisoires;?>"><i class="fam-bullet-go"></i>Gestion
+						des demandes de PASS PROVISOIRE</a></li>
 				<li><a href="<?= $url_gest_change_as; ?>"><i class="fam-bullet-go"></i>Choix
 						de l'année scolaire</a></li>
 				<li><a href="<?= $url_gest_statistiques; ?>"><i

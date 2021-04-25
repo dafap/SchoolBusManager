@@ -10,8 +10,8 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 août 2020
- * @version 2020-2.6.0
+ * @date 12 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -116,11 +116,18 @@ class ServicesForSelect implements FactoryInterface
      * Renvoie un tableau structuré Service fournissant une liste des services sous la
      * forme d'un tableau 'serviceId' => 'serviceId - nom (operateur - transporteur)'
      *
-     * @param int $transporteurId
+     * @param int|array $transporteurId
      * @return array
      */
-    public function par(int $transporteurId)
+    public function par($transporteurId)
     {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime);
+        if (is_array($transporteurId)) {
+            $where->in('transporteurId',$transporteurId);
+        } else{
+            $where->equalTo('transporteurId', $transporteurId);
+        }
         $select = $this->sql->select($this->table_name);
         $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
         $this->columns['jours'] = new Literal($this->getSqlSemaine());

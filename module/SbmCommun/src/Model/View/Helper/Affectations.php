@@ -8,8 +8,8 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juil. 2020
- * @version 2020-2.6.0
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\View\Helper;
 
@@ -62,9 +62,10 @@ class Affectations extends AbstractHelper
      */
     public function __invoke($trajet, $structure)
     {
-        //$this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
-        //    'viewhelper-affectation.log');
+        // $this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
+        // 'viewhelper-affectation.log');
         $aMoments = $this->getMoment();
+        $oSemaine = new Semaine();
         $render = '';
         if (isset($structure['annee_courante'])) {
             $render = '<table class="eleve-affectations annee-courante">';
@@ -72,7 +73,6 @@ class Affectations extends AbstractHelper
                 foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
                     foreach ($affectationsCorrespondance as $j => $affectation) {
                         // il faut décoder $j
-                        $oSemaine = new Semaine();
                         $jours = $oSemaine->renderSemaine($j);
                         $args = '/jours:' . $j;
                         $args .= '/moment:' . $m;
@@ -103,6 +103,8 @@ class Affectations extends AbstractHelper
             foreach ($structure['annee_precedente'] as $m => $affectationsMoment) {
                 foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
                     foreach ($affectationsCorrespondance as $j => $affectation) {
+                        // il faut décoder $j
+                        $jours = $oSemaine->renderSemaine($j);
                         $render .= sprintf(self::TR . self::TD . self::END_TR, $jours,
                             $aMoments[$m], $affectation['ligne1Id'],
                             $affectation['station1'], $affectation['horaireD'],

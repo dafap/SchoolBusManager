@@ -2,12 +2,12 @@
  * Feuille de style de la pages horaires.phtml du module SbmParent
  * 
  * @project sbm
- * @package public/css/ccmgc/sbm-parent/index
+ * @package public/css/tra/sbm-parent/index
  * @filesource horaires.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
  **/ 
 .parent.horaires td:nth-child(4) {
 	text-align: right;

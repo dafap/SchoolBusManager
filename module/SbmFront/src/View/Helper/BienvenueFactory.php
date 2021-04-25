@@ -8,13 +8,12 @@
  * @filesource BienvenueFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2021
+ * @date 23 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmFront\View\Helper;
 
 use SbmBase\Model\StdLib;
-use SbmFront\View\Helper\Bienvenue;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 

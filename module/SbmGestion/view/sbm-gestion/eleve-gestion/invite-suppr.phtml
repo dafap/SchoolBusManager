@@ -1,31 +1,38 @@
 <?php
 /**
- * Page de suppression de l'inscription d'un correspondant
+ * Page de suppression de l'inscription d'un invité
  *
  * Cette vue reçoit les variables suivantes :
- * data
+ * - data
+ * - form
+ * data est un objet muni des propriétés nom, prenom, dateDebut, dateFin
+ * form est un formulaire
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
- * @filesource correspondant-suppr.phtml
+ * @filesource invite-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
+use SbmBase\Model\DateLib;
+
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 ?>
-<h1>Suppression d'une station</h1>
+<h1>Suppression d'une personne bénéficiaire d'un PASS PROVISOIRE</h1>
 <div id="suppr-wrapper">
-	<p>Vous avez demandé la suppression du correspondant :</p>
+	<p>Vous avez demandé la suppression d'une personne qui a demandé un
+		PASS PROVISOIRE :</p>
 	<div class="header-wrapper">
 		<ul>
-			<li><?= $this->escapeHtml($this->data->nom); ?>
-				<?= $this->escapeHtml($this->data->prenom); ?></li>
+			<li><?=$this->escapeHtml($this->data->nom . ' ' . $this->data->prenom);?></li>
+			<li>Validité du <?=DateLib::formatDateFromMysql($this->data->dateDebut);?>
+			    au <?=DateLib::formatDateFromMysql($this->data->dateFin);?></li>
 		</ul>
 	</div>
 	<p>Confirmez-vous ?</p>
-    <?= $this->form()->openTag($form);?>
-    <?= $this->formCollection($form);?>
+    <?= $this->form()->openTag($this->form);?>
+    <?= $this->formCollection($this->form);?>
     <?= $this->form()->closeTag();?>
 </div>

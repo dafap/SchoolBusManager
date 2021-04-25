@@ -7,14 +7,12 @@
  * @filesource AbonnementsResilies.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 sept. 2020
- * @version 2020-2.6.0
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Paiements;
 
-use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use SbmCommun\Model\Traits\DebugTrait;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 

@@ -11,8 +11,8 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2020
- * @version 2020-2.6.0
+ * @date 13 avr. 2021
+ * @version 2021-2.6.0
  */
 namespace SbmCommun\Arlysere;
 
@@ -481,7 +481,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                     ], sprintf('cir%dsta2.stationId = etasta.stationId', $i), $columns2);
             } else {
                 // cette station est une station de correspondance
-                array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance', $i));
+                array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance DESC', $i));
                 $select->join(
                     [
                         sprintf('cir%dsta2', $i) => $this->db_manager->getCanonicName(
@@ -525,7 +525,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         foreach ($ordre_corr as $column) {
             $ordre[] = $column;
         }
-
+$this->debugLog([__METHOD__,'moment'=>$moment, 'nb_cir'=>$nb_cir, 'ordre' => $ordre, 'conditions'=>$this->getConditions($moment, $nb_cir)]);
         $select->where($this->getConditions($moment, $nb_cir))
             ->order($ordre);
         if ($this->hasDebugger()) {

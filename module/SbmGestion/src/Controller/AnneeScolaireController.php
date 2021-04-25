@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 25 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Controller;
 
@@ -106,7 +106,7 @@ class AnneeScolaireController extends AbstractActionController
             }
             $data = $request->getPost();
         } else {
-            $data = $table_calendar->getRecord($calendarId)->getArrayCopy();
+            $data = array_filter($table_calendar->getRecord($calendarId)->getArrayCopy());
             $form->setData($data);
         }
         return new ViewModel(

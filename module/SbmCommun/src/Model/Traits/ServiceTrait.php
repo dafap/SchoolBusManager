@@ -8,8 +8,8 @@
  * @filesource ServiceTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2020
- * @version 2020-2.6.0
+ * @date 12 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Traits;
 
@@ -17,7 +17,8 @@ trait ServiceTrait
 {
 
     /**
-     * Tableau des clés servant à identifier un service pour un millesime donné. Ce
+     * Tableau des clés servant à identifier un service pour un millesime donné.
+     * Ce
      * tableau est ordonné dans l'ordre logique souhaité.
      *
      * @return string[]
@@ -33,7 +34,8 @@ trait ServiceTrait
     }
 
     /**
-     * Renvoie le sens du service, en clair. L'argument est un tableau identifant le
+     * Renvoie le sens du service, en clair.
+     * L'argument est un tableau identifant le
      * service ou la valeur numérique de la clé 'sens' de ce service. S'il n'y a pas
      * d'argument, le tableau des sens est renvoyé.
      *
@@ -59,7 +61,8 @@ trait ServiceTrait
     }
 
     /**
-     * Renvoie le moment du service, en clair. L'argument est un tableau identifant le
+     * Renvoie le moment du service, en clair.
+     * L'argument est un tableau identifant le
      * service ou la valeur numérique de la clé 'moment' de ce service. S'il n'y a pas
      * d'argument, le tableau des moments est renvoyé.
      *
@@ -152,6 +155,29 @@ trait ServiceTrait
     {
         return sprintf('%s - %s - %s - N° %d', $data['ligneId'], self::getSens($data),
             self::getMoment($data), $data['ordre']);
+    }
+
+    /**
+     * Renvoie le ON de la jointure entre table1 et table2.
+     * Exemple : jointure('a', 'b', ['x' => 'x', 'y'=>'z'])
+     * donnera : 'a.x=b.x AND z.y=b.z'
+     *
+     * @param string $table1
+     *            alias de la table1
+     * @param string $table2
+     *            alias de la table2
+     * @param array $liens
+     *            tableau associatif où chaque enregistrement est de la forme :
+     *            keyTable1 => keyTable2
+     * @return string
+     */
+    public function jointure(string $table1, string $table2, array $liens)
+    {
+        $cond = [];
+        foreach ($liens as $keyTable1 => $keyTable2) {
+            $cond[] = "$table1.$keyTable1=$table2.$keyTable2";
+        }
+        return implode(' AND ', $cond);
     }
 
     /**

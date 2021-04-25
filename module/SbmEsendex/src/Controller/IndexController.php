@@ -14,6 +14,7 @@
  */
 namespace SbmEsendex\Controller;
 
+use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -21,8 +22,6 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Log\Logger;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
-use Esendex;
-use SbmBase\Model\DateLib;
 
 class IndexController extends AbstractActionController
 {

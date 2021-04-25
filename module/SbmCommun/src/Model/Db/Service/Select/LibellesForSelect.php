@@ -15,11 +15,12 @@
  * @filesource LibellesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 mars 2020
- * @version 2020-2.6.0
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Sql;
@@ -32,6 +33,8 @@ class LibellesForSelect implements FactoryInterface
 
     private $db_manager;
 
+    private $millesime;
+
     private $table_name;
 
     private $sql;
@@ -43,6 +46,7 @@ class LibellesForSelect implements FactoryInterface
             throw new Exception\ExceptionNoDbManager(
                 sprintf($message, gettype($serviceLocator)));
         }
+        $this->millesime = Session::get('millesime');
         $this->db_manager = $serviceLocator;
         $this->sql = new Sql($this->db_manager->getDbAdapter());
         $this->table_name = $this->db_manager->getCanonicName('libelles', 'system');
@@ -152,15 +156,15 @@ class LibellesForSelect implements FactoryInterface
     }
 
     /**
-     * Renvoie les motifs d réduction en rajoutant au début 'Pas de réduction' en 0 et en
+     * Renvoie les motifs de réduction en rajoutant au début 'Pas de réduction' en 0 et en
      * remplaçant le chaine %dateDebut% et %echeance% par leurs valeurs
      *
      * @return string[]
      */
     public function motifsReduction()
     {
-        $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $etatDuSite = $tCalendar->getEtatDuSite();
+        $datesInscriptions = $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+            $this->millesime);
         $where = new Where();
         $where->literal('ouvert = 1')->equalTo('nature', 'MotifReduction');
         $select = $this->sql->select($this->table_name);
@@ -184,8 +188,8 @@ class LibellesForSelect implements FactoryInterface
                 '%echeance%'
             ],
                 [
-                    $etatDuSite['dateDebut']->format('d/m/Y'),
-                    $etatDuSite['echeance']->format('d/m/Y')
+                    $datesInscriptions['dateDebut']->format('d/m/Y'),
+                    $datesInscriptions['echeance']->format('d/m/Y')
                 ], $row['libelle']);
         }
         return $array;

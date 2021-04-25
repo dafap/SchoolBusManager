@@ -3,14 +3,15 @@
  * Calcul des effectifs des élèves transportés par circuit
  *
  * Calcul spécial qui n'est pas rattaché à un AbstractEffectifTypex mais dérive
- * directement de AbstractEffectif
+ * directement de AbstractEffectif.
+ * L'interface SpecialEffectifInterface est défini en fin de ce fichier.
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mars 2021
+ * @date 18 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
@@ -29,9 +30,67 @@ interface SpecialEffectifInterface extends EffectifInterface
 
 class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterface
 {
-    use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait, \SbmCommun\Model\Traits\DebugTrait;
+
+    private $ligneId;
+
+    private $sens;
+
+    private $moment;
+
+    private $ordre;
 
     private $sanspreinscrits = false;
+
+    /**
+     *
+     * @param number $millesime
+     */
+    public function setMillesime(int $millesime)
+    {
+        $this->millesime = $millesime;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $ligneId
+     */
+    public function setLigneId(string $ligneId)
+    {
+        $this->ligneId = $ligneId;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $sens
+     */
+    public function setSens(int $sens)
+    {
+        $this->sens = $sens;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $moment
+     */
+    public function setMoment(int $moment)
+    {
+        $this->moment = $moment;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $ordre
+     */
+    public function setOrdre(int $ordre)
+    {
+        $this->ordre = $ordre;
+        return $this;
+    }
 
     /**
      * Appeler cette méthode avant la méthode init()
@@ -44,8 +103,17 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
         return $this;
     }
 
-    public function init(Where $where)
+    public function init(Where $where = null)
     {
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'effectifCircuit.log');
+        if (empty($where)) {
+            $where = new Where();
+            $where->equalTo('c.millesime', $this->millesime)
+                ->equalTo('c.ligneId', $this->ligneId)
+                ->equalTo('c.sens', $this->sens)
+                ->equalTo('c.moment', $this->moment)
+                ->equalTo('c.ordre', $this->ordre);
+        }
         $this->structure = [];
         $rowset = $this->requete($where);
         $effectif_reel = 0;
@@ -67,6 +135,9 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
 
     public function transportes($circuitId)
     {
+        if (! array_key_exists($circuitId, $this->structure)) {
+            $this->debugLog([__METHOD__ =>['circuitId'=>$circuitId, 'structure' => $this->structure]]);
+        }
         return StdLib::getParam($circuitId, $this->structure, 0);
     }
 
@@ -142,6 +213,7 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'c.horaireA',
                 'passage'
             ]);
+        $this->debugLog([__METHOD__=>$this->getSqlString($select)]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -203,12 +275,17 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
         $condition->literal('sco.inscrit = 1');
         if ($this->sanspreinscrits) {
             $condition->nest()
+                ->nest()
                 ->literal('aff.trajet = 1')
                 ->literal('sco.paiementR1 = 1')
                 ->unnest()->or->nest()
                 ->literal('aff.trajet = 2')
                 ->literal('sco.reductionR2 = 0')
                 ->literal('sco.paiementR2 = 1')
+                ->unnest()->or->nest()
+                ->literal('aff.trajet = 2')
+                ->literal('sco.reductionR2 = 1')
+                ->unnest()
                 ->unnest();
         }
         $select->join([

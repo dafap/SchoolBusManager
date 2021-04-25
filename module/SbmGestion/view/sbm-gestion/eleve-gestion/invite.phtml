@@ -1,40 +1,41 @@
 <?php
 /**
- * Liste des correspondants d'un élève permettant la gestion :
+ * Liste des invités d'un élève permettant la gestion :
  * ajout, modification, suppression, impression du PASS PEMPORAIRE
  *
- * Cette vue reçoit les variables data et eleve
+ * Cette vue reçoit les variables paginator, page et count_per_page
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
- * @filesource correspondant.phtml
+ * @filesource invite.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
 
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+
 $url_ici = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant'
+    'action' => 'invite'
 ]);
 $url_ajouter = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant-ajout'
+    'action' => 'invite-ajout'
 ]);
 $url_edit = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant-edit'
+    'action' => 'invite-edit'
 ]);
 $url_delete = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant-suppr'
+    'action' => 'invite-suppr'
 ]);
 $url_pass = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant-pass'
+    'action' => 'invite-pass'
 ]);
-$hiddens = [
-    'eleveId' => $this->eleveId,
-    'eleve' => $this->eleve,
-];
+$hiddens = [];
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
@@ -44,11 +45,19 @@ $actions = [
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
-        'title' => 'Ajouter un correspondant'
+        'title' => 'Ajouter un invité'
     ]
 ];
 ?>
-<h1>Correspondants de <?= $this->eleve;?></h1>
+<h1>Demandes de PASS PROVISOIRE</h1>
+<h3>(hors élèves)</h3>
+<p class="sbm_description">
+	Pour les élèves ayant perdu leur PASS et demandant un PASS PROVISOIRE,
+	allez dans la gestion des duplicatas et utilisez le bouton PASS
+	PROVISOIRE. Par contre, s'il s'agit d'un PASS PROVISOIRE sur un autre
+	trajet, inscrivez-les ici.<br>Pour tous les autres cas, inscrivez-les
+	ici.
+</p>
 <div class="groupe-wrapper">
 	<div class="header-wrapper">
 		<div id="liste-header" class="clearfix">
@@ -68,66 +77,100 @@ $actions = [
 			<table class="eleves">
 				<tbody>
 					<tr>
-						<th>Nom</th>
-						<th>Prénom</th>
-						<th>Séjour</th>
-						<th>du</th>
-						<th>au</th>
+						<th>Du</th>
+						<th>Au</th>
+						<th>Bénéficiaire</th>
+						<th>Origine</th>
+						<th>Établissement</th>
+						<th>Services</th>
 						<th></th>
 					</tr>
-					<?php foreach ($this->data as $correspondant) :?>
+					<?php foreach ($data as $invite) :?>
 					<?php
+        $invite->setFlags(\ArrayObject::ARRAY_AS_PROPS);
         $tr_css = $this->cycle([
             "even",
             "odd"
         ])->next();
-        $df = DateTime::createFromFormat('Y-m-d', $correspondant->dateFin);
+        $df = DateTime::createFromFormat('Y-m-d', $invite->dateFin);
         $df->modify('+1 day');
         $aujourdhui = new DateTime();
         $hiddens = [
-            'inviteId' => $correspondant->inviteId,
+            'inviteId' => $invite->inviteId,
             'eleveId' => $this->eleveId,
             'eleve' => $this->eleve
         ];
-        $infoCorrespondant = $correspondant->nom . ' ' . $correspondant->prenom;
+        $stations = implode('<br>', array_filter([
+            $invite->station,
+            $invite->stationR2
+        ]));
+        if ($invite->servicesMatin) {
+            $servicesMatin = 'Matin : ' . $invite->servicesMatin;
+        } else {
+            $servicesMatin = null;
+        }
+        if ($invite->servicesMidi) {
+            $servicesMidi = 'Midi : ' . $invite->servicesMidi;
+        } else {
+            $servicesMidi = null;
+        }
+        if ($invite->servicesSoir) {
+            $servicesSoir = 'Soir : ' . $invite->servicesSoir;
+        } else {
+            $servicesSoir = null;
+        }
+        if (! empty($invite->servicesMerSoir)) {
+            $servicesMerSoir = 'Me soir : ' . $invite->servicesMerSoir;
+        } else {
+            $servicesMerSoir = null;
+        }
+        $services = implode('<br>',
+            array_filter(
+                [
+                    $servicesMatin,
+                    $servicesMidi,
+                    $servicesSoir,
+                    $servicesMerSoir
+                ]));
         $buttons = [
             'modifier' => [
                 'class' => 'fam-pencil',
                 'formaction' => $url_edit,
-                'title' => 'Modifier la fiche de ' . $infoCorrespondant
+                'title' => 'Modifier la fiche de ' . $invite->beneficiaire
             ],
             'supprimer' => [
                 'class' => 'fam-delete',
                 'formaction' => $url_delete,
-                'title' => 'Supprimer la fiche de ' . $infoCorrespondant
+                'title' => 'Supprimer la fiche de ' . $invite->beneficiaire
             ],
             'pass' => [
                 'class' => 'fam-vcard-add',
                 'formaction' => $url_pass,
                 'formtarget' => '_blank',
-                'title' => 'Impression du PASS TEMPORAIRE pour ' . $infoCorrespondant
+                'title' => 'Impression du PASS TEMPORAIRE pour ' . $invite->beneficiaire
             ]
         ];
-        if ($correspondant->demande == 0) {
+        if ($invite->demande == 0) {
             $tr_css .= ' barre';
             unset($buttons['pass']);
         }
         if ($aujourdhui >= $df) {
             $tr_css .= ' gris';
             unset($buttons['pass']);
-        } elseif ($correspondant->demande == 1) {
+        } elseif ($invite->demande == 1) {
             $tr_css .= ' orange';
             unset($buttons['pass']);
         }
-        $menu = $this->listeLigneActions($correspondant->inviteId, $hiddens, $buttons);
-
+        $menu = $this->listeLigneActions($invite->inviteId, $hiddens, $buttons);
         ?>
 					<tr class="<?= $tr_css;?>">
-						<td><?=$this->escapeHtml($correspondant->nom);?></td>
-						<td><?=$this->escapeHtml($correspondant->prenom);?></td>
-						<td><?=$this->escapeHtml($correspondant->identifiantSejour);?></td>
-						<td><?=DateLib::formatDateFromMysql($correspondant->dateDebut);?></td>
-						<td><?=DateLib::formatDateFromMysql($correspondant->dateFin);?></td>
+
+						<td><?=DateLib::formatDateFromMysql($invite->dateDebut);?></td>
+						<td><?=DateLib::formatDateFromMysql($invite->dateFin);?></td>
+						<td><?=$this->escapeHtml($invite->beneficiaire);?></td>
+						<td><?=$this->escapeHtml($stations);?></td>
+						<td><?=$this->escapeHtml($invite->etablissement);?></td>
+						<td><?=$services;?></td>
 						<td><?=$menu;?></td>
 					</tr>
 					<?php endforeach;?>
@@ -135,9 +178,28 @@ $actions = [
 			</table>
 		</div>
 		<div class="liste-footer">
-		<p class="sbm-description"><span class="orange">En orange</span> les demandes non traitées.</p>
-		<p class="sbm-description"><span class="barre">Rayé</span> les demandes refusées.</p>
-		<p class="sbm-description"><span class="gris">En gris</span> les demandes dont le séjour est terminé.</p>
+			<div class="float-left">
+				<p class="sbm-description">
+					<span class="orange">En orange</span> les demandes non traitées.
+				</p>
+				<p class="sbm-description">
+					<span class="barre">Rayé</span> les demandes refusées.
+				</p>
+				<p class="sbm-description">
+					<span class="gris">En gris</span> les demandes dont le séjour est
+					terminé.
+				</p>
+			</div>
+			<div class="pagination-wrapper clearfix">
+			    <?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
+			</div>
+			<div class="criteres-wrapper">
+			<?php if($this->criteres_form):?>
+                <?=$this->form()->openTag($this->criteres_form);?>
+                <?=$this->formCollection($this->criteres_form, true);?>
+                <?=$this->form()->closeTag();?>
+            <?php endif;?>
+            </div>
 		</div>
 	</div>
 

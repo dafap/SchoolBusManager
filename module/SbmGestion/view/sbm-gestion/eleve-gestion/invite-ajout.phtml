@@ -1,24 +1,33 @@
 <?php
 /**
- * Page d'inscription d'un correspondant
+ * Page d'inscription d'un invité
  *
- * Cette vue reçoit les variables suivantes : form, eleve
+ * Cette vue reçoit les variables suivantes :
+ * - form
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
- * @filesource correspondant-ajout.phtml
+ * @filesource invite-ajout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->themeCss('sbm-gestion/eleve-gestion', 'correspondant.css');
-$this->jQuery();
-$this->themeJs('gestion-eleve', 'correspondant.js');
+$this->themeCss('sbm-gestion/eleve-gestion', 'invite.css');
+$this->jQuery([
+    'jquery-ui'
+]);
+$this->themeJs('gestion-eleve', 'invite.js');
+/*
+ * $this->inlineScript()->captureStart();
+ * ?>
+ * <?php
+ * $this->inlineScript()->captureEnd();
+ */
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant'
+    'action' => 'invite'
 ]);
 $hiddens = [];
 $actions = [
@@ -30,7 +39,7 @@ $actions = [
     ]
 ];
 ?>
-<h1>Inscription d'un correspondant de <?=$this->eleve;?></h1>
+<h1>Inscription d'une demande de PASS PROVISOIRE</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">
@@ -41,31 +50,119 @@ $actions = [
 	<?=$this->form()->openTag($this->form);?>
         <?=$this->formHidden($this->form->get('inviteId'));?>
         <?=$this->formHidden($this->form->get('millesime'));?>
-        <?=$this->formHidden($this->form->get('eleveId'));?>
         <?=$this->formHidden($this->form->get('gratuit'));?>
         <?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1 label-180">
-			<div id="wrapper-nom" class="row-inner ajout">
+			<div id="wrapper-beneficiaire" class="beneficiaire clearfix">
+				<div id="wrapper-nom" class="row-inner ajout float-left">
+			    <?php $this->form->get('nom')->setLabel('Nom du bénéficiaire');?>
 			    <?=$this->formRow($this->form->get('nom'));?></div>
-			<div id="wrapper-prenom" class="row-inner ajout">
+				<div id="wrapper-prenom" class="row-inner ajout float-left">
 			    <?=$this->formRow($this->form->get('prenom'));?></div>
-			<div id="wrapper-sexe" class="clearfix">
 				<div id="inner-sexe" class="row-inner ajout float-left">
 			    <?=$this->formRow($this->form->get('sexe'));?></div>
-			</div>
-			<div id="wrapper-nationalite" class="row-inner ajout">
+				<div id="wrapper-nationalite" class="row-inner ajout float-left">
 			    <?=$this->formRow($this->form->get('nationalite'));?></div>
-			<div id="wrapper-identifiantSejour" class="row-inner ajout">
-			    <?=$this->formRow($this->form->get('identifiantSejour'));?></div>
-			<div id="wrapper-dateDebut" class="row-inner ajout">
+			</div>
+			<div id="wrapper-validite" class="validite clearfix">
+				<div id="wrapper-dateDebut" class="row-inner ajout float-left">
 			    <?=$this->formRow($this->form->get('dateDebut'));?></div>
-			<div id="wrapper-dateFin" class="row-inner ajout">
+				<div id="wrapper-dateFin" class="row-inner ajout float-left">
 			    <?=$this->formRow($this->form->get('dateFin'));?></div>
-			<div id="wrapper-demande" class="clearfix">
-				<div id="inner-demande" class="row-inner ajout float-left">
-			    <?=$this->formRow($this->form->get('demande'));?></div>
-				<div id="inner-motifRefus" class="row-inner ajout float-left">
-			    <?=$this->formRow($this->form->get('motifRefus'));?></div>
+			</div>
+			<div id="tabs" class="sbm-tabs-wrapper">
+				<ul>
+					<li id="onglet1"><a href="#tab-1">Décision</a></li>
+					<li id="onglet2"><a href="#tab-2">Invité ou accompagnant d'un élève</a></li>
+					<li id="onglet3"><a href="#tab-3">Hébergé chez un responsable</a></li>
+					<li id="onglet4"><a href="#tab-4">Accueilli par un organsisme</a></li>
+					<li id="onglet5"><a href="#tab-5">Autre cas</a></li>
+				</ul>
+				<div id="tab-1" class="sbm-tabs-container">
+					<div id="wrapper-demande" class="clearfix">
+						<div id="inner-demande" class="row-inner ajout float-left">
+			            <?=$this->formRow($this->form->get('demande'));?></div>
+						<div id="inner-motifDemande" class="row-inner ajout float-left">
+			            <?=$this->formRow($this->form->get('motifDemande'));?></div>
+						<div id="inner-motifRefus" class="row-inner ajout float-left">
+			            <?=$this->formRow($this->form->get('motifRefus'));?></div>
+					</div>
+				</div>
+				<div id="tab-2" class="sbm-tabs-container">
+					<p class="sbm-description">
+						Personne accueillie chez un élève déjà inscrit et se rendant au
+						même établissement par les mêmes services de transport.<br>Ou aide
+						de vie d'un élève.
+					</p>
+					<div id="wrapper-eleveId" class="clearfix">
+						<div id="inner-eleveId" class="row-inner ajout eleveId float-left">
+						    <?=$this->formRow($this->form->get('eleveId'));?></div>
+						<div id="inner-eleve-infos" class="infos-wrapper float-left"></div>
+					</div>
+
+				</div>
+				<div id="tab-3" class="sbm-tabs-container">
+					<p class="sbm-description">
+						Personne accueillie chez un responsable ayant déjà son compte.<br>Le
+						PASS PROVISOIRE sera adressé à ce responsable.
+					</p>
+					<div id="wrapper-responsableId" class="clearfix">
+						<div id="inner-responsableId" class="row-inner ajout responsableId">
+						    <?=$this->formRow($this->form->get('responsableId'));?>
+						    <div id="inner-responsable-infos" class="infos-wrapper"></div>
+						</div>
+						<div id="wrapper-tab3-col2" class=""></div>
+					</div>
+				</div>
+				<div id="tab-4" class="sbm-tabs-container">
+					<p class="sbm-description">
+						Personne faisant partie d'un groupe accueilli par un organisme
+						(voir Gestion financière / Gestion des organismes payeurs).<br>Le
+						PASS PROVISOIRE sera adressé à cet organisme.
+					</p>
+					<div id="wrapper-organismeId" class="clearfix">
+						<div id="inner-organismeId" class="row-inner ajout organismeId">
+						    <?=$this->formRow($this->form->get('organismeId'));?>
+						    <div id="inner-organisme-infos" class="infos-wrapper"></div>
+						</div>
+						<div id="wrapper-tab4-col2" class=""></div>
+					</div>
+				</div>
+				<div id="tab-5" class="sbm-tabs-container">
+					<p class="sbm-description">Tous les champs de cet onglet doivent
+						être renseignés.</p>
+					<div id="wrapper-invite" class="clearfix">
+					    <div id="wrapper-adresse" class="float-left">
+					        <div id="inner-chez" class="row-inner ajout chez">
+					        <?=$this->formRow($this->form->get('chez'));?></div>
+					        <div id="inner-adresseL1" class="row-inner ajout adresseL1">
+					        <?=$this->formRow($this->form->get('adresseL1'));?></div>
+					        <div id="inner-adresseL2" class="row-inner ajout adresseL2">
+					        <?=$this->formRow($this->form->get('adresseL2'));?></div>
+					        <div id="inner-adresseL3" class="row-inner ajout adresseL3">
+					        <?=$this->formRow($this->form->get('adresseL3'));?></div>
+					        <div id="inner-codePostal" class="row-inner ajout codePostal">
+					        <?=$this->formRow($this->form->get('codePostal'));?></div>
+					        <div id="inner-communeId" class="row-inner ajout communeId">
+					        <?=$this->formRow($this->form->get('communeId'));?></div>
+					        <div id="inner-etablissementId" class="row-inner ajout etablissementId">
+					        <?=$this->formRow($this->form->get('etablissementId'));?></div>
+					        <div id="inner-stationId" class="row-inner ajout stationId">
+					        <?=$this->formRow($this->form->get('stationId'));?></div>
+					    </div>
+					    <div id="wrapper-transport" class="float-left">
+					        <div id="inner-servicesMatin" class="row-inner ajout servicesMatin">
+					        <?=$this->formRow($this->form->get('servicesMatin[]'));?></div>
+					        <div id="inner-servicesMidi" class="row-inner ajout servicesMidi">
+					        <?=$this->formRow($this->form->get('servicesMidi[]'));?></div>
+					        <div id="inner-servicesSoir" class="row-inner ajout servicesSoir">
+					        <?=$this->formRow($this->form->get('servicesSoir[]'));?></div>
+					        <div id="inner-servicesMerSoir" class="row-inner ajout servicesMerSoir">
+					        <?=$this->formRow($this->form->get('servicesMerSoir[]'));?></div>
+					    </div>
+					</div>
+				</div>
+
 			</div>
 			<div id="wrapper-commentaire" class="row-inner ajout">
 			    <?=$this->formRow($this->form->get('commentaire'));?></div>

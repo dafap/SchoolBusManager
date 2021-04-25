@@ -9,16 +9,16 @@
  * @filesource table.invites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 1 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
 
 return [
     'name' => 'invites',
     'type' => 'table',
-    'drop' => false,
-    'edit_entity' => false,
+    'drop' => true,
+    'edit_entity' => true,
     'add_data' => false,
     'structure' => [
         'fields' => [
@@ -35,16 +35,19 @@ return [
             'prenomSA' => 'varchar(30) NOT NULL',
             'sexe' => 'tinyint(1) NOT NULL DEFAULT "1"', // 1 ou 2
             'nationalite' => 'char(2) NOT NULL DEFAULT "??"',
-            'etablissementId' => 'char(8) DEFAULT NULL',
-            'identifiantSejour' => 'varchar(30) NOT NULL',
+            'etablissementId' => 'char(8) NOT NULL',
             'chez' => 'varchar(38) DEFAULT NULL',
-            'adresseL1' => 'varchar(38) DEFAULT NULL',
+            'adresseL1' => 'varchar(38) NOT NULL',
             'adresseL2' => 'varchar(38) DEFAULT NULL',
             'adresseL3' => 'varchar(38) DEFAULT NULL',
-            'codePostal' => 'varchar(5) DEFAULT NULL',
-            'communeId' => 'varchar(6) DEFAULT NULL',
+            'codePostal' => 'varchar(5) NOT NULL',
+            'communeId' => 'varchar(6) NOT NULL',
             'joursTransport' => 'tinyint(3) unsigned NOT NULL DEFAULT "31"',
-            'stationId' => 'int(11) DEFAULT NULL',
+            'stationId' => 'int(11) NOT NULL',
+            'servicesMatin' => 'varchar(30) NOT NULL',
+            'servicesMidi' => 'varchar(30) NOT NULL DEFAULT ""',
+            'servicesSoir' => 'varchar(30) NOT NULL',
+            'servicesMerSoir' => 'varchar(30) NOT NULL DEFAULT ""',
             'demande' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
@@ -54,6 +57,7 @@ return [
             'responsableId' => 'int(11) NOT NULL DEFAULT "0"',
             'eleveId' => 'int(11) NOT NULL DEFAULT "0"',
             'organismeId' => 'int(11) NOT NULL DEFAULT "0"',
+            'motifDemande' => 'text NULL',
             'motifRefus' => 'text NULL',
             'commentaire' => 'text NULL'
         ],
@@ -70,14 +74,6 @@ return [
                     'dateFin',
                 ]
             ],
-            'INVITE_groupe' => [
-                'unique' => false,
-                'fields' => [
-                    'millesime',
-                    'etablissementId',
-                    'identifiantSejour',
-                ]
-            ]
         ],
         'foreign key' => [
             [

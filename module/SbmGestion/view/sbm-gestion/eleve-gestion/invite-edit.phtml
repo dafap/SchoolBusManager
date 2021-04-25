@@ -1,24 +1,25 @@
 <?php
 /**
- * Page de modification de l'inscription d'un correspondant
+ * Page de modification de l'inscription d'un invité
  *
- * Cette vue reçoit les variables suivantes : form, eleve
+ * Cette vue reçoit les variables suivantes :
+ * - form
  *
  * @project sbm
  * @package SbmGestion/view/sbm-gestion/eleve-gestion
- * @filesource correspondant-edit.phtml
+ * @filesource invite-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->themeCss('sbm-gestion/eleve-gestion', 'correspondant.css');
+$this->themeCss('sbm-gestion/eleve-gestion', 'invite.css');
 $this->jQuery();
-$this->themeJs('gestion-eleve', 'correspondant.js');
+$this->themeJs('gestion-eleve', 'invite.js');
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $url_retour = $this->url('sbmgestion/gestioneleve', [
-    'action' => 'correspondant'
+    'action' => 'invite'
 ]);
 $hiddens = [];
 $actions = [
@@ -30,7 +31,7 @@ $actions = [
     ]
 ];
 ?>
-<h1>Modification de la fiche d'un correspondant de <?=$this->eleve;?></h1>
+<h1>Modification d'une demande de PASS PROVISOIRE</h1>
 <div id="fiche-wrapper">
 	<div id="fiche-header">
 		<div class="menu clearfix">

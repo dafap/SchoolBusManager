@@ -14,7 +14,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2021
+ * @date 23 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmGestion\Controller;
@@ -557,7 +557,8 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
+        $dateDebut = $tCalendar->getDatesInscriptions($millesime)['dateDebut']->format(
+            'Y-m-d');
         $form1 = new \SbmGestion\Form\NouveauLotDeCartes();
         $form2 = $this->form_manager->get(FormGestion\SelectionCartes::class);
         $form2->setValueOptions('dateReprise',
@@ -783,8 +784,10 @@ class EleveGestionController extends AbstractActionController
                         })
                         ->renderPdf();
                 } else {
-                    $data = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getDataForDuplicata(
-                        Session::get('millesime'), $args['eleveId'])->current()->getArrayCopy();
+                    $data = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
+                        ->getDataForDuplicata(Session::get('millesime'), $args['eleveId'])
+                        ->current()
+                        ->getArrayCopy();
                     $data['du'] = date('d/m/Y');
                     $data['au'] = date('d/m/Y', strtotime('+15 days'));
                     $passProvisoire = new \SbmPdf\Model\PassProvisoire();
@@ -821,7 +824,7 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
+        $dateDebut = $tCalendar->getDatesInscriptions($millesime)['dateDebut']->format('Y-m-d');
         $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [
@@ -930,58 +933,68 @@ class EleveGestionController extends AbstractActionController
     }
 
     /**
-     * Cette méthode reçoit en POST les paramètres eleveId, eleveName, origine,
-     * responsableId et op.
+     * Accès en GET autorisé.
      *
      * @return \Zend\View\Model\ViewModel
      */
-    public function correspondantAction()
+    public function inviteAction()
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'),
-            'correspondant.log');
-        $prg = $this->prg();
-        $arret = false;
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg === false || array_key_exists('retour', $prg)) {
-            $args = Session::get('post', false, $this->getSessionNamespace());
-            if (! $args) {
-                $arret = true;
-                $flashMessengerMessage = 'Action formellement interdite !';
-                $flashMessengerNS = FlashMessenger::NAMESPACE_ERROR;
-            }
-        } else {
-            $args = $prg;
-            if (array_key_exists('cancel', $args)) {
-                $arret = true;
-                $flashMessengerMessage = '';
-                $flashMessengerNS = FlashMessenger::NAMESPACE_SUCCESS;
-            } elseif (array_key_exists('origine', $args)) {
-                $this->redirectToOrigin()->setBack($args['origine']);
-                unset($args['origine']);
-                Session::set('post', $args, $this->getSessionNamespace());
-            }
+        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'invite.log');
+        /*
+         * $prg = $this->prg();
+         * $arret = false;
+         * if ($prg instanceof Response) {
+         * return $prg;
+         * } elseif ($prg === false || array_key_exists('retour', $prg)) {
+         * $args = Session::get('post', false, $this->getSessionNamespace());
+         * if (! $args) {
+         * $arret = true;
+         * $flashMessengerMessage = 'Action formellement interdite !';
+         * $flashMessengerNS = FlashMessenger::NAMESPACE_ERROR;
+         * }
+         * } else {
+         * $args = $prg;
+         * if (array_key_exists('cancel', $args)) {
+         * $arret = true;
+         * $flashMessengerMessage = '';
+         * $flashMessengerNS = FlashMessenger::NAMESPACE_SUCCESS;
+         * } elseif (array_key_exists('origine', $args)) {
+         * $this->redirectToOrigin()->setBack($args['origine']);
+         * unset($args['origine']);
+         * Session::set('post', $args, $this->getSessionNamespace());
+         * }
+         * }
+         * // sortie propre
+         * if ($arret) {
+         * Session::remove('post', $this->getSessionNamespace());
+         * try {
+         * return $this->redirectToOrigin()->back();
+         * } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface
+         * $e) {
+         * return $this->homePage($flashMessengerMessage, $flashMessengerNS);
+         * }
+         * }
+         */
+        $args = $this->initListe('invites');
+        if ($args instanceof Response) {
+            return $args;
+        } elseif (array_key_exists('cancel', $args)) {
+            $this->redirectToOrigin()->reset();
+            return $this->redirect()->toRoute('sbmgestion');
         }
-        // sortie propre
-        if ($arret) {
-            Session::remove('post', $this->getSessionNamespace());
-            try {
-                return $this->redirectToOrigin()->back();
-            } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
-                return $this->homePage($flashMessengerMessage, $flashMessengerNS);
-            }
-        }
-        $eleveId = StdLib::getParam('eleveId', $args, 0);
-        $resultset = $this->db_manager->get('Sbm\Db\Table\Invites')->fetchAll(
-            [
-                'millesime' => Session::get('millesime'),
-                'eleveId' => $eleveId
-            ]);
         return new ViewModel(
             [
-                'data' => $resultset,
-                'eleve' => StdLib::getParam('eleveNom', $args),
-                'eleveId' => $eleveId
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\Invites')->paginatorInvites(
+                    $args['where'],
+                    [
+                        'dateFin DESC',
+                        'dateDebut DESC',
+                        'inv.nom',
+                        'inv.prenom'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_invites', 10),
+                'page' => $this->params('page', 1),
+                'criteres_form' => null
             ]);
     }
 
@@ -989,11 +1002,36 @@ class EleveGestionController extends AbstractActionController
      *
      * @return \Zend\View\Model\ViewModel
      */
-    public function correspondantAjoutAction()
+    public function inviteAjoutAction()
     {
-        $form = $this->form_manager->get(Form\Correspondant::class);
-        $form->setValueOptions('nationalite',
-            \SbmCommun\Model\Nationalites::getNationalites());
+        $values_options = [];
+        $form = $this->form_manager->get(Form\Invite::class)->setMillesime(
+            Session::get('millesime'));
+        /*
+         * ->setValueOptions('eleveId',
+         * $this->db_manager->get('Sbm\Db\Select\Eleves')
+         * ->elevesAbonnes())
+         * ->setValueOptions('responsableId',
+         * $this->db_manager->get('Sbm\Db\Select\Responsables'))
+         * ->setValueOptions('organismeId',
+         * $this->db_manager->get('Sbm\Db\Select\Organismes'))
+         * ->
+         * // ajax à partir du codePostal au lieu de: ->setValueOptions('communeId',
+         * // $values_options)
+         * setValueOptions('etablissementId',
+         * $this->db_manager->get('Sbm\Db\Select\Etablissements')
+         * ->desservis())
+         * ->setValueOptions('stationId',
+         * $this->db_manager->get('Sbm\Db\Select\Stations')
+         * ->ouvertes());
+         * /*
+         * Ajax permettant de réduire les services à ceux desservant l'établissement
+         * ->setValueOptions('servicesMatin[]',
+         * $this->db_manager->get('Sbm\Db\Select\Services')->desservent())
+         * ->setValueOptions('servicesMidi[]', $values_options)
+         * ->setValueOptions('servicesSoir[]', $values_options)
+         * ->setValueOptions('servicesMerSoir[]', $values_options);
+         */
         $params = [
             'data' => [
                 'table' => 'invites',
@@ -1002,11 +1040,7 @@ class EleveGestionController extends AbstractActionController
             ],
             'form' => $form
         ];
-        $r = $this->addData($params, function ($args) {
-            return $args['eleve'];
-        }, function ($args) use ($form) {
-            $form->initialise($args['eleveId']);
-        });
+        $r = $this->addData($params);
         switch ($r) {
             case $r instanceof Response:
                 return $r;
@@ -1016,13 +1050,12 @@ class EleveGestionController extends AbstractActionController
             case 'success':
                 return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                     [
-                        'action' => 'correspondant'
+                        'action' => 'invite'
                     ]);
                 break;
             default:
                 return new ViewModel([
-                    'form' => $form->prepare(),
-                    'eleve' => $r
+                    'form' => $form->prepare()
                 ]);
                 break;
         }
@@ -1032,11 +1065,9 @@ class EleveGestionController extends AbstractActionController
      *
      * @return \Zend\View\Model\ViewModel
      */
-    public function correspondantEditAction()
+    public function inviteEditAction()
     {
-        $form = $this->form_manager->get(Form\Correspondant::class);
-        $form->setValueOptions('nationalite',
-            \SbmCommun\Model\Nationalites::getNationalites());
+        $form = $this->form_manager->get(Form\Invite::class);
         $params = [
             'data' => [
                 'table' => 'invites',
@@ -1060,7 +1091,7 @@ class EleveGestionController extends AbstractActionController
                 case 'success':
                     return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                         [
-                            'action' => 'correspondant'
+                            'action' => 'invite'
                         ]);
                     break;
                 default:
@@ -1081,7 +1112,7 @@ class EleveGestionController extends AbstractActionController
      *
      * @return \Zend\View\Model\ViewModel
      */
-    public function correspondantSupprAction()
+    public function inviteSupprAction()
     {
         $currentPage = $this->params('page', 1);
         $form = new Form\ButtonForm([
@@ -1107,18 +1138,18 @@ class EleveGestionController extends AbstractActionController
 
         try {
             $r = $this->supprData($params,
-                function ($id, $tableClasses) {
+                function ($id, $tableInvites) {
                     return [
                         'id' => $id,
-                        'data' => $tableClasses->getRecord($id)
+                        'data' => $tableInvites->getRecord($id)
                     ];
                 });
         } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             $this->flashMessenger()->addWarningMessage(
-                'Impossible de supprimer cette classe parce que certains élèves y sont inscrits.');
+                'Impossible de supprimer cette personne.');
             return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                 [
-                    'action' => 'correspondant',
+                    'action' => 'invite',
                     'page' => $currentPage
                 ]);
         }
@@ -1132,7 +1163,7 @@ class EleveGestionController extends AbstractActionController
                 case 'success':
                     return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                         [
-                            'action' => 'correspondant',
+                            'action' => 'invite',
                             'page' => $currentPage
                         ]);
                     break;
@@ -1140,16 +1171,14 @@ class EleveGestionController extends AbstractActionController
                     return new ViewModel(
                         [
                             'form' => $form->prepare(),
-                            'page' => $currentPage,
-                            'data' => StdLib::getParam('data', $r->getResult()),
-                            'inviteId' => StdLib::getParam('id', $r->getResult())
+                            'data' => StdLib::getParam('data', $r->getResult())
                         ]);
                     break;
             }
         }
     }
 
-    public function correspondantPassAction()
+    public function invitePassAction()
     {
         $prg = $this->prg('/document/pass-temporaire', true);
         if ($prg instanceof Response) {

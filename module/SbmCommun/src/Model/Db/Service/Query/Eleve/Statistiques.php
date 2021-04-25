@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 nov. 2020
- * @version 2020-2.6.1
+ * @date 11 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -17,12 +17,30 @@ use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
+use Zend\Stdlib\ArrayObject;
 
 class Statistiques extends AbstractQuery
 {
 
+    /**
+     *
+     * @var bool
+     */
+    private $sansimpayes = false;
+
     protected function init()
     {
+    }
+
+    /**
+     *
+     * @param bool $sansimpayes
+     * @return self
+     */
+    public function setSansImpayes(bool $sansimpayes):self
+    {
+        $this->sansimpayes = $sansimpayes;
+        return $this;
     }
 
     /**
@@ -46,9 +64,16 @@ class Statistiques extends AbstractQuery
     public function getNbEnregistresByMillesime(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbEnregistresByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbEnregistresByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'regimeId' => 0,
+                'effectif' => 0
+            ]);
+        }
     }
 
     public function selectNbEnregistresByMillesime(int $millesime = null,
@@ -89,14 +114,16 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
+        return $select;
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves inscrits par millesime. ATTENTION !
+     * Renvoie un tableau statistiques des élèves inscrits par millesime.
+     * ATTENTION !
      * L'élève est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en
      * payant. Le R2 ne compte pas pour ça.
      *
@@ -114,9 +141,15 @@ class Statistiques extends AbstractQuery
     public function getNbInscritsByMillesime(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbInscritsByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbInscritsByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbInscritsByMillesime($millesime, $nature, $id)
@@ -164,7 +197,8 @@ class Statistiques extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves préinscrits par millesime. ATTENTION !
+     * Renvoie un tableau statistiques des élèves préinscrits par millesime.
+     * ATTENTION !
      * L'élève est inscrit si paiementR1 == 0 car c'est le R1 qui inscrit l'élève en
      * payant. Le R2 ne compte pas pour ça.
      *
@@ -183,9 +217,15 @@ class Statistiques extends AbstractQuery
     public function getNbPreinscritsByMillesime(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbPreinscritsByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbPreinscritsByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbPreinscritsByMillesime($millesime, $nature, $id)
@@ -226,9 +266,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     /**
@@ -248,9 +289,15 @@ class Statistiques extends AbstractQuery
     public function getNbFamilleAccueilByMillesime(int $millesime = null,
         string $nature = '', $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbFamilleAccueilByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbFamilleAccueilByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbFamilleAccueilByMillesime($millesime, $nature, $id)
@@ -291,37 +338,45 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
+        return $select;
     }
 
     /**
-     * Renvoie un tableau statistiques des élèves rayés par millesime. ATTENTION ! L'élève
+     * Renvoie un tableau statistiques des élèves rayés par millesime.
+     * ATTENTION ! L'élève
      * est inscrit si paiementR1 == 1 car c'est le R1 qui inscrit l'élève en payant. Le R2
      * ne compte pas pour ça.
      *
      * @param string $millesime
      *            Si le millesime est donné, le tableau renvoyé n'a qu'un seul élément
      *            d'index 0
-     * @param string $inscrits
-     *            si true alors on ne compte que les inscrits rayés, sinon on ne compte
-     *            que les préinscrits
      * @param string $nature
      *            prend pour valeur 'commune', 'etablissement', 'transporteur'. Les autres
      *            valeurs sont assimilées à 'secretariat'
      * @param string $id
      *            idenntifiant correspondant à la nature indiquée
+     * @param string $inscrits
+     *            si true alors on ne compte que les inscrits rayés, sinon on ne compte
+     *            que les préinscrits
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbRayesByMillesime($millesime = null, $inscrits = true,
-        string $nature = '', $id = null)
+    public function getNbRayesByMillesime($millesime = null, string $nature = '',
+        $id = null, $inscrits = true)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbRayesByMillesime($millesime, $inscrits, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbRayesByMillesime($millesime, $inscrits, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbRayesByMillesime($millesime, $inscrits, $nature, $id)
@@ -367,9 +422,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     /**
@@ -391,9 +447,15 @@ class Statistiques extends AbstractQuery
     public function getNbGardeAlterneeByMillesime(int $millesime = null,
         string $nature = '', $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbGardeAlterneeByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbGardeAlterneeByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbGardeAlterneeByMillesime($millesime, $nature, $id = null)
@@ -441,10 +503,11 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime',
             'regimeId'
         ]);
+        return $select;
     }
 
     /**
@@ -466,9 +529,15 @@ class Statistiques extends AbstractQuery
     public function getNbByMillesimeEtablissement(int $millesime = null,
         string $nature = '', $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbByMillesimeEtablissement($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbByMillesimeEtablissement($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbByMillesimeEtablissement($millesime, $nature, $id)
@@ -521,13 +590,13 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group(
-            [
-                'millesime',
-                'regimeId',
-                'com.nom',
-                'eta.nom'
-            ]);
+        $select->where($where)->group([
+            'millesime',
+            'regimeId',
+            'com.nom',
+            'eta.nom'
+        ]);
+        return $select;
     }
 
     /**
@@ -549,9 +618,15 @@ class Statistiques extends AbstractQuery
     public function getNbByMillesimeClasse(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbByMillesimeClasse($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbByMillesimeClasse($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbByMillesimeClasse($millesime, $nature, $id)
@@ -599,11 +674,12 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime',
             'regimeId',
             'cla.nom'
         ]);
+        return $select;
     }
 
     /**
@@ -621,12 +697,18 @@ class Statistiques extends AbstractQuery
      * @return array Les enregistrements du tableau (indexé à partir de 0) sont des
      *         tableaux associatifs dont les clés sont 'millesime' et 'effectif'
      */
-    public function getNbMoins1KmByMillesime($millesime = null, string $nature = "",
+    public function getNbMoins1KmByMillesime($millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbMoins1KmByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbMoins1KmByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbMoins1KmByMillesime($millesime, $nature, $id)
@@ -669,9 +751,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     /**
@@ -692,9 +775,15 @@ class Statistiques extends AbstractQuery
     public function getNbDe1A3KmByMillesime(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNbDe1A3KmByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbDe1A3KmByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbDe1A3KmByMillesime($millesime, $nature, $id)
@@ -738,9 +827,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     /**
@@ -761,9 +851,15 @@ class Statistiques extends AbstractQuery
     public function getNb3kmEtPlusByMillesime(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult(
-                $this->selectNb3kmEtPlusByMillesime($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNb3kmEtPlusByMillesime($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNb3kmEtPlusByMillesime($millesime, $nature, $id)
@@ -811,9 +907,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     /**
@@ -834,8 +931,15 @@ class Statistiques extends AbstractQuery
     public function getNbDistanceInconnue(int $millesime = null, string $nature = '',
         $id = null)
     {
-        return iterator_to_array(
-            $this->renderResult($this->selectNbDistanceInconnue($millesime, $nature, $id)));
+        $resultset = $this->renderResult(
+            $this->selectNbDistanceInconnue($millesime, $nature, $id));
+        if ($resultset->count()) {
+            return iterator_to_array($resultset);
+        } else {
+            return new ArrayObject([
+                'effectif' => 0
+            ]);
+        }
     }
 
     protected function selectNbDistanceInconnue($millesime, $nature, $id)
@@ -879,9 +983,10 @@ class Statistiques extends AbstractQuery
                     break;
             }
         }
-        return $select->where($where)->group([
+        $select->where($where)->group([
             'millesime'
         ]);
+        return $select;
     }
 
     private function selectFiltreCommune(string $communeId)

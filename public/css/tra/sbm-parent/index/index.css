@@ -2,12 +2,12 @@
  * Feuille de style des pages index.phtml et reinscription-eleve-phase1.phtml du module SbmParent
  * 
  * @project sbm
- * @package public/css/ccmgc/sbm-parent/index
+ * @package public/css/tra/sbm-parent/index
  * @filesource index.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
  **/ 
 div#parent-wrapper {
 	min-height: 400px;

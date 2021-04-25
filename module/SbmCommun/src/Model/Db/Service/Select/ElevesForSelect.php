@@ -8,8 +8,8 @@
  * @filesource ElevesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2020
- * @version 2020-2.6.0
+ * @date 3 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -31,7 +31,9 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
     {
         foreach ([
             'eleves',
-            'scolarites'
+            'scolarites',
+            'responsables',
+            'communes'
         ] as $name) {
             $this->table_name[$name] = $this->db_manager->getCanonicName($name, 'table');
         }
@@ -60,7 +62,8 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
             ->columns(
             [
                 'eleveId',
-                'nomprenom' => new Literal('concat(nom, " ", prenom)')
+                'nomprenom' => new Literal(
+                    'concat(ele.nom," ",ele.prenom," (",com.alias,")")')
             ])
             ->join([
             'sco' => $this->table_name['scolarites']
@@ -69,10 +72,18 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
             'reductionR1',
             'duplicataR1'
         ])
+            ->join([
+            'res' => $this->table_name['responsables']
+        ], 'res.responsableId = ele.responsable1Id', [])
+            ->join([
+            'com' => $this->table_name['communes']
+        ], 'com.communeId = res.communeId', [
+            'alias'
+        ])
             ->where($conditions())
             ->order([
-            'nom',
-            'prenom'
+            'ele.nom',
+            'ele.prenom'
         ]);
         $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')

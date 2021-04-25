@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 sept. 2020
- * @version 2020-2.6.1
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Controller;
 
@@ -93,13 +93,13 @@ class TransportController extends AbstractActionController
         }
         // mise en place du calcul d'effectif
         $effectifCircuits = $this->db_manager->get('Sbm\Db\Eleve\EffectifCircuits');
-        $where = new Where();
-        $where->equalTo('c.millesime', Session::get('millesime'))
-            ->equalTo('c.ligneId', $args['post']['ligneId'])
-            ->equalTo('c.sens', $args['post']['sens'])
-            ->equalTo('c.moment', $args['post']['moment'])
-            ->equalTo('c.ordre', $args['post']['ordre']);
-        $effectifCircuits->setSanspreinscrits(false)->init($where);
+        $effectifCircuits->setSanspreinscrits(false)
+            ->setMillesime(Session::get('millesime'))
+            ->setLigneId($args['post']['ligneId'])
+            ->setSens($args['post']['sens'])
+            ->setMoment($args['post']['moment'])
+            ->setOrdre($args['post']['ordre'])
+            ->init();
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Vue\Circuits')->paginator(
@@ -572,7 +572,8 @@ class TransportController extends AbstractActionController
                             'sens' => $circuit->sens,
                             'moment' => $circuit->moment,
                             'ordre' => $circuit->ordre
-                        ], $circuit->stationId, false, in_array($circuit->moment, [
+                        ], $circuit->stationId, false,
+                        in_array($circuit->moment, [
                             1,
                             4,
                             5
@@ -585,14 +586,15 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $this->params('id', 1),
                 'circuitId' => $circuitId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 
     /**
      * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce
-     * millesime est vide. Cette action reprend les circuits de la dernière année connue.
+     * millesime est vide.
+     * Cette action reprend les circuits de la dernière année connue.
      */
     public function circuitDupliquerAction()
     {
@@ -936,8 +938,8 @@ class TransportController extends AbstractActionController
                 'moment' => $moment,
                 'ordre' => $ordre,
                 'origine' => StdLib::getParam('origine', $args, 'service-liste'),
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    $millesime)['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -1193,8 +1195,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'classeId' => $classeId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -1507,8 +1509,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'communeId' => $communeId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -1579,7 +1581,8 @@ class TransportController extends AbstractActionController
      * ================================ ETABLISSEMENTS ========================
      */
     /**
-     * Critère de sélection commun aux établissements et aux stations. La localisation
+     * Critère de sélection commun aux établissements et aux stations.
+     * La localisation
      * géographique est dans un rectangle défini dans la config (voir
      * config/autoload/sbm.local.php) (paramètres dans cartes - etablissements - valide)
      *
@@ -1865,8 +1868,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'etablissementId' => $etablissementId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -2482,7 +2485,8 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une relation établissement-service avec confirmation A l'appel, les
      * variables suivantes sont récupérées : $etablissementId, $ligneId, $sens, $moment,
-     * $ordre, $origine, $op, $supprimer. Lors de l'annulation, on a : $etablissementId,
+     * $ordre, $origine, $op, $supprimer.
+     * Lors de l'annulation, on a : $etablissementId,
      * $ligneId, $sens, $moment, $ordre, $origine, $op, $supprnon. Lors de la validation
      * on a : $etablissementId, $ligneId, $sens, $moment, $ordre, $origine, $op, $supproui
      *
@@ -2653,8 +2657,8 @@ class TransportController extends AbstractActionController
                 'moment' => $moment,
                 'ordre' => $ordre,
                 'origine' => StdLib::getParam('origine', $args, 'etablissement-service'),
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    $millesime)['dateDebut']->format('Y-m-d')
             ]);
         return $viewModel;
     }
@@ -2806,7 +2810,8 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une relation établissement-station avec confirmation à l'appel, les
      * variables suivantes sont récupérées : $etablissementId, $stationId, $origine, $op,
-     * $supproui. Lors de l'annulation, on a : $etablissementId, $stationId, $origine,
+     * $supproui.
+     * Lors de l'annulation, on a : $etablissementId, $stationId, $origine,
      * $op, $supprnon. Lors de la validation on a : $etablissementId, $stationId,
      * $origine, $op, $supproui
      *
@@ -3191,8 +3196,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'lotId' => $lotId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
         ;
     }
@@ -3573,8 +3578,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'lotId' => $lotId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
         ;
     }
@@ -4024,8 +4029,8 @@ class TransportController extends AbstractActionController
                 'moment' => $moment,
                 'ordre' => $ordre,
                 'origine' => StdLib::getParam('origine', $args, 'service-liste'),
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    $millesime)['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -4378,7 +4383,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Montre la carte des stations. Un clic dans la carte permet de placer la nouvelle
+     * Montre la carte des stations.
+     * Un clic dans la carte permet de placer la nouvelle
      * station. On enregistre la position. Le formulaire prérempli est présenté avec la
      * commune, l'adresse (N° + rue) et les coordonnées X et Y On peut alors changer le
      * nom de la station avant d'enregistrer la fiche.
@@ -4553,8 +4559,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'stationId' => $stationId,
                 'origine' => StdLib::getParam('origine', $args),
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 
@@ -4677,8 +4683,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'circuitId' => $circuit->circuitId,
                 'origine' => StdLib::getParam('origine', $args, 'station-service'),
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    $millesime)['dateDebut']->format('Y-m-d')
             ]);
         $view->setTemplate('sbm-gestion/transport/circuit-group.phtml');
         return $view;
@@ -4813,7 +4819,8 @@ class TransportController extends AbstractActionController
 
     /**
      * Localisation d'une station sur la carte et enregistrement de ses coordonnées Toutes
-     * les stations sont affichées. La station à localiser est repérée par un bulet rouge.
+     * les stations sont affichées.
+     * La station à localiser est repérée par un bulet rouge.
      */
     public function stationLocalisationAction()
     {
@@ -5098,7 +5105,8 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une relation station-station avec confirmation à l'appel, les
      * variables suivantes sont récupérées : $station1Id, $station2Id, $origine, $op,
-     * $supproui. Lors de l'annulation, on a : $station1Id, $station2Id, $origine, $op,
+     * $supproui.
+     * Lors de l'annulation, on a : $station1Id, $station2Id, $origine, $op,
      * $supprnon. Lors de la validation on a : $station1Id, $station2Id, $origine, $op,
      * $supproui
      *
@@ -5452,8 +5460,8 @@ class TransportController extends AbstractActionController
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour,
                 'transporteurId' => $transporteurId,
-                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite()['dateDebut']->format(
-                    'Y-m-d')
+                'dateDebut' => $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+                    Session::get('millesime'))['dateDebut']->format('Y-m-d')
             ]);
     }
 

@@ -5,22 +5,27 @@
  * Utilisation de la forme :
  * $this->db_manager->get('Sbm\GrilleTarifR1')->appliquerTarif($eleveId);
  *
- * Si on ne veut pas relire les fiches eleve et scolarite, on peut passer les objectData oEleve et oSolarite
+ * Si on ne veut pas relire les fiches eleve et scolarite, on peut passer les objectData
+ * oEleve et oSolarite
  * $this->db_manager->get('Sbm\GrilleTarifR1')->setOEleve($oEleve)->setOScolarite($oScolarite)->appliquerTarif($eleveId);
  *
- * La méthode appliquerTarif() calcule et enregistre si nécessaire la grille tarifaire et la réduction
- * La méthode getObjectDataScolarite() calcule la grile tarifaire et la réduction et renvoie l'object
+ * La méthode appliquerTarif() calcule et enregistre si nécessaire la grille tarifaire et
+ * la réduction
+ * La méthode getObjectDataScolarite() calcule la grile tarifaire et la réduction et
+ * renvoie l'object
  * sans l'enregistrer
- * La méthode scolariteChange() renvoie un booléen qui indique si l'objectData Scolarite a changé après
- * le calcul de la grille tarifaire et de la réduction. Mais il n'y a pas d'enregistrement.
+ * La méthode scolariteChange() renvoie un booléen qui indique si l'objectData Scolarite a
+ * changé après
+ * le calcul de la grille tarifaire et de la réduction. Mais il n'y a pas
+ * d'enregistrement.
  *
  * @project sbm
  * @package SbmCommun/src/Arlysere/Tarification
  * @filesource GrilleTarifR1.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juil. 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification;
 
@@ -47,12 +52,11 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     private $millesime;
 
     /**
-     * Tableau contenant les clés 'dateDebut', 'dateFin', 'echeance', 'etat',
-     * 'inscription'
+     * Tableau contenant les clés 'dateDebut', 'dateFin', 'echeance'
      *
      * @var array
      */
-    protected $etatDuSite;
+    protected $datesInscriptions;
 
     /**
      * Indicateur interne qui permet de réduire les lectures dans les tables
@@ -70,7 +74,8 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
 
     /**
      * Cet objet est initialisé par le contenu de la table scolarites puis ses propriétés
-     * grilleTarifRx et reductionRx sont mises à jour par les calculs. Le résultat sera
+     * grilleTarifRx et reductionRx sont mises à jour par les calculs.
+     * Le résultat sera
      * enregistré si on appelle la méthode appliquerTarif() ou renvoyé sans enregistrement
      * si on appelle la méthode getObjectDataScolarite()
      *
@@ -123,8 +128,9 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
                 sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
-        $this->etatDuSite = $this->db_manager->get('Sbm\Db\System\Calendar')->getEtatDuSite();
         $this->millesime = Session::get('millesime');
+        $this->datesInscriptions = $this->db_manager->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+            $this->millesime);
         $this->init();
         return $this;
     }
@@ -149,7 +155,8 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
 
     /**
      * Renvoie un ObjectData Scolarite avec la bonne grille et la bonne réduction pour R1
-     * sans l'enregistrer dans la table. Attention, la propriété changeScolarite indique
+     * sans l'enregistrer dans la table.
+     * Attention, la propriété changeScolarite indique
      * si cet enregistrement est nécessaire.
      *
      * @param int $eleveId
@@ -164,7 +171,8 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
-     * Renvoie true si la grille tarifaire ou la réduction pour R1 ont changé. Pas
+     * Renvoie true si la grille tarifaire ou la réduction pour R1 ont changé.
+     * Pas
      * d'enregistrement dans la table. La méthode getObjectDataScolarite() permet de
      * récupérer les données à jour.
      *
@@ -225,7 +233,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         if ($this->oScolarite) {
             $dateInscription = \DateTime::createFromFormat('Y-m-d H:i:s',
                 $this->oScolarite->dateInscription);
-            return $dateInscription <= $this->etatDuSite['echeance'];
+            return $dateInscription <= $this->datesInscriptions['echeance'];
         } else {
             return false;
         }
@@ -242,7 +250,7 @@ class GrilleTarifR1 implements FactoryInterface, GrilleTarifInterface
         if ($this->oEleve) {
             $dateCreation = \DateTime::createFromFormat('Y-m-d H:i:s',
                 $this->oEleve->dateCreation);
-            return $dateCreation > $this->etatDuSite['echeance'];
+            return $dateCreation > $this->datesInscriptions['echeance'];
         } else {
             return false;
         }

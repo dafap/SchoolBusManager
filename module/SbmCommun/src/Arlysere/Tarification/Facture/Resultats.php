@@ -9,8 +9,8 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -103,6 +103,17 @@ class Resultats implements ResultatsInterface
             'liste' => []
         ];
         $this->paiements = [];
+    }
+
+    /**
+     *
+     * @param int $millesime
+     * @return self
+     */
+    public function setMillesime(int $millesime): self
+    {
+        $this->millesime = $millesime;
+        return $this;
     }
 
     /**
@@ -313,6 +324,17 @@ class Resultats implements ResultatsInterface
     }
 
     /**
+     * Vide le résultat
+     *
+     * @return self
+     */
+    public function clear(): self
+    {
+        $this->responsableId = null;
+        return $this;
+    }
+
+    /**
      *
      * @return boolean
      */
@@ -337,7 +359,8 @@ class Resultats implements ResultatsInterface
 
     /**
      * Pour obtenir le montant total des abonnements (R1 + R2), mettre 0 dans le premier
-     * paramètre. Si la nature est 'tous' laisser vide les 2 paramètres.
+     * paramètre.
+     * Si la nature est 'tous' laisser vide les 2 paramètres.
      *
      * @param int $r
      *            1 pour R1, 2 pour R2, 0 pour le total
@@ -380,7 +403,8 @@ class Resultats implements ResultatsInterface
     }
 
     /**
-     * Renvoie le tableau des abonnements. Si $r == 0, c'est un tableaud de tableau où la
+     * Renvoie le tableau des abonnements.
+     * Si $r == 0, c'est un tableaud de tableau où la
      * première clé est le 1 ou 2 selon R1 ou R2
      *
      * @param int $r
@@ -459,7 +483,8 @@ class Resultats implements ResultatsInterface
 
     /**
      * Deux résultats sont égaux s'ils ont les mêmes éléments de facturation (duplicataR1,
-     * liste d'élèves, abonnements). Il n'est pas tenu compte des paiements.
+     * liste d'élèves, abonnements).
+     * Il n'est pas tenu compte des paiements.
      *
      * @param Resultats $r
      * @return boolean

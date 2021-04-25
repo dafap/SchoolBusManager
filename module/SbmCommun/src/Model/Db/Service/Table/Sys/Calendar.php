@@ -9,8 +9,8 @@
  * @filesource Calendar.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 déc. 2019
- * @version 2019-2.5.4
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -23,9 +23,13 @@ use DateTime;
 
 class Calendar extends AbstractSbmTable
 {
+
     const ETAT_AVANT = 0;
+
     const ETAT_PENDANT = 1;
+
     const ETAT_APRES = 2;
+
     const ETAT_FERME = 3;
 
     /**
@@ -223,7 +227,28 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
-     * Renvoie l'état du site vis à vis de la période d'inscripton. Les dates sont données
+     * Renvoie la date de début, de fin et d'échéance des inscriptions du millesime
+     * demandé.
+     *
+     * @param int $millesime
+     * @return DateTime
+     */
+    public function getDatesInscriptions(int $millesime)
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $millesime)->literal('nature="INS"');
+        $resultset = $this->fetchAll($where);
+        $row = $resultset->current();
+        return [
+            'dateDebut' => DateTime::createFromFormat('Y-m-d', $row->dateDebut),
+            'dateFin' => DateTime::createFromFormat('Y-m-d', $row->dateFin),
+            'echeance' => DateTime::createFromFormat('Y-m-d', $row->echeance)
+        ];
+    }
+
+    /**
+     * Renvoie l'état du site vis à vis de la période d'inscripton.
+     * Les dates sont données
      * sous forme de DateTime. L'état du site est :<ul> <li>0 : inscriptions
      * annoncées</li> <li>1 : inscriptions ouvertes</li> <li>2 : inscriptions ouvertes
      * pour les retardataires</li> <li>3 : inscriptions fermées</li></ul> ATTENTION !
@@ -245,8 +270,8 @@ class Calendar extends AbstractSbmTable
         $resultset = $this->fetchAll($where);
         $row = $resultset->current();
         $dateDebut = DateTime::createFromFormat('Y-m-d', $row->dateDebut);
-        $df = clone($dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin));
-        $de = clone($echeance = DateTime::createFromFormat('Y-m-d', $row->echeance));
+        $df = clone ($dateFin = DateTime::createFromFormat('Y-m-d', $row->dateFin));
+        $de = clone ($echeance = DateTime::createFromFormat('Y-m-d', $row->echeance));
         $aujourdhui = new DateTime();
         if ($aujourdhui < $dateDebut) {
             return [
@@ -352,7 +377,8 @@ class Calendar extends AbstractSbmTable
     }
 
     /**
-     * Change l'état d'une année scolaire. Une année scolaire peut être ouverte (1) ou
+     * Change l'état d'une année scolaire.
+     * Une année scolaire peut être ouverte (1) ou
      * fermée (0).
      *
      * @param int $millesime

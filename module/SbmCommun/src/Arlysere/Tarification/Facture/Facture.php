@@ -5,18 +5,20 @@
  * Cet objet est déclaré dans module.config.php sous l'alias 'Sbm\Facture' en db_manager.
  * Utilisation :
  * $facture = $this->db_manager('Sbm\Facture');
- * $facture->setResponsableId($responsableId); // affecte la propriété et lance les calculs si nécessaire
+ * $facture->setMillesime($millesime)->setResponsableId($responsableId);
  * $facture->lire($numero); // lit les factures de ce responsable jusqu'au numéro indiqué
- * $facture->facturer(); // lit les factures du responsable, compare la signature de la dernière avec celle
- *    du getResultats() et en crée une nouvelle si nécessaire. Affecte correctement la propriété oFacture.
+ * $facture->facturer(); // lit les factures du responsable, compare la signature de la
+ * dernière avec celle
+ * du getResultats() et en crée une nouvelle si nécessaire. Affecte correctement la
+ * propriété oFacture.
  *
  * @project sbm
  * @package SbmCommun/src/Arlysere
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
- * @version 2020-2.6.0
+ * @date 25 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -31,6 +33,13 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Facture implements FactoryInterface, FactureInterface
 {
+
+    /**
+     * Il est interdit d'y accéder directement (hors getter et setter)
+     *
+     * @var int
+     */
+    private $millesime;
 
     /**
      *
@@ -94,6 +103,25 @@ class Facture implements FactoryInterface, FactureInterface
     }
 
     /**
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Paiements\FactureInterface::getMillesime()
+     */
+    public function getMillesime(): int
+    {
+        if (! $this->millesime) {
+            $this->setMillesime();
+        }
+        return $this->millesime;
+    }
+
+    public function setMillesime(int $millesime = 0): self
+    {
+        $this->millesime = $millesime ?: Session::get('millesime');
+        return $this;
+    }
+
+    /**
      * En même temps, lance les calculs si nécessaire
      *
      * {@inheritdoc}
@@ -110,8 +138,9 @@ class Facture implements FactoryInterface, FactureInterface
     {
         if (is_null($resulats)) {
             try {
-                $this->resulats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                    $this->responsableId);
+                $this->resulats = $this->db_manager->get('Sbm\Facture\Calculs')
+                    ->setMillesime($this->getMillesime())
+                    ->getResultats($this->responsableId);
             } catch (\Exception $e) {
                 $this->resulats = null;
             }
@@ -216,16 +245,6 @@ class Facture implements FactoryInterface, FactureInterface
     /**
      *
      * {@inheritdoc}
-     * @see \SbmCommun\Model\Paiements\FactureInterface::getMillesime()
-     */
-    public function getMillesime(): int
-    {
-        return $this->getOFacture()->millesime;
-    }
-
-    /**
-     *
-     * {@inheritdoc}
      * @see \SbmCommun\Model\Paiements\FactureInterface::getOFacture()
      */
     public function getOFacture(): ObjectDataFacture
@@ -234,7 +253,7 @@ class Facture implements FactoryInterface, FactureInterface
             $this->oFacture = $this->tFactures->getObjData();
             $this->oFacture->exchangeArray(
                 [
-                    'millesime' => Session::get('millesime'),
+                    'millesime' => $this->getMillesime(),
                     'exercice' => date('Y'),
                     'responsableId' => $this->getResponsableId(),
                     'date' => DateLib::todayToMysql(),
@@ -326,7 +345,7 @@ class Facture implements FactoryInterface, FactureInterface
      */
     protected function add()
     {
-        $this->oFacture->exchangeArray(
+        $this->getOFacture()->exchangeArray(
             [
                 'exercice' => $this->getExercice(),
                 'numero' => $this->getNouveauNumero(),
@@ -346,7 +365,8 @@ class Facture implements FactoryInterface, FactureInterface
     }
 
     /**
-     * Donne un nouveau numéro. Le redonne si on l'a déjà recherché.
+     * Donne un nouveau numéro.
+     * Le redonne si on l'a déjà recherché.
      *
      * @return int
      */

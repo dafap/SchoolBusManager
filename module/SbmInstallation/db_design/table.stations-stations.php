@@ -8,7 +8,7 @@
  * @filesource table.stations-stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 fév. 2021
+ * @date 11 avr. 2021
  * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
@@ -23,7 +23,7 @@ return [
         'fields' => [
             'station1Id' => 'int(11) NOT NULL DEFAULT "0"',
             'station2Id' => 'int(11) NOT NULL DEFAULT "0"',
-            'temps' => 'time DEFAULT NULL'
+            'temps' => 'time NOT NULL DEFAULT "00:00:00"'
         ],
         'primary_key' => [
             'station1Id',

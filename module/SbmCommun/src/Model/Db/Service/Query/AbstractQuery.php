@@ -9,8 +9,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query;
 
@@ -79,6 +79,17 @@ abstract class AbstractQuery implements FactoryInterface
     }
 
     abstract protected function init();
+
+    /**
+     *
+     * @param int $millesime
+     * @return self
+     */
+    public function setMillesime(int $millesime)
+    {
+        $this->millesime = $millesime;
+        return $this;
+    }
 
     /**
      * Prépare un resultSetPrototype permettant d'appliquer les stratégies au résultat de

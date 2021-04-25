@@ -9,8 +9,8 @@
  * @filesource circuit-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 sept. 2020
- * @version 2020-2.6.1
+ * @date 21 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -73,6 +73,7 @@ $actions = [
 			<tbody>
 				<tr>
 					<th>Service</th>
+					<th>Précision</th>
 					<th>Jours</th>
 					<th>Transporteur</th>
 					<th>De</th>
@@ -143,6 +144,8 @@ $actions = [
 				<tr class="petit <?=$css;?>">
 					<td class="designationService">
 						<?=$this->escapeHtml($designationService);?></td>
+					<td class="alias">
+					    <?=$this->escapeHtml($service->alias);?></td>
 					<td class="semaine">
 						<?= $service->jours;?></td>
 					<td class="transporteur">

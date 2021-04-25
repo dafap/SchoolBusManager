@@ -9,8 +9,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juin 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -58,7 +58,8 @@ class Calculs extends AbstractQuery
     private $duplicataPU;
 
     /**
-     * Méthode publique unique permettant de renvoyer un résultat. Si un résultat a déjà
+     * Méthode publique unique permettant de renvoyer un résultat.
+     * Si un résultat a déjà
      * été préparé il est repris (sauf si force)
      *
      * @param int $responsableId
@@ -82,6 +83,30 @@ class Calculs extends AbstractQuery
         return $this->resultats;
     }
 
+    public function clearResultats()
+    {
+        $this->resultats->clear();
+    }
+
+    /**
+     * Surcharge la méthode pour transmettre le millesime à l'objet Resultats
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Query\AbstractQuery::setMillesime()
+     */
+    public function setMillesime(int $millesime)
+    {
+        $this->millesime = $millesime;
+        $this->resultats->setMillesime($millesime);
+        return $this;
+    }
+
+    /**
+     * Par défaut, le millesime est celui de la session
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Query\AbstractQuery::init()
+     */
     protected function init()
     {
         $this->resultats = new Resultats($this->millesime);
@@ -338,7 +363,8 @@ class Calculs extends AbstractQuery
     }
 
     /**
-     * Indique si le responsableId de l'objet est un responsable. Sinon cela peut être un
+     * Indique si le responsableId de l'objet est un responsable.
+     * Sinon cela peut être un
      * organisme, un gestionnaire, un administrateur, le sadmin ...
      *
      * @return bool
