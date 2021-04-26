@@ -76,8 +76,8 @@ class VerifSoldeAnterieur
      */
     public function getResultats(int $millesime): Resultats
     {
-        $this->oCalculs->setMillesime($millesime);
-        return $this->oCalculs->getResultats($this->responsableId);
+        return $this->oCalculs->setMillesime($millesime)->getResultats(
+            $this->responsableId);
     }
 
     /**

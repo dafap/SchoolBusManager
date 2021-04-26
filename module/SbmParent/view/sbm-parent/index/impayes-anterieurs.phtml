@@ -42,7 +42,16 @@ $boutons['payer'] = [
     'formaction' => $url_payercb1
 ];
 ?>
-<h1></h1>
+<div class="clearfix">
+	<h1>Espace Parents</h1>
+	<div class="flashMessenger float-right">
+<?=$this->flashMessenger()->render('success');?>
+<?=$this->flashMessenger()->render('warning');?>
+<?=$this->flashMessenger()->render('error');?>
+<?=$this->flashMessenger()->render('info');?>
+<?=$this->flashMessenger()->render('default');?>
+	</div>
+</div>
 <p>Votre compte laisse apparaitre un impayé des PASS ANNUELS JUNIORS de vos enfants pour
 l'année scolaire <?= $as_precedente;?> d'un total de <?= $solde;?>.</p>
 <p>Avant d'inscrire vos enfants pour l'année scolaire <?= $as;?> nous vous demandons
@@ -56,6 +65,7 @@ de bien vouloir régler cet impayé.</p>
 		    <tr>
 				<td><?=sprintf('%s %s', $enfant['nom'], $enfant['prenom']);?></td>
 				<td><?=$enfant['grilleTarif'];?></td>
+				<td><?=$enfant['reduction'] ? 'Réduit' : 'Normal';?></td>
 			</tr>
 		<?php endforeach;?>
 		    <tr>

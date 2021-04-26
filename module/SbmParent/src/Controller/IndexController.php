@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2021
+ * @date 25 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmParent\Controller;
@@ -75,12 +75,15 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
+        $millesime = Session::get('millesime');
+        $anterieur = $millesime - 1;
         try {
             $responsable = $this->responsable->get();
             // mise en session pour contrôler la demande de factures et de paiement
             Session::set('post', [
                 'responsableId' => $responsable->responsableId
             ], $this->getSessionNamespace());
+            Session::set('millesime', $millesime, $this->getSessionNamespace());
             Session::set('nsArgsFacture', $this->getSessionNamespace());
         } catch (\Exception $e) {
             if ($this->authenticate->by()->hasIdentity() &&
@@ -115,8 +118,8 @@ class IndexController extends AbstractActionController
         // controle des impayés de l'année précédente
         $ctrl = new \SbmParent\Model\VerifSoldeAnterieur($this->db_manager,
             $responsable->responsableId);
-        // if (! $ctrl->valid(Session::get('millesime') - 1)) {
-        if (! $ctrl->valid(Session::get('millesime'))) { // pour DEBUG
+        if (! $ctrl->valid($anterieur)) {
+            // if (! $ctrl->valid($millesime)) { // pour DEBUG
             return $this->redirect()->toRoute('sbmparent',
                 [
                     'action' => 'impayes-anterieurs'
@@ -127,9 +130,11 @@ class IndexController extends AbstractActionController
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $format_telephone = new \SbmCommun\Model\View\Helper\Telephone();
+        $as = Session::get('as');
         return new ViewModel(
             [
                 'theme' => $this->theme,
+                'as_date_debut' => $as['dateDebut'],
                 'namespacectrl' => md5('nsArgsFacture'),
                 'responsable' => $responsable,
                 'calendar' => $tCalendar,
@@ -144,12 +149,12 @@ class IndexController extends AbstractActionController
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
-                        'anneeScolaire' => Session::get('as')['libelle']
+                        'anneeScolaire' => $as['libelle']
                     ]),
                 'factures' => $this->db_manager->get('Sbm\Db\Table\Factures')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
-                        'millesime' => Session::get('millesime')
+                        'millesime' => $millesime
                     ]),
                 'client' => $this->client,
                 'accueil' => $this->accueil,
@@ -1224,30 +1229,28 @@ class IndexController extends AbstractActionController
             ]);
     }
 
+    /**
+     * Cette méthode ne peut pas récupérer le responsableId par la méthode
+     * getResponsableIdFromSession() puisque son accès nest pas en POST.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function impayesAnterieursAction()
     {
         $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
-        try {
-            $auth_responsable = $this->responsable->get();
-            // mise en session pour contrôler la demande de factures et de paiement
-            Session::set('post', [
-                'responsableId' => $auth_responsable->responsableId
-            ], $this->getSessionNamespace());
-            Session::set('nsArgsFacture', $this->getSessionNamespace());
-        } catch (\Exception $e) {
-            return $this->redirect()->toRoute('login', [
-                'action' => 'logout'
-            ]);
-        }
         $millesime = Session::get('millesime');
-        $ctrl = new \SbmParent\Model\VerifSoldeAnterieur($this->db_manager,
-            $auth_responsable->responsableId);
-        return new ViewModel([
-            'resultats' => $ctrl->getResultats($millesime),
-            'millesime' => $millesime,
-            'client' => $this->client,
-            'accueil' => $this->accueil,
-            'namespacectrl' => md5('nsArgsFacture'),
-        ]);
+        $anterieur = $millesime - 1;
+        $sessionNamespacePaiement = Session::get('nsArgsFacture');
+        Session::set('millesime', $anterieur, $sessionNamespacePaiement);
+        $responsableId = Session::get('post', 0, $sessionNamespacePaiement)['responsableId'];
+        $ctrl = new \SbmParent\Model\VerifSoldeAnterieur($this->db_manager, $responsableId);
+        return new ViewModel(
+            [
+                'resultats' => $ctrl->getResultats($anterieur),
+                'millesime' => $millesime,
+                'client' => $this->client,
+                'accueil' => $this->accueil,
+                'namespacectrl' => md5('nsArgsFacture')
+            ]);
     }
 }
