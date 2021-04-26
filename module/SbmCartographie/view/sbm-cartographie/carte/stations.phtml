@@ -12,8 +12,8 @@
  * @filesource stations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 nov. 2020
- * @version 2020-2.6.1
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->headStyle()->captureStart();
@@ -88,6 +88,8 @@ foreach ($this->ptStations as $pt) {
             $table .= '<tr><td>' . implode('</td><td>', $ligne) . '</td></tr>';
         }
         $table .= '</table>';
+    } else {
+        $table = '';
     }
     if ($pt->getAttribute('color') == 'current') {
         $color = "purple";
