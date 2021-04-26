@@ -7,9 +7,11 @@
  * @filesource par-classe-etablissement.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2019
- * @version 2019-2.5.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
+use SbmBase\Model\StdLib;
+
 try {
     $url_retour = $this->url('sbmgestion/statistiques');
     $url_rapports = $this->url('sbmgestion/statistiques',
@@ -102,22 +104,54 @@ if ($url_retour) {
 				<?php for ($i = 0; $i < count($this->statistiques['annee_courante']); $i++):?>
 				<?php
         // année précédente
-        $inscrits_a_p = $this->statistiques['annee_precedente'][$i]['inscrits'] ?: 0;
+        $inscrits_a_p = StdLib::getParamR([
+            'annee_precedente',
+            $i,
+            'inscrits'
+        ], $this->statistique, 0);
         $totaux['annee_precedente']['inscrits'] += $inscrits_a_p;
-        $internet_a_p = $this->statistiques['annee_precedente'][$i]['internet'] ?: 0;
+        $internet_a_p = StdLib::getParamR([
+            'annee_precedente',
+            $i,
+            'internet'
+        ], $this->statistique, 0);
         $totaux['annee_precedente']['internet'] += $internet_a_p;
-        $papier_a_p = $this->statistiques['annee_precedente'][$i]['papier'] ?: 0;
+        $papier_a_p = StdLib::getParamR([
+            'annee_precedente',
+            $i,
+            'papier'
+        ], $this->statistique, 0);
         $totaux['annee_precedente']['papier'] += $papier_a_p;
-        $transportes_a_p = $this->statistiques['annee_precedente'][$i]['transportes'] ?: 0;
+        $transportes_a_p = StdLib::getParamR([
+            'annee_precedente',
+            $i,
+            'transportes'
+        ], $this->statistique, 0);
         $totaux['annee_precedente']['transportes'] += $transportes_a_p;
         // année courante
-        $inscrits_a_c = $this->statistiques['annee_courante'][$i]['inscrits'] ?: 0;
+        $inscrits_a_c = StdLib::getParamR([
+            'annee_courante',
+            $i,
+            'inscrits'
+        ], $this->statistique, 0);
         $totaux['annee_courante']['inscrits'] += $inscrits_a_c;
-        $internet_a_c = $this->statistiques['annee_courante'][$i]['internet'] ?: 0;
+        $internet_a_c = StdLib::getParamR([
+            'annee_courante',
+            $i,
+            'internet'
+        ], $this->statistique, 0);
         $totaux['annee_courante']['internet'] += $internet_a_c;
-        $papier_a_c = $this->statistiques['annee_courante'][$i]['papier'] ?: 0;
+        $papier_a_c = StdLib::getParamR([
+            'annee_courante',
+            $i,
+            'papier'
+        ], $this->statistique, 0);
         $totaux['annee_courante']['papier'] += $papier_a_c;
-        $transportes_a_c = $this->statistiques['annee_courante'][$i]['transportes'] ?: 0;
+        $transportes_a_c = StdLib::getParamR([
+            'annee_courante',
+            $i,
+            'transportes'
+        ], $this->statistique, 0);
         $totaux['annee_courante']['transportes'] += $transportes_a_c;
         ?>
 				<tr class="<?= $this->cycle(["even", "odd"])->next();?>">
