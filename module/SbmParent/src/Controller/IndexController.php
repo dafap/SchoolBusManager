@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2021
+ * @date 26 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmParent\Controller;
@@ -1237,7 +1237,6 @@ class IndexController extends AbstractActionController
      */
     public function impayesAnterieursAction()
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'), 'sbm_error.log');
         $millesime = Session::get('millesime');
         $anterieur = $millesime - 1;
         $sessionNamespacePaiement = Session::get('nsArgsFacture');

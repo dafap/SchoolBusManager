@@ -1,6 +1,7 @@
 <?php
 /**
- * Trait regroupant les méthodes communes aux tables lignes, services, etablissements-services et circuits
+ * Trait regroupant les méthodes communes aux tables lignes, services,
+ * etablissements-services et circuits
  * ainsi qu'aux tables scolarites et affectations
  *
  * @project sbm
@@ -8,14 +9,13 @@
  * @filesource OutilsMillesimeTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
-use SbmCommun\Model\Traits\DebugTrait;
 
 /**
  *
@@ -23,7 +23,6 @@ use SbmCommun\Model\Traits\DebugTrait;
  */
 trait OutilsMillesimeTrait
 {
-    use DebugTrait;
 
     /**
      * Supprime tous les enregistrements concernant le millesime indiqué.
@@ -41,7 +40,8 @@ trait OutilsMillesimeTrait
 
     /**
      * Duplique les enregistrements du millesime départ en millesime nouveau à condition
-     * qu'il n'y ait aucun enregistrement dans le millesime nouveau. Renvoie true si c'est
+     * qu'il n'y ait aucun enregistrement dans le millesime nouveau.
+     * Renvoie true si c'est
      * bon, false s'il y avait déjà des enregistrements dans le millesime nouveau. En cas
      * d'erreur, lance une exception.
      *
@@ -55,7 +55,6 @@ trait OutilsMillesimeTrait
             $resultset = $this->fetchAll([
                 'millesime' => $millesime_depart
             ]);
-            //$this->debugInitLog('/debug', 'outil-millesime.log');
             $columns = $this->db_manager->getColumns($this->table_name, $this->table_type);
             $column_name = false;
             foreach ($columns as $ocolumn) {
@@ -64,8 +63,6 @@ trait OutilsMillesimeTrait
                     break;
                 }
             }
-            //$this->debugLog($this->table_name);
-            //$this->debugLog($column_name);
             foreach ($resultset as $item) {
                 if ($column_name) {
                     $item->{$column_name} = null;

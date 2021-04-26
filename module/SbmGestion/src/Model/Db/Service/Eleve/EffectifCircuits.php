@@ -11,26 +11,20 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2021
+ * @date 26 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
-use SbmGestion\Model\Db\Service\EffectifInterface;
+use SbmGestion\Model\Db\Service\Eleve\Special\EffectifInterface as SpecialEffectifInterface;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
-interface SpecialEffectifInterface extends EffectifInterface
-{
-
-    public function init(Where $where);
-}
-
 class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterface
 {
-    use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait, \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     private $ligneId;
 
@@ -105,7 +99,6 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
 
     public function init(Where $where = null)
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'effectifCircuit.log');
         if (empty($where)) {
             $where = new Where();
             $where->equalTo('c.millesime', $this->millesime)
@@ -135,9 +128,6 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
 
     public function transportes($circuitId)
     {
-        if (! array_key_exists($circuitId, $this->structure)) {
-            $this->debugLog([__METHOD__ =>['circuitId'=>$circuitId, 'structure' => $this->structure]]);
-        }
         return StdLib::getParam($circuitId, $this->structure, 0);
     }
 
@@ -213,7 +203,6 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'c.horaireA',
                 'passage'
             ]);
-        $this->debugLog([__METHOD__=>$this->getSqlString($select)]);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }

@@ -8,19 +8,14 @@
  * @filesource station-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 juil. 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\StdLib;
 
 class Temps
 {
-    use \SbmCommun\Model\Traits\DebugTrait;
-    public function __construct()
-    {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'station-station.log');
-    }
     public function __invoke($temps)
     {
         $t = \DateTime::createFromFormat('H:i:s', $temps);
@@ -29,10 +24,6 @@ class Temps
         } else {
             return '';
         }
-    }
-    public function debug($temps)
-    {
-        $this->debugLog($temps);
     }
 }
 

@@ -8,7 +8,7 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2021
+ * @date 26 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\View\Helper;
@@ -18,7 +18,7 @@ use SbmCommun\Model\Strategy\Semaine;
 
 class Affectations extends AbstractHelper
 {
-    use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     const TR = '<tr>';
 
@@ -62,8 +62,6 @@ class Affectations extends AbstractHelper
      */
     public function __invoke($trajet, $structure)
     {
-        // $this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
-        // 'viewhelper-affectation.log');
         $aMoments = $this->getMoment();
         $oSemaine = new Semaine();
         $render = '';
