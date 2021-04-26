@@ -3,7 +3,8 @@
  * Détermination d'un trajet permettant d'aller du domicile à l'établissement ou retour
  *
  * Hérite des propriétés millesime, sql, db_manager de la classe parent
- * Hérite des méthodes publiques addStrategy, createService et getSqlString de la classe parent.
+ * Hérite des méthodes publiques addStrategy, createService et getSqlString de la classe
+ * parent.
  * Hérite aussi des méthodes protégées getResultSetPrototype, paginator, renderResult
  *
  * @project sbm
@@ -11,8 +12,8 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2021
- * @version 2021-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.0 (en 2.6.1 il n'existe plus)
  */
 namespace SbmCommun\Arlysere;
 
@@ -202,13 +203,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
                 'sbm_error.log');
         }
-        $this->niveau = -1;
-        $this->regimeId = -1;
+        $this->niveau = - 1;
+        $this->regimeId = - 1;
     }
 
     /**
      * Le tableau renvoyé est de la forme [$moment => boolean] Pour chaque moment on
-     * renvoie true si on a trouvé une solution et false sinon. En mode debuggage le
+     * renvoie true si on a trouvé une solution et false sinon.
+     * En mode debuggage le
      * compte-rendu cr est enregistré dans le fichier erreurs.
      *
      * @return boolean[]
@@ -275,7 +277,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Renvoie le Where des requêtes de recherche de trajet. L'établissement fréquenté est
+     * Renvoie le Where des requêtes de recherche de trajet.
+     * L'établissement fréquenté est
      * identifié par la propriété $this->etablissementId. La station d'origine est
      * identifiée par la propriété $this->stationId. Une correspondance cor1 permet
      * d'utiliser une station jumelle de la station d'origine comme point de départ
@@ -431,7 +434,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Requête déterminant les trajets avec 1 ou plusieurs circuits. Les correspondances
+     * Requête déterminant les trajets avec 1 ou plusieurs circuits.
+     * Les correspondances
      * ne se font que si la station porte le même identifiant sur les deux circuits. Par
      * défaut, trajet du matin sans correspondance.
      *
@@ -525,7 +529,16 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         foreach ($ordre_corr as $column) {
             $ordre[] = $column;
         }
-$this->debugLog([__METHOD__,'moment'=>$moment, 'nb_cir'=>$nb_cir, 'ordre' => $ordre, 'conditions'=>$this->getConditions($moment, $nb_cir)]);
+        if ($this->hasDebugger()) {
+            $this->debugLog(
+                [
+                    __METHOD__,
+                    'moment' => $moment,
+                    'nb_cir' => $nb_cir,
+                    'ordre' => $ordre,
+                    'conditions' => $this->getConditions($moment, $nb_cir)
+                ]);
+        }
         $select->where($this->getConditions($moment, $nb_cir))
             ->order($ordre);
         if ($this->hasDebugger()) {
