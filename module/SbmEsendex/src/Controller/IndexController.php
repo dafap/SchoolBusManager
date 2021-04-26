@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmEsendex\Controller;
 
@@ -411,7 +411,7 @@ class IndexController extends AbstractActionController
             } else {
                 // on récupère les telephones en session
                 $post = Session::get('post', [], $this->getSessionNamespace());
-                $args['telephones'] = $post['telephones'];
+                $args['telephones'] = StdLib::getParam('telephones', $post, []);
             }
         }
         $telephones = StdLib::getParam('telephones', $args, []);
