@@ -715,7 +715,7 @@ class Tcpdf extends \TCPDF
                 'éditée par School Bus Manager'));
         $subtitle = $oCalculs->getResultat($pageheader_string);
         $this->setPrintHeader($has_pageheader);
-        $this->SetHeaderData(
+        $this->setHeaderData(
             $this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO),
             $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH),
             $title, $subtitle,
@@ -729,7 +729,7 @@ class Tcpdf extends \TCPDF
                 trim($this->getConfig('document', 'pageheader_font_style', '')),
                 $this->getConfig('document', 'pageheader_font_size', PDF_FONT_SIZE_MAIN)
             ]);
-        $this->SetHeaderMargin(
+        $this->setHeaderMargin(
             $this->getConfig('document', 'pageheader_margin', PDF_MARGIN_HEADER));
     }
 

@@ -14,7 +14,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="pass-provisoire-A4.svg">
+   sodipodi:docname="pass-provisoire-A4 - Copie (2).svg">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -153,17 +153,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="408.17455"
-     inkscape:cy="785.5722"
+     inkscape:zoom="3.959798"
+     inkscape:cx="334.05176"
+     inkscape:cy="913.93008"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer9"
+     inkscape:current-layer="photo1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1001"
-     inkscape:window-x="-9"
-     inkscape:window-y="-9"
+     inkscape:window-height="986"
+     inkscape:window-x="2869"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -576,7 +576,7 @@
            y="64.448875"
            x="-126.75373"
            id="tspan910"
-           sodipodi:role="line">du %8$s</tspan></text>
+           sodipodi:role="line">du %5$s</tspan></text>
       <text
          inkscape:label="au"
          xml:space="preserve"
@@ -588,7 +588,7 @@
            id="tspan918"
            x="-126.74613"
            y="69.966263"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.89283px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.208544">au %9$s</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.89283px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.208544">au %6$s</tspan></text>
     </g>
     <path
        id="path1130"
@@ -801,7 +801,7 @@
          id="tspan868"
          x="55.376976"
          y="220.07793"
-         style="font-size:2.50253px;stroke-width:0.208544">Identifiant       %10$d</tspan></text>
+         style="font-size:2.50253px;stroke-width:0.208544">Identifiant       %7$d</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -830,7 +830,7 @@
          id="tspan873"
          x="52.613033"
          y="224.27493"
-         style="font-size:2.50253px;stroke-width:0.208544">Valable du %8$s au %9$s</tspan></text>
+         style="font-size:2.50253px;stroke-width:0.208544">Valable du %5$s au %6$s</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -848,27 +848,27 @@
          id="tspan995"
          x="20.673634"
          y="233.04956"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.175px;line-height:1.05;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:-0.0661458px;stroke-width:0.208544">%11$s %12$s</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:3.175px;line-height:1.05;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:-0.0661458px;stroke-width:0.208544">%8$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="236.05858"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;line-height:1.05;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan999">chez %13$s %14$s</tspan><tspan
+         id="tspan999">%9$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="238.88045"
          style="font-size:2.46944px;line-height:1.05;letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan1001">%4$s</tspan><tspan
+         id="tspan1001">%2$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="241.70233"
          style="font-size:2.46944px;line-height:1.05;letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan1003">%5$s</tspan><tspan
+         id="tspan1003">%3$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="244.52422"
          style="font-size:2.46944px;line-height:1.05;letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan1005">%6$s %7$s</tspan><tspan
+         id="tspan1005">%4$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="247.34608"
@@ -878,7 +878,7 @@
          x="20.673634"
          y="250.16797"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:2.46944px;line-height:1.05;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan1009">%15$s</tspan><tspan
+         id="tspan1009">%10$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="252.98984"
@@ -888,7 +888,7 @@
          x="20.673634"
          y="255.74675"
          style="font-size:2.46944px;line-height:1.05;letter-spacing:-0.0661458px;stroke-width:0.208544"
-         id="tspan1013">Point d'origine : %16$s</tspan><tspan
+         id="tspan1013">Point d'origine : %11$s</tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="258.61652"
@@ -897,7 +897,7 @@
            id="tspan1786"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:sans-serif;-inkscape-font-specification:sans-serif">Matin : </tspan><tspan
            id="tspan1792"
-           style="font-size:2.82222px">%17$s</tspan></tspan><tspan
+           style="font-size:2.82222px">%12$s</tspan></tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="261.57983"
@@ -906,7 +906,7 @@
            id="tspan1788"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:sans-serif;-inkscape-font-specification:sans-serif">Midi : </tspan><tspan
            id="tspan1794"
-           style="font-size:2.82222px">%18$s</tspan></tspan><tspan
+           style="font-size:2.82222px">%13$s</tspan></tspan><tspan
          sodipodi:role="line"
          x="20.673634"
          y="264.54318"
@@ -915,7 +915,7 @@
            id="tspan1790"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:sans-serif;-inkscape-font-specification:sans-serif">Soir : </tspan><tspan
            id="tspan1796"
-           style="font-size:2.82222px">%19$s</tspan></tspan></text>
+           style="font-size:2.82222px">%14$s</tspan></tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -933,22 +933,22 @@
          id="tspan1022"
          x="97.910332"
          y="46.508968"
-         style="font-size:3.05865px;line-height:1.95;stroke-width:0.208544">%1$s %2$s %3$s</tspan><tspan
+         style="font-size:3.05865px;line-height:1.95;stroke-width:0.208544">%1$s</tspan><tspan
          sodipodi:role="line"
          x="97.910332"
          y="52.473335"
          style="font-size:3.05865px;line-height:1.95;stroke-width:0.208544"
-         id="tspan1026">%4$s</tspan><tspan
+         id="tspan1026">%2$s</tspan><tspan
          sodipodi:role="line"
          x="97.910332"
          y="58.437702"
          style="font-size:3.05865px;line-height:1.95;stroke-width:0.208544"
-         id="tspan1028">%5$s</tspan><tspan
+         id="tspan1028">%3$s</tspan><tspan
          sodipodi:role="line"
          x="97.910332"
          y="64.402069"
          style="font-size:3.05865px;line-height:1.95;stroke-width:0.208544"
-         id="tspan1030">%6$s %7$s</tspan></text>
+         id="tspan1030">%4$s</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1000,7 +1000,7 @@
          x="16.037109"
          y="150.65573"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">adresser le PASS JUNIOR PROVISOIRE</tspan><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold'"> valable du %8$s  au %9$s.</tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold'"> valable du %5$s  au %6$s.</tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;shape-inside:url(#rect1056);display:inline">
 </tspan></tspan><tspan
          x="16.037109"
@@ -1015,7 +1015,7 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;shape-inside:url(#rect1056);display:inline">scolaire suivants les horaires d’ouverture et de fermeture de l’enseignement. Aussi, à ce titre pour le bon fonctionnement du réseau TRA MOBILITÉ </tspan></tspan><tspan
          x="16.037109"
          y="169.21985"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">il convient que l'enfant respecte impérativement les n° de lignes attribuées telles qu’indiquées sur le PASS JUNIOR</tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">il convient que le bénéficiaire respecte impérativement les n° de lignes attribuées telles qu’indiquées sur le PASS JUNIOR</tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman,  Bold'">.</tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.02818px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;shape-inside:url(#rect1056);display:inline">
 </tspan></tspan><tspan
@@ -1107,7 +1107,7 @@
          x="87.074219"
          y="196.04357"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;shape-inside:url(#rect1147)">► </tspan><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold'">METTRE UNE PHOTO RÉCENTE de l'enfant</tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold'">METTRE UNE PHOTO RÉCENTE du bénéficiaire</tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;shape-inside:url(#rect1147)"> </tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">à coller sur le PASS,</tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif">
@@ -1224,4 +1224,5 @@
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.44894px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.208544"
          id="tspan2201">JUNIOR</tspan></text>
   </g>
+  %15$s
 </svg>

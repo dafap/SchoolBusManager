@@ -29,17 +29,17 @@
      fit-margin-left="0"
      fit-margin-top="0"
      inkscape:window-maximized="1"
-     inkscape:window-y="-9"
-     inkscape:window-x="-9"
-     inkscape:window-height="1001"
+     inkscape:window-y="-11"
+     inkscape:window-x="2869"
+     inkscape:window-height="986"
      inkscape:window-width="1920"
      showgrid="false"
      inkscape:document-rotation="0"
-     inkscape:current-layer="g2099"
+     inkscape:current-layer="svg8"
      inkscape:document-units="mm"
-     inkscape:cy="792.92673"
-     inkscape:cx="602.99766"
-     inkscape:zoom="1.979899"
+     inkscape:cy="265.38131"
+     inkscape:cx="514.96534"
+     inkscape:zoom="1.4"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -60,7 +60,6 @@
     </rdf:RDF>
   </metadata>
   <g
-     sodipodi:insensitive="true"
      transform="translate(0.52409542,0.41510543)"
      style="display:inline"
      id="g2010"
@@ -127,7 +126,8 @@
      transform="translate(-0.26458458,-0.26459457)"
      inkscape:label="Bas de page"
      id="layer13"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     style="display:inline">
     <g
        id="g3347">
       <text
@@ -158,7 +158,6 @@
      id="layer1"
      inkscape:groupmode="layer">
     <rect
-       sodipodi:insensitive="true"
        inkscape:label="colonneDeDroite"
        y="49.989536"
        x="104.98953"
@@ -167,14 +166,14 @@
        id="rect2391"
        style="opacity:1;fill:none;stroke:#aaaaaa;stroke-width:0.979071;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <rect
-       sodipodi:insensitive="true"
        inkscape:label="colonneDeGauche"
        style="opacity:0.420744;fill:none;stroke:none;stroke-width:0.263;stroke-opacity:0.8"
        id="rect2398"
        width="95"
        height="200"
        x="10"
-       y="50" />
+       y="50"
+       sodipodi:insensitive="true" />
     <g
        sodipodi:insensitive="true"
        id="g3333">
@@ -472,6 +471,7 @@
          x="109.58051"
          y="108.67128"><tspan>véhicule en est équipé.</tspan></tspan></text>
     <g
+       sodipodi:insensitive="true"
        id="g2099">
       <rect
          sodipodi:insensitive="true"
@@ -522,15 +522,16 @@
            style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:84.7899;stroke-width:0.264583"
            x="111.74022"
            y="186.52823"
-           id="text1999"><tspan
+           id="text1999"
+           inkscape:label="text1999"><tspan
              x="111.74022"
              y="186.52823"><tspan
                style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">de fumer </tspan><tspan
                style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif">ou</tspan><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583"> d'être en possission d'allumettes, de </tspan></tspan><tspan
+               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583"> d'être en possession d'allumettes, de </tspan></tspan><tspan
              x="111.74022"
              y="190.05602"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">briquets ou de récipiant pouvant contenir du liquide </tspan></tspan><tspan
+               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">briquets ou de récipient pouvant contenir du liquide </tspan></tspan><tspan
              x="111.74022"
              y="193.5838"><tspan
                style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">inflammable </tspan><tspan
@@ -619,22 +620,22 @@
          x="109.58051"
          y="101.6157"><tspan>par le conducteur, le contrôleur ou l'accompagnateur.</tspan></tspan></text>
     <text
+       sodipodi:insensitive="true"
        xml:space="preserve"
        style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:88.7277;stroke-width:0.264583"
        x="109.58051"
        y="98.087914"
        id="text2059"
-       transform="translate(-0.65587044,130.91532)"
-       sodipodi:insensitive="true"><tspan
+       transform="translate(-0.65587044,130.91532)"><tspan
          x="109.58051"
          y="98.087914"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">TouteInfractionsera sanctionnée </tspan><tspan>en rapport au </tspan></tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">Toute infraction sera sanctionnée </tspan><tspan>en rapport au </tspan></tspan><tspan
          x="109.58051"
          y="101.6157"><tspan>comportement de l'élève </tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">au vu du tableau des sanctions </tspan></tspan><tspan
          x="109.58051"
          y="105.14349"><tspan>téléchargeable sur le site </tspan><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">www.tra-mobilite.com</tspan><tspan>.</tspan></tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">tra-mobilite.com</tspan><tspan>.</tspan></tspan></text>
     <g
        id="g6457"
        sodipodi:insensitive="true">
@@ -773,7 +774,8 @@
          style="font-size:4.23333px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
          x="25.851171"
          y="99.563583"
-         id="text5875"><tspan
+         id="text5875"
+         inkscape:label="text5875"><tspan
            sodipodi:role="line"
            id="tspan5873"
            x="25.851171"
@@ -782,7 +784,8 @@
     </g>
     <g
        id="g6474"
-       sodipodi:insensitive="true">
+       sodipodi:insensitive="true"
+       inkscape:label="g6474">
       <path
          inkscape:transform-center-y="-17.706606"
          inkscape:transform-center-x="6.2808339"
