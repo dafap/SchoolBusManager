@@ -16,8 +16,8 @@
  * @filesource Photo.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Photo;
 
@@ -167,7 +167,8 @@ class Photo
     }
 
     /**
-     * Taille de l'image en px selon la résolution. Cette classe ne traite que 150 (par
+     * Taille de l'image en px selon la résolution.
+     * Cette classe ne traite que 150 (par
      * défaut) ou 300 dpi
      *
      * @param number $resolution
@@ -194,7 +195,8 @@ class Photo
     }
 
     /**
-     * Renvoie un flux binaire (blob) du codage de l'image en jpeg. L'image est
+     * Renvoie un flux binaire (blob) du codage de l'image en jpeg.
+     * L'image est
      * reconstruite pour être à la taille correspondante à une photo d'identité de 35 x 45
      * mm, à la résolution initialisée, de type JPEG. Par défaut, la résolution est de 150
      * dpi. Attention ! Pour l'enregistrer en base de données, penser à l'échapper par
@@ -248,7 +250,8 @@ class Photo
     }
 
     /**
-     * Mise de l'image aux bonnes proportions. Rognage si nécessaire. La photo est centrée
+     * Mise de l'image aux bonnes proportions.
+     * Rognage si nécessaire. La photo est centrée
      * horizontalement et prise à partir du haut verticalement.
      *
      * @param resource $image
@@ -284,7 +287,8 @@ class Photo
     }
 
     /**
-     * Supprime un cadre blanc, noir, gris, contenant la photo. Utile lorsque la photo a
+     * Supprime un cadre blanc, noir, gris, contenant la photo.
+     * Utile lorsque la photo a
      * une bordure blanche due à un mauvais scan (page A4 par exemple).
      *
      * @param resource $im
@@ -389,16 +393,19 @@ class Photo
         }
 
         // Renvoie la partie copiée si succès, sinon l'image d'origine
-        $newim = $this->imagecreatetruecolor($r - $l, $b - $t);
-        if ($this->imagecopy($newim, $im, 0, 0, $l, $t, $this->imagesx($newim),
-            $this->imagesy($newim))) {
-            return $newim;
+        if ($r > $l && $b > $t) {
+            $newim = $this->imagecreatetruecolor($r - $l, $b - $t);
+            if ($this->imagecopy($newim, $im, 0, 0, $l, $t, $this->imagesx($newim),
+                $this->imagesy($newim))) {
+                return $newim;
+            }
         }
         return $im;
     }
 
     /**
-     * Renvoie la chaine src de la balise <img src="... Cette chaine est de la forme
+     * Renvoie la chaine src de la balise <img src="...
+     * Cette chaine est de la forme
      * data:image/jpeg;base64,... (jpeg peut être remplacé par un autre type)
      *
      * @param string $imagebinary
