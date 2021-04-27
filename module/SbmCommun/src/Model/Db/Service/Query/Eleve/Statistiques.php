@@ -8,7 +8,7 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2021
+ * @date 27 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -37,7 +37,7 @@ class Statistiques extends AbstractQuery
      * @param bool $sansimpayes
      * @return self
      */
-    public function setSansImpayes(bool $sansimpayes):self
+    public function setSansImpayes(bool $sansimpayes): self
     {
         $this->sansimpayes = $sansimpayes;
         return $this;
@@ -69,10 +69,16 @@ class Statistiques extends AbstractQuery
         if ($resultset->count()) {
             return iterator_to_array($resultset);
         } else {
-            return new ArrayObject([
-                'regimeId' => 0,
-                'effectif' => 0
-            ]);
+            return [
+                new ArrayObject([
+                    'regimeId' => 0,
+                    'effectif' => 0
+                ]),
+                new ArrayObject([
+                    'regimeId' => 1,
+                    'effectif' => 0
+                ])
+            ];
         }
     }
 
