@@ -7,8 +7,8 @@
  * @package module/SbmCommun/src/SbmCommun/Model/Db/ObjectData
  * @filesource ObjectDataInterface.php
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2020
- * @version 2020-2.6.0
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\ObjectData;
 
@@ -31,7 +31,7 @@ interface ObjectDataInterface
      * @abstract
      *
      * @param \Iterator|\IteratorAggregate|array $dataSource
-     * @return \ArrayIterator
+     * @return self
      */
     public function exchangeArray($dataSource);
 

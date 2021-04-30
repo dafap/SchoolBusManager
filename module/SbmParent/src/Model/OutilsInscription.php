@@ -9,8 +9,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juin 2020
- * @version 2020-2.6.0
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmParent\Model;
 
@@ -451,13 +451,14 @@ class OutilsInscription
     {
         if ($mode != 'edit' || $this->cr['saveScolarite']['etablissementChange']) {
             $this->local_manager->get('Sbm\DbManager')
-                ->get('Sbm\ChercheTrajet')
+                ->get('Sbm\ChercheItineraires')
                 ->setEtablissementId($this->getOScolarite()->etablissementId)
                 ->setStationId($this->getOScolarite()->{'stationIdR' . $rang})
                 ->setEleveId($this->eleveId)
                 ->setJours($this->getOScolarite()->{'joursTransportR' . $rang})
                 ->setTrajet($rang)
                 ->setResponsableId($this->getOEleve()->{'responsable' . $rang . 'Id'})
+                ->setRegimeId($this->getOScolarite()->regimeId)
                 ->run();
         }
     }

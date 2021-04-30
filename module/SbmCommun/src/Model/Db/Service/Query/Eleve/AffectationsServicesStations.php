@@ -8,8 +8,8 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 déc. 2020
- * @version 2020-2.6.1
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -173,6 +173,7 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'trajet',
                 'moment',
+                'jours',
                 'cir1.horaireA',
                 // semaine (de Services), remplace jours (Affectations) non traité
                 'semaine DESC'
@@ -1014,7 +1015,6 @@ class AffectationsServicesStations extends AbstractQuery
         $select = $this->sql->select()
             ->columns(
             [
-                // 'jours', Non traité
                 'moment',
                 'correspondance',
                 'ligne1Id',
@@ -1063,6 +1063,7 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'trajet',
                 'moment',
+                'jours',
                 'cir1.horaireA',
                 // semaine (de Circuit), remplace jours (Affectations) non traité
                 'cir1.semaine & cir2.semaine DESC'

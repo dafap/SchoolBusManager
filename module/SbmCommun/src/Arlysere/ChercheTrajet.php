@@ -2,6 +2,8 @@
 /**
  * Détermination d'un trajet permettant d'aller du domicile à l'établissement ou retour
  *
+ * ABANDONNEE
+ *
  * Hérite des propriétés millesime, sql, db_manager de la classe parent
  * Hérite des méthodes publiques addStrategy, createService et getSqlString de la classe
  * parent.
@@ -12,7 +14,7 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2021
+ * @date 30 avr. 2021
  * @version 2021-2.6.0 (en 2.6.1 il n'existe plus)
  */
 namespace SbmCommun\Arlysere;
@@ -24,6 +26,15 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 
+/**
+ * Cette classe a été utilisée durant l'année 2020-2021. Elle ne tient pas compte
+ * du régime des élèves ni des places disponibles. Elle n'affecte pas de trajet le
+ * mercredi soir pour les lycéens. Elle gère mal les circuits primaires.
+ * Elle est abandonnée et remplacée par la classe ChercheItineraires
+ *
+ * @author alain
+ * @deprecated
+ */
 class ChercheTrajet extends AbstractQuery implements FactoryInterface
 {
     use DebugTrait;

@@ -8,11 +8,24 @@
  * @filesource etablissement-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
- * @version 2020-2.6.0
+ * @date 30 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
 
+class Temps
+{
+    public function __invoke($temps)
+    {
+        $t = \DateTime::createFromFormat('H:i:s', $temps);
+        if ($t) {
+            return $t->format('i:s');
+        } else {
+            return '';
+        }
+    }
+}
+$format_temps = new Temps();
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
     [
@@ -96,6 +109,7 @@ $data = $this->paginator->getCurrentItems();
 					<th>Station</th>
 					<th>Commune</th>
 					<th>Rang</th>
+					<th title="durée du trajet à pied en minutes et secondes">Temps</th>
 					<th></th>
 				</tr>
             <?php
@@ -113,8 +127,10 @@ $data = $this->paginator->getCurrentItems();
 						<?=$this->escapeHtml($entity->sta_nom);?></td>
 					<td class="commune">
 						<?=$this->escapeHtml($entity->sta_lacommune);?></td>
-					<td class="rang">
+					<td class="rang centre">
 						<?=$entity->rang;?></td>
+					<td class="temps align-right">
+						<?=$format_temps($entity->temps);?></td>
 					<td class="boutons">
             <?php
                 $hiddens['stationId'] = $entity->stationId;

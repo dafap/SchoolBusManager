@@ -8,7 +8,7 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2021
+ * @date 29 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\View\Helper;
@@ -68,8 +68,8 @@ class Affectations extends AbstractHelper
         if (isset($structure['annee_courante'])) {
             $render = '<table class="eleve-affectations annee-courante">';
             foreach ($structure['annee_courante'] as $m => $affectationsMoment) {
-                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
-                    foreach ($affectationsCorrespondance as $j => $affectation) {
+                foreach ($affectationsMoment as $j => $affectationsJours) {
+                    foreach ($affectationsJours as $rang => $affectation) {
                         // il faut décoder $j
                         $jours = $oSemaine->renderSemaine($j);
                         $args = '/jours:' . $j;
@@ -91,16 +91,17 @@ class Affectations extends AbstractHelper
                     }
                     unset($affectation);
                 }
-                unset($affectationsCorrespondance);
+                unset($affectationsJours);
             }
+            unset($affectationsMoment);
             $render .= "\n</table>";
         }
         if (isset($structure['annee_precedente'])) {
             $render .= '<span class="annee-precedente">Année précédente</span>';
             $render .= '<table class="eleve-affectations annee-precedente">';
             foreach ($structure['annee_precedente'] as $m => $affectationsMoment) {
-                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
-                    foreach ($affectationsCorrespondance as $j => $affectation) {
+                foreach ($affectationsMoment as $j => $affectationsJours) {
+                    foreach ($affectationsJours as $rang => $affectation) {
                         // il faut décoder $j
                         $jours = $oSemaine->renderSemaine($j);
                         $render .= sprintf(self::TR . self::TD . self::END_TR, $jours,
@@ -111,8 +112,9 @@ class Affectations extends AbstractHelper
                     }
                     unset($affectation);
                 }
-                unset($affectationsMoment);
+                unset($affectationsJours);
             }
+            unset($affectationsMoment);
             $render .= "\n</table>";
         }
         return $render;

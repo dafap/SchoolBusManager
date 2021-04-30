@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 déc. 2020
- * @version 2020-2.6.1
+ * @date 29 avr.2021
+ * @version 2021-2.6.1
  */
 use SbmCommun\Arlysere;
 use SbmCommun\Form;
@@ -87,7 +87,11 @@ return [
         ],
         'factories' => [
             'Sbm\Db\ObjectData\Responsable' => ObjectData\ResponsableFactory::class,
-            'Sbm\ChercheTrajet' => Arlysere\ChercheTrajet::class,
+            'Sbm\ChercheItineraires' => Arlysere\ChercheItineraires::class,
+            Arlysere\Itineraire\CollegienDP::class => Arlysere\Itineraire\CollegienDP::class,
+            Arlysere\Itineraire\LyceenDP::class => Arlysere\Itineraire\LyceenDP::class,
+            Arlysere\Itineraire\Ecolier::class => Arlysere\Itineraire\Ecolier::class,
+            Arlysere\Itineraire\Interne::class => Arlysere\Itineraire\Interne::class,
             'Sbm\Affectations\Deplacement' => Arlysere\Deplacement::class,
             'Sbm\GrilleTarifR1' => Arlysere\Tarification\GrilleTarifR1::class,
             'Sbm\GrilleTarifR2' => Arlysere\Tarification\GrilleTarifR2::class,
@@ -241,6 +245,7 @@ return [
             'Sbm\Db\Query\Etablissements' => Query\Etablissement\Etablissements::class,
             'Sbm\Db\Query\EtablissementsServices' => SbmCommun\Model\Db\Service\Query\Etablissement\EtablissementsServices::class,
             'Sbm\Db\Query\EtablissementsStations' => SbmCommun\Model\Db\Service\Query\Etablissement\EtablissementsStations::class,
+            'Sbm\Db\Query\Invites' => SbmCommun\Model\Db\Service\Query\Invite\Invites::class,
             'Sbm\Db\Query\SecteursScolairesClgPu' => Query\Etablissement\SecteursScolairesClgPu::class,
             'Sbm\Db\Query\Services' => Query\Service\Services::class,
             'Sbm\Db\Query\SimulationEtablissements' => Query\Etablissement\SimulationEtablissements::class,
@@ -265,8 +270,8 @@ return [
             Form\Circuit::class => Form\Circuit::class,
             Form\Classe::class => Form\Classe::class,
             Form\Commune::class => Form\Commune::class,
-            Form\Correspondant::class => Form\Correspondant::class,
             Form\Etablissement::class => Form\Etablissement::class,
+            Form\Invite::class => Form\Invite::class,
             Form\Ligne::class => Form\Ligne::class,
             Form\Lot::class => Form\Lot::class,
             Form\Organisme::class => Form\Organisme::class,

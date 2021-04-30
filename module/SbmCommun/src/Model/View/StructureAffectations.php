@@ -10,8 +10,8 @@
  * @filesource StructureAffectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juil. 2020
- * @version 2020-2.6.0
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\View;
 
@@ -25,7 +25,7 @@ class StructureAffectations
         if ($resultset->count()) {
             $structure = [];
             foreach ($resultset as $affectation) {
-                $structure[$affectation['moment']][$affectation['correspondance']][$affectation['jours']] = [
+                $structure[$affectation['moment']][$affectation['jours']][$affectation['correspondance']] = [
                     'ligne1Id' => $affectation['ligne1Id'],
                     'sensligne1' => $affectation['sensligne1'],
                     'ordreligne1' => $affectation['ordreligne1'],

@@ -1,16 +1,15 @@
 <?php
 /**
  * Remplace la classe Zend\Db\Sql\Ddl\CreateTable pour traiter le cas
- * spécifique de CREATE [TEMPORY] TABLE [IF NOT EXISTS] nom LIKE table_reference;
- *
- *
+ * spécifique de CREATE [TEMPORY] TABLE [IF NOT EXISTS] nom SELECT selectSql;
+ * où selectSql est une chaine SQL valide commençant par SELECT
  *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Sql/Ddl
- * @filesource CreateLike.php
+ * @filesource CreateSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 avr. 2021
+ * @date 28 avr. 2021
  * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Sql\Ddl;
@@ -19,11 +18,12 @@ use Zend\Db\Adapter\Driver\DriverInterface;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\Adapter\Platform\PlatformInterface;
 use Zend\Db\Sql\AbstractSql;
+use Zend\Db\Sql\Select;
 
-class CreateLike extends AbstractSql
+class CreateSelect extends AbstractSql
 {
 
-    const SPECIFICATION = 'CREATE %3$sTABLE %4$s%1$s LIKE %2$s';
+    const SPECIFICATION = 'CREATE %3$sTABLE %4$s%1$s %2$s';
 
     const TEMPORARY = 'isTemporary';
 
@@ -51,25 +51,24 @@ class CreateLike extends AbstractSql
     /**
      * Table modèle
      *
-     * @var string
+     * @var Select
      */
-    protected $likeTable;
+    protected $select;
 
     /**
      *
      * @param string $table
      *            Nom de la table à créer
-     * @param string $likeTable
-     *            Table de référence pour la construction des colonnes, des index et des
-     *            contraintes
+     * @param Select $select
+     *            Reuête SQL pour la construction de la table et son peuplement
      * @param array $options
      *            Indique si c'est une table temporaire et si on ajoute 'If Not Exists'
      */
-    public function __construct(string $table = '', string $likeTable = '',
+    public function __construct(string $table = '', Select $select = null,
         array $options = [])
     {
         $this->setTable($table)
-            ->setLikeTable($likeTable)
+            ->setSelect($select)
             ->setOptions($options);
     }
 
@@ -86,12 +85,12 @@ class CreateLike extends AbstractSql
 
     /**
      *
-     * @param string $likeTable
+     * @param Select $select
      * @return self
      */
-    public function setLikeTable(string $likeTable): self
+    public function setSelect(Select $select): self
     {
-        $this->likeTable = $likeTable;
+        $this->select = $select;
         return $this;
     }
 
@@ -131,9 +130,9 @@ class CreateLike extends AbstractSql
         DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
     {
         $table = $this->resolveTable($this->table, $platform);
-        $likeTable = $this->resolveTable($this->likeTable, $platform);
+        $selectSql = $this->select->getSqlString($platform);
         $temporary = $this->isTemporary ? 'TEMPORARY ' : '';
         $ifNotExists = $this->ifNotExists ? 'IF NOT EXISTS ' : '';
-        return sprintf(self::SPECIFICATION, $table, $likeTable, $temporary, $ifNotExists);
+        return sprintf(self::SPECIFICATION, $table, $selectSql, $temporary, $ifNotExists);
     }
 }

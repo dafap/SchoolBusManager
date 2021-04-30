@@ -8,7 +8,7 @@
  * @filesource station-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2021
+ * @date 30 avr. 2021
  * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
@@ -16,6 +16,7 @@ use SbmBase\Model\StdLib;
 
 class Temps
 {
+
     public function __invoke($temps)
     {
         $t = \DateTime::createFromFormat('H:i:s', $temps);
@@ -26,7 +27,7 @@ class Temps
         }
     }
 }
-
+$format_temps = new Temps();
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
     [
@@ -107,13 +108,10 @@ $actions = [
 					<th>Commune</th>
 					<th>Station 2</th>
 					<th>Commune</th>
-					<th>Temps</th>
+					<th title="durée du trajet à pied en minutes et secondes">Temps</th>
 					<th></th>
 				</tr>
-            <?php
-            $format_temps = new Temps();
-            foreach ($this->data as $entity) :
-                ?>
+            <?php foreach ($this->data as $entity) : ?>
             	<?php
                 $entity->setFlags(ArrayObject::ARRAY_AS_PROPS);
                 $css = $this->cycle([
@@ -130,7 +128,7 @@ $actions = [
 						<?=$this->escapeHtml($entity->sta2_nom);?></td>
 					<td class="commune2">
 						<?=$this->escapeHtml($entity->sta2_lacommune);?></td>
-					<td class="temps">
+					<td class="temps align-right">
 						<?=$format_temps($entity->temps);?></td>
 					<td class="boutons">
             <?php

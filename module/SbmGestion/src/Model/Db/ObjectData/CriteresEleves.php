@@ -15,8 +15,8 @@
  * @filesource CriteresEleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 sept. 2020
- * @version 2020-2.6.0
+ * @date 30 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\ObjectData;
 
@@ -157,7 +157,7 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 2:
                     // Famille d'accueil
-                    $where = $this->clauseFamilleDAccueil($where);
+                    $where = $this->clauseEleveInterne($where);
                     break;
                 case 3:
                     // Dérogation accordée
@@ -332,8 +332,8 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 2:
                     // famille d'accueil
-                    $where = $this->clauseFamilleDAccueil($where, true);
-                    $pageheader_string[] = 'élèves en famille d\'accueil';
+                    $where = $this->clauseEleveInterne($where, true);
+                    $pageheader_string[] = 'élèves internes';
                     break;
                 case 3:
                     // dérogation
@@ -523,8 +523,8 @@ class CriteresEleves extends SbmCommunCriteres
                     break;
                 case 2:
                     // famille d'accueil
-                    $where = $this->clauseFamilleDAccueil($where, true);
-                    $pageheader_string[] = 'élèves en famille d\'accueil';
+                    $where = $this->clauseEleveInterne($where, true);
+                    $pageheader_string[] = 'élèves internes';
                     break;
                 case 3:
                     // dérogation
@@ -1181,13 +1181,13 @@ class CriteresEleves extends SbmCommunCriteres
      *
      * @return \Zend\Db\Sql\Where|array
      */
-    private function clauseFamilleDAccueil($where, $pdf = false)
+    private function clauseEleveInterne($where, $pdf = false)
     {
         if ($where instanceof Where) {
-            return $where->literal('fa=1');
+            return $where->literal('regimeId=1');
         } else {
             $where['criteres']['particularite'] = 2;
-            $literal = 'inscrit = 1 AND fa = 1';
+            $literal = 'inscrit = 1 AND regimeId = 1';
             $where['expression']['particularite'] = $literal;
             return $where;
         }
