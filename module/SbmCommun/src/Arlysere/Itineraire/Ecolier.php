@@ -19,8 +19,6 @@ use Zend\Db\Sql\Where;
 class Ecolier extends AbstractItineraire
 {
 
-    use \SbmCommun\Model\Traits\DebugTrait;
-
     // Aller : lundi mardi jeudi vendredi
     protected const JOURS_MATIN = 27;
 
@@ -133,12 +131,6 @@ class Ecolier extends AbstractItineraire
                         $this->moment));
                 break;
         }
-        /*
-         * die($this->getSqlString($this->select));
-         * $this->debugLog([
-         * __METHOD__ => $this->getSqlString($this->select)
-         * ]);
-         */
         return $this;
     }
 

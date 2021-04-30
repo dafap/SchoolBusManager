@@ -14,7 +14,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mars 2021
+ * @date 30 avr. 2021
  * @version 2021-2.6.1
  */
 use SbmAuthentification\Model\CategoriesInterface;
@@ -69,8 +69,8 @@ return [
             'gr_etablissements' => 'sbmportail/etablissement',
             'commune' => 'sbmportail/commune',
             'gr_communes' => 'sbmportail/commune',
-            'secretariat' => 'sbmportail/secretariat',
-            'parent' => 'sbmparent',
+            'secretariat' => 'sbmportail',//'sbmportail/organisateur',
+            'parent' => 'sbmparentconfig',
             'organisme' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',

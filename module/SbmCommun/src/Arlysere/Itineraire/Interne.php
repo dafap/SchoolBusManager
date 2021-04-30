@@ -18,8 +18,6 @@ use Zend\Db\Sql\Where;
 class Interne extends AbstractItineraire
 {
 
-    // use \SbmCommun\Model\Traits\DebugTrait;
-
     // du lundi
     const JOURS_MATIN = 1;
 
@@ -123,12 +121,6 @@ class Interne extends AbstractItineraire
                         $this->moment));
                 break;
         }
-        /*
-         * die($this->getSqlString($this->select));
-         * $this->debugLog([
-         * __METHOD__ => $this->getSqlString($this->select)
-         * ]);
-         */
         return $this;
     }
 

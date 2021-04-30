@@ -16,17 +16,14 @@ namespace SbmCommun\Arlysere\Itineraire;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Replace;
 use SbmCommun\Model\Db\Sql\Ddl\CreateLike;
+use SbmCommun\Model\Db\Sql\Ddl\CreateSelect;
+use SbmCommun\Model\Db\Sql\Ddl\DropIfExists;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
-use SbmCommun\Model\Db\Sql\Ddl\CreateSelect;
-use SbmCommun\Model\Db\Sql\Ddl\DropIfExists;
-use SbmBase\Model\StdLib;
 
 abstract class AbstractItineraire extends AbstractQuery implements ItineraireInterface
 {
-
-    use \SbmCommun\Model\Traits\DebugTrait;
 
     public const MAX_NB_TRONCONS = 3;
 
@@ -160,8 +157,6 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
      */
     protected function init()
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'tineraires.log');
-        $this->debugClear();
         $this->tAffectations = $this->db_manager->get('Sbm\Db\Table\Affectations');
         $this->itineraire = [];
         $this->surbook = [];
@@ -169,11 +164,7 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
 
     protected function process(array $arrayMoments)
     {
-        // $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'),
-        // 'itineraires.log');
-        // $this->debugClear();
         foreach ($arrayMoments as $moment) {
-            // $this->debugLog('moment : ' . $moment);
             $this->setMoment($moment);
             $this->itineraire[$moment] = null;
             $this->surbook[$moment] = new \ArrayObject(
@@ -192,16 +183,8 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
                                 $this->prepareItineraire($num_tr)
                                     ->getSelect()))
                     ], \ArrayObject::ARRAY_AS_PROPS);
-                $this->debugLog([
-                    __METHOD__ => $this->getSqlString($this->getSelect())
-                ]);
             }
         }
-        $this->debugLog(
-            [
-                'itineraire' => $this->itineraire,
-                'surbook' => $this->surbook
-            ]);
         $this->putAffectations($arrayMoments);
     }
 
@@ -453,10 +436,6 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
                 CreateLike::TEMPORARY => true,
                 CreateLike::IF_NOT_EXISTS => true
             ]);
-        $this->debugLog(
-            [
-                __METHOD__ => $createSelect->buildSqlString($dbAdapter->getPlatform())
-            ]);
         $dbAdapter->query($createSelect->buildSqlString($dbAdapter->getPlatform()),
             $dbAdapter::QUERY_MODE_EXECUTE);
         return $table_name;
@@ -703,9 +682,6 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
             $dbAdapter::QUERY_MODE_EXECUTE);
         $replace = new Replace($table_name);
         $replace->setUnion($union);
-        $this->debugLog([
-            __METHOD__ => $this->sql->buildSqlString($replace)
-        ]);
         $dbAdapter->query($this->sql->buildSqlString($replace),
             $dbAdapter::QUERY_MODE_EXECUTE);
         return $table_name;
@@ -888,7 +864,6 @@ abstract class AbstractItineraire extends AbstractQuery implements ItineraireInt
                     $tr_num, 'montee_stationId')];
                 $oAffectation->station2Id = $itineraire[$this->prefixeFieldTroncon(
                     $tr_num, 'descente_stationId')];
-                // $this->debugLog($oAffectation->getArrayCopy());
                 $this->tAffectations->saveRecord($oAffectation);
             }
         }
