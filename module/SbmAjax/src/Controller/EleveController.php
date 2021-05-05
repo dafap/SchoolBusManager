@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2021
+ * @date 5 mai 2021
  * @version 2021-2.6.1
  */
 namespace SbmAjax\Controller;
@@ -398,6 +398,7 @@ class EleveController extends AbstractActionController
                             case 'delete':
                                 // ré-écrire deleteRecord pour mettre à jour les
                                 // correspondances qui restent
+                                $oData->jours = $form->getData()['days'];
                                 $tAffectations->deleteRecord($oData);
                                 $messages = 'Affectation supprimée.';
                                 $this->flashMessenger()->addSuccessMessage(
@@ -528,8 +529,8 @@ class EleveController extends AbstractActionController
                         if ($data['raz'] == 'RAZ') {
                             $tAffectations = $this->db_manager->get(
                                 'Sbm\Db\Table\Affectations');
-                            $tAffectations->deleteResponsableId(Session::get('millesime'),
-                                $data['eleveId'], $data['responsableId']);
+                            $tAffectations->deleteTrajet(Session::get('millesime'),
+                                $data['eleveId'], $data['trajet']);
                         }
                         switch ($data['op']) {
                             case 'auto':
