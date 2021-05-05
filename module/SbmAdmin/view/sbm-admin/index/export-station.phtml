@@ -9,8 +9,8 @@
  * @filesource export-station.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 déc. 2020
- * @version 2020-2.6.1
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 ?>
@@ -34,8 +34,10 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 		<fieldset class="sbm-page1">
 			<div class="row-inner label-120"><?= $this->formRow($this->form->get('stationId'));?></div>
 			<div class="row-inner label-120"><?= $this->formRow($this->form->get('communeId'));?></div>
+			<div class="row-inner label-120"><?= $this->formRow($this->form->get('ligneId'));?></div>
 			<div class="row-inner"><?= $this->formRow($this->form->get('visible'));?></div>
 			<div class="row-inner"><?= $this->formRow($this->form->get('ouverte'));?></div>
+			<div class="row-inner"><?= $this->formRow($this->form->get('horaire'));?></div>
 			<div class="row-inner">
 				<?= $this->formSubmit($this->form->get('submit'));?>
 				<?=$this->formSubmit($this->form->get('cancel'));?></div>

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 déc. 2020
- * @version 2020-2.6.1
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmAdmin\Controller;
 
@@ -1973,6 +1973,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
             } else {
                 $form->setData($prg);
                 if ($form->isValid()) {
+                    $avecHoraires = $form->getData()['horaire'];
                     $projection = $this->projection;
                     $proj_demande = $form->getProjection();
                     $where = $form->whereStation();
@@ -1980,7 +1981,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
                         $where, [
                             'commune',
                             'nom'
-                        ]);
+                        ], $avecHoraires);
                     $data = iterator_to_array($resultset);
                     if (! empty($data)) {
                         $fields = array_keys(

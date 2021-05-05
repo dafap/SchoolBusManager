@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 déc. 2020
- * @version 2020-2.6.1
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmAdmin\Form;
 
@@ -822,8 +822,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'value_options' => $this->sm->get('Sbm\Db\Select\Stations')
                         ->toutes()
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'communeId',
@@ -837,9 +837,23 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                         ->desservies()
                 ]
-            ]);
-
-        $this->add(
+            ])
+            ->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'ligneId',
+                'attributes' => [
+                    'id' => 'ligneId'
+                ],
+                'options' => [
+                    'label' => 'Lignes',
+                    'empty_option' => 'Toutes',
+                    'allow_empty' => true,
+                    'value_options' => $this->sm->get('Sbm\Db\Select\Lignes')
+                        ->tout()
+                ]
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Radio',
                 'name' => 'visible',
@@ -854,8 +868,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                         '2' => 'Tous'
                     ]
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Radio',
                 'name' => 'ouverte',
@@ -870,7 +884,22 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                         '2' => 'Tous'
                     ]
                 ]
-            ]);
+            ])
+            ->add(
+                [
+                    'type' => 'Zend\Form\Element\Radio',
+                    'name' => 'horaire',
+                    'attributes' => [
+                        'value' => '1'
+                    ],
+                    'options' => [
+                        'label' => 'Horaires de passage',
+                        'value_options' => [
+                            '1' => 'Avec les horaires',
+                            '0' => 'Sans les horaires'
+                        ]
+                    ]
+                ]);
     }
 
     private function formStationSpecification()
@@ -882,6 +911,10 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'communeId' => [
                 'name' => 'communeId',
+                'required' => false
+            ],
+            'ligneId' => [
+                'name' => 'ligneId',
                 'required' => false
             ]
         ];
@@ -901,6 +934,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         }
         if (! empty($data['communeId'])) {
             $where->equalTo('sta.communeId', $data['communeId']);
+        }
+        if (! empty($data['ligneId'])) {
+            $where->equalTo('cir.ligneId', $data['ligneId']);
         }
         if (isset($data['visible']) && $data['visible'] != '2') {
             $where->equalTo('sta.visible', $data['visible']);

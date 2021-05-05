@@ -8,8 +8,8 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 déc. 2020
- * @version 2020-2.6.1
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
@@ -33,12 +33,13 @@ class Stations extends AbstractQuery
      * @param string $order
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getLocalisation(Where $where, $order = null)
+    public function getLocalisation(Where $where, $order = null, $avecHoraires = 1)
     {
-        return $this->renderResult($this->selectLocalisation($where, $order));
+        return $this->renderResult(
+            $this->selectLocalisation($where, $order, $avecHoraires));
     }
 
-    protected function selectLocalisation(Where $where, $order): Select
+    protected function selectLocalisation(Where $where, $order, $avecHoraires): Select
     {
         if (is_array($order)) {
             $order = str_replace('commune', 'com.nom', $order);
@@ -46,6 +47,23 @@ class Stations extends AbstractQuery
                 'ligneId',
                 'horaireD'
             ]);
+        }
+        if ($avecHoraires) {
+            $columns = [
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
+                'service' => new Literal(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireD'
+            ];
+        } else {
+            $columns = [
+                'ligneId'
+            ];
         }
         // $where->equalTo('millesime', $this->millesime);
         $select = clone $this->sql->select();
@@ -67,18 +85,7 @@ class Stations extends AbstractQuery
         ])
             ->join([
             'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], 'cir.stationId = sta.stationId',
-            [
-                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
-                'service' => new Literal(
-                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
-                'ligneId',
-                'sens',
-                'moment',
-                'ordre',
-                'passage',
-                'horaireD'
-            ], Select::JOIN_LEFT)
+        ], 'cir.stationId = sta.stationId', $columns, Select::JOIN_LEFT)
             ->where($where);
         if (! is_null($order)) {
             $select->order($order);
