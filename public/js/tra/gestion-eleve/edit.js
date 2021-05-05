@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2020
- * @version 2020-2.6.0
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 
 $(function(){
@@ -1025,6 +1025,7 @@ function stationdepart() {
 				'trajet' : trajet,
 				'jours' : $(formstationdepart+' input[name=jours]').val(),
 				'responsableId' : $(formstationdepart+' input[name=responsableId]').val(),
+				'regimeId' : $(formstationdepart+' input[name=regimeId]').val(),
 				'stationId' : $(formstationdepart+' select[name=stationId]').val(),
 				'raz' : $(formstationdepart+' input[name=raz]').val(),
 				'op' : $(formstationdepart+' input[name=op]').val(),
