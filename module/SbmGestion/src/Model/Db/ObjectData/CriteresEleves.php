@@ -1,13 +1,17 @@
 <?php
 /**
- * Extension de la classe SbmCommun\Model\Db\ObjectData pour surcharger le méthode getWhere()
+ * Extension de la classe SbmCommun\Model\Db\ObjectData pour surcharger le méthode
+ * getWhere()
  *
- * Les methodes clause...() ont toutes le même modèle à 2 paramètres Where $where et bool $pdf.
+ * Les methodes clause...() ont toutes le même modèle à 2 paramètres Where $where et bool
+ * $pdf.
  * Elles reçoivent le $where en construction et le renvoie après modification.
  * Le paramètre $pdf doit être à TRUE lorsqu'on appelle la méthode depuis getWhereSql() et
  * il est omis lorsque l'appel se fait depuis getWhere(). En effet, la requête du document
- * PDF est de la forme SELECT * FROM (SELECT ... FROM ... JOIN ...) WHERE $where. Aussi les
- * noms des champs ne sont pas préfixés par les noms de tables. C'est tout à fait le contraire
+ * PDF est de la forme SELECT * FROM (SELECT ... FROM ... JOIN ...) WHERE $where. Aussi
+ * les
+ * noms des champs ne sont pas préfixés par les noms de tables. C'est tout à fait le
+ * contraire
  * dans la requête donnée au paginateur pour l'écran.
  *
  * @project sbm
@@ -28,7 +32,8 @@ class CriteresEleves extends SbmCommunCriteres
 {
 
     /**
-     * On filtre sur le millesime en cours. La propriété `data` est un tableau de la forme
+     * On filtre sur le millesime en cours.
+     * La propriété `data` est un tableau de la forme
      * : array (size=10) 'numero' => string '' (length=0) 'nomSA' => string '' (length=0)
      * 'responsableSA' => string '' (length=0) 'etablissementId' => string '' (length=0)
      * 'classeId' => string '' (length=0) 'etat' => string '' (length=0) 'demande' =>
@@ -1109,6 +1114,7 @@ class CriteresEleves extends SbmCommunCriteres
                     ->nest()
                     ->isNull('affecteR1matin')->or->isNull('affecteR1soir')->or->nest()
                     ->literal('niveau >= 4')
+                    ->literal('regimeId = 0')
                     ->isNull('affecteR1midi')
                     ->unnest()
                     ->unnest()
@@ -1117,6 +1123,7 @@ class CriteresEleves extends SbmCommunCriteres
                     ->nest()
                     ->isNull('affecteR2matin')->or->isNull('affecteR2soir')->or->nest()
                     ->literal('niveau >= 4')
+                    ->literal('regimeId = 0')
                     ->isNull('affecteR2midi')
                     ->unnest()
                     ->unnest()
@@ -1129,6 +1136,7 @@ class CriteresEleves extends SbmCommunCriteres
                     ->nest()
                     ->isNull('aff1R1.eleveId')->or->isNull('aff3R1.eleveId')->or->nest()
                     ->literal('cla.niveau >= 4')
+                    ->literal('sco.regimeId = 0')
                     ->isNull('aff2R1.eleveId')
                     ->unnest()
                     ->unnest()
@@ -1137,6 +1145,7 @@ class CriteresEleves extends SbmCommunCriteres
                     ->nest()
                     ->isNull('aff1R2.eleveId')->or->isnull('aff3R2.eleveId')->or->nest()
                     ->literal('cla.niveau >= 4')
+                    ->literal('sco.regimeId = 0')
                     ->isNull('aff2R2.eleveId')
                     ->unnest()
                     ->unnest()
