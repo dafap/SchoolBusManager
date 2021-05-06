@@ -8,7 +8,7 @@
  * @filesource Stations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2021
+ * @date 6 mai 2021
  * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
@@ -138,7 +138,7 @@ class Stations extends AbstractQuery
         if (! $order) {
             $order = [];
         }
-        return $this->selectLocalisation($where, $order)->columns(
+        return $this->selectLocalisation($where, $order, 1)->columns(
             [
                 'stationId',
                 'nom',
