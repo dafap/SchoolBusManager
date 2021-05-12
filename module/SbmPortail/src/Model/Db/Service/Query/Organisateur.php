@@ -1,10 +1,11 @@
 <?php
 /**
- * Requêtes nécessaires au portail des communes
+ * Requêtes utilisées pour le portail de l'organisateur
+ *
  *
  * @project sbm
  * @package SbmPortail/src/Model/Db/Service/Query
- * @filesource Commune.php
+ * @filesource Organisateur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 11 mai 2021
@@ -12,75 +13,112 @@
  */
 namespace SbmPortail\Model\Db\Service\Query;
 
+use SbmAuthentification\Model\CategoriesInterface;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
-class Commune extends AbstractPortailQuery
+class Organisateur extends AbstractPortailQuery
 {
     use \SbmCommun\Model\Traits\ExpressionSqlTrait;
 
     /**
+     * Rien à faire
      *
-     * @var array
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Query\AbstractQuery::init()
      */
-    private $arrayCommuneId;
-
     protected function init()
     {
     }
 
     /**
+     * Non utilisé ici
      *
-     * @param array $arrayCommuneId
-     * @return self
+     * {@inheritdoc}
+     * @see \SbmPortail\Model\Db\Service\Query\AbstractPortailQuery::selectEtablissementsPourCarte()
      */
-    public function setCommuneId(array $arrayCommuneId): self
+    protected function selectEtablissementsPourCarte(): Select
     {
-        $this->arrayCommuneId = $arrayCommuneId;
-        return $this;
     }
 
-    private function adapteWhere(Where $where)
+    /**
+     * Non utilisé ici
+     *
+     * {@inheritdoc}
+     * @see \SbmPortail\Model\Db\Service\Query\AbstractPortailQuery::selectStationsPourCarte()
+     */
+    protected function selectStationsPourCarte(): Select
     {
-        $where->nest()->in('r1.communeId', $this->arrayCommuneId)->or->in('r2.communeId',
-            $this->arrayCommuneId)->or->in('sco.communeId', $this->arrayCommuneId)->unnest();
     }
 
-    public function listeEleves(Where $where = null, array $order = [])
+    /**
+     * Renvoie la liste des utilisateurs en tant que commune
+     *
+     * @return array Tableau associatif userId => libelle
+     */
+    public function enTantQueCommune()
     {
-        $this->adapteWhere($where);
-        return parent::listeEleves($where, $order);
-    }
-
-    public function paginatorEleves(Where $where = null, array $order = [])
-    {
-        $this->adapteWhere($where);
-        return parent::paginatorEleves($where, $order);
-    }
-
-    public function getArrayCommunes()
-    {
-        $arrayCommunes = [];
-        foreach ($this->renderResult($this->selectCommunes()) as $row) {
-            $row->setFlags(\ArrayObject::ARRAY_AS_PROPS);
-            $arrayCommunes[$row->communeId] = $row->commune;
+        $where = new Where();
+        $where->equalTo('categorieId', CategoriesInterface::COMMUNE_ID)->or->equalTo(
+            'categorieId', CategoriesInterface::GR_COMMUNES_ID);
+        $resultset = $this->renderResult($this->selectEnTantQue($where));
+        $array = [];
+        foreach ($resultset as $row) {
+            $array[$row['userId']] = $row['libelle'];
         }
-        return $arrayCommunes;
+        return $array;
     }
 
-    protected function selectCommunes()
+    /**
+     * Renvoie la liste des utilisateurs en tant que établissement
+     *
+     * @return array Tableau associatif userId => libelle
+     */
+    public function enTantQueEtablissement()
     {
-        return $this->sql->select()
+        $where = new Where();
+        $where->equalTo('categorieId', CategoriesInterface::ETABLISSEMENT_ID)->or->equalTo(
+            'categorieId', CategoriesInterface::GR_ETABLISSEMENTS_ID);
+        $resultset = $this->renderResult($this->selectEnTantQue($where));
+        $array = [];
+        foreach ($resultset as $row) {
+            $array[$row['userId']] = $row['libelle'];
+        }
+        return $array;
+    }
+
+    /**
+     * Renvoie la liste des utilisateurs en tant que transporteur
+     *
+     * @return array Tableau associatif userId => libelle
+     */
+    public function enTantQueTransporteur()
+    {
+        $where = new Where();
+        $where->equalTo('categorieId', CategoriesInterface::TRANSPORTEUR_ID)->or->equalTo(
+            'categorieId', CategoriesInterface::GR_TRANSPORTEURS_ID);
+        $resultset = $this->renderResult($this->selectEnTantQue($where));
+        $array = [];
+        foreach ($resultset as $row) {
+            $array[$row['userId']] = $row['libelle'];
+        }
+        return $array;
+    }
+
+    protected function selectEnTantQue(Where $where)
+    {
+        $select = $this->sql->select($this->db_manager->getCanonicName('users'))
             ->columns(
             [
-                'communeId',
-                'commune' => new Literal('CONCAT(com.codePostal, " ", com.alias)')
+                'userId',
+                'libelle' => new Literal('CONCAT_WS(" ", titre, prenom, nom)')
             ])
-            ->from([
-            'com' => $this->db_manager->getCanonicName('communes')
-        ])
-            ->where((new Where())->in('communeId', $this->arrayCommuneId));
+            ->where($where)
+            ->order([
+            'nom'
+        ]);
+        return $select;
     }
 
     /**
@@ -110,35 +148,19 @@ class Commune extends AbstractPortailQuery
      * @param array $order
      * @return \Zend\Db\Sql\Select
      */
-    protected function selectLignes(Where $where = null, array $order = []): Select
+    protected function selectLignes(Where $where = null, array $order = [])
     {
-        // sous-requête pour filtrer sur les communes (par un IN)
-        $where1 = new Where();
-        $where1->equalTo('millesime', $this->millesime)->in('communeId',
-            $this->arrayCommuneId);
-        $subselect = $this->sql->select()
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns([
-            'ligneId'
-        ])
-            ->from([
-            'cir' => $this->db_manager->getCanonicName('circuits')
-        ])
-            ->join([
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ], 'sta.stationId = cir.stationId', [])
-            ->where($where1);
-        // requête principale
         if (is_null($where)) {
             $where = new Where();
         }
-        $where->equalTo('millesime', $this->millesime)->in('ligneId', $subselect);
         if (! $order) {
             $order = [
                 'ligneId'
             ];
         }
-        return $this->sql->select($this->db_manager->getCanonicName('lignes'))
+        $where->equalTo('millesime', $this->millesime);
+        return $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(
             [
                 'ligneId',
@@ -148,6 +170,7 @@ class Commune extends AbstractPortailQuery
                 'via',
                 'internes'
             ])
+            ->from($this->db_manager->getCanonicName('lignes'))
             ->where($where)
             ->order($order);
     }
@@ -237,106 +260,6 @@ class Commune extends AbstractPortailQuery
         return $select;
     }
 
-    /**
-     *
-     * {@inheritdoc}
-     * @see \SbmPortail\Model\Db\Service\Query\AbstractPortailQuery::selectEtablissementsPourCarte()
-     */
-    protected function selectEtablissementsPourCarte(): Select
-    {
-        return $this->sql->select()
-            ->columns([])
-            ->from([
-            'com' => $this->db_manager->getCanonicName('communes')
-        ])
-            ->join([
-            'res' => $this->db_manager->getCanonicName('responsables')
-        ], 'res.communeId = com.communeId', [])
-            ->join([
-            'ele' => $this->db_manager->getCanonicName('eleves')
-        ],
-            'ele.responsable1Id = res.responsableId OR ele.responsable2Id = res.responsableId',
-            [])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites')
-        ], 'sco.eleveId = ele.eleveId', [])
-            ->join([
-            'eta' => $this->db_manager->getCanonicName('etablissements')
-        ], 'eta.etablissementId = sco.etablissementId',
-            [
-                'nom',
-                'adresse1',
-                'adresse2',
-                'codePostal',
-                'telephone',
-                'email',
-                'niveau',
-                'desservie',
-                'x',
-                'y'
-            ])
-            ->join([
-            'cometa' => $this->db_manager->getCanonicName('communes')
-        ], 'cometa.communeId = eta.communeId',
-            [
-                'commune' => 'nom',
-                'lacommune' => 'alias',
-                'laposte' => 'alias_laposte'
-            ])
-            ->where(
-            (new Where())->equalTo('millesime', $this->millesime)
-                ->in('com.communeId', $this->arrayCommuneId));
-    }
-
-    /**
-     *
-     * {@inheritdoc}
-     * @see \SbmPortail\Model\Db\Service\Query\AbstractPortailQuery::selectStationsPourCarte()
-     */
-    protected function selectStationsPourCarte(): Select
-    {
-        return $this->sql->select()
-            ->columns([
-            'stationId',
-            'x',
-            'y',
-            'nom',
-            'alias',
-            'ouverte'
-        ])
-            ->from([
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ])
-            ->join([
-            'com' => $this->db_manager->getCanonicName('communes')
-        ], 'com.communeId = sta.communeId',
-            [
-                'codePostal',
-                'commune' => 'nom',
-                'lacommune' => 'alias',
-                'laposte' => 'alias_laposte'
-            ])
-            ->join([
-            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
-        ], 'cir.stationId = sta.stationId',
-            [
-                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
-                'service' => new Literal(
-                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
-                'ligneId',
-                'sens',
-                'moment',
-                'ordre',
-                'passage',
-                'horaireD'
-            ], Select::JOIN_LEFT)
-            ->where(
-            (new Where())->in('sta.communeId', $this->arrayCommuneId)
-                ->nest()
-                ->isNull('millesime')->or->equalTo('millesime', $this->millesime)
-                ->unnest());
-    }
-
     public function listeServicesForSelect()
     {
         $libelle = [
@@ -360,26 +283,29 @@ class Commune extends AbstractPortailQuery
     protected function selectServicesForSelect()
     {
         $where = new Where();
-        $where->equalTo('cir.millesime', $this->millesime)->in('sta.communeId',
-            $this->arrayCommuneId);
+        $where->equalTo('aff.millesime', $this->millesime);
         return $this->sql->select()
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(
             [
                 'moment',
-                'serviceId' => new Literal($this->getSqlEncodeServiceId()),
-                'designation' => new Literal($this->getSqlDesignationService())
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('', true)),
+                'designation' => new Literal(
+                    $this->getSqlDesignationService('ligne1Id', 'sensligne1', 'moment',
+                        'ordreligne1'))
             ])
             ->from([
-            'cir' => $this->db_manager->getCanonicName('circuits')
+            'aff' => $this->db_manager->getCanonicName('affectations')
         ])
             ->join([
-            'sta' => $this->db_manager->getCanonicName('stations')
-        ], 'cir.stationId = sta.stationId', [])
+            'sco' => $this->db_manager->getCanonicName('scolarites')
+        ], 'sco.millesime = aff.millesime AND sco.eleveId = aff.eleveId', [])
             ->where($where)
             ->order([
             'moment',
-            'ligneId'
+            'ligne1Id',
+            'sensligne1',
+            'ordreligne1'
         ]);
     }
 
@@ -400,8 +326,7 @@ class Commune extends AbstractPortailQuery
     protected function selectStationsForSelect()
     {
         $where = new Where();
-        $where->equalTo('aff.millesime', $this->millesime)->in('sta.communeId',
-            $this->arrayCommuneId);
+        $where->equalTo('aff.millesime', $this->millesime);
         return $this->sql->select()
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns([

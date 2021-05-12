@@ -1,10 +1,10 @@
 <?php
 /**
- * Formulaire des critères de recherche des élèves pour le portail des organisateurs
+ * Formulaire des critères de recherche des élèves pour le portail des transporteurs
  *
  * @project sbm
- * @package SbmPortail/Form
- * @filesource CriteresOrgForm.php
+ * @package SbmPortail/src/Form
+ * @filesource CriteresTransporteurForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 2 mai 2021
@@ -15,21 +15,24 @@ namespace SbmPortail\Form;
 use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInterface
+class CriteresTransporteurForm extends AbstractSbmForm implements
+    InputFilterProviderInterface
 {
 
-    public function __construct()
+    private $choixTransporteur;
+
+    public function __construct(array $arrayTransporteurs = [])
     {
+        $this->choixTransporteur = count($arrayTransporteurs) > 1;
         parent::__construct('criteres');
         $this->setAttribute('method', 'post');
-
         $this->add(
             [
                 'type' => 'text',
                 'name' => 'nomSA',
                 'attributes' => [
                     'id' => 'critere-nom',
-                    'maxlength' => '45',
+                    'maxlength' => '30',
                     'class' => 'sbm-width-25c'
                 ],
                 'options' => [
@@ -45,7 +48,7 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 'name' => 'prenomSA',
                 'attributes' => [
                     'id' => 'critere-prenom',
-                    'maxlength' => '45',
+                    'maxlength' => '30',
                     'class' => 'sbm-width-25c'
                 ],
                 'options' => [
@@ -81,11 +84,13 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 'name' => 'responsable',
                 'attributes' => [
                     'id' => 'critere-responsable',
-                    'maxlength' => '45',
+                    'maxlength' => '30',
                     'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Responsable',
+                    'label_attributes' => [ // 'class' => 'sbm-new-line'
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -93,11 +98,11 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
             ]);
         $this->add(
             [
-                'name' => 'communeId',
                 'type' => 'Zend\Form\Element\Select',
+                'name' => 'communeId',
                 'attributes' => [
                     'id' => 'critere-communeId',
-                    'class' => 'sbm-width-30c'
+                    'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Commune',
@@ -136,12 +141,39 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 ],
                 'options' => [
                     'label' => 'Etablissement',
+                    'label_attributes' => [
+                        'sbm-new-line'
+                    ],
                     'empty_option' => 'Tout',
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
                 ]
             ]);
+        $label_attributes = [
+            'class' => 'sbm-new-line'
+        ];
+        if ($this->choixTransporteur) {
+            $this->add(
+                [
+                    'type' => 'Zend\Form\Element\Select',
+                    'name' => 'transporteurId',
+                    'attributes' => [
+                        'id' => 'critere-transporteurId',
+                        'class' => 'sbm-width-25c'
+                    ],
+                    'options' => [
+                        'label' => 'Transporteur',
+                        'label_attributes' => $label_attributes,
+                        'empty_option' => 'Tout',
+                        'value_options' => $arrayTransporteurs,
+                        'error_attributes' => [
+                            'class' => 'sbm-error'
+                        ]
+                    ]
+                ]);
+            $label_attributes = [];
+        }
         $this->add(
             [
                 'type' => 'Zend\Form\Element\Select',
@@ -152,9 +184,7 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 ],
                 'options' => [
                     'label' => 'Service',
-                    'label_attributes' => [
-                        'class' => 'sbm-new-line'
-                    ],
+                    'label_attributes' => $label_attributes,
                     'empty_option' => 'Tous',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -183,7 +213,7 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 'name' => 'numero',
                 'attributes' => [
                     'id' => 'critere-nom',
-                    'maxlength' => '11',
+                    'maxlength' => '6',
                     'class' => 'sbm-width-5c'
                 ],
                 'options' => [
@@ -211,7 +241,7 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
 
     public function getInputFilterSpecification()
     {
-        return [
+        $config = [
             'numero' => [
                 'name' => 'numero',
                 'required' => false,
@@ -248,6 +278,10 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                     ]
                 ]
             ],
+            'communeId' => [
+                'name' => 'communeId',
+                'required' => false
+            ],
             'etablissementId' => [
                 'name' => 'etablissementId',
                 'required' => false
@@ -256,8 +290,8 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 'name' => 'classeId',
                 'required' => false
             ],
-            'communeId' => [
-                'name' => 'communeId',
+            'regimeId' => [
+                'name' => 'regimeId',
                 'required' => false
             ],
             'serviceId' => [
@@ -268,10 +302,14 @@ class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInte
                 'name' => 'stationId',
                 'required' => false
             ],
-            'regimeId' => [
-                'name' => 'regimeId',
+            'transporteurId' => [
+                'name' => 'transporteurId',
                 'required' => false
             ]
         ];
+        if (! $this->choixTransporteur) {
+            unset($config['transporteurId']);
+        }
+        return $config;
     }
 }

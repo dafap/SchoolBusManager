@@ -26,17 +26,34 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 nov. 2020
- * @version 2020-2.6.1
+ * @date 17 mars 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
 
+$msgEnr = <<<EOT
+Comprend toutes les demandes, y compris les abonnements
+impayés et les inscriptions rayées.
+EOT;
+$msgAbo = <<<EOT
+L'écart entre le nombre d'élèves enregistrés et le nombre 
+d'abonnements délivrés s'explique par l'impossibilité de 
+répondre à la demande ou le non paiement de l'abonnement 
+demandé.
+EOT;
+$msgRay = <<<EOT
+Abonnements payés puis annulés à la demande de la famille.
+EOT;
+$msgGeo = <<<EOT
+Élèves pour lesquels il est impossible de calculer la 
+distance du domicile à l'établissement.
+EOT;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_eleves = $this->url('sbmportail/etablissement', [
     'action' => 'eleves'
 ]);
-$url_circuits = $this->url('sbmportail/etablissement', [
+$url_lignes = $this->url('sbmportail/etablissement', [
     'action' => 'lignes'
 ]);
 $url_carte_stations = $this->url('sbmportail/etablissement',
@@ -57,24 +74,43 @@ $url_carte_etablissements = $this->url('sbmportail/etablissement',
 		<?=$this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail des établissements : <?=$this->etablissements;?></h1>
+	<div id="menugeneral" class="float-right" style="min-width: 306px;">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?=$url_lignes;?>"><i class="fam-bullet-go"></i>Lignes,
+						services et horaires</a></li>
+				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Points
+						d'arrêts desservant l'établissement</a></li>
+				<li><a href="<?=$url_carte_etablissements;?>"><i
+						class="fam-bullet-go"></i>Établissements scolaires</a></li>
+			</ul>
+		</div>
+	</div>
 	<div class="float-left">
 		<h2>Quelques chiffres</h2>
 		<?php foreach($this->data as $etablissement):?>
 		<?php
     $elevesEnregistres = StdLib::getParam('elevesEnregistres', $etablissement, 0) ?: 0;
     $nbInternes = StdLib::getParam('elevesIntEnregistres', $etablissement, 0);
+    $nbRayes = StdLib::getParam('elevesInscritsRayes',$etablissement, 0);
     $elevesMoins1km = StdLib::getParam('elevesMoins1km', $etablissement, 0) ?: 0;
     $elevesDe1A3km = StdLib::getParam('elevesDe1A3km', $etablissement, 0) ?: 0;
     $eleves3kmEtPlus = StdLib::getParam('eleves3kmEtPlus', $etablissement, 0) ?: 0;
     $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
         $eleves3kmEtPlus;
     ?>
+    	<div class="float-left" style="max-width: 300px;">
 		<?php if (count($this->data) > 1 && array_key_exists('etablissement', $etablissement)):?>
-		<h3><?=$etablissement['etablissement']?></h3>
-		<?php endif;?><div class="bleu float-left" style="max-width: 300px;">
-			<table>
+			<h3><?=$etablissement['etablissement']?></h3>
+		<?php endif;?>
+			<table class="bleu float-left">
 				<tbody>
-					<tr>
+					<tr title="<?=$msgEnr;?>">
 						<td>Nombre d'élèves enregistrés</td>
 						<td class="effectif"><?=$elevesEnregistres;?></td>
 					</tr>
@@ -88,14 +124,15 @@ $url_carte_etablissements = $this->url('sbmportail/etablissement',
 					et <?=$nbInternes;?> interne<?=$nbInternes > 1 ? 's' : '';?></td>
 						<td></td>
 					</tr>
-					<tr>
+					<tr title="<?=$msgAbo;?>">
 						<td>Nombre d'abonnements délivrés</td>
-						<td class="effectif"><?=StdLib::getParam('elevesInscrits',$etablissement, 0);?></td>
+						<td class="effectif">
+							<?=StdLib::getParam('elevesInscrits',$etablissement, 0);?></td>
 					</tr>
-					<tr class="separateur">
+					<tr class="separateur"  title="<?=$msgRay;?>">
 						<td class="align-right">
-						dont <?= StdLib::getParam('elevesInscritsRayes',$etablissement, 0);?>
-						abonnements rayés</td>
+						dont <?= $nbRayes;?>
+						inscription<?= $nbRayes > 1 ? 's' : '';?> rayée<?= $nbRayes > 1 ? 's' : '';?></td>
 						<td></td>
 					</tr>
 					<tr>
@@ -110,7 +147,7 @@ $url_carte_etablissements = $this->url('sbmportail/etablissement',
 						<td>Nombre d'élèves à 3 km et plus</td>
 						<td class="effectif"><?=$eleves3kmEtPlus;?></td>
 					</tr>
-					<tr class="separateur">
+					<tr class="separateur" title="<?=$msgGeo;?>">
 						<td>Nombre d'élèves non géolocalisés</td>
 						<td class="effectif"><?= $nbDistanceInconnue;?></td>
 					</tr>
@@ -121,27 +158,7 @@ $url_carte_etablissements = $this->url('sbmportail/etablissement',
 				</tbody>
 			</table>
 		<?php endforeach;?>
-		<p class="sbm-description">L'écart entre le nombre d'élèves
-				enregistrés et le nombre d'abonnements délivrés s'explique par
-				l'impossibilité de répondre à la demande ou le non paiement de
-				l'abonnement.</p>
-		</div>
-	</div>
-	<div id="menugeneral" class="float-right" style="min-width: 306px;">
-		<div id="menugeneral-header">
-			<h2>Menu</h2>
-		</div>
-		<div id="menugeneral-inner">
-			<ul>
-				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
-						des élèves</a></li>
-				<li><a href="<?=$url_circuits;?>"><i class="fam-bullet-go"></i>Circuits
-						et horaires</a></li>
-				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Points
-						d'arrêts desservant l'établissement</a></li>
-				<li><a href="<?=$url_carte_etablissements;?>"><i
-						class="fam-bullet-go"></i>Établissements scolaires</a></li>
-			</ul>
+		<p class="sbm-description">Passez la souris au dessus d'une ligne pour avoir une explication.</p>
 		</div>
 	</div>
 </div>

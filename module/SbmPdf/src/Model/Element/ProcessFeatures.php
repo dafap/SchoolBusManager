@@ -6,17 +6,21 @@
  * pour tous les enregistrements
  *
  * La propriété 'pointer' tient à jour les pointeurs du lot de donnée :
- * - pointer->current : rang de l'enregistrement courant),
- * - pointer->pagebegin : rang de l'enregistrement de début de page)
+ * - pointer->current : rang de l'enregistrement courant,
+ * - pointer->last : rang de l'enregistrement précédent (à utiliser comme dernier
+ * enregistrement lors d'un changement de page, l'élément courant étant sur la nouvelle
+ * page)
+ * - pointer->pagebegin : rang de l'enregistrement de début de page,
  * - pointer->groupbegins[$key] : rang de l'enregistrement de début du groupe $key
- * Les pointeurs servent à paramétrer la méthode Range() de la classe Calcul.
+ * Les pointeurs servent comme paramètres de la méthode Range() de la classe
+ * SbmPdf\Model\Document\Calculs.
  *
  * @project sbm
  * @package SbmPdf/src/Model/Element
  * @filesource ProcessFeatures.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 févr. 2021
+ * @date 6 mars 2021
  * @version 2021-2.6.1
  */
 namespace SbmPdf\Model\Element;
@@ -25,7 +29,6 @@ use SbmBase\Model\StdLib;
 
 class ProcessFeatures
 {
-    use \SbmCommun\Model\Traits\DebugTrait;
 
     private $operator;
 
@@ -57,9 +60,6 @@ class ProcessFeatures
      */
     public function __construct($operator = null)
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
-            'tablesimple.log');
-        $this->debugLog(__METHOD__);
         $this->operator = $operator;
         $this->column = null;
         $this->group = (object) [
@@ -73,6 +73,7 @@ class ProcessFeatures
         ];
         $this->pointer = (object) [
             'current' => 0,
+            'last' => 0,
             'pagebegin' => 0,
             'groupbegins' => []
         ];
@@ -80,7 +81,6 @@ class ProcessFeatures
 
     public function getListOperators()
     {
-        $this->debugLog(__METHOD__);
         return [
             'sum' => 'Somme',
             'ave' => 'Moyenne',
@@ -99,33 +99,28 @@ class ProcessFeatures
 
     public function getOperator()
     {
-        $this->debugLog(__METHOD__);
         return $this->operator;
     }
 
     public function getColumn()
     {
-        $this->debugLog(__METHOD__);
         return $this->column;
     }
 
     public function setOperator($operator)
     {
-        $this->debugLog(__METHOD__);
         $this->operator = $operator;
         return $this;
     }
 
     public function setColumn($column)
     {
-        $this->debugLog(__METHOD__);
         $this->column = $column;
         return $this;
     }
 
     public function addGroup($key)
     {
-        $this->debugLog(__METHOD__);
         $this->group->rowIdx[] = $key;
         $i = count($this->group->rowIdx) - 1;
         $this->group->valueRowIdx[$i] = null;
@@ -136,7 +131,6 @@ class ProcessFeatures
 
     public function initGroup($columns)
     {
-        $this->debugLog(__METHOD__);
         for ($i = 0; $i < count($columns); $i ++) {
             if (StdLib::getParamR([
                 $i,
@@ -149,7 +143,6 @@ class ProcessFeatures
 
     public function setGroupValue($key, $value)
     {
-        $this->debugLog(__METHOD__);
         $this->group->valueRowIdx[$key] = $value;
         return $this;
     }
@@ -164,7 +157,6 @@ class ProcessFeatures
      */
     public function isNewGroup($row)
     {
-        $this->debugLog(__METHOD__);
         $newGroup = false;
         foreach ($this->group->rowIdx as $idx) {
             if (! empty($this->group->valueRowIdx[$idx]) &&
@@ -184,7 +176,6 @@ class ProcessFeatures
      */
     public function newGroup($row)
     {
-        $this->debugLog(__METHOD__);
         foreach ($this->group->rowIdx as $idx) {
             if (! empty($this->group->valueRowIdx[$idx]) &&
                 $this->group->valueRowIdx[$idx] != $row[$idx]) {
@@ -198,7 +189,6 @@ class ProcessFeatures
 
     public function reset()
     {
-        $this->debugLog(__METHOD__);
         $this->pointer->current = 0;
         $this->newPage();
         foreach (array_keys($this->pointer->groupbegins) as $key) {
@@ -209,51 +199,48 @@ class ProcessFeatures
 
     public function nextPointer()
     {
-        $this->debugLog(__METHOD__);
-        $this->pointer->current ++;
+        $this->pointer->last = $this->pointer->current ++;
         return $this;
     }
 
     public function newPage()
     {
-        $this->debugLog(__METHOD__);
         $this->pointer->pagebegin = $this->pointer->current;
         return $this;
     }
 
     public function getPointerCurrent()
     {
-        $this->debugLog(__METHOD__);
         return $this->pointer->current;
+    }
+
+    public function getPointerLast()
+    {
+        return $this->pointer->last;
     }
 
     public function getPointerPageBegin()
     {
-        $this->debugLog(__METHOD__);
         return $this->pointer->pagebegin;
     }
 
     public function getPointerGroupBegin($key)
     {
-        $this->debugLog(__METHOD__);
         return $this->pointer->groupbegins[$key];
     }
 
     public function getResultPage()
     {
-        $this->debugLog(__METHOD__);
         return $this->result->page;
     }
 
     public function getResultGroup($key)
     {
-        $this->debugLog(__METHOD__);
         return $this->result->group[$key];
     }
 
     public function getResultAll()
     {
-        $this->debugLog(__METHOD__);
         return $this->result->all;
     }
 }

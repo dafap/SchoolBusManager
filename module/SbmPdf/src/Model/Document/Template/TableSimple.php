@@ -15,7 +15,7 @@
  * @filesource TableSimple.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 févr. 2021
+ * @date 8 mars 2021
  * @version 2021-2.6.1
  */
 namespace SbmPdf\Model\Document\Template;
@@ -27,10 +27,11 @@ use SbmPdf\Model\Document;
 use SbmPdf\Model\Exception;
 use Zend\Stdlib\Parameters;
 use SbmPdf\Model\Db\Sql\Select;
+use Zend\Stdlib\ArrayObject;
 
 class TableSimple extends Document\AbstractDocument
 {
-    use Document\DocumentTrait, \SbmPdf\Model\Tcpdf\TcpdfTrait, \SbmCommun\Model\Traits\DebugTrait;
+    use Document\DocumentTrait, \SbmPdf\Model\Tcpdf\TcpdfTrait;
 
     const PDFMANAGER_ID = 'tableSimple';
 
@@ -48,6 +49,30 @@ class TableSimple extends Document\AbstractDocument
      * @var ProcessFeatures
      */
     private $oProcess;
+
+    /**
+     *
+     * @var int
+     */
+    private $thead_xobjid = 0;
+
+    /**
+     * Enregistre le (protected) $pdf->topMargin afin de le modifier lorsqu'il y a une
+     * ligne d'entête
+     * de tableau en haut de chaque page et de le restaurer à la fin, après l'écriture du
+     * tableau.
+     *
+     * @var float
+     */
+    private $original_topMargin;
+
+    /**
+     * topMargin à utiliser lorsqu'il y a une ligne d'entêtes de colonnes à répéter à
+     * chaque page.
+     *
+     * @var float
+     */
+    private $thead_topMargin;
 
     public static function description()
     {
@@ -77,8 +102,7 @@ class TableSimple extends Document\AbstractDocument
      */
     protected function init()
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
-            'tablesimple.log');
+        $this->original_topMargin = 0;
         $this->db_manager = $this->pdf_manager->get('Sbm\DbManager');
         // met en place la méthode à appeler dans pdf->AddPage() pour mettre à jour les
         // pointeurs
@@ -88,52 +112,60 @@ class TableSimple extends Document\AbstractDocument
         };
         // complète la propriété 'config'
         try {
-            $config_table = $this->pdf_manager->get('Sbm\DbManager')
-                ->get('Sbm\Db\System\DocTables')
-                ->getConfig($this->documentId);
+            $config_table = $this->db_manager->get('Sbm\Db\System\DocTables')->getConfig(
+                $this->documentId);
         } catch (\Exception $e) {
             $config_table = require (__DIR__ . '/default/doctables.inc.php');
         }
         try {
-            $config_table['columns'] = $this->pdf_manager->get('Sbm\DbManager')
-                ->get('Sbm\Db\System\DocTables\Columns')
-                ->getConfig($this->documentId);
+            $config_table['columns'] = $this->db_manager->get(
+                'Sbm\Db\System\DocTables\Columns')->getConfig($this->documentId);
         } catch (\Exception $e) {
             // pas d'en-tête, pas de pied, colonnes proportionnelles à la taille du
             // contenu
             $config_table['thead']['visible'] = $config_table['tfoot']['visible'] = false;
         }
         $this->setConfig('doctable', $config_table);
+        // entête et pied de page
+        $this->pdf->setPageHeaderObject(
+            new Document\PageHeader\LogoTitleString($this->params, $this->config,
+                $this->data))->setPageFooterObject(
+            new Document\PageFooter\PiedStandard($this->params, $this->config, $this->data,
+                $this->oProcess));
     }
 
     /**
      * On regarde si un paramètre 'data' est connu.
      * Sinon, on recherche les datas à partir de recordSource.
      */
-    protected function getData(bool $force = false)
+    protected function getData(bool $force = false): ArrayObject
     {
-        if ($force || empty($this->dada)) {
+        if ($force || ! $this->data->count()) {
             if ($this->params->offsetExists('data')) {
                 // les datas sont fournies par la méthode appelante
-                $this->data = $this->params->get('data', false);
+                $this->data->exchangeArray($this->params->get('data', false));
             } elseif ($this->params->offsetExists('recordSource')) {
                 // la source de données est fournie par la méthode appelante
                 $recordSource = $this->params->document->recordSource;
                 if ($this->params->document->get('recordSourceType', false) == 'T') {
                     // la source est une table
-                    $this->data = $this->getDataFromTable($recordSource, 'params');
+                    $this->data->exchangeArray(
+                        $this->getDataFromTable($recordSource, 'params'));
                 } else {
                     // la source est une requête SQL
-                    $this->data = $this->getDataFromQuery($recordSource, 'params');
+                    $this->data->exchangeArray(
+                        $this->getDataFromQuery($recordSource, 'params'));
                 }
             } else {
                 $recordSource = $this->config->document->recordSource;
                 if ($this->config->document->recordSourceType == 'T') {
                     // la source est une table
-                    $this->data = $this->getDataFromTable($recordSource, 'config');
+                    $this->data->exchangeArray(
+                        $this->getDataFromTable($recordSource, 'config'));
                 } else {
                     // la source est une requête SQL
-                    $this->data = $this->getDataFromQuery($recordSource, 'config');
+                    $this->data->exchangeArray(
+                        $this->getDataFromQuery($recordSource, 'config'));
                 }
             }
         }
@@ -507,7 +539,6 @@ class TableSimple extends Document\AbstractDocument
             if ($effectifClassName && $this->db_manager->has($effectifClassName)) {
                 $structColumns->effectifClass = $this->db_manager->get($effectifClassName);
                 if ($structColumns->effectifClass instanceof \SbmGestion\Model\Db\Service\EffectifInterface) {
-                    // @todo : à utiliser directement $id = $effectifClass->getIdColumn();
                     if (method_exists($structColumns->effectifClass,
                         'setCaractereConditionnel')) {
                         if ($this->param->caractereConditionnel) {
@@ -561,9 +592,9 @@ class TableSimple extends Document\AbstractDocument
         string $section = 'tbody')
     {
         $value_width = $this->pdf->GetStringWidth($value,
-            $this->config->document->get('data_font_family', PDF_FONT_NAME_DATA),
+            $this->getProperty('document', 'data_font_family', PDF_FONT_NAME_DATA),
             $this->config->doctable->{$section}['font_style'] ?: '',
-            $this->config->document->get('data_font_size', PDF_FONT_SIZE_DATA));
+            $this->getProperty('document', 'data_font_size', PDF_FONT_SIZE_DATA));
         $value_width += $this->pdf->getCellPaddings()['L'] +
             $this->pdf->getCellPaddings()['R'];
         if ($value_width > $column['width']) {
@@ -627,7 +658,8 @@ class TableSimple extends Document\AbstractDocument
 
     protected function templateDocumentHeader()
     {
-        $this->debugLog(__METHOD__);
+        $doc_header = new Document\DocHeader\DebutDocStandard($this->params, $this->config);
+        $doc_header->render($this->pdf);
     }
 
     /**
@@ -639,7 +671,6 @@ class TableSimple extends Document\AbstractDocument
      */
     protected function templateDocumentBody()
     {
-        $this->debugLog(__METHOD__);
         // prend en compte les entêtes de colonnes pour adapter leur largeur
         $doctable_columns = $this->config->doctable->columns;
         foreach ($doctable_columns as &$column) {
@@ -652,17 +683,26 @@ class TableSimple extends Document\AbstractDocument
         $table_width = $this->adaptTableWidthsToPage();
         // entête du tableau
         $this->templateThead();
+        $this->pdf->setTableHeaderMethod(
+            function () {
+                if ($this->original_topMargin) {
+                    $this->pdf->SetY($this->original_topMargin);
+                }
+                $this->templateThead();
+            });
         // corps du tableau
         $this->templateTbody();
         // pied du tableau
         $this->templateTfoot();
         $this->pdf->Cell($table_width, 0, '', 'T');
+        $this->restoreTopMargin();
     }
 
     protected function templateDocumentFooter()
     {
-        $this->debugLog(__METHOD__);
-        ;
+        $doc_header = new Document\DocFooter\FinDocStandard($this->params, $this->config,
+            $this->data, $this->oProcess);
+        $doc_header->render($this->pdf);
     }
 
     /**
@@ -671,28 +711,35 @@ class TableSimple extends Document\AbstractDocument
      */
     protected function templateThead()
     {
-        $this->debugLog(__METHOD__);
         if (! StdLib::getParam('visible', $this->config->doctable->thead))
-            return;
-        $this->configGraphicSectionTable('thead');
-        foreach ($this->config->doctable->columns as $column) {
-            $align = $this->getAlign($column['thead'], $column['thead_align']);
-            $this->pdf->Cell($column['width'],
-                $this->config->doctable->thead['row_height'],
-                StdLib::formatData($column['thead'], $column['thead_precision'],
-                    $column['thead_completion']),
-                $this->config->doctable->thead['cell_border'], 0, $align, 1,
-                $this->config->doctable->thead['cell_link'], $column['thead_stretch'],
-                $this->config->doctable->thead['cell_ignore_min_height'],
-                $this->config->doctable->thead['cell_calign'],
-                $this->config->doctable->thead['cell_valign']);
+            return 0;
+        $tmp = $this->pdf->saveFontAndColors();
+        if (! $this->thead_xobjid) {
+            $this->configGraphicSectionTable('thead');
+            foreach ($this->config->doctable->columns as $column) {
+                $align = $this->getAlign($column['thead'], $column['thead_align']);
+                $this->pdf->Cell($column['width'],
+                    $this->config->doctable->thead['row_height'],
+                    StdLib::formatData($column['thead'], $column['thead_precision'],
+                        $column['thead_completion']),
+                    $this->config->doctable->thead['cell_border'], 0, $align, 1,
+                    $this->config->doctable->thead['cell_link'], $column['thead_stretch'],
+                    $this->config->doctable->thead['cell_ignore_min_height'],
+                    $this->config->doctable->thead['cell_calign'],
+                    $this->config->doctable->thead['cell_valign']);
+            }
+            $this->pdf->Ln();
         }
-        $this->pdf->Ln();
+        $this->pdf->restoreFontAndColors($tmp);
+        if (! $this->original_topMargin) {
+            $this->saveTopMargin();
+            $this->pdf->SetTopMargin(
+                $this->original_topMargin + $this->config->doctable->thead['row_height']);
+        }
     }
 
     protected function templateTbody()
     {
-        $this->debugLog(__METHOD__);
         if (! StdLib::getParam('visible', $this->config->doctable->tbody))
             return;
         $this->configGraphicSectionTable('tbody');
@@ -703,8 +750,6 @@ class TableSimple extends Document\AbstractDocument
                 $this->templateTfoot();
                 $this->pdf->AddPage();
                 $this->oProcess->newGroup($row);
-                $this->templateThead();
-                $this->configGraphicSectionTable('tbody');
             }
             for ($j = 0; $j < count($row); $j ++) {
                 $align = $this->getAlign($row[$j],
@@ -732,16 +777,14 @@ class TableSimple extends Document\AbstractDocument
      */
     protected function templateTfoot()
     {
-        $this->debugLog(__METHOD__);
         if (! StdLib::getParam('visible', $this->config->doctable->tfoot))
             return;
         $this->configGraphicSectionTable('tfoot');
         $index = 0;
         foreach ($this->config->doctable->columns as $column) {
-            // @todo Vérifier Calculs pour le calcul sur la colonne $index
-            $oCalculs = new \SbmPdf\Model\Calculs($this->getData(), ++ $index);
+            $oCalculs = new Document\Calculs($this->data, ++ $index);
             $oCalculs->range($this->oProcess->getPointerPageBegin(),
-                $this->oProcess->getPointerCurrent());
+                $this->oProcess->getPointerLast());
             $value = $oCalculs->getResultat($column['tfoot']);
             $align = $this->getAlign($column['tfoot'], $column['tfoot_align']);
             $this->pdf->Cell($column['width'],
@@ -766,9 +809,9 @@ class TableSimple extends Document\AbstractDocument
     protected function configGraphicSectionTable($section)
     {
         $this->pdf->SetFont(
-            $this->config->document->get('data_font_family', PDF_FONT_NAME_DATA),
+            $this->getProperty('document', 'data_font_family', PDF_FONT_NAME_DATA),
             trim(StdLib::getParam('font_style', $this->config->doctable->{$section}, '')),
-            $this->config->document->get('data_font_size', PDF_FONT_SIZE_DATA));
+            $this->getProperty('document', 'data_font_size', PDF_FONT_SIZE_DATA));
         $this->pdf->SetLineWidth(
             StdLib::getParam('line_width', $this->config->doctable->{$section}, 0.2));
         $this->pdf->SetDrawColorArray(
@@ -780,5 +823,21 @@ class TableSimple extends Document\AbstractDocument
         $this->pdf->SetTextColorArray(
             $this->convertColor(
                 StdLib::getParam('text_color', $this->config->doctable->{$section}, 'black')));
+    }
+
+    /**
+     * Enregistre le (protected) $pdf->topMargin
+     */
+    protected function saveTopMargin()
+    {
+        $this->original_topMargin = $this->pdf->getMargins()['top'];
+    }
+
+    /**
+     * Restaure le (protected) $pdf->topMargin
+     */
+    protected function restoreTopMargin()
+    {
+        $this->pdf->SetTopMargin($this->original_topMargin);
     }
 }

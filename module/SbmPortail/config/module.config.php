@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 nov. 2020
- * @version 2020-2.6.0
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
  */
 use SbmPortail\Controller;
 
@@ -32,7 +32,7 @@ return [
                         'deny' => [
                             'roles' => [
                                 'etablissement',
-                                'secretariat',
+                                //'secretariat',
                                 'transporteur'
                             ]
                         ]
@@ -41,7 +41,7 @@ return [
                         'deny' => [
                             'roles' => [
                                 'commune',
-                                'secretariat',
+                                //'secretariat',
                                 'transporteur'
                             ]
                         ]
@@ -60,7 +60,7 @@ return [
                             'roles' => [
                                 'commune',
                                 'etablissement',
-                                'secretariat'
+                                //'secretariat'
                             ]
                         ]
                     ]
@@ -70,7 +70,6 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => Controller\Service\IndexControllerFactory::class,
             Controller\CommuneController::class => Controller\Service\CommuneControllerFactory::class,
             Controller\EtablissementController::class => Controller\Service\EtablissementControllerFactory::class,
             Controller\OrganisateurController::class => Controller\Service\OrganisateurControllerFactory::class,
@@ -111,7 +110,7 @@ return [
                     'etablissement' => [
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/etablissement[/:action[/:page][/:id][/id/:id]]',
+                            'route' => '/etablissement[/:action[/:page][/id/:id]]',
                             'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
@@ -127,7 +126,7 @@ return [
                     'organisateur' => [
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/organisateur[/:action[/:page][/:id][/id/:id]]',
+                            'route' => '/organisateur[/:action[/:page][/id/:id]]',
                             'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
@@ -143,7 +142,7 @@ return [
                     'transporteur' => [
                         'type' => 'segment',
                         'options' => [
-                            'route' => '/transporteur[/:action[/:page][/:id][/id/:id]]',
+                            'route' => '/transporteur[/:action[/:page][/id/:id]]',
                             'constraints' => [
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'page' => '[0-9]+',
@@ -164,7 +163,7 @@ return [
         'factories' => [
             'Sbm\Portail\Commune\Query' => \SbmPortail\Model\Db\Service\Query\Commune::class,
             'Sbm\Portail\Etablissement\Query' => \SbmPortail\Model\Db\Service\Query\Etablissement::class,
-            'Sbm\Portail\Secretariat\Query' => \SbmPortail\Model\Db\Service\Query\Secretariat::class,
+            'Sbm\Portail\Organisateur\Query' => \SbmPortail\Model\Db\Service\Query\Organisateur::class,
             'Sbm\Portail\Transporteur\Query' => \SbmPortail\Model\Db\Service\Query\Transporteur::class
         ]
     ],

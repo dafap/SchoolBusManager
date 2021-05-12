@@ -7,8 +7,8 @@
  * @filesource Etablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 nov. 2020
- * @version 2020-2.6.1
+ * @date 6 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPortail\Model\User;
 
@@ -16,6 +16,7 @@ use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Service\DbManager;
+use SbmPortail\Model\Db\Service\Query\Etablissement as QueryObject;
 
 class Etablissement
 {
@@ -49,7 +50,13 @@ class Etablissement
 
     /**
      *
-     * @var \SbmPortail\Model\Db\Service\Query\Etablissement
+     * @var bool
+     */
+    private $sansimpayes;
+
+    /**
+     *
+     * @var QueryObject
      */
     private $query;
 
@@ -67,16 +74,20 @@ class Etablissement
      * @param int $categorieId
      * @param int $userId
      * @param \SbmCommun\Model\Db\Service\DbManager $db_manager
+     * @param bool $sansimpayes
      * @throws \SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface
      */
-    public function __construct(int $categorieId, int $userId, DbManager $db_manager)
+    public function __construct(int $categorieId, int $userId, DbManager $db_manager,
+        bool $sansimpayes)
     {
         $this->categorieId = $categorieId;
         $this->userId = $userId;
         $this->db_manager = $db_manager;
+        $this->sansimpayes = $sansimpayes;
+        $this->query = $db_manager->get('Sbm\Portail\Etablissement\Query')->setSansImpayes(
+            $this->sansimpayes);
         $this->millesime = Session::get('millesime');
         $this->arrayEtablissements = [];
-        $this->query = $this->db_manager->get('Sbm\Portail\Etablissement\Query');
         try {
             $userEtablissementId = $this->db_manager->get(
                 'Sbm\Db\Table\UsersEtablissements')->getEtablissementId($userId);
@@ -110,7 +121,8 @@ class Etablissement
      */
     public function tableauStatistique(): array
     {
-        $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
+        $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve')->setSansImpayes(
+            $this->sansimpayes);
         $data = [];
         foreach ($this->arrayEtablissements as $etablissementId => $nomEtablissement) {
             $resultNbEnregistres = $statEleve->getNbEnregistresByMillesime(
@@ -132,8 +144,8 @@ class Etablissement
                     $statEleve->getNbInscritsByMillesime($this->millesime, 'etablissement',
                         $etablissementId))['effectif'],
                 'elevesInscritsRayes' => current(
-                    $statEleve->getNbRayesByMillesime($this->millesime, true,
-                        'etablissement', $etablissementId))['effectif'],
+                    $statEleve->getNbRayesByMillesime($this->millesime, 'etablissement',
+                        $etablissementId, true))['effectif'],
                 /*'elevesPreinscrits' => current(
                     $statEleve->getNbPreinscritsByMillesime($this->millesime,
                         'etablissement', $etablissementId))['effectif'],
@@ -160,27 +172,52 @@ class Etablissement
         return $data;
     }
 
+    /**
+     * Noms des établissements pour ce user
+     *
+     * @return string
+     */
     public function listeDesNoms(): string
     {
         return implode(' ou ', array_values($this->arrayEtablissements));
     }
 
+    /**
+     * Nombre d'établissements pour ce user
+     *
+     * @return int
+     */
     public function getNbEtablissements(): int
     {
         return count($this->arrayEtablissements);
     }
 
-    public function getEtablissementIds()
+    /**
+     * Tableau indexé des etablissementId pour ce user
+     *
+     * @return array
+     */
+    public function getEtablissementIds(): array
     {
         return array_keys($this->arrayEtablissements);
     }
 
-    public function getArrayEtablissements()
+    /**
+     * Tableau associatif etablissementId => nom pour ce user
+     *
+     * @return array
+     */
+    public function getArrayEtablissements(): array
     {
         return $this->arrayEtablissements;
     }
 
-    public function getQuery()
+    /**
+     * Objet query donnant accès aux données pour ce user
+     *
+     * @return \SbmPortail\Model\Db\Service\Query\Etablissement
+     */
+    public function getQuery(): QueryObject
     {
         return $this->query;
     }

@@ -1,0 +1,177 @@
+<?php
+/**
+ * Carte des stations d'un circuit
+ *
+ * Affichage des stations décrites dans $this->ptStations qui est un tableau de Point
+ * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés
+ * décimaux.
+ * Le circuit est ordonné dans le sens de l'horaireD
+ * Chaque point a un attribut 'station' dont les propriétés sont :
+ * - x
+ * - y
+ * - stationId
+ * - nom
+ * - alias
+ * - ouverte
+ * - codePostal
+ * - commune
+ * - lacommune
+ * - laposte
+ * - services (voir ci-dessous)
+ * - couleur (qui peut prendre les valeurs 1 ou 2)
+ * La propriété 'services' est un tableau associatif dont la clé est stationId et dont
+ * les enregistrements sont des objets composés des propriétés suivantes :
+ * - serviceId
+ * - service
+ * - ligneId
+ * - sens
+ * - moment
+ * - ordre
+ * - passage
+ * - horaireD
+ * Ce tableau n'a qu'un enregistrement s'il n'y a qu'un seul service.
+ * Pour une ligne il peut y avoir plusieurs services donc plusieurs enregistrements.
+ *
+ * @project sbm
+ * @package SbmCarographie/view/sbm-cartographie/carte
+ * @filesource stations.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 13 nov. 2020
+ * @version 2020-2.6.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headStyle()->captureStart();
+?>
+#carte-inner {
+    width: 90%;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#choix {
+	margin-right: 5em;
+}
+<?php
+$this->headStyle()->captureEnd();
+$legende = [];
+$format_legende = '<span style="color: %s; background-color: %s; font-weight: bold;">&nbsp;En %s&nbsp;</span> le%5$s point%5$s d\'arrêt %s';
+$i = 0;
+$aMarkers = [];
+$rang = 0;
+foreach ($this->ptStations as $pt) {
+    $station = $pt->getAttribute('station');
+    $d = [
+        '<b>' . $this->escapeHtml($station->nom) . '</b>',
+        $this->escapeHtml($station->alias),
+        implode(' ', [
+            $station->codePostal,
+            $station->lacommune
+        ])
+    ];
+    $desservie = false;
+    $aServices = [];
+    foreach ($station->services as $service) {
+        if ($service->ligneId) {
+            $aServices[] = explode(' ', $service->service);
+            $desservie = true;
+        }
+    }
+    if ($desservie && $station->ouverte) {
+        $color = "white";
+        $bgrcolor = "limegreen";
+        $icon = "green-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert',
+            'ouverts', 's');
+        $text = 'O';
+        $nature = "ouverte";
+        $index = 'ouvert';
+    } elseif ($station->ouverte) {
+        $color = "#7a7a7a";
+        $bgrcolor = "yellow";
+        $icon = "yellow-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune',
+            'non desservis', 's');
+        $text = 'N';
+        $nature = "non desservie";
+        $index = "nonDesservi";
+    } else {
+        $color = "white";
+        $bgrcolor = "red";
+        $icon = "red-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge',
+            'fermés', 's');
+        $text = 'F';
+        $nature = "fermée";
+        $index = "ferme";
+    }
+    $d[] = 'Station ' . $nature;
+    if (count($aServices)) {
+        $table = '<table>';
+        foreach ($aServices as $ligne) {
+            $table .= '<tr><td>' . implode('</td><td>', $ligne) . '</td></tr>';
+        }
+        $table .= '</table>';
+    }
+    if ($station->couleur == 2) {
+        $color = "purple";
+        $icon = "purple-dot.png";
+        $text = 'A';
+    }
+    $aMarkers[$index][] = [
+        'lat' => $pt->getLatitude(),
+        'lng' => $pt->getLongitude(),
+        'icon' => $icon,
+        'text' => $text,
+        'title' => $station->lacommune . ' - ' . $station->nom,
+        'info' => implode('<br>', array_filter($d)) . $table
+    ];
+}
+$carte_init_parametres = sprintf('"%s","%s","%s",%f,%f,%d,%s', 'stationcheckbox',
+    'carte-inner', $this->scheme, $this->config['centre']['lat'],
+    $this->config['centre']['lng'], $this->config['zoom'], json_encode($aMarkers));
+$this->headScript()->prependFile($this->url_api);
+$this->JQuery();
+$this->ThemeJs('commun', 'carte.js');
+$this->headScript()->captureStart();
+?>
+carte.init(<?=$carte_init_parametres;?>);
+<?php
+$this->headScript()->captureEnd();
+/* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
+$hiddens = [
+    'origine' => $this->origine
+];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-door-out',
+        'title' => 'Retour'
+    ]
+];
+?>
+<h1>Circuit <?=$this->designation;?></h1>
+<div id="carte-wrapper">
+	<div id="carte-header" class="clearfix">
+		<div class="menu float-left">
+		<?= $this->listeZoneActions($hiddens,$actions);?>
+		</div>
+		<?php if (false): // n'apparait pas ?>
+		<div id="choix" class="float-right">
+			Cochez ou décochez pour choisir les points d'arrêt affichées : <input
+				name="stationcheckbox" type="checkbox" checked value="ouvert">Ouverts
+			<input name="stationcheckbox" type="checkbox" checked value="ferme">Fermés
+			<input name="stationcheckbox" type="checkbox" checked
+				value="nonDesservi">Non desservis
+		</div>
+		<?php endif;?>
+	</div>
+	<div id="carte-inner"></div>
+	<div class="float-right right-10px sbm-description">
+		<ul style="list-style: none;">
+			<li><?= implode('</li><li>', $legende) ?></li>
+		</ul>
+
+	</div>
+</div>

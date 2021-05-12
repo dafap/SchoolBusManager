@@ -17,7 +17,6 @@
 namespace SbmPdf\Model\Document\Template;
 
 use SbmPdf\Model\Document;
-use Zend\Stdlib\Parameters;
 
 class TableHtml extends Document\AbstractDocument
 {

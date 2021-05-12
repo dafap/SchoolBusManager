@@ -16,8 +16,8 @@
  * @filesource services.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
- * @version 2020-2.6.1
+ * @date 8 mai 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
@@ -29,7 +29,6 @@ $url_download = $this->url('sbmportail/commune', [
 $url_group = $this->url('sbmportail/commune',
     [
         'action' => 'service-group',
-        'id' => $this->page
     ]);
 $url_retour = $this->url('sbmportail/commune', [
     'action' => 'lignes'
@@ -125,7 +124,8 @@ $actions = [
             'sens' => $service->sens,
             'moment' => $service->moment,
             'ordre' => $service->ordre,
-            'origine' => $url_ici
+            'origine' => $url_ici,
+            'designation' => $designationService
         ];
         $buttons = [
             'ouvrir' => [

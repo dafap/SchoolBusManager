@@ -1,13 +1,13 @@
 <?php
 /**
- * Entité pour les critères élèves du portail
+ * Entité pour les critères élèves du portail organisateur
  *
  * @project sbm
  * @package SbmPortail\Model\Db\ObjectData
- * @filesource CriteresTransporteur.php
+ * @filesource CriteresOrganisateur.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2021
+ * @date 8 mai 2021
  * @version 2021-2.6.1
  */
 namespace SbmPortail\Model\Db\ObjectData;
@@ -16,7 +16,7 @@ use SbmBase\Model\Session;
 use SbmCommun\Model\Db\ObjectData\Criteres as SbmCommunCriteres;
 use Zend\Db\Sql\Where;
 
-class CriteresTransporteur extends SbmCommunCriteres
+class CriteresOrganisateur extends SbmCommunCriteres
 {
     use \SbmCommun\Model\Traits\ServiceTrait;
 
@@ -33,7 +33,15 @@ class CriteresTransporteur extends SbmCommunCriteres
     }
 
     /**
-     * Les paramètres ne sont présents que par compatibilité avec la classe parent
+     * On filtre sur le millesime en cours.
+     * La propriété `data` est un tableau de la forme
+     * :<dl> <dt>array (size=10)</dt> <dd>'numero' => string '' (length=0)</dd>
+     * <dd>'nomSA' => string '' (length=0)</dd> <dd>'responsableSA' => string ''
+     * (length=0)</dd> <dd>'etablissementId' => string '' (length=0)</dd> <dd>'classeId'
+     * => string '' (length=0)</dd> <dd>'etat' => string '' (length=0)</dd> <dd>'demande'
+     * => string '' (length=0)</dd> <dd>'decision' => string '' (length=0)</dd>
+     * <dd>'derogation' => string '0' (length=1)</dd> <dd>'selection' => string '0'
+     * (length=1)</dd></dl> (non-PHPdoc)
      *
      * @see \SbmCommun\Model\Db\ObjectData\Criteres::getWhere()
      */
@@ -51,6 +59,7 @@ class CriteresTransporteur extends SbmCommunCriteres
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
         }
+        // condition stricte
         if (array_key_exists('regimeId', $this->data) && strlen($this->data['regimeId'])) {
             $where->equalTo('sco.regimeId', $this->data['regimeId']);
         }
@@ -65,8 +74,10 @@ class CriteresTransporteur extends SbmCommunCriteres
                 'r2.nomSA', $this->data['responsable'] . '%')->unnest();
         }
         if (! empty($this->data['communeId'])) {
-            $where->nest()->equalTo('r1.communeId', $this->data['communeId'])->or->equalTo(
-                'r2.communeId', $this->data['communeId'])->unnest();
+            $where->nest()->equalTo('sco.communeId', $this->data['communeId'])->or->nest()
+                ->isNull('sco.communeId')
+                ->equalTo('r1.communeId', $this->data['communeId'])
+                ->unnest()->or->equalTo('r2.communeId', $this->data['communeId'])->unnest();
         }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('sco.etablissementId', $this->data['etablissementId']);
@@ -125,12 +136,15 @@ class CriteresTransporteur extends SbmCommunCriteres
     }
 
     /**
-     * Cette méthode est semblable à la précédente mais il ne doit pas y avoir de champ
-     * préfixé.
+     * Prépare et renvoie un Where à partir des données de l'objet.
+     * Le tableau
+     * $descripteur est structuré de la façon suivante :<ul> <li>'strict' => [liste de
+     * champs ...]</li> <li>'expressions' => [liste de champs]</li></ul> En fait, cette
+     * méthode appelle la précédente mais il ne doit pas y avoir de champ préfixé dans le
+     * tableau 'expressions'.
      *
      * @param array $descripteur
-     *            Ce paramètre n'est présent que pour la compatibilité avec sa classe
-     *            parent
+     *
      * @return \Zend\Db\Sql\Where
      */
     public function getWherePdf($descripteur = null)
@@ -139,16 +153,13 @@ class CriteresTransporteur extends SbmCommunCriteres
         if ($this->sanspreinscrits) {
             $where->literal('inscrit = 1')
                 ->nest()
-                ->literal('paiementR1 = 1')->or->literal('gratuit = 1')->unnest();
+                ->literal('paiementR1 = 1')->or->literal('gratuit > 0')->unnest();
         } else {
             $where->literal('inscrit = 1');
         }
         $where->equalTo('millesime', Session::get('millesime'));
         if (! empty($this->data['numero'])) {
             $where->equalTo('numero', $this->data['numero']);
-        }
-        if (! empty($this->data['regimeId'])) {
-            $where->equalTo('sco.regimeId', $this->data['regimeId']);
         }
         if (! empty($this->data['nomSA'])) {
             $where->like('nomSA', $this->data['nomSA'] . '%');
@@ -159,12 +170,6 @@ class CriteresTransporteur extends SbmCommunCriteres
         if (! empty($this->data['responsable'])) {
             $where->like('responsable', $this->data['responsable'] . '%');
         }
-        if (! empty($this->data['communeId'])) {
-            $where->nest()->equalTo('sco.communeId', $this->data['communeId'])->or->nest()
-                ->isNull('sco.communeId')
-                ->equalTo('r1.communeId', $this->data['communeId'])
-                ->unnest()->or->equalTo('r2.communeId', $this->data['communeId'])->unnest();
-        }
         if (! empty($this->data['etablissementId'])) {
             $where->equalTo('etablissementId', $this->data['etablissementId']);
         }
@@ -172,8 +177,8 @@ class CriteresTransporteur extends SbmCommunCriteres
             $where->equalTo('classeId', $this->data['classeId']);
         }
         if (! empty($this->data['serviceId'])) {
-            list ('ligneId' => $ligneId, 'sens' => $sens, 'moment' => $moment, 'ordre' => $ordre) = $this->decodeServiceId(
-                $this->data['serviceId']);
+            list ($ligneId, $sens, $moment, $ordre) = explode('|',
+                $this->decodeServiceId($this->data['serviceId']));
             $where->nest()
                 ->nest()
                 ->equalTo('R1ligne1Id', $ligneId)
@@ -182,9 +187,9 @@ class CriteresTransporteur extends SbmCommunCriteres
                 ->equalTo('R1ordreligne1', $ordre)
                 ->unnest()->or->nest()
                 ->equalTo('R2ligne1Id', $ligneId)
-                ->equalTo('R2sensligne1', $sens)
+                ->equalTo('R2sens', $sens)
                 ->equalTo('R2moment', $moment)
-                ->equalTo('R2ordreligne1', $ordre)
+                ->equalTo('R2ordre', $ordre)
                 ->unnest()
                 ->unnest();
         }
@@ -199,7 +204,7 @@ class CriteresTransporteur extends SbmCommunCriteres
                 ->equalTo('R1station1Id', $this->data['stationId'])
                 ->unnest()->or->nest()
                 ->nest()
-                ->literal('R1moment = 2')->or->literal('R1moment = 3')
+                ->literal('R1moment = 2')->or->literal('affR1.moment = 3')
                 ->unnest()
                 ->equalTo('R1station2Id', $this->data['stationId'])
                 ->unnest()
@@ -212,7 +217,7 @@ class CriteresTransporteur extends SbmCommunCriteres
                 ->equalTo('R2station1Id', $this->data['stationId'])
                 ->unnest()->or->nest()
                 ->nest()
-                ->literal('R2moment = 2')->or->literal('R2moment = 3')
+                ->literal('R2moment = 2')->or->literal('affR2.moment = 3')
                 ->unnest()
                 ->equalTo('R2station2Id', $this->data['stationId'])
                 ->unnest()

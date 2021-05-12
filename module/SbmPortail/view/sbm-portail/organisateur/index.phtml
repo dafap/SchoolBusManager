@@ -35,17 +35,44 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 oct. 2020
- * @version 2020-2.6.1
+ * @date 17 mars 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\StdLib;
 
+$msgEnr = <<<EOT
+Comprend toutes les demandes, y compris les abonnements
+impayés et les inscriptions rayées.
+EOT;
+$msgAbo = <<<EOT
+L'écart entre le nombre d'élèves enregistrés et le nombre
+d'abonnements délivrés s'explique par l'impossibilité de
+répondre à la demande ou le non paiement de l'abonnement
+demandé.
+EOT;
+$msgRay = <<<EOT
+Abonnements payés puis annulés à la demande de la famille.
+EOT;
+$msgImp = <<<EOT
+Comprend les abonnements impayés et les abonnements payés
+par CB en 3 fois et pour lesquels, suite à un incident de 
+paiement, une ou deux échéances n'ont pas été honorées.
+EOT;
+$msgNon = <<<EOT
+Il s'agit de demandes formulées par la famille en prévision
+d'un besoin, mais non confirmées. Le service n'a jamais été
+consommé.
+EOT;
+$msgGeo = <<<EOT
+Élèves pour lesquels il est impossible de calculer la
+distance du domicile à l'établissement.
+EOT;
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
 $url_eleves = $this->url('sbmportail/organisateur', [
     'action' => 'eleves'
 ]);
-$url_circuits = $this->url('sbmportail/organisateur', [
+$url_lignes = $this->url('sbmportail/organisateur', [
     'action' => 'lignes'
 ]);
 $url_carte_stations = $this->url('sbmportail/organisateur',
@@ -56,6 +83,9 @@ $url_carte_etablissements = $this->url('sbmportail/organisateur',
     [
         'action' => 'carte-etablissements'
     ]);
+$url_portails = $this->url('sbmportail/organisateur', [
+    'action' => 'autres-portails'
+]);
 
 $elevesEnregistres = StdLib::getParam('elevesEnregistres', $this->data['eleves'], 0);
 $nbInternes = StdLib::getParam('elevesIntEnregistres', $this->data['eleves'], 0);
@@ -74,11 +104,30 @@ $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
 		<?= $this->flashMessenger()->render('default');?>
     </div>
 	<h1>Portail de l'organisateur</h1>
+	<div id="menugeneral" class="float-right">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?= $url_lignes;?>"><i
+						class="fam-bullet-go"></i>Lignes, services et horaires</a></li>
+				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
+						des points d'arrêts</a></li>
+				<li><a href="<?= $url_carte_etablissements; ?>"><i
+						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
+				<li><a href="<?= $url_portails; ?>"><i
+						class="fam-bullet-go"></i>Portails des partenaires</a></li>
+			</ul>
+		</div>
+	</div>
 	<div class="float-left">
 		<h2>Quelques chiffres</h2>
 		<table class="bleu float-left">
 			<tbody>
-				<tr>
+				<tr title="<?=$msgEnr;?>">
 					<td>Nombre d'élèves enregistrés</td>
 					<td class="effectif"><?=$elevesEnregistres;?></td>
 				</tr>
@@ -92,19 +141,19 @@ $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
 					et <?=$nbInternes;?> interne <?=$nbInternes > 1 ? 's' : '';?></td>
 					<td></td>
 				</tr>
-				<tr>
+				<tr title="<?=$msgAbo;?>">
 					<td>Nombre d'abonnements payés</td>
 					<td class="effectif"><?=StdLib::getParam('elevesInscrits',$this->data['eleves'], 0);?></td>
 				</tr>
-				<tr>
+				<tr title="<?=$msgRay;?>">
 					<td>Nombre d'abonnements payés puis rayés</td>
 					<td class="effectif"><?= StdLib::getParam('elevesInscritsRayes',$this->data['eleves'], 0);?></td>
 				</tr>
-				<tr>
+				<tr title="<?=$msgImp;?>">
 					<td>Nombre de demandes non payées</td>
 					<td class="effectif"><?=StdLib::getParam('elevesPreinscrits',$this->data['eleves'], 0);?></td>
 				</tr>
-				<tr class="separateur">
+				<tr class="separateur" title="<?=$msgNon;?>">
 					<td>Nombre de demandes non payées puis rayés</td>
 					<td class="effectif"><?=StdLib::getParam('elevesPreinscritsRayes',$this->data['eleves'], 0);?></td>
 				</tr>
@@ -120,7 +169,7 @@ $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
 					<td>Nombre d'élèves à 3 km et plus</td>
 					<td class="effectif"><?=$eleves3kmEtPlus;?></td>
 				</tr>
-				<tr class="separateur">
+				<tr class="separateur" title="<?=$msgGeo;?>">
 					<td>Nombre d'élèves non géolocalisés</td>
 					<td class="effectif"><?= $nbDistanceInconnue;?></td>
 				</tr>
@@ -165,25 +214,6 @@ $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
 					</tr>
 				</tbody>
 			</table>
-		</div>
-	</div>
-	<div id="menugeneral" class="float-right">
-		<div id="menugeneral-header">
-			<h2>Menu</h2>
-		</div>
-		<div id="menugeneral-inner">
-			<ul>
-				<li><a href="<?= $url_eleves; ?>"><i class="fam-bullet-go"></i>Liste
-						des élèves</a></li>
-				<li><a href="<?= $url_circuits;?>" target="_blank"><i
-						class="fam-bullet-go"></i>Circuits et horaires</a></li>
-				<li><a href="<?= $url_commune; ?>" target="_blank"><i
-						class="fam-bullet-go"></i>Portail d'une commune</a></li>
-				<li><a href="<?= $url_carte_stations; ?>"><i class="fam-bullet-go"></i>Carte
-						des points d'arrêts</a></li>
-				<li><a href="<?= $url_carte_etablissements; ?>"><i
-						class="fam-bullet-go"></i>Carte des établissements scolaires</a></li>
-			</ul>
 		</div>
 	</div>
 </div>

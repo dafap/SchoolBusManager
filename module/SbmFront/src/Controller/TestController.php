@@ -45,32 +45,99 @@ class TestController extends AbstractActionController
 
     public function indexAction()
     {
+        /**
+         * Test sur BUISSON Taina (Clg Beaufort) eleveId=526 etablissemenntId=0730007L
+         * stationId=366 jours=27 trajet=1 responsableId=
+         */
+        /**
+         * Test sur COUTIN Clément (Clg Beaufort) eleveId=782 etablissementId=0730007L
+         * stationId=249 jours=27 trajet=1 responsableId
+         */
+        /**
+         * Test sur ANDOLFATTO Luna (R.Perrin Ugine - Me) eleveId=292
+         * etablissementId=0730043A
+         * stationId=372 jours=31 trajet=1 responsableId=234
+         */
+        /**
+         * Test sur COL DACRUZ Valentin (R.
+         * Perrin Ugine midi:3 troncons) eleveId=802 etablissementId=0730043A
+         * stationId=197 jours=4 trajet=1 responsableId=
+         */
+        /**
+         * Test sur CHRISTIN Laura (Lyc Grans Arc) eleveId=2153 etablissementId=0730006K
+         * stationId=33 jours=31 trajet=1 responsableId=
+         */
+        /**
+         * Test sur BARBASSAT Andjy (Lyc Grand Arc) eleveId=1872 etablissementId=0730006K
+         * stationId=173 jours=31 trajet=1 respondableId=
+         */
+        $object = $this->db_manager->get('Sbm\ChercheTrajet')
+            ->setEtablissementId('0730043A')
+            ->setEleveId(292)
+            ->setStationId(372)
+            ->setJours(31)
+            ->setTrajet(1)
+            ->setResponsableId(1)
+            ->run();
+        // dump et print_r de l'objet 'obj'
+        $viewmodel = new ViewModel([
+            'obj' => $object,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
+    }
+
+    public function passProvisoireAction()
+    {
+        $array = [
+            'du' => '25/03/2021',
+            'au' => '08/04/2021',
+            // 'numero'=>17616,
+            'beneficiaire' => '',
+            'eleve' => strtoupper('KARATAS Melike'),
+            'responsable' => 'Mme PERRIN DELPHINE',
+            'adresseL1' => 'LA COUTELLAT',
+            'adresseL2' => '',
+            'adresseCommune' => 'ESSERTS-BLAY',
+            'ecole' => 'COLLÈGE PIERRE GRANGE ALBERTVILLE',
+            'station' => 'PLAINE DE BLAY (ESSERTS-BLAY)',
+            'matin' => '638',
+            'midi' => '638',
+            'soir' => '638'
+        ];
+        $pass = new \SbmPdf\Model\PassProvisoire();
+        return $pass->render($array);
+    }
+
+    public function indexOldAction()
+    {
         $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
         $qrcodeNiveau = 'QRCODE,Q';
         $qrcodeMessage1 = 'https://www.tra-mobilite/plan-temps-reel/';
         $qrcodeMessage2 = 'ABOARSCO00018';
         $imagePassJunior = file_get_contents(
             StdLib::concatPath($imagePath, 'pass-provisoire-A4.svg'));
-        $du = '21/02/2021';
-        $au = '10/03/2021';
-        $beneficiaire_nom = 'YAHOU';
-        $beneficiaire_prenom = 'MILENA';
+        $du = '25/03/2021';
+        $au = '08/04/2021';
+        $beneficiaire_nom = 'KARATAS';
+        $beneficiaire_prenom = strtoupper('Melike');
         // $chez = 'MASSON Juliette';
         $eleve_nom = "";
         $eleve_prenom = "";
-        $eleve_numero = 32951; // stagiaire => supérieur à 99991
-        $adresseL1 = '3 RUE DES TILLEULS';
+        $eleve_numero = 17616; // stagiaire => supérieur à 99991
+        $adresseL1 = 'LA COUTELLAT';
         $adresseL2 = '';
-        $codePostal = '73460';
-        $commune = 'FRONTENEX';
-        $etablissement = 'LYCÉE JEANNE D\'ARC - ALBERTVILLE';
-        $origine = 'MAIRIE CENTRE (FRONTENEX)';
-        $services_matin = '704';
-        $services_midi = '701';
-        $services_soir = '704 ou 701 le Me';
+        $codePostal = '73540';
+        $commune = 'ESSERTS-BLAY';
+        $etablissement = 'COLLÈGE PIERRE GRANGE - ALBERTVILLE';
+        $origine = 'PLAINE DE BLAY (ESSERTS-BLAY)';
+        $services_matin = '638';
+        $services_midi = '638';
+        $services_soir = '638';
         $responsable_titre = "Mme";
-        $responsable_nom = "YAHOU";
-        $responsable_prenom = "DIANE";
+        $responsable_nom = "PERRIN";
+        $responsable_prenom = "DELPHINE";
         if ($eleve_nom == '') {
             $imagePassJunior = str_replace('chez', '', $imagePassJunior);
         }

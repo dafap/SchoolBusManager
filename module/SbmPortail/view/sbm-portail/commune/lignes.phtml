@@ -13,6 +13,13 @@
  * - millesime
  * - criteres_form
  *
+ * Le paginateur propose des enregistrements ayant les clés suivantes :
+ * - ligneId
+ * - operateur
+ * - extremite1
+ * - extremite2
+ * - via
+ *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/commune
  * @filesource lignes.phtml
@@ -88,6 +95,8 @@ $actions = [
 					<th>Départ</th>
 					<th>Terminus</th>
 					<th>Via</th>
+					<th>Réservée<br>internes
+					</th>
 					<th></th>
 				</tr>
 			<?php foreach ($lignes as $ligne) :?>
@@ -121,6 +130,8 @@ $actions = [
 						<?=$this->escapeHtml($ligne->extremite2);?></td>
 					<td class="via">
 						<?=$this->escapeHtml($ligne->via);?></td>
+					<td class="internes centre">
+						<?=$this->escapeHtml($ligne->internes ? 'Oui':'Non');?></td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($ligne->ligneId, $hiddens, $buttons);?></td>
 				</tr>

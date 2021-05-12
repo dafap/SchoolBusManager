@@ -8,14 +8,16 @@
  * - page
  * - commune
  * - criteres_form
+ * - sansimpayes
+ * - ns
  *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/commune
  * @filesource eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2020
- * @version 2020-2.6.1
+ * @date 8 mai 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\Session;
 
@@ -59,19 +61,19 @@ if ((new \DateTime()) < $date_fin_aout) {
 }
 // url_retour pour utiliser le redirectToOrigine
 $url_retour = $this->url('sbmportail/commune', [
-    'action' => 'index'
+    'action' => $this->ns
 ]);
 $url_rapports = $this->url('sbmportail/commune',
     [
-        'action' => 'eleves-pdf',
+        'action' => $this->ns . '-pdf',
         'page' => $this->page
     ]);
 $url_download = $this->url('sbmportail/commune',
     [
-        'action' => 'eleves-download',
+        'action' => $this->ns . '-download',
         'page' => $this->page
     ]);
-$action_ici = 'eleves';
+$action_ici = $this->ns;
 $url_ici = $this->url('sbmportail/commune',
     [
         'action' => $action_ici,
@@ -87,7 +89,7 @@ $hiddens = $menuImpression['hiddens'];
 $actions = [
     'cancel' => [
         'class' => 'fam-door-out',
-        // 'formaction' => $url_retour,
+        'formaction' => $url_retour,
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
@@ -100,6 +102,9 @@ $actions = [
 ];
 ?>
 <h1>Liste des élèves de <?=$this->commune;?></h1>
+<?php if ($this->subtitle):?>
+<h2><?=$this->subtitle;?></h2>
+<?php endif;?>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left">
@@ -125,7 +130,9 @@ $actions = [
 					<th>Etablissement scolaire</th>
 					<th>Classe</th>
 					<th class="<?=$avant_fin_aout;?>">Circuits</th>
+					<?php if (! $this->sansimpayes):?>
 					<th>Abonnement</th>
+					<?php endif;?>
 				</tr>
 				<?php foreach($eleves as $eleve): ?>
 				<?php
@@ -152,10 +159,10 @@ $actions = [
             array_filter(
                 array_unique(
                     [
-                        $eleve['adresseL1R1'],
-                        $eleve['adresseL2R1'],
-                        $eleve['adresseL3R1'],
-                        $eleve['lacommuneR1']
+                        $eleve['adresseL1Elv'],
+                        $eleve['adresseL2Elv'],
+                        $eleve['adresseL3Elv'],
+                        $eleve['lacommuneElv']
                     ])));
         $adresseR2 = implode('<br>',
             array_filter(
@@ -173,22 +180,26 @@ $actions = [
             $itinerairesR2 = sprintf(
                 $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
                 '');
+        } else {
+            $itinerairesR2 = '';
         }
         if (! $eleve['inscrit']) {
             $tr_css .= ' barre';
         }
-        if ($eleve['paiementR1'] || $eleve['gratuit'] == 1) {
-            $paiementR1 = 'Payé';
-        } else {
-            $paiementR1 = 'Impayé';
-        }
-        if ($ga) {
-            if ($eleve['reductionR2'] || $eleve['gratuit'] == 1) {
-                $paiementR2 = 'Gratuit';
-            } elseif ($eleve['paiementR2'] == 1) {
-                $paiementR2 = 'Payé';
+        if (! $this->sansimpayes) {
+            if ($eleve['paiementR1'] || $eleve['gratuit'] == 1) {
+                $paiementR1 = 'Payé';
             } else {
-                $paiementR2 = 'Impayé';
+                $paiementR1 = 'Impayé';
+            }
+            if ($ga) {
+                if ($eleve['reductionR2'] || $eleve['gratuit'] == 1) {
+                    $paiementR2 = 'Gratuit';
+                } elseif ($eleve['paiementR2'] == 1) {
+                    $paiementR2 = 'Payé';
+                } else {
+                    $paiementR2 = 'Impayé';
+                }
             }
         }
         ?>
@@ -198,10 +209,10 @@ $actions = [
 					<?= $eleve['numero']; ?></td>
 					<td class="nom"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?= $this->escapeHtml($eleve['nom']); ?></td>
+					<?= $this->escapeHtml($eleve['nom_eleve']); ?></td>
 					<td class="prenom"
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
-					<?= $this->escapeHtml($eleve['prenom']); ?></td>
+					<?= $this->escapeHtml($eleve['prenom_eleve']); ?></td>
 					<td class="adresse">
 					<?= $adresseR1; ?></td>
 					<td class="responsables">
@@ -213,15 +224,19 @@ $actions = [
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['classe']);?></td>
 					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR1;?></td>
+					<?php if (! $this->sansimpayes):?>
 					<td class="centre"><?= $paiementR1;?></td>
-					<?php if ($nbResponsables == 2) :?>
+					<?php endif;?>
+				<?php if ($nbResponsables == 2) :?>
 				</tr>
 				<tr class="petit <?= $tr_css;?>">
 					<td class="adresse"><?= $adresseR2; ?></td>
 					<td><?= $responsables[1]; ?></td>
 					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR2;//$this->printServices($eleve['eleveId'], 2);?></td>
+					<?php if (! $this->sansimpayes):?>
 					<td class="centre"><?= $paiementR2;?></td>
 					<?php endif;?>
+				<?php endif;?>
         		</tr>
 				<?php endforeach;?>
 			</tbody>

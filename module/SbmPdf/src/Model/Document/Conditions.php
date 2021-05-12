@@ -7,25 +7,25 @@
  * La non égalité est noté <> ou !=
  * Les opérateurs de comparaison <, <=, >, >= sont acceptés
  * Les opérateurs et, and, ou, or, &&, ||, xor sont acceptés
- * 
- * Les structures sont interprétées dans les méthodes commençant par `struc_`. 
+ *
+ * Les structures sont interprétées dans les méthodes commençant par `struc_`.
  * Pour rajouter une nouvelle structure, il suffit de définir sa méthode.
  * Penser à mettre l'expression php à évaluer entre parenthèses afin de pouvoir enchainer les conditions.
- * 
+ *
  * Tous les mots sont mis entre quotes avant l'évaluation, à l'exception des mots autorisés par leur propriété.
  * Par exemple, in_array n'est évalué que si la propriété `enable['in_array']` existe et est vraie.
- * 
+ *
  * Si la condition est incohérente (syntaxe incorrecte), son évaluation renvoie false et il n'y a pas d'alerte.
- * 
+ *
  * @project sbm
- * @package SbmPdf/Model
+ * @package SbmPdf/src/Model/Document
  * @filesource Conditions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2019-2.5.0
+ * @date 6 mars 2021
+ * @version 2021-2.6.1
  */
-namespace SbmPdf\Model;
+namespace SbmPdf\Model\Document;
 
 class Conditions
 {
@@ -432,4 +432,4 @@ class Conditions
             return $condition;
         }
     }
-} 
+}

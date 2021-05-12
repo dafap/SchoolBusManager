@@ -7,8 +7,8 @@
  * @filesource ExpressionSqlTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 juil. 2020
- * @version 2020-2.6.0
+ * @date 7 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Traits;
 
@@ -146,10 +146,29 @@ trait ExpressionSqlTrait
         return 'CONCAT_WS(" ",' . $expr . ')';
     }
 
-    public function getSqlEncodeServiceId(string $prefix = '')
+    /**
+     * Renvoie un identifiant du service par encodage.
+     * Les colonnes ligneId, sens, moment et ordre sont concaténées avec pour séparateur
+     * le caractère |
+     * Si l'encodage est réalisé à partir d'une fiche de la table affectations, on précise
+     * alors si il concerne le service 1 ou le service 2
+     *
+     * @param string $prefix
+     * @param bool $fromAffectation
+     * @param int $num_ligne
+     * @return string
+     */
+    public function getSqlEncodeServiceId(string $prefix = '',
+        bool $fromAffectation = false, int $num_ligne = 1)
     {
         if ($prefix) {
             $prefix = rtrim($prefix, '.') . '.';
+        }
+        if ($fromAffectation) {
+            return sprintf(
+                'CONCAT_WS("|",%1$sligne%2$dId,%1$ssensligne%2$d,%1$smoment,%1$sordreligne%2$d)',
+                $prefix, $num_ligne);
+            // return 'CONCAT_WS(\'|\',ligne1Id,sensligne1,moment,ordreligne1)';
         }
         return sprintf('CONCAT_WS("|",%1$sligneId,%1$ssens,%1$smoment,%1$sordre)', $prefix);
         // return 'CONCAT_WS(\'|\',ligneId,sens,moment,ordre)';

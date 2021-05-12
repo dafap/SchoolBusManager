@@ -3,14 +3,21 @@
  * Liste des élèves
  *
  * Les variables définies dans cette vue sont :
+ * - paginator
+ * - count_per_page
+ * - page
+ * - etablissement
+ * - nbEtablissements
+ * - criteres_form
+ * - sansimpayes
  *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/etablissement
  * @filesource eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 nov. 2020
- * @version 2020-2.6.1
+ * @date 8 mai 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\Session;
 
@@ -54,16 +61,16 @@ if ((new \DateTime()) < $date_fin_aout) {
 }
 // url_retour pour utiliser le redirectToOrigine
 $url_retour = $this->url('sbmportail/etablissement', [
-    'action' => 'index'
+    'action' => $this->ns
 ]);
 $url_rapports = $this->url('sbmportail/etablissement',
     [
-        'action' => 'eleves-pdf',
+        'action' => $this->ns . '-pdf',
         'page' => $this->page
     ]);
 $url_download = $this->url('sbmportail/etablissement',
     [
-        'action' => 'eleves-download',
+        'action' => $this->ns . '-download',
         'page' => $this->page
     ]);
 $action_ici = 'eleves';
@@ -95,6 +102,9 @@ $actions = [
 ];
 ?>
 <h1>Liste des élèves de <?=$this->etablissement;?></h1>
+<?php if ($this->subtitle):?>
+<h2><?=$this->subtitle;?></h2>
+<?php endif;?>
 <div id="liste-wrapper">
 	<div id="liste-header" class="clearfix">
 		<div class="menu float-left">
@@ -122,6 +132,9 @@ $actions = [
 					<?php endif;?>
 					<th>Classe</th>
 					<th class="<?=$avant_fin_aout;?>">Circuits</th>
+					<?php if (! $this->sansimpayes):?>
+					<th>Abonnement</th>
+					<?php endif;?>
 				</tr>
 				<?php foreach($eleves as $eleve): ?>
 				<?php
@@ -169,9 +182,27 @@ $actions = [
             $itinerairesR2 = sprintf(
                 $this->printItineraires($eleve['eleveId'], 2, $eleve['demandeR2'] == 1),
                 '');
+        } else {
+            $itinerairesR2 = '';
         }
         if (! $eleve['inscrit']) {
             $tr_css .= ' barre';
+        }
+        if (! $this->sansimpayes) {
+            if ($eleve['paiementR1'] || $eleve['gratuit'] == 1) {
+                $paiementR1 = 'Payé';
+            } else {
+                $paiementR1 = 'Impayé';
+            }
+            if ($ga) {
+                if ($eleve['reductionR2'] || $eleve['gratuit'] == 1) {
+                    $paiementR2 = 'Gratuit';
+                } elseif ($eleve['paiementR2'] == 1) {
+                    $paiementR2 = 'Payé';
+                } else {
+                    $paiementR2 = 'Impayé';
+                }
+            }
         }
         ?>
         		<tr class=" r1 petit <?= $tr_css;?>">
@@ -197,13 +228,19 @@ $actions = [
 						<?= $nbResponsables ? ' rowspan=' . $nbResponsables : ''?>>
 					<?= $this->escapeHtml($eleve['classe']);?></td>
 					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR1;?></td>
-					<?php if ($nbResponsables == 2) :?>
+					<?php if (! $this->sansimpayes):?>
+					<td class="centre"><?= $paiementR1;?></td>
+					<?php endif;?>
+				<?php if ($nbResponsables == 2) :?>
 				</tr>
 				<tr class="r2 petit <?= $tr_css;?>">
 					<td class="adresse"><?= $adresseR2; ?></td>
 					<td><?= $responsables[1]; ?></td>
 					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR2;?></td>
+					<?php if (! $this->sansimpayes):?>
+					<td class="centre"><?= $paiementR2;?></td>
 					<?php endif;?>
+				<?php endif;?>
         		</tr>
 				<?php endforeach;?>
 			</tbody>

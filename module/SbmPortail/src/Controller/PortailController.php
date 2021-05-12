@@ -9,38 +9,19 @@
  * @filesource PortailController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
- * @version 2020-2.6.1
+ * @date 16 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPortail\Controller;
 
 use SbmAuthentification\Model\CategoriesInterface;
+use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
+// use SbmBase\Model\StdLib;
 class PortailController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
-
-    /**
-     * Indique si le portail des transporteur cache les préinscrits ou pas.
-     *
-     * @var bool
-     */
-    private $transporteur_sanspreinscrits = true;
-
-    /**
-     * Indique si le portail des établissements cache les préinscrits ou pas.
-     *
-     * @var bool
-     */
-    private $etablissement_sanspreinscrits = true;
-
-    /**
-     * Indique si le portail des communes cache les préinscrits ou pas.
-     *
-     * @var boolean
-     */
-    private $commune_sanspreinscrits = false;
 
     /**
      * Aiguilleur
@@ -67,7 +48,16 @@ class PortailController extends AbstractActionController
             case CategoriesInterface::GESTION_ID:
             case CategoriesInterface::ADMINISTRATEUR_ID:
             case CategoriesInterface::SUPER_ADMINISTRATEUR_ID:
-                return $this->redirect()->toRoute('sbmportail/organisateur');
+                if (Session::get('commune', false, 'enTantQue') !== false) {
+                    $route = 'sbmportail/commune';
+                } elseif (Session::get('etablissement', false, 'enTantQue') !== false) {
+                    $route = 'sbmportail/etablissement';
+                } elseif (Session::get('transporteur', false, 'enTantQue') !== false) {
+                    $route = 'sbmportail/transporteur';
+                } else {
+                    $route ='sbmportail/organisateur';
+                }
+                return $this->redirect()->toRoute($route);
                 break;
             default:
                 return $this->redirect()->toRoute('login', [

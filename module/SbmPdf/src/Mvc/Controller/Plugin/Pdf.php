@@ -7,7 +7,7 @@
  * @filesource Pdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 févr. 2021
+ * @date 4 mars 2021
  * @version 2021-2.6.1
  */
 namespace SbmPdf\Mvc\Controller\Plugin;
@@ -23,7 +23,6 @@ use SbmBase\Model\StdLib;
 
 class Pdf extends AbstractPlugin
 {
-    use \SbmCommun\Model\Traits\DebugTrait;
 
     const PLUGINMANAGER_ID = 'documentPdf';
 
@@ -70,9 +69,6 @@ class Pdf extends AbstractPlugin
      */
     public function __invoke(PdfManager $pdf_manager, array $params): Response
     {
-        $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
-            'tablesimple.log');
-        $this->debugLog(__METHOD__);
         $this->pdf_manager = $pdf_manager;
         $this->params = new Parameters($params);
         try {
@@ -81,6 +77,10 @@ class Pdf extends AbstractPlugin
                 ->getConfig($this->getDocumentId());
             $classDocument = $this->params->get('classDocument',
                 StdLib::getParam('classDocument', $config, false));
+            $out_mode = $this->params->get('out_mode',
+                StdLib::getParam('out_mode', $config, 'I'));
+            $out_name = $this->params->get('out_name',
+                StdLib::getParam('out_name', $config, 'resultat.pdf'));
             if (! $classDocument) {
                 throw new Exception\RuntimeException(
                     "Le type de document n'est pas indiqué.");
@@ -88,32 +88,35 @@ class Pdf extends AbstractPlugin
                 throw new Exception\RuntimeException(
                     "Ce type de document n'est pas programmé.");
             }
-            $response = $this->getResponse();
-            $response->getHeaders()->addHeaders(
-                [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => sprintf('inline; filename="%s"',
-                        $this->params->get('out_name',
-                            StdLib::getParam('out_name', $config, 'resultat.pdf'))),
-                    'Tranfert-Encoding' => 'chunked',
-                    'Cache-Control' => 'private, must-revalidate, post-check=0, pre-check=0, max-age=1',
-                    'Pragma' => 'public',
-                    'Expires' => 'Sat, 26 Jul 1997 05:00:00 GMT',
-                    'Last-Modified' => gmdate('D, d M Y H:i:s') . ' GMT'
-                ]);
+
             /*die(var_dump($this->pdf_manager->get($classDocument)
-                ->setPdfManager($pdf_manager)
-                ->setDocumentId($this->getDocumentId())
-                ->setConfig('document', $config)
-                ->setParams($this->params)
-                ->render()));*/
-             $response->setContent(
+              ->setPdfManager($pdf_manager)
+              ->setDocumentId($this->getDocumentId())
+              ->setConfig('document', $config)
+              ->setParams($this->params)
+              ->render()));*/
+
+            $response = $this->getResponse();
+            if ($out_mode == 'I') {
+                $response->getHeaders()->addHeaders($this->inlineHeaders($out_name));
+            } else {
+                $response->getHeaders()->addHeaders($this->attachmentHeaders($out_name));
+            }
+            $response->setContent(
                 $this->pdf_manager->get($classDocument)
                     ->setPdfManager($pdf_manager)
                     ->setDocumentId($this->getDocumentId())
                     ->setConfig('document', $config)
                     ->setParams($this->params)
                     ->render());
+            if (headers_sent() || ($complement = ob_get_contents())) {
+                $msg = "Certaines données ont déjà été envoyées au navigateur.\n" .
+                    "Il est donc impossible de transmettre le fichier PDF.";
+                if ($complement) {
+                    $msg .= "\n$complement";
+                }
+                throw new Exception\RuntimeException($msg);
+            }
             return $response;
         } catch (\Exception $e) {
             if (getenv('APPLICATION_ENV') == 'development') {
@@ -144,7 +147,6 @@ class Pdf extends AbstractPlugin
      */
     private function getDocumentId(): int
     {
-        $this->debugLog(__METHOD__);
         if (! $this->documentId) {
             $docKey = current((array) $this->params->documentId);
             $docaffectationId = $this->params->docaffectationId;
@@ -172,9 +174,51 @@ class Pdf extends AbstractPlugin
         return $this->documentId;
     }
 
-    private function getHeaders()
+    /**
+     *
+     * @param string $filename
+     * @return string[]|string[][]
+     */
+    private function attachmentHeaders(string $filename)
     {
-        $this->debugLog(__METHOD__);
+        $array = [
+            'Content-Description' => 'File Transfer',
+            'Content-Disposition' => sprintf('attachment; filename="%s"',
+                basename($filename)),
+            'Tranfert-Encoding' => 'binary',
+            'Cache-Control' => 'private, must-revalidate, post-check=0, pre-check=0, max-age=1',
+            'Pragma' => 'public',
+            'Expires' => 'Sat, 26 Jul 1997 05:00:00 GMT',
+            'Last-Modified' => gmdate('D, d M Y H:i:s') . ' GMT'
+        ];
+        // en cas de PHP en mode "non CGI"
+        if (strpos(php_sapi_name(), 'cgi') === false) {
+            $array['Content-Type'] = [
+                'application/force-download',
+                'application/octet-stream',
+                'application/download',
+                'application/pdf'
+            ];
+        }
+        return $array;
+    }
+
+    /**
+     *
+     * @param string $filename
+     * @return string[]
+     */
+    private function inlineHeaders(string $filename)
+    {
+        return [
+            'Content-type' => 'application/pdf',
+            'Content-Disposition' => sprintf('inline; filename="%s"', basename($filename)),
+            'Tranfert-Encoding' => 'chunked',
+            'Cache-Control' => 'private, must-revalidate, post-check=0, pre-check=0, max-age=1',
+            'Pragma' => 'public',
+            'Expires' => 'Sat, 26 Jul 1997 05:00:00 GMT',
+            'Last-Modified' => gmdate('D, d M Y H:i:s') . ' GMT'
+        ];
     }
 
     /**
@@ -185,7 +229,6 @@ class Pdf extends AbstractPlugin
      */
     private function getResponse()
     {
-        $this->debugLog(__METHOD__);
         if ($this->response) {
             return $this->response;
         }
@@ -194,7 +237,7 @@ class Pdf extends AbstractPlugin
         $response = $event->getResponse();
         if (! $response instanceof Response) {
             throw new Exception\DomainException(
-                'Redirect plugin requires event compose a response');
+                'Le plugin Pdf ne peut pas obtenir la réponse.');
         }
         $this->response = $response;
         return $this->response;
@@ -208,7 +251,6 @@ class Pdf extends AbstractPlugin
      */
     private function getEvent()
     {
-        $this->debugLog(__METHOD__);
         if ($this->event) {
             return $this->event;
         }

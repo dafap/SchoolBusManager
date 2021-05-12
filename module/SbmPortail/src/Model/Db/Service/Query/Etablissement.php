@@ -7,30 +7,24 @@
  * @filesource Etablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 nov. 2020
- * @version 2020-2.6.1
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPortail\Model\Db\Service\Query;
 
-use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Literal;
-use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
-use SbmCartographie\Model\Point;
+use Zend\Db\Sql\Where;
 
-class Etablissement extends AbstractQuery
+class Etablissement extends AbstractPortailQuery
 {
-    use \SbmCommun\Model\Traits\ExpressionSqlTrait;
+    use \SbmCommun\Model\Traits\ExpressionSqlTrait, \SbmCommun\Model\Traits\ServiceTrait;
 
     /**
      *
-     * @var string
+     * @var array
      */
     private $arrayEtablissementId;
-
-    private $projection;
-
-    private $sansimpayes;
 
     protected function init()
     {
@@ -47,16 +41,27 @@ class Etablissement extends AbstractQuery
         return $this;
     }
 
-    public function setProjection($projection): self
+    private function adapteWhere(Where $where)
     {
-        $this->projection = $projection;
-        return $this;
+        $where->in('sco.etablissementId', $this->arrayEtablissementId);
     }
 
-    public function setSansImpayes($sansimpayes): self
+    public function listeEleves(Where $where = null, array $order = [])
     {
-        $this->sansimpayes = $sansimpayes;
-        return $this;
+        $this->adapteWhere($where);
+        return parent::listeEleves($where, $order);
+    }
+
+    /**
+     *
+     * @param Where $where
+     * @param array $order
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorEleves(Where $where, array $order = [])
+    {
+        $this->adapteWhere($where);
+        return parent::paginatorEleves($where, $order);
     }
 
     public function getArrayEtablissements()
@@ -101,7 +106,7 @@ class Etablissement extends AbstractQuery
             if (! array_key_exists($row->moment, $result)) {
                 $result[$row->moment]['label'] = $libelle[$row->moment - 1];
             }
-            $result[$row->moment]['options'][$row->moment . '|' . $row->ligneId] = $row->ligneId;
+            $result[$row->moment]['options'][$row->serviceId] = $row->designation;
         }
         return $result;
     }
@@ -109,24 +114,24 @@ class Etablissement extends AbstractQuery
     protected function selectServicesForSelect()
     {
         $where = new Where();
-        $where->equalTo('aff.millesime', $this->millesime)->in('sco.etablissementId',
+        $where->equalTo('millesime', $this->millesime)->in('etablissementId',
             $this->arrayEtablissementId);
         return $this->sql->select()
             ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns([
-            'moment',
-            'ligneId' => 'ligne1Id'
-        ])
-            ->from([
-            'aff' => $this->db_manager->getCanonicName('affectations')
-        ])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites')
-        ], 'sco.millesime = aff.millesime AND sco.eleveId = aff.eleveId', [])
+            ->columns(
+            [
+                'moment',
+                'serviceId' => new Literal($this->getSqlEncodeServiceId()),
+                'designation' => new Literal($this->getSqlDesignationService())
+            ])
+            ->from(
+            [
+                'etaser' => $this->db_manager->getCanonicName('etablissements-services')
+            ])
             ->where($where)
             ->order([
             'moment',
-            'ligne1Id'
+            'ligneId'
         ]);
     }
 
@@ -177,147 +182,87 @@ class Etablissement extends AbstractQuery
         ]);
     }
 
-    public function listeEleves(Where $where = null, array $order = [])
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     */
+    public function listeLignes(Where $where = null, array $order = [])
     {
-        return $this->renderResult($this->selectEleves($where, $order));
+        return $this->renderResult($this->selectLignes($where, $order));
     }
 
     /**
      *
-     * @param Where $where
+     * @param \Zend\Db\Sql\Where $where
      * @param array $order
      * @return \Zend\Paginator\Paginator
      */
-    public function paginatorEleves(Where $where, array $order = [])
-    {
-        return $this->paginator($this->selectEleves($where, $order));
-    }
-
-    protected function selectEleves(Where $where, array $order)
-    {
-        $where->equalTo('sco.millesime', $this->millesime)->in('sco.etablissementId',
-            $this->arrayEtablissementId);
-        $subselectAffR1 = $this->sql->select(
-            $this->db_manager->getCanonicName('affectations'))
-            ->where((new Where())->literal('trajet = 1'));
-        $subselectAffR2 = $this->sql->select(
-            [
-                'aff' => $this->db_manager->getCanonicName('affectations')
-            ])
-            ->where((new Where())->literal('trajet = 2'));
-        $columnR1 = function ($part_adresse) {
-            switch ($part_adresse) {
-                case 'adresseL1':
-                    return 'IFNULL(sco.chez, r1.adresseL1)';
-                case 'adresseL2':
-                    return 'IFNULL(sco.adresseL1, r1.adresseL2)';
-                case 'adresseL3':
-                    return 'IFNULL(sco.adresseL2, r1.adresseL3)';
-                case 'codePostal':
-                    return 'IFNULL(sco.codePostal, r1.codePostal)';
-                case 'lacommune':
-                    return 'IFNULL(comele.alias, comr1.alias)';
-            }
-        };
-        $select = $this->sql->select()
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(
-            [
-                'eleveId',
-                'numero',
-                'nom_eleve' => 'nom',
-                'prenom_eleve' => 'prenom',
-                'responsable2Id',
-                'adresseL1Elv' => new Literal($columnR1('adresseL1')),
-                'adresseL2Elv' => new Literal($columnR1('adresseL2')),
-                'adresseL3Elv' => new Literal($columnR1('adresseL3')),
-                'codePostalElv' => new Literal($columnR1('codePostal')),
-                'lacommuneElv' => new Literal($columnR1('lacommune')),
-                'etablissement' => new Literal('CONCAT(eta.nom, " - ", cometa.alias)'),
-                'responsable1NomPrenom' => new Literal(
-                    'CASE WHEN isnull(r1.responsableId) THEN "" ELSE CONCAT(r1.nom, " ", r1.prenom) END'),
-                'responsable2NomPrenom' => new Literal(
-                    'CASE WHEN isnull(r2.responsableId) THEN "" ELSE CONCAT(r2.nom, " ", r2.prenom) END')
-            ])
-            ->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId = sco.eleveId', [
-            'inscrit',
-            'demandeR1',
-            'demandeR2'
-        ])
-            ->join([
-            'aff' => $this->db_manager->getCanonicName('affectations')
-        ], 'sco.millesime = aff.millesime AND sco.eleveId = aff.eleveId', [])
-            ->join([
-            'affR1' => $subselectAffR1
-        ], 'sco.millesime = affR1.millesime AND sco.eleveId = affR1.eleveId', [],
-            Select::JOIN_LEFT)
-            ->join([
-            'r1' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'affR1.responsableId = r1.responsableId',
-            [
-                'adresseL1R1' => 'adresseL1',
-                'adresseL2R1' => 'adresseL2',
-                'adresseL3R1' => 'adresseL3',
-                'codePostalR1' => 'codePostal'
-            ], Select::JOIN_LEFT)
-            ->join([
-            'comr1' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r1.communeId = comr1.communeId', [
-            'lacommuneR1' => 'alias'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'affR2' => $subselectAffR2
-        ], 'sco.millesime = affR2.millesime AND sco.eleveId = affR2.eleveId', [],
-            Select::JOIN_LEFT)
-            ->join([
-            'r2' => $this->db_manager->getCanonicName('responsables', 'table')
-        ], 'affR2.responsableId = r2.responsableId',
-            [
-                'adresseL1R2' => 'adresseL1',
-                'adresseL2R2' => 'adresseL2',
-                'adresseL3R2' => 'adresseL3',
-                'codePostalR2' => 'codePostal'
-            ], Select::JOIN_LEFT)
-            ->join([
-            'comr2' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'r2.communeId = comr2.communeId', [
-            'lacommuneR2' => 'alias'
-        ], Select::JOIN_LEFT)
-            ->join(
-            [
-                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'sco.etablissementId = eta.etablissementId', [])
-            ->join([
-            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = cometa.communeId', [])
-            ->join([
-            'cla' => $this->db_manager->getCanonicName('classes', 'table')
-        ], 'sco.classeId = cla.classeId', [
-            'classe' => 'nom'
-        ])
-            ->join([
-            'comele' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'sco.communeId = comele.communeId', [], SELECT::JOIN_LEFT)
-            ->where($where)
-            ->order($order);
-        return $select;
-    }
-
     public function paginatorLignes(Where $where = null, array $order = [])
     {
         return $this->paginator($this->selectLignes($where, $order));
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     * @return \Zend\Db\Sql\Select
+     */
     protected function selectLignes(Where $where = null, array $order = [])
     {
-        ;
+        // sous-requête pour filtrer sur l'établissement (par un IN)
+        $where1 = new Where();
+        $where1->equalTo('millesime', $this->millesime)->in('etablissementId',
+            $this->arrayEtablissementId);
+        $subselect = $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns([
+            'ligneId'
+        ])
+            ->from($this->db_manager->getCanonicName('etablissements-services'))
+            ->where($where1);
+        // requête principale
+        if (is_null($where)) {
+            $where = new Where();
+        }
+        $where->equalTo('millesime', $this->millesime)->in('ligneId', $subselect);
+        if (! $order) {
+            $order = [
+                'ligneId'
+            ];
+        }
+        return $this->sql->select($this->db_manager->getCanonicName('lignes'))
+            ->columns(
+            [
+                'ligneId',
+                'operateur',
+                'extremite1',
+                'extremite2',
+                'via',
+                'internes'
+            ])
+            ->where($where)
+            ->order($order);
     }
 
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function listeCircuits(Where $where = null, array $order = [])
+    {
+        return $this->renderResult($this->selectCircuits($where, $order));
+    }
+
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     * @return \Zend\Paginator\Paginator
+     */
     public function paginatorCircuits(Where $where, array $order = [])
     {
         $this->addStrategy('semaine',
@@ -326,30 +271,143 @@ class Etablissement extends AbstractQuery
         return $this->paginator($this->selectCircuits($where, $order));
     }
 
-    protected function selectCircuits(Where $where = null, array $order = []): Select
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @param array $order
+     * @return \Zend\Db\Sql\Select
+     */
+    protected function selectCircuits(Where $having = null, array $order = []): Select
     {
-        ;
+        $where = new Where();
+        $where->equalTo('cir.millesime', $this->millesime);
+        if (! $order) {
+            $order = [
+                'horaireD',
+                'horaireA'
+            ];
+        }
+        $select = $this->sql->select()
+            ->columns(
+            [
+                'station' => 'nom',
+                'stationAlias' => 'alias',
+                'communeIdStation' => 'communeId',
+                'stationOuverte' => 'ouverte'
+            ])
+            ->from([
+            'sta' => $this->db_manager->getCanonicName('stations')
+        ])
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes')
+        ], 'com.communeId = sta.communeId',
+            [
+                'communeStation' => 'nom',
+                'lacommuneStation' => 'alias',
+                'laposteStation' => 'alias_laposte'
+            ])
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits')
+        ], 'cir.stationId = sta.stationId',
+            [
+                'circuitId',
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireA',
+                'horaireD',
+                'semaine',
+                'stationId',
+                'emplacement',
+                'circuitOuvert' => 'ouvert'
+            ])
+            ->where($where)
+            ->order($order);
+        if ($having) {
+            $select->having($having);
+        }
+        return $select;
     }
 
-    /**
-     * Renvoie un tableau de points.
-     * Stations permettant d'atteindre l'établissement.
-     *
-     * @return array
-     */
-    public function stationsPourCarte()
+    protected function selectEtablissementsPourCarte(): Select
     {
-        ;
+        return $this->sql->select()
+            ->columns(
+            [
+                'nom',
+                'adresse1',
+                'adresse2',
+                'codePostal',
+                'telephone',
+                'email',
+                'niveau',
+                'desservie',
+                'x',
+                'y'
+            ])
+            ->from([
+            'eta' => $this->db_manager->getCanonicName('etablissements')
+        ])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes')
+        ], 'cometa.communeId = eta.communeId',
+            [
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
+            ])
+            ->where((new Where())->in('eta.etablissementId', $this->arrayEtablissementId));
     }
 
-    /**
-     * Renvoie un tableau de points.
-     * Etablissements à montrer.
-     *
-     * @return array
-     */
-    public function etablissementsPourCarte()
+    protected function selectStationsPourCarte(): Select
     {
-        ;
+        return $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns([
+            'stationId',
+            'x',
+            'y',
+            'nom',
+            'alias',
+            'ouverte'
+        ])
+            ->from([
+            'sta' => $this->db_manager->getCanonicName('stations')
+        ])
+            ->join([
+            'com' => $this->db_manager->getCanonicName('communes')
+        ], 'com.communeId = sta.communeId',
+            [
+                'codePostal',
+                'commune' => 'nom',
+                'lacommune' => 'alias',
+                'laposte' => 'alias_laposte'
+            ])
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], 'cir.stationId = sta.stationId',
+            [
+                'serviceId' => new Literal($this->getSqlEncodeServiceId('cir')),
+                'service' => new Literal(
+                    $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireD')),
+                'ligneId',
+                'sens',
+                'moment',
+                'ordre',
+                'passage',
+                'horaireD'
+            ], Select::JOIN_LEFT)
+            ->join(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ], 'aff.station1Id = sta.stationId', [])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'sco.millesime = aff.millesime AND sco.eleveId = aff.eleveId', [])
+            ->where(
+            (new Where())->in('sco.etablissementId', $this->arrayEtablissementId)
+                ->equalTo('sco.millesime', $this->millesime));
     }
 }

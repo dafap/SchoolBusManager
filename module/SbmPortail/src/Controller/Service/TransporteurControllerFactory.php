@@ -12,6 +12,8 @@
  */
 namespace SbmPortail\Controller\Service;
 
+use SbmAuthentification\Model\CategoriesInterface;
+use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 use SbmPortail\Controller\TransporteurController;
@@ -32,14 +34,25 @@ class TransporteurControllerFactory implements FactoryInterface
         $config_cartes = $cm->get('cartes');
         $google_api = $cm->get('google_api_browser');
         $auth = $sm->get('SbmAuthentification\Authentication')->by('email');
+        $categorieId = $auth->getCategorieId();
+        $userId = $auth->getUserId();
+        $enTantQue = Session::get('transporteur', false, 'enTantQue');
+        if ($enTantQue !== false &&
+            ($categorieId == CategoriesInterface::SECRETARIAT_ID ||
+                $categorieId == CategoriesInterface::GESTION_ID ||
+                $categorieId == CategoriesInterface::ADMINISTRATEUR_ID ||
+                $categorieId == CategoriesInterface::SUPER_ADMINISTRATEUR_ID)) {
+                    $categorieId = CategoriesInterface::TRANSPORTEUR_ID;
+                    $userId = $enTantQue;
+                }
         $config_controller = [
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'projection' => new $projection($nzone),
             'config_cartes' => $config_cartes,
             'url_api' => $google_api['js'],
-            'categorieId' => $auth->getCategorieId(),
-            'userId' => $auth->getUserId()
+            'categorieId' => $categorieId,
+            'userId' => $userId
         ];
         return new TransporteurController($config_controller);
     }

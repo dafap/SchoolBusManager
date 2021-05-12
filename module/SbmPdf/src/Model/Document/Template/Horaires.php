@@ -13,7 +13,6 @@
 namespace SbmPdf\Model\Document\Template;
 
 use SbmPdf\Model\Document;
-use Zend\Stdlib\Parameters;
 
 class Horaires extends Document\AbstractDocument
 {

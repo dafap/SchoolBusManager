@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 12 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPdf\Controller;
 
@@ -33,75 +33,6 @@ class DocumentController extends AbstractActionController
 
     public function indexAction()
     {
-    }
-
-    public function testAction()
-    {
-        return $this->documentPdf($this->pdf_manager,
-            [
-                'docaffectationId' => 31,
-                'documentId'=>'Test plugin documentPdf query',
-                'classDocument'=>'tableSimple', // peut être omis si présent dans table 'documents'
-                //'where'=> (new \Zend\Db\Sql\Where())->literal('niveau = 4'),
-                'pageheader_title'=>'Exemple',
-                'pageheader_string'=>'Bla bla bla',
-                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasse'
-            ]);
-    }
-
-    /**
-     * Cette méthode est un TEST A SUPPRIMER
-     */
-    public function tableAction()
-    {
-        $pdf = new Tcpdf($this->pdf_manager);
-        $pdf->SetTitle('Mon fichier PDF');
-        $pdf->SetMargins(20, 20, 20);
-        $pdf->SetPrintHeader(false);
-        $pdf->SetPrintFooter(false);
-        $pdf->SetAutoPageBreak(true, 9);
-        $pdf->SetFont('dejavusans', '', 10);
-
-        $pdf->AddPage(); // add a new page to the document
-        $table = new \SbmPdf\Model\Element\Table($pdf);
-        $table->setLineHeight(3);
-        for ($i = 0; $i < 2; $i ++) {
-            $table->newRow()
-            ->newCell('Exemple Multicell')
-            ->setBorder(1)
-            ->newCell('John')
-            ->setBorder(1)
-            ->newCell('1956-04-14')
-            ->setBorder(1)
-            ->newCell('johnny@example.com')
-            ->setBorder(1)
-                ->endRow()
-                ->newRow()
-                ->newCell('Last Name')
-                ->setText('Override Text')
-                ->setFontWeight('bold')
-                ->setAlign('L')
-                ->setVerticalAlign('bottom')
-                ->setBorder(1)
-                ->setRowspan(2)
-                ->setColspan(2)
-                ->setFontSize(10)
-                ->setMinHeight(10)
-                ->setPadding(2, 4)
-                ->setPadding(2, 4, 5, 6)
-                ->setWidth(125)
-                ->newCell('bar')
-                ->setBorder(1)
-                ->endRow()
-                ->newRow()
-                ->newCell('toto')
-                ->setBorder(1)
-                ->newCell('Marius')
-                ->setBorder(1)
-                ->endRow();
-        }
-
-        $table()->Output('fichier.pdf', 'I');
     }
 
     private function init($sessionNameSpace)
@@ -142,7 +73,9 @@ class DocumentController extends AbstractActionController
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
-        $facture = $this->db_manager->get('Sbm\Facture')->setResponsableId($responsableId);
+        $facture = $this->db_manager->get('Sbm\Facture')
+            ->setMillesime(Session::get('millesime'))
+            ->setResponsableId($responsableId);
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(
             [

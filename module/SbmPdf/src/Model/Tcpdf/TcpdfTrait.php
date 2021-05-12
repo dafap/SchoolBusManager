@@ -18,7 +18,7 @@ trait TcpdfTrait
     /**
      * Convertit une couleur hex RGB en un tableau decimal de couloeurs RGB.
      * Si la valeur est vide ou si la chaine contient 'transparent' retourne null.
-     * Ne sait pas convertir les autres chaines de nom de couleur.
+     * Convertir les chaines de nom de couleur de la classe \TCPDF_COLORS.
      *
      * @example convertColor('#ff00ff') => [255, 0, 255]
      * @example convertColor('#aaa') => [170, 170, 170]

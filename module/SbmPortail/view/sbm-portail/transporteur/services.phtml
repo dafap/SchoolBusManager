@@ -3,12 +3,168 @@
  * Liste des services d'une ligne
  *
  * Les variables définies dans cette vue sont :
+ * - paginator
+ * - count_per_page
+ * - page
+ * - as
+ * - ligneId
+ * - effectifServices
+ * - criteres_form
  *
  * @project sbm
  * @package SbmPortail/view/sbm-portail/transporteur
  * @filesource services.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
- * @version 2020-2.6.1
+ * @date 9 mai 2021
+ * @version 2021-2.6.1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$services = $this->paginator->getCurrentItems();
+$url_download = $this->url('sbmportail/transporteur', [
+    'action' => 'services-download'
+]);
+$url_group = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'service-group',
+    ]);
+$url_retour = $this->url('sbmportail/transporteur', [
+    'action' => 'lignes'
+]);
+$url_ouvrir = $this->url('sbmportail/transporteur', [
+    'action' => 'circuit'
+]);
+$url_rapports = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'services-pdf',
+        'page' => $this->page
+    ]);
+$route_ici = $this->url('sbmportail/transporteur', [
+    'action' => 'services'
+]);
+$url_ici = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'services',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
+    $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Télécharger la liste'
+    ]
+];
+?>
+<h1>Circuits de l'année scolaire <?=$this->as;?></h1>
+<h2>Liste des services de la ligne <?=$this->ligneId;?></h2>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?= $this->flashMessenger()->render('success');?>
+			<?= $this->flashMessenger()->render('warning');?>
+			<?= $this->flashMessenger()->render('error');?>
+			<?= $this->flashMessenger()->render('info');?>
+			<?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Service</th>
+					<th>Jours</th>
+					<th>Transporteur</th>
+					<th>Capacité</th>
+					<th>Inscrits</th>
+					<th></th>
+				</tr>
+				<?php foreach ($services as $service) :?>
+				<?php
+        $serviceId = sprintf('%d|%s|%d|%d|%d', $service->millesime, $service->ligneId,
+            $service->sens, $service->moment, $service->ordre);
+        if ($service->moment == 1) {
+            $depassement_autorise = $service->nbPlaces + 7;
+        } else {
+            $depassement_autorise = $service->nbPlaces + 15;
+        }
+        if ($this->effectifServices) {
+            $nbInscrits = $this->effectifServices->transportes($service->ligneId,
+                $service->sens, $service->moment, $service->ordre);
+        } else {
+            $nbInscrits = 0;
+        }
+        $css = $this->cycle([
+            "even",
+            "odd"
+        ])->next();
+        if ($nbInscrits > $service->nbPlaces) {
+            if ($nbInscrits > $depassement_autorise) {
+                $css .= ' exces';
+            } else {
+                $css .= ' warning gras';
+            }
+        }
+        $designationService = $service->designation();
+        $hiddens = [
+            'ligneId' => $service->ligneId,
+            'sens' => $service->sens,
+            'moment' => $service->moment,
+            'ordre' => $service->ordre,
+            'origine' => $url_ici,
+            'designation' => $designationService
+        ];
+        $buttons = [
+            'ouvrir' => [
+                'class' => 'fam-book-open',
+                'formaction' => $url_ouvrir,
+                'title' => 'Détails du circuit ' . $designationService
+            ],
+            'eleves' => [
+                'class' => 'fam-group',
+                'formaction' => $url_group,
+                'title' => 'Élèves inscrits sur le circuit ' . $designationService
+            ]
+        ];
+        ?>
+				<tr class="petit <?=$css;?>">
+					<td class="designationService">
+						<?=$this->escapeHtml($designationService);?></td>
+					<td class="semaine">
+						<?= $service->jours;?></td>
+					<td class="transporteur">
+						<?=$this->escapeHtml($service->transporteur);?></td>
+					<td class="nbplaces">
+						<?=$this->escapeHtml($service->nbPlaces);?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits;?></td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($serviceId, $hiddens, $buttons);?></td>
+				</tr>
+            	<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

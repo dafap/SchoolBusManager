@@ -2,13 +2,219 @@
 /**
  * Page de description d'un circuit
  *
- * Les variables définies dans cette vue sont :
+ * Les variables disponibles dans cette vue sont :
+ * - paginator
+ * - count_per_page
+ * - page
+ * - service
+ * - effectifCircuits
+ * - criteres_form
+ * - arrayTransporteurIds
+ * Le paginator fournit des enregistrements du type ArrayObject dont les clés sont :
+ * - circuitId
+ * - stationId
+ * - lacommuneStation
+ * - station
+ * - emplacement
+ * - horaireA
+ * - horaireD
+ * - semaine
+ * Utilisation des aides de vue (autres que celles du framework)
+ * - jQuery()
+ * - themeJS()
+ * - menuRapports()
+ * - listeZoneActions()
+ * - listeLigneActions()
+ * - designationService()
  *
  * @project sbm
  * @package SbmPortain/view/sbm-portail/transporteur
  * @filesource circuit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 sept. 2020
- * @version 2020-2.6.1
+ * @date 9 mai 2021
+ * @version 2021-2.6.1
  */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->jQuery();
+$this->themeJS('gestion-transport', 'circuit-liste.js');
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$circuits = $this->paginator->getCurrentItems();
+
+if ($this->service->moment == 1) {
+    $depassement_autorise = $this->service->nbPlaces + 7;
+} else {
+    $depassement_autorise = $this->service->nbPlaces + 15;
+}
+$url_download = $this->url('sbmportail/transporteur', [
+    'action' => 'circuit-download'
+]);
+$url_rapports = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'circuit-pdf',
+        'page' => $this->page
+    ]);
+$url_group = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'circuit-group',
+    ]);
+$url_localiser = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'carte-circuit',
+        'page' => $this->page
+    ]);
+$url_retour = $this->url('sbmportail/transporteur', [
+    'action' => 'services'
+]);
+$action_ici = 'circuit';
+$url_ici = $this->url('sbmportail/transporteur',
+    [
+        'action' => $action_ici,
+        'page' => $this->page
+    ]);
+$route_ici = $this->url('sbmportail/transporteur', [
+    'action' => $action_ici
+]);
+$hiddens = [
+    'ligneId' => $this->service->ligneId,
+    'sens' => $this->service->sens,
+    'moment' => $this->service->moment,
+    'ordre' => $this->service->ordre
+];
+$menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
+    $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'cancel' => [
+        'class' => 'fam-book',
+        'formaction' => $url_retour,
+        'title' => 'Retour aux services de la ligne ' . $this->service->ligneId
+    ],
+    'rapports' => $menuImpression['content'],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Télécharger la liste'
+    ]
+];
+?>
+<h1>Liste des points d'arrêt du circuit <?=$this->service->designation();?> (<?=$this->service->nbPlaces;?> places)</h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?=$this->flashMessenger()->render('success');?>
+            <?=$this->flashMessenger()->render('warning');?>
+            <?=$this->flashMessenger()->render('error');?>
+            <?=$this->flashMessenger()->render('info');?>
+            <?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="circuits">
+			<tbody>
+				<tr>
+					<th>Commune</th>
+					<th>Arrêt</th>
+					<th>Emplacement</th>
+					<th class="horaire">Horaire</th>
+					<th class="jours" title="Jours de passage">Jours</th>
+					<th class="nbinscrits"><i class="fam-arrow-up"></i></th>
+					<th class="nbinscrits"><i class="fam-arrow-down"></i></th>
+					<th class="nbinscrits">Effectif</th>
+					<th></th>
+				</tr>
+        <?php foreach ($circuits as $circuit) :?>
+        	<?php
+            $circuit->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+            $nbInscrits = $this->effectifCircuits->transportes($circuit->circuitId);
+            $css = $this->cycle([
+                "even",
+                "odd"
+            ])->next();
+            if ($nbInscrits['effectif_reel'] > $this->service->nbPlaces) {
+                if ($nbInscrits['effectif_reel'] > $depassement_autorise) {
+                    $css .= ' exces';
+                } else {
+                    $css .= ' warning gras';
+                }
+            }
+            $horaires = [
+                (new \DateTime($circuit->horaireA))->format('H:i'),
+                (new \DateTime($circuit->horaireD))->format('H:i')
+            ];
+            $horaires = array_unique($horaires);
+            $horaire_title = ' title="Heure de passage"';
+            if (count($horaires) > 1) {
+                $horaire_title = " title=\"Heure d'arrivée\nHeure de départ\"";
+            }
+            $oSemaine = new \SbmCommun\Model\Strategy\Semaine();
+            $jours = $oSemaine->renderSemaine($oSemaine->extract($circuit->semaine));
+            $designation = $this->designationService($circuit);
+            $hiddens = [
+                'ligneId' => $this->service->ligneId,
+                'sens' => $this->service->sens,
+                'moment' => $this->service->moment,
+                'ordre' => $this->service->ordre,
+                'circuitId' => $circuit->circuitId,
+                'stationId' => $circuit->stationId,
+                'origine' => $url_ici,
+                'action' => $action_ici,
+                'designation' => $designation,
+                'station' => $circuit->station
+            ];
+            $buttons = [
+                'localiser' => [
+                    'class' => 'fam-map-magnify',
+                    'formaction' => $url_localiser,
+                    'title' => 'position sur la carte'
+                ]
+            ];
+            // partie spécifique au portail des transporteurs
+            if (in_array($this->service->transporteurId, $this->arrayTransporteurIds)) {
+                $buttons['eleves'] = [
+                    'class' => 'fam-group',
+                    'formaction' => $url_group,
+                    'title' => sprintf('élèves du circuit %s à l\'arrêt %s',
+                        $this->designationService($circuit), $circuit->station)
+                ];
+            }
+            // fin de la partie spécifique
+            ?>
+            	<tr class="petit <?=$css;?>">
+					<td class="commune">
+						<?=$this->escapeHtml($circuit->lacommuneStation);?></td>
+					<td class="station">
+						<?=$this->escapeHtml($circuit->station);?></td>
+					<td class="emplacement">
+						<?=$this->escapeHtml($circuit->emplacement);?></td>
+					<td class="horaire" <?=$horaire_title;?>>
+						<?=implode('<br>', $horaires);?></td>
+					<td class="jours">
+						<?=$jours;?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits['montee'];?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits['descente'];?></td>
+					<td class="nbinscrits">
+						<?=$nbInscrits['effectif_reel'];?></td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>
+				</tr>
+        <?php endforeach;?>
+        </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
+		</div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+	    </div>
+	</div>
+</div>

@@ -2,15 +2,16 @@
 /**
  * Classe de calcul des effectifs
  *
- * Cette classe dérive de AbstractEffectif et sera dérivée pour les Services et les Stations.
+ * Cette classe dérive de AbstractEffectif et sera dérivée pour les Services et les
+ * Stations.
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource AbstractEffectifType2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mars 2020
- * @version 2020-2.6.0
+ * @date 5 mai 2021
+ * @version 20210-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -34,18 +35,25 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     {
         $where = new Where();
         $where->equalTo('a.millesime', $this->millesime);
-
-        $select = $this->sql->select()
+        $columns = array_merge((array) $indexId, [
+            'eleveId'
+        ]);
+        $subselect = $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns($columns)
             ->from([
             'a' => $this->tableNames['affectations']
         ])
-            ->columns($this->getColumns($indexId))
             ->join([
             's' => $this->tableNames['scolarites']
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
-            ->where($this->arrayToWhere($where, $conditions))
+            ->where($this->arrayToWhere($where, $conditions));
+        $select = $this->sql->select()
+            ->columns($this->getColumns($indexId))
+            ->from([
+            'tmp' => $subselect
+        ])
             ->group($group);
-
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
@@ -128,7 +136,8 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     }
 
     /**
-     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine. Il doit
+     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine.
+     * Il doit
      * être surchargé si $index est un tableau
      *
      * @param string $index
@@ -148,7 +157,8 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
     }
 
     /**
-     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine. Il doit
+     * Ce prototype est écrit pour un $index donné sous la forme d'une chaine.
+     * Il doit
      * être surchargé si $index est un tableau
      *
      * @param string $index
