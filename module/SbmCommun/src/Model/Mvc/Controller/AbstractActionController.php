@@ -269,7 +269,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            tableau associatif de paramètres à passer
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
-    public function old_documentPdf($criteresObject, $criteresForm, $documentId = null,
+    public function documentPdf($criteresObject, $criteresForm, $documentId = null,
         $retour = null, $pdf_params = [])
     {
         if (is_null($documentId)) {
