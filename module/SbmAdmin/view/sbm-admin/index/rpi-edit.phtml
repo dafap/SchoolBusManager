@@ -14,8 +14,8 @@
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
-$this->themeJS('sbm-admin','rpi-edit.js');
-$this->themeJS('commun','checkallbox.js');
+$this->themeJS('sbm-admin', 'rpi-edit.js');
+$this->themeJS('commun', 'checkallbox.js');
 $this->headScript()->captureStart();
 ?>
 multicheckbox_actions.init("classe-edit-niveau");
@@ -95,10 +95,10 @@ echo $this->rpiEtablissements($this->structure['etablissements'],
         $etablissementId = $etablissement['etablissementId'];
         $lignesClasses = $viewHelperRpiClasses($etablissement);
         return <<<EOT
-<table id="rpi-classes-$etablissementId">
-    $lignesClasses
-</table>
-EOT;
+        <table id="rpi-classes-$etablissementId">
+            $lignesClasses
+        </table>
+        EOT;
     });
 ?>
 

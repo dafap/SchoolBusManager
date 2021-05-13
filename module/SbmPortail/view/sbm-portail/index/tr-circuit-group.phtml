@@ -72,25 +72,35 @@ $bilan = '<em>Il y a %d %s et %d %s.</em>';
 					</tr>
 				<?php foreach ($this->data[$sens] as $row) :?>
 				<?php
-				if ($row['trajet'] == 1) {
-				    $adresse = implode(' / ',array_filter([$row['adresseL1'], $row['adresseL2']]));
-				    $commune = $row['commune'];
-				    $origine = $row['origine1'];
-				} else {
-				    $adresse = implode(' ; ',array_filter([$row['adresseL12'], $row['adresseL22']]));
-				    $commune = $row['commune2'];
-				    $origine = $row['origine2'];
-				}
-				?>
+            if ($row['trajet'] == 1) {
+                $adresse = implode(' / ',
+                    array_filter([
+                        $row['adresseL1'],
+                        $row['adresseL2']
+                    ]));
+                $commune = $row['commune'];
+                $origine = $row['origine1'];
+            } else {
+                $adresse = implode(' ; ',
+                    array_filter([
+                        $row['adresseL12'],
+                        $row['adresseL22']
+                    ]));
+                $commune = $row['commune2'];
+                $origine = $row['origine2'];
+            }
+            ?>
     			<tr class="<?= $this->cycle(["even","odd"])->next()?>">
-    				<td><?=$row['nom'];?></td>
-    				<td><?=$row['prenom'];?></td>
-    				<td><?=$adresse;?></td>
-    				<td><?=$commune;?>
-    				<td><?=$row['etablissement'];?></td>
-    				<td><?=$row['classe'];?></td>
-    				<td><?=$origine;?></td>
-    			</tr>
+						<td><?=$row['nom'];?></td>
+						<td><?=$row['prenom'];?></td>
+						<td><?=$adresse;?></td>
+						<td><?=$commune;?>
+    				
+						
+						<td><?=$row['etablissement'];?></td>
+						<td><?=$row['classe'];?></td>
+						<td><?=$origine;?></td>
+					</tr>
 				<?php endforeach;?>
 
 			</tbody>

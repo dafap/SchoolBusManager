@@ -10,8 +10,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
- * @version 2020-2.6.0
+ * @date 26 sept. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -69,21 +69,23 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param string|array $order
      * @param string $by
      *            laisser vide sauf pour 'service' ou 'station'
+     * @param Where $where
+     *            permet de passer le Where d'un formulaire de critères
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function queryGroup($millesime, $filtre,
+    public function queryGroup(int $millesime, array $filtre,
         $order = [
             'commune',
             'nom',
             'prenom'
-        ], $by = '')
+        ], string $by = '', Where $where = null)
     {
         if ($by == 'service') {
-            $select = $this->selectGroupByService($millesime, $filtre, $order);
+            $select = $this->selectGroupByService($millesime, $filtre, $order, $where);
         } elseif ($by == 'station') {
-            $select = $this->selectGroupByStation($millesime, $filtre, $order);
+            $select = $this->selectGroupByStation($millesime, $filtre, $order, $where);
         } else {
-            $select = $this->selectGroup($millesime, $filtre, $order);
+            $select = $this->selectGroup($millesime, $filtre, $order, $where);
         }
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
@@ -97,21 +99,23 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param string|array $order
      * @param string $by
      *            laisser vide sauf pour 'service' ou 'station'
+     * @param Where $where
+     *            permet de passer le Where d'un formulaire de critères
      * @return \Zend\Paginator\Paginator
      */
-    public function paginatorGroup($millesime, $filtre,
+    public function paginatorGroup(int $millesime, array $filtre,
         $order = [
             'commune',
             'nom',
             'prenom'
-        ], $by = '')
+        ], string $by = '', Where $where = null)
     {
         switch ($by) {
             case 'service':
-                $select = $this->selectGroupByService($millesime, $filtre, $order);
+                $select = $this->selectGroupByService($millesime, $filtre, $order, $where);
                 break;
             case 'station':
-                $select = $this->selectGroupByStation($millesime, $filtre, $order);
+                $select = $this->selectGroupByStation($millesime, $filtre, $order, $where);
                 break;
             case 'tarif':
                 $select = $this->selectGroupByScolariteResponsable($millesime,
@@ -121,10 +125,10 @@ class Liste extends AbstractQuery implements FactoryInterface
                             $filtre['grilleTarif']);
                     },
                     \SbmGestion\Model\Db\Filtre\Eleve\Filtre::byGrilleTarif(
-                        $filtre['grilleTarif'], $filtre['reduction']), $order);
+                        $filtre['grilleTarif'], $filtre['reduction']), $order, $where);
                 break;
             default:
-                $select = $this->selectGroup($millesime, $filtre, $order);
+                $select = $this->selectGroup($millesime, $filtre, $order, $where);
                 break;
         }
         // die($this->getSqlString($select));
@@ -137,6 +141,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param int $millesime
      * @param array $filtre
      * @param string|array $order
+     * @param Where $where
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -145,22 +150,32 @@ class Liste extends AbstractQuery implements FactoryInterface
             'serviceId',
             'nom',
             'prenom'
-        ])
+        ], Where $where = null)
     {
-        $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
+        $select = $this->selectGroupParAffectations($millesime, $filtre, $order, $where);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
+    /**
+     *
+     * @param int $millesime
+     * @param array $filtre
+     * @param string|array $order
+     * @param \Zend\Db\Sql\Where $where
+     *
+     * @return \Zend\Paginator\Paginator
+     */
     public function paginatorGroupParAffectations(int $millesime, array $filtre,
         $order = [
             'serviceId',
             'nom',
             'prenom'
-        ])
+        ], Where $where = null)
     {
         return new Paginator(
-            new DbSelect($this->selectGroupParAffectations($millesime, $filtre, $order),
+            new DbSelect(
+                $this->selectGroupParAffectations($millesime, $filtre, $order, $where),
                 $this->db_manager->getDbAdapter()));
     }
 
@@ -186,12 +201,15 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param int $millesime
      * @param array $filtre
      * @param string|array $order
+     * @param Where $where
      *
      * @return \Zend\Db\Sql\Select
      */
-    protected function selectGroup(int $millesime, array $filtre, $order)
+    protected function selectGroup(int $millesime, array $filtre, $order, $where)
     {
-        $where = new Where();
+        if (is_null($where)) {
+            $where = new Where();
+        }
         $where->equalTo('sco.millesime', $millesime);
         $select = $this->sql->select()
             ->from([
@@ -225,7 +243,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'fa',
                 'gratuit',
                 'dateCarteR1',
-                'dateCarteR2'
+                'dateCarteR2',
+                'reductionR2'
             ])
             ->join(
             [
@@ -255,6 +274,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'numero',
                 'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
                 'adresseL2' => new Literal(
@@ -302,11 +322,16 @@ class Liste extends AbstractQuery implements FactoryInterface
 
     private function subColumnsResponsables(int $trajet): array
     {
-        $second = $trajet == 1 ? '' : '2';
+        if ($trajet == 1) {
+            $second = '';
+            $responsable = 'CONCAT(res.titre, " ", res.nom, " ", res.prenom)';
+        } else {
+            $second = '2';
+            $responsable = 'CONCAT(re2.titre, " ", re2.nom, " ", re2.prenom)';
+        }
         $subcolumnsresponsables = [
             'email' . $second => 'email',
-            'responsable' . $second => new Literal(
-                'CONCAT(res.titre, " ", res.nom, " ", res.prenom)'),
+            'responsable' . $second => new Literal($responsable),
             'adresseL1' . $second => 'adresseL1',
             'adresseL2' . $second => 'adresseL2',
             'adresseL3' . $second => 'adresseL3',
@@ -317,9 +342,11 @@ class Liste extends AbstractQuery implements FactoryInterface
     }
 
     protected function selectGroupByScolariteResponsable(int $millesime,
-        callable $jointureEleveResponsable, array $filtre, $order)
+        callable $jointureEleveResponsable, array $filtre, $order, $where)
     {
-        $where = new Where();
+        if (is_null($where)) {
+            $where = new Where();
+        }
         $where->equalTo('sco.millesime', $millesime);
 
         $select = $this->sql->select()
@@ -432,12 +459,16 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param int $millesime
      * @param array $filtre
      * @param string|array $order
+     * @param Where $where
      *
      * @return \Zend\Db\Sql\Select
      */
-    protected function selectGroupParAffectations(int $millesime, array $filtre, $order)
+    protected function selectGroupParAffectations(int $millesime, array $filtre, $order,
+        $where)
     {
-        $where = new Where();
+        if (is_null($where)) {
+            $where = new Where();
+        }
         $where->equalTo('s.millesime', $millesime);
 
         $select = $this->sql->select()
@@ -557,12 +588,15 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param int $millesime
      * @param array $filtre
      * @param string|array $order
+     * @param Where $where
      *
      * @return \Zend\Db\Sql\Select
      */
-    protected function selectGroupByService(int $millesime, array $filtre, $order)
+    protected function selectGroupByService(int $millesime, array $filtre, $order, $where)
     {
-        $where = new Where();
+        if (is_null($where)) {
+            $where = new Where();
+        }
         $where->equalTo('sco.millesime', $millesime);
         $select = $this->sql->select()
             ->from([
@@ -580,7 +614,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'fa',
                 'gratuit',
                 'dateCarteR1',
-                'dateCarteR2'
+                'dateCarteR2',
+                'reductionR2'
             ])
             ->join(
             [
@@ -654,6 +689,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'nom',
                 'prenom',
                 'sexe',
+                'numero',
                 'ga' => new Literal('responsable2Id IS NOT NULL'),
                 'adresseL1' => new Literal('IFNULL(sco.adresseL1, res.adresseL1)'),
                 'adresseL2' => new Literal(
@@ -662,7 +698,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                     'CASE WHEN sco.adresseL1 IS NULL THEN res.adresseL3 ELSE "" END'),
                 'codePostal' => new Literal('IFNULL(sco.codePostal, res.codePostal)'),
                 'commune' => new Literal('IFNULL(comsco.alias, comres.alias)'),
-                'etablissement' => new Literal('CONCAT_WS(" ", eta.nom, LEFT(replace(replace(replace(etacom.alias,"NOTRE DAME", "ND"),"SAINT","ST")," SUR ","/"),12))')
+                'etablissement' => new Literal(
+                    'CONCAT_WS(" ", eta.nom, LEFT(replace(replace(replace(etacom.alias,"NOTRE DAME", "ND"),"SAINT","ST")," SUR ","/"),12))')
             ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->where($this->arrayToWhere($where, $filtre));
@@ -681,11 +718,13 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @param int $millesime
      * @param array $filtre
      * @param string|array $order
+     * @param Where $where
+     *
      * @return \Zend\Db\Sql\Select
      */
-    protected function selectGroupByStation(int $millesime, array $filtre, $order)
+    protected function selectGroupByStation(int $millesime, array $filtre, $order, $where)
     {
-        return $this->selectGroup($millesime, $filtre, $order)
+        return $this->selectGroup($millesime, $filtre, $order, $where)
             ->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')

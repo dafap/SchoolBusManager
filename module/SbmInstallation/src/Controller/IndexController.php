@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 juin 2020
- * @version 2020-2.6.0
+ * @date 16 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmInstallation\Controller;
 
@@ -888,6 +888,41 @@ class IndexController extends AbstractActionController
                 'titrePage' => 'Configuration de l\'API Esendex',
                 'theme' => $this->theme->getTheme(),
                 'config_client' => $this->theme->getConfigFile('esendex.config.php'),
+                'labelButton' => 'Ajouter une ligne ',
+                'fieldsN2' => []
+            ]);
+        return $view->setTemplate('sbm-installation/index/edit-arrayn2idx.phtml');
+    }
+
+    /**
+     * Tinymce : paramères de choix de l'URL et de la clé
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
+     */
+    public function editTinymceAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        } elseif (array_key_exists('submit', $args)) {
+            $this->theme->setConfigFileN2Idx('tinymce.config.php', $args, []);
+            return $this->redirect()->toRoute('sbminstall',
+                [
+                    'action' => 'gestion-config'
+                ]);
+        }
+        $view = new ViewModel(
+            [
+                'titrePage' => 'Configuration de l\'éditeur TinyMce',
+                'theme' => $this->theme->getTheme(),
+                'config_client' => $this->theme->getConfigFile('tinymce.config.php'),
                 'labelButton' => 'Ajouter une ligne ',
                 'fieldsN2' => []
             ]);

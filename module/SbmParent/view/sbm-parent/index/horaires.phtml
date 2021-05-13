@@ -9,8 +9,8 @@
  * @filesource horaires.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->themeCss('sbm-parent/index', 'horaires.css');
 $url_retour = $this->url('sbmparent');
@@ -56,7 +56,7 @@ foreach ($this->circuits as $circuit) {
 	</div>
 	<div id=fiche-inner>
 <?php foreach ($nomenclatureMoments as $moment => $legend):?>
-    <?php if (count($data[$moment])):?>
+    <?php if (array_key_exists($moment, $data) && count($data[$moment])):?>
 		<fieldset class="sbm-page1">
 			<legend><?=$legend;?></legend>
 			<div class="clearfix">

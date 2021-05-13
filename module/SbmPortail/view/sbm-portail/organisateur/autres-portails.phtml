@@ -1,0 +1,35 @@
+<?php
+/**
+ * Page de choix d'un partenaire pour accéder à son portail
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/organisateur
+ * @filesource autres-portails.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 mars 2021
+ * @version 2021-2.6.1
+ */
+?>
+<h1>Accès au portail d'une commune</h1>
+<div class='form-wrapper'>
+<?= $this->form()->openTag($this->formCommune);?>
+<?= $this->formCollection($this->formCommune, true);?>
+<?= $this->form()->closeTag();?>
+</div>
+<?php if ($this->formEtablissement):?>
+<h1>Accès au portail d'un établissement scolaire</h1>
+<div class='form-wrapper'>
+<?= $this->form()->openTag($this->formEtablissement);?>
+<?= $this->formCollection($this->formEtablissement, true);?>
+<?= $this->form()->closeTag();?>
+</div>
+<?php endif;?>
+<?php if ($this->formTransporteur):?>
+<h1>Accès au portail d'un transporteur</h1>
+<div class='form-wrapper'>
+<?= $this->form()->openTag($this->formTransporteur);?>
+<?= $this->formCollection($this->formTransporteur, true);?>
+<?= $this->form()->closeTag();?>
+<?php endif;?>
+</div>

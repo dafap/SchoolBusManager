@@ -10,8 +10,8 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2020
- * @version 2020-2.6.0
+ * @date 21 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -93,13 +93,14 @@ $actions = [
 	<div id="liste-inner">
 		<table class="liste-inner services">
 			<tbody>
-				<tr>
-					<th>Code</th>
-					<th>Départ</th>
-					<th>Arrivée</th>
+				<tr class="petit">
+					<th>Service</th>
+					<th>Précision</th>
 					<th>Jours</th>
-					<th>Transporteur</th>
 					<th>Opérateur</th>
+					<th>Transporteur</th>
+					<th>De</th>
+					<th>Vers</th>
 					<th>Capacité</th>
 					<th>Inscrits</th>
 					<th>Sélect.</th>
@@ -174,16 +175,18 @@ $actions = [
                 <tr class="petit <?=$css;?>">
 					<td class="designationService">
 						<?=$this->escapeHtml($designationService);?></td>
+					<td class="alias">
+						<?=$this->escapeHtml($service->alias);?></td>
+					<td class="semaine">
+						<?=$service->jours;?></td>
+					<td class="operateur">
+						<?=$this->escapeHtml($service->operateur);?></td>
+					<td class="transporteur">
+						<?=$this->escapeHtml($service->transporteur);?></td>
 					<td class="depart">
 						<?=$service->sens==1 ? $this->escapeHtml($service->extremite1) : $this->escapeHtml($service->extremite2);?></td>
 					<td class="arrivee">
 						<?=$service->sens==1 ? $this->escapeHtml($service->extremite2) : $this->escapeHtml($service->extremite1);?></td>
-					<td class="semaine">
-						<?=$service->jours;?></td>
-					<td class="transporteur">
-						<?=$this->escapeHtml($service->transporteur);?></td>
-					<td class="operateur">
-						<?=$this->escapeHtml($service->operateur);?></td>
 					<td class="nbplaces">
 						<?=$this->escapeHtml($service->nbPlaces);?></td>
 					<td class="nbinscrits">

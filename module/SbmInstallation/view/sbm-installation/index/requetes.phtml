@@ -9,8 +9,8 @@
  * @filesource requetes.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $retour = $this->url("sbminstall");
@@ -36,6 +36,6 @@ $actions = [
 		</div>
 	</div>
 	<div id="wrapper-content">
-	<fielset class="sbm-page1"><dl><dt>Liste des élèves</dt><dd><?=$this->eleve_liste;?></dd></dl></fielset>
+	<fieldset class="sbm-page1"><dl><dt>Liste des élèves</dt><dd><?=$this->eleve_liste;?></dd></dl></fielset>
 	</div>
 </div>

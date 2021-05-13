@@ -9,11 +9,12 @@
  * @filesource Module.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 juin 2020
- * @version 2020-2.6.0
+ * @date 26 nov. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCleverSms;
 
+use SbmBase\Model\StdLib;
 use SbmBase\Module\AbstractModule;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;

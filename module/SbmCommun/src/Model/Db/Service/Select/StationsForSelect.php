@@ -1,7 +1,7 @@
 <?php
 /**
  * Service fournissant une liste des stations sous la forme d'un tableau de la forme :
- *    stationId => commune - nom_station
+ * stationId => commune - nom_station
  * pour value_options d'un select
  *
  * Les méthodes de la classe permettent de filtrer la table selon quelques critères :
@@ -14,8 +14,8 @@
  * @filesource StationsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2020
- * @version 2020-2.6.0
+ * @date 12 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -132,7 +132,8 @@ class StationsForSelect implements FactoryInterface
 
     /**
      * Afin de présenter les stations dans l'ordre alphabétique (commune - station) il
-     * faut trier le tableau selon les libellés. Or si on laisse la clé en numérique le
+     * faut trier le tableau selon les libellés.
+     * Or si on laisse la clé en numérique le
      * tri est perdu lors du passage de PHP à JS en JSON.
      *
      * @param int $millesime
@@ -186,7 +187,8 @@ class StationsForSelect implements FactoryInterface
 
     /**
      * On renvoie la liste des stations proches du point donné, sur les circuits
-     * desservant l'établissement donné. La recherche se fait par pas indiqué jusqu'à une
+     * desservant l'établissement donné.
+     * La recherche se fait par pas indiqué jusqu'à une
      * distance maxi indiquée et s'arrête dès que la liste des résultats n'est pas vide.
      *
      * @param \SbmCartographie\Model\Point $point
@@ -268,5 +270,54 @@ class StationsForSelect implements FactoryInterface
             $array[$row['stationId']] = $row['libelle'];
         }
         return $array;
+    }
+
+    /**
+     * Stations utiles pour un transporteur (sur un circuit d'un service qu'il assure)
+     *
+     * @param int|array $transporteurId
+     * @return array
+     */
+    public function transporteur($transporteurId)
+    {
+        $select = $this->selectPourTransporteur($transporteurId);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$row['stationId']] = $row['libelle'];
+        }
+        return $array;
+    }
+
+    /**
+     *
+     * @param int|array $transporteurId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectPourTransporteur($transporteurId)
+    {
+        $where = new Where();
+        $where->equalTo('ser.millesime', Session::get('millesime'));
+        if (is_array($transporteurId)) {
+            $where->in('ser.transporteurId', $transporteurId);
+        } else {
+            $where->equalTo('ser.transporteurId', $transporteurId);
+        }
+        $select = $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns($this->columns)
+            ->from([
+            'sta' => $this->table_name
+        ])
+            ->join([
+            'cir' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], 'sta.stationId = cir.stationId', [])
+            ->join([
+            'ser' => $this->db_manager->getCanonicName('services', 'table')
+        ], $this->jointureService('ser', 'cir'))
+            ->where($where)
+            ->order($this->order);
+        return $select;
     }
 }

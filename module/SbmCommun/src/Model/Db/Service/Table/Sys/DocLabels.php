@@ -11,8 +11,8 @@
  * @filesource DocLabels.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2020
- * @version 2020-2.6.0
+ * @date 22 oct. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -32,6 +32,7 @@ class DocLabels extends AbstractSbmTable
         $this->table_name = 'doclabels';
         $this->table_type = 'system';
         $this->table_gateway_alias = 'Sbm\Db\SysTableGateway\DocLabels';
+        //$this->id_name = 'doclabelId';
         $this->id_name = [
             'documentId',
             'sublabel'

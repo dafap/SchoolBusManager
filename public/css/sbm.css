@@ -1,3 +1,4 @@
+@charset "utf-8";
 /**
  * Feuille de style des pages de l'application
  * 
@@ -6,11 +7,9 @@
  * @filesource sbm.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 sept. 2020
- * @version 2020-2.6.0
+ * @date 16 mars 2021
+ * @version 2021-2.6.1
  **/
-@CHARSET "UTF-8";
-
 html {
 	background: #E5E0D4;
 	color: #333;
@@ -291,6 +290,7 @@ div.table-page1 div.row {
 
 div.table-page1 div.column1 {
 	display: table-cell;
+	vertical-align: top;
 	border-right: 10px solid white;
 }
 
@@ -1165,6 +1165,11 @@ label.sbm-label-350dem {
 /*---------------- Formulaire automatique -------------------------*/
 /* utilisation de l'aide de vue $this->form($formulaire)      -    */
 /* le formulaire se trouve dans un conteneur de class="inner-form" */
+div.form-wrapper fieldset {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
 div.inner-form-auto {
 	position: relative;
 }
@@ -1190,6 +1195,14 @@ label.sbm-form-auto:before {
 /* utilisation pour écarter les boutons dans la div           */
 div.bloc-bouton input {
 	margin-top: 30px;
+	margin-left: 15px;
+}
+
+div.form-wrapper input,div.form-wrapper select {
+	margin-left: 5px;
+}
+
+div.form-wrapper input[type=submit] {
 	margin-left: 15px;
 }
 /*---------------- Tableau de bord ---------------------------*/

@@ -2,13 +2,15 @@
 /**
  * Objet Iterator donnant un ensemble de factures
  *
+ * Cette classe ne travaille que sur le millesime en session
+ *
  * @project sbm
  * @package SbmCommun/src/Arlysere
  * @filesource FactureSet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2020
- * @version 2020-2.6.0
+ * @date 25 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -56,7 +58,7 @@ class FactureSet implements FactoryInterface, \Iterator, \Countable
 
     /**
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      * @see \Zend\ServiceManager\FactoryInterface::createService()
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -75,6 +77,7 @@ class FactureSet implements FactoryInterface, \Iterator, \Countable
     {
         // on s'assure d'abord que la dernière facture a été créée
         $this->db_manager->get('Sbm\Facture')
+            ->setMillesime($this->millesime)
             ->setResponsableId($responsableId)
             ->facturer();
         // on initialise la liste des factures
@@ -106,7 +109,8 @@ class FactureSet implements FactoryInterface, \Iterator, \Countable
     {
         $objectdataFacture = $this->rowset->current();
         $resultats = unserialize($objectdataFacture->content);
-        // ATTENTION !!! Il faut un clone pour un autre objet avec le même responsableId
+        // ATTENTION !!! Il faut un clone pour un autre objet avec les mêmes millesime et
+        // responsableId
         $facture = (clone $this->db_manager->get('Sbm\Facture'))->setResultats($resultats);
         return $facture->lire($objectdataFacture->numero);
     }

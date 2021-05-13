@@ -8,7 +8,7 @@
 // (contains translated texts)
 // German
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // German
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'de';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'Seite';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

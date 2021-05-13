@@ -42,7 +42,8 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
     }
 
     /**
-     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et renvoie
+     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et
+     * renvoie
      * un point en coordonnées de la zone
      *
      * @param Point $p
@@ -57,11 +58,13 @@ class Lambert06CC9zones extends AbstractProjection implements ProjectionInterfac
     }
 
     /**
-     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées géographiques
+     * Reçoit un point en coordonnées de la zone et renvoie un point en coordonnées
+     * géographiques
      * (RGF93 ou WPS84) exprimées en degré
      *
      * @param Point $p
-     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en degré)
+     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en
+     *         degré)
      */
     public function xyzVersgRGF93(Point $p)
     {

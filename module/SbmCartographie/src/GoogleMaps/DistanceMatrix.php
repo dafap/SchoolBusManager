@@ -194,7 +194,7 @@ class DistanceMatrix
      */
     public function calculDistance(Point $origine, Point $destination)
     {
-        $d = $this->lanceCalcul($origine, $destination) ;
+        $d = $this->lanceCalcul($origine, $destination);
         if ($d < 1500) {
             $w = $this->lanceCalcul($origine, $destination, true);
             if ($w < $d) {
@@ -203,6 +203,7 @@ class DistanceMatrix
         }
         return $d;
     }
+
     private function lanceCalcul(Point $origine, Point $destination, bool $walking = false)
     {
         $d = null;
@@ -229,7 +230,8 @@ class DistanceMatrix
     }
 
     /**
-     * Il y a plusieurs origines et une seule destination. Renvoie un tableau de distances
+     * Il y a plusieurs origines et une seule destination.
+     * Renvoie un tableau de distances
      * des origines à la destination.
      *
      * @param array(Point) $origines
@@ -274,7 +276,8 @@ class DistanceMatrix
     }
 
     /**
-     * Il y a une seule origine et plusieurs destinations. La réponse de l'API donne donc
+     * Il y a une seule origine et plusieurs destinations.
+     * La réponse de l'API donne donc
      * un seul rows et plusieurs elements dans ce rows. Renvoie un tableau de distances de
      * l'origine aux destinations
      *

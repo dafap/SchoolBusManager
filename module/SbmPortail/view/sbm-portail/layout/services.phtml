@@ -1,0 +1,82 @@
+<?php
+/**
+ * Modèle de document pdf
+ *
+ * Liste des services pour les portails
+ * La liste est basée sur le modèle de données fourni par la méthode exportService() du
+ * controleur
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/layout
+ * @filesource services.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 sept. 2020
+ * @version 2020-2.6.1
+ */
+use SbmBase\Model\StdLib;
+?>
+<style>
+table {
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
+	font-size: 8px;
+}
+
+th {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
+}
+
+th.service {
+	width: 200px;
+}
+
+th.jours {
+	width: 40px;
+}
+
+th.transporteur {
+	width: 200px;
+}
+th.capacite, th.inscrits {
+    width: 60px;
+    }
+
+td {
+	border: 1px solid black;
+}
+
+td.centre {
+	text-align: center;
+}
+
+td.align-right {
+	text-align: right;
+}
+</style>
+
+<table>
+	<tbody>
+		<tr>
+			<th class="service">Service</th>
+			<th class="jours">Jours</th>
+			<th class="transporteur">Transporteur</th>
+			<th class="capacite">Capacité</th>
+			<th class="inscrits">Inscrits</th>
+		</tr>
+	<?php foreach($data as $service): ?>
+        <tr>
+			<td> <?= $service['service']; ?></td>
+			<td> <?= $service['jours']; ?></td>
+			<td> <?= $service['transporteur'];?></td>
+			<td class="align-right"><?= $service['nbPlaces'];?></td>
+			<td class="align-right"><?= $service['nbInscrits']; ?></td>
+        </tr>
+	<?php endforeach;?>
+	</tbody>
+</table>

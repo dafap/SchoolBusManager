@@ -2,7 +2,8 @@
 /**
  * Classe abstraite pour définir les plugins
  *
- * Un plugin doit être installé dans un sous-répertoire du dossier Plugin, sous le nom dont il sera reconnu.
+ * Un plugin doit être installé dans un sous-répertoire du dossier Plugin, sous le nom
+ * dont il sera reconnu.
  * Sa configuration sera faite :
  * - soit dans le /config/autoload/sbm.local.php
  * - soit dans le /config/autoload/sbm.global.php
@@ -35,6 +36,12 @@ use Zend\Stdlib\Parameters;
 abstract class AbstractPlateforme implements FactoryInterface, EventManagerAwareInterface,
     PlateformeInterface
 {
+
+    /**
+     *
+     * @var int
+     */
+    private $millesime;
 
     /**
      * Event manager
@@ -114,7 +121,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     protected $error_msg = '';
 
     /**
-     * Cette méthode est appelée à la fin de la méthode createService(). createService()
+     * Cette méthode est appelée à la fin de la méthode createService().
+     * createService()
      * lit la configuration enregistrée dans les fichiers de configuration standard ZF2 :
      * /config/autoload/sbm.global.php /config/autoload/sbm.local.php
      * /module/SbmPaiement/config/module.config.php init() pourra lire ou inclure le
@@ -127,7 +135,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
 
     /**
      * Cette méthode est appelée par la méthode notification() pour controler la validité
-     * de la notification. Cela peut être un contrôle de la signature ou une analyse du
+     * de la notification.
+     * Cela peut être un contrôle de la signature ou une analyse du
      * contenu de la notification. S'il y a un problème, les propriétés error_no (n°
      * d'erreur) et error_msg (message d'erreur) seront renseignées. Si un traitement est
      * nécessaire sur les données reçues, les données sous leur nouveau format seront
@@ -137,7 +146,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
 
     /**
      * Analyse le contenu de la propriété data pour savoir si le paiement a été réalisé
-     * par la plateforme. S'il a échoué, les propriétés error_no (n° d'erreur) et
+     * par la plateforme.
+     * S'il a échoué, les propriétés error_no (n° d'erreur) et
      * error_msg (message d'erreur) seront renseignées. Si un traitement est nécessaire
      * sur les données reçues, les données sous leur nouveau format seront placées dans la
      * propriété data de l'objet, en remplacement des données initiales. En particulier,
@@ -213,6 +223,31 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     }
 
     /**
+     * Donne le millesime
+     *
+     * @return int
+     */
+    protected function getMillesime(): int
+    {
+        if (! $this->millesime) {
+            $this->setMillesime();
+        }
+        return $this->millesime;
+    }
+
+    /**
+     * Initialise le millesime
+     *
+     * @param int $millesime
+     * @return self
+     */
+    public function setMillesime(int $millesime = 0)
+    {
+        $this->millesime = $millesime ?: (int) Session::get('millesime', date('Y'));
+        return $this;
+    }
+
+    /**
      * Renvoie le db manager permettant d'accéder à la base de données
      *
      * @return \Zend\ServiceManager\ServiceLocatorInterface
@@ -238,7 +273,8 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     }
 
     /**
-     * Vérification de REMOTE_ADDR puis vérification propre à la plateforme. - si bon,
+     * Vérification de REMOTE_ADDR puis vérification propre à la plateforme.
+     * - si bon,
      * lance un évènement 'paiementNotification' avec comme `target` le ServiceManager et
      * comme `argv` le tableau des data préparé par la méthode validNotification() - si
      * mauvais, enregistre l'appel dans un fichier log en précisant l'url de l'appel et
@@ -370,16 +406,6 @@ abstract class AbstractPlateforme implements FactoryInterface, EventManagerAware
     public function getPlateformeConfig()
     {
         return $this->config;
-    }
-
-    /**
-     * Donne le millesime
-     *
-     * @return int|string
-     */
-    protected function getMillesime()
-    {
-        return Session::get('millesime', date('Y'));
     }
 
     /**

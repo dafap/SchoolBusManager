@@ -2,7 +2,8 @@
 /**
  * Interface pour les classes de projection
  *
- * Toutes les projections doivent implémenter cet interface afin de créer un plugin valable
+ * Toutes les projections doivent implémenter cet interface afin de créer un plugin
+ * valable
  *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Projection

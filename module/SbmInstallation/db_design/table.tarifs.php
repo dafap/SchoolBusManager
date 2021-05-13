@@ -8,8 +8,8 @@
  * @filesource table.tarifs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
- * @version 2020-2.6.0
+ * @date 26 nov. 2020
+ * @version 2020-2.6.1
  */
 use SbmBase\Model\StdLib;
 
@@ -58,6 +58,7 @@ return [
             'idx_grille' => [
                 'unique' => true,
                 'fields' => [
+                    'millesime',
                     'duplicata',
                     'grille',
                     'reduit',

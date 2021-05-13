@@ -1,0 +1,147 @@
+<?php
+/**
+ * Liste des lignes donnant accès aux services
+ *
+ * Chaque ligne propose un bouton permettant d'ouvrir la liste des services
+ *
+ * Les variables définies dans cette vue sont :
+ * - paginator
+ * - count_per_page
+ * - page
+ * - as
+ * - millesime
+ * - criteres_form
+ *
+ *Le paginateur propose des enregistrements ayant les clés suivantes :
+ * - ligneId
+ * - operateur
+ * - extremite1
+ * - extremite2
+ * - via
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/organisateur
+ * @filesource lignes.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 17 mars 2021
+ * @version 2021-2.6.1
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$lignes = $this->paginator->getCurrentItems();
+$url_download = $this->url('sbmportail/organisateur', [
+    'action' => 'lignes-download'
+]);
+$url_retour = $this->url('sbmportail/organisateur', [
+    'action' => 'index'
+]);
+$url_ouvrir = $this->url('sbmportail/organisateur', [
+    'action' => 'services'
+]);
+$url_rapports = $this->url('sbmportail/organisateur',
+    [
+        'action' => 'lignes-pdf',
+        'page' => $this->page
+    ]);
+$route_ici = $this->url('sbmportail/organisateur', [
+    'action' => 'lignes'
+]);
+$url_ici = $this->url('sbmportail/organisateur',
+    [
+        'action' => 'lignes',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports($route_ici, $url_rapports, 'fam-printer', null,
+    $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content'],
+    'download' => [
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'formtarget' => '_blank',
+        'title' => 'Télécharger la liste'
+    ]
+];
+?>
+<h1>Circuits de l'année scolaire <?=$this->as;?></h1>
+<h2>Liste des lignes</h2>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Ligne</th>
+					<th>Opérateur</th>
+					<th>Départ</th>
+					<th>Terminus</th>
+					<th>Via</th>
+					<th></th>
+				</tr>
+			<?php foreach ($lignes as $ligne) :?>
+			<?php
+    $ligne->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+    $css = $this->cycle([
+        "even",
+        "odd"
+    ])->next();
+    $hiddens = [
+        'id' => $this->millesime . '|' . $ligne->ligneId,
+        'ligneId' => $ligne->ligneId,
+        'origine' => $url_ici
+    ];
+    $buttons = [
+        'ouvrir' => [
+            'class' => 'fam-book-open',
+            'formaction' => $url_ouvrir,
+            'title' => 'Services de la ligne ' . $ligne->ligneId
+        ]
+    ];
+    ?>
+				<tr class="petit <?=$css;?>">
+					<td class="ligneid">
+						<?=$this->escapeHtml($ligne->ligneId);?></td>
+					<td class="operateur">
+						<?=$this->escapeHtml($ligne->operateur);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($ligne->extremite1);?></td>
+					<td class="extremite">
+						<?=$this->escapeHtml($ligne->extremite2);?></td>
+					<td class="via">
+						<?=$this->escapeHtml($ligne->via);?></td>
+					<td class="boutons">
+            			<?=$this->listeLigneActions($ligne->ligneId, $hiddens, $buttons);?></td>
+				</tr>
+			<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?>
+		</div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?=$this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

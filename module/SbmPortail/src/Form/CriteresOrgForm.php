@@ -7,15 +7,15 @@
  * @filesource CriteresOrgForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2020
- * @version 2020-2.6.0
+ * @date 2 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPortail\Form;
 
-use SbmCommun\Form\CriteresForm as SbmCommunCriteresForm;
+use SbmCommun\Form\AbstractSbmForm;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProviderInterface
+class CriteresOrgForm extends AbstractSbmForm implements InputFilterProviderInterface
 {
 
     public function __construct()
@@ -26,30 +26,11 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
         $this->add(
             [
                 'type' => 'text',
-                'name' => 'numero',
-                'attributes' => [
-                    'id' => 'critere-nom',
-                    'maxlength' => '11',
-                    'class' => 'sbm-width-10c'
-                ],
-                'options' => [
-                    'label' => 'Numéro',
-                    'label_attributes' => [
-                        'class' => 'sbm-first'
-                    ],
-                    'error_attributes' => [
-                        'class' => 'sbm-error'
-                    ]
-                ]
-            ]);
-        $this->add(
-            [
-                'type' => 'text',
                 'name' => 'nomSA',
                 'attributes' => [
                     'id' => 'critere-nom',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Nom',
@@ -65,10 +46,30 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
                 'attributes' => [
                     'id' => 'critere-prenom',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Prénom',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'regimeId',
+                'attributes' => [
+                    'id' => 'critere-regimeId',
+                    'class' => 'sbm-width-7c'
+                ],
+                'options' => [
+                    'label' => 'Régime',
+                    'empty_option' => 'Tout',
+                    'value_options' => [
+                        'DP',
+                        'Interne'
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -81,13 +82,10 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
                 'attributes' => [
                     'id' => 'critere-responsable',
                     'maxlength' => '45',
-                    'class' => 'sbm-width-45c'
+                    'class' => 'sbm-width-25c'
                 ],
                 'options' => [
                     'label' => 'Responsable',
-                    'label_attributes' => [
-                        'class' => 'sbm-new-line'
-                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -95,14 +93,17 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
             ]);
         $this->add(
             [
+                'name' => 'communeId',
                 'type' => 'Zend\Form\Element\Select',
-                'name' => 'etablissementId',
                 'attributes' => [
-                    'id' => 'critere-etablissementId',
+                    'id' => 'critere-communeId',
                     'class' => 'sbm-width-30c'
                 ],
                 'options' => [
-                    'label' => 'Etablissement',
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-new-line'
+                    ],
                     'empty_option' => 'Tout',
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -127,20 +128,71 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
             ]);
         $this->add(
             [
-                'name' => 'communeId',
                 'type' => 'Zend\Form\Element\Select',
+                'name' => 'etablissementId',
                 'attributes' => [
-                    'id' => 'critere-communeId',
-                    'class' => 'sbm-width-30c'
+                    'id' => 'critere-etablissementId',
+                    'class' => 'sbm-width-45c'
                 ],
                 'options' => [
-                    'label' => 'Commune',
+                    'label' => 'Etablissement',
+                    'empty_option' => 'Tout',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'serviceId',
+                'attributes' => [
+                    'id' => 'critere-serviceId',
+                    'class' => 'sbm-width-15c'
+                ],
+                'options' => [
+                    'label' => 'Service',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
                     ],
-                    'empty_option' => 'Tout',
+                    'empty_option' => 'Tous',
                     'error_attributes' => [
-                        'class' => 'error_class'
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'stationId',
+                'attributes' => [
+                    'id' => 'critere-stationId',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Arrêt',
+                    'empty_option' => 'Tous',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
+                'type' => 'text',
+                'name' => 'numero',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'maxlength' => '11',
+                    'class' => 'sbm-width-5c'
+                ],
+                'options' => [
+                    'label' => 'PASS n°',
+                    'label_attributes' => [
+                        'class' => 'sbm-first'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
                     ]
                 ]
             ]);
@@ -208,6 +260,18 @@ class CriteresOrgForm extends SbmCommunCriteresForm implements InputFilterProvid
                 'name' => 'communeId',
                 'required' => false
             ],
+            'serviceId' => [
+                'name' => 'serviceId',
+                'required' => false
+            ],
+            'stationId' => [
+                'name' => 'stationId',
+                'required' => false
+            ],
+            'regimeId' => [
+                'name' => 'regimeId',
+                'required' => false
+            ]
         ];
     }
 }

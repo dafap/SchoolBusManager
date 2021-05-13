@@ -8,8 +8,8 @@
  * @filesource AbstractSbmForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 11 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Form;
 
@@ -27,11 +27,18 @@ abstract class AbstractSbmForm extends Form
                 if (! is_null($type) && $type == 'text') {
                     $e->setAttribute('maxlength', $maxLength);
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
         return $this;
     }
 
+    /**
+     * Affecte les values_options à l'élément indiqué
+     *
+     * @param string $element
+     * @param array $values_options
+     */
     public function setValueOptions($element, array $values_options)
     {
         $e = $this->get($element);
@@ -61,5 +68,33 @@ abstract class AbstractSbmForm extends Form
             }
         }
         return $this;
+    }
+
+    /**
+     * Renvoie un tableau contenant les noms des champs du formulaire (sans submit)
+     *
+     * @return array
+     */
+    public function getElementNames()
+    {
+        $array = [];
+        foreach ($this->getElements() as $element) {
+            if ($element->getName() != 'submit') {
+                $array[] = $element->getName();
+            }
+        }
+        return $array;
+    }
+
+    /**
+     * Affecte une classe css à tous les éléments du formulaire
+     *
+     * @param string $css_class
+     */
+    public function setCssClass($css_class)
+    {
+        foreach ($this->getElements() as $element) {
+            $element->setAttribute('class', $css_class);
+        }
     }
 }

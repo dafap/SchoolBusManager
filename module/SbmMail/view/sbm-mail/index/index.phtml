@@ -12,13 +12,13 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 $msg = include $this->theme->getIncludeView('sbm-mail/index/index');
 
 $this->jQuery();
-$this->headScript()->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->tinymce();
 $this->headScript()->captureStart();
 ?>
 tinymce.init({

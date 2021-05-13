@@ -9,13 +9,14 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
+ * @date 11 déc. 2019
  * @version 2018-2.5.0
  */
 namespace SbmAdmin\Controller\Service;
 
 use SbmAdmin\Controller\IndexController;
 use SbmBase\Model\StdLib;
+use SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -25,11 +26,17 @@ class IndexControllerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $sm = $serviceLocator->getServiceLocator();
+        $cm = $sm->get('Sbm\CartographieManager');
+        $cartographie = $cm->get('cartographie');
+        $projection = str_replace('ProjectionInterface',
+            StdLib::getParam('system', $cartographie), ProjectionInterface::class);
+        $nzone = StdLib::getParam('nzone', $cartographie, 0);
         $config_application = $sm->get('config');
         $config_controller = [
             'theme' => $sm->get(\SbmInstallation\Model\Theme::class),
             'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
+            'projection' => new $projection($nzone),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'img' => StdLib::getParamR([

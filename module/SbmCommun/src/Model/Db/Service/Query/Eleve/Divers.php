@@ -3,22 +3,27 @@
  * Diverses requêtes et paginateurs associés
  *
  * Liste des requêtes présentes :
- * getScolaritesR et paginatorScolaritesR : renvoie une requête lourde composée de 35 tables jointes
+ * - getScolaritesR et paginatorScolaritesR : renvoie une requête lourde composée de 35
+ * tables jointes
+ * - getDataForDuplicata : renvoie le résultat d'une requête permettant de remplir un
+ * duplicata ou un provisoire à partir du millesime et de l'identifiant eleveId
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juin 2020
- * @version 2020-2.6.0
+ * @date 1 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Traits\ExpressionSqlTrait;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 
 class Divers extends AbstractQuery
 {
@@ -449,5 +454,282 @@ class Divers extends AbstractQuery
             'lacommune' . $suffixe => 'alias',
             'laposte' . $suffixe => 'alias_laposte'
         ];
+    }
+
+    public function getDataForDuplicata(int $millesime, int $eleveId)
+    {
+        return $this->renderResult($this->selectDataForDuplicata($millesime, $eleveId));
+    }
+
+    /**
+     * L'adresse du responsable de l'élève est :
+     * - l'adresse de l'organisme d'accueil s'il est pris en charge par un organisme
+     * d'accueil
+     * - l'adresse personnelle notée dans la table scolarites si c'est son trajet 1
+     * (responsable légal N°1) et que cette adresse personnelle est renseignée
+     * - l'adresse de son responsable légal sinon
+     * La station point d'origine du transport le matin depuis le domicile du R1 est la
+     * station1
+     * La station point d'origine du transport le matin depuis le domicile du R2 est la
+     * station2
+     *
+     * @param int $millesime
+     * @param int $eleveId
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectDataForDuplicata(int $millesime, int $eleveId): Select
+    {
+        // construction des expressions SQL
+        $xSqlResponsableRes = "CONCAT_WS(' ',res.titre,res.nom,res.prenom)";
+        $xSqlResponsableSco = "CONCAT('Mme ou M. ',sco.chez)";
+        $xSqlResponsableElv = "IF(aff.trajet=1 AND NOT ISNULL(sco.communeId),$xSqlResponsableSco,$xSqlResponsableRes)";
+        $xSqlResponsable = "IF(ISNULL(org.communeId),$xSqlResponsableElv,org.nom)";
+        $xSqlAdresseL1Elv = "IF(aff.trajet=1 AND NOT ISNULL(sco.communeId),sco.adresseL1,res.adresseL1)";
+        $xSqlAdresseL1 = "IF(ISNULL(org.communeId),$xSqlAdresseL1Elv,org.adresse1)";
+        $xSqlAdresseL2Elv = "IF(aff.trajet=1 AND NOT ISNULL(sco.communeId),sco.adresseL2,res.adresseL2)";
+        $xSqlAdresseL2 = "IF(ISNULL(org.communeId),$xSqlAdresseL2Elv,org.adresse2)";
+        $xSqlAdresseL3Elv = "IF(aff.trajet=1 AND NOT ISNULL(sco.communeId),'',res.adresseL3)";
+        $xSqlAdresseL3 = "IF(ISNULL(org.communeId),$xSqlAdresseL3Elv,'')";
+        $xSqlCommuneRes = "CONCAT_WS(' ',res.codePostal,comres.`alias_laposte`)";
+        $xSqlCommuneSco = "CONCAT_WS(' ',sco.codePostal,comsco.`alias_laposte`)";
+        $xSqlCommuneFamille = "IF(aff.trajet=1 AND NOT ISNULL(sco.communeId),$xSqlCommuneSco,$xSqlCommuneRes)";
+        $xSqlCommuneOrganisateur = "CONCAT_WS(' ',org.codePostal,comorg.`alias_laposte`)";
+        $xSqlAdresseCommune = "IF(ISNULL(org.communeId),$xSqlCommuneFamille,$xSqlCommuneOrganisateur)";
+        $xSqlStation1 = "CONCAT(sta1.nom,' (',comsta1.alias,')')";
+        $xSqlStation2 = "CONCAT(sta2.nom,' (',comsta2.alias,')')";
+        // construction de la requête
+        $where = new Where();
+        $where->equalTo('sco.millesime', $millesime)->equalTo('ele.eleveId', $eleveId);
+        return $this->sql->select(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->columns(
+            [
+                'eleveId',
+                'selection',
+                'numero',
+                'eleve' => new Literal("CONCAT_WS(' ',ele.nom,ele.prenom)"),
+                'responsable' => new Literal($xSqlResponsable),
+                'adresseL1' => new Literal($xSqlAdresseL1),
+                'adresseL2' => new Literal($xSqlAdresseL2),
+                'adresseL3' => new Literal($xSqlAdresseL3),
+                'adresseCommune' => new Literal($xSqlAdresseCommune),
+                'ecole' => new Literal("CONCAT_WS(' ',eta.nom,cometa.aliasCG)"),
+                'station' => new Literal("IF(aff.trajet=1,$xSqlStation1,$xSqlStation2)")
+            ])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'sco.eleveId = ele.eleveId',
+            [
+                'millesime',
+                'dateCarteR1',
+                'dateCarteR2',
+                'paiementR1',
+                'paiementR2',
+                'accordR1',
+                'accordR2',
+                'demandeR1',
+                'demandeR2',
+                'inscrit',
+                'gratuit',
+                'etablissementId'
+            ])
+            ->join([
+            'aff' => $this->subselectAffectations($millesime)
+        ], 'sco.millesime=aff.millesime AND sco.eleveId=aff.eleveId', [
+            'trajet'
+        ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'res.responsableId=aff.responsableId',
+            [
+                'communeId',
+                'rNom' => 'nomSA',
+                'rPrenom' => 'prenomSA',
+                'responsable-titre' => 'titre',
+                'responsable-nom' => 'nomSA',
+                'responsable-prenom' => 'prenomSA'
+            ])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comres.communeId=res.communeId', [])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'sco.etablissementId=eta.etablissementId', [])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cometa.communeId=eta.communeId', [])
+            ->join([
+            'sta1' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta1.stationId=sco.stationIdR1', [])
+            ->join(
+            [
+                'comsta1' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'comsta1.communeId=sta1.communeId', [])
+            ->join([
+            'sta2' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta2.stationId=sco.stationIdR2', [], SELECT::JOIN_LEFT)
+            ->join(
+            [
+                'comsta2' => $this->db_manager->getCanonicName('communes', 'table')
+            ], 'comsta2.communeId = sta2.communeId', [], SELECT::JOIN_LEFT)
+            ->join(
+            [
+                'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
+            ], 'photos.eleveId=ele.eleveId',
+            [
+                'photo',
+                'dateExtraction',
+                'typephoto' => new Literal("IF(ISNULL(photos.eleveId),FALSE,photos.type)")
+            ], SELECT::JOIN_LEFT)
+            ->join([
+            'comsco' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsco.communeId = sco.communeId', [], SELECT::JOIN_LEFT)
+            ->join([
+            'org' => $this->db_manager->getCanonicName('organismes', 'table')
+        ], 'org.organismeId=sco.organismeId', [], SELECT::JOIN_LEFT)
+            ->join([
+            'comorg' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comorg.communeId=org.communeId', [], SELECT::JOIN_LEFT)
+            ->join([
+            'mat' => $this->subselectMatin($millesime)
+        ],
+            'mat.millesime=aff.millesime AND mat.eleveId=aff.eleveId AND mat.trajet=aff.trajet',
+            [
+                'matin'
+            ], SELECT::JOIN_LEFT)
+            ->join([
+            'mid' => $this->subselectMidi($millesime)
+        ],
+            'mid.millesime=aff.millesime AND mid.eleveId=aff.eleveId AND mid.trajet=aff.trajet',
+            [
+                'midi'
+            ], SELECT::JOIN_LEFT)
+            ->join([
+            'soi' => $this->subselectSoir($millesime)
+        ],
+            'soi.millesime=aff.millesime AND soi.eleveId=aff.eleveId AND soi.trajet=aff.trajet',
+            [], SELECT::JOIN_LEFT)
+            ->join([
+            'mer' => $this->subselectMercrediSoir($millesime)
+        ],
+            'mer.millesime=aff.millesime AND mer.eleveId=aff.eleveId AND mer.trajet=aff.trajet',
+            [
+                'soir' => new Literal(
+                    "IF(eta.niveau < 4,soir,CONCAT_WS(' - Me soir : ',soir,msoir))")
+            ], SELECT::JOIN_LEFT)
+            ->where($where);
+    }
+
+    private function subselectAffectations(int $millesime): Select
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $millesime);
+        return $this->sql->select(
+            $this->db_manager->getCanonicName('affectations', 'table'))
+            ->columns([
+            'millesime',
+            'eleveId',
+            'trajet',
+            'responsableId'
+        ])
+            ->where($where)
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet',
+            'responsableId'
+        ]);
+    }
+
+    private function subselectMatin(int $millesime): Select
+    {
+        $where = new Where();
+        $where->literal('moment = 1')->equalTo('millesime', $millesime);
+        return $this->sql->select(
+            $this->db_manager->getCanonicName('affectations', 'table'))
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'matin' => new Literal("GROUP_CONCAT(DISTINCT ligne1Id SEPARATOR '-')")
+            ])
+            ->where($where)
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet'
+        ]);
+    }
+
+    private function subselectMidi(int $millesime): Select
+    {
+        $where = new Where();
+        $where->literal('moment = 2')->equalTo('millesime', $millesime);
+        return $this->sql->select(
+            $this->db_manager->getCanonicName('affectations', 'table'))
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'midi' => new Literal("GROUP_CONCAT(DISTINCT ligne1Id SEPARATOR '-')")
+            ])
+            ->where($where)
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet'
+        ]);
+    }
+
+    private function subselectSoir(int $millesime): Select
+    {
+        $where = new Where();
+        $where->literal('moment = 3')
+            ->equalTo('millesime', $millesime)
+            ->literal('jours & 11 = 11');
+        return $this->sql->select(
+            $this->db_manager->getCanonicName('affectations', 'table'))
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'soir' => new Literal("GROUP_CONCAT(DISTINCT ligne1Id SEPARATOR '-')")
+            ])
+            ->where($where)
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet'
+        ]);
+    }
+
+    private function subselectMercrediSoir(int $millesime): Select
+    {
+        $where = new Where();
+        $where->literal('moment = 3')
+            ->equalTo('millesime', $millesime)
+            ->literal('jours & 4 = 4');
+        return $this->sql->select(
+            $this->db_manager->getCanonicName('affectations', 'table'))
+            ->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'msoir' => new Literal("GROUP_CONCAT(DISTINCT ligne1Id SEPARATOR '-')")
+            ])
+            ->where($where)
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet'
+        ]);
     }
 }

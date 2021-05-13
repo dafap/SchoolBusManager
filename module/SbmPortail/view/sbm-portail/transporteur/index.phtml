@@ -1,0 +1,173 @@
+<?php
+/**
+ * Page d'accueil du portail pour les établissements
+ *
+ * Les variables définies dans cette vue sont :
+ * - data : tableau associatif décrit ci-dessous
+ * - transporteurs : tableau des nom des transporteurs (clé : transporteurId)
+ * - elevesATransporter
+ * - services
+ *
+ * Description du tableau data
+ * - transporteurId => tableau des données de ce transporteur
+ *
+ * Contenu du tableau des données
+ * - statistiques => tableau de statistiques
+ * - voyages => nombre de voyages assurés par le transporteur
+ * - services => tableau indexé d'objets service assuré par le transporteur
+ *
+ * Contenu d'un tableau de statistiques :
+ * - 'transporteur' => nom du transporteur,
+ * - 'elevesDpEnregistres',
+ * - 'elevesIntEnregistres',
+ * - 'elevesEnregistres',
+ * - 'elevesPreinscrits',
+ * - 'elevesInscritsRayes',
+ * - 'elevesGardeAlternee'
+ *
+ * Contenu d'un service (objet) :
+ * - ligneId
+ * - sens
+ * - moment
+ * - ordre
+ * - designation
+ * - serviceId
+ * - effectif
+ *
+ * @project sbm
+ * @package SbmPortain/view/sbm-portail/transporteur
+ * @filesource index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 16 mars 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleves = $this->url('sbmportail/transporteur', [
+    'action' => 'eleves'
+]);
+$url_lignes = $this->url('sbmportail/transporteur', [
+    'action' => 'lignes'
+]);
+$url_carte_stations = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'carte-stations'
+    ]);
+$url_carte_etablissements = $this->url('sbmportail/transporteur',
+    [
+        'action' => 'carte-etablissements'
+    ]);
+?>
+<div id="tableau-de-bord" class="clearfix">
+	<div class="flashMessenger float-right">
+		<?=$this->flashMessenger()->render('success');?>
+		<?=$this->flashMessenger()->render('warning');?>
+		<?=$this->flashMessenger()->render('error');?>
+		<?=$this->flashMessenger()->render('info');?>
+		<?=$this->flashMessenger()->render('default');?>
+    </div>
+	<h1>Portail des transporteurs</h1>
+	<div id="menugeneral" class="float-right" style="min-width: 306px;">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?=$url_lignes;?>"><i class="fam-bullet-go"></i>Lignes,
+						services et horaires</a></li>
+				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Points
+						d'arrêts</a></li>
+				<li><a href="<?=$url_carte_etablissements;?>"><i
+						class="fam-bullet-go"></i>Établissements scolaires</a></li>
+			</ul>
+		</div>
+	</div>
+	<?php // === POUR CHAQUE TRANSPORTEUR UN div CONTENANT SES DONNEES === ?>
+	<?php foreach ($this->transporteurs as $transporteurId => $nom) :?>
+	<?php
+    if (! array_key_exists($transporteurId, $this->data))
+        continue;
+    ?>
+	<div class="float-left">
+		<h3>Pour <?= $nom; ?></h3>
+	<?php if (StdLib::array_keys_exists([$transporteurId, 'voyages'], $this->data)) :?>
+	    <?php $nbInternes = StdLib::getParam('elevesIntEnregistres', $this->data[$transporteurId]['statistiques'], 0);;?>
+		<table class="bleu">
+			<tbody>
+				<tr>
+					<td>Nombre de voyages</td>
+					<td class="effectif">
+						<?=$this->data[$transporteurId]['voyages'] ?: 0;?>
+					</td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves</td>
+					<td class="effectif"><?=$this->data[$transporteurId]['statistiques']['elevesEnregistres'];?></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					dont <?=StdLib::getParam('elevesDpEnregistres', $this->data[$transporteurId]['statistiques'], 0);?> DP</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					et <?=$nbInternes;?> interne<?=$nbInternes > 1 ? 's' : '';?></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>En garde alternée</td>
+					<td class="effectif">
+					<?=StdLib::getParam('elevesGardeAlternee',$this->data[$transporteurId]['statistiques'], 0);?></td>
+				</tr>
+				<tr>
+					<td>Inscriptions annulées</td>
+					<td class="effectif">
+					<?=StdLib::getParam('elevesInscritsRayes',$this->data[$transporteurId]['statistiques'], 0);?></td>
+				</tr>
+				<tr>
+					<td>Inscriptions non confirmées</td>
+					<td class="effectif">
+					<?=StdLib::getParam('elevesPreinscrits',$this->data[$transporteurId]['statistiques'], 0);?></td>
+				</tr>
+			</tbody>
+		</table>
+	<?php endif;?>
+		<p></p>
+	<?php if (StdLib::array_keys_exists([$transporteurId, 'services'], $this->data)) :?>
+		<table class="rose ">
+			<tbody>
+			<?php foreach ($this->data[$transporteurId]['services'] as $service) :?>
+			<?php
+            $hiddens = [
+                'ligneId' => $service->ligneId,
+                'sens' => $service->sens,
+                'moment' => $service->moment,
+                'ordre' => $service->ordre
+            ];
+            $buttons = [
+                'horaires' => [
+                    'class' => 'fam-clock-red',
+                    'formaction' => $url_lignes,
+                    'title' => 'Fiche horaires et informations'
+                ]
+            ];
+            ?>
+				<tr>
+					<td><?=$service->designation;?></td>
+					<td class="effectif"><?=$service->effectif;?></td>
+					<td>
+						<?=$this->listeLigneActions($service->serviceId, $hiddens, $buttons);?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	<?php endif;?>
+	</div>
+	<?php endforeach;?>
+</div>

@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 16 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmFront\Controller;
 
@@ -235,20 +235,30 @@ class LoginController extends AbstractActionController
                 case CategoriesInterface::GR_ETABLISSEMENTS_ID:
                 case CategoriesInterface::TRANSPORTEUR_ID:
                 case CategoriesInterface::GR_TRANSPORTEURS_ID:
+                    return $this->redirect()->toRoute('sbmportail');
+                    break;
                 case CategoriesInterface::SECRETARIAT_ID:
-                    Session::set('home', 'sbmportail', 'layout');
-                    return $this->redirect()->toRoute('sbmportail',
-                        [
-                            'action' => 'index'
-                        ]);
+                    Session::remove('commune','enTantQue');
+                    Session::remove('etablissement','enTantQue');
+                    Session::remove('transporteur','enTantQue');
+                    return $this->redirect()->toRoute('sbmportail');
                     break;
                 case CategoriesInterface::GESTION_ID:
+                    Session::remove('commune','enTantQue');
+                    Session::remove('etablissement','enTantQue');
+                    Session::remove('transporteur','enTantQue');
                     Session::set('home', 'sbmgestion/config', 'layout');
                     return $this->redirect()->toRoute('sbmgestion');
                 case CategoriesInterface::ADMINISTRATEUR_ID:
+                    Session::remove('commune','enTantQue');
+                    Session::remove('etablissement','enTantQue');
+                    Session::remove('transporteur','enTantQue');
                     Session::set('home', 'sbmadmin', 'layout');
                     return $this->redirect()->toRoute('sbmadmin');
                 case CategoriesInterface::SUPER_ADMINISTRATEUR_ID:
+                    Session::remove('commune','enTantQue');
+                    Session::remove('etablissement','enTantQue');
+                    Session::remove('transporteur','enTantQue');
                     Session::set('home', 'sbminstall', 'layout');
                     return $this->redirect()->toRoute('sbminstall');
                 default:
@@ -299,6 +309,7 @@ class LoginController extends AbstractActionController
         $auth = $this->authenticate->by();
         $auth->clearIdentity();
         Session::remove('millesime');
+        Session::remove('commune', 'enTantQue');
     }
 
     /**

@@ -1,8 +1,9 @@
 <?php
 /**
- * Exception déclenchée par une classe des namespaces SbmCartographie\ConvertSystemGeodetic\...
- * 
- * Exception émise lorsqu'un index illégal est demandé. 
+ * Exception déclenchée par une classe des namespaces
+ * SbmCartographie\ConvertSystemGeodetic\...
+ *
+ * Exception émise lorsqu'un index illégal est demandé.
  * Elle représente les erreurs qui devraient être détectées au moment de la compilation.
  *
  * @project sbm

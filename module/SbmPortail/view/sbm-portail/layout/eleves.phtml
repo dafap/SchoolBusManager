@@ -1,0 +1,100 @@
+<?php
+/**
+ * Modèle de document pdf
+ *
+ * Liste des élèves pour les portails
+ * La liste est basée sur le modèle de données fourni par la méthode exportEleve() du
+ * controleur
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/layout
+ * @filesource portail-eleve.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+?>
+<style>
+table {
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
+	font-size: 8px;
+}
+
+th {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
+}
+
+th.pass {
+	width: 30px;
+}
+
+th.classe {
+	width: 40px;
+}
+
+th.circuits {
+	width: 300px;
+}
+
+td {
+	border: 1px solid black;
+}
+
+td.centre {
+	text-align: center;
+}
+
+td.align-right {
+	text-align: right;
+}
+</style>
+
+<table>
+	<tbody>
+		<tr>
+			<th class="pass">PASS n°</th>
+			<th>Elève</th>
+			<th>Etablissement scolaire</th>
+			<th class="classe">Classe</th>
+			<th>Responsables</th>
+			<th>Adresses</th>
+			<th class="circuits">Circuits</th>
+		</tr>
+	<?php foreach($data as $eleve): ?>
+	<?php
+    $ga = $eleve['responsable2NomPrenom'] ? true : false;
+    if ($ga) {
+        $rowspan = ' rowspan="2"';
+    } else {
+        $rowspan = '';
+    }
+    ?>
+        <tr>
+			<td class="align-right" <?= $rowspan;?>>
+					<?= $eleve['numero']; ?></td>
+			<td <?= $rowspan;?>>
+					<?= $eleve['nom_eleve'] . ' ' . $eleve['prenom_eleve']; ?></td>
+			<td <?= $rowspan;?>><?= $eleve['etablissement'];?></td>
+			<td <?= $rowspan;?>><?= $eleve['classe'];?></td>
+			<td><?= $eleve['responsable1NomPrenom']; ?></td>
+			<td><?= $eleve['adresseR1']; ?></td>
+			<td><?= $eleve['circuits1'];?></td>
+		<?php if ($ga) :?>
+		</tr>
+		<tr>
+			<td><?= StdLib::getParam('responsable2NomPrenom',$eleve); ?></td>
+			<td><?= StdLib::getParam('adresse2',$eleve); ?></td>
+			<td><?= StdLib::getParam('circuits2',$eleve);?></td>
+		<?php endif;?>
+        </tr>
+	<?php endforeach;?>
+	</tbody>
+</table>

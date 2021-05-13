@@ -2,8 +2,11 @@
 /**
  * Détermination d'un trajet permettant d'aller du domicile à l'établissement ou retour
  *
+ * ABANDONNEE
+ *
  * Hérite des propriétés millesime, sql, db_manager de la classe parent
- * Hérite des méthodes publiques addStrategy, createService et getSqlString de la classe parent.
+ * Hérite des méthodes publiques addStrategy, createService et getSqlString de la classe
+ * parent.
  * Hérite aussi des méthodes protégées getResultSetPrototype, paginator, renderResult
  *
  * @project sbm
@@ -11,8 +14,8 @@
  * @filesource ChercheTrajet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2020
- * @version 2020-2.6.0
+ * @date 30 avr. 2021
+ * @version 2021-2.6.0 (en 2.6.1 il n'existe plus)
  */
 namespace SbmCommun\Arlysere;
 
@@ -23,6 +26,15 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
 
+/**
+ * Cette classe a été utilisée durant l'année 2020-2021. Elle ne tient pas compte
+ * du régime des élèves ni des places disponibles. Elle n'affecte pas de trajet le
+ * mercredi soir pour les lycéens. Elle gère mal les circuits primaires.
+ * Elle est abandonnée et remplacée par la classe ChercheItineraires
+ *
+ * @author alain
+ * @deprecated
+ */
 class ChercheTrajet extends AbstractQuery implements FactoryInterface
 {
     use DebugTrait;
@@ -202,13 +214,14 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
             $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/logs'),
                 'sbm_error.log');
         }
-        $this->niveau = -1;
-        $this->regimeId = -1;
+        $this->niveau = - 1;
+        $this->regimeId = - 1;
     }
 
     /**
      * Le tableau renvoyé est de la forme [$moment => boolean] Pour chaque moment on
-     * renvoie true si on a trouvé une solution et false sinon. En mode debuggage le
+     * renvoie true si on a trouvé une solution et false sinon.
+     * En mode debuggage le
      * compte-rendu cr est enregistré dans le fichier erreurs.
      *
      * @return boolean[]
@@ -275,7 +288,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Renvoie le Where des requêtes de recherche de trajet. L'établissement fréquenté est
+     * Renvoie le Where des requêtes de recherche de trajet.
+     * L'établissement fréquenté est
      * identifié par la propriété $this->etablissementId. La station d'origine est
      * identifiée par la propriété $this->stationId. Une correspondance cor1 permet
      * d'utiliser une station jumelle de la station d'origine comme point de départ
@@ -431,7 +445,8 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Requête déterminant les trajets avec 1 ou plusieurs circuits. Les correspondances
+     * Requête déterminant les trajets avec 1 ou plusieurs circuits.
+     * Les correspondances
      * ne se font que si la station porte le même identifiant sur les deux circuits. Par
      * défaut, trajet du matin sans correspondance.
      *
@@ -481,7 +496,7 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
                     ], sprintf('cir%dsta2.stationId = etasta.stationId', $i), $columns2);
             } else {
                 // cette station est une station de correspondance
-                array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance', $i));
+                array_unshift($ordre_corr, sprintf('cir%dsta2.correspondance DESC', $i));
                 $select->join(
                     [
                         sprintf('cir%dsta2', $i) => $this->db_manager->getCanonicName(
@@ -525,7 +540,16 @@ class ChercheTrajet extends AbstractQuery implements FactoryInterface
         foreach ($ordre_corr as $column) {
             $ordre[] = $column;
         }
-
+        if ($this->hasDebugger()) {
+            $this->debugLog(
+                [
+                    __METHOD__,
+                    'moment' => $moment,
+                    'nb_cir' => $nb_cir,
+                    'ordre' => $ordre,
+                    'conditions' => $this->getConditions($moment, $nb_cir)
+                ]);
+        }
         $select->where($this->getConditions($moment, $nb_cir))
             ->order($ordre);
         if ($this->hasDebugger()) {

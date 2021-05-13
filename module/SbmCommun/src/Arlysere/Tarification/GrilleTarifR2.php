@@ -27,8 +27,8 @@
  * @filesource GrilleTarifR2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 avr. 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Arlysere\Tarification;
 
@@ -98,7 +98,7 @@ class GrilleTarifR2 extends GrilleTarifR1
         $this->readEleve($eleveId);
         if ($this->oScolarite) {
             $dateInscription = \DateTime::createFromFormat('Y-m-d', $this->dateDemandeR2);
-            return $dateInscription <= $this->etatDuSite['echeance'];
+            return $dateInscription <= $this->datesInscriptions['echeance'];
         } else {
             return false;
         }

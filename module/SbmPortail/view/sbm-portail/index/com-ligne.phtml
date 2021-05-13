@@ -74,8 +74,8 @@ $actions = [
 				</tr>
 			<?php foreach ($lignes as $ligne) :?>
 			<?php
-			$ligne->setFlags(\ArrayObject::ARRAY_AS_PROPS);
-			//die(var_dump($ligne));
+    $ligne->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+    // die(var_dump($ligne));
     $css = $this->cycle([
         "even",
         "odd"

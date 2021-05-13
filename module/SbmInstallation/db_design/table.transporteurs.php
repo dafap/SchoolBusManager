@@ -8,8 +8,8 @@
  * @filesource table.transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 26 nov. 2020
+ * @version 2020-2.6.1
  */
 use SbmBase\Model\StdLib;
 
@@ -37,7 +37,8 @@ return [
             'rib_titulaire' => 'varchar(32) NOT NULL DEFAULT ""',
             'rib_domiciliation' => 'varchar(24) NOT NULL DEFAULT ""',
             'rib_bic' => 'varchar(11) NOT NULL DEFAULT ""',
-            'rib_iban' => 'varchar(34) NOT NULL DEFAULT ""'
+            'rib_iban' => 'varchar(34) NOT NULL DEFAULT ""',
+            'id_tra' => 'int(11) NULL DEFAULT NULL'
         ],
         'primary_key' => [
             'transporteurId'

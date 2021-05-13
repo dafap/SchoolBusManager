@@ -4,14 +4,14 @@
  * Plugins de TinyMCE utilisés :
  * - advlist : options pour les listes numérotées et listes à bulle
  * - autolink : transforme à la volée dans le texte une url en lien
- * - autoresize : préciser les hauteurs mini et maxi à la suite 
+ * - autoresize : préciser les hauteurs mini et maxi à la suite
  * - charmap : table de caractères spéciaux (bouton Insérer)
  * - code : montre le code source dans une fenêtre popup (bouton Outils)
  * - hr : pour placer une ligne horizontale dans le document (bouton Insérer)
  * - insertdatetime : pour insérer la date ou l'heure (bouton Insérer)
  * - nonbreaking : pour insérer un espace insécable (bouton Insérer)
  * - searchreplace : pour trouver / remplacer (bouton Editer)
- * - spellchecker : à voir où placer la référence du dictionnaire
+ * - spellchecker : PAS GRATUIT - PREMIUM à voir où placer la référence du dictionnaire
  * - table : outil de création de tables
  * - textcolor : palette de couleurs pour le texte et le fond (mais construire la toolbar)
  *
@@ -38,8 +38,7 @@ tinymce.init({
     plugins: "advlist autolink autoresize charmap code hr insertdatetime nonbreaking searchreplace spellchecker table textcolor wordcount",
     autoresize_min_height: 300,
     autoresize_max_height: 400,
-    insertdatetime_formats: ["%d/%m/%Y", "%H:%M"],
-    spellchecker_languages: "+Français=fr"
+    insertdatetime_formats: ["%d/%m/%Y", "%H:%M"]
  });
 JS;
 $this->inlineScript()->captureEnd();

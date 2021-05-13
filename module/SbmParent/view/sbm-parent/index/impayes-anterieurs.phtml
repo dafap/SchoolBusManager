@@ -1,0 +1,136 @@
+<?php
+/**
+ * Impayes des années antérieures
+ *
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource impayes-anterieurs.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\DateLib;
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->themeCss('sbm-parent/index', 'impayes-anterieurs.css');
+$contact = implode('<br>',
+    [
+        implode('<br>', $this->client['adresse']),
+        sprintf('%s %s', $this->client['code_postal'], $this->client['commune']),
+        sprintf('Téléphone : %s', $this->telephone($this->client['telephone'])),
+        sprintf('Courriel : %s', $this->client['email'])
+    ]);
+$encaisses = [];
+$refuses = [];
+foreach ($this->resultats->getPaiementsDetail() as $paiement) {
+    if ($paiement['mouvement'] == 0) {
+        $refuses[] = $paiement;
+    } else {
+        $encaisses[] = $paiement;
+    }
+}
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+$solde = $fmt->formatCurrency($this->resultats->getSolde(), 'EUR');
+$as_precedente = sprintf('%d-%d', $this->millesime - 1, $this->millesime);
+$as = sprintf('%d-%d', $this->millesime, $this->millesime + 1);
+$url_payercb1 = $this->url('sbmpaiement', [
+    'action' => 'formulaire'
+]);
+$boutons['payer'] = [
+    'class' => 'button default left-10px',
+    'value' => "Payer la somme de $solde",
+    'formaction' => $url_payercb1
+];
+?>
+<div class="clearfix">
+	<h1>Espace Parents</h1>
+	<div class="flashMessenger float-right">
+<?=$this->flashMessenger()->render('success');?>
+<?=$this->flashMessenger()->render('warning');?>
+<?=$this->flashMessenger()->render('error');?>
+<?=$this->flashMessenger()->render('info');?>
+<?=$this->flashMessenger()->render('default');?>
+	</div>
+</div>
+<p>Votre compte laisse apparaitre un impayé des PASS ANNUELS JUNIORS de vos enfants pour
+l'année scolaire <?= $as_precedente;?> d'un total de <?= $solde;?>.</p>
+<p>Avant d'inscrire vos enfants pour l'année scolaire <?= $as;?> nous vous demandons
+de bien vouloir régler cet impayé.</p>
+<p>Voici le détail de votre dette :</p>
+<fieldset class="sbm-page1">
+	<div id="enfants" class="demi float-left">
+		<h3>Vos achats</h3>
+		<table class="encadre">
+		<?php foreach($this->resultats->getListeEleves() as $enfant):?>
+		    <tr>
+				<td><?=sprintf('%s %s', $enfant['nom'], $enfant['prenom']);?></td>
+				<td><?=$enfant['grilleTarif'];?></td>
+				<td><?=$enfant['reduction'] ? 'Réduit' : 'Normal';?></td>
+			</tr>
+		<?php endforeach;?>
+		    <tr>
+				<td>Nombre de duplicatas commandés</td>
+				<td><?=$this->resultats->getNbDuplicatas();?></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td>Montant des abonnements</td>
+				<td><?=$fmt->formatCurrency($this->resultats->getAbonnementsMontant(), 'EUR');?></td>
+			</tr>
+			<tr>
+				<td>Montant des duplicatas</td>
+				<td><?=$fmt->formatCurrency($this->resultats->getMontantDuplicatas(), 'EUR');?></td>
+			</tr>
+			<tr>
+				<th>Montant total</th>
+				<th><?=$fmt->formatCurrency($this->resultats->getMontantTotal(), 'EUR');?></th>
+			</tr>
+		</table>
+	</div>
+	<div id="paiements" class="float-left">
+		<h3>Vos paiements</h3>
+		<table class="encadre">
+			<tr>
+				<th>Date de valeur</th>
+				<th>Montant</th>
+				<th>Mode de paiement</th>
+			</tr>
+		    <?php foreach ($encaisses as $paiement):?>
+		    <tr>
+				<td><?=DateLib::formatDateFromMysql($paiement['dateValeur']);?></td>
+				<td><?=$fmt->formatCurrency($paiement['montant'], 'EUR');?></td>
+				<td class="centre"><?=$paiement['modeDePaiement'];?></td>
+			</tr>
+		    <?php endforeach;?>
+		</table>
+		<div class="top6px">
+			<div class="menu clearfix">
+		<?php
+echo $this->listeZoneActions(
+    [
+        'montant' => $this->resultats->getSolde(),
+        'namespacectrl' => $this->namespacectrl
+    ], $boutons);
+?>
+            </div>
+		</div>
+		<?php if (!empty($refuses)):?>
+		<h3>Paiements refusés par votre banque</h3>
+		<table class="encadre">
+			<tr>
+				<th>Date de valeur</th>
+				<th>Montant</th>
+			</tr>
+		    <?php foreach ($refuses as $paiement):?>
+		    <tr>
+				<td><?=DateLib::formatDateFromMysql($paiement['dateValeur']);?></td>
+				<td><?=$fmt->formatCurrency($paiement['montant'], 'EUR');?></td>
+			</tr>
+		    <?php endforeach;?>
+		</table>
+		<?php endif;?>
+	</div>
+</fieldset>
+<p>Pour toute demande concernant cet impayé, veuillez contacter :</p>
+<div class="centre"><?=$contact;?></div>

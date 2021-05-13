@@ -27,7 +27,8 @@
 		"drewm/mailchimp-api" : "^2.1",
 		"tecnickcom/tcpdf" : "~6.2",
 		"phpoffice/phpspreadsheet" : "^1.12",
-		"esendex/sdk" : "~2.1"
+		"esendex/sdk" : "~2.1",
+		"setasign/fpdi" : "~2.3"
 	},
 	"minimum-stability" : "stable",
 	"repositories" : [{

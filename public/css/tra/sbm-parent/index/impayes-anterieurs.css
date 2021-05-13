@@ -1,0 +1,26 @@
+@charset "UTF-8";
+/**
+ * Feuille de style 
+ *
+ *
+ * @project sbm
+ * @package public/css/tra/sbm-parent/index
+ * @filesource impayes-anterieurs.css
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@dafap.fr)
+ * @date 24 avr. 2021
+ * @version 2021-2.6.1
+ */
+table.encadre {
+	border: 1px solid #f78042;
+	border-radius: 4px 4px 4px 4px;
+}
+
+div.demi {
+	width: 50%;
+}
+
+div.top6px {
+	margin-top: 6px;
+	margin-bottom: 8px;
+}

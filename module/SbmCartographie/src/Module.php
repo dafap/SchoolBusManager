@@ -2,7 +2,7 @@
 /**
  * Module de conversion de coordonnées géodésiques
  *
- * 
+ *
  * @project sbm
  * @package SbmCartographie
  * @filesource Module.php

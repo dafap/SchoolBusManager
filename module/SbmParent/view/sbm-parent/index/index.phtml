@@ -8,11 +8,15 @@
  * 'responsable' : objet responsable créé lors du login
  * 'calendar' : objet SbmCommun\Model\Db\Service\Table\System\Calendar
  * 'inscrits' : résultat de la requête Sbm\Db\Query\ElevesScolarites::getElevesInscrits()
- * 'preinscrits' => résultat de la requête Sbm\Db\Query\ElevesScolarites::getElevesPreinscritsOuEnAttente()
+ * 'preinscrits' => résultat de la requête
+ * Sbm\Db\Query\ElevesScolarites::getElevesPreinscritsOuEnAttente()
  * 'affectations' => résultat de la requête Sbm\Db\Query\AffectationsServicesStations
- * 'resultats' => objet SbmCommun\Model\Paiement\resultats présentant les justificatifs des sommes dues
- * 'paiements' => ensemble des paiements enregistrés pour ce parent durant cette année scolaire
- * 'factures' => ensemble des factures enregistrées pour ce parent durant cette année scolaire
+ * 'resultats' => objet SbmCommun\Model\Paiement\resultats présentant les justificatifs
+ * des sommes dues
+ * 'paiements' => ensemble des paiements enregistrés pour ce parent durant cette année
+ * scolaire
+ * 'factures' => ensemble des factures enregistrées pour ce parent durant cette année
+ * scolaire
  * 'client' : tableau décrivant l'organisateur (array)
  * 'accueil' : url du site de l'organisateur
  * 'adresse' : tableau de l'adresse du parent
@@ -22,15 +26,14 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 août 2020
- * @version 2020-2.6.0
+ * @date 25 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmBase\Model\DateLib;
-use SbmBase\Model\Session;
 use SbmCommun\Model\Paiements\GrilleTarifInterface;
 
-// Nomenclature
-$rendez_vous = 'POINT INFO BUS';
+// (spécial Arlysère compte tenu que client['name'] est différent)
+$rendez_vous = $this->client['adresse'][0];
 // ================================================================================
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-parent/index', 'index.css');
@@ -38,8 +41,7 @@ $this->jQuery('jquery-ui');
 $this->themeJS('sbm-parent', 'index.js');
 $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 // affichage des circuits, stations et horaires
-$date_site_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify(
-    '15 days ago');
+$date_site_fin_aout = (new \DateTime($this->as_date_debut))->modify('15 days ago');
 $avant_fin_aout = '';
 if ((new \DateTime()) < $date_site_fin_aout) {
     $avant_fin_aout = 'invisible';
@@ -49,7 +51,6 @@ $permanences = '';
 $enAttente = false;
 $adresse_organisateur = implode(', ',
     [
-        $this->client['name'],
         implode(', ', $this->client['adresse']),
         sprintf('%s %s', $this->client['code_postal'], $this->client['commune'])
     ]);
@@ -129,20 +130,20 @@ $url_facture = $this->url('sbmdocument', [
 <?php
     $votre_vos = $nbPreinscrits == 1 ? 'votre' : 'vos';
     $sera_seront = $nbPreinscrits == 1 ? 'sera' : 'seront';
-    $date_horaires_cartes = (new \DateTime(Session::get('as')['dateDebut']))->modify(
-        '8 days ago')->format('d/m/Y');
+    $date_envoi_cartes = (new \DateTime($this->as_date_debut))->modify('8 days ago')->format(
+        'd/m/Y');
     switch ($etatDuSite['etat']) {
         case $this->calendar::ETAT_PENDANT:
             $msg_reception_pass_inscrit = <<<EOT
             Vous recevrez $votre_vos PASS ANNUEL JUNIOR par voie postale &agrave;
-            l'adresse indiqu&eacute;e &agrave; partir du $date_horaires_cartes.
+            l'adresse indiqu&eacute;e &agrave; partir du $date_envoi_cartes.
             EOT;
             $msg_reception_pass_preinscrit = <<<EOT
             Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez <span id="help-payer" class="orange" 
             title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
             L'inscription doit &ecirc;tre r&eacute;gl&eacute;e avant le %s pour obtenir une place 
             d&eacute;finitive sur le circuit et recevoir le PASS MOBILIT&Eacute; JUNIOR par la poste 
-            &agrave; partir du $date_horaires_cartes.
+            &agrave; partir du $date_envoi_cartes.
             EOT;
             $msg_reception_pass_preinscrit = sprintf($msg_reception_pass_preinscrit,
                 $dateFinReduction);
@@ -156,13 +157,13 @@ $url_facture = $this->url('sbmdocument', [
         case $this->calendar::ETAT_APRES:
             $votre_vos = ucfirst($votre_vos);
             $msg_reception_pass_inscrit = <<<EOT
-            $votre_vos PASS ANNUEL JUNIOR $sera_seront &agrave; retirer au Point Info Bus apr&egrave;s
+            $votre_vos PASS ANNUEL JUNIOR $sera_seront &agrave; retirer &agrave; l'AGENCE TRA MOBILIT&Eacute; apr&egrave;s
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_reception_pass_preinscrit = <<<EOT
             Le PASS ANNUEL JUNIOR ne sera d&eacute;livr&eacute; que si vous avez <span id="help-payer" class="orange" 
             title="Comment payer ?">pay&eacute; son abonnement <em class="fam-help"> </em></span><br>
-            Vous pourrez le retirer au Point Info Bus apr&egrave;s
+            Vous pourrez le retirer &agrave; l'AGENCE TRA MOBILIT&Eacute; apr&egrave;s
             r&eacute;ception d'un mail de confirmation vous pr&eacute;cisant la disponibilit&eacute;.
             EOT;
             $msg_circuit_horaire = "Les circuits et horaires seront consultables ici ";
@@ -179,7 +180,7 @@ $url_facture = $this->url('sbmdocument', [
             break;
     }
     $msg_photo_manquante = <<<EOT
-    Pensez à coller une photo d'identit&eacute; r&eacute;cente sur le PASS ANNUEL JUNIOR.
+    Pensez &agrave; coller une photo d'identit&eacute; r&eacute;cente sur le PASS ANNUEL JUNIOR.
     EOT;
     ?>
 <div id="parent-wrapper">
@@ -245,7 +246,7 @@ $url_facture = $this->url('sbmdocument', [
 		</fieldset>
 <?php if ($photo_manquante): ?>
 <p class="important"><?=$msg_photo_manquante;?></p>
-<?php elseif (Session::get('as')['dateDebut'] >= date('Y-m-d')):?>
+<?php elseif ($this->as_date_debut >= date('Y-m-d')):?>
 <p class="sbm-description"><?=$msg_reception_pass_inscrit;?></p>
 <?php endif;?>
 <p class="sbm-description"><?=$msg_circuit_horaire;?></p>
@@ -462,8 +463,9 @@ $url_facture = $this->url('sbmdocument', [
 					uniquement sur le site internet au moment de l'inscription.</li>
 				<li><strong>Par ch&egrave;que <span class="orange">**</span></strong>
 					&agrave; libeller &agrave; <strong>TRANSDEV ALBERTVILLE</strong>.</li>
-				<li><strong>En esp&egrave;ces,</strong> au POINT INFO BUS, Place de
-					la Gare &agrave; Albertville durant les heures d'ouverture.</li>
+				<li><strong>En esp&egrave;ces,</strong> &agrave; l'AGENCE TRA
+					MOBILIT&Eacute; Place de la Gare &agrave; Albertville durant les
+					heures d'ouverture.</li>
 			</ul>
 			<div style="display: table;">
 				<div style="display: table-row; margin-top: 4px;">
@@ -478,8 +480,9 @@ $url_facture = $this->url('sbmdocument', [
 						<span class="orange">**</span>
 					</div>
 					<div style="display: table-cell">
-						Facilit&eacute; de paiement en 3 fois : contacter le POINT INFO
-						BUS<br>IMPORTANT : mentionner au dos du ch&egrave;que :
+						Facilit&eacute; de paiement en 3 fois : contacter l'AGENCE TRA
+						MOBILIT&Eacute; BUS<br>IMPORTANT : mentionner au dos du
+						ch&egrave;que :
 						<ul>
 							<li>le nom du responsable l&eacute;gal</li>
 							<li>le nom de l'&eacute;l&egrave;ve</li>

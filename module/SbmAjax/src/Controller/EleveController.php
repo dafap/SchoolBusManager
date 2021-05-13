@@ -10,8 +10,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
- * @version 2020-2.6.0
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmAjax\Controller;
 
@@ -398,6 +398,7 @@ class EleveController extends AbstractActionController
                             case 'delete':
                                 // ré-écrire deleteRecord pour mettre à jour les
                                 // correspondances qui restent
+                                $oData->jours = $form->getData()['days'];
                                 $tAffectations->deleteRecord($oData);
                                 $messages = 'Affectation supprimée.';
                                 $this->flashMessenger()->addSuccessMessage(
@@ -476,6 +477,7 @@ class EleveController extends AbstractActionController
             'trajet' => $trajet,
             'jours' => $this->params('jours', 31), // 31:LMMJV
             'responsableId' => $this->params('responsableId', 0),
+            'regimeId' => $oscolarite->regimeId,
             'op' => $this->params('op', null),
             'stationId' => $stationId
         ];
@@ -527,8 +529,8 @@ class EleveController extends AbstractActionController
                         if ($data['raz'] == 'RAZ') {
                             $tAffectations = $this->db_manager->get(
                                 'Sbm\Db\Table\Affectations');
-                            $tAffectations->deleteResponsableId(Session::get('millesime'),
-                                $data['eleveId'], $data['responsableId']);
+                            $tAffectations->deleteTrajet(Session::get('millesime'),
+                                $data['eleveId'], $data['trajet']);
                         }
                         switch ($data['op']) {
                             case 'auto':
@@ -541,13 +543,14 @@ class EleveController extends AbstractActionController
                                     ]);
                                 $oScolarite->{'stationIdR' . $data['trajet']} = $data['stationId'];
                                 $tScolarites->saveRecord($oScolarite);
-                                $this->db_manager->get('Sbm\ChercheTrajet')
+                                $this->db_manager->get('Sbm\ChercheItineraires')
                                     ->setEtablissementId($data['etablissementId'])
                                     ->setStationId($data['stationId'])
                                     ->setEleveId($oScolarite->eleveId)
                                     ->setJours($data['jours'])
                                     ->setTrajet($data['trajet'])
                                     ->setResponsableId($data['responsableId'])
+                                    ->setRegimeId($data['regimeId'])
                                     ->run();
                                 $messages = 'Nouvelles affectations enregistrées.';
                                 $this->flashMessenger()->addSuccessMessage($messages);
@@ -1112,7 +1115,8 @@ class EleveController extends AbstractActionController
 
     /**
      * Reçoie en POST le paramètre eleveId et supprime la photo dans la table
-     * ElevesPhotos. Renvoie un compte rendu : <ul> <li>success = 1 et src = sans photo
+     * ElevesPhotos.
+     * Renvoie un compte rendu : <ul> <li>success = 1 et src = sans photo
      * gif</li> <li>success = 20x et cr = message d'erreur à afficher en cas
      * d'erreur</li></ul>
      *
@@ -1226,5 +1230,99 @@ class EleveController extends AbstractActionController
                     'success' => 1
                 ]));
         }
+    }
+
+    /**
+     * On échange key/value pour conserver le tri.
+     * Il faut y penser à la réception.
+     *
+     * @return mixed
+     */
+    public function getelevesvalueoptionsAction()
+    {
+        try {
+            $eleves = $this->db_manager->get('Sbm\Db\Select\Eleves')->elevesAbonnes();
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => array_flip($eleves),
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            $msg = __METHOD__ . "\n";
+            $msg .= $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString();
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 0,
+                    'msg' => $msg
+                ]));
+        }
+    }
+
+    public function getresponsablesvalueoptionsAction()
+    {
+        try {
+            $responsables = $this->db_manager->get('Sbm\Db\Select\Responsables');
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => array_flip($responsables),
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            $msg = __METHOD__ . "\n";
+            $msg .= $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString();
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 0,
+                    'msg' => $msg
+                ]));
+        }
+    }
+
+    public function getorganismesvalueoptionsAction()
+    {
+        try {
+            $organismes = $this->db_manager->get('Sbm\Db\Select\Organismes');
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'data' => array_flip($organismes),
+                    'success' => 1
+                ]));
+        } catch (\Exception $e) {
+            $msg = __METHOD__ . "\n";
+            $msg .= $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString();
+            return $this->getResponse()->setContent(
+                Json::encode([
+                    'success' => 0,
+                    'msg' => $msg
+                ]));
+        }
+    }
+
+    public function getEtablissementsValueOptions()
+    {
+    }
+
+    public function getStationsValueOptions()
+    {
+        $serviceId = $this->params('serviceId');
+        $arrayServiceId = $this->decodeServiceId($serviceId);
+        $queryStations = $this->db_manager->get('Sbm\Db\Select\Stations');
+        $stations = $queryStations->surcircuit(Session::get('millesime'),
+            $arrayServiceId['ligneId'], $arrayServiceId['sens'], $arrayServiceId['moment'],
+            $arrayServiceId['ordre']);
+        return $this->getResponse()->setContent(
+            Json::encode(
+                [
+                    'data' => array_flip($stations), // échange key/value pour conserver
+                                                      // le tri
+                    'success' => 1
+                ]));
+    }
+
+    public function getLignesMomentValuesOptions()
+    {
     }
 }

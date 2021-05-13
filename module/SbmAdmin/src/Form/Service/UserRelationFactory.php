@@ -4,8 +4,8 @@
  *
  * Compatibilité ZF3
  * usage :
- *   $form = $sm->get('SbmAdmin\Form\UserRelation')->getForm('etablissement');
- * 
+ * $form = $sm->get('SbmAdmin\Form\UserRelation')->getForm('etablissement');
+ *
  * @project sbm
  * @package SbmAdmin/Form/Service
  * @filesource UserRelationFactory.php

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2020
- * @version 2020-2.6.0
+ * @date 1 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmFront\Controller;
 use SbmFront\Form;
@@ -253,7 +253,7 @@ return [
     ],
     'view_helpers' => [
         'factories' => [
-            'bienvenue' => 'SbmFront\Factory\View\Helper\BienvenueFactory'
+            'bienvenue' => \SbmFront\View\Helper\BienvenueFactory::class
         ]
     ],
     'view_manager' => [

@@ -7,13 +7,12 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
- * @version 2020-2.6.0
+ * @date 25 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPaiement\Plugin\PayBox;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use SbmBase\Model\Session;
 use SbmCommun\Model\Paiements\FactureInterface as Facture;
 use SbmFront\Model\Responsable\Responsable;
 use SbmPaiement\Plugin;
@@ -24,12 +23,6 @@ use Zend\Stdlib\Parameters;
 
 class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeInterface
 {
-
-    /**
-     *
-     * @var int
-     */
-    private $millesime;
 
     /**
      *
@@ -110,7 +103,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         $this->setConfig(
             array_merge($this->getPlateformeConfig(),
                 include __DIR__ . '/config/paybox.config.php'));
-        $this->millesime = Session::get('millesime');
         $this->exercice = date('Y');
         $this->facture = null;
         $this->responsable = null;
@@ -159,6 +151,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             // génère une facture ou la récupère si elle existe déjà
             $this->setFacture(
                 $this->db_manager->get('Sbm\Facture')
+                    ->setMillesime($this->getMillesime())
                     ->setResponsableId($this->responsable->responsableId)
                     ->facturer());
         }
@@ -180,6 +173,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     public function setFacture(Facture $facture)
     {
         $this->facture = $facture;
+        //echo '<pre>';var_dump($facture); die('</pre>');
         return $this;
     }
 
@@ -286,8 +280,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     public function getRefDet()
     {
         if (! $this->refdet) {
-            $cmd = sprintf("%4d%4s%14s%07d%07d%02d", $this->millesime, $this->exercice,
-                date('YmdHis'), $this->facture->getNumero(),
+            $cmd = sprintf("%4d%4s%14s%07d%07d%02d", $this->getMillesime(),
+                $this->exercice, date('YmdHis'), $this->facture->getNumero(),
                 $this->responsable->responsableId, $this->nbEnfants);
             if ($this->paiement3fois) {
                 $abonnement = $this->getFormulaireAbonnement();
@@ -307,7 +301,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * Renvoie le montant à payer en centimes. Si paiement en 3 fois, calcule le premier
+     * Renvoie le montant à payer en centimes.
+     * Si paiement en 3 fois, calcule le premier
      * paiement (direct) et prépare les versements différés dans montantAbonnement
      *
      * @return number
@@ -325,7 +320,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * Renvoie le montant d'un abonnement. S'il est nul, lance le calcul
+     * Renvoie le montant d'un abonnement.
+     * S'il est nul, lance le calcul
      * getMontantCentimes (pour éviter que l'odre des calculs soit source d'erreur)
      *
      * @return number
@@ -398,7 +394,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
     }
 
     /**
-     * Vérifie qu'un serveur est disponible. Sinon lance une exception.
+     * Vérifie qu'un serveur est disponible.
+     * Sinon lance une exception.
      *
      * @param array $serveurs
      * @throws \SbmPaiement\Plugin\Exception
@@ -441,7 +438,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
      */
 
     /**
-     * La référence se trouve dans la propriété $data (voir parent), clé 'ref'. Retrouve
+     * La référence se trouve dans la propriété $data (voir parent), clé 'ref'.
+     * Retrouve
      * et renvoie une partie dans la référence. Lorsqu'il n' a pas d'abonnement les clés
      * 'PBX_2MONT', 'PBX_NBPAIE', 'PBX_FREQ', 'PBX_QUAND' et 'PBX_DELAIS' renvoient une
      * chaine vide. Les autres clés n'étant pas obligatoire, la présence d'un abonnement
@@ -702,7 +700,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
             $in[] = $appel->eleveId;
         }
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->in('eleveId', $in);
+        $where->equalTo('millesime', $this->getMillesime())
+            ->in('eleveId', $in);
         $set = [
             'paiementR1' => 0
         ];
@@ -726,7 +725,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     /**
      * Cette méthode prépare les données à inclure dans les tables paiements et
-     * scolarites. Ces données sont rangées dans les propriétés de même nom.
+     * scolarites.
+     * Ces données sont rangées dans les propriétés de même nom.
      *
      * {@inheritdoc}
      * @see \SbmPaiement\Plugin\AbstractPlateforme::prepareData()
@@ -800,7 +800,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         ];
         $this->scolarite = [
             'type' => 'DEBIT',
-            'millesime' => $this->millesime,
+            'millesime' => $this->getMillesime(),
             'responsableId' => $responsableId,
             'eleveIds' => []
         ];
@@ -963,7 +963,8 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     /**
      * Vérifie si des appels du responsable enregistré sont non notifiés et si c'est le
-     * cas prépare le plugin puis lance le rattrapage de ces notifications. Appelé par le
+     * cas prépare le plugin puis lance le rattrapage de ces notifications.
+     * Appelé par le
      * SbmParent\Controller\IndexController::indexAction() pour s'assurer que les
      * notifications ont été reçues. Non prévu dans Paybox. Laissé vide.
      *
@@ -1183,7 +1184,6 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         return '?????';
     }
 }
-
 
 class Formatage
 {

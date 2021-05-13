@@ -1,7 +1,8 @@
 <?php
 /**
- * Exception déclenchée par une classe des namespaces SbmCartographie\ConvertSystemGeodetic\...
- * 
+ * Exception déclenchée par une classe des namespaces
+ * SbmCartographie\ConvertSystemGeodetic\...
+ *
  * Exception lancée si une valeur n'adhère pas à un domaine de données défini et valide.
  *
  * @project sbm

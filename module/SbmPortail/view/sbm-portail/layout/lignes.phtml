@@ -1,0 +1,89 @@
+<?php
+/**
+ * Modèle de document pdf
+ *
+ * Liste des circuits pour les portails
+ * La liste est basée sur le modèle de données fourni par la méthode exportLigne() du
+ * controleur
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/layout
+ * @filesource lignes.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+?>
+<style>
+table {
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
+	font-size: 8px;
+}
+
+th {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
+}
+
+th.ligne {
+	width: 30px;
+}
+
+th.operateur {
+	width: 30px;
+}
+
+th.libelle {
+	width: 270px;
+}
+
+th.internes {
+	width: 50px;
+}
+
+td {
+	border: 1px solid black;
+}
+
+td.centre {
+	text-align: center;
+}
+
+td.align-right {
+	text-align: right;
+}
+</style>
+
+<table>
+	<tbody>
+		<tr>
+			<th class="ligne">Ligne</th>
+			<th class="operateur">Opér.</th>
+			<th class="libelle">Départ</th>
+			<th class="libelle">Terminus</th>
+			<th class="libelle">Via</th>
+			<th class="internes">Réservée<br>aux<br>internes
+			</th>
+		</tr>
+	<?php foreach($data as $ligne): ?>
+	<?php
+    $res_int = $ligne['internes'];
+    ?>
+        <tr>
+			<td class="centre"><?= $ligne['ligneId']; ?></td>
+			<td> <?= $ligne['operateur']; ?></td>
+			<td> <?= $ligne['depart'];?></td>
+			<td> <?= $ligne['terminus'];?></td>
+			<td> <?= $ligne['via']; ?></td>
+			<td class="centre"><?= $res_int; ?></td>
+		</tr>
+	<?php endforeach;?>
+	</tbody>
+</table>

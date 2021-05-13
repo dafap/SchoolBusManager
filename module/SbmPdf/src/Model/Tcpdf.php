@@ -13,8 +13,8 @@
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 sept. 2020
- * @version 2020-2.6.0
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPdf\Model;
 
@@ -70,7 +70,8 @@ class Tcpdf extends \TCPDF
 
     /**
      * Nom de l'enregistrement du recordSource dans le db_manager lorsqu'il s'agit d'une
-     * table ou d'une vue. Requête Sql sinon.
+     * table ou d'une vue.
+     * Requête Sql sinon.
      *
      * @var string
      */
@@ -157,8 +158,6 @@ class Tcpdf extends \TCPDF
      */
     public function setParams($params = [])
     {
-        global $l;
-
         if (array_key_exists('data', $params)) {
             $this->setData($params['data']);
             unset($params['data']);
@@ -196,9 +195,10 @@ class Tcpdf extends \TCPDF
         $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__) . '/lang/' . PDF_LANG . '.php')) {
-            require_once (dirname(__FILE__) . '/lang/' . PDF_LANG . '.php');
-            $this->setLanguageArray($l);
+        $fileLanguage = StdLib::concatPath(StdLib::findParentPath(__DIR__, 'lang'),
+            PDF_LANG . '.php');
+        if (@is_file($fileLanguage)) {
+            $this->setLanguageArray(require $fileLanguage);
         }
 
         // set default monospaced font
@@ -351,7 +351,8 @@ class Tcpdf extends \TCPDF
     /**
      * Surcharge la méthode de tcpdf afin de placer les bon HTTP headers et arrêter le
      * script après un envoi inline ($dest = I ou FI) ATTENTION !!! la méthode Close()
-     * appelle la méthode _destroy() qui supprime les propriétés non préservées. Il faut
+     * appelle la méthode _destroy() qui supprime les propriétés non préservées.
+     * Il faut
      * donc préserver les propriétés de $params qui sont nécessaire pour la fin du script.
      *
      * {@inheritdoc}
@@ -531,7 +532,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Exécute une fonction lorsqu'elle est paramétrée et met fin au script. La fonction
+     * Exécute une fonction lorsqu'elle est paramétrée et met fin au script.
+     * La fonction
      * est référencée dans params sous la clé 'function_end' Ses arguments sont référencés
      * dans params sous la clé 'function_end_args'
      */
@@ -716,7 +718,7 @@ class Tcpdf extends \TCPDF
                 'éditée par School Bus Manager'));
         $subtitle = $oCalculs->getResultat($pageheader_string);
         $this->setPrintHeader($has_pageheader);
-        $this->SetHeaderData(
+        $this->setHeaderData(
             $this->getConfig('document', 'pageheader_logo', PDF_HEADER_LOGO),
             $this->getConfig('document', 'pageheader_logo_width', PDF_HEADER_LOGO_WIDTH),
             $title, $subtitle,
@@ -730,7 +732,7 @@ class Tcpdf extends \TCPDF
                 trim($this->getConfig('document', 'pageheader_font_style', '')),
                 $this->getConfig('document', 'pageheader_font_size', PDF_FONT_SIZE_MAIN)
             ]);
-        $this->SetHeaderMargin(
+        $this->setHeaderMargin(
             $this->getConfig('document', 'pageheader_margin', PDF_MARGIN_HEADER));
     }
 
@@ -759,7 +761,8 @@ class Tcpdf extends \TCPDF
 
     /**
      * Renvoie le documentId, que l'on ait passé le documentId, le name ou le libellé du
-     * menu dans l'appel de l'évènement. Le paramètre 'documentId' est un scalaire ou un
+     * menu dans l'appel de l'évènement.
+     * Le paramètre 'documentId' est un scalaire ou un
      * tableau à un élément. On le transforme en scalaire.
      *
      * @return int
@@ -790,7 +793,8 @@ class Tcpdf extends \TCPDF
 
     /**
      * Va chercher le where dans les paramètres de l'évènement (Where vide si ce paramètre
-     * n'y est pas). Rajoute le filtre indiqué dans le document comme un Literal
+     * n'y est pas).
+     * Rajoute le filtre indiqué dans le document comme un Literal
      *
      * @return \Zend\Db\Sql\Where
      */
@@ -973,7 +977,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Surcharge de la méthode. Pour définir un nouveau modèle d'en-tête, il suffit
+     * Surcharge de la méthode.
+     * Pour définir un nouveau modèle d'en-tête, il suffit
      * d'écrire une méthode templateHeaderMethod2(), templateHeaderMethod3()... en prenant
      * modèle sur templateHeaderMethod1(). (non-PHPdoc)
      *
@@ -1097,7 +1102,8 @@ class Tcpdf extends \TCPDF
      * Surcharge de la méthode Cette méthode n'est appelée par la méthode setFooter() que
      * si la propriété print_footer == true Pour définir un nouveau modèle de pied de
      * page, il suffit d'écrire une méthode templateFooterMethod2(),
-     * templateFooterMethod3()... en prenant modèle sur templateFooterMethod1().
+     * templateFooterMethod3()...
+     * en prenant modèle sur templateFooterMethod1().
      * (non-PHPdoc)
      *
      * @see TCPDF::Footer()
@@ -1116,7 +1122,8 @@ class Tcpdf extends \TCPDF
     /**
      * Modèle de pied de page par défaut Il y aura toujours à droite le "numéro de page /
      * nombre de pages" (exitant dans le modèle par défaut de tcpdf) On peut rajouter une
-     * chaine à gauche et une chaine au centre du pied de page. Le modèle de pied de page
+     * chaine à gauche et une chaine au centre du pied de page.
+     * Le modèle de pied de page
      * est se trouve dans $this->config['document']['pagefooter_string'] et s'obtient par
      * $this->getConfig('document', 'pagefooter_string','') Pour définir une chaine à
      * gauche : @gauche{chaine} Pour définir une chaine au centre : @centre{chaine} Tout
@@ -1449,7 +1456,8 @@ class Tcpdf extends \TCPDF
 
     // ============= Les corps de document ======================
     /**
-     * Modèle de corps de document par défaut. Renvoie un identifiant du template si
+     * Modèle de corps de document par défaut.
+     * Renvoie un identifiant du template si
      * $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
@@ -1761,7 +1769,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie le tableau des données pour la table $ordinal_table. Initialise le tableau
+     * Renvoie le tableau des données pour la table $ordinal_table.
+     * Initialise le tableau
      * s'il est vide ou si $force.
      *
      * @param int $ordinal_table
@@ -2175,7 +2184,8 @@ class Tcpdf extends \TCPDF
     // Modèle pour imprimer des étiquettes
     //
     /**
-     * Modèle pour imprimer des étiquettes. Renvoie un identifiant du template si $param
+     * Modèle pour imprimer des étiquettes.
+     * Renvoie un identifiant du template si $param
      * vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
@@ -2269,7 +2279,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Renvoie un tableau indexé de données pour les étiquettes. Chaque enregistrement du
+     * Renvoie un tableau indexé de données pour les étiquettes.
+     * Chaque enregistrement du
      * tableau correspond au contenu d'une étiquette sous la forme d'un tableau associatif
      * <code> [ 'lignes' => [tableau indexé des lignes de l'étiquette (1)], 'photos' =>
      * false ou tableau indexé de tableaux associatifs de la photo et de ses paramètres
@@ -2352,7 +2363,8 @@ class Tcpdf extends \TCPDF
                 }
             } else {
                 /**
-                 * c'est une requête Sql. S'il n'y a pas de description des colonnes dans
+                 * c'est une requête Sql.
+                 * S'il n'y a pas de description des colonnes dans
                  * la table doccolumns alors on en crée une par défaut.
                  */
                 // remplacement des variables %millesime%, %date%, %heure% et %userId%
@@ -2501,7 +2513,8 @@ class Tcpdf extends \TCPDF
     }
 
     /**
-     * Récursivité qui s'arrête lorsque $array est une chaine de caractères. Si cette
+     * Récursivité qui s'arrête lorsque $array est une chaine de caractères.
+     * Si cette
      * chaine répond à la grammaire d'un nom de colonne, elle est préfixée. Pour ne pas la
      * préfixer il faut qu'elle soit quotée ('ALAIN' ou "ALAIN") ou qu'elle contienne un
      * caractère autre qu'une lettre, un chiffre ou le souligné. Les colonnes déjà
@@ -2570,7 +2583,8 @@ class Tcpdf extends \TCPDF
     // Modèle pour imprimer des cartes
     //
     /**
-     * Modèle pour imprimer les cartes de transport. Renvoie un identifiant du template si
+     * Modèle pour imprimer les cartes de transport.
+     * Renvoie un identifiant du template si
      * $param vaut '?'. Sinon, le paramètre est ignoré et le template est exécuté.
      *
      * @param string $param
@@ -2723,7 +2737,8 @@ class Tcpdf extends \TCPDF
     //
     /**
      * Modèle pour imprimer les horaires de circuits avec liste des élèves par point
-     * d'arrêt. Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour
+     * d'arrêt.
+     * Le document est composé de deux tableaux, l'un pour l'aller, l'autre pour
      * le retour. Renvoie un identifiant du template si $param vaut '?'. Sinon, le
      * paramètre est ignoré et le template est exécuté.
      *
@@ -2778,10 +2793,10 @@ class Tcpdf extends \TCPDF
         }
     }
 
-    public function templateFooterMethod4($param = null)
+    public function templateFooterMethod2($param = null)
     {
         if (is_string($param) && $param == '?')
-            return 'Pied de page pour les horaires';
+            return 'Pied de page pour Page de texte';
 
         $cur_y = $this->y;
         $this->SetTextColorArray($this->footer_text_color);
@@ -2879,7 +2894,8 @@ class Tcpdf extends \TCPDF
     // Modèle particulier pour les copies d'écran
     //
     /**
-     * Doit recevoir un tableau de paramètres dont une clé est html. Cette clé donne le
+     * Doit recevoir un tableau de paramètres dont une clé est html.
+     * Cette clé donne le
      * texte html à placer dans le pdf.
      *
      * @param string $param
@@ -3217,5 +3233,36 @@ class Tcpdf extends \TCPDF
             ], $this->data, 0));
 
         $this->Cell($sum_width * $ratio, 0, '', 'T');
+    }
+
+    /**
+     *
+     * @param string $param
+     * @throws Exception
+     * @return string|void
+     */
+    public function templateDocBodyMethod9($param = null)
+    {
+
+        /**
+         * Identifiant du template
+         */
+        if (is_string($param) && $param == '?') {
+            return 'Document basé sur un modèle HTML et sur un tableau de données passés par la procédure appelante';
+        }
+        $fichier_phtml = $this->getParam('layout', null);
+        if (empty($fichier_phtml)) {
+            throw new Exception("Le modèle de ce document n'a pas été défini.");
+        }
+        $viewRender = $this->pdf_manager->get('ViewRenderer');
+        $layout = new ViewModel();
+        $layout->setTemplate($fichier_phtml);
+        $layout->setVariables([
+            'args' => $this->getParam('args', null)
+        ]);
+        $layout->setVariable('data', $this->getData());
+        $codeHtml = $viewRender->render($layout);
+        set_time_limit(300);
+        $this->writeHTML($codeHtml, true, false, false, false, '');
     }
 }

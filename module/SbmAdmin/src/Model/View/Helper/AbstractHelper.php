@@ -3,7 +3,7 @@
  * Classe abstraite de ces ViewHelpers
  *
  * méthodes communes
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Model/View/Helper
  * @filesource AbstractHelper.php

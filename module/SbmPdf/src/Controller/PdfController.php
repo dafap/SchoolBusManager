@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 mai 2020
- * @version 2020-2.6.0
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPdf\Controller;
 
@@ -1418,7 +1418,7 @@ class PdfController extends AbstractActionController
                         [
                             'form' => $form->prepare(),
                             'page' => $currentPage,
-                            'tarifId' => $r->getResult()
+                            'document' => $r->getResult()
                         ]);
                     break;
             }

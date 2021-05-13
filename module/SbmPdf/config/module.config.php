@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 15 février 2021
+ * @version 2021-2.6.1
  */
 use SbmPdf\Controller;
 use SbmPdf\Service;
@@ -25,6 +25,12 @@ use SbmPdf\Model\Service as PdfService;
 use SbmPdf\Model\Tcpdf;
 use SbmPdf\Model\Service\ColumnsFactory;
 use SbmPdf\Model\Service\TcpdfFactory;
+use SbmPdf\Model\View\Helper as ViewHelper;
+use SbmPdf\Model\Document;
+use SbmPdf\Model\Document\Template;
+use SbmPdf\Mvc\Controller\Plugin as PluginController;
+use SbmPdf\Model\Document\Template\TableHtml;
+use SbmPdf\Model\Document\Template\TableComplexe;
 
 return [
     'tcpdf' => [],
@@ -55,7 +61,7 @@ return [
                             ]
                         ]
                     ],
-                    'les-factures'=>[
+                    'les-factures' => [
                         'allow' => [
                             'roles' => [
                                 'secretariat',
@@ -101,7 +107,15 @@ return [
             'FormDocColumn' => FormDocColumn::class,
             'FormDocField' => FormDocField::class,
             'FormDocLabel' => FormDocLabel::class,
-            'FormDocAffectation' => FormDocAffectation::class
+            'FormDocAffectation' => FormDocAffectation::class,
+            Template\CartesTransport::PDFMANAGER_ID => Template\CartesTransport::class,
+            Template\CopieEcran::PDFMANAGER_ID => Template\CopieEcran::class,
+            Template\Etiquettes::PDFMANAGER_ID => Template\Etiquettes::class,
+            Template\Horaires::PDFMANAGER_ID => Template\Horaires::class,
+            Template\PublipostageHtml::PDFMANAGER_ID => Template\PublipostageHtml::class,
+            Template\TableComplexe::PDFMANAGER_ID => Template\TableComplexe::class,
+            Template\TableHtml::PDFMANAGER_ID => Template\TableHtml::class,
+            Template\TableSimple::PDFMANAGER_ID => Template\TableSimple::class
         ],
         'factories' => [
             'ListeRoutes' => PdfService\ListeRoutesService::class,
@@ -113,6 +127,11 @@ return [
             'paginator' => [
                 'nb_pdf' => 1
             ]
+        ]
+    ],
+    'controller_plugins' => [
+        'invokables' => [
+            PluginController\Pdf::PLUGINMANAGER_ID => PluginController\Pdf::class
         ]
     ],
     'service_manager' => [
@@ -164,6 +183,11 @@ return [
                 ],
                 'may_terminate' => true
             ]
+        ]
+    ],
+    'view_helpers' => [
+        'factories' => [
+            'menuRapports' => ViewHelper\MenuRapports::class
         ]
     ],
     'view_manager' => [

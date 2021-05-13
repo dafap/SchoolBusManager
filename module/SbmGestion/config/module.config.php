@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 5 juil. 2020
- * @version 2020-2.6.0
+ * @date 13 fév. 2021
+ * @version 2021-2.6.1
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
@@ -256,7 +256,6 @@ return [
             'designationService' => ViewHelper\DesignationService::class
         ],
         'factories' => [
-            'menuRapports' => ViewHelper\MenuRapports::class,
             'printServices' => ViewHelper\Services::class,
             'printStations' => ViewHelper\Stations::class,
             'printItineraires' => ViewHelper\Itineraires::class

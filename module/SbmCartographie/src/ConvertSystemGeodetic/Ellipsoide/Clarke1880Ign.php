@@ -14,6 +14,7 @@ namespace SbmCartographie\ConvertSystemGeodetic\Ellipsoide;
 
 class Clarke1880Ign extends Ellipsoide
 {
+
     function __construct()
     {
         $this->setA(6378249.2);

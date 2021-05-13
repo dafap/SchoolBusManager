@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 11 mars 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Form;
 
@@ -67,47 +67,6 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 return [];
             }
         }
-    }
-
-    /**
-     * Affecte une classe css à tous les éléments du formulaire
-     *
-     * @param string $css_class
-     */
-    public function setCssClass($css_class)
-    {
-        foreach ($this->getElements() as $element) {
-            $element->setAttribute('class', $css_class);
-        }
-    }
-
-    /**
-     * Affecte les values_options à l'élément indiqué
-     *
-     * @param string $element
-     * @param array $values_options
-     */
-    public function setValueOptions($element, array $values_options)
-    {
-        $e = $this->get($element);
-        $e->setValueOptions($values_options);
-        return $this;
-    }
-
-    /**
-     * Renvoie un tableau contenant les noms des champs du formulaire (sans submit)
-     *
-     * @return array
-     */
-    public function getElementNames()
-    {
-        $array = [];
-        foreach ($this->getElements() as $element) {
-            if ($element->getName() != 'submit') {
-                $array[] = $element->getName();
-            }
-        }
-        return $array;
     }
 
     private function formCircuits()

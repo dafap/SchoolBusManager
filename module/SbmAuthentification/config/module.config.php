@@ -3,10 +3,10 @@
  * Configuration du module SbmAuthentification
  *
  * Initialidation des acl avec
- *  - la liste des rôles,
- *  - la correspondance avec la catégorie d'utilisateur,
- *  - la ressource par défaut,
- *  - la route à utiliser en cas d'accès non autorisé.
+ * - la liste des rôles,
+ * - la correspondance avec la catégorie d'utilisateur,
+ * - la ressource par défaut,
+ * - la route à utiliser en cas d'accès non autorisé.
  *
  *
  * @project sbm
@@ -14,8 +14,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 30 avr. 2021
+ * @version 2021-2.6.1
  */
 use SbmAuthentification\Model\CategoriesInterface;
 return [
@@ -62,11 +62,15 @@ return [
         ],
         // routes de redirection lorsque l'accès n'est pas autorisé (en fonction du rôle)
         'redirectTo' => [
-            'transporteur' => 'sbmportail',
-            'etablissement' => 'sbmportail',
-            'commune' => 'sbmportail',
-            'secretariat' => 'sbmportail',
-            'parent' => 'sbmparent',
+            'guest' => '/',
+            'transporteur' => 'sbmportail/transporteur',
+            'gr_transporteurs' => 'sbmportail/transporteur',
+            'etablissement' => 'sbmportail/etablissement',
+            'gr_etablissements' => 'sbmportail/etablissement',
+            'commune' => 'sbmportail/commune',
+            'gr_communes' => 'sbmportail/commune',
+            'secretariat' => 'sbmportail',//'sbmportail/organisateur',
+            'parent' => 'sbmparentconfig',
             'organisme' => 'sbmparent',
             'gestion' => 'sbmgestion',
             'admin' => 'sbmadmin',

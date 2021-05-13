@@ -15,22 +15,21 @@
  * @filesource AffectationDecision.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juil. 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Form;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Form\AbstractSbmForm as Form;
+use SbmCommun\Model\Strategy\Semaine;
 use SbmCommun\Model\Traits\ServiceTrait;
-use SbmCommun\Model\Traits\DebugTrait;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterProviderInterface;
-use SbmCommun\Model\Strategy\Semaine;
-use SbmBase\Model\StdLib;
 
 class AffectationDecision extends Form implements InputFilterProviderInterface
 {
-    use ServiceTrait, DebugTrait;
+    use ServiceTrait;
 
     /**
      * Correspond au n° de trajet. Prend la valeur 1 ou 2 selon qu'il s'agit du trajet 1
@@ -59,9 +58,6 @@ class AffectationDecision extends Form implements InputFilterProviderInterface
      */
     public function __construct($trajet, $phase)
     {
-        // DEBUG
-        // $this->debugInitLog('/debug', 'ajax-formaffectationdecision');
-        // ----------------------
         $this->trajet = $trajet;
         $this->phase = $phase;
         parent::__construct($phase == 1 ? 'decision-form' : 'affectation-form');

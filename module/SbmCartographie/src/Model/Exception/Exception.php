@@ -2,8 +2,8 @@
 /**
  * Exception lancée par une classe du namespace SbmCartographie\Model
  *
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmCartographie/Model/Exception
  * @filesource Exception.php

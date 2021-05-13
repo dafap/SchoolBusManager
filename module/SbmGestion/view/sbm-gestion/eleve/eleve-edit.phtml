@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2020
- * @version 2020-2.6.0
+ * @date 21 oct. 2020
+ * @version 2020-2.6.1
  */
 use SbmBase\Model\DateLib;
 
@@ -48,9 +48,17 @@ $url_map = $this->url('sbmgestion/eleve',
 $url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
 ]);
+$url_correspondant = $this->url('sbmgestion/gestioneleve',
+    [
+        'action' => 'correspondant',
+        'page' => $this->page
+    ]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve', 'eleve-edit.css');
-$this->jQuery(['jquery-ui', 'jquery-confirm']);
+$this->jQuery([
+    'jquery-ui',
+    'jquery-confirm'
+]);
 $this->themeJS('gestion-eleve', 'edit.js');
 $this->themeJS('commun', 'checkallbox.js');
 $this->headScript()->captureStart();
@@ -76,7 +84,7 @@ $js = 'window.document.getElementById(\'op\').value=%s;';
 
 $hiddens = [
     'eleveId' => $this->eleveId,
-    'eleveName' => $this->identite,
+    'eleveNom' => $this->identite,
     'origine' => $url_ici,
     'responsableId' => $this->args_paiement['responsableId']
 ];
@@ -99,6 +107,12 @@ $actions = [
         'formaction' => $url_euro,
         'title' => 'paiements de ' . $this->args_paiement['responsable'],
         'onclick' => sprintf($js, "'eleve-edit'")
+    ],
+    'correspondant' => [
+        'class' => 'fam-user-add',
+        'formaction' => $url_correspondant,
+        'title' => 'Gestion des correspondants',
+        'onclick' => sprintf($js, "'correspondant'")
     ]
 ];
 // DEBUG =============================

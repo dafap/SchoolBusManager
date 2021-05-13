@@ -14,8 +14,8 @@
  * @filesource etablissement-station-ajout.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
- * @version 2020-2.6.0
+ * @date 22 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -59,6 +59,9 @@ $description1 = 'la station';
             </div>
 			<div id="wrapper-rang" class="row-inner ajout">
         		<?= $this->formRow($this->form->get('rang'));?>
+			</div>
+			<div id="wrapper-temps" class="row-inner ajout">
+        		<?= $this->formRow($this->form->get('temps'));?>
 			</div>
 			<div id="wrapper-buttons" class="row-inner ajout">
     			<?= $this->formSubmit($this->form->get('submit'));?>

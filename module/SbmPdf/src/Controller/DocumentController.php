@@ -9,12 +9,13 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 12 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmPdf\Controller;
 
 use SbmBase\Model\Session;
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
@@ -72,7 +73,9 @@ class DocumentController extends AbstractActionController
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
-        $facture = $this->db_manager->get('Sbm\Facture')->setResponsableId($responsableId);
+        $facture = $this->db_manager->get('Sbm\Facture')
+            ->setMillesime(Session::get('millesime'))
+            ->setResponsableId($responsableId);
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(
             [
@@ -95,6 +98,22 @@ class DocumentController extends AbstractActionController
             ->run();
     }
 
+    public function passTemporaireAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            die('bizare !');
+            return $this->homePage();
+        } elseif (! $prg || ! ($inviteId = StdLib::getParam('inviteId', $prg, false))) {
+            return $this->homePage();
+        }
+        $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
+        $qrcodeNiveau = 'QRCODE,Q';
+        $qrcodeMessage = 'ABOARSCO00018';
+        $imagePassJunior = file_get_contents(
+            StdLib::concatPath($imagePath, 'passTemporaireJunior.svg'));
+    }
+
     /**
      * Appel à la page du site de l'organisateur
      *
@@ -102,7 +121,8 @@ class DocumentController extends AbstractActionController
      */
     public function horairesAction()
     {
-        return $this->redirect()->toUrl('https://www.tra-mobilite.com/fiches-horaires-tra-mobilite/');
+        return $this->redirect()->toUrl(
+            'https://www.tra-mobilite.com/fiches-horaires-tra-mobilite/');
     }
 
     /**

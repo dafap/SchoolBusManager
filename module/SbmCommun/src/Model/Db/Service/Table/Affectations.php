@@ -8,8 +8,8 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mars 2020
- * @version 2020-2.6.0
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -72,7 +72,8 @@ class Affectations extends AbstractSbmTable
     }
 
     /**
-     * Suppression d'un enregistrement. Il y a renumérotation des correspondances après la
+     * Suppression d'un enregistrement.
+     * Il y a renumérotation des correspondances après la
      * suppression
      *
      * @param \SbmCommun\Model\Db\ObjectData\ObjectDataInterface $item
@@ -138,6 +139,25 @@ class Affectations extends AbstractSbmTable
                 'millesime' => $millesime,
                 'eleveId' => $eleveId,
                 'responsableId' => $ancienResponsableId
+            ]);
+    }
+
+    /**
+     * Suppression de tous les itinéraires relatif aux paramètres indiqués
+     *
+     * @param int $millesime
+     * @param int $eleveId
+     * @param int $trajet
+     *            1 pour R1 ou 2 pour R2
+     * @return number
+     */
+    public function deleteTrajet(int $millesime, int $eleveId, int $trajet)
+    {
+        return $this->table_gateway->delete(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId,
+                'trajet' => $trajet
             ]);
     }
 }

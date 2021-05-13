@@ -3,7 +3,7 @@
  * Permet d'enregistrer l'objet SbmCartographie\Model\Projection dans le service_manager
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model/Service
  * @filesource ProjectionFactory.php

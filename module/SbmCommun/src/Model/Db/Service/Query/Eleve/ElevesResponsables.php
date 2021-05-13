@@ -1,6 +1,7 @@
 <?php
 /**
- * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs responsables
+ * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs
+ * responsables
  *
  *
  * @project sbm
@@ -8,8 +9,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2020
- * @version 2020-2.6.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -57,6 +58,7 @@ class ElevesResponsables extends AbstractQuery
                 'adresseL2R1' => 'adresseL2',
                 'adresseL3R1' => 'adresseL3',
                 'codePostalR1' => 'codePostal',
+                'communeIdR1' => 'communeId',
                 'telephoneFR1' => 'telephoneF',
                 'telephonePR1' => 'telephoneP',
                 'telephoneTR1' => 'telephoneT',
@@ -288,6 +290,7 @@ class ElevesResponsables extends AbstractQuery
                 'adresseL2R2' => 'adresseL2',
                 'adresseL3R2' => 'adresseL3',
                 'codePostalR2' => 'codePostal',
+                'communeIdR2' => 'communeId',
                 'telephoneFR2' => 'telephoneF',
                 'telephonePR2' => 'telephoneP',
                 'telephoneTR2' => 'telephoneT',
@@ -319,43 +322,41 @@ class ElevesResponsables extends AbstractQuery
             ->join(
             [
                 $this->aliasEffectifAffectations(1) => $this->subselectAffectations(1)
-            ], $this->jointureEffectifAffectations(1),
-            [
+            ], $this->jointureEffectifAffectations(1), [
                 'affecteR1matin' => 'eleveId'
             ], $select::JOIN_LEFT)
             ->join(
             [
                 $this->aliasEffectifAffectations(2) => $this->subselectAffectations(2)
-            ], $this->jointureEffectifAffectations(2),
-            [
+            ], $this->jointureEffectifAffectations(2), [
                 'affecteR1midi' => 'eleveId'
             ], $select::JOIN_LEFT)
             ->join(
             [
                 $this->aliasEffectifAffectations(3) => $this->subselectAffectations(3)
-            ], $this->jointureEffectifAffectations(3),
-            [
+            ], $this->jointureEffectifAffectations(3), [
                 'affecteR1soir' => 'eleveId'
             ], $select::JOIN_LEFT)
             ->join(
             [
-                $this->aliasEffectifAffectations(1,2) => $this->subselectAffectations(1,2)
-            ], $this->jointureEffectifAffectations(1,2),
+                $this->aliasEffectifAffectations(1, 2) => $this->subselectAffectations(1,
+                    2)
+            ], $this->jointureEffectifAffectations(1, 2),
             [
                 'affecteR2matin' => 'eleveId'
             ], $select::JOIN_LEFT)
             ->join(
             [
-                $this->aliasEffectifAffectations(2,2) => $this->subselectAffectations(2,2)
-            ], $this->jointureEffectifAffectations(2,2),
-            [
+                $this->aliasEffectifAffectations(2, 2) => $this->subselectAffectations(2,
+                    2)
+            ], $this->jointureEffectifAffectations(2, 2), [
                 'affecteR2midi' => 'eleveId'
             ], $select::JOIN_LEFT)
             ->join(
             [
-                $this->aliasEffectifAffectations(3,2) => $this->subselectAffectations(3,2)
-            ], $this->jointureEffectifAffectations(3,2),
-            [
+                $this->aliasEffectifAffectations(3, 2) => $this->subselectAffectations(3,
+                    2)
+            ], $this->jointureEffectifAffectations(3, 2), [
                 'affecteR2soir' => 'eleveId'
             ], $select::JOIN_LEFT)
             /*->join(
@@ -723,9 +724,12 @@ class ElevesResponsables extends AbstractQuery
             ])
             ->join([
             'ori1' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'ori1.stationId=sco.stationIdR1', [
-            'station_origineR1' => 'nom'
-        ])
+        ], 'ori1.stationId=sco.stationIdR1',
+            [
+                'station_origineR1' => 'nom',
+                'x_origineR1' => 'x',
+                'y_origineR1' => 'y'
+            ])
             ->join(
             [
                 'comori1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -762,9 +766,12 @@ class ElevesResponsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->join([
             'ori2' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'ori2.stationId=sco.stationIdR2', [
-            'station_origineR2' => 'nom'
-        ], $select::JOIN_LEFT)
+        ], 'ori2.stationId=sco.stationIdR2',
+            [
+                'station_origineR2' => 'nom',
+                'x_origineR2' => 'x',
+                'y_origineR2' => 'y'
+            ], $select::JOIN_LEFT)
             ->join(
             [
                 'comori2' => $this->db_manager->getCanonicName('communes', 'table')
@@ -773,10 +780,11 @@ class ElevesResponsables extends AbstractQuery
                 'commune_origineR2' => 'nom',
                 'lacommune_origineR2' => 'alias',
                 'laposte_origineR2' => 'alias_laposte'
-            ], $select::JOIN_LEFT);
+            ], $select::JOIN_LEFT)
+            ->where($where);
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $select->where($where);
+        return $select;
     }
 }

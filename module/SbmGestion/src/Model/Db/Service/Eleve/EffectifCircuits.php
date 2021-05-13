@@ -3,35 +3,88 @@
  * Calcul des effectifs des élèves transportés par circuit
  *
  * Calcul spécial qui n'est pas rattaché à un AbstractEffectifTypex mais dérive
- * directement de AbstractEffectif
+ * directement de AbstractEffectif.
+ * L'interface SpecialEffectifInterface est défini en fin de ce fichier.
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
- * @version 2020-2.6.0
+ * @date 27 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
-use SbmGestion\Model\Db\Service\EffectifInterface;
+use SbmGestion\Model\Db\Service\Eleve\Special\EffectifInterface as SpecialEffectifInterface;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
-
-interface SpecialEffectifInterface extends EffectifInterface
-{
-
-    public function init(Where $where);
-}
 
 class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterface
 {
     use \SbmCommun\Model\Traits\ServiceTrait,\SbmCommun\Model\Traits\ExpressionSqlTrait;
 
+    private $ligneId;
+
+    private $sens;
+
+    private $moment;
+
+    private $ordre;
+
     private $sanspreinscrits = false;
+
+    /**
+     *
+     * @param number $millesime
+     */
+    public function setMillesime(int $millesime)
+    {
+        $this->millesime = $millesime;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $ligneId
+     */
+    public function setLigneId(string $ligneId)
+    {
+        $this->ligneId = $ligneId;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $sens
+     */
+    public function setSens(int $sens)
+    {
+        $this->sens = $sens;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $moment
+     */
+    public function setMoment(int $moment)
+    {
+        $this->moment = $moment;
+        return $this;
+    }
+
+    /**
+     *
+     * @param int $ordre
+     */
+    public function setOrdre(int $ordre)
+    {
+        $this->ordre = $ordre;
+        return $this;
+    }
 
     /**
      * Appeler cette méthode avant la méthode init()
@@ -44,8 +97,22 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
         return $this;
     }
 
-    public function init(Where $where)
+    /**
+     * Le tableau $structure est ordonné selon l'ordre défini dans la requête
+     *
+     * {@inheritdoc}
+     * @see \SbmGestion\Model\Db\Service\Eleve\Special\EffectifInterface::init()
+     */
+    public function init(Where $where = null)
     {
+        if (empty($where)) {
+            $where = new Where();
+            $where->equalTo('c.millesime', $this->millesime)
+                ->equalTo('c.ligneId', $this->ligneId)
+                ->equalTo('c.sens', $this->sens)
+                ->equalTo('c.moment', $this->moment)
+                ->equalTo('c.ordre', $this->ordre);
+        }
         $this->structure = [];
         $rowset = $this->requete($where);
         $effectif_reel = 0;
@@ -63,6 +130,38 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
             ];
         }
         return $this->structure;
+    }
+
+    /**
+     *
+     * @param int $circuit1Id
+     *            point de montee
+     * @param int $circuit2Id
+     *            point de descente
+     * @return int
+     */
+    public function effectifMaxEntre(int $circuit1Id, int $circuit2Id): int
+    {
+        if (! array_key_exists($circuit1Id, $this->structure) ||
+            ! array_key_exists($circuit2Id, $this->structure)) {
+            return 0;
+        }
+        $max = 0;
+        $start = false;
+        foreach ($this->structure as $circuitId => $array) {
+            if ($circuitId == $circuit1Id) {
+                $max = $array['effectif_reel'];
+                $start = true;
+                continue;
+            } elseif (! $start) {
+                continue;
+            } elseif ($circuitId == $circuit2Id) {
+                break; // on ne prend pas en compte l'effectif de la station de descente
+            } elseif ($array['effectif_reel'] > $max) {
+                $max = $array['effectif_reel'];
+            }
+        }
+        return $max;
     }
 
     public function transportes($circuitId)
@@ -199,21 +298,28 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'ordreligne1',
                 $stationId
             ]);
+        $condition = new Where();
+        $condition->literal('sco.inscrit = 1');
         if ($this->sanspreinscrits) {
-            $condition = new Where();
             $condition->nest()
+                ->nest()
                 ->literal('aff.trajet = 1')
                 ->literal('sco.paiementR1 = 1')
                 ->unnest()->or->nest()
                 ->literal('aff.trajet = 2')
                 ->literal('sco.reductionR2 = 0')
                 ->literal('sco.paiementR2 = 1')
+                ->unnest()->or->nest()
+                ->literal('aff.trajet = 2')
+                ->literal('sco.reductionR2 = 1')
+                ->unnest()
                 ->unnest();
-            $select->join([
-                'sco' => $this->db_manager->getCanonicName('scolarites')
-            ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
-                ->where($condition);
         }
+        $select->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites')
+        ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
+            ->where($condition);
+
         return $select;
     }
 }

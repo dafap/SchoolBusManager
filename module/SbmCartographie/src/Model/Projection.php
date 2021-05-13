@@ -3,7 +3,7 @@
  * Projection configurée dans le fichier module.config.php
  *
  * Compatible ZF3
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model
  * @filesource Projection.php
@@ -73,7 +73,8 @@ class Projection extends AbstractProjection implements ProjectionInterface
     }
 
     /**
-     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et renvoie
+     * Reçoit un point en coordonnées géographiques (RGF93 ou WPS84) exprimées en degré et
+     * renvoie
      * un point en coordonnées xyz
      *
      * @param Point $p
@@ -87,11 +88,13 @@ class Projection extends AbstractProjection implements ProjectionInterface
     }
 
     /**
-     * Reçoit un point en coordonnées xyz et renvoie un point en coordonnées géographiques (RGF93
+     * Reçoit un point en coordonnées xyz et renvoie un point en coordonnées géographiques
+     * (RGF93
      * ou WPS84) exprimées en degré
      *
      * @param Point $p
-     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en degré)
+     * @return \SbmCartographie\Model\Point (les coordonnées du point résulat sont en
+     *         degré)
      */
     public function xyzVersgRGF93(Point $p)
     {
@@ -117,7 +120,8 @@ class Projection extends AbstractProjection implements ProjectionInterface
             'gestion',
             'parent'
         ])) {
-            throw new Exception\DomainException(__METHOD__ . ' - Paramètre `nature` non conforme.');
+            throw new Exception\DomainException(
+                __METHOD__ . ' - Paramètre `nature` non conforme.');
         }
         return $p->setLatLngRange($this->rangeLat[$nature], $this->rangeLng[$nature])
             ->setXYRange($this->rangeX[$nature], $this->rangeY[$nature])

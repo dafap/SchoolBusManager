@@ -8,11 +8,12 @@
  * @filesource EtablissementStation.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 mai 2020
- * @version 2020-2.6.0
+ * @date 22 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Form;
 
+use SbmBase\Model\StdLib;
 use Zend\InputFilter\InputFilterProviderInterface;
 
 class EtablissementStation extends AbstractSbmForm implements
@@ -85,6 +86,28 @@ class EtablissementStation extends AbstractSbmForm implements
             ]);
         $this->add(
             [
+                'name' => 'temps',
+                'type' => 'Zend\Form\Element\Time',
+                'attributes' => [
+                    'id' => 'temps',
+                    'class' => 'sbm-width-10c',
+                    'min' => '00:00:00',
+                    'max' => '00:20:59',
+                    'step' => '15'
+                ],
+                'options' => [
+                    'label' => 'Temps de déplacement à pied (en h:m:s)',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'format' => 'H:i:s',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+        $this->add(
+            [
                 'name' => 'submit',
                 'attributes' => [
                     'type' => 'submit',
@@ -111,7 +134,34 @@ class EtablissementStation extends AbstractSbmForm implements
             'stationId' => [
                 'name' => 'stationId',
                 'required' => true
+            ],
+            'temps' => [
+                'name' => 'temps',
+                'required' => false,
+                'allow_empty' => true
             ]
         ];
+    }
+
+    /**
+     * Correction du format du temps renvoyé par certains navigateurs sans les secondes
+     * lorsque la partie secondes est 00
+     *
+     * {@inheritdoc}
+     * @see \Zend\Form\Form::setData()
+     */
+    public function setData($data)
+    {
+        if (is_array($data)) {
+            $temps = StdLib::getParam('temps', $data);
+            if (is_string($temps) &&
+                ! (\DateTime::createFromFormat('H:i:s', $temps) instanceof \DateTime)) {
+                    $dt = \DateTime::createFromFormat('H:i', $temps);
+                    if ($dt instanceof \DateTime) {
+                        $data['temps'] = $dt->format('H:i:s');
+                    }
+                }
+        }
+        return parent::setData($data);
     }
 }

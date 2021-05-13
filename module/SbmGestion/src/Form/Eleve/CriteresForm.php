@@ -7,8 +7,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2020
- * @version 2020-2.6.0
+ * @date 30 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmGestion\Form\Eleve;
 
@@ -260,7 +260,7 @@ class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderI
                     'empty_option' => 'Tout',
                     'value_options' => [
                         '1' => 'Garde alternée',
-                        // '2' => 'Famille d\'accueil',
+                        '2' => 'Elève interne',
                         '3' => 'Dérogation accordée',
                         '4' => 'Non ayants droit acceptés'
                     ],

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 août 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmParent\Controller;
 
@@ -38,7 +38,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Place des commentaires sur l'écran suite à une demande de transport ne
-     * correspondant pas à un établissement auquel on a droit. Une dérogation est
+     * correspondant pas à un établissement auquel on a droit.
+     * Une dérogation est
      * nécessaire.
      *
      * @param array $cr
@@ -52,7 +53,8 @@ class IndexController extends AbstractActionController
 
     private function controleEtatDuSite()
     {
-        if ($this->authenticate->by()->getCategorieId() < CategoriesInterface::SUPER_ADMINISTRATEUR_ID) {
+        if ($this->authenticate->by()->getCategorieId() <
+            CategoriesInterface::SUPER_ADMINISTRATEUR_ID) {
             $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
             if (! $tCalendar->getEtatDuSite()['inscription']) {
                 throw new \Exception('Inscriptions fermées');
@@ -63,7 +65,8 @@ class IndexController extends AbstractActionController
     /**
      * A noter que `paiementenligne` vient de l'objet
      * SbmFront\Model\Responsable\Responsable initialisé par la vue `responsables` de la
-     * base de données qui va chercher la valeur dans la table `communes`. A noter aussi
+     * base de données qui va chercher la valeur dans la table `communes`.
+     * A noter aussi
      * la mise en place du contrôle par session (post et nsArgsFacture) afin de récupérer
      * le responsableId lors d'une demande de facture ou de paiement.
      *
@@ -72,12 +75,15 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
+        $millesime = Session::get('millesime');
+        $anterieur = $millesime - 1;
         try {
             $responsable = $this->responsable->get();
             // mise en session pour contrôler la demande de factures et de paiement
             Session::set('post', [
                 'responsableId' => $responsable->responsableId
             ], $this->getSessionNamespace());
+            Session::set('millesime', $millesime, $this->getSessionNamespace());
             Session::set('nsArgsFacture', $this->getSessionNamespace());
         } catch (\Exception $e) {
             if ($this->authenticate->by()->hasIdentity() &&
@@ -109,13 +115,26 @@ class IndexController extends AbstractActionController
                 $this->flashMessenger()->addErrorMessage($message);
             }
         }
+        // controle des impayés de l'année précédente
+        $ctrl = new \SbmParent\Model\VerifSoldeAnterieur($this->db_manager,
+            $responsable->responsableId);
+        if (! $ctrl->valid($anterieur)) {
+            // if (! $ctrl->valid($millesime)) { // pour DEBUG
+            return $this->redirect()->toRoute('sbmparent',
+                [
+                    'action' => 'impayes-anterieurs'
+                ]);
+        }
+        $ctrl->clear();
         // fin du contrôle de paiement en ligne
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
         $format_telephone = new \SbmCommun\Model\View\Helper\Telephone();
+        $as = Session::get('as');
         return new ViewModel(
             [
                 'theme' => $this->theme,
+                'as_date_debut' => $as['dateDebut'],
                 'namespacectrl' => md5('nsArgsFacture'),
                 'responsable' => $responsable,
                 'calendar' => $tCalendar,
@@ -130,12 +149,12 @@ class IndexController extends AbstractActionController
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
-                        'anneeScolaire' => Session::get('as')['libelle']
+                        'anneeScolaire' => $as['libelle']
                     ]),
                 'factures' => $this->db_manager->get('Sbm\Db\Table\Factures')->fetchAll(
                     [
                         'responsableId' => $responsable->responsableId,
-                        'millesime' => Session::get('millesime')
+                        'millesime' => $millesime
                     ]),
                 'client' => $this->client,
                 'accueil' => $this->accueil,
@@ -153,7 +172,8 @@ class IndexController extends AbstractActionController
                                     $format_telephone($responsable->telephoneT)
                                 ]))
                     ]),
-                'sadmin' => $this->authenticate->by()->getCategorieId() == CategoriesInterface::SUPER_ADMINISTRATEUR_ID
+                'sadmin' => $this->authenticate->by()->getCategorieId() ==
+                CategoriesInterface::SUPER_ADMINISTRATEUR_ID
             ]);
     }
 
@@ -278,8 +298,12 @@ class IndexController extends AbstractActionController
                 echo '<h3>Debug:</h3>';
                 var_dump($form->getMessages());
             } else {
-                $this->debugLog(__METHOD__);
-                $this->debugLog($form->getMessages());
+                $this->debugLog(
+                    [
+                        __METHOD__,
+                        'ligne' => __LINE__,
+                        'formulaire invalide' => $form->getMessages()
+                    ]);
             }
         }
         $formga->setValueOptions('r2communeId',
@@ -302,7 +326,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Attention à la gestion du SbmParent\Form\Responsable2 ($formga) - les noms
-     * d'éléments sont préfixés par r2. Ils le sont aussi dans le POST donc dans args[]. -
+     * d'éléments sont préfixés par r2.
+     * Ils le sont aussi dans le POST donc dans args[]. -
      * par contre, la méthode setData() permet de placer directement des données, que
      * leurs index soient préfixés on non - et getData() supprime le préfixe r2 Cela
      * permet de charger le formulaire par setData() indifféremment depuis la table
@@ -407,7 +432,8 @@ class IndexController extends AbstractActionController
             }
             /**
              * Dans form->isValid(), on refuse si existence d'un élève de même nom,
-             * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+             * prénom, dateN et n° différent.
+             * formga->isValid() n'est regardé que si
              * hasGa.
              */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
@@ -556,7 +582,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Change l'état d'attente d'un enfant. L'état d'attente est enregistré dans le champ
+     * Change l'état d'attente d'un enfant.
+     * L'état d'attente est enregistré dans le champ
      * selection de la table scolarites Pas de vue. Renvoie sur la liste une fois le
      * changement effectué
      *
@@ -815,7 +842,8 @@ class IndexController extends AbstractActionController
                 }
                 /**
                  * Dans form->isValid(), on refuse si existence d'un élève de même nom,
-                 * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+                 * prénom, dateN et n° différent.
+                 * formga->isValid() n'est regardé que si
                  * hasGa.
                  */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
@@ -1198,6 +1226,30 @@ class IndexController extends AbstractActionController
                 'form' => $form->prepare(),
                 'config' => $configCarte,
                 'url_api' => $this->cartographie_manager->get('google_api_browser')['js']
+            ]);
+    }
+
+    /**
+     * Cette méthode ne peut pas récupérer le responsableId par la méthode
+     * getResponsableIdFromSession() puisque son accès nest pas en POST.
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function impayesAnterieursAction()
+    {
+        $millesime = Session::get('millesime');
+        $anterieur = $millesime - 1;
+        $sessionNamespacePaiement = Session::get('nsArgsFacture');
+        Session::set('millesime', $anterieur, $sessionNamespacePaiement);
+        $responsableId = Session::get('post', 0, $sessionNamespacePaiement)['responsableId'];
+        $ctrl = new \SbmParent\Model\VerifSoldeAnterieur($this->db_manager, $responsableId);
+        return new ViewModel(
+            [
+                'resultats' => $ctrl->getResultats($anterieur),
+                'millesime' => $millesime,
+                'client' => $this->client,
+                'accueil' => $this->accueil,
+                'namespacectrl' => md5('nsArgsFacture')
             ]);
     }
 }

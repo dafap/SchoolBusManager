@@ -1,7 +1,7 @@
 <?php
 /**
  * Exception lancée par une classe ne trouvant pas de CartographieManager
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model/Exception
  * @filesource ExceptionNoCartographieManager.php

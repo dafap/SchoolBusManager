@@ -2,13 +2,18 @@
 /**
  * Objet parent d'une projection
  *
- * Cette classe abstraite représente une projection avec les méthodes générales de conversion et de calculs.
- * La classe dérivée devra initialiser l'ellipsoide ainsi que les données générales de la projection,
+ * Cette classe abstraite représente une projection avec les méthodes générales de
+ * conversion et de calculs.
+ * La classe dérivée devra initialiser l'ellipsoide ainsi que les données générales de la
+ * projection,
  * puis appeler l'une des méthodes suivantes :
- * - la méthode alg0019 si c'est une projection Lambert conique conforme dans le cas tangent
- * - la méthode alg0054 si c'est une projection Lambert conique conforme dans le cas sécant
+ * - la méthode alg0019 si c'est une projection Lambert conique conforme dans le cas
+ * tangent
+ * - la méthode alg0054 si c'est une projection Lambert conique conforme dans le cas
+ * sécant
  *
- * Les latitudes, longitudes et SbmCartographie\Model\Point sont tous en radian, en entrée comme en sortie
+ * Les latitudes, longitudes et SbmCartographie\Model\Point sont tous en radian, en entrée
+ * comme en sortie
  *
  * @project sbm
  * @package SbmCartographie/ConvertSystemGeodetic/Projection
@@ -571,8 +576,8 @@ abstract class AbstractProjection
      *            rotation sur z
      * @return \SbmCartographie\Model\Point
      */
-    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0, $ry = 0,
-        $rz = 0)
+    public function alg0013(Point $point, $tx = 0, $ty = 0, $tz = 0, $k = 0, $rx = 0,
+        $ry = 0, $rz = 0)
     {
         return $point->translate($tx, $ty, $tz);
         // ->ajoute($point->dilate(1 + $k))

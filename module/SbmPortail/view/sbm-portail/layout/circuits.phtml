@@ -1,0 +1,101 @@
+<?php
+/**
+ * Modèle de document pdf
+ *
+ * Liste des circuits pour les portails
+ * La liste est basée sur le modèle de données fourni par la méthode exportCircuit() du
+ * controleur
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/layout
+ * @filesource circuits.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 11 mai 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+?>
+<style>
+table {
+	margin: 0;
+	padding: 1px;
+	border-collapse: collapse;
+	border: 1px solid black;
+	font-size: 8px;
+}
+
+th {
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	border: 1px solid black;
+}
+
+th.commune {
+	width: 150px;
+}
+
+th.station {
+	width: 150px;
+}
+
+th.emplacement {
+	width: 95px;
+}
+
+th.horaire {
+	width: 40px;
+}
+
+th.jours {
+	width: 45px;
+}
+
+th.effectif {
+	width: 40px;
+}
+
+td {
+	border: 1px solid black;
+}
+
+td.centre {
+	text-align: center;
+}
+
+td.align-right {
+	text-align: right;
+}
+</style>
+
+<table>
+	<tbody>
+		<tr>
+			<th class="commune">Commune</th>
+			<th class="station">Arrêt</th>
+			<th class="emplacement">Emplacement</th>
+			<th class="horaire">Départ</th>
+			<th class="horaire">Arrivée</th>
+			<th class="jours">Jours</th>
+			<th class="effectif">Nombre<br>entrants
+			</th>
+			<th class="effectif">Nombre<br>sortants
+			</th>
+			<th class="effectif">Effectif</th>
+		</tr>
+	<?php foreach($data as $circuit): ?>
+        <tr>
+			<td> <?= $circuit['commune']; ?></td>
+			<td> <?= $circuit['station']; ?></td>
+			<td> <?= $circuit['emplacement'];?></td>
+			<td class="centre"><?= $circuit['horaireA'];?></td>
+			<td class="centre"><?= $circuit['horaireD']; ?></td>
+			<td> <?= $circuit['semaine']; ?></td>
+			<td class="align-right"><?= $circuit['montee'];?></td>
+			<td class="align-right"><?= $circuit['descente'];?></td>
+			<td class="align-right"><?= $circuit['effectif'];?></td>
+		</tr>
+	<?php endforeach;?>
+	</tbody>
+</table>

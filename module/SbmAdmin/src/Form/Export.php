@@ -9,8 +9,8 @@
  * @filesource Export.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
- * @version 2020-2.6.0
+ * @date 5 mai 2021
+ * @version 2021-2.6.1
  */
 namespace SbmAdmin\Form;
 
@@ -19,6 +19,7 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\InputFilter\InputFilterProviderInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use SbmCartographie\ConvertSystemGeodetic\Projection\SelectOptions;
 
 class Export extends AbstractSbmForm implements InputFilterProviderInterface
 {
@@ -58,6 +59,25 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         }
         $this->add(
             [
+                'name' => 'projectionId',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'projectionId',
+                    'autofocus' => 'autofocus'
+                ],
+                'options' => [
+                    'label' => 'Choix du système géographique',
+                    'label_attributes' => [
+                        'class' => 'sbm-label'
+                    ],
+                    'value_options' => SelectOptions::getOptions(),
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ])
+            ->add(
+            [
                 'type' => 'submit',
                 'name' => 'submit',
                 'attributes' => [
@@ -65,8 +85,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'button default submit left-95px',
                     'value' => 'Extraire les données'
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'submit',
                 'name' => 'cancel',
@@ -802,8 +822,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'value_options' => $this->sm->get('Sbm\Db\Select\Stations')
                         ->toutes()
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Select',
                 'name' => 'communeId',
@@ -817,9 +837,23 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                     'value_options' => $this->sm->get('Sbm\Db\Select\Communes')
                         ->desservies()
                 ]
-            ]);
-
-        $this->add(
+            ])
+            ->add(
+            [
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'ligneId',
+                'attributes' => [
+                    'id' => 'ligneId'
+                ],
+                'options' => [
+                    'label' => 'Lignes',
+                    'empty_option' => 'Toutes',
+                    'allow_empty' => true,
+                    'value_options' => $this->sm->get('Sbm\Db\Select\Lignes')
+                        ->tout()
+                ]
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Radio',
                 'name' => 'visible',
@@ -834,8 +868,8 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                         '2' => 'Tous'
                     ]
                 ]
-            ]);
-        $this->add(
+            ])
+            ->add(
             [
                 'type' => 'Zend\Form\Element\Radio',
                 'name' => 'ouverte',
@@ -850,7 +884,22 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
                         '2' => 'Tous'
                     ]
                 ]
-            ]);
+            ])
+            ->add(
+                [
+                    'type' => 'Zend\Form\Element\Radio',
+                    'name' => 'horaire',
+                    'attributes' => [
+                        'value' => '1'
+                    ],
+                    'options' => [
+                        'label' => 'Horaires de passage',
+                        'value_options' => [
+                            '1' => 'Avec les horaires',
+                            '0' => 'Sans les horaires'
+                        ]
+                    ]
+                ]);
     }
 
     private function formStationSpecification()
@@ -862,6 +911,10 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'communeId' => [
                 'name' => 'communeId',
+                'required' => false
+            ],
+            'ligneId' => [
+                'name' => 'ligneId',
                 'required' => false
             ]
         ];
@@ -882,6 +935,9 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
         if (! empty($data['communeId'])) {
             $where->equalTo('sta.communeId', $data['communeId']);
         }
+        if (! empty($data['ligneId'])) {
+            $where->equalTo('cir.ligneId', $data['ligneId']);
+        }
         if (isset($data['visible']) && $data['visible'] != '2') {
             $where->equalTo('sta.visible', $data['visible']);
         }
@@ -889,5 +945,11 @@ class Export extends AbstractSbmForm implements InputFilterProviderInterface
             $where->equalTo('sta.ouverte', $data['ouverte']);
         }
         return $where;
+    }
+
+    public function getProjection()
+    {
+        $data = $this->getData();
+        return SelectOptions::getProjection($data['projectionId']);
     }
 }

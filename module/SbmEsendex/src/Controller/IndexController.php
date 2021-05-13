@@ -9,11 +9,12 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2020
- * @version 2020-2.6.0
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmEsendex\Controller;
 
+use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
@@ -21,8 +22,6 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Log\Logger;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
-use Esendex;
-use SbmBase\Model\DateLib;
 
 class IndexController extends AbstractActionController
 {
@@ -412,7 +411,7 @@ class IndexController extends AbstractActionController
             } else {
                 // on récupère les telephones en session
                 $post = Session::get('post', [], $this->getSessionNamespace());
-                $args['telephones'] = $post['telephones'];
+                $args['telephones'] = StdLib::getParam('telephones', $post, []);
             }
         }
         $telephones = StdLib::getParam('telephones', $args, []);

@@ -2,8 +2,8 @@
 /**
  * Module destiné aux partenaires et permettant la consultation des données autorisées
  *
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmPortail
  * @filesource Module.php

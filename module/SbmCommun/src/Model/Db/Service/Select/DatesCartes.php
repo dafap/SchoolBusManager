@@ -8,8 +8,8 @@
  * @filesource DatesCartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mars 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -52,8 +52,8 @@ class DatesCartes implements FactoryInterface
         }
         $this->db_manager = $serviceLocator;
         $this->millesime = Session::get('millesime');
-        $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
-        $this->dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d');
+        $this->dateDebut = $serviceLocator->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+            $this->millesime)['dateDebut']->format('Y-m-d');
         return $this;
     }
 

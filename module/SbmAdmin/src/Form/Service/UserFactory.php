@@ -4,8 +4,8 @@
  *
  * Compatibilité ZF3
  * Usage :
- *   $form = $sm->get('SbmAdmin\Form\User');
- * 
+ * $form = $sm->get('SbmAdmin\Form\User');
+ *
  * @project sbm
  * @package SbmAdmin/Form/Service
  * @filesource UserFactory.php

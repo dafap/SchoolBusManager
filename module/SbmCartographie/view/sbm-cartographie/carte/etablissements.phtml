@@ -2,24 +2,36 @@
 /**
  * Carte des établissements scolaires
  *
- * Affichage des établissements décrits dans $this->ptEtablissements qui est un tableau de Point
- * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés décimaux.
- *
- * Le style des markers peut être changé : remplacer BUBBLE par MARKER ligne 39
+ * Affichage des établissements décrits dans $this->ptEtablissements qui est un tableau de
+ * Point
+ * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés
+ * décimaux.
+ * Des cases à cocher permettent de sélectionner l'affichage.
  *
  * @project sbm
  * @package SbmCarographie/view/sbm-cartographie/carte
  * @filesource etablissements.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
- * @version 2020-2.6.0
+ * @date 9 nov. 2020
+ * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-// mise en place des JS de googleMaps
-$this->headScript()->appendFile($this->url_api);
-$this->themeJS('commun', 'carte.js');
-$this->themeJS('commun', 'StyledMarker.js');
+$this->headStyle()->captureStart();
+?>
+#carte-inner {
+    width: 90%;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#choix {
+	margin-right: 5em;
+}
+<?php
+$this->headStyle()->captureEnd();
 // préparation du script
 $i = 0;
 $aMarkers = [];
@@ -28,25 +40,32 @@ foreach ($this->ptEtablissements as $pt) {
     $niveau = is_array($e->niveau) ? array_sum($e->niveau) : $e->niveau;
     $accord_desservi = "";
     if ($niveau < 4) {
-        // $color = "#ffff00";
+        $color = "pink";
+        $icon = "pink-pushpin.png";
         $lettre = "E";
         $nature = "École";
         $accord_desservi = "e";
+        $index = "ecole";
     } elseif ($niveau == 4) {
-        // $color = "#fc6700";
+        $color = "yellow";
+        $icon = "ylw-pushpin.png";
         $lettre = "C";
         $nature = "Collège";
+        $index = "college";
     } else {
-        // $color = "#e5c3d0";
+        $color = "blue";
+        $icon = "ltblu-pushpin.png";
         $lettre = "L";
         $nature = "Lycée";
+        $index = "lycee";
     }
     if ($e->desservie) {
-        $color = "#00ff00";
         $nature .= " desservi" . $accord_desservi;
     } else {
-        $color = "#ff0000";
+        $color = "black";
+        $icon = "flag.png";
         $nature .= " non desservi" . $accord_desservi;
+        $index = "nonDesservi";
     }
     $d = [
         '<b>' . $this->escapeHtml($e->nom) . '</b>',
@@ -65,24 +84,28 @@ foreach ($this->ptEtablissements as $pt) {
         $d[] = 'Email : ' . $e->email;
     }
     $d[] = $nature;
-    $aMarkers[] = [
+    $aMarkers[$index][] = [
         'lat' => $pt->getLatitude(),
         'lng' => $pt->getLongitude(),
-        'color' => $color,
+        'icon' => $icon,
         'text' => $lettre,
-        'title' => $e->nom,
+        'title' => $e->nom . "\n" . $e->lacommune,
         'info' => implode('<br>', $d)
     ];
 }
-// lancement du script
-$this->inlineScript()->captureStart();
+$carte_init_parametres = sprintf('"%s","%s","%s",%f,%f,%d,%s', 'etablissementcheckbox',
+    'carte-inner', $this->scheme, $this->config['centre']['lat'],
+    $this->config['centre']['lng'], $this->config['zoom'], json_encode($aMarkers));
+
+// mise en place des JS de googleMaps
+$this->headScript()->prependFile($this->url_api);
+$this->JQuery();
+$this->ThemeJs('commun', 'carte.js');
+$this->headScript()->captureStart();
 ?>
-const CENTRE_LAT = <?= $this->config['centre']['lat']; ?>;
-const CENTRE_LNG = <?= $this->config['centre']['lng']; ?>;
-const INI_ZOOM = <?= $this->config['zoom']; ?>;
-initialiser("<?=$this->scheme;?>",<?= json_encode($aMarkers);?>);
+carte.init(<?=$carte_init_parametres;?>);
 <?php
-$this->inlineScript()->captureEnd();
+$this->headScript()->captureEnd();
 /* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
 $hiddens = [];
 $actions = [
@@ -98,8 +121,17 @@ $actions = [
 		<div class="menu float-left">
 		<?= $this->listeZoneActions($hiddens, $actions);?>
 		</div>
-		<div class="float-right right-10px sbm-description">Zoomez puis cliquez sur une marque
-			pour obtenir des renseignements.</div>
+		<div id="choix" class="float-right">
+			Cochez ou décochez pour choisir les établissements affichés : <input
+				name="etablissementcheckbox" type="checkbox" checked value="ecole">Écoles
+			<input name="etablissementcheckbox" type="checkbox" checked
+				value="college">Collèges <input name="etablissementcheckbox"
+				type="checkbox" checked value="lycee">Lycées
+			<?php if (! $this->filtre):?>
+			<input name="etablissementcheckbox" type="checkbox"
+				value="nonDesservi">Non desservis
+			<?php endif;?>
+		</div>
 	</div>
 	<div id="carte-inner"
 		style="width: 90%; height: 500px; margin-left: auto; margin-right: auto; margin-top: 20px; margin-bottom: 20px;"></div>

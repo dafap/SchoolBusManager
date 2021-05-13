@@ -2,13 +2,13 @@
 // ============================================================+
 // File name : pol.php
 // Begin : 2010-10-26
-// Last Update : 2010-10-26
+// Last Update : 2020-10-28
 //
 // Description : Language module for TCPDF
 // (contains translated texts)
 // Polish
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Polish
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'pl';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'strona';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

@@ -8,7 +8,7 @@
 // (contains translated texts)
 // Czech
 //
-// Author: Nicola Asuni
+// Author: Nicola Asuni (modif. Alain Pomirol - DAFAP Informatique)
 //
 // (c) Copyright:
 // Nicola Asuni
@@ -27,7 +27,6 @@
  */
 
 // Czech
-global $l;
 $l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
@@ -39,6 +38,7 @@ $l['a_meta_language'] = 'cs';
 // TRANSLATIONS --------------------------------------
 $l['w_page'] = 'stránka';
 
+return $l;
 //============================================================+
 // END OF FILE
 //============================================================+

@@ -5,7 +5,7 @@
  * L'aide de vue utilise la variable de vue $rpiId. Si elle n'existe pas (appel depuis
  * le controller) ou si elle est nulle, $rpiId est remplacée par '?'. A charge pour
  * l'utilisateur de remplacer ce ? par la valeur convenable.
- * 
+ *
  * @project sbm
  * @package SbmAdmin/Model/View/Helper
  * @filesource RpiEtablissements.php
@@ -23,10 +23,13 @@ class RpiEtablissements extends AbstractHelper
      * Aide de vue renvoyant le tableau des établissements et de leurs classes
      *
      * @param array $aetablissements
-     *            Chaque ligne de ce tableau est un tableau décrivant les établissements et leurs
+     *            Chaque ligne de ce tableau est un tableau décrivant les établissements
+     *            et leurs
      *            classes.
-     *            Les index de chaque ligne sont 'etablissementId', 'nom', 'commune' et 'classes'
-     *            L'index 'classes' est un tableau qui contient la liste des classes ('classeId',
+     *            Les index de chaque ligne sont 'etablissementId', 'nom', 'commune' et
+     *            'classes'
+     *            L'index 'classes' est un tableau qui contient la liste des classes
+     *            ('classeId',
      *            'nom')
      * @param callable $fncTableClasses
      *            aide de vue renvoyant le tableau des classes pour un établissement donné

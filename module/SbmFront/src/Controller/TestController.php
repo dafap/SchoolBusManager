@@ -18,6 +18,7 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Db\Sql\Where;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use TCPDF;
 
 class TestController extends AbstractActionController
 {
@@ -44,12 +45,197 @@ class TestController extends AbstractActionController
 
     public function indexAction()
     {
-        $result = [];
-        foreach ($this->db_manager->get(\SbmFront\Factory\Test\Query\Test::class)->get() as $row) {
-            foreach ($row as $key => $value) {
-                $result[$key] = $value;
-            }
+        /**
+         * Test sur BUISSON Taina (Clg Beaufort) eleveId=526 etablissemenntId=0730007L
+         * stationId=366 jours=27 trajet=1 responsableId=
+         */
+        /**
+         * Test sur COUTIN Clément (Clg Beaufort) eleveId=782 etablissementId=0730007L
+         * stationId=249 jours=27 trajet=1 responsableId
+         */
+        /**
+         * Test sur ANDOLFATTO Luna (R.Perrin Ugine - Me) eleveId=292
+         * etablissementId=0730043A
+         * stationId=372 jours=31 trajet=1 responsableId=234
+         */
+        /**
+         * Test sur COL DACRUZ Valentin (R.
+         * Perrin Ugine midi:3 troncons) eleveId=802 etablissementId=0730043A
+         * stationId=197 jours=4 trajet=1 responsableId=
+         */
+        /**
+         * Test sur CHRISTIN Laura (Lyc Grans Arc) eleveId=2153 etablissementId=0730006K
+         * stationId=33 jours=31 trajet=1 responsableId=
+         */
+        /**
+         * Test sur BARBASSAT Andjy (Lyc Grand Arc) eleveId=1872 etablissementId=0730006K
+         * stationId=173 jours=31 trajet=1 respondableId=
+         */
+        $object = $this->db_manager->get('Sbm\ChercheTrajet')
+            ->setEtablissementId('0730043A')
+            ->setEleveId(292)
+            ->setStationId(372)
+            ->setJours(31)
+            ->setTrajet(1)
+            ->setResponsableId(1)
+            ->run();
+        // dump et print_r de l'objet 'obj'
+        $viewmodel = new ViewModel([
+            'obj' => $object,
+            'form' => null
+        ]);
+        $viewmodel->setTemplate('sbm-front/test/test.phtml');
+        return $viewmodel;
+    }
+
+    public function passProvisoireAction()
+    {
+        $array = [
+            'du' => '25/03/2021',
+            'au' => '08/04/2021',
+            // 'numero'=>17616,
+            'beneficiaire' => '',
+            'eleve' => strtoupper('KARATAS Melike'),
+            'responsable' => 'Mme PERRIN DELPHINE',
+            'adresseL1' => 'LA COUTELLAT',
+            'adresseL2' => '',
+            'adresseCommune' => 'ESSERTS-BLAY',
+            'ecole' => 'COLLÈGE PIERRE GRANGE ALBERTVILLE',
+            'station' => 'PLAINE DE BLAY (ESSERTS-BLAY)',
+            'matin' => '638',
+            'midi' => '638',
+            'soir' => '638'
+        ];
+        $pass = new \SbmPdf\Model\PassProvisoire();
+        return $pass->render($array);
+    }
+
+    public function indexOldAction()
+    {
+        $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
+        $qrcodeNiveau = 'QRCODE,Q';
+        $qrcodeMessage1 = 'https://www.tra-mobilite/plan-temps-reel/';
+        $qrcodeMessage2 = 'ABOARSCO00018';
+        $imagePassJunior = file_get_contents(
+            StdLib::concatPath($imagePath, 'pass-provisoire-A4.svg'));
+        $du = '25/03/2021';
+        $au = '08/04/2021';
+        $beneficiaire_nom = 'KARATAS';
+        $beneficiaire_prenom = strtoupper('Melike');
+        // $chez = 'MASSON Juliette';
+        $eleve_nom = "";
+        $eleve_prenom = "";
+        $eleve_numero = 17616; // stagiaire => supérieur à 99991
+        $adresseL1 = 'LA COUTELLAT';
+        $adresseL2 = '';
+        $codePostal = '73540';
+        $commune = 'ESSERTS-BLAY';
+        $etablissement = 'COLLÈGE PIERRE GRANGE - ALBERTVILLE';
+        $origine = 'PLAINE DE BLAY (ESSERTS-BLAY)';
+        $services_matin = '638';
+        $services_midi = '638';
+        $services_soir = '638';
+        $responsable_titre = "Mme";
+        $responsable_nom = "PERRIN";
+        $responsable_prenom = "DELPHINE";
+        if ($eleve_nom == '') {
+            $imagePassJunior = str_replace('chez', '', $imagePassJunior);
         }
+        $imagePathJunior = sprintf('@' . $imagePassJunior, $responsable_titre,
+            $responsable_nom, $responsable_prenom, $adresseL1, $adresseL2, $codePostal,
+            $commune, $du, $au, $eleve_numero, $beneficiaire_nom, $beneficiaire_prenom,
+            $eleve_nom, $eleve_prenom, $etablissement, $origine, $services_matin,
+            $services_midi, $services_soir);
+        $qrcodeStyle = [
+            'border' => 0,
+            'vpadding' => 'auto',
+            'hpadding' => 'auto',
+            'fgcolor' => [
+                0,
+                0,
+                0
+            ],
+            'bgcolor' => false, // array(255,255,255)
+            'module_width' => 1, // width of a single module in points
+            'module_height' => 1 // height of a single module in points
+        ];
+
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
+            false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Alain POMIROL, DAFAP Informatique');
+        $pdf->SetTitle('PASS TEMPORAIRE JUNIOR');
+        $pdf->SetSubject('School Bus Manager');
+        $pdf->SetKeywords('TCPDF, PDF, PASS, ARLYSERE, School Bus Manager');
+
+        /*
+         * $pdf->setHeaderFont(Array( PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN ));
+         * $pdf->setFooterFont(Array( PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA ));
+         */
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        // $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(0, 0, 0, true);
+        $pdf->SetAutoPageBreak(TRUE, 0);
+        // $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        // $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        // $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->AddPage();
+        $pdf->ImageSVG($imagePathJunior, 0, 0, 210, 297);
+        $pdf->write2DBarcode($qrcodeMessage1, $qrcodeNiveau, 181.3, 5.2, 24, 24,
+            $qrcodeStyle, 'N');
+        $pdf->write2DBarcode($qrcodeMessage2, $qrcodeNiveau, 161.3, 217.2, 24, 24,
+            $qrcodeStyle, 'N');
+        $pdf->AddPage();
+        $pdf->ImageSVG(StdLib::concatPath($imagePath, 'pass-provisoire-verso-A4.svg'), 0,
+            0, 210, 297);
+        // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'logo.svg'), 15, 20, '', 35);
+        // $pdf->ImageSVG($imagePathJunior, 110, 20, '', 54);
+        // $pdf->ImageSVG(StdLib::concatPath($imagePath, 'bas-de-page.svg'), 10, 266,
+        // 190);
+        // $pdf->write2DBarcode($qrcodeMessage, $qrcodeNiveau, 165.8, 21.8, 25, 25,
+        // $qrcodeStyle, 'N');
+        // =============
+        // $pdf->setY(75);
+        // $pdf->SetFont('helvetica', '', 16);
+        // $pdf->Write(0, $qrcodeNiveau);
+        // =============
+        /*
+         * $y = 95; $pdf->setY($y); $pdf->SetFont('helvetica', 'B', 24); $pdf->Write(0,
+         * sprintf("PASS TEMPORAIRE JUNIOR\nValable du %s au %s", $du, $au), '', false,
+         * 'C'); $y +=35; $pdf->setY($y); $pdf->SetFont('helvetica', '', 16);
+         * $pdf->Write(0, 'Bénéficiaire'); $y += 10; $pdf->setY($y); $pdf->Write(0, 'Nom
+         * :'); $pdf->setX(50); $pdf->SetFont('helvetica', 'B', 16); $pdf->Write(0,
+         * $beneficiaire_nom); $y +=6; $pdf->setY($y); $pdf->SetFont('helvetica', '', 16);
+         * $pdf->Write(0, 'Prénom :'); $pdf->setX(50); $pdf->SetFont('helvetica', 'B',
+         * 16); $pdf->Write(0, $beneficiaire_prenom); $pdf->SetFont('helvetica', '', 12);
+         * $y +=22; $pdf->setY($y); $pdf->Write(0, 'Hébergé chez :'); $pdf->setX(77);
+         * $pdf->SetFont('helvetica', 'B', 12); $pdf->Write(0, $chez); $y +=6;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 12); $pdf->Write(0, 'Adresse
+         * :'); $pdf->SetFont('helvetica', 'B', 12); foreach (array_filter( [ $adresseL1,
+         * $adresseL2, sprintf('%s %s', $codePostal, $commune) ]) as $value) {
+         * $pdf->SetY($y); $pdf->setX(77); $pdf->Write(0, $value); $y += 6; } $y += 16;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Point de
+         * montée :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0,
+         * $origine); $y += 6; $pdf->setY($y); $pdf->SetFont('helvetica', '', 13);
+         * $pdf->Write(0, 'Établissement scolaire :'); $pdf->setX(77);
+         * $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0, $etablissement); $y += 22;
+         * $pdf->setY($y); $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Services de
+         * transport :'); $y += 6; $pdf->setXY(40, $y); $pdf->SetFont('helvetica', '',
+         * 13); $pdf->Write(0, 'Matin :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B',
+         * 13); $pdf->Write(0, $services_matin); $y += 6; $pdf->setXY(40, $y);
+         * $pdf->SetFont('helvetica', '', 13); $pdf->Write(0, 'Mercredi midi :');
+         * $pdf->setX(77); $pdf->SetFont('helvetica', 'B', 13); $pdf->Write(0,
+         * $services_midi); $y += 6; $pdf->setXY(40, $y); $pdf->SetFont('helvetica', '',
+         * 13); $pdf->Write(0, 'Soir :'); $pdf->setX(77); $pdf->SetFont('helvetica', 'B',
+         * 13); $pdf->Write(0, $services_soir);
+         */
+        return $pdf->Output('passTemporaireJunior.pdf', 'D');
+        die();
+
         $this->initDebug();
         $error_msg[] = $this->auth->getIdentity();
         $error_msg[] = $this->auth->getCategorieId();
@@ -57,7 +243,7 @@ class TestController extends AbstractActionController
         $error_msg[] = 'Terminé';
         // dump et print_r de l'objet 'obj'
         $viewmodel = new ViewModel([
-            'obj' => $result,
+            'obj' => $error_msg,
             'form' => null
         ]);
         $viewmodel->setTemplate('sbm-front/test/test.phtml');
@@ -66,7 +252,8 @@ class TestController extends AbstractActionController
 
     /**
      * Permet de construire le tableau des acl à placer dans module.config.php dans la clé
-     * 'actions' sans en oublier. Il suffit ensuite d'ajouter les autorisations pour
+     * 'actions' sans en oublier.
+     * Il suffit ensuite d'ajouter les autorisations pour
      * chacune des actions
      *
      * @return \Zend\View\Model\ViewModel
@@ -407,7 +594,8 @@ class TestController extends AbstractActionController
     }
 
     /**
-     * Méthode prête pour donner un numéro aux élèves. La renommer testAction pour qu'elle
+     * Méthode prête pour donner un numéro aux élèves.
+     * La renommer testAction pour qu'elle
      * fonctionne. Si elle est trop longue, rajouter des ->limit(xxx) au select. Au
      * préalable, vider la table sbm_t_eleves et ré-initialiser AUTO_INCREMENT par : ALTER
      * TABLE `sbm_t_responsables` AUTO_INCREMENT = 1;

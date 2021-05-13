@@ -1,0 +1,181 @@
+<?php
+/**
+ * Page d'accueil du portail pour les communes
+ *
+ * Les variables définies dans cette vue sont :
+ * - data : tableau associatif décrit ci-dessous
+ * - communes : nom de la (ou des) commune(s)
+ *
+ * Description du tableau data
+ * - communeId => tableau des statistiques pour cette commune
+ *
+ * Contenu d'un tableau de statistiques :
+ * - 'lacommune' => $lacommune,
+ * - 'elevesDpEnregistres',
+ * - 'elevesIntEnregistres',
+ * - 'elevesEnregistres',
+ * - 'elevesInscrits',
+ * - 'elevesInscritsRayes',
+ * - 'elevesPreinscrits',
+ * - 'elevesPreinscritsRayes',
+ * - 'elevesFamilleAcceuil',
+ * - 'elevesGardeAlternee',
+ * - 'elevesMoins1km',
+ * - 'elevesDe1A3km',
+ * - 'eleves3kmEtPlus'
+ *
+ * @project sbm
+ * @package SbmPortail/view/sbm-portail/commune
+ * @filesource index.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 17 mars 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+
+$msgEnr = <<<EOT
+Comprend toutes les demandes, y compris les abonnements
+impayés et les inscriptions rayées.
+EOT;
+$msgAbo = <<<EOT
+L'écart entre le nombre d'élèves enregistrés et le nombre
+d'abonnements délivrés s'explique par l'impossibilité de
+répondre à la demande ou le non paiement de l'abonnement
+demandé.
+EOT;
+$msgRay = <<<EOT
+Abonnements payés puis annulés à la demande de la famille.
+EOT;
+$msgImp = <<<EOT
+Comprend les abonnements impayés et les abonnements payés
+par CB en 3 fois et pour lesquels, suite à un incident de
+paiement, une ou deux échéances n'ont pas été honorées.
+EOT;
+$msgNon = <<<EOT
+Il s'agit de demandes formulées par la famille en prévision
+d'un besoin, mais non confirmées. Le service n'a jamais été
+consommé.
+EOT;
+$msgGeo = <<<EOT
+Élèves pour lesquels il est impossible de calculer la
+distance du domicile à l'établissement.
+EOT;
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$url_eleves = $this->url('sbmportail/commune', [
+    'action' => 'eleves'
+]);
+$url_lignes = $this->url('sbmportail/commune', [
+    'action' => 'lignes'
+]);
+$url_carte_stations = $this->url('sbmportail/commune', [
+    'action' => 'carte-stations'
+]);
+$url_carte_etablissements = $this->url('sbmportail/commune',
+    [
+        'action' => 'carte-etablissements'
+    ]);
+?>
+<div id="tableau-de-bord" class="clearfix">
+	<div class="flashMessenger float-right">
+		<?=$this->flashMessenger()->render('success');?>
+		<?=$this->flashMessenger()->render('warning');?>
+		<?=$this->flashMessenger()->render('error');?>
+		<?=$this->flashMessenger()->render('info');?>
+		<?=$this->flashMessenger()->render('default');?>
+    </div>
+	<h1>Portail des communes : <?=$this->communes;?></h1>
+	<div id="menugeneral" class="float-right" style="min-width: 306px;">
+		<div id="menugeneral-header">
+			<h2>Menu</h2>
+		</div>
+		<div id="menugeneral-inner">
+			<ul>
+				<li><a href="<?=$url_eleves;?>"><i class="fam-bullet-go"></i>Liste
+						des élèves</a></li>
+				<li><a href="<?=$url_lignes;?>"><i class="fam-bullet-go"></i>Lignes,
+						services et horaires</a></li>
+				<li><a href="<?=$url_carte_stations;?>"><i class="fam-bullet-go"></i>Points
+						d'arrêts de la commune</a></li>
+				<li><a href="<?=$url_carte_etablissements;?>"><i
+						class="fam-bullet-go"></i>Établissements scolaires fréquentés</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="float-left">
+		<h2>Quelques chiffres</h2>
+		<?php foreach($this->data as $commune):?>
+		<?php
+    $elevesEnregistres = StdLib::getParam('elevesEnregistres', $commune, 0);
+    $nbInternes = StdLib::getParam('elevesIntEnregistres', $commune, 0);
+    $nbRayes = StdLib::getParam('elevesInscritsRayes',$commune, 0);
+    $accordRayes = $nbRayes > 1 ? 's': '';
+    $elevesMoins1km = StdLib::getParam('elevesMoins1km', $commune, 0);
+    $elevesDe1A3km = StdLib::getParam('elevesDe1A3km', $commune, 0);
+    $eleves3kmEtPlus = StdLib::getParam('eleves3kmEtPlus', $commune, 0);
+    $nbDistanceInconnue = $elevesEnregistres - $elevesMoins1km - $elevesDe1A3km -
+        $eleves3kmEtPlus;
+    ?>
+		<?php if (count($this->data) > 1 && array_key_exists('lacommune', $commune)):?>
+		<h3><?=$commune['lacommune']?></h3>
+		<?php endif;?>
+		<table class="bleu float-left">
+			<tbody>
+				<tr title="<?=$msgEnr;?>">
+					<td>Nombre d'élèves enregistrés</td>
+					<td class="effectif"><?=$elevesEnregistres;?></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					dont <?=StdLib::getParam('elevesDpEnregistres', $commune, 0);?> DP</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="align-right">
+					et <?=$nbInternes;?> interne<?=$nbInternes > 1 ? 's' : '';?></td>
+					<td></td>
+				</tr>
+				<tr title="<?=$msgAbo;?>">
+					<td>Nombre d'abonnements payés</td>
+					<td class="effectif"><?=StdLib::getParam('elevesInscrits',$commune, 0);?></td>
+				</tr>
+				<tr title="<?=$msgRay;?>">
+					<td class="align-right">
+						dont <?= $nbRayes;?>
+						abonnement<?=$accordRayes;?> payé<?=$accordRayes;?> puis rayé<?=$accordRayes;?></td>
+					<td></td>
+				</tr>
+				<tr title="<?=$msgImp;?>">
+					<td>Nombre de demandes non payées</td>
+					<td class="effectif"><?=StdLib::getParam('elevesPreinscrits',$commune, 0);?></td>
+				</tr>
+				<tr class="separateur" title="<?=$msgNon;?>">
+					<td>Nombre de demandes non payées puis rayées</td>
+					<td class="effectif"><?=StdLib::getParam('elevesPreinscritsRayes',$commune, 0);?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves à moins de 1 km</td>
+					<td class="effectif"><?=$elevesMoins1km;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves de 1 à 3 km</td>
+					<td class="effectif"><?=$elevesDe1A3km;?></td>
+				</tr>
+				<tr class="separateur">
+					<td>Nombre d'élèves à 3 km et plus</td>
+					<td class="effectif"><?=$eleves3kmEtPlus;?></td>
+				</tr>
+				<tr class="separateur" title="<?=$msgGeo;?>">
+					<td>Nombre d'élèves non géolocalisés</td>
+					<td class="effectif"><?= $nbDistanceInconnue;?></td>
+				</tr>
+				<tr>
+					<td>Nombre d'élèves en garde alternée</td>
+					<td class="effectif"><?=StdLib::getParam('elevesGardeAlternee',$commune, 0);?></td>
+				</tr>
+			</tbody>
+		</table>
+		<?php endforeach;?>
+	</div>
+</div>

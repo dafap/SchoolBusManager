@@ -1,0 +1,205 @@
+<?php
+/**
+ * Carte des stations pour envoi sans le layout
+ *
+ * Affichage des stations décrites dans $this->ptStations qui est un tableau de Point
+ * Chaque Point est donné dans le système géographique RGF93 (ou WGS84) en degrés
+ * décimaux.
+ * Des cases à cocher permettent de sélectionner l'affichage.
+ *
+ * @project sbm
+ * @package SbmCarographie/view/sbm-cartographie/carte
+ * @filesource stations.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 26 avr. 2021
+ * @version 2021-2.6.1
+ */
+use SbmBase\Model\StdLib;
+
+$appl_name = 'School Bus Manager';
+echo $this->doctype();
+?>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<base href="<?= $this->basePath(); ?>" />
+<?php
+echo $this->headTitle('SBM ' . $appl_name)
+    ->setSeparator(' - ')
+    ->setAutoEscape(false);
+echo $this->headMeta()
+    ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+    ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ->setName('author', 'Alain Pomirol - DAFAP Informatique')
+    ->setName('generator', 'ZendFramework 2')
+    ->setName('language', 'fr') . PHP_EOL;
+?>
+</head>
+<body>
+<?php
+// les fichiers css du layout
+$this->headLink(
+    [
+        'rel' => 'shortcut icon',
+        'type' => 'image/vnd.microsoft.icon',
+        'href' => $this->basePath('/img/favicon.ico')
+    ]);
+// $this->headLink()->appendStylesheet($this->basePath('/css/sbm.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/tra/sbm.css'));
+$this->headLink()->appendStylesheet($this->basePath('/css/sbm-ie.css'), 'all', 'IE', []);
+// =================== DEBUT DE LA COPIE DE stations.phtml
+// on a supprimé le titre et le bouton de sortie et on a fixé la largeur à 100%
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+$this->headStyle()->captureStart();
+?>
+#carte-wrapper {
+	font-family: Roboto;
+	color: #7a7a7a;
+}
+#carte-inner {
+    width: 790px;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#choix {
+	margin-right: 5em;
+}
+.clearfix:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+.float-right {
+	float: right;
+}
+.sbm-description {
+	font-size: 12px;
+}
+.sbm-description ul {
+	list-style: none;
+}
+
+<?php
+$this->headStyle()->captureEnd();
+$legende = [];
+$format_legende = '<span style="color: %s; background-color: %s; font-weight: bold;">&nbsp;En %s&nbsp;</span> le%5$s point%5$s d\'arrêt %s';
+$i = 0;
+$aMarkers = [];
+foreach ($this->ptStations as $pt) {
+    $station = $pt->getAttribute('station');
+    $d = [
+        '<b>' . $this->escapeHtml($station->nom) . '</b>',
+        $this->escapeHtml($station->alias),
+        implode(' ', [
+            $station->codePostal,
+            $station->lacommune
+        ])
+    ];
+    $desservie = false;
+    $aServices = [];
+    foreach ($station->services as $service) {
+        if ($service->ligneId) {
+            $aServices[] = explode(' ', $service->service);
+            $desservie = true;
+        }
+    }
+    if ($desservie && $station->ouverte) {
+        $color = "white";
+        $bgrcolor = "limegreen";
+        $icon = "green-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'vert',
+            'ouverts', 's');
+        $text = 'O';
+        $nature = "ouverte";
+        $index = 'ouvert';
+    } elseif ($station->ouverte) {
+        $color = "#7a7a7a";
+        $bgrcolor = "yellow";
+        $icon = "yellow-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'jaune',
+            'non desservis', 's');
+        $text = 'N';
+        $nature = "non desservie";
+        $index = "nonDesservi";
+    } else {
+        $color = "white";
+        $bgrcolor = "red";
+        $icon = "red-dot.png";
+        $legende[$bgrcolor] = sprintf($format_legende, $color, $bgrcolor, 'rouge',
+            'fermés', 's');
+        $text = 'F';
+        $nature = "fermée";
+        $index = "ferme";
+    }
+    $d[] = 'Station ' . $nature;
+    if (count($aServices)) {
+        $table = '<table>';
+        foreach ($aServices as $ligne) {
+            $table .= '<tr><td>' . implode('</td><td>', $ligne) . '</td></tr>';
+        }
+        $table .= '</table>';
+    } else {
+        $table = '';
+    }
+    if ($pt->getAttribute('color') == 'current') {
+        $color = "purple";
+        $icon = "purple-dot.png";
+        $text = 'A';
+    }
+    $aMarkers[$index][] = [
+        'lat' => $pt->getLatitude(),
+        'lng' => $pt->getLongitude(),
+        'icon' => $icon,
+        'text' => $text,
+        'title' => $station->lacommune . ' - ' . $station->nom,
+        'info' => implode('<br>', array_filter($d)) . $table
+    ];
+}
+$carte_init_parametres = sprintf('"%s","%s","%s",%f,%f,%d,%s', 'stationcheckbox',
+    'carte-inner', $this->scheme, $this->config['centre']['lat'],
+    $this->config['centre']['lng'], $this->config['zoom'], json_encode($aMarkers));
+$this->headScript()->prependFile($this->url_api);
+$this->JQuery();
+$this->ThemeJs('commun', 'carte.js');
+$this->headScript()->captureStart();
+?>
+carte.init(<?=$carte_init_parametres;?>);
+<?php
+$this->headScript()->captureEnd();
+/* ========== FIN DE LA MISE EN PLACE DES JAVASCRIPTS ====== */
+?>
+<div id="carte-wrapper">
+		<div id="carte-header" class="clearfix">
+			<div id="choix" class="float-right">
+				Cochez ou décochez pour choisir les points d'arrêt affichées : <input
+					name="stationcheckbox" type="checkbox" checked value="ouvert">Ouverts
+				<input name="stationcheckbox" type="checkbox" checked value="ferme">Fermés
+				<input name="stationcheckbox" type="checkbox" checked
+					value="nonDesservi">Non desservis
+			</div>
+		</div>
+		<div id="carte-inner"></div>
+		<div class="float-right right-10px sbm-description">
+			<ul>
+				<li><?= implode('</li><li>', $legende) ?></li>
+			</ul>
+
+		</div>
+	</div>
+<?php
+// ======================== FIN DE LA COPIE DE stations.phtml
+
+echo $this->headLink();
+// les styles css définis dans cette page
+echo $this->headStyle();
+// les fichiers de script
+echo $this->headScript();
+// les scripts à lancer
+echo $this->inlineScript();
+?>
+</body>
+</html>

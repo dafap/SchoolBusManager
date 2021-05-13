@@ -10,8 +10,8 @@
  * @filesource gestion-config.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 juin 2020
- * @version 2020-2.6.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_edit_cartes = $this->url('sbminstall', [
@@ -53,6 +53,9 @@ $url_edit_mailchimp = $this->url('sbminstall', [
 ]);
 $url_edit_sites = $this->url('sbminstall', [
     'action' => 'edit-sites'
+]);
+$url_edit_tinymce = $this->url('sbminstall', [
+    'action' => 'edit-tinymce'
 ]);
 //var_dump($this->plateforme_paiement);
 $url_edit_plateforme_paiement = $this->url('sbminstall',
@@ -141,6 +144,11 @@ echo $this->ligneMenuAction('fam-bullet-go', [],
     [
         'value' => 'Configuration de jQuery dans l\'application',
         'formaction' => $url_edit_jquery
+    ]);
+echo $this->ligneMenuAction('fam-bullet-go', [],
+    [
+        'value' => 'Configuration de l\'éditeur TinyMce',
+        'formaction' => $url_edit_tinymce
     ]);
 echo $this->ligneMenuAction('fam-bullet-go', [],
     [

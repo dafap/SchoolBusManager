@@ -1,16 +1,16 @@
 <?php
 /**
  * Exportation de données géolocalisées
- * 
+ *
  * Vue des critères d'exportation des responsables
- * 
+ *
  * @project sbm
  * @package SbmAdmin/view/sbm-admin/index
  * @filesource export-responsable.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 sept. 2018
- * @version 2019-2.5.0
+ * @date 11 déc. 2020
+ * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 ?>
@@ -28,6 +28,9 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 	</div>
 	<div id="fiche-inner">
 	<?= $this->form()->openTag($this->form);?>
+	    <fieldset class="sbm-page1" style="margin-bottom: 6px;">
+			<div class="row-inner"><?= $this->formRow($this->form->get('projectionId'));?></div>
+		</fieldset>
 	    <fieldset class="sbm-page1">
 			<div class="row-inner label-120"><?= $this->formRow($this->form->get('nomSA'));?></div>
 			<div class="row-inner label-120"><?= $this->formRow($this->form->get('communeId'));?></div>

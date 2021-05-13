@@ -1,7 +1,7 @@
 <?php
 /**
  * Exceptions déclarées dans ce dossier
- * 
+ *
  * @project sbm
  * @package SbmCartographie/Model/Exception
  * @filesource ExceptionInterface.php

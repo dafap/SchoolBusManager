@@ -14,8 +14,8 @@
  * @filesource pdf-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 15 avr. 2021
+ * @version 2021-2.6.1
  */
 
 /**
@@ -86,8 +86,7 @@ function blocAccordeon2cols($view, $label, $array2d)
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery('jquery-ui');
 $this->themeJS('sbm-pdf','pdf-document.js');
-$this->headScript()
-    ->appendFile($this->basePath('js/tinymce/tinymce.min.js'));
+$this->tinymce();
 $this->inlineScript()->captureStart();
 ?>
 js_document_edit.init();

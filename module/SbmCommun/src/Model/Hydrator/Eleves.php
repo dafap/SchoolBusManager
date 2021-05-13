@@ -2,22 +2,25 @@
 /**
  * Hydrator pour tenir à jour la modification d'une fiche Eleve dans la table `eleves`
  *
- * Cet hydrator 
- * déclaré dans \SbmCommun\Model\Db\Service\TableGateway\TableGateway::init()
+ * Cet hydrator
+ * déclaré dans \SbmCommun\Model\Db\Service\TableGateway\TableGatewayEleves::init()
+ * et dans \SbmCommun\Model\Db\Service\TableGatewayInvites::init()
  * sera utilisé dans \SbmCommun\Model\Db\Service\Table\Eleves::saveRecord()
- * 
+ * et dans \SbmCommun\Model\Db\Service\Table\Invites::saveRecord()
+ *
+ *
  * @project sbm
  * @package SbmCommun/Model/Hydrator
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
- * @version 2019-2.5.0
+ * @date 14 oct. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Hydrator;
 
 use SbmCommun\Filter\SansAccent;
-use SbmCommun\Model\Db\ObjectData\Eleve as ObjectData;
+use SbmCommun\Model\Db\ObjectData\AbstractObjectData as ObjectData;
 
 class Eleves extends AbstractHydrator
 {
@@ -32,7 +35,7 @@ class Eleves extends AbstractHydrator
         if (! $object instanceof ObjectData) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
-                    '%s : On attend un SbmCommun\Model\Db\ObjectData\Eleve et on a reçu un %s',
+                    '%s : On attend un SbmCommun\Model\Db\ObjectData\AbstractObjectData et on a reçu un %s',
                     __METHOD__, gettype($object)));
         }
         $calculate_fields = $object->getCalculateFields();

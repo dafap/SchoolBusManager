@@ -12,8 +12,8 @@
  * @filesource etiquette-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2020
- * @version 2020-2.6.0
+ * @date 22 oct. 2020
+ * @version 2020-2.6.1
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 
@@ -54,7 +54,7 @@ $actions = [
 	<div id="fiche-inner">
 		<fieldset class="sbm-page1">
     		<?= $this->form()->openTag($this->form);?>
-    		<?= $this->formHidden($this->form->get('doclabelId'));?>
+    		<?php //= $this->formHidden($this->form->get('doclabelId'));?>
     		<?= $this->formHidden($this->form->get('documentId'));?>
     		<?= $this->formHidden($this->form->get('sublabel'));?>
     		<?= $this->formHidden($this->form->get('name'));?>

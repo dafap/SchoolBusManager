@@ -69,7 +69,7 @@ if ($this->user->token) {
         $hiddens['telephones[]'] = $this->telephones;
         $hiddens['url1_retour'] = $url_ici;
         $hiddens['responsable'] = $hiddens['utilisateur'];
-        $actions['sms'] =[
+        $actions['sms'] = [
             'class' => 'fam-phone',
             'formaction' => $url_sms,
             'title' => 'Envoyer le lien par SMS'

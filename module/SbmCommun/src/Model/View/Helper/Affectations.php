@@ -8,8 +8,8 @@
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juil. 2020
- * @version 2020-2.6.0
+ * @date 29 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmCommun\Model\View\Helper;
 
@@ -18,7 +18,7 @@ use SbmCommun\Model\Strategy\Semaine;
 
 class Affectations extends AbstractHelper
 {
-    use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
+    use \SbmCommun\Model\Traits\ServiceTrait;
 
     const TR = '<tr>';
 
@@ -62,17 +62,15 @@ class Affectations extends AbstractHelper
      */
     public function __invoke($trajet, $structure)
     {
-        //$this->debugInitLog(\SbmBase\Model\StdLib::findParentPath(__DIR__, 'data/tmp'),
-        //    'viewhelper-affectation.log');
         $aMoments = $this->getMoment();
+        $oSemaine = new Semaine();
         $render = '';
         if (isset($structure['annee_courante'])) {
             $render = '<table class="eleve-affectations annee-courante">';
             foreach ($structure['annee_courante'] as $m => $affectationsMoment) {
-                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
-                    foreach ($affectationsCorrespondance as $j => $affectation) {
+                foreach ($affectationsMoment as $j => $affectationsJours) {
+                    foreach ($affectationsJours as $rang => $affectation) {
                         // il faut décoder $j
-                        $oSemaine = new Semaine();
                         $jours = $oSemaine->renderSemaine($j);
                         $args = '/jours:' . $j;
                         $args .= '/moment:' . $m;
@@ -93,16 +91,19 @@ class Affectations extends AbstractHelper
                     }
                     unset($affectation);
                 }
-                unset($affectationsCorrespondance);
+                unset($affectationsJours);
             }
+            unset($affectationsMoment);
             $render .= "\n</table>";
         }
         if (isset($structure['annee_precedente'])) {
             $render .= '<span class="annee-precedente">Année précédente</span>';
             $render .= '<table class="eleve-affectations annee-precedente">';
             foreach ($structure['annee_precedente'] as $m => $affectationsMoment) {
-                foreach ($affectationsMoment as $rang => $affectationsCorrespondance) {
-                    foreach ($affectationsCorrespondance as $j => $affectation) {
+                foreach ($affectationsMoment as $j => $affectationsJours) {
+                    foreach ($affectationsJours as $rang => $affectation) {
+                        // il faut décoder $j
+                        $jours = $oSemaine->renderSemaine($j);
                         $render .= sprintf(self::TR . self::TD . self::END_TR, $jours,
                             $aMoments[$m], $affectation['ligne1Id'],
                             $affectation['station1'], $affectation['horaireD'],
@@ -111,8 +112,9 @@ class Affectations extends AbstractHelper
                     }
                     unset($affectation);
                 }
-                unset($affectationsMoment);
+                unset($affectationsJours);
             }
+            unset($affectationsMoment);
             $render .= "\n</table>";
         }
         return $render;

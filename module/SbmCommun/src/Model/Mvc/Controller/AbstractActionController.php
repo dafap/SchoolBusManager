@@ -7,8 +7,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 avr. 2020
- * @version 2020-2.6.0
+ * @date 2 oct. 2020
+ * @version 2020-2.6.1
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -21,6 +21,7 @@ use SbmCommun\Model\Db\ObjectData\Criteres as ObjectDataCriteres;
 use SbmGestion\Model\Db\Filtre\Eleve\Filtre;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\AbstractActionController as ZendAbstractActionController;
+use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -90,6 +91,27 @@ abstract class AbstractActionController extends ZendAbstractActionController
     {
         $uri = $this->getRequest()->getUri();
         return sprintf('%s://%s', $uri->getScheme(), $uri->getHost());
+    }
+
+    /**
+     * Retourne à la home page de l'utilisateur, en plaçant éventuellement un message en
+     * flashMessenger, dans le namespace souhaité (Success par défaut).
+     *
+     * @param string $message
+     * @param string $namespace
+     *            Utile si $message n'est pas vide pour donner le namespace à utiliser.
+     *            Les namespaces sont des constantes de la classe FlashMessenger.
+     * @return \Zend\Http\Response
+     */
+    protected function homePage(string $message = '',
+        string $namespace = FlashMessenger::NAMESPACE_SUCCESS)
+    {
+        if ($message) {
+            $this->flashMessenger()->addMessage($message, $namespace);
+        }
+        return $this->redirect()->toRoute('login', [
+            'action' => 'home-page'
+        ]);
     }
 
     /**

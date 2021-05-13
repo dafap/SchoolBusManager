@@ -7,8 +7,8 @@
  * @filesource Users.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 août 2020
- * @version 2020-2.6.0
+ * @date 23 avr. 2021
+ * @version 2021-2.6.1
  */
 namespace SbmMailChimp\Model\Db\Service;
 
@@ -63,9 +63,9 @@ class Users implements FactoryInterface
             throw new \SbmCommun\Model\Db\Exception\ExceptionNoDbManager(
                 sprintf($message), gettype($serviceLocator));
         }
-        $tCalendar = $serviceLocator->get('Sbm\Db\System\Calendar');
-        $this->dateDebut = $tCalendar->getEtatDuSite()['dateDebut']->format('Y-m-d H:i:s');
         $this->millesime = $tCalendar->getDefaultMillesime();
+        $this->dateDebut = $serviceLocator->get('Sbm\Db\System\Calendar')->getDatesInscriptions(
+            $this->millesime)['dateDebut']->format('Y-m-d H:i:s');
         $this->db_manager = $serviceLocator;
         $this->dbAdapter = $this->db_manager->getDbAdapter();
         $this->sql = new Sql($this->dbAdapter);
@@ -170,7 +170,8 @@ class Users implements FactoryInterface
 
     /**
      * Ce sont les usr qui ont des enfants inscrits cette année ou qui en avait l'an
-     * dernier. Pour 2016 cela donne : SELECT DISTINCT `u1`.`email`, `u1`.`prenom`,
+     * dernier.
+     * Pour 2016 cela donne : SELECT DISTINCT `u1`.`email`, `u1`.`prenom`,
      * `u1`.`nom`, `u1`.`categorieId`, `u1`.`confirme` FROM `sbm_t_users` AS `u1` INNER
      * JOIN `sbm_t_responsables` AS `r1` ON `r1`.`email` =`u1`.`email` INNER JOIN
      * `sbm_t_eleves` AS `e1` ON `e1`.`responsable1Id` = `r1`.`responsableId` OR
@@ -298,11 +299,11 @@ class Users implements FactoryInterface
                 'u' => $this->db_manager->getCanonicName('users', 'table')
             ])
             ->columns([
-                'userId'
-            ])
+            'userId'
+        ])
             ->join([
-                'res' => $this->subRespPaye()
-            ], 'res.email = u.email', []);
+            'res' => $this->subRespPaye()
+        ], 'res.email = u.email', []);
     }
 
     private function subRespPaye()
@@ -320,21 +321,21 @@ class Users implements FactoryInterface
         $jointureRE = sprintf('r.responsableId = e.responsable%dId', $r);
         $condition = new Where();
         $condition->equalTo('s.millesime', $this->millesime)
-        ->literal("s.paiementR$r = 1")
-        ->literal("s.demandeR$r > 0");
+            ->literal("s.paiementR$r = 1")
+            ->literal("s.demandeR$r > 0");
         return $this->sql->select(
             [
                 'r' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-                'email'
-            ])
+            'email'
+        ])
             ->join([
-                'e' => $this->db_manager->getCanonicName('eleves', 'table')
-            ], $jointureRE, [])
+            'e' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], $jointureRE, [])
             ->join([
-                's' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ], 'e.eleveId = s.eleveId', [])
+            's' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'e.eleveId = s.eleveId', [])
             ->where($condition);
     }
 
