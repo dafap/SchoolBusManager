@@ -14,8 +14,8 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.1
+ * @date 17 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
 
@@ -784,12 +784,15 @@ class EleveGestionController extends AbstractActionController
                         })
                         ->renderPdf();
                 } else {
-                    $data = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
-                        ->getDataForDuplicata(Session::get('millesime'), $args['eleveId'])
-                        ->current()
-                        ->getArrayCopy();
-                    $data['du'] = date('d/m/Y');
-                    $data['au'] = date('d/m/Y', strtotime('+15 days'));
+                    $resultset = $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->getDataForDuplicata(
+                        Session::get('millesime'), $args['eleveId']);
+                    if ($resultset->count() > 0) {
+                        $data = $resultset->current()->getArrayCopy();
+                        $data['du'] = date('d/m/Y');
+                        $data['au'] = date('d/m/Y', strtotime('+15 days'));
+                    } else {
+                        die('Rien à imprimer. Avez-vous renseigné le point d\'origine ?');
+                    }
                     $passProvisoire = new \SbmPdf\Model\PassProvisoire();
                     return $passProvisoire->render($data);
                 }
@@ -824,7 +827,8 @@ class EleveGestionController extends AbstractActionController
         }
         $millesime = Session::get('millesime');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $dateDebut = $tCalendar->getDatesInscriptions($millesime)['dateDebut']->format('Y-m-d');
+        $dateDebut = $tCalendar->getDatesInscriptions($millesime)['dateDebut']->format(
+            'Y-m-d');
         $form1 = new Form\ButtonForm([],
             [
                 'nouvelle' => [
