@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 août 2020
- * @version 2020-2.6.0
+ * @date 17 mai 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\Session;
 
@@ -219,7 +219,7 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
             }
             $pictogrammes = [];
             $ga = is_null($row['responsable2Id']);
-            if (array_key_exists('mailchimp', $row)) {
+            if (isset($row['mailchimp'])) {
                 $nePasRelancer = $row['mailchimp'] == 0;
             } else {
                 $nePasRelancer = false;
