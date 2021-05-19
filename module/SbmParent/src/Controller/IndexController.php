@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 avr. 2021
- * @version 2021-2.6.1
+ * @date 19 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmParent\Controller;
 
@@ -215,7 +215,7 @@ class IndexController extends AbstractActionController
             ]));
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->visibles())
+                ->visiblesPourParent())
             ->setValueOptions('joursTransportR1', Semaine::getJours())
             ->setValueOptions('communeId', $selectCommunes)
             ->setValueOptions('stationIdR1', $selectStations)
@@ -394,7 +394,7 @@ class IndexController extends AbstractActionController
             ]));
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->visibles())
+            ->visiblesPourParent())
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
@@ -808,7 +808,7 @@ class IndexController extends AbstractActionController
                 ]);
             $form->setValueOptions('etablissementId',
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                    ->visibles())
+                ->visiblesPourParent())
                 ->setValueOptions('joursTransportR1', Semaine::getJours())
                 ->setValueOptions('communeId', $selectCommunes)
                 ->setValueOptions('stationIdR1', $selectStations)

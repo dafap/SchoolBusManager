@@ -9,8 +9,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
- * @version 2020-2.6.0
+ * @date 17 mai 2020
+ * @version 2020-2.6.2
  */
 namespace SbmAjax\Controller;
 
@@ -372,17 +372,16 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * Cette méthode reçoit en post :
-     *
-     * @formatter off
-     * - responsableId
-     * - eleveIds : tableau encodé JSON des eleveId à prendre en compte
-     * @formatter on
-     * et renvoie le montant à payer en tenant compte des duplicatas
+     * Cette méthode reçoit en post :<ul>
+     * <li>responsableId</li>
+     * <li>eleveIds : tableau encodé JSON des eleveId à prendre en compte</li></ul>
+     * et renvoie le montant à payer en tenant compte des duplicatas.
+     * Pour calculer le montant dû on doit prendre en compte les eleves composant la fratrie et dont l'abonnement est déjà payé.
      */
     public function calculmontantAction()
     {
         $responsableId = $this->params('responsableId', - 1);
+        $dejaPayeEleveId = [];
         $aEleveId = json_decode($this->params('eleveIds', '[]'));
         if ($responsableId == - 1) {
             return $this->getResponse()->setContent(

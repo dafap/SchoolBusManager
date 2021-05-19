@@ -9,8 +9,8 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.1
+ * @date 17 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -59,8 +59,8 @@ class Calculs extends AbstractQuery
 
     /**
      * Méthode publique unique permettant de renvoyer un résultat.
-     * Si un résultat a déjà
-     * été préparé il est repris (sauf si force)
+     * Si un résultat a déjà été préparé il est repris (sauf si force ou si le responsable
+     * a changé ou si une liste d'élèves est passée)
      *
      * @param int $responsableId
      * @param array $aEleveId
@@ -70,7 +70,8 @@ class Calculs extends AbstractQuery
     public function getResultats(int $responsableId, array $arrayEleveId = [],
         bool $force = false): Resultats
     {
-        if ($this->responsableId != $responsableId || $force || $this->resultats->isEmpty()) {
+        $force |= ! empty($arrayEleveId) || ($this->responsableId != $responsableId);
+        if ($force) {
             $this->responsableId = $responsableId;
             $this->is_responsable = $this->isResponsable();
             $this->arrayEleveId = $arrayEleveId ?: [
@@ -204,7 +205,9 @@ class Calculs extends AbstractQuery
     }
 
     /**
-     * Analyde les éléments de facture pour la liste d'eleveId de la classe Resultats
+     * Analyse les éléments de facture pour la liste d'eleveId de la classe Resultats
+     * Ici, il faut tenir compte de la fratrie donc des enfants dont l'abonnement a déjà
+     * été payé.
      */
     private function analyseListeEleves()
     {
@@ -212,12 +215,52 @@ class Calculs extends AbstractQuery
         // 'analyse-liste.log');
         for ($r = 1; $r <= 2; $r ++) {
             $where = new Where();
-            $where->in('ele.eleveId', $this->arrayEleveId)->equalTo(
-                'responsable' . $r . 'Id', $this->responsableId);
+            $where->in('ele.eleveId', $this->listeEnfantsAPrendreEnCompte($r))
+                ->equalTo('responsable' . $r . 'Id', $this->responsableId);
             $select = $this->selectAbonnementsEleves($r, $where);
             // $this->debugLog($this->getSqlString($select));
             $this->getAbonnementsFratrie($r, 'liste', $select);
         }
+    }
+
+    /**
+     * Pour le R1, on ne prend pas en compte les abonnements gratuits (gratuit = 1) ou les
+     * abonnements pris en charge par des organismes payeur (gratuit = 2) pour la
+     * dégressivité
+     * Pour le R2, on prend les abonnements payés ou réduits (reductionR2 <=> gratuit)
+     *
+     * @param int $r
+     * @return array
+     */
+    private function listeEnfantsAPrendreEnCompte($r)
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)
+            ->literal('selection = 0')
+            ->literal('inscrit = 1');
+        if ($r == 1) {
+            $where->literal('demandeR1 > 0')
+                ->literal('accordR1 = 1')
+                ->literal('gratuit = 0')
+                ->literal('paiementR1 = 1');
+        } else {
+            $where->literal('demandeR2 > 0')
+                ->literal('accordR2 = 1')
+                ->nest()
+                ->literal('paiementR2 = 1')->or->literal('reductionR2 = 1')->unnest();
+        }
+        $select = $this->sql->select()
+            ->columns([
+            'eleveId'
+        ])
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
+            ->where($where);
+        $resultset = $this->renderResult($select);
+        $array = [];
+        foreach ($resultset as $row) {
+            $array[] = $row['eleveId'];
+        }
+        return array_merge($array, $this->arrayEleveId);
     }
 
     /**

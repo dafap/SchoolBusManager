@@ -11,8 +11,8 @@
  * @filesource EtablissementsForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mai 2020
- * @version 2020-2.6.0
+ * @date 19 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -114,6 +114,22 @@ class EtablissementsForSelect implements FactoryInterface
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
+            $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
+        }
+        return $array;
+    }
+
+    public function visiblesPourParent()
+    {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectEtablissement()
+            ->where('eta.visible = true'));
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            if (strpos($row['nom'], 'PRIMAIRE') !== false) {
+                $row['nom'] .= ' (MATERNELLE OU ÉLÉMENTAIRE)';
+            }
             $array[$row['etablissementId']] = $row['commune'] . ' - ' . $row['nom'];
         }
         return $array;

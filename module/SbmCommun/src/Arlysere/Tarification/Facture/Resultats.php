@@ -9,8 +9,8 @@
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.1
+ * @date 17 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -277,12 +277,8 @@ class Resultats implements ResultatsInterface
      */
     public function getMontantTotal($r = 0, string $nature = 'tous'): float
     {
-        if ($nature == 'tous') {
+        if ($nature == 'tous' || $nature == 'liste') {
             return $this->getAbonnementsMontant($r, $nature) +
-                $this->getMontantDuplicatas($r, $nature);
-        } elseif ($nature == 'liste') {
-            return $this->getAbonnementsMontant($r, $nature) +
-                $this->getAbonnementsMontant($r, 'inscrits') +
                 $this->getMontantDuplicatas($r);
         } else {
             throw new \SbmCommun\Arlysere\Exception\OutOfBoundsException(
