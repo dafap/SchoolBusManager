@@ -1,14 +1,14 @@
 <?php
 /**
  * Page d'entrée dans l'espace Parents - Version CCDA
- * 
+ *
  * @project sbm
  * @package SbmParent/view/sbm-parent/index
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.4.16
+ * @date 17 mai 2021
+ * @version 2018-2.4.20
  */
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
@@ -28,6 +28,9 @@ $etat = $this->etatSite['etat'];
 $dateLimite = $this->etatSite['echeance']->format('d/m/Y');
 $dateDebut = $this->etatSite['dateDebut']->format('d/m/Y');
 $dateFin = $this->etatSite['dateFin']->format('d/m/Y');
+// permanences
+$du = $this->permanences['du'];
+$au = $this->permanences['au'];
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
 ]);
@@ -71,12 +74,12 @@ echo $this->flashMessenger()->render('default');
 <div id="parent-wrapper" class="explication">
 	<?php if ($etat == 0) :?>
 	<p>Vos enfants ne sont pas inscrits pour l'année scolaire <?= Session::get('as')['libelle'];?>.</p>
-	<p>Vous pourrez les inscire entre le <?= $dateDebut;?> 
-	et le <?= $dateFin;?> (ou jusqu'au 
+	<p>Vous pourrez les inscire entre le <?= $dateDebut;?>
+	et le <?= $dateFin;?> (ou jusqu'au
 	<?= $dateLimite;?> pour ceux qui sont en attente d'affectation).</p>
 	<?php elseif ($etat == 1) :?>
 	<p>Vous n'avez pas encore d'enfant inscrit.</p>
-	<p>Avant le <?= $dateFin; ?> (ou le <?= $dateLimite; ?> 
+	<p>Avant le <?= $dateFin; ?> (ou le <?= $dateLimite; ?>
 	pour ceux en attente d'orientation) afin de retenir une place :</p>
 	<ul>
 		<li>Inscrivez tous vos enfants qui doivent utiliser le service de
@@ -90,15 +93,11 @@ echo $this->flashMessenger()->render('default');
 	</ul>
 	<p>Si les inscriptions sont complètes dans le respect des dates
 		indiquées, vous recevrez les cartes de transport courant août.</p>
-	<p>Sinon, vous devrez vous présenter lors des permanences pour
+	<p>Sinon, vous devrez vous présenter lors des permanences tenues du
+	   <?=$du;?> au <?=$au;?> pour
 		compléter l'inscription, payer et retirer les cartes mais votre
 		inscription ne sera plus prioritaire et ne sera prise en compte que
 		dans la mesure des places disponibles à la rentrée.</p>
-	<ul>
-    <?php foreach ($this->permanences as $row) :?>
-        <li><?php echo "Pour les habitants de $row";?></li>
-    <?php endforeach;?>
-    </ul>
 	<p>
 		<b>Quelque soit votre moyen de paiement, les inscriptions ne seront
 			prises en compte qu'une fois le paiement enregistré.</b>
@@ -113,7 +112,7 @@ echo $this->flashMessenger()->render('default');
 	</blockquote>
 	<div class="menu clearfix">
     <?php
-        echo $this->listeZoneActions([], 
+        echo $this->listeZoneActions([],
             [
                 'modif-adresse' => [
                     'class' => 'accueil default',
@@ -127,7 +126,7 @@ echo $this->flashMessenger()->render('default');
                 ]
             ]);
         ?>
-    </div>	
+    </div>
     <?php else :?>
     <p>Vous n'avez pas d'enfant inscrit.</p>
 	<p>Les inscriptions en ligne sont fermées.</p>
@@ -167,28 +166,28 @@ echo $this->flashMessenger()->render('default');
                 // construction des tableaux $service, $station et $circuit sans doublons
                 foreach ($reseau as $transport) {
                     $service_transporteur = $transport['service1Id'] . ' - ' .
-                         $transport['transporteur1'];
+                        $transport['transporteur1'];
                     $station_commune = $transport['station1'] . ' - ' .
-                         $transport['commune1'];
+                        $transport['commune1'];
                     $circuitId = $transport['circuit1Id'];
                     $key = md5(
-                        sprintf('%s;%s;%d', $service_transporteur, $station_commune, 
+                        sprintf('%s;%s;%d', $service_transporteur, $station_commune,
                             $circuitId));
                     $service[$key] = $service_transporteur;
                     $station[$key] = $station_commune;
                     $circuit[$key] = $circuitId;
                     $correspondance = ! empty($transport['service2Id']) ||
-                         ! empty($transport['station2Id']);
+                        ! empty($transport['station2Id']);
                     if ($correspondance) {
                         if (! empty($transport['service2Id'])) {
                             $service_transporteur = $transport['service2Id'] . ' - ' .
-                                 $transport['transporteur2'];
+                                $transport['transporteur2'];
                         } else {
                             $service_transporteur = '';
                         }
                         if (! empty($transport['station2Id'])) {
                             $station_commune = $transport['station2'] . ' - ' .
-                                 $transport['commune2'];
+                                $transport['commune2'];
                         } else {
                             $station_commune = '';
                         }
@@ -198,7 +197,7 @@ echo $this->flashMessenger()->render('default');
                             $circuitId = 0;
                         }
                         $key = md5(
-                            sprintf('%s;%s;%d', $service_transporteur, $station_commune, 
+                            sprintf('%s;%s;%d', $service_transporteur, $station_commune,
                                 $circuitId));
                         $service[$key] = $service_transporteur;
                         $station[$key] = $station_commune;
@@ -209,18 +208,17 @@ echo $this->flashMessenger()->render('default');
                 $station = array_values($station);
                 $circuit = array_values($circuit);
             }
-            $css = $this->cycle(
-                [
-                    "odd",
-                    "even"
-                ])->next();
+            $css = $this->cycle([
+                "odd",
+                "even"
+            ])->next();
             // identité, scolarité : lignes 1 à 4
             $colonne1_4 = '<td %s' . $nbAffectations . '>' . $row['nom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['prenom'] . '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['etablissement'] .
-                 '</td>';
+                '</td>';
             $colonne1_4 .= '<td %s' . $nbAffectations . '>' . $row['communeEtablissement'] .
-                 '</td>';
+                '</td>';
             // on prépare le code HTML avant pour ajuster les "rowspan", les boutons
             // et les hiddens si nécessaire
             $boutons_ligne = [
@@ -245,7 +243,7 @@ echo $this->flashMessenger()->render('default');
                         // bouton photo et pas d'horaire
                         unset($boutons_ligne['horaires']);
                         $hiddens_ligne['eleveId'] = $row['eleveId'];
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                        $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
                     }
                     $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
@@ -255,7 +253,8 @@ echo $this->flashMessenger()->render('default');
                     break;
                 case 1:
                     if (empty($circuit[0])) {
-                        // il y a des points d'arrêt mais pas de circuit donc pas d'horaire
+                        // il y a des points d'arrêt mais pas de circuit donc pas
+                        // d'horaire
                         unset($boutons_ligne['horaires']);
                     } else {
                         $hiddens_ligne = [
@@ -269,24 +268,25 @@ echo $this->flashMessenger()->render('default');
                             $code_boutons = '';
                         } else {
                             // bouton horaires
-                            $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                            $code_boutons = $this->listeLigneActions($row['eleveId'],
                                 $hiddens_ligne, $boutons_ligne);
                         }
                     } else {
                         // au moins le bouton photo
                         $hiddens_ligne['eleveId'] = $row['eleveId'];
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                        $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
                     }
                     $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
-                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité, scolarité
+                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité,
+                                                                            // scolarité
                     $ligneHtml .= '<td>' . $service[0] . '</td><td>' . $station[0] .
-                         '</td>';
+                        '</td>';
                     $ligneHtml .= '<td>' . $code_boutons .
-                         "</td><td class=\"alert\">$msgphoto</td></tr>\n";
+                        "</td><td class=\"alert\">$msgphoto</td></tr>\n";
                     break;
                 default:
-                    $colonne1_4 = str_replace('%s' . $nbAffectations, 
+                    $colonne1_4 = str_replace('%s' . $nbAffectations,
                         'rowspan="' . $nbCircuits . '"', $colonne1_4);
                     $lignesTableau = [];
                     $hiddens_ligne = [
@@ -298,8 +298,9 @@ echo $this->flashMessenger()->render('default');
                         }
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
                         $lignesTableau[$i] .= '<td>' . $service[$i] . '</td><td>' .
-                             $station[$i] . '</td>';
-                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et les
+                            $station[$i] . '</td>';
+                        // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et
+                        // les
                         // hiddens
                         if ($i > 0) {
                             $lignesTableau[$i] .= "</tr>\n";
@@ -325,13 +326,14 @@ echo $this->flashMessenger()->render('default');
                             $hiddens_ligne['eleveId'] = $row['eleveId'];
                         }
                     }
-                    if (empty($hiddens_ligne) && $row['hasphoto']) {} else {
-                        
-                        $code_boutons = $this->listeLigneActions($row['eleveId'], 
+                    if (empty($hiddens_ligne) && $row['hasphoto']) {
+                    } else {
+
+                        $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
                         $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' .
-                             $code_boutons .
-                             "</td><td class=\"alert\"rowspan=\"$nbCircuits\">$msgphoto</td></tr>\n";
+                            $code_boutons .
+                            "</td><td class=\"alert\"rowspan=\"$nbCircuits\">$msgphoto</td></tr>\n";
                     }
                     $ligneHtml = implode('', $lignesTableau);
                     break;
@@ -353,7 +355,7 @@ echo $this->flashMessenger()->render('default');
         <p class="sbm-description">Vous allez recevoir la carte de
 			transport par courrier courant août.</p>
 <?php endif;?>
-<?php endif;?>			
+<?php endif;?>
 		<p class="sbm-description">Les circuits et horaires seront
 			consultables ici à partir de la dernière semaine d'août.</p>
     <?php endif; ?>
@@ -374,17 +376,17 @@ echo $this->flashMessenger()->render('default');
             <?php
         foreach ($this->preinscrits as $row) {
             $peutPayer = (max($row['distanceR1'], $row['distanceR2']) >= 1.0 &&
-                 $row['district'] == 1) || $row['derogation'] == 1;
+                $row['district'] == 1) || $row['derogation'] == 1;
             if ($row['selectionScolarite']) {
                 $montantUnitaire = 'en attente(*)';
                 $enAttente = true;
             } elseif ($peutPayer) {
-                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']], 
+                $montantUnitaire = $fmt->formatCurrency($this->tarifs[$row['tarifId']],
                     'EUR');
                 $montantTotal += $this->tarifs[$row['tarifId']];
             } else {
                 $montantUnitaire = '<span class="exces" title="Prenez contact avec le service des transports de ' .
-                     $this->client['name'] . '">pas de droit au transport scolaire</span>';
+                    $this->client['name'] . '">pas de droit au transport scolaire</span>';
                 $enAttente = true;
             }
             $hiddens = [
@@ -408,7 +410,7 @@ echo $this->flashMessenger()->render('default');
                 if ($peutPayer && $this->paiementenligne) {
                     $attenteValue = $row['selectionScolarite'] ? 'Reprendre cet enfant' : 'Mettre en attente de paiement*';
                     $attenteTitle = $row['selectionScolarite'] ? 'Remettre ' .
-                         $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
+                        $row['prenom'] . ' dans' : 'Retirer ' . $row['prenom'] . ' de';
                     $attenteTitle .= ' la liste des inscriptions à payer';
                     $buttons['attente'] = [
                         'class' => 'button ligne',
@@ -433,12 +435,10 @@ echo $this->flashMessenger()->render('default');
             }
             $btligne = $this->listeLigneActions($row['eleveId'], $hiddens, $buttons);
             $modeleligne = '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class="alert">%s</td></tr>';
-            echo sprintf($modeleligne, 
-                $this->cycle(
-                    [
-                        "odd",
-                        "even"
-                    ])->next(), $row['nom'], $row['prenom'], $row['etablissement'], 
+            echo sprintf($modeleligne, $this->cycle([
+                "odd",
+                "even"
+            ])->next(), $row['nom'], $row['prenom'], $row['etablissement'],
                 $row['communeEtablissement'], $montantUnitaire, $btligne, $pasdephoto);
         }
         ?>
@@ -489,20 +489,17 @@ echo $this->flashMessenger()->render('default');
                 break;
             case 1:
                 $msg = <<<EOT
-L'inscription doit être réglée avant le $dateFin (ou le $dateLimite pour les élèves
-en attente d'orientation) pour retenir une place définitive dans le circuit et recevoir 
-la carte de transport par la poste.<br>
-Passé ce délai, votre demande d'inscription ne devient plus prioritaire et 
-ne sera traitée que dans la mesure des places disponibles à la rentrée. Vous 
-devrez vous rendre à la permanence qui se tiendra à la Communauté de communes
-pour connaitre la suite donnée à votre demande, payer et retirer la carte de transport. 
-Pour les habitants de 
-EOT;
-                $msg .= $this->permanences[0] . '.';
+                L'inscription doit être réglée avant le $dateFin (ou le $dateLimite pour les élèves
+                en attente d'orientation) pour retenir une place définitive dans le circuit et recevoir 
+                la carte de transport par la poste.<br>
+                Passé ce délai, votre demande d'inscription ne devient plus prioritaire et 
+                ne sera traitée que dans la mesure des places disponibles à la rentrée. Vous 
+                devrez vous rendre à la permanence qui se tiendra  du $du au $au à la Communauté de communes
+                pour connaitre la suite donnée à votre demande, payer et retirer la carte de transport. 
+                EOT;
                 break;
             default:
-                $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes le jour de la distribution des cartes. Pour les habitants de ";
-                $msg .= $this->permanences[0] . '.';
+                $msg = "Pour valider les préinscriptions, rendez-vous à la Communauté de communes entre le $du et le $au, lors de la distribution des cartes.";
                 break;
         }
         ?>
@@ -518,23 +515,22 @@ EOT;
 		<div id="help-preinscrits-content" class="invisible">
 			<p>Vous pouvez :</p>
 			<ul>
-				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire 
-				avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour les élèves en attente 
+				<li style="margin-bottom: 0.4rem;">payer en ligne à l'aide d'une carte bancaire
+				avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour les élèves en attente
 				d'orientation). Vous recevrez alors la carte de transport par la poste.</li>
-				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à 
-				l'adresse ci-dessous avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour 
-				les élèves en attente d'orientation). Vous recevrez alors la carte de transport 
+				<li style="margin-bottom: 0.4rem;">adresser un chèque du montant indiqué à
+				l'adresse ci-dessous avant le <?= $dateFin;?> (ou le <?= $dateLimite; ?> pour
+				les élèves en attente d'orientation). Vous recevrez alors la carte de transport
 				par la poste.</li>
-				<li>vous rendre à la Communauté de communes (pour les habitant de 
-				<?php echo $this->permanences[0];?>) pour payer en espèces ou par chèque et 
+				<li>vous rendre à la Communauté de communes du <?=$du;?> au <?=$au;?> pour payer en espèces ou par chèque et
 				retirer la carte de transport. Toutefois, votre demande ne sera plus prioritaire
 				et ne sera satisfaite que dans la mesure des places disponibles.</li>
 			</ul>
-			<div class="centre">   
+			<div class="centre">
 				<?php echo $this->client['name'];?><br>
 				<?php echo $this->client['adresse'][0]; ?><br>
 				<?php echo $this->client['adresse'][1]; ?><br>
-				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br> 
+				<?php echo $this->client['code_postal']; ?> <?php echo $this->client['commune']; ?><br>
 				Tél. <?php echo $this->telephone($this->client['telephone']); ?>
 		    </div>
 		</div>
@@ -554,8 +550,8 @@ EOT;
             <?php
         foreach ($this->paiements as $row) {
             echo '<tr><td>' . DateLib::formatDateTimeFromMysql($row->datePaiement) .
-                 '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant .
-                 '</td></tr>';
+                '</td><td>' . $row->modeDePaiement . '</td><td>' . $row->montant .
+                '</td></tr>';
         }
         ?>
             </tbody>

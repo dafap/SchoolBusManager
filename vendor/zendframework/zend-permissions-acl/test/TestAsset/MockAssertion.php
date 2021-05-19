@@ -1,0 +1,32 @@
+<?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ */
+
+namespace ZendTest\Permissions\Acl\TestAsset;
+
+use Zend\Permissions\Acl;
+
+class MockAssertion implements Acl\Assertion\AssertionInterface
+{
+    protected $returnValue;
+
+    public function __construct($returnValue)
+    {
+        $this->returnValue = (bool) $returnValue;
+    }
+
+    public function assert(
+        Acl\Acl $acl,
+        Acl\Role\RoleInterface $role = null,
+        Acl\Resource\ResourceInterface $resource = null,
+        $privilege = null
+    ) {
+
+        return $this->returnValue;
+    }
+}

@@ -1,7 +1,7 @@
 <?php
 /**
  * Controleur principal de l'application
- * 
+ *
  * Compatible ZF3
  *
  * @project sbm
@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juillet 2018
- * @version 2018-2.4.2
+ * @date 17 mai 2021
+ * @version 2018-2.4.20
  */
 namespace SbmFront\Controller;
 
@@ -24,9 +24,9 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $form = $this->login_form;
-        $form->setAttribute('action', 
+        $form->setAttribute('action',
             $this->url()
-                ->fromRoute('login', 
+                ->fromRoute('login',
                 [
                     'action' => 'login'
                 ]));
@@ -39,7 +39,7 @@ class IndexController extends AbstractActionController
                 'accueil' => $this->accueil,
                 'as' => Session::get('as')['libelle'],
                 'etat' => $tCalendar->etatDuSite(),
-                'permanences' => $tCalendar->getPermanences(),
+                'permanences' => $tCalendar->getPermanencesDuAu(),
                 'url_ts_region' => $this->url_ts_region
             ]);
         switch ($tCalendar->etatDuSite()['etat']) {
