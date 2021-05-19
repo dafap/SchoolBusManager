@@ -12,8 +12,8 @@
  * @filesource Enfant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mai 2020
- * @version 2020-2.6.0
+ * @date 19 mai 2021
+ * @version 2021-2.6.2
  */
 namespace SbmParent\Form;
 
@@ -324,7 +324,7 @@ class Enfant extends AbstractSbmForm implements InputFilterProviderInterface
                             'attributes' => [
                                 'id' => 'regimeidradio0dp'
                             ],
-                            'label' => 'DP',
+                            'label' => 'Externe ou Demi-pensionnaire',
                             'label_attributes' => [
                                 'class' => 'sbm-radio-label dp'
                             ]
