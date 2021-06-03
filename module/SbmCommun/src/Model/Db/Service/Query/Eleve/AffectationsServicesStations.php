@@ -8,14 +8,14 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2021
- * @version 2021-2.6.1
+ * @date 3 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Traits\ExpressionSqlTrait;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
@@ -104,20 +104,41 @@ class AffectationsServicesStations extends AbstractQuery
             $millesime --;
         }
         $select = clone $this->select;
-        $select->join(
+        $select->columns(
             [
-                'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
-            ], $this->jointureAffectationsCircuits(1, 'cir1'),
-            [
-                'horaire1' => 'horaireA'
+                'millesime' => 'millesime',
+                'eleveId' => 'eleveId',
+                'trajet' => 'trajet',
+                'jours' => new Literal(
+                    'aff.jours & cir1.semaine & cir2.semaine & ser1.semaine'),
+                'semaine' => new Literal(
+                    'aff.jours & cir1.semaine & cir2.semaine & ser1.semaine'),
+                'moment' => 'moment',
+                'correspondance' => 'correspondance',
+                'selection' => 'selection',
+                'responsableId' => 'responsableId',
+                'station1Id' => 'station1Id',
+                'ligne1Id' => 'ligne1Id',
+                'sensligne1' => 'sensligne1',
+                'ordreligne1' => 'ordreligne1',
+                // 'service1Id' => 'service1Id',
+                'station2Id' => 'station2Id',
+                // 'service2Id' => 'service2Id',
+                'ligne2Id' => 'ligne2Id',
+                'sensligne2' => 'sensligne2',
+                'ordreligne2' => 'ordreligne2'
             ])
+            ->join([
+            'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
+        ], $this->jointureAffectationsCircuits(1, 'cir1'), [
+            'horaire1' => 'horaireD'
+        ])
             ->join([
             'ser1' => $this->db_manager->getCanonicName('services', 'table')
         ], $this->jointureAffectationsServices(1, 'ser1'),
             [
                 'service1_nbPlaces' => 'nbPlaces',
-                'service1_alias' => 'alias',
-                'semaine' => 'semaine'
+                'service1_alias' => 'alias'
             ])
             ->join([
             'lign1' => $this->db_manager->getCanonicName('lignes', 'table')
@@ -173,13 +194,15 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'trajet',
                 'moment',
-                'jours',
-                'cir1.horaireA',
-                // semaine (de Services), remplace jours (Affectations) non traité
-                'semaine DESC'
+                'aff.jours & cir1.semaine & ser1.semaine & cir2.semaine',
+                'cir1.horaireD',
+                'cir2.horaireA Desc'
             ]);
         $where = new Where();
-        $where->equalTo('aff.millesime', $millesime)->and->equalTo('aff.eleveId', $eleveId);
+        $where->equalTo('aff.millesime', $millesime)
+            ->equalTo('aff.eleveId', $eleveId)
+            ->lessThan('cir1.horaireD', 'cir2.horaireA', Predicate::TYPE_IDENTIFIER,
+            Predicate::TYPE_IDENTIFIER);
         if (isset($trajet)) {
             $where->equalTo('trajet', $trajet);
         }
@@ -201,7 +224,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'ser1' => $this->db_manager->getCanonicName('services', 'table')
             ], $this->jointureAffectationsServices(1, 'ser1'),
             [
-                'service1Id' => new Expression($this->getSqlEncodeServiceId('ser1')),
+                'service1Id' => new Literal($this->getSqlEncodeServiceId('ser1')),
                 'service1_nbPlaces' => 'nbPlaces',
                 'service1_alias' => 'alias',
                 'semaine' => 'semaine'
@@ -235,7 +258,7 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'horaire' => 'horaireA',
                 'circuit1Id' => 'circuitId',
-                'service1' => new Expression(
+                'service1' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireA',
                         'sens', 'cir1'))
             ], $select::JOIN_LEFT)
@@ -255,7 +278,7 @@ class AffectationsServicesStations extends AbstractQuery
             'ser2' => $this->db_manager->getCanonicName('services', 'table')
         ], $this->jointureAffectationsServices(2, 'ser2'),
             [
-                'service2Id' => new Expression($this->getSqlEncodeServiceId('ser2')),
+                'service2Id' => new Literal($this->getSqlEncodeServiceId('ser2')),
                 'service2_nbPlaces' => 'nbPlaces',
                 'service2_alias' => 'alias',
                 'service2_semaine' => 'semaine'
@@ -301,7 +324,7 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'horaire2' => 'horaireA',
                 'circuit2Id' => 'circuitId',
-                'service2' => new Expression(
+                'service2' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('semaine', 'ligneId', 'horaireA',
                         'sens', 'cir2'))
             ], $select::JOIN_LEFT);
@@ -342,8 +365,8 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'millesime' => 'millesime',
                 'trajet' => 'trajet',
-                'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
-                'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
+                'X' => new Literal('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
+                'Y' => new Literal('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
             ])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -360,7 +383,7 @@ class AffectationsServicesStations extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId',
             [
-                'transportGA' => new Expression(
+                'transportGA' => new Literal(
                     'CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
                 'x_eleve' => 'x',
                 'y_eleve' => 'y',
@@ -380,7 +403,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId=eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'x_etablissement' => 'x',
                 'y_etablissement' => 'y'
@@ -400,7 +423,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'res.responsableId=aff.responsableId',
             [
-                'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+                'responsable' => new Literal('concat(res.nom," ",res.prenom)'),
                 'x_responsable' => 'x',
                 'y_responsable' => 'y',
                 'telephoneF_responsable' => 'telephoneF',
@@ -552,10 +575,10 @@ class AffectationsServicesStations extends AbstractQuery
     {
         $select = clone $this->select;
         $columns = $select->getRawState(Select::COLUMNS);
-        $columns['service1'] = new Expression(
+        $columns['service1'] = new Literal(
             $this->getSqlSemaineLigneHoraireSens('ser1.semaine', 'aff.ligne1Id',
                 'cir1.horaireA', 'aff.sensligne1'));
-        // $columns['service2Id'] = new Expression('');
+        // $columns['service2Id'] = new Literal('');
         $select->columns($columns)
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -574,7 +597,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'res.responsableId=aff.responsableId',
             [
-                'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+                'responsable' => new Literal('concat(res.nom," ",res.prenom)'),
                 'adresseL1' => 'adresseL1',
                 'adresseL2' => 'adresseL2',
                 'adresseL3' => 'adresseL3',
@@ -606,7 +629,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId=eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END')
             ])
             ->join([
@@ -773,7 +796,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'aff.responsableId = res.responsableId',
             [
-                'responsable' => new Expression('concat(res.nomSA, " ", res.prenomSA)'),
+                'responsable' => new Literal('concat(res.nomSA, " ", res.prenomSA)'),
                 'telephoneF',
                 'telephoneP',
                 'telephoneT'
@@ -783,7 +806,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
             ], 'ele.eleveId = aff.eleveId',
             [
-                'eleve' => new Expression('concat(ele.nomSA, " ", ele.prenomSA)')
+                'eleve' => new Literal('concat(ele.nomSA, " ", ele.prenomSA)')
             ])
             ->where($where);
         // dans le champ des téléphones fixes
@@ -836,7 +859,7 @@ class AffectationsServicesStations extends AbstractQuery
             'responsable',
             'telephone' => $telephone,
             'eleve' => 'eleve',
-            'service1' => new Expression(
+            'service1' => new Literal(
                 $this->getSqlDesignationService('ligne1Id', 'sensligne1', 'moment',
                     'ordreligne1')),
             'service2' => 'ligne2Id',
@@ -1018,9 +1041,10 @@ class AffectationsServicesStations extends AbstractQuery
                 'moment',
                 'correspondance',
                 'ligne1Id',
-                'jours' => new Expression($this->getSqlSemaine('aff.jours')),
-                'semaine' => new Expression(
-                    $this->getSqlSemaine('cir1.semaine & cir2.semaine'))
+                'jours' => new Literal(
+                    $this->getSqlSemaine('aff.jours & cir1.semaine & cir2.semaine')),
+                'semaine' => new Literal(
+                    $this->getSqlSemaine('aff.jours & cir1.semaine & cir2.semaine'))
             ])
             ->from(
             [
@@ -1040,7 +1064,7 @@ class AffectationsServicesStations extends AbstractQuery
             'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
         ], $this->jointureAffectationsCircuits(1, 'cir1'),
             [
-                'horaire1' => new Expression('TIME_FORMAT(cir1.horaireA,"%H:%i")')
+                'horaire1' => new Literal('TIME_FORMAT(cir1.horaireD,"%H:%i")')
             ])
             ->join([
             'sta2' => $this->db_manager->getCanonicName('stations', 'table')
@@ -1056,17 +1080,16 @@ class AffectationsServicesStations extends AbstractQuery
             'cir2' => $this->db_manager->getCanonicName('circuits', 'table')
         ], $this->jointureAffectationsCircuits(1, 'cir2', 2),
             [
-                'horaire2' => new Expression('TIME_FORMAT(cir2.horaireA,"%H:%i")')
+                'horaire2' => new Literal('TIME_FORMAT(cir2.horaireA,"%H:%i")')
             ])
             ->where($where)
             ->order(
             [
                 'trajet',
                 'moment',
-                'jours',
-                'cir1.horaireA',
-                // semaine (de Circuit), remplace jours (Affectations) non traité
-                'cir1.semaine & cir2.semaine DESC'
+                'aff.jours & cir1.semaine & ser1.semaine & cir2.semaine',
+                'cir1.horaireD',
+                'cir2.horaireA Desc'
             ]);
         return $this->renderResult($select);
     }
