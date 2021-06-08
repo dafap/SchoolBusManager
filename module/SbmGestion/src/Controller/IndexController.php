@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juil. 2020
- * @version 2020-2.6.0
+ * @date 8 juin 2021
+ * @version 2020-2.6.2
  */
 namespace SbmGestion\Controller;
 
@@ -22,7 +22,8 @@ class IndexController extends AbstractActionController
 {
 
     /**
-     * Affectation du millesime de travail. S'il n'y en a pas en session, il prend le
+     * Affectation du millesime de travail.
+     * S'il n'y en a pas en session, il prend le
      * dernier millesime valide et le met en session. (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
@@ -34,14 +35,28 @@ class IndexController extends AbstractActionController
             return $prg;
         }
         $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est
-                                            // vide
+        // vide
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
         $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         $resultNbEnregistres = $statEleve->getNbEnregistresByMillesime($millesime);
-        $nbDpEnregistres = current($resultNbEnregistres)['effectif'];
-        $nbInternesEnregistres = next($resultNbEnregistres)['effectif'];
+        if (count($resultNbEnregistres) == 2) {
+            $nbDpEnregistres = current($resultNbEnregistres)['effectif'];
+            $nbInternesEnregistres = next($resultNbEnregistres)['effectif'];
+        } elseif (count($resultNbEnregistres) == 1) {
+            $arrayObj = current($resultNbEnregistres);
+            if ($arrayObj['regimeId'] == 0) {
+                $nbDpEnregistres = $arrayObj['effectif'];
+                $nbInternesEnregistres = 0;
+            } else {
+                $nbDpEnregistres = 0;
+                $nbInternesEnregistres = $arrayObj['effectif'];
+            }
+        } else {
+            $nbDpEnregistres = 0;
+            $nbInternesEnregistres = 0;
+        }
         return new ViewModel(
             [
                 'elevesDpEnregistres' => $nbDpEnregistres,
