@@ -7,7 +7,7 @@
  * @filesource payfip.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
+ * @date 11 juin 2021
  * @version 2019-2.5.0
  */
 return [
@@ -16,7 +16,8 @@ return [
         'ACTIVATION' => 'X',
         'PRODUCTION' => 'W'
     ],
-    'urlpaiement' => 'https://www.tipi.budget.gouv.fr/tpa/paiementws.web?idop=',
+    //'urlpaiement' => 'https://www.tipi.budget.gouv.fr/tpa/paiementws.web?idop=',
+    'urlpaiement' => 'https://www.payfip.gouv.fr/tpa/paiementws.web?idop=',
     'urlnotification' => 'http://alain.pomirol.free.fr/notification/index.php',
 	//'urlnotification' => 'http://notification.millaugrandscausses.dafap.fr/paiement/notification',
     //'urlnotification' => 'http://www.transports-millaugrandscausses.fr/paiement/notification',
