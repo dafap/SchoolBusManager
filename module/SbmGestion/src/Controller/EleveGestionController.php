@@ -14,7 +14,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2021
+ * @date 10 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
@@ -1082,9 +1082,12 @@ class EleveGestionController extends AbstractActionController
             'form' => $form
         ];
         $r = $this->editData($params, function ($args) {
-            return $args['eleve'];
-        }, function ($args) use ($form) {
-            $form->initialise($args['eleveId']);
+            return $args['inviteId'];
+        },null, function ($args) {
+            if (array_key_exists('servicesMatin', $args)) {
+                $args['servicesMatin'] = \Zend\Json\Json::encode($args['servicesMatin']);
+                return $args;
+            }
         });
         if ($r instanceof Response) {
             return $r;
@@ -1102,7 +1105,7 @@ class EleveGestionController extends AbstractActionController
                     return new ViewModel(
                         [
                             'form' => $form->prepare(),
-                            'eleve' => $r->getResult()
+                            'inviteId' => $r->getResult()
                         ]);
                     break;
             }

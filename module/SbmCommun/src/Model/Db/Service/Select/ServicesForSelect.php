@@ -1,7 +1,7 @@
 <?php
 /**
  * Service fournissant une liste des services sous la forme d'un tableau
- *   'serviceId' => 'nom'
+ * 'serviceId' => 'nom'
  * où serviceId est une chaine de la forme ligneId|sens|moment|ordre
  *
  *
@@ -10,8 +10,8 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mars 2021
- * @version 2021-2.6.1
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -113,6 +113,116 @@ class ServicesForSelect implements FactoryInterface
     }
 
     /**
+     * Renvoie un tableau structuré Service fournissant une liste des services du matin
+     * sous la forme d'un tableau 'serviceId' => 'serviceId - nom (operateur -
+     * transporteur)'
+     *
+     * @return array
+     */
+    public function matin()
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->literal('moment = 1');
+        $select = $this->sql->select($this->table_name);
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
+        $this->columns['jours'] = new Literal($this->getSqlSemaine());
+        $select->columns($this->columns)
+            ->where($where)
+            ->order($this->getServiceKeys());
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
+                ')';
+        }
+        return $array;
+    }
+
+    /**
+     * Renvoie un tableau structuré Service fournissant une liste des services du midi
+     * sous la forme d'un tableau 'serviceId' => 'serviceId - nom (operateur -
+     * transporteur)'
+     *
+     * @return array
+     */
+    public function midi()
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->literal('moment = 2');
+        $select = $this->sql->select($this->table_name);
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
+        $this->columns['jours'] = new Literal($this->getSqlSemaine());
+        $select->columns($this->columns)
+            ->where($where)
+            ->order($this->getServiceKeys());
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
+                ')';
+        }
+        return $array;
+    }
+
+    /**
+     * Renvoie un tableau structuré Service fournissant une liste des services du soir
+     * sous la forme d'un tableau 'serviceId' => 'serviceId - nom (operateur -
+     * transporteur)'
+     *
+     * @return array
+     */
+    public function soir()
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->literal('moment = 3');
+        $select = $this->sql->select($this->table_name);
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
+        $this->columns['jours'] = new Literal($this->getSqlSemaine());
+        $select->columns($this->columns)
+            ->where($where)
+            ->order($this->getServiceKeys());
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
+                ')';
+        }
+        return $array;
+    }
+
+    /**
+     * Renvoie un tableau structuré Service fournissant une liste des services du mercredi
+     * soir sous la forme d'un tableau 'serviceId' => 'serviceId - nom (operateur -
+     * transporteur)'
+     *
+     * @return array
+     */
+    public function mersoir()
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)
+            ->literal('moment = 3')
+            ->literal('(semaine & 4) = 4');
+        $select = $this->sql->select($this->table_name);
+        $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
+        $this->columns['jours'] = new Literal($this->getSqlSemaine());
+        $select->columns($this->columns)
+            ->where($where)
+            ->order($this->getServiceKeys());
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
+                ')';
+        }
+        return $array;
+    }
+
+    /**
      * Renvoie un tableau structuré Service fournissant une liste des services sous la
      * forme d'un tableau 'serviceId' => 'serviceId - nom (operateur - transporteur)'
      *
@@ -124,25 +234,26 @@ class ServicesForSelect implements FactoryInterface
         $where = new Where();
         $where->equalTo('millesime', $this->millesime);
         if (is_array($transporteurId)) {
-            $where->in('transporteurId',$transporteurId);
-        } else{
+            $where->in('transporteurId', $transporteurId);
+        } else {
             $where->equalTo('transporteurId', $transporteurId);
         }
         $select = $this->sql->select($this->table_name);
         $this->columns['libelle'] = new Literal($this->getSqlDesignationService());
         $this->columns['jours'] = new Literal($this->getSqlSemaine());
         $select->columns($this->columns)
-        ->where([
-            'millesime' => $this->millesime,
-            'transporteurId' => $transporteurId
-        ])
-        ->order($this->getServiceKeys());
+            ->where(
+            [
+                'millesime' => $this->millesime,
+                'transporteurId' => $transporteurId
+            ])
+            ->order($this->getServiceKeys());
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];
         foreach ($rowset as $row) {
             $array[$this->encodeServiceId($row)] = $row['libelle'] . ' (' . $row['jours'] .
-            ')';
+                ')';
         }
         return $array;
     }

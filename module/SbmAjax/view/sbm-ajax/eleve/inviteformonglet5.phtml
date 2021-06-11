@@ -1,0 +1,43 @@
+<?php
+/**
+ * Contenu de l'onglet 5 d'une fiche invité
+ *
+ * @project sbm
+ * @package SbmAjax\view\sbm-ajax\eleve
+ * @filesource inviteformonglet5.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
+ */
+?>
+<div id="wrapper-onglet5">
+	<div id="wrapper-beneficiaire" class="beneficiaire clearfix">
+		<div id="wrapper-nom" class="row-inner float-left"><?=$this->formRow($this->form->get('nom'));?></div>
+		<div id="wrapper-prenom" class="row-inner float-left"><?=$this->formRow($this->form->get('prenom'));?></div>
+		<div id="wrapper-sexe" class="row-inner float-left"><?=$this->formRow($this->form->get('sexe'));?></div>
+		<div id="wrapper-nationalite" class="row-inner float-left"><?=$this->formRow($this->form->get('nationalite'));?></div>
+	</div>
+	<div id="wrapper-domicile" class="domicile">
+		<div class="clearfix">
+			<div id="wrapper-chez" class="row-inner float-left"><?=$this->formRow($this->form->get('chez'));?></div>
+			<div id="wrapper-adresseL1" class="row-inner float-left"><?=$this->formRow($this->form->get('adresseL1'));?></div>
+			<div id="wrapper-adresseL2" class="row-inner float-left"><?=$this->formRow($this->form->get('adresseL2'));?></div>
+			<div id="wrapper-adresseL3" class="row-inner float-left"><?=$this->formRow($this->form->get('adresseL3'));?></div>
+		</div>
+		<div class="clearfix">
+			<div id="wrapper-codePostal" class="row-inner float-left"><?=$this->formRow($this->form->get('codePostal'));?></div>
+			<div id="wrapper-communeId" class="row-inner float-left"><?=$this->formRow($this->form->get('communeId'));?></div>
+			<div id="wrapper-stationId" class="row-inner float-left"><?=$this->formRow($this->form->get('stationId'));?></div>
+		</div>
+	</div>
+	<div id="wrapper-destination" class="destination">
+		<div id="wrapper-etablissementId" class="row-inner"><?=$this->formRow($this->form->get('etablissementId'));?></div>
+	</div>
+	<div id="wrapper-transport" class="transport clearfix">
+		<div id="wrapper-servicesMatin" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMatin[]'));?></div>
+		<div id="wrapper-servicesMidi" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMidi[]'));?></div>
+		<div id="wrapper-servicesSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesSoir[]'));?></div>
+		<div id="wrapper-servicesMerSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMerSoir[]'));?></div>
+	</div>
+</div>

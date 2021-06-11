@@ -51,11 +51,12 @@
  * @filesource Invite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 avr. 2021
- * @version 2021-2.6.1
+ * @date 10 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Form;
 
+use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\ObjectData\Invite as ObjectDataInvite;
 use Zend\InputFilter\InputFilterProviderInterface;
 
@@ -71,6 +72,13 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
     private $millesime;
 
     /**
+     * Correspond au cas adapté à un onglet
+     *
+     * @var integer
+     */
+    private $etat;
+
+    /**
      *
      * @param mixed $millesime
      * @return self
@@ -83,6 +91,8 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function __construct(string $name = 'invite', $options = [])
     {
+        $this->dataTmp = null;
+        $this->resetEtat();
         parent::__construct($name, $options);
         $this->add([
             'name' => 'millesime',
@@ -120,7 +130,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'autofocus' => 'autofocus'
                 ],
                 'options' => [
-                    'label' => 'Nom',
+                    'label' => 'Nom du bénéficiaire',
                     'label_attributes' => [
                         'class' => 'sbm-label nom'
                     ],
@@ -175,7 +185,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                 'type' => 'Zend\Form\Element\Select',
                 'attributes' => [
                     'id' => 'invite-nationalite',
-                    'class' => 'sbm-width-10c'
+                    'class' => 'sbm-width-20c'
                 ],
                 'options' => [
                     'label' => 'Nationalité',
@@ -197,11 +207,11 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-30c'
                 ],
                 'options' => [
-                    'label' => 'Elève accueillant',
+                    'label' => 'Accompagnant l\'élève',
                     'label_attributes' => [
                         'class' => 'sbm-label eleveId'
                     ],
-                    'empty_option' => 'Choisir si besoin',
+                    'empty_option' => 'Choisir un élève',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -217,11 +227,11 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-30c'
                 ],
                 'options' => [
-                    'label' => 'Responsable accueillant',
+                    'label' => 'Domicilié chez',
                     'label_attributes' => [
                         'class' => 'sbm-label responsableId'
                     ],
-                    'empty_option' => 'Choisir si besoin',
+                    'empty_option' => 'Choisir un responsable',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -241,7 +251,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label organismeId'
                     ],
-                    'empty_option' => 'Choisir si besoin',
+                    'empty_option' => 'Choisir un organisme',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -351,7 +361,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'sbm-label'
                     ],
-                    'empty_option' => 'Choisir si besoin',
+                    'empty_option' => 'Choisir une commune',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
@@ -387,7 +397,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'class' => 'sbm-width-30c'
                 ],
                 'options' => [
-                    'label' => 'Point de départ',
+                    'label' => 'Point de départ depuis ce domicile',
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
@@ -412,7 +422,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Sélectionnez les services',
+                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
@@ -433,7 +443,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Sélectionnez les services',
+                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
@@ -454,7 +464,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Sélectionnez les services',
+                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
@@ -475,7 +485,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Sélectionnez si besoin',
+                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
                     'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
@@ -645,21 +655,19 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ],
             'millesime' => [
                 'name' => 'millesime',
-                'required' => true,
-                'validators' => [
-                    [
-                        'name' => 'Between',
-                        'options' => [
-                            'min' => $this->millesime,
-                            'max' => $this->millesime,
-                            'inclusive' => true
-                        ]
-                    ]
-                ]
+                'required' => true
+            ],
+            'nom' => [
+                'name' => 'nom',
+                'required' => false
+            ],
+            'prenom' => [
+                'name' => 'prenom',
+                'required' => false
             ],
             'sexe' => [
                 'name' => 'sexe',
-                'required' => true
+                'required' => false
             ],
             'nationalite' => [
                 'name' => 'nationalite',
@@ -710,19 +718,19 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                 'required' => false
             ],
             'servicesMatin[]' => [
-                'name' => 'servicesMatin',
+                'name' => 'servicesMatin[]',
                 'required' => false
             ],
             'servicesMidi[]' => [
-                'name' => 'servicesMidi',
+                'name' => 'servicesMidi[]',
                 'required' => false
             ],
             'servicesSoir[]' => [
-                'name' => 'servicesSoir',
+                'name' => 'servicesSoir[]',
                 'required' => false
             ],
             'servicesMerSoir[]' => [
-                'name' => 'servicesMerSoir',
+                'name' => 'servicesMerSoir[]',
                 'required' => false
             ],
             'dateDebut' => [
@@ -779,72 +787,167 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
     public function isValid()
     {
         $valid = parent::isValid();
-        if (empty($this->data['eleveId'])) {
-            if (empty($this->data['responsableId']) && empty($this->data['organismeId'])) {
-                if (empty($this->data['chez'])) {
-                    $this->get('chez')->setMessages(
-                        [
-                            'Vous devez indiquer une domiciliation' . self::MSG_ELVRESORG
-                        ]);
-                    $valid = false;
-                }
-                if (empty($this->data['adresseL1'])) {
-                    $this->get('adresseL1')->setMessages(
-                        [
-                            'Vous devez indiquer une adresse' . self::MSG_ELVRESORG
-                        ]);
-                    $valid = false;
-                }
-                if (empty($this->data['codePostal'])) {
-                    $this->get('codePostal')->setMessages(
-                        [
-                            'Vous devez indiquer un code postal' . self::MSG_ELVRESORG
-                        ]);
-                    $valid = false;
-                }
-                if (empty($this->data['communeId'])) {
-                    $this->get('communeId')->setMessages(
-                        [
-                            'Vous devez indiquer une commune' . self::MSG_ELVRESORG
-                        ]);
-                    $valid = false;
-                }
-            }
-            if (empty($this->data['etablissementId'])) {
-                $this->get('etablissementId')->setMessages(
-                    [
-                        'Vous devez indiquer un établissement' . self::MSG_ELV
-                    ]);
-                $valid = false;
-            }
-            if (empty($this->data['stationId'])) {
-                $this->get('stationId')->setMessages(
-                    [
-                        'Vous devez indiquer une station d\'origine' . self::MSG_ELV
-                    ]);
-                $valid = false;
-            }
-            if (empty($this->data['servicesMatin'])) {
-                $this->get('servicesMatin[]')->setMessages(
-                    [
-                        'Vous devez indiquer les services du matin' . self::MSG_ELV
-                    ]);
-                $valid = false;
-            }
-            if (empty($this->data['servicesSoir'])) {
-                $this->get('servicesSoir[]')->setMessages(
-                    [
-                        'Vous devez indiquer les services du soir' . self::MSG_ELV
-                    ]);
-                $valid = false;
-            }
+        $this->resetEtat();
+        $this->dataTmp = $this->data;
+        switch ($this->getEtat()) {
+            case 1:
+                $valid &= $this->validIfNotEmpty('chez');
+                $valid &= $this->validIfNotEmpty('adresseL1');
+                $valid &= $this->validIfNotEmpty('codePostal');
+                $valid &= $this->validIfNotEmpty('communeId');
+                $valid &= $this->validIfNotEmpty('stationId');
+                $valid &= $this->validIfNotEmpty('etablissementId');
+                $valid &= $this->validIfNotEmpty('servicesMatin');
+                $valid &= $this->validIfNotEmpty('servicesSoir');
+                break;
+            case 2:
+                $valid &= $this->validIfNotEmpty('nom');
+                $valid &= $this->validIfNotEmpty('prenom');
+                $valid &= $this->validIfNotEmpty('eleveId');
+                $valid &= $this->validIfExists('sexe');
+                $valid &= $this->validIfExists('nationalite');
+                break;
+            case 3:
+                $valid &= $this->validIfNotEmpty('nom');
+                $valid &= $this->validIfNotEmpty('prenom');
+                $valid &= $this->validIfExists('sexe');
+                $valid &= $this->validIfExists('nationalite');
+                $valid &= $this->validIfNotEmpty('responsableId');
+                $valid &= $this->validIfNotEmpty('stationId');
+                $valid &= $this->validIfNotEmpty('etablissementId');
+                $valid &= $this->validIfNotEmpty('servicesMatin');
+                $valid &= $this->validIfNotEmpty('servicesSoir');
+                break;
+            case 4:
+                $valid &= $this->validIfNotEmpty('nom');
+                $valid &= $this->validIfNotEmpty('prenom');
+                $valid &= $this->validIfExists('sexe');
+                $valid &= $this->validIfExists('nationalite');
+                $valid &= $this->validIfNotEmpty('organismeId');
+                $valid &= $this->validIfNotEmpty('stationId');
+                $valid &= $this->validIfNotEmpty('etablissementId');
+                $valid &= $this->validIfNotEmpty('servicesMatin');
+                $valid &= $this->validIfNotEmpty('servicesSoir');
+                break;
+            case 5:
+                $valid &= $this->validIfNotEmpty('nom');
+                $valid &= $this->validIfNotEmpty('prenom');
+                $valid &= $this->validIfExists('sexe');
+                $valid &= $this->validIfExists('nationalite');
+                $valid &= $this->validIfNotEmpty('chez');
+                $valid &= $this->validIfNotEmpty('adresseL1');
+                $valid &= $this->validIfNotEmpty('codePostal');
+                $valid &= $this->validIfNotEmpty('communeId');
+                $valid &= $this->validIfNotEmpty('stationId');
+                $valid &= $this->validIfNotEmpty('etablissementId');
+                $valid &= $this->validIfNotEmpty('servicesMatin');
+                $valid &= $this->validIfNotEmpty('servicesSoir');
+                break;
+            default:
+                break;
         }
         return $valid;
+    }
+
+    private function validIfNotEmpty($key): bool
+    {
+        $chez = StdLib::getParam($key, $this->data, '');
+        if (empty($chez)) {
+            $this->get($key)->setMessages(
+                [
+                    'Cette donnée est nécessaire et ne peut être vide.'
+                ]);
+            return false;
+        }
+        return true;
+    }
+
+    private function validIfExists($key): bool
+    {
+        $valid = array_key_exists($key, $this->data);
+        if (! $valid) {
+            $this->get($key)->setMessages([
+                'Ce renseignement est nécessaire.'
+            ]);
+        }
+        return $valid;
+    }
+
+    public function getEtat()
+    {
+        if ($this->etat == - 1) {
+            if (empty($this->dataTmp)) {
+                $this->etat = 1;
+            } else {
+                if (StdLib::getParam('eleveId', $this->dataTmp, 0) > 0) {
+                    if (StdLib::getParam('stationId', $this->dataTmp, 0) > 0) {
+                        $this->etat = 1;
+                    } else {
+                        $this->etat = 2;
+                    }
+                } elseif (StdLib::getParam('responsableId', $this->dataTmp, 0) > 0) {
+                    $this->etat = 3;
+                } elseif (StdLib::getParam('organismeId', $this->dataTmp, 0) > 0) {
+                    $this->etat = 4;
+                } else {
+                    $this->etat = 5;
+                }
+            }
+        }
+        return $this->etat;
+    }
+
+    public function resetEtat(): self
+    {
+        $this->etat = - 1;
+        return $this;
+    }
+
+    public function setEtat($etat): self
+    {
+        $this->etat = $etat;
+        return $this;
     }
 
     public function setData($data)
     {
         $this->dataTmp = $data;
+        switch ($this->etat) {
+            case 1:
+                unset($this->dataTmp['nom'], $this->dataTmp['prenom'],
+                    $this->dataTmp['sexe'], $this->dataTmp['nationalite'],
+                    $this->dataTmp['responsableId'], $this->dataTmp['organismeId']);
+                break;
+            case 2:
+                unset($this->dataTmp['chez'], $this->dataTmp['adresseL1'],
+                    $this->dataTmp['adresseL2'], $this->dataTmp['adresseL3'],
+                    $this->dataTmp['codePostal'], $this->dataTmp['communeId'],
+                    $this->dataTmp['stationId'], $this->dataTmp['etablissementId'],
+                    $this->dataTmp['responsableId'], $this->dataTmp['organismeId']);
+                break;
+            case 3:
+                unset($this->dataTmp['chez'], $this->dataTmp['adresseL1'],
+                    $this->dataTmp['adresseL2'], $this->dataTmp['adresseL3'],
+                    $this->dataTmp['codePostal'], $this->dataTmp['communeId'],
+                    $this->dataTmp['eleveId'], $this->dataTmp['organismeId']);
+                break;
+                break;
+            case 4:
+                unset($this->dataTmp['chez'], $this->dataTmp['adresseL1'],
+                    $this->dataTmp['adresseL2'], $this->dataTmp['adresseL3'],
+                    $this->dataTmp['codePostal'], $this->dataTmp['communeId'],
+                    $this->dataTmp['eleveId'], $this->dataTmp['responsableId']);
+                break;
+                break;
+            case 5:
+                unset($this->dataTmp['eleveId'], $this->dataTmp['responsableId'],
+                    $this->dataTmp['organismeId']);
+                break;
+            default:
+                $this->etat = - 1;
+                break;
+        }
+        die(var_dump($this->dataTmp));
         $this->explodeServices('servicesMatin')
             ->explodeServices('servicesMidi')
             ->explodeServices('servicesSoir')
@@ -854,12 +957,23 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function getData($flag = self::VALUES_NORMALIZED)
     {
-        $this->dataTmp = parent::getData($flag);
+        $objData = parent::getData($flag);
+        if (is_object($objData)) {
+            $this->dataTmp = $objData->getArrayCopy();
+        } else {
+            $this->dataTmp = $objData;
+        }
+        //die(var_dump($this->dataTmp));
+        $this->resetEtat()->getEtat();
         $this->implodeServices('servicesMatin')
             ->implodeServices('servicesMidi')
             ->implodeServices('servicesSoir')
             ->implodeServices('servicesMerSoir');
-        return $this->dataTmp;
+        if (is_object($objData)) {
+            return $objData->exchangeArray($this->dataTmp);
+        } else {
+            return $this->dataTmp;
+        }
     }
 
     private function explodeServices(string $key)

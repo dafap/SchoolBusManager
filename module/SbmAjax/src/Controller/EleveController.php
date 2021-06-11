@@ -10,8 +10,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2021
- * @version 2021-2.6.1
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmAjax\Controller;
 
@@ -1232,72 +1232,213 @@ class EleveController extends AbstractActionController
         }
     }
 
-    /**
-     * On échange key/value pour conserver le tri.
-     * Il faut y penser à la réception.
-     *
-     * @return mixed
-     */
-    public function getelevesvalueoptionsAction()
+    public function inviteformonglet1Action()
     {
+        $form = $this->form_manager->get(\SbmCommun\Form\Invite::class);
+        $form->setValueOptions('eleveId',
+            $this->db_manager->get('Sbm\Db\Select\Eleves')
+                ->inscrits())
+            ->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->visibles())
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes())
+            ->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('servicesMatin[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->matin())
+            ->setValueOptions('servicesMidi[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->midi())
+            ->setValueOptions('servicesSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->soir())
+            ->setValueOptions('servicesMerSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->mersoir());
         try {
-            $eleves = $this->db_manager->get('Sbm\Db\Select\Eleves')->elevesAbonnes();
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'data' => array_flip($eleves),
-                    'success' => 1
-                ]));
+            $inviteId = (int) $this->params('inviteId');
+            if ($inviteId > 0) {
+                $form->setEtat(1)->setData(
+                    $this->db_manager->get('Sbm\Db\Table\Invites')
+                        ->getRecord($inviteId)
+                        ->getArrayCopy());
+            }
+            return new ViewModel([
+                'form' => $form
+            ]);
         } catch (\Exception $e) {
+            $msg = '<pre>';
             $msg = __METHOD__ . "\n";
             $msg .= $e->getMessage() . "\n";
             $msg .= $e->getTraceAsString();
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 0,
-                    'msg' => $msg
-                ]));
+            $msg .= '</pre>';
+            return $msg;
         }
     }
 
-    public function getresponsablesvalueoptionsAction()
+    public function inviteformonglet2Action()
     {
+        $form = $this->form_manager->get(\SbmCommun\Form\Invite::class);
+        $form->setValueOptions('eleveId',
+            $this->db_manager->get('Sbm\Db\Select\Eleves')
+                ->inscrits());
         try {
-            $responsables = $this->db_manager->get('Sbm\Db\Select\Responsables');
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'data' => array_flip($responsables),
-                    'success' => 1
-                ]));
+            $inviteId = (int) $this->params('inviteId');
+            if ($inviteId > 0) {
+                $form->setEtat(2)->setData(
+                    $this->db_manager->get('Sbm\Db\Table\Invites')
+                        ->getRecord($inviteId)
+                        ->getArrayCopy());
+            }
+            return new ViewModel([
+                'form' => $form
+            ]);
         } catch (\Exception $e) {
+            $msg = '<pre>';
             $msg = __METHOD__ . "\n";
             $msg .= $e->getMessage() . "\n";
             $msg .= $e->getTraceAsString();
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 0,
-                    'msg' => $msg
-                ]));
+            $msg .= '</pre>';
+            return $msg;
         }
     }
 
-    public function getorganismesvalueoptionsAction()
+    public function inviteformonglet3Action()
     {
+        $form = $this->form_manager->get(\SbmCommun\Form\Invite::class);
+        $form->setValueOptions('responsableId',
+            $this->db_manager->get('Sbm\Db\Select\Responsables'))
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes())
+            ->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('servicesMatin[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->matin())
+            ->setValueOptions('servicesMidi[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->midi())
+            ->setValueOptions('servicesSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->soir())
+            ->setValueOptions('servicesMerSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->mersoir());
         try {
-            $organismes = $this->db_manager->get('Sbm\Db\Select\Organismes');
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'data' => array_flip($organismes),
-                    'success' => 1
-                ]));
+            $inviteId = (int) $this->params('inviteId');
+            if ($inviteId > 0) {
+                $form->setEtat(3)->setData(
+                    $this->db_manager->get('Sbm\Db\Table\Invites')
+                        ->getRecord($inviteId)
+                        ->getArrayCopy());
+            }
+            return new ViewModel([
+                'form' => $form
+            ]);
+            die(var_dump($view));
         } catch (\Exception $e) {
+            $msg = '<pre>';
             $msg = __METHOD__ . "\n";
             $msg .= $e->getMessage() . "\n";
             $msg .= $e->getTraceAsString();
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 0,
-                    'msg' => $msg
-                ]));
+            $msg .= '</pre>';
+            return $msg;
+        }
+    }
+
+    public function inviteformonglet4Action()
+    {
+        $form = $this->form_manager->get(\SbmCommun\Form\Invite::class);
+        $form->setValueOptions('organismeId',
+            $this->db_manager->get('Sbm\Db\Select\Organismes'))
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes())
+            ->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('servicesMatin[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->matin())
+            ->setValueOptions('servicesMidi[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->midi())
+            ->setValueOptions('servicesSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->soir())
+            ->setValueOptions('servicesMerSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->mersoir());
+        try {
+            $inviteId = (int) $this->params('inviteId');
+            if ($inviteId > 0) {
+                $form->setEtat(4)->setData(
+                    $this->db_manager->get('Sbm\Db\Table\Invites')
+                        ->getRecord($inviteId)
+                        ->getArrayCopy());
+            }
+            return new ViewModel([
+                'form' => $form
+            ]);
+            die(var_dump($view));
+        } catch (\Exception $e) {
+            $msg = '<pre>';
+            $msg = __METHOD__ . "\n";
+            $msg .= $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString();
+            $msg .= '</pre>';
+            return $msg;
+        }
+    }
+
+    public function inviteformonglet5Action()
+    {
+        $form = $this->form_manager->get(\SbmCommun\Form\Invite::class);
+        $form->setValueOptions('communeId',
+            $this->db_manager->get('Sbm\Db\Select\Communes')
+                ->visibles())
+            ->setValueOptions('stationId',
+            $this->db_manager->get('Sbm\Db\Select\Stations')
+                ->ouvertes())
+            ->setValueOptions('etablissementId',
+            $this->db_manager->get('Sbm\Db\Select\Etablissements')
+                ->desservis())
+            ->setValueOptions('servicesMatin[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->matin())
+            ->setValueOptions('servicesMidi[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->midi())
+            ->setValueOptions('servicesSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->soir())
+            ->setValueOptions('servicesMerSoir[]',
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->mersoir());
+        try {
+            $inviteId = (int) $this->params('inviteId');
+            if ($inviteId > 0) {
+                $form->setEtat(5)->setData(
+                    $this->db_manager->get('Sbm\Db\Table\Invites')
+                        ->getRecord($inviteId)
+                        ->getArrayCopy());
+            }
+            return new ViewModel([
+                'form' => $form
+            ]);
+        } catch (\Exception $e) {
+            $msg = '<pre>';
+            $msg = __METHOD__ . "\n";
+            $msg .= $e->getMessage() . "\n";
+            $msg .= $e->getTraceAsString();
+            $msg .= '</pre>';
+            return $msg;
         }
     }
 

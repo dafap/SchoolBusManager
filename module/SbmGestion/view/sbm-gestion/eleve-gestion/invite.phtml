@@ -10,8 +10,8 @@
  * @filesource invite.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2021
- * @version 2021-2.6.1
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\DateLib;
 
@@ -96,9 +96,7 @@ $actions = [
         $df->modify('+1 day');
         $aujourdhui = new DateTime();
         $hiddens = [
-            'inviteId' => $invite->inviteId,
-            'eleveId' => $this->eleveId,
-            'eleve' => $this->eleve
+            'inviteId' => $invite->inviteId
         ];
         $stations = implode('<br>', array_filter([
             $invite->station,

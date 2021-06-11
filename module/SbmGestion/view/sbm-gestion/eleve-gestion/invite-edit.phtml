@@ -10,14 +10,30 @@
  * @filesource invite-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2021
- * @version 2021-2.6.1
+ * @date 10 juin 2021
+ * @version 2021-2.6.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('sbm-gestion/eleve-gestion', 'invite.css');
-$this->jQuery();
+$this->jQuery([
+    'jquery-ui'
+]);
 $this->themeJs('gestion-eleve', 'invite.js');
+$this->inlineScript()->captureStart();
+?>
+alert(<?=$this->form->getEtat();?>);
+$(function() {
+	$("#tabs").tabs({active: <?=$this->form->getEtat() == -1 ? 1 : $this->form->getEtat() - 1;?>});
+	js_invite.montreOnglet(<?=$this->form->getEtat();?>);
+});
+<?php
+$this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
+$this->inlineScript()->captureStart();
+?>
+js_invite.init(<?=$this->inviteId;?>);
+<?php
+$this->inlineScript()->captureEnd();
 $url_retour = $this->url('sbmgestion/gestioneleve', [
     'action' => 'invite'
 ]);
@@ -46,22 +62,39 @@ $actions = [
         <?=$this->formHidden($this->form->get('gratuit'));?>
         <?=$this->formHidden($this->form->get('csrf'));?>
     	<fieldset class="sbm-page1 label-180">
-			<div id="wrapper-nom" class="row-inner edit">
-			    <?=$this->formRow($this->form->get('nom'));?></div>
-			<div id="wrapper-prenom" class="row-inner edit">
-			    <?=$this->formRow($this->form->get('prenom'));?></div>
-			<div id="wrapper-sexe" class="clearfix">
-				<div id="inner-sexe" class="row-inner ajout float-left">
-			    <?=$this->formRow($this->form->get('sexe'));?></div>
+			<p>Choisissez l'onglet correspondant à la situation du bénéficiaire.</p>
+			<div id="tabs">
+				<ul>
+					<li><a href="#onglet1">Élève déjà inscrit ayant<br>besoin d'un
+							déplacement<br>sur d'autres itinéraires
+					</a></li>
+					<li><a href="#onglet2">Bénéficiaire rattaché à un élève<br>déjà
+							inscrit et affecté sur les<br>mêmes itinéraires que l'élève
+					</a></li>
+					<li><a href="#onglet3">Bénéficiaire hébergé chez un<br>responsable
+							déjà inscrit mais<br>avec des itinéraires spécifiques
+					</a></li>
+					<li class="centre"><a href="#onglet4">Bénéficiaire dépendant<br>d'un<br>organisme
+							d'accueil
+					</a></li>
+					<li><a href="#onglet5">&nbsp;<br>Autres cas<br>&nbsp;
+					</a></li>
+				</ul>
+				<div id="onglet1"></div>
+				<div id="onglet2"></div>
+				<div id="onglet3"></div>
+				<div id="onglet4"></div>
+				<div id="onglet5"></div>
+				</ul>
 			</div>
-			<div id="wrapper-nationalite" class="row-inner edit">
-			    <?=$this->formRow($this->form->get('nationalite'));?></div>
-			<div id="wrapper-identifiantSejour" class="row-inner edit">
-			    <?=$this->formRow($this->form->get('identifiantSejour'));?></div>
-			<div id="wrapper-dateDebut" class="row-inner edit">
+			<div id="wrapper-motifDemande" class="row-inner edit">
+			    <?=$this->formRow($this->form->get('motifDemande'));?></div>
+			<div class="validite clearfix">
+				<div id="wrapper-dateDebut" class="row-inner edit float-left">
 			    <?=$this->formRow($this->form->get('dateDebut'));?></div>
-			<div id="wrapper-dateFin" class="row-inner edit">
+				<div id="wrapper-dateFin" class="row-inner edit float-left">
 			    <?=$this->formRow($this->form->get('dateFin'));?></div>
+			</div>
 			<div id="wrapper-demande" class="clearfix">
 				<div id="inner-demande" class="row-inner edit float-left">
 			    <?=$this->formRow($this->form->get('demande'));?></div>

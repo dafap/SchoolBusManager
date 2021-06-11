@@ -1,0 +1,24 @@
+<?php
+/**
+ * Contenu de l'onglet 2 d'une fiche invité
+ *
+ * @project sbm
+ * @package SbmAjax\view\sbm-ajax\eleve
+ * @filesource inviteformonglet2.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
+ */
+?>
+<div id="wrapper-onglet2">
+	<div id="wrapper-beneficiaire" class="beneficiaire clearfix">
+		<div id="wrapper-nom" class="row-inner float-left"><?=$this->formRow($this->form->get('nom'));?></div>
+		<div id="wrapper-prenom" class="row-inner float-left"><?=$this->formRow($this->form->get('prenom'));?></div>
+		<div id="wrapper-sexe" class="row-inner float-left"><?=$this->formRow($this->form->get('sexe'));?></div>
+		<div id="wrapper-nationalite" class="row-inner float-left"><?=$this->formRow($this->form->get('nationalite'));?></div>
+	</div>
+	<div id="wrapper-domicile" class="domicile">
+		<div id="wrapper-chez" class="row-inner"><?=$this->formRow($this->form->get('eleveId'));?></div>
+	</div>
+</div>

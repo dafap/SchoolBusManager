@@ -8,8 +8,8 @@
  * @filesource ElevesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2021
- * @version 2021-2.6.1
+ * @date 9 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -94,6 +94,40 @@ class ElevesForSelect extends AbstractQuery implements FactoryInterface
                 $row['nomprenom'], $row['grilleTarifR1'],
                 $row['reductionR1'] ? 'Réduit' : 'Normal', $row['duplicataR1'],
                 $row['duplicataR1'] > 1 ? 's' : '');
+        }
+        return $result;
+    }
+
+    public function inscrits()
+    {
+        $conditions = new \SbmCommun\Model\Db\Sql\Predicate\ElevesInscrits(
+            $this->millesime, 'sco');
+        $select = $this->sql->select([
+            'ele' => $this->table_name['eleves']
+        ])
+            ->columns(
+            [
+                'eleveId',
+                'nomprenom' => new Literal(
+                    'concat(ele.nom," ",ele.prenom," (",com.alias,")")')
+            ])
+            ->join([
+            'sco' => $this->table_name['scolarites']
+        ], 'ele.eleveId = sco.eleveId', [])
+            ->join([
+            'res' => $this->table_name['responsables']
+        ], 'res.responsableId = ele.responsable1Id', [])
+            ->join([
+            'com' => $this->table_name['communes']
+        ], 'com.communeId = res.communeId', [])
+            ->where($conditions())
+            ->order([
+            'ele.nom',
+            'ele.prenom'
+        ]);
+        $result = [];
+        foreach ($this->renderResult($select) as $row) {
+            $result[$row['eleveId']] = $row['nomprenom'];
         }
         return $result;
     }
