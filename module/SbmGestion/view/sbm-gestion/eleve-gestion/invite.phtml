@@ -88,7 +88,7 @@ $actions = [
 					<?php foreach ($data as $invite) :?>
 					<?php
         $invite->setFlags(\ArrayObject::ARRAY_AS_PROPS);
-        $tr_css = $this->cycle([
+        $tr_css = 'petit ' . $this->cycle([
             "even",
             "odd"
         ])->next();

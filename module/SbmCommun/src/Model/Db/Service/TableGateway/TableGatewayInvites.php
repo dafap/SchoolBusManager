@@ -15,7 +15,7 @@
  */
 namespace SbmCommun\Model\Db\Service\TableGateway;
 
-use SbmCommun\Model\Hydrator\Eleves as Hydrator;
+use SbmCommun\Model\Hydrator\Invites as Hydrator;
 
 class TableGatewayInvites extends AbstractSbmTableGateway
 {

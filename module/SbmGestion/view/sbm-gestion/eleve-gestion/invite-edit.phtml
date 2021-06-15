@@ -21,9 +21,10 @@ $this->jQuery([
 $this->themeJs('gestion-eleve', 'invite.js');
 $this->inlineScript()->captureStart();
 ?>
-alert(<?=$this->form->getEtat();?>);
+
 $(function() {
 	$("#tabs").tabs({active: <?=$this->form->getEtat() == -1 ? 1 : $this->form->getEtat() - 1;?>});
+    js_invite.init(<?=$this->inviteId;?>);
 	js_invite.montreOnglet(<?=$this->form->getEtat();?>);
 });
 <?php
@@ -31,7 +32,6 @@ $this->inlineScript()->captureEnd();
 $js = 'window.document.getElementById(\'op\').value=%s;';
 $this->inlineScript()->captureStart();
 ?>
-js_invite.init(<?=$this->inviteId;?>);
 <?php
 $this->inlineScript()->captureEnd();
 $url_retour = $this->url('sbmgestion/gestioneleve', [
@@ -55,13 +55,81 @@ $actions = [
 		</div>
 	</div>
 	<div id="fiche-inner">
-	<?=$this->form()->openTag($this->form);?>
+	    <?=$this->form()->openTag($this->form);?>
         <?=$this->formHidden($this->form->get('inviteId'));?>
         <?=$this->formHidden($this->form->get('millesime'));?>
-        <?=$this->formHidden($this->form->get('eleveId'));?>
-        <?=$this->formHidden($this->form->get('gratuit'));?>
         <?=$this->formHidden($this->form->get('csrf'));?>
-    	<fieldset class="sbm-page1 label-180">
+
+        <?php
+        switch ($this->form->getEtat()) {
+            case 1:
+                $hiddens = [
+                    'nom' => null,
+                    'prenom' => null,
+                    'sexe' => null,
+                    'nationalite' => null,
+                    'responsableId' => null,
+                    'organismeId' => null
+                ];
+                break;
+            case 2:
+                $hiddens = [
+                    'chez' => '',
+                    'adresseL1' => '',
+                    'adresseL2' => '',
+                    'adresseL3' => '',
+                    'codePostal' => '',
+                    'communeId' => '',
+                    'etablissementId' => '',
+                    'stationId' => - 1,
+                    'responsableId' => - 1,
+                    'organismeId' => - 1,
+                    'servicesMatin' => '',
+                    'servicesMidi' => '',
+                    'servicesSoir' => '',
+                    'servicesMerSoir' => ''
+                ];
+                break;
+            case 3:
+                $hiddens = [
+                    'chez' => null,
+                    'adresseL1' => null,
+                    'adresseL2' => null,
+                    'adresseL3' => null,
+                    'codePostal' => null,
+                    'communeId' => null,
+                    'etablissementId' => null,
+                    'stationId' => null,
+                    'eleveId' => null,
+                    'organismeId' => null
+                ];
+                break;
+            case 4:
+                $hiddens = [
+                    'chez' => null,
+                    'adresseL1' => null,
+                    'adresseL2' => null,
+                    'adresseL3' => null,
+                    'codePostal' => null,
+                    'communeId' => null,
+                    'etablissementId' => null,
+                    'stationId' => null,
+                    'eleveId' => null,
+                    'responsableId' => null
+                ];
+                break;
+            case 5:
+                $hiddens = [
+                    'eleveId' => null,
+                    'responsableId' => null,
+                    'organismeId' => null
+                ];
+                break;
+            default:
+                break;
+        }
+        ?>
+		<fieldset class="sbm-page1 label-180">
 			<p>Choisissez l'onglet correspondant à la situation du bénéficiaire.</p>
 			<div id="tabs">
 				<ul>

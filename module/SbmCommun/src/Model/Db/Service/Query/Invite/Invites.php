@@ -42,7 +42,7 @@ class Invites extends AbstractQuery
                 'demande',
                 'dateDebut',
                 'dateFin',
-                'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom,inv.prenom)'),
+                'beneficiaire' => new Literal($this->xSqlBeneficiaire()),
                 'responsable' => new Literal($this->xSqlResponsable()),
                 'adresseL1' => new Literal($this->xSqlAdresseL(1)),
                 'adresseL2' => new Literal($this->xSqlAdresseL(2)),
@@ -118,7 +118,9 @@ class Invites extends AbstractQuery
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ], 'sco.eleveId = ele.eleveId', [
             'eleveId',
-            'responsable2Id'
+            'responsable2Id',
+            'nom',
+            'prenom'
         ])
             ->join([
             'r1' => $this->subselectResponsable()
@@ -214,10 +216,9 @@ class Invites extends AbstractQuery
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = eta.communeId',
-            [
-                //'commune' => 'nom',
-                //'lacommune' => 'alias',
-                //'laposte' => 'alias_laposte'
+            [ // 'commune' => 'nom',
+            // 'lacommune' => 'alias',
+            // 'laposte' => 'alias_laposte'
             ]);
     }
 
@@ -356,6 +357,13 @@ class Invites extends AbstractQuery
     }
 
     // ===============================================================
+    private function xSqlBeneficiaire(): string
+    {
+        $sql1 = 'CONCAT_WS(" ",ele.nom,ele.prenom)';
+        $sql2 = 'CONCAT_WS(" ",inv.nom,inv.prenom)';
+        return "IF(ISNULL(inv.nom),$sql1,$sql2)";
+    }
+
     private function xSqlResponsable(): string
     {
         $sql2 = 'IF(inv.organismeId > 0,org.organisme,inv.chez)';
@@ -410,7 +418,7 @@ class Invites extends AbstractQuery
 
     private function xSqlStation(): string
     {
-        return 'IF(inv.eleveId > 0,ele.stationR1,sta.station)';
+        return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.stationR1,sta.station)';
     }
 
     private function xSqlStationR2(): string
@@ -426,21 +434,21 @@ class Invites extends AbstractQuery
 
     private function xSqlServicesMatin(): string
     {
-        return 'IF(inv.eleveId > 0,ele.matin,inv.servicesMatin)';
+        return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.matin,inv.servicesMatin)';
     }
 
     private function xSqlServicesMidi(): string
     {
-        return 'IF(inv.eleveId > 0,ele.midi,inv.servicesMidi)';
+        return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.midi,inv.servicesMidi)';
     }
 
     private function xSqlServicesSoir(): string
     {
-        return 'IF(inv.eleveId > 0,ele.soir,inv.servicesSoir)';
+        return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.soir,inv.servicesSoir)';
     }
 
     private function xSqlServicesMerSoir(): string
     {
-        return 'IF(inv.eleveId > 0,ele.msoir,inv.servicesMerSoir)';
+        return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.msoir,inv.servicesMerSoir)';
     }
 }

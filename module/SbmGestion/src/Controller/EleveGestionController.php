@@ -944,41 +944,6 @@ class EleveGestionController extends AbstractActionController
     public function inviteAction()
     {
         $this->debugInitLog(StdLib::findParentPath(__DIR__, 'data/tmp'), 'invite.log');
-        /*
-         * $prg = $this->prg();
-         * $arret = false;
-         * if ($prg instanceof Response) {
-         * return $prg;
-         * } elseif ($prg === false || array_key_exists('retour', $prg)) {
-         * $args = Session::get('post', false, $this->getSessionNamespace());
-         * if (! $args) {
-         * $arret = true;
-         * $flashMessengerMessage = 'Action formellement interdite !';
-         * $flashMessengerNS = FlashMessenger::NAMESPACE_ERROR;
-         * }
-         * } else {
-         * $args = $prg;
-         * if (array_key_exists('cancel', $args)) {
-         * $arret = true;
-         * $flashMessengerMessage = '';
-         * $flashMessengerNS = FlashMessenger::NAMESPACE_SUCCESS;
-         * } elseif (array_key_exists('origine', $args)) {
-         * $this->redirectToOrigin()->setBack($args['origine']);
-         * unset($args['origine']);
-         * Session::set('post', $args, $this->getSessionNamespace());
-         * }
-         * }
-         * // sortie propre
-         * if ($arret) {
-         * Session::remove('post', $this->getSessionNamespace());
-         * try {
-         * return $this->redirectToOrigin()->back();
-         * } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface
-         * $e) {
-         * return $this->homePage($flashMessengerMessage, $flashMessengerNS);
-         * }
-         * }
-         */
         $args = $this->initListe('invites');
         if ($args instanceof Response) {
             return $args;
@@ -1083,11 +1048,6 @@ class EleveGestionController extends AbstractActionController
         ];
         $r = $this->editData($params, function ($args) {
             return $args['inviteId'];
-        },null, function ($args) {
-            if (array_key_exists('servicesMatin', $args)) {
-                $args['servicesMatin'] = \Zend\Json\Json::encode($args['servicesMatin']);
-                return $args;
-            }
         });
         if ($r instanceof Response) {
             return $r;

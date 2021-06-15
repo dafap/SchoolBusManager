@@ -10,7 +10,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2021
+ * @date 14 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmAjax\Controller;
@@ -1246,19 +1246,7 @@ class EleveController extends AbstractActionController
                 ->ouvertes())
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->desservis())
-            ->setValueOptions('servicesMatin[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->matin())
-            ->setValueOptions('servicesMidi[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->midi())
-            ->setValueOptions('servicesSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->soir())
-            ->setValueOptions('servicesMerSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->mersoir());
+                ->desservis());
         try {
             $inviteId = (int) $this->params('inviteId');
             if ($inviteId > 0) {
@@ -1317,19 +1305,7 @@ class EleveController extends AbstractActionController
                 ->ouvertes())
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->desservis())
-            ->setValueOptions('servicesMatin[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->matin())
-            ->setValueOptions('servicesMidi[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->midi())
-            ->setValueOptions('servicesSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->soir())
-            ->setValueOptions('servicesMerSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->mersoir());
+                ->desservis());
         try {
             $inviteId = (int) $this->params('inviteId');
             if ($inviteId > 0) {
@@ -1362,19 +1338,7 @@ class EleveController extends AbstractActionController
                 ->ouvertes())
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->desservis())
-            ->setValueOptions('servicesMatin[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->matin())
-            ->setValueOptions('servicesMidi[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->midi())
-            ->setValueOptions('servicesSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->soir())
-            ->setValueOptions('servicesMerSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->mersoir());
+                ->desservis());
         try {
             $inviteId = (int) $this->params('inviteId');
             if ($inviteId > 0) {
@@ -1408,19 +1372,7 @@ class EleveController extends AbstractActionController
                 ->ouvertes())
             ->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->desservis())
-            ->setValueOptions('servicesMatin[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->matin())
-            ->setValueOptions('servicesMidi[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->midi())
-            ->setValueOptions('servicesSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->soir())
-            ->setValueOptions('servicesMerSoir[]',
-            $this->db_manager->get('Sbm\Db\Select\Services')
-                ->mersoir());
+                ->desservis());
         try {
             $inviteId = (int) $this->params('inviteId');
             if ($inviteId > 0) {

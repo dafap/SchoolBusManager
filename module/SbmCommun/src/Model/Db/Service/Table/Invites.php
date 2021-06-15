@@ -54,6 +54,7 @@ class Invites extends AbstractSbmTable
                 'dateCreation'
             ]);
         }
+        //$obj_data->debug_dump(false, true);
         return parent::saveRecord($obj_data);
     }
 }

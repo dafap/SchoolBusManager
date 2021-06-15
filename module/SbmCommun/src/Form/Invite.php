@@ -16,18 +16,20 @@
  *
  * Les champs suivants sont des Select dont le tableau de value_options devra être
  * initialisé : eleveId, responsableId, organismeId, communeId, etablissementId,
- * stationId, servicesMatin, servicesMidi, servicesSoir et servicesMerSoir
+ * stationId
  * Le champ nationalite (Select) est initialisé par la méthode
  * SbmCommun\Model\Db\ObjectData\Invite::getNationalites()
- * Parmmi eux, les champs suivants sont des MultiSelect : servicesMatin, servicesMidi,
- * servicesSoir et servicesMerSoir
  *
- * 4 cas seront envisagés par la suite :
- * 1/ Si eleveId est renseigné, il s'agit d'un correspondant résidant au même domicile que
- * l'élève. Il n'y a pas lieu de saisir la suite car l'adresse est celle de l'élève, le
- * responsable est celui de l'élève, l'établissement est celui de l'élève, la station
- * origine est celle de l'élève et les services de transport sont ceux de l'élève.
- *
+ * 5 cas seront envisagés par la suite :
+ * 1/ Si eleveId est renseigné, il s'agit
+ * 1.a/ Soit d'un élève qui a besoin d'un itinéraire spécifique sur une durée limitée. Il
+ * faut alors saisir les champs : chez, adresseL1, adresseL2, adresseL3, codePostal,
+ * communeId, etablissementId, stationId, servicesMatin, servicesMidi, servicesSoir,
+ * servicesMerSoir
+ * 1.b/ Soit d'un correspondant résidant au même domicile que l'élève. Il n'y a pas lieu
+ * de saisir la suite car l'adresse est celle de l'élève, le responsable est celui de
+ * l'élève, l'établissement est celui de l'élève, la station origine est celle de l'élève
+ * et les services de transport sont ceux de l'élève.
  * 2/ Si responsabeId est renseigné, l'adresse est celle du responsable. Il reste à saisir
  * l'établissement, la station d'origine et les services de transport
  *
@@ -51,7 +53,7 @@
  * @filesource Invite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 juin 2021
+ * @date 14 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmCommun\Form;
@@ -410,20 +412,17 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ])
             ->add(
             [
-                'name' => 'servicesMatin[]',
-                'type' => 'Zend\Form\Element\Select',
+                'name' => 'servicesMatin',
+                'type' => 'text',
                 'attributes' => [
                     'id' => 'invite-servicesMatin',
-                    'class' => 'sbm-width-30c',
-                    'multiple' => 'multiple'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Services du matin',
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
-                    'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]
@@ -431,20 +430,17 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ])
             ->add(
             [
-                'name' => 'servicesMidi[]',
-                'type' => 'Zend\Form\Element\Select',
+                'name' => 'servicesMidi',
+                'type' => 'text',
                 'attributes' => [
                     'id' => 'invite-servicesMidi',
-                    'class' => 'sbm-width-30c',
-                    'multiple' => 'multiple'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Services du retour midi',
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
-                    'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]
@@ -452,20 +448,17 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ])
             ->add(
             [
-                'name' => 'servicesSoir[]',
-                'type' => 'Zend\Form\Element\Select',
+                'name' => 'servicesSoir',
+                'type' => 'text',
                 'attributes' => [
                     'id' => 'invite-servicesSoir',
-                    'class' => 'sbm-width-30c',
-                    'multiple' => 'multiple'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Services du soir',
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
-                    'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]
@@ -473,20 +466,17 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ])
             ->add(
             [
-                'name' => 'servicesMerSoir[]',
-                'type' => 'Zend\Form\Element\Select',
+                'name' => 'servicesMerSoir',
+                'type' => 'text',
                 'attributes' => [
                     'id' => 'invite-servicesMerSoir',
-                    'class' => 'sbm-width-30c',
-                    'multiple' => 'multiple'
+                    'class' => 'sbm-width-30c'
                 ],
                 'options' => [
                     'label' => 'Services du mercredi soir',
                     'label_attributes' => [
                         'class' => 'label_class'
                     ],
-                    'empty_option' => 'Ctrl + Clic pour sélectionner plusieurs services',
-                    'disable_inarray_validator' => true,
                     'error_attributes' => [
                         'class' => 'error_class'
                     ]
@@ -717,20 +707,20 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                 'name' => 'stationId',
                 'required' => false
             ],
-            'servicesMatin[]' => [
-                'name' => 'servicesMatin[]',
+            'servicesMatin' => [
+                'name' => 'servicesMatin',
                 'required' => false
             ],
-            'servicesMidi[]' => [
-                'name' => 'servicesMidi[]',
+            'servicesMidi' => [
+                'name' => 'servicesMidi',
                 'required' => false
             ],
-            'servicesSoir[]' => [
-                'name' => 'servicesSoir[]',
+            'servicesSoir' => [
+                'name' => 'servicesSoir',
                 'required' => false
             ],
-            'servicesMerSoir[]' => [
-                'name' => 'servicesMerSoir[]',
+            'servicesMerSoir' => [
+                'name' => 'servicesMerSoir',
                 'required' => false
             ],
             'dateDebut' => [
@@ -911,6 +901,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
 
     public function setData($data)
     {
+        //var_dump($this->etat, $data);
         $this->dataTmp = $data;
         switch ($this->etat) {
             case 1:
@@ -947,11 +938,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
                 $this->etat = - 1;
                 break;
         }
-        die(var_dump($this->dataTmp));
-        $this->explodeServices('servicesMatin')
-            ->explodeServices('servicesMidi')
-            ->explodeServices('servicesSoir')
-            ->explodeServices('servicesMerSoir');
+        //die(var_dump($this->dataTmp));
         return parent::setData($this->dataTmp);
     }
 
@@ -963,40 +950,12 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
         } else {
             $this->dataTmp = $objData;
         }
-        //die(var_dump($this->dataTmp));
+        // die(var_dump($this->dataTmp));
         $this->resetEtat()->getEtat();
-        $this->implodeServices('servicesMatin')
-            ->implodeServices('servicesMidi')
-            ->implodeServices('servicesSoir')
-            ->implodeServices('servicesMerSoir');
         if (is_object($objData)) {
             return $objData->exchangeArray($this->dataTmp);
         } else {
             return $this->dataTmp;
         }
-    }
-
-    private function explodeServices(string $key)
-    {
-        if (is_object($this->dataTmp) && isset($this->dataTmp->{$key}) &&
-            is_string($this->dataTmp->{$key})) {
-            $this->dataTmp->{$key} = explode(' ', $this->dataTmp->{$key});
-        } elseif (is_array($this->dataTmp) && array_key_exists($key, $this->dataTmp) &&
-            is_string($this->dataTmp[$key])) {
-            $this->dataTmp[$key] = explode(' ', $this->dataTmp[$key]);
-        }
-        return $this;
-    }
-
-    private function implodeServices(string $key)
-    {
-        if (is_object($this->dataTmp) && isset($this->dataTmp->{$key}) &&
-            is_array($this->dataTmp->{$key})) {
-            $this->dataTmp->{$key} = implode(' ', $this->dataTmp->{$key});
-        } elseif (is_array($this->dataTmp) && array_key_exists($key, $this->dataTmp) &&
-            is_array($this->dataTmp[$key])) {
-            $this->dataTmp[$key] = implode(' ', $this->dataTmp[$key]);
-        }
-        return $this;
     }
 }

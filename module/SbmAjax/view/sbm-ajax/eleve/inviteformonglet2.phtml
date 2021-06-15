@@ -10,6 +10,27 @@
  * @date 9 juin 2021
  * @version 2021-2.6.2
  */
+$hiddens = [
+    'chez' => null,
+    'adresseL1' => null,
+    'adresseL2' => null,
+    'adresseL3' => null,
+    'codePostal' => null,
+    'communeId' => null,
+    'etablissementId' => null,
+    'stationId' => null,
+    'responsableId' => null,
+    'organismeId' => null,
+    'servicesMatin' => null,
+    'servicesMidi' => null,
+    'servicesSoir' => null,
+    'servicesMerSoir' => null
+];
+foreach ($hiddens as $elementName => $value) {
+    $element = $this->form->get($elementName);
+    $element->setValue($value);
+    echo $this->formHidden($element);
+}
 ?>
 <div id="wrapper-onglet2">
 	<div id="wrapper-beneficiaire" class="beneficiaire clearfix">

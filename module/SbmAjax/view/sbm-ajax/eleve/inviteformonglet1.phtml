@@ -7,11 +7,24 @@
  * @filesource inviteformonglet1.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2021
+ * @date 14 juin 2021
  * @version 2021-2.6.2
  */
 $element = $this->form->get('eleveId');
 $element->setLabel('Identité du bénéficiaire');
+$hiddens = [
+    'nom' => null,
+    'prenom' => null,
+    'sexe' => null,
+    'nationalite' => null,
+    'responsableId' => null,
+    'organismeId' => null
+];
+foreach ($hiddens as $elementName => $value) {
+    $element = $this->form->get($elementName);
+    $element->setValue($value);
+    echo $this->formHidden($element);
+}
 ?>
 <div id="wrapper-onglet1">
 	<div id="wrapper-beneficiaire" class="beneficiaire">
@@ -34,9 +47,9 @@ $element->setLabel('Identité du bénéficiaire');
 		<div id="wrapper-etablissementId" class="row-inner"><?=$this->formRow($this->form->get('etablissementId'));?></div>
 	</div>
 	<div id="wrapper-transport" class="transport clearfix">
-		<div id="wrapper-servicesMatin" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMatin[]'));?></div>
-		<div id="wrapper-servicesMidi" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMidi[]'));?></div>
-		<div id="wrapper-servicesSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesSoir[]'));?></div>
-		<div id="wrapper-servicesMerSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMerSoir[]'));?></div>
+		<div id="wrapper-servicesMatin" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMatin'));?></div>
+		<div id="wrapper-servicesMidi" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMidi'));?></div>
+		<div id="wrapper-servicesSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesSoir'));?></div>
+		<div id="wrapper-servicesMerSoir" class="row-inner float-left"><?=$this->formRow($this->form->get('servicesMerSoir'));?></div>
 	</div>
 </div>
