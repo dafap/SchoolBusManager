@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2020
- * @version 2020-2.5.4
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 use SbmCommun\Form;
 use SbmCommun\Form\View\Helper as ViewHelper;
@@ -21,7 +21,7 @@ use SbmCommun\Model\Db\Service\Select;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
 use SbmCommun\Model\Mvc\Controller\Plugin\Service as PluginController;
-use SbmCommun\Model\Service\CalculDroits;
+use SbmCommun\Millau;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Service\MajDistances;
 
@@ -218,7 +218,7 @@ return [
             'Sbm\Db\Query\Services' => Query\Service\Services::class,
             'Sbm\Db\Query\SimulationEtablissements' => Query\Etablissement\SimulationEtablissements::class,
             'Sbm\Db\Query\Stations' => Query\Station\Stations::class,
-            Query\Paiement\Calculs::class => Query\Paiement\Calculs::class,
+            Millau\Tarification\Facture\Calculs::class => Millau\Tarification\Facture\Calculs::class,
             Query\Station\VersEtablissement::class => Query\Station\VersEtablissement::class,
             'Sbm\Db\Query\Transporteurs' => Query\Transporteur\Transporteurs::class,
             'Sbm\Db\Query\History' => Query\History\History::class,
@@ -252,7 +252,7 @@ return [
     ],
     'cartographie_manager' => [
         'factories' => [
-            'Sbm\CalculDroitsTransport' => CalculDroits::class,
+            'Sbm\CalculDroitsTransport' => Millau\CalculDroits::class,
             'Sbm\MajDistances' => MajDistances::class
         ]
     ],

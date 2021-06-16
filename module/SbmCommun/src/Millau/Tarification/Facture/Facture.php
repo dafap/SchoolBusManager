@@ -2,9 +2,12 @@
 /**
  * Objet de manipulation d'une facture
  *
- * La création de l'objet va examiner les sommes dues et rechercher si une facture de la table
- * présente la même signature pour le même millesime et le même responsableId. Si c'est le cas,
- * elle vérifie que les resultats (SbmCommun\Model\Paiements\Resultats) sont les mêmes sinon
+ * La création de l'objet va examiner les sommes dues et rechercher si une facture de la
+ * table
+ * présente la même signature pour le même millesime et le même responsableId. Si c'est le
+ * cas,
+ * elle vérifie que les resultats (SbmCommun\Model\Paiements\Resultats) sont les mêmes
+ * sinon
  * elle crée une nouvelle facture avec le numéro séquentiel suivant.
  *
  * @project sbm
@@ -12,16 +15,19 @@
  * @filesource Facture.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-4.5.11
  */
-namespace SbmCommun\Model\Paiements;
+namespace SbmCommun\Millau\Tarification\Facture;
 
 use SbmBase\Model\DateLib;
 use SbmBase\Model\Session;
+use SbmCommun\Model\Db\ObjectData\Facture as ObjectDataFacture;
+use SbmCommun\Model\Paiements\FactureInterface;
+use SbmCommun\Model\Paiements\ResultatsInterface;
 use Zend\Db\Sql\Where;
 
-class Facture
+class Facture implements FactureInterface
 {
 
     /**
@@ -61,7 +67,7 @@ class Facture
     private $montantDejaFacture;
 
     /**
-     * Attention, ne pas utiliser directement !!! Appeler la méthode getNonveauNumero()
+     * Attention, ne pas utiliser directement !!! Appeler la méthode getNouveauNumero()
      *
      * @var int
      */
@@ -69,9 +75,15 @@ class Facture
 
     /**
      *
-     * @return \SbmCommun\Model\Paiements\Resultats
+     * @var float
      */
-    public function getResultats()
+    private $tauxTva;
+
+    /**
+     *
+     * @return \SbmCommun\Model\Paiements\ResultatsInterface
+     */
+    public function getResultats(): ResultatsInterface
     {
         return $this->resultats;
     }
@@ -80,7 +92,7 @@ class Facture
      *
      * @return \SbmCommun\Model\Db\ObjectData\Facture;
      */
-    public function getOFacture()
+    public function getOFacture(): ObjectDataFacture
     {
         return $this->oFacture;
     }
@@ -89,7 +101,7 @@ class Facture
      *
      * @return int
      */
-    public function getResponsableId()
+    public function getResponsableId(): int
     {
         return $this->oFacture->responsableId;
     }
@@ -98,7 +110,7 @@ class Facture
      *
      * @return number
      */
-    public function getMillesime()
+    public function getMillesime(): int
     {
         return $this->oFacture->millesime;
     }
@@ -107,7 +119,7 @@ class Facture
      *
      * @return number
      */
-    public function getExercice()
+    public function getExercice(): int
     {
         return $this->oFacture->exercice;
     }
@@ -117,7 +129,7 @@ class Facture
      *
      * @return string
      */
-    public function getDate()
+    public function getDate(): string
     {
         return $this->oFacture->date;
     }
@@ -126,7 +138,7 @@ class Facture
      *
      * @return number
      */
-    public function getNumero()
+    public function getNumero(): int
     {
         return $this->oFacture->numero;
     }
@@ -135,7 +147,7 @@ class Facture
      *
      * @return float
      */
-    public function getMontant()
+    public function getMontant(): float
     {
         return $this->oFacture->montant;
     }
@@ -144,7 +156,7 @@ class Facture
      *
      * @return array
      */
-    public function getFacturesPrecedentes()
+    public function getFacturesPrecedentes(): array
     {
         return $this->facturesPrecedentes;
     }
@@ -153,7 +165,7 @@ class Facture
      *
      * @return number
      */
-    public function getMontantDejaFacture()
+    public function getMontantDejaFacture(): float
     {
         return $this->montantDejaFacture;
     }
@@ -164,6 +176,7 @@ class Facture
         $this->resultats = $resultats;
         $this->montantDejaFacture = 0;
         $this->facturesPrecedentes = [];
+        $this->tauxTva = 0;
         $this->_nouveau_numero = 0;
         $this->tFactures = $dbManager->get('Sbm\Db\Table\Factures');
         $this->oFacture = $this->tFactures->getObjData();
@@ -180,13 +193,14 @@ class Facture
     /**
      * Si on veut facturer, la facture sera créée à partir de la propriété 'resultats'
      * lorsque la signature de ce resultats n'est pas la même que la signature de la
-     * dernière facture pour ce débiteur. Pour obtenir les facturesPrecedentes on se
+     * dernière facture pour ce débiteur.
+     * Pour obtenir les facturesPrecedentes on se
      * contente de rechercher les factures de numéro antérieur à celle qu'on doit sortir.
      * En même temps on met à jour la propriété 'montantDejaFacture'
      *
-     * @return \SbmCommun\Model\Paiements\Facture
+     * @return \SbmCommun\Model\Paiements\FactureInterface
      */
-    public function facturer()
+    public function facturer(): FactureInterface
     {
         $this->facturesPrecedentes = [];
         $this->montantDejaFacture = 0;
@@ -226,7 +240,7 @@ class Facture
         // }
     }
 
-    public function lire($numero)
+    public function lire($numero): FactureInterface
     {
         $this->facturesPrecedentes = [];
         $this->montantDejaFacture = 0;
@@ -281,7 +295,8 @@ class Facture
     }
 
     /**
-     * Donne un nouveau numéro. Le redonne si on l'a déjà recherché.
+     * Donne un nouveau numéro.
+     * Le redonne si on l'a déjà recherché.
      *
      * @return int
      */
@@ -292,5 +307,44 @@ class Facture
                 1;
         }
         return $this->_nouveau_numero;
+    }
+
+    public function getTva(): float
+    {
+        return round($this->getMontant() * $this->tauxTva / (1 + $this->tauxTva), 2);
+    }
+
+    public function getMontantHT(): float
+    {
+        return $this->getMontant() - $this->getTva();
+    }
+
+    public function setTauxTva(float $taux): FactureInterface
+    {
+        $this->tauxTva = $taux;
+        return $this;
+    }
+
+    public function setResponsableId(int $responsableId): FactureInterface
+    {
+        return $this->clearResultats()->initResultats($responsableId);
+    }
+
+    public function initResultats(int $responsableId)
+    {
+        try {
+            $this->resulats = $this->db_manager->get('Sbm\Facture\Calculs')
+                ->setMillesime($this->getMillesime())
+                ->getResultats($this->responsableId);
+        } catch (\Exception $e) {
+            $this->resulats = null;
+        }
+        return $this;
+    }
+
+    public function clearResultats()
+    {
+        $this->resulats = null;
+        return $this;
     }
 }

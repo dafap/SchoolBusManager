@@ -7,10 +7,10 @@
  * @filesource FactureSet.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-4.5.11
  */
-namespace SbmCommun\Model\Paiements;
+namespace SbmCommun\Millau\Tarification\Facture;
 
 use SbmBase\Model\Session;
 

@@ -1,40 +1,45 @@
 <?php
 /**
- * ViewHelper permettant d'afficher le formulaire d'actions en bout de ligne dans une liste,
+ * ViewHelper permettant d'afficher le formulaire d'actions en bout de ligne dans une
+ * liste,
  * à déclarer dans module.config.php comme ceci :
  * 'view_helpers' => [
- *          'invokables' => [
- *                      'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',]
+ * 'invokables' => [
+ * 'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',]
  * ]
  *
  * La mise en page d'une liste est la suivante :
  * <div class="liste-wrapper">
- *   <div class="zone-actions">
- *   </div>
- *   <table class="liste-inner paiements">
- *     <tbody>
- *       <tr><td>...</td><td><?php echo $this->listeLigneActions($id, $hiddens, $actions, $form_attributes); ?></td></tr>
- *       où $id est un id unique de la ligne, $hiddens, $actions et $arguments des tableaux comme décrit plus bas.
- *       ...
- *     </tbody>
- *   </table>
- *   <div class="zone-pagination">
- *   </div>
+ * <div class="zone-actions">
  * </div>
- * Tous les attributs de la balise <form> sont acceptés, à l'exception de 'method' qui est fixée à POST.
+ * <table class="liste-inner paiements">
+ * <tbody>
+ * <tr><td>...</td><td><?php echo $this->listeLigneActions($id, $hiddens, $actions,
+ * $form_attributes); ?></td></tr>
+ * où $id est un id unique de la ligne, $hiddens, $actions et $arguments des tableaux
+ * comme décrit plus bas.
+ * ...
+ * </tbody>
+ * </table>
+ * <div class="zone-pagination">
+ * </div>
+ * </div>
+ * Tous les attributs de la balise <form> sont acceptés, à l'exception de 'method' qui est
+ * fixée à POST.
  *
  * Pour les hiddens, leur nom est vérifié en fonction de la nature de la valeur passée.
  * - Si la valeur est un scalaire, le nom est épuré pour qu'il ne se termine pas par []
  * - alors que si la valeur est un tableau le nom est normalisé pour se terminer par [].
- *   Il y aura laors autant de <input type='hidden'> que nécessaire et leur id sont distincts.
+ * Il y aura alors autant de <input type='hidden'> que nécessaire et leur id sont
+ * distincts.
  *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form/View/Helper
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 mai 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -132,7 +137,7 @@ class ListeLigneActions extends AbstractListeAction
     {
         $result = '';
         foreach ($buttons as $name => $attributes) {
-            $result .= $this->getButton($name, $attributes, $id);
+            $result .= $this->getButton($name, $attributes, $name . $id);
         }
         return $result;
     }

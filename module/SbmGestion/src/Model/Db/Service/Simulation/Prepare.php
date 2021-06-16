@@ -3,21 +3,21 @@
  * Classe contenant les méthodes servant à préparer une simulation
  *
  * (doit être déclarée dans db_manager parmi les factories)
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Simulation
  * @filesource Prepare.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1ç fév. 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Exception as DbException;
 use SbmCommun\Model\Db\Service\Table\Exception as DbTableException;
-use SbmCommun\Model\Service\CalculDroits;
+use SbmCommun\Millau\CalculDroits;
 use SbmCommun\Model\Strategy\Niveau;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -36,7 +36,7 @@ class Prepare implements FactoryInterface
     /**
      * Classe permettant de mettre à jour les distances
      *
-     * @var \SbmCommun\Model\Service\CalculDroits
+     * @var \SbmCommun\Millau\CalculDroits
      */
     private $majDistances;
 

@@ -213,7 +213,7 @@ class FinanceController extends AbstractActionController
             $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
             // calcul des montants dus, payés et du solde
             $resultats = $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                 $responsableId);
             // condition pour le paginator
             $where = new Where();
@@ -325,7 +325,7 @@ class FinanceController extends AbstractActionController
                 if (! empty($args['eleveId'])) {
                     $responsableId = $form->getData()->responsableId;
                     $resultats = $this->db_manager->get(
-                        \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                        \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                         $responsableId, $args['eleveId']);
                     if ($montant >= $resultats->getSolde('liste')) {
                         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
@@ -1100,7 +1100,7 @@ class FinanceController extends AbstractActionController
         }
         $responsableId = $args['responsableId'];
         $resultats = $this->db_manager->get(
-            \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+            \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
             $responsableId);
         return new ViewModel(
             [

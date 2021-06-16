@@ -5,18 +5,17 @@
  * Service enregistré dans db_manager sous son nom
  *
  * @project sbm
- * @package SbmCommun/src/Model/Db/Service/Query/Paiement
+ * @package SbmCommun/src/Millau/Tarification/Facture
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-4.5.0
+ * @date 16 juin 2021
+ * @version 2021-4.5.11
  */
-namespace SbmCommun\Model\Db\Service\Query\Paiement;
+namespace SbmCommun\Millau\Tarification\Facture;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate;
-use SbmCommun\Model\Paiements\Resultats;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Literal;
 
@@ -37,7 +36,7 @@ class Calculs extends AbstractQuery
      * @param array $arrayEleveId
      * @param bool $force
      *            force l'analyse, même si elle a déjà été faite
-     * @return \SbmCommun\Model\Paiements\Resultats
+     * @return Resultats
      */
     public function getResultats(int $responsableId, array $arrayEleveId = null,
         bool $force = false): Resultats

@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 namespace SbmPdf\Controller;
 
@@ -42,9 +42,9 @@ class DocumentController extends AbstractActionController
     {
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // factureset est un objet Iterator
-        $factureset = new \SbmCommun\Model\Paiements\FactureSet($this->db_manager,
+        $factureset = new \SbmCommun\Millau\Tarification\Facture\FactureSet($this->db_manager,
             $responsableId, $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                     $responsableId));
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
@@ -75,9 +75,9 @@ class DocumentController extends AbstractActionController
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
-        $facture = new \SbmCommun\Model\Paiements\Facture($this->db_manager,
+        $facture = new \SbmCommun\Millau\Tarification\Facture\Facture($this->db_manager,
             $this->db_manager->get(
-                \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                 $responsableId));
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(

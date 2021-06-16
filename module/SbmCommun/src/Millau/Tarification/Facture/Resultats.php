@@ -5,18 +5,19 @@
  * Renvoie les résultats et les méthodes
  *
  * @project sbm
- * @package SbmCommun/src/Model/Paiements
+ * @package SbmCommun/src/Millau/Tarification/Facture
  * @filesource Resultats.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 mai 2019
- * @version 2019-4.5.0
+ * @date 16 juin 2021
+ * @version 2021-4.5.11
  */
-namespace SbmCommun\Model\Paiements;
+namespace SbmCommun\Millau\Tarification\Facture;
 
 use SbmBase\Model\StdLib;
+use SbmCommun\Model\Paiements\ResultatsInterface;
 
-class Resultats
+class Resultats implements ResultatsInterface
 {
 
     private const MONTANT_ABBONNEMENTS = 'montantAbonnements';
@@ -502,7 +503,7 @@ class Resultats
      *
      * @return string
      */
-    public function signature()
+    public function signature():string
     {
         $tmp = sprintf("%04d%011d%.2f%.2f", $this->millesime, $this->responsableId,
             $this->getMontantDuplicatas(), $this->getMontantTotal());
@@ -523,7 +524,7 @@ class Resultats
      * @param Resultats $r
      * @return boolean
      */
-    public function equalTo(Resultats $r): bool
+    public function equalTo(ResultatsInterface $r): bool
     {
         return $this->getMontantDuplicatas() == $r->getMontantDuplicatas() &&
             $this->getMontantTotal() == $r->getMontantTotal() &&

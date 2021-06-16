@@ -7,15 +7,15 @@
  * @filesource Plateforme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 namespace SbmPaiement\Plugin\PayFiP;
 
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Form\ButtonForm;
-use SbmCommun\Model\Paiements\Facture;
+use SbmCommun\Millau\Tarification\Facture\Facture;
 use SbmFront\Model\Responsable\Responsable;
 use SbmPaiement\Plugin;
 use SbmPaiement\Plugin\Exception;
@@ -40,7 +40,7 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
 
     /**
      *
-     * @var \SbmCommun\Model\Paiements\Facture
+     * @var \SbmCommun\Millau\Tarification\Facture\Facture
      */
     private $facture;
 
@@ -133,9 +133,9 @@ class Plateforme extends Plugin\AbstractPlateforme implements Plugin\PlateformeI
         if (empty($this->facture)) {
             // génère une facture ou la récupère si elle existe déjà
             $this->setFacture(
-                new \SbmCommun\Model\Paiements\Facture($this->db_manager,
+                new \SbmCommun\Millau\Tarification\Facture\Facture($this->db_manager,
                     $this->db_manager->get(
-                        \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)
+                        \SbmCommun\Millau\Tarification\Facture\Calculs::class)
                         ->getResultats($this->responsable->responsableId)))
                 ->facturer();
         }

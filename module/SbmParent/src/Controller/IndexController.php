@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 déc. 2019
- * @version 2019-2.5.4
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
 namespace SbmParent\Controller;
 
@@ -137,7 +137,7 @@ class IndexController extends AbstractActionController
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations'),
                 'resultats' => $this->db_manager->get(
-                    \SbmCommun\Model\Db\Service\Query\Paiement\Calculs::class)->getResultats(
+                    \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                     $responsable->responsableId, null, true), // pour forcer le calcul
                 'paiements' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
                     [
@@ -254,8 +254,8 @@ class IndexController extends AbstractActionController
                     } else {
                         $this->flashMessenger()->addSuccessMessage(
                             'L\'enfant est enregistré.');
-                        $this->flashMessenger()->addWarningMessage(
-                            'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                        //$this->flashMessenger()->addWarningMessage(
+                        //    'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
                     }
                 } else {
                     $this->warningDerogationNecessaire($cr);
@@ -840,8 +840,8 @@ class IndexController extends AbstractActionController
                         } else {
                             $this->flashMessenger()->addSuccessMessage(
                                 'L\'enfant est enregistré.');
-                            $this->flashMessenger()->addWarningMessage(
-                                'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                            //$this->flashMessenger()->addWarningMessage(
+                            //    'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
                         }
                     } else {
                         if ($args['fa']) {

@@ -245,6 +245,7 @@ class OutilsInscription
                 'millesime' => $this->millesime,
                 'eleveId' => $eleveId,
                 'inscrit' => 1,
+                'gratuit' => 1,
                 'paiement' => 0,
                 'internet' => 1,
                 'duplicata' => 0,

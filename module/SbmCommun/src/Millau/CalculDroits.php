@@ -19,20 +19,20 @@
  * Aussi, on enregistrera tout, que ce soit l'acquisition ou la perte des droits.
  *
  * @project sbm
- * @package SbmCommun\Model\Service
+ * @package SbmCommun/src/Millau
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mai 2019
- * @version 2019-2.5.0
+ * @date 16 juin 2021
+ * @version 2021-2.5.11
  */
-namespace SbmCommun\Model\Service;
+namespace SbmCommun\Millau;
 
 use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Exception;
 use SbmCartographie\Model\Point;
-use SbmCommun\Model\Paiements\GrilleTarifInterface;
+use SbmCommun\Millau\Tarification\GrilleTarifInterface;
 use SbmCommun\Model\Strategy\Niveau;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -75,9 +75,6 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
      * et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
      *
      * @var array of float
-     * @throws \SbmCartographie\Model\Exception\ExceptionNoCartographieManager
-     *
-     * @return CalculDroits
      */
     private $distance = [];
 
@@ -228,9 +225,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                     case 8:
                         // lycée
                         $result = [
-                            'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                                $domiciles, $destination),
-                            'droit' => true
+                        'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
+                        $domiciles, $destination),
+                        'droit' => true
                         ];
                         break;
                     case 4:
@@ -302,20 +299,20 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $horsSecteur = $r1HorsSecteur && (! $r2 || $r2HorsSecteur);
         if ($return_value && $scolarite->derogation != 1 &&
             (! $this->validDistanceMini() || $horsSecteur)) {
-            $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
-            $return_value = $result['droit'] = false;
-            if ($horsSecteur) {
-                $result['message'] = 'Résidence hors secteur.';
-            } else {
-                $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
+                $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
+                $return_value = $result['droit'] = false;
+                if ($horsSecteur) {
+                    $result['message'] = 'Résidence hors secteur.';
+                } else {
+                    $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
+                }
             }
-        }
-        if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
-            $scolarite->derogation == 0) {
-            $this->data['accordR1'] = $this->data['accordR2'] = 0;
-        }
-        $this->setCompteRendu($result);
-        return $return_value;
+            if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
+                $scolarite->derogation == 0) {
+                    $this->data['accordR1'] = $this->data['accordR2'] = 0;
+                }
+                $this->setCompteRendu($result);
+                return $return_value;
     }
 
     /**
@@ -326,7 +323,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     private function validDistanceMini()
     {
         return $this->data['distanceR1'] >= self::DISTANCE_MINI ||
-            $this->data['distanceR2'] >= self::DISTANCE_MINI;
+        $this->data['distanceR2'] >= self::DISTANCE_MINI;
     }
 
     private function validCommune($communeId)
@@ -475,7 +472,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             $estDeLaCommune = false;
             foreach ($domiciles as $pt) {
                 $estDeLaCommune |= $pt->getAttribute('communeId') ==
-                    $college->getAttribute('communeId');
+                $college->getAttribute('communeId');
             }
             // liste des collèges privés
             $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
@@ -669,15 +666,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                                 // on récupère la distance entre le domicile et l'ecole
                                 if ($aPtDestinations[$j]->getAttribute('etablissementId') ==
                                     $ptEtablissement->getAttribute('etablissementId')) {
-                                    $distances[$i] = $element->distance->value;
-                                }
-                                // on met à jour la distance minimale $dmin
-                                // et on mémorise l'établissement le plus proche
-                                if ($dmin > $element->distance->value) {
-                                    $dmin = $element->distance->value;
-                                    $procheEtablissementId = $aPtDestinations[$j]->getAttribute(
-                                        'etablissementId');
-                                }
+                                        $distances[$i] = $element->distance->value;
+                                    }
+                                    // on met à jour la distance minimale $dmin
+                                    // et on mémorise l'établissement le plus proche
+                                    if ($dmin > $element->distance->value) {
+                                        $dmin = $element->distance->value;
+                                        $procheEtablissementId = $aPtDestinations[$j]->getAttribute(
+                                            'etablissementId');
+                                    }
                             }
                             $j ++;
                         }
@@ -689,7 +686,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                             $procheEtablissementId,
                             $ptEtablissement->getAttribute('classeId'));
                         $droit |= $ptEtablissement->getAttribute('etablissementId') ==
-                            $procheEtablissementId;
+                        $procheEtablissementId;
                         $aEtablissementsAyantDroit[] = $procheEtablissementId;
                         $i ++;
                     }
