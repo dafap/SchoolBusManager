@@ -13,8 +13,8 @@
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2021
- * @version 2021-2.6.1
+ * @date 17 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -477,7 +477,7 @@ class Divers extends AbstractQuery
      * @param int $eleveId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectDataForDuplicata(int $millesime, int $eleveId): Select
+    public function selectDataForDuplicata(int $millesime, int $eleveId): Select
     {
         // construction des expressions SQL
         $xSqlResponsableRes = "CONCAT_WS(' ',res.titre,res.nom,res.prenom)";

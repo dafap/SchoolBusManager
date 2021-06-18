@@ -7,8 +7,8 @@
  * @filesource PassProvisoire.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 avr. 2021
- * @version 2021-2.6.1
+ * @date 18 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmPdf\Model;
 
@@ -65,14 +65,14 @@ class PassProvisoire
      */
     private $data;
 
-    public function __construct()
+    public function __construct(int $millesime)
     {
         $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
         $this->imagePassJuniorRecto = StdLib::concatPath($imagePath, self::RECTO);
         $this->imagePassJuniorVerso = StdLib::concatPath($imagePath, self::VERSO);
         $this->qrcodeNiveau = 'QRCODE,Q';
         $this->qrcodeMessage1 = 'https://www.tra-mobilite/plan-temps-reel/';
-        $this->qrcodeMessage2 = 'ABOARSCO00018';
+        $this->qrcodeMessage2 = sprintf('ABOARSCO%05d', $millesime - 2000);
     }
 
     /**
@@ -86,13 +86,13 @@ class PassProvisoire
         $imagePassJunior = file_get_contents($this->imagePassJuniorRecto);
         $du = StdLib::getParam('du', $data, '');
         $au = StdLib::getParam('au', $data, '');
-        $eleve = StdLib::getParam('eleve', $data, '');
+        $chez = StdLib::getParam('eleve', $data, StdLib::getParam('chez', $data, ''));
         $beneficiaire = StdLib::getParam('beneficiaire', $data, '');
         if (empty($beneficiaire)) {
-            $beneficiaire = $eleve;
-            $eleve = ''; // $eleve est facultatif par la suite
-        } elseif (! empty($eleve)) {
-            $eleve = 'chez ' . $eleve;
+            $beneficiaire = $chez;
+            $chez = ''; // $eleve est facultatif par la suite
+        } elseif (! empty($chez)) {
+            $chez = 'chez ' . $chez;
         }
         $adresseL1 = StdLib::getParam('adresseL1', $data, '');
         $adresseCommune = StdLib::getParam('adresseCommune', $data, '');
@@ -114,7 +114,7 @@ class PassProvisoire
         $midi = StdLib::getParam('midi', $data, '');
         $numero = StdLib::getParam('numero', $data, 99991 + rand(10, 1000));
         return sprintf('@' . $imagePassJunior, $responsable, $adresseL1, $adresseL2,
-            $adresseCommune, $du, $au, $numero, $beneficiaire, $eleve, $ecole, $station,
+            $adresseCommune, $du, $au, $numero, $beneficiaire, $chez, $ecole, $station,
             $matin, $midi, $soir, '');
     }
 

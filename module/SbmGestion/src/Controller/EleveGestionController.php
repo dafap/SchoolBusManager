@@ -14,7 +14,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 juin 2021
+ * @date 17 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
@@ -793,7 +793,7 @@ class EleveGestionController extends AbstractActionController
                     } else {
                         die('Rien à imprimer. Avez-vous renseigné le point d\'origine ?');
                     }
-                    $passProvisoire = new \SbmPdf\Model\PassProvisoire();
+                    $passProvisoire = new \SbmPdf\Model\PassProvisoire($millesime);
                     return $passProvisoire->render($data);
                 }
             }
@@ -1145,13 +1145,34 @@ class EleveGestionController extends AbstractActionController
         }
     }
 
+    /**
+     * Lance la demande d'un pass provisoire
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
     public function invitePassAction()
     {
+        $currentPage = $this->params('page', 1);
         $prg = $this->prg('/document/pass-temporaire', true);
         if ($prg instanceof Response) {
             return $prg;
-        } else {
+        } elseif (! ($inviteId = StdLib::getParam('inviteId', $prg, false))) {
+            $this->flashMessenger()->addErrorMessage('Demande incorrecte.');
             return $this->homePage();
+        }
+        // ici on dispose de $inviteId pour lire les données dans la requête Invites
+        $millesime = Session::get('millesime');
+        try {
+            $passProvisoire = new \SbmPdf\Model\PassProvisoire($millesime);
+            $data = $this->db_manager->get('Sbm\Db\Query\Invites')->getInvitePourPass(
+                $inviteId);
+            return $passProvisoire->render($data);
+        } catch (\Exception $e) {
+            return $this->redirect()->toRoute('sbmgestion/gestioneleve',
+                [
+                    'action' => 'invite',
+                    'page' => $currentPage
+                ]);
         }
     }
 }

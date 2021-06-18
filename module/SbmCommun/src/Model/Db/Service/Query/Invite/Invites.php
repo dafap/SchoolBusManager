@@ -17,6 +17,7 @@ use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use SbmBase\Model\StdLib;
+use SbmBase\Model\DateLib;
 
 class Invites extends AbstractQuery
 {
@@ -217,8 +218,8 @@ class Invites extends AbstractQuery
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = eta.communeId',
             [ // 'commune' => 'nom',
-            // 'lacommune' => 'alias',
-            // 'laposte' => 'alias_laposte'
+               // 'lacommune' => 'alias',
+               // 'laposte' => 'alias_laposte'
             ]);
     }
 
@@ -450,5 +451,237 @@ class Invites extends AbstractQuery
     private function xSqlServicesMerSoir(): string
     {
         return 'IF(inv.eleveId > 0 AND ISNULL(inv.stationId),ele.msoir,inv.servicesMerSoir)';
+    }
+
+    public function getInvitePourPass(int $inviteId): array
+    {
+        $error_msg = 'Ce bénéficiaire n\'a pas été trouvé !';
+        try {
+            $oInvite = $this->db_manager->get('Sbm\Db\Table\Invites')->getRecord(
+                $inviteId);
+        } catch (\Exception $e) {
+            throw new \SbmCommun\Model\Db\Exception\RuntimeException($error_msg);
+        }
+        $eleveId = $oInvite->eleveId;
+        $responsableId = $oInvite->responsableId;
+        $organismeId = $oInvite->organismeId;
+        $stationId = $oInvite->stationId;
+        if (! empty($eleveId)) {
+            if (! empty($stationId)) {
+                $select = $this->selectCas1($inviteId);
+            } else {
+                $select = $this->selectCas2($inviteId, $eleveId);
+            }
+        } elseif (! empty($responsableId)) {
+            $select = $this->selectCas3($inviteId);
+        } elseif (! empty($organismeId)) {
+            $select = $this->selectCas4($inviteId);
+        } else {
+            $select = $this->selectCas5($inviteId);
+        }
+        $resultset = $this->renderResult($select);
+        if ($resultset->count() > 0) {
+            $aoInvite = $resultset->current();
+            $aoInvite->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+            $mersoir = $aoInvite->mersoir;
+            if (empty($mersoir)) {
+                $soir = $aoInvite->soir;
+            } else {
+                $soir = sprintf('%s - Me soir : %s', $aoInvite->soir, $aoInvite->merSoir);
+            }
+            return [
+                'du' => DateLib::formatDateFromMysql($aoInvite->du),
+                'au' => DateLib::formatDateFromMysql($aoInvite->au),
+                'chez' => $aoInvite->chez,
+                'beneficiaire' => $aoInvite->beneficiaire,
+                'responsable' => $aoInvite->responsable,
+                'adresseL1' => $aoInvite->adresseL1,
+                'adresseL2' => $aoInvite->adresseL2,
+                'adresseCommune' => $aoInvite->adresseCommune,
+                'ecole' => $aoInvite->ecole,
+                'station' => $aoInvite->station,
+                'matin' => $aoInvite->matin,
+                'midi' => $aoInvite->midi,
+                'soir' => $soir
+            ];
+        } else {
+            throw new \SbmCommun\Model\Db\Exception\RuntimeException($error_msg);
+        }
+    }
+
+    private function selectCas1(int $inviteId): Select
+    {
+        $columns = [
+            'du' => 'dateDebut',
+            'au' => 'dateFin',
+            'chez' => 'chez',
+            'beneficiaire' => new Literal('CONCAT_WS(" ",ele.nom, ele.prenom)'),
+            'responsable' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            'adresseL1' => 'adresseL1',
+            'adresseL2' => 'adresseL2',
+            'adresseCommune' => new Literal('CONCAT_WS(" ",inv.codePostal,cominv.alias)'),
+            'ecole' => new Literal('CONCAT_WS(" - ",eta.nom, cometa.alias)'),
+            'station' => new Literal('CONCAT(sta.nom, " (", comsta.alias, ")")'),
+            'matin' => 'servicesMatin',
+            'midi' => 'servicesMidi',
+            'soir' => 'servicesSoir',
+            'mersoir' => 'servicesMerSoir'
+        ];
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        return $this->sql->select()
+            ->columns($columns)
+            ->from([
+            'inv' => $this->db_manager->getCanonicName('invites', 'table')
+        ])
+            ->join([
+            'cominv' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cominv.communeId = inv.communeId', [])
+            ->join([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'ele.eleveId = inv.communeId', [])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'res.responsableId = ele.responsable1Id', [])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'eta.etablissementId = inv.etablissementId', [])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cometa.communeId = eta.communeId', [])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta.stationId = inv.stationId', [])
+            ->join([
+            'comsta' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsta.communeId = sta.communeId', [])
+            ->where($where);
+    }
+
+    private function selectCas2(int $inviteId, int $eleveId): Select
+    {
+        $columns = [
+            'du' => 'dateDebut',
+            'au' => 'dateFin',
+            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
+            'merSoir' => new Literal('')
+        ];
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        return $this->sql->select()
+            ->columns($columns)
+            ->from([
+            'inv' => $this->db_manager->getCanonicName('invites', 'table')
+        ])
+            ->join(
+            [
+                'ele' => $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
+                    ->getDataForDuplicata($this->millesime, $eleveId)
+            ], 'ele.eleveId = inv.eleveId',
+            [
+                'chez' => 'eleve',
+                'responsable',
+                'adresseL1',
+                'adresseL2',
+                'adresseCommune',
+                'ecole',
+                'station',
+                'matin',
+                'midi',
+                'soir'
+            ])
+            ->where($where);
+    }
+
+    private function selectCas3(int $inviteId): Select
+    {
+        $columns = [
+            'du' => 'dateDebut',
+            'au' => 'dateFin',
+            'chez' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
+            'responsable' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            'adresseCommune' => new Literal('CONCAT_WS(" ",res.codePostal,comres.alias)'),
+            'ecole' => new Literal('CONCAT_WS(" - ",eta.nom, cometa.alias)'),
+            'station' => new Literal('CONCAT(sta.nom, " (", comsta.alias, ")")'),
+            'matin' => 'servicesMatin',
+            'midi' => 'servicesMidi',
+            'soir' => 'servicesSoir',
+            'mersoir' => 'servicesMerSoir'
+        ];
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        return $this->sql->select()
+            ->columns($columns)
+            ->from([
+            'inv' => $this->db_manager->getCanonicName('invites', 'table')
+        ])
+            ->join(
+            [
+                'res' => $this->db_manager->getCanonicName('responsables', 'table')
+            ], 'res.responsableId = ele.responsable1Id', [])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId = comres.communeId',
+            [
+                'adresseL1' => 'adresseL1',
+                'adresseL2' => 'adresseL2'
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'eta.etablissementId = inv.etablissementId', [])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cometa.communeId = eta.communeId', [])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta.stationId = inv.stationId', [])
+            ->join([
+            'comsta' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsta.communeId = sta.communeId', [])
+            ->where($where);
+    }
+
+    private function selectCas4(int $inviteId): Select
+    {
+        $columns = [
+            'du' => 'dateDebut',
+            'au' => 'dateFin',
+            'chez' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
+            'responsable' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            'adresseCommune' => new Literal('CONCAT_WS(" ",res.codePostal,comres.alias)'),
+            'ecole' => new Literal('CONCAT_WS(" - ",eta.nom, cometa.alias)'),
+            'station' => new Literal('CONCAT(sta.nom, " (", comsta.alias, ")")'),
+            'matin' => 'servicesMatin',
+            'midi' => 'servicesMidi',
+            'soir' => 'servicesSoir',
+            'mersoir' => 'servicesMerSoir'
+        ];
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        return $this->sql->select()
+            ->columns($columns)
+            ->from([
+            'inv' => $this->db_manager->getCanonicName('invites', 'table')
+        ])
+            ->join([], '', [])
+            ->where($where);
+    }
+
+    private function selectCas5(int $inviteId): Select
+    {
+        $where = new Where();
+        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        return $this->sql->select()
+            ->columns($columns)
+            ->from([
+            'inv' => $this->db_manager->getCanonicName('invites', 'table')
+        ])
+            ->join([], '', [])
+            ->where($where);
     }
 }
