@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.1
+ * @date 19 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
 
@@ -2346,6 +2346,30 @@ class TransportController extends AbstractActionController
                 'effectifServicesEtablissements' => $effectifServicesEtablissements,
                 'page' => $currentPage,
                 'pageRetour' => $pageRetour
+            ]);
+    }
+
+    /**
+     * Reçoit en POST les données suivantes : etablissementId, op
+     *
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     */
+    public function etablissementServiceMajAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false ||
+            ! ($etablissementId = StdLib::getParam('etablissementId', $prg, false))) {
+            $this->flashMessenger()->addErrorMessage('L\'etablissement n\'est pas indiqué.');
+            return $this->homePage();
+        }
+        $this->db_manager->get(\SbmCommun\Arlysere\Etablissement\Services::class)->updateServices($etablissementId);
+        $this->flashMessenger()->addInfoMessage(
+            'La mise à jour des services est terminée.');
+        return $this->redirect()->toRoute('sbmgestion/transport',
+            [
+                'action' => 'etablissement-service'
             ]);
     }
 

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr.2021
- * @version 2021-2.6.1
+ * @date 18 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmCommun\Arlysere;
 use SbmCommun\Form;
@@ -88,6 +88,7 @@ return [
         'factories' => [
             'Sbm\Db\ObjectData\Responsable' => ObjectData\ResponsableFactory::class,
             'Sbm\ChercheItineraires' => Arlysere\ChercheItineraires::class,
+            Arlysere\Etablissement\Services::class => Arlysere\Etablissement\Services::class,
             Arlysere\Itineraire\CollegienDP::class => Arlysere\Itineraire\CollegienDP::class,
             Arlysere\Itineraire\LyceenDP::class => Arlysere\Itineraire\LyceenDP::class,
             Arlysere\Itineraire\Ecolier::class => Arlysere\Itineraire\Ecolier::class,
