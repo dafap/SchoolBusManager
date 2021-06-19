@@ -8,8 +8,8 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2020
- * @version 2020-2.6.0
+ * @date 18 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\DateLib;
 
@@ -17,6 +17,12 @@ $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css')
 $url_ajouter = $this->url('sbmgestion/transport',
     [
         'action' => 'etablissement-service-ajout',
+        'page' => $this->page,
+        'id' => $this->pageRetour
+    ]);
+$url_maj = $this->url('sbmgestion/transport',
+    [
+        'action' => 'etablissement-service-maj',
         'page' => $this->page,
         'id' => $this->pageRetour
     ]);
@@ -64,6 +70,11 @@ $actions = [
         'onclick' => $js_retour
     ],
     'rapports' => $menuImpression['content'],
+    'maj' => [
+        'class' => 'fam-cog-add',
+        'formaction' => $url_maj,
+        'title' => 'Mise à jour des services'
+    ],
     'ajouter' => [
         'class' => 'fam-add',
         'formaction' => $url_ajouter,
