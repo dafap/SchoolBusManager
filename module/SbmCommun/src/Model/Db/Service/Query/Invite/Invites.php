@@ -7,17 +7,16 @@
  * @filesource Invites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2021
+ * @date 21 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Query\Invite;
 
+use SbmBase\Model\DateLib;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
-use SbmBase\Model\StdLib;
-use SbmBase\Model\DateLib;
 
 class Invites extends AbstractQuery
 {
@@ -483,16 +482,25 @@ class Invites extends AbstractQuery
         if ($resultset->count() > 0) {
             $aoInvite = $resultset->current();
             $aoInvite->setFlags(\ArrayObject::ARRAY_AS_PROPS);
-            $mersoir = $aoInvite->mersoir;
+            if (isset($aoInvite->mersoir)) {
+                $mersoir = $aoInvite->mersoir;
+            } else {
+                $mersoir = null;
+            }
             if (empty($mersoir)) {
                 $soir = $aoInvite->soir;
             } else {
-                $soir = sprintf('%s - Me soir : %s', $aoInvite->soir, $aoInvite->merSoir);
+                $soir = sprintf('%s - Me soir : %s', $aoInvite->soir, $mersoir);
+            }
+            if (isset($aoInvite->chez)) {
+                $chez = $aoInvite->chez;
+            } else {
+                $chez = null;
             }
             return [
                 'du' => DateLib::formatDateFromMysql($aoInvite->du),
                 'au' => DateLib::formatDateFromMysql($aoInvite->au),
-                'chez' => $aoInvite->chez,
+                'chez' => $chez,
                 'beneficiaire' => $aoInvite->beneficiaire,
                 'responsable' => $aoInvite->responsable,
                 'adresseL1' => $aoInvite->adresseL1,
@@ -539,7 +547,7 @@ class Invites extends AbstractQuery
         ], 'cominv.communeId = inv.communeId', [])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'ele.eleveId = inv.communeId', [])
+        ], 'ele.eleveId = inv.eleveId', [])
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
@@ -565,11 +573,10 @@ class Invites extends AbstractQuery
         $columns = [
             'du' => 'dateDebut',
             'au' => 'dateFin',
-            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
-            'merSoir' => new Literal('')
+            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)')
         ];
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
+        $where->equalTo('inviteId', $inviteId);
         return $this->sql->select()
             ->columns($columns)
             ->from([
@@ -578,8 +585,8 @@ class Invites extends AbstractQuery
             ->join(
             [
                 'ele' => $this->db_manager->get('Sbm\Db\Query\ElevesDivers')
-                    ->getDataForDuplicata($this->millesime, $eleveId)
-            ], 'ele.eleveId = inv.eleveId',
+                    ->selectDataForDuplicata($this->millesime, $eleveId)
+            ], 'ele.millesime = inv.millesime AND ele.eleveId = inv.eleveId',
             [
                 'chez' => 'eleve',
                 'responsable',
@@ -621,14 +628,14 @@ class Invites extends AbstractQuery
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'res.responsableId = ele.responsable1Id', [])
-            ->join([
-            'comres' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'res.communeId = comres.communeId',
+            ], 'res.responsableId = inv.responsableId',
             [
                 'adresseL1' => 'adresseL1',
                 'adresseL2' => 'adresseL2'
             ])
+            ->join([
+            'comres' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'res.communeId = comres.communeId', [])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -650,10 +657,8 @@ class Invites extends AbstractQuery
         $columns = [
             'du' => 'dateDebut',
             'au' => 'dateFin',
-            'chez' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
+            // 'chez' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
             'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
-            'responsable' => new Literal('CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
-            'adresseCommune' => new Literal('CONCAT_WS(" ",res.codePostal,comres.alias)'),
             'ecole' => new Literal('CONCAT_WS(" - ",eta.nom, cometa.alias)'),
             'station' => new Literal('CONCAT(sta.nom, " (", comsta.alias, ")")'),
             'matin' => 'servicesMatin',
@@ -668,12 +673,56 @@ class Invites extends AbstractQuery
             ->from([
             'inv' => $this->db_manager->getCanonicName('invites', 'table')
         ])
-            ->join([], '', [])
+            ->join([
+            'org' => $this->db_manager->getCanonicName('organismes', 'table')
+        ], 'org.organismeId = inv.organismeId',
+            [
+                'responsable' => 'nom',
+                'adresseL1' => 'adresse1',
+                'adresseL2' => 'adresse2',
+                'adresse2'
+            ])
+            ->join([
+            'comorg' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comorg.communeId = org.communeId',
+            [
+                'adresseCommune' => new literal(
+                    'CONCAT_WS(" ",org.codePostal,comorg.alias)')
+            ])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'eta.etablissementId = inv.etablissementId', [])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cometa.communeId = eta.communeId', [])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta.stationId = inv.stationId', [])
+            ->join([
+            'comsta' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsta.communeId = sta.communeId', [])
             ->where($where);
     }
 
     private function selectCas5(int $inviteId): Select
     {
+        $columns = [
+            'du' => 'dateDebut',
+            'au' => 'dateFin',
+            'chez' => 'chez',
+            'beneficiaire' => new Literal('CONCAT_WS(" ",inv.nom, inv.prenom)'),
+            'responsable' => 'chez',
+            'adresseL1' => 'adresseL1',
+            'adresseL2' => 'adresseL2',
+            'adresseCommune' => new Literal('CONCAT_WS(" ",inv.codePostal,cominv.alias)'),
+            'ecole' => new Literal('CONCAT_WS(" - ",eta.nom, cometa.alias)'),
+            'station' => new Literal('CONCAT(sta.nom, " (", comsta.alias, ")")'),
+            'matin' => 'servicesMatin',
+            'midi' => 'servicesMidi',
+            'soir' => 'servicesSoir',
+            'mersoir' => 'servicesMerSoir'
+        ];
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)->equalTo('inviteId', $inviteId);
         return $this->sql->select()
@@ -681,7 +730,22 @@ class Invites extends AbstractQuery
             ->from([
             'inv' => $this->db_manager->getCanonicName('invites', 'table')
         ])
-            ->join([], '', [])
+            ->join([
+            'cominv' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cominv.communeId = inv.communeId', [])
+            ->join(
+            [
+                'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
+            ], 'eta.etablissementId = inv.etablissementId', [])
+            ->join([
+            'cometa' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'cometa.communeId = eta.communeId', [])
+            ->join([
+            'sta' => $this->db_manager->getCanonicName('stations', 'table')
+        ], 'sta.stationId = inv.stationId', [])
+            ->join([
+            'comsta' => $this->db_manager->getCanonicName('communes', 'table')
+        ], 'comsta.communeId = sta.communeId', [])
             ->where($where);
     }
 }

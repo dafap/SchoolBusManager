@@ -53,7 +53,7 @@
  * @filesource Invite.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2021
+ * @date 21 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmCommun\Form;
@@ -263,7 +263,7 @@ class Invite extends AbstractSbmForm implements InputFilterProviderInterface
             ->add(
             [
                 'name' => 'chez',
-                'type' => 'SbmCommun\Form\Element\NomPropre',
+                'type' => 'SbmCommun\Form\Element\Adresse',
                 'attributes' => [
                     'id' => 'invite-chez',
                     'class' => 'sbm-width-30c'

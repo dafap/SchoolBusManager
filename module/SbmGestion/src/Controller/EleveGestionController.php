@@ -14,7 +14,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2021
+ * @date 20 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
@@ -24,14 +24,13 @@ use SbmBase\Model\StdLib;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use SbmCommun\Form;
+use SbmCommun\Model\Strategy;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Form as FormGestion;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
-use SbmCommun\Model\Strategy;
-use Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 class EleveGestionController extends AbstractActionController
 {
@@ -954,7 +953,7 @@ class EleveGestionController extends AbstractActionController
         return new ViewModel(
             [
                 'paginator' => $this->db_manager->get('Sbm\Db\Query\Invites')->paginatorInvites(
-                    $args['where'],
+                    $args['where']->equalTo('millesime', Session::get('millesime')),
                     [
                         'dateFin DESC',
                         'dateDebut DESC',
@@ -973,34 +972,7 @@ class EleveGestionController extends AbstractActionController
      */
     public function inviteAjoutAction()
     {
-        $values_options = [];
-        $form = $this->form_manager->get(Form\Invite::class)->setMillesime(
-            Session::get('millesime'));
-        /*
-         * ->setValueOptions('eleveId',
-         * $this->db_manager->get('Sbm\Db\Select\Eleves')
-         * ->elevesAbonnes())
-         * ->setValueOptions('responsableId',
-         * $this->db_manager->get('Sbm\Db\Select\Responsables'))
-         * ->setValueOptions('organismeId',
-         * $this->db_manager->get('Sbm\Db\Select\Organismes'))
-         * ->
-         * // ajax à partir du codePostal au lieu de: ->setValueOptions('communeId',
-         * // $values_options)
-         * setValueOptions('etablissementId',
-         * $this->db_manager->get('Sbm\Db\Select\Etablissements')
-         * ->desservis())
-         * ->setValueOptions('stationId',
-         * $this->db_manager->get('Sbm\Db\Select\Stations')
-         * ->ouvertes());
-         * /*
-         * Ajax permettant de réduire les services à ceux desservant l'établissement
-         * ->setValueOptions('servicesMatin[]',
-         * $this->db_manager->get('Sbm\Db\Select\Services')->desservent())
-         * ->setValueOptions('servicesMidi[]', $values_options)
-         * ->setValueOptions('servicesSoir[]', $values_options)
-         * ->setValueOptions('servicesMerSoir[]', $values_options);
-         */
+        $form = $this->form_manager->get(Form\Invite::class);
         $params = [
             'data' => [
                 'table' => 'invites',
@@ -1153,7 +1125,7 @@ class EleveGestionController extends AbstractActionController
     public function invitePassAction()
     {
         $currentPage = $this->params('page', 1);
-        $prg = $this->prg('/document/pass-temporaire', true);
+        $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
         } elseif (! ($inviteId = StdLib::getParam('inviteId', $prg, false))) {
@@ -1168,6 +1140,7 @@ class EleveGestionController extends AbstractActionController
                 $inviteId);
             return $passProvisoire->render($data);
         } catch (\Exception $e) {
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return $this->redirect()->toRoute('sbmgestion/gestioneleve',
                 [
                     'action' => 'invite',
