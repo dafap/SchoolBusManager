@@ -7,12 +7,14 @@
  * (eleveId, grille, reduit) par la méthode setEleves.
  * La méthode addEleve() permet d'ajouter un élève à la liste.
  * La méthode resetEleves() vide la liste des élèves.
- * Elle calcule les montants des abonnements à appliquer à chaque enfant par la méthode calcule().
+ * Elle calcule les montants des abonnements à appliquer à chaque enfant par la méthode
+ * calcule().
  * Elle renvoie le montant total à payer par la méthode total()
  * Elle renvoie le détail des sommes à payer par la méthode detail()
  *
  * La modification de la liste des élèves vide la table abonnements
- * La méthode calcule() est automatiquement lancée par les méthodes total() et detail() si nécessaire.
+ * La méthode calcule() est automatiquement lancée par les méthodes total() et detail() si
+ * nécessaire.
  *
  *
  * @project sbm
@@ -20,8 +22,8 @@
  * @filesource AbonnementsFratrie.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juin 2020
- * @version 2020-2.6.0
+ * @date 22 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
 
@@ -46,7 +48,8 @@ class AbonnementsFratrie implements FactoryInterface
     private $millesime;
 
     /**
-     * Grille tarifaire. C'est un tableau de tableaux. Les clés de niveau 1 sont les
+     * Grille tarifaire.
+     * C'est un tableau de tableaux. Les clés de niveau 1 sont les
      * numéros de grille. Les clés de niveau 2 sont la reduction. Les clés de niveau 3
      * sont les seuils. Exemple : [ 1 => [0 => [2 => 165, 1 => 165, 3 => 83, 4 => 0], 1 =>
      * [2 => 110, 1 => 110, 3 => 55, 4 => 0]], 2 => [0 => [1 => 200, 2 => 200, 3 => 100, 4
@@ -67,7 +70,8 @@ class AbonnementsFratrie implements FactoryInterface
     private $eleves;
 
     /**
-     * Tableau d'Abonnement. Il est initialisé par la méthode calcul() et on en tire le
+     * Tableau d'Abonnement.
+     * Il est initialisé par la méthode calcul() et on en tire le
      * contenu par la méthode detail() et le montant total des abonnements par la méthode
      * total()
      *
@@ -76,7 +80,8 @@ class AbonnementsFratrie implements FactoryInterface
     private $abonnements;
 
     /**
-     * Infique si on doit appliquer un montant degressif. Sinon on applique le montant de
+     * Infique si on doit appliquer un montant degressif.
+     * Sinon on applique le montant de
      * seuil le plus bas.
      *
      * @var bool
@@ -143,7 +148,8 @@ class AbonnementsFratrie implements FactoryInterface
     }
 
     /**
-     * Initialise le tableau des élèves. Chaque élève du tableau se présente sous la forme
+     * Initialise le tableau des élèves.
+     * Chaque élève du tableau se présente sous la forme
      * d'un tableau associatif ayant au moins les clés 'eleveId', 'grille' et 'reduit'.
      *
      * @param array $eleves
@@ -165,7 +171,8 @@ class AbonnementsFratrie implements FactoryInterface
     }
 
     /**
-     * Ajoute un élève dans le tableau des élèves. L'élève est passé sour la forme d'un
+     * Ajoute un élève dans le tableau des élèves.
+     * L'élève est passé sour la forme d'un
      * tableau associatif ayant au moins les clés 'eleveId', 'grille' et 'reduit'.
      *
      * @param array $eleve
@@ -194,7 +201,8 @@ class AbonnementsFratrie implements FactoryInterface
         $array = [];
         foreach ($this->eleves as $row) {
             $array[] = new Abonnement($row['grille'], $row['reduit'],
-                $this->getTarifs($row['grille'], $row['reduit']), $row['eleveId']);
+                $this->getTarifs($row['grille'], $row['reduit'], $row['anneeComplete'],
+                    $row['dateFin']), $row['eleveId']);
         }
         if ($this->degressif) {
             sort($array);
@@ -213,15 +221,50 @@ class AbonnementsFratrie implements FactoryInterface
      *
      * @param int $grille
      * @param int $reduit
+     * @param bool $anComplet
+     * @param string $dateFin
      * @return array
      */
-    private function getTarifs(int $grille, int $reduit): array
+    private function getTarifs(int $grille, int $reduit, bool $anComplet, string $dateFin): array
     {
-        $tarifsGrille = $this->tarifs[$grille];
+        $tarifsGrille = $this->tarifsProrataTemps($grille, $anComplet, $dateFin);
         if (count($tarifsGrille) == 1) {
             return current($tarifsGrille);
         }
         return $tarifsGrille[$reduit];
+    }
+
+    /**
+     * L'abonnement commence le 01/09 de chaque année.
+     * Tout mois commencé est du.
+     * Prise en compte de 12 mois dans l'année.
+     *
+     * @param int $grille
+     * @param bool $anComplet
+     * @param string $dateFin
+     * @return array
+     */
+    private function tarifsProrataTemps(int $grille, bool $anneComplete, string $dateFin): array
+    {
+        if ($anneComplete) {
+            return $this->tarifs[$grille];
+        } else {
+            $dateDebut = "2020-09-01";
+            $datetime1 = new \DateTime($dateDebut);
+            $datetime2 = new \DateTime($dateFin);
+            $diff = $datetime2->diff($datetime1);
+            $nb = $diff->d ? $diff->m + 1 : $diff->m;
+            $tarifsProrata = [];
+            foreach ($this->tarifs[$grille] as $reduction => $seuils) {
+                foreach ($seuils as $seuil => $montant) {
+                    $montant *= 100;
+                    $montant = ceil($montant * $nb / 12);
+                    $montant /= 100;
+                    $tarifsProrata[$reduction][$seuil] = $montant;
+                }
+            }
+            return $tarifsProrata;
+        }
     }
 
     /**

@@ -9,7 +9,7 @@
  * @filesource Calculs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2021
+ * @date 22 juin 2021
  * @version 2021-2.6.2
  */
 namespace SbmCommun\Arlysere\Tarification\Facture;
@@ -354,7 +354,9 @@ class Calculs extends AbstractQuery
                 'eleveId' => 'eleveId',
                 'grilleTarif' => "grilleTarifR$r",
                 'grille' => "grilleTarifR$r",
-                'reduit' => "reductionR$r"
+                'reduit' => "reductionR$r",
+                'anneeComplete',
+                'dateFin'
             ])
             ->columns([])
             ->where($where);
