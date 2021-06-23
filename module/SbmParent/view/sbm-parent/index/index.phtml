@@ -26,8 +26,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 avr. 2021
- * @version 2021-2.6.1
+ * @date 23 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\DateLib;
 use SbmCommun\Model\Paiements\GrilleTarifInterface;
@@ -227,7 +227,7 @@ $url_facture = $this->url('sbmdocument', [
                 unset($boutons_ligne['horaires']);
             }
             if ($row['hasphoto']) {
-                unset($boutons_ligne['photo']);
+                $boutons_ligne['photo']['value'] = 'Changer la photo';
                 $msgphoto = '';
             } else {
                 $msgphoto = ' <span class="alert">Pas de photo</span>';
