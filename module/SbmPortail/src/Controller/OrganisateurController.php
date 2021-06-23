@@ -7,8 +7,8 @@
  * @filesource OrganisateurController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2021
- * @version 2021-2.6.1
+ * @date 23 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmPortail\Controller;
 
@@ -1141,6 +1141,29 @@ class OrganisateurController extends AbstractActionController
 
     private function exportEleve($record)
     {
+        $responsable1 = implode("\r\n",
+            array_merge([
+                $record['responsable1NomPrenom'],
+                $record['emailR1']
+            ],
+                array_filter(
+                    [
+                        $record['telephoneFR1'],
+                        $record['telephonePR1'],
+                        $record['telephoneTR1']
+                    ])));
+        $responsable2 = implode("\r\n",
+            array_filter(
+                array_merge([
+                    $record['responsable2NomPrenom'],
+                    $record['emailR2']
+                ],
+                    array_filter(
+                        [
+                            $record['telephoneFR2'],
+                            $record['telephonePR2'],
+                            $record['telephoneTR2']
+                        ]))));
         $adresseR1 = implode("\r\n",
             array_filter(
                 array_unique(
@@ -1167,10 +1190,10 @@ class OrganisateurController extends AbstractActionController
             'prenom_eleve' => $record['prenom_eleve'],
             'etablissement' => $record['etablissement'],
             'classe' => $record['classe'],
-            'responsable1NomPrenom' => $record['responsable1NomPrenom'],
+            'responsable1NomPrenom' => $responsable1,
             'adresseR1' => $adresseR1,
             'circuits1' => $circuits1,
-            'responsable2NomPrenom' => $record['responsable2NomPrenom'],
+            'responsable2NomPrenom' => $responsable2,
             'adresseR2' => $adresseR2,
             'circuits2' => $circuits2
         ];
@@ -1201,7 +1224,8 @@ class OrganisateurController extends AbstractActionController
             ],
             [
                 'label' => 'Responsable1',
-                'autosize' => true
+                'width' => 41,
+                'wraptext' => true
             ],
             [
                 'label' => 'Adresse1',
@@ -1215,7 +1239,8 @@ class OrganisateurController extends AbstractActionController
             ],
             [
                 'label' => 'Responsable2',
-                'autosize' => true
+                'width' => 41,
+                'wraptext' => true
             ],
             [
                 'label' => 'Adresse2',
