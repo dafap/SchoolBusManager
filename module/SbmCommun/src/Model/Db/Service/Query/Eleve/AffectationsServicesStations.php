@@ -8,13 +8,13 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 25 juin 2021
+ * @version 2021-2.5.12
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -294,8 +294,8 @@ class AffectationsServicesStations extends AbstractQuery
             [
                 'millesime' => 'millesime',
                 'trajet' => 'trajet',
-                'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
-                'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
+                'X' => new Literal('IF(sco.x = 0 AND sco.y = 0, res.x, sco.x)'),
+                'Y' => new Literal('IF(sco.x = 0 AND sco.y = 0, res.y, sco.y)')
             ])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -312,7 +312,7 @@ class AffectationsServicesStations extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId',
             [
-                'transportGA' => new Expression(
+                'transportGA' => new Literal(
                     'CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
                 'x_eleve' => 'x',
                 'y_eleve' => 'y',
@@ -332,7 +332,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId=eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'x_etablissement' => 'x',
                 'y_etablissement' => 'y'
@@ -352,7 +352,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'res.responsableId=aff.responsableId',
             [
-                'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+                'responsable' => new Literal('concat(res.nom," ",res.prenom)'),
                 'x_responsable' => 'x',
                 'y_responsable' => 'y',
                 'telephoneF_responsable' => 'telephoneF',
@@ -507,7 +507,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'res.responsableId=aff.responsableId',
             [
-                'responsable' => new Expression('concat(res.nom," ",res.prenom)'),
+                'responsable' => new Literal('concat(res.nom," ",res.prenom)'),
                 'adresseL1' => 'adresseL1',
                 'adresseL2' => 'adresseL2',
                 'telephoneF' => 'telephoneF',
@@ -534,7 +534,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId=eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END')
             ])
             ->join([
@@ -667,7 +667,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], 'aff.responsableId = res.responsableId',
             [
-                'responsable' => new Expression('concat(res.nomSA, " ", res.prenomSA)'),
+                'responsable' => new Literal('concat(res.nomSA, " ", res.prenomSA)'),
                 'telephoneF',
                 'telephoneP',
                 'telephoneT'
@@ -677,7 +677,7 @@ class AffectationsServicesStations extends AbstractQuery
                 'ele' => $this->db_manager->getCanonicName('eleves', 'table')
             ], 'ele.eleveId = aff.eleveId',
             [
-                'eleve' => new Expression('concat(ele.nomSA, " ", ele.prenomSA)')
+                'eleve' => new Literal('concat(ele.nomSA, " ", ele.prenomSA)')
             ])
             ->where($where);
         // dans le champ des téléphones fixes

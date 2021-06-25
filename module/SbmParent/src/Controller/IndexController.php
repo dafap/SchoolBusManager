@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
- * @version 2021-2.5.11
+ * @date 25 juin 2021
+ * @version 2021-2.5.12
  */
 namespace SbmParent\Controller;
 
@@ -26,15 +26,16 @@ use SbmParent\Model\OutilsInscription;
 use SbmParent\Model\Db\Service\Query;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\ViewModel;
 use Zend\Log\Logger;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
 
     /**
      * Place des commentaires sur l'écran suite à une demande de transport ne
-     * correspondant pas à un établissement auquel on a droit. Une dérogation est
+     * correspondant pas à un établissement auquel on a droit.
+     * Une dérogation est
      * nécessaire.
      *
      * @param array $cr
@@ -76,7 +77,8 @@ class IndexController extends AbstractActionController
     /**
      * A noter que `paiementenligne` vient de l'objet
      * SbmFront\Model\Responsable\Responsable initialisé par la vue `responsables` de la
-     * base de données qui va chercher la valeur dans la table `communes`. A noter aussi
+     * base de données qui va chercher la valeur dans la table `communes`.
+     * A noter aussi
      * la mise en place du contrôle par session (post et nsArgsFacture) afin de récupérer
      * le responsableId lors d'une demande de facture ou de paiement.
      *
@@ -254,8 +256,9 @@ class IndexController extends AbstractActionController
                     } else {
                         $this->flashMessenger()->addSuccessMessage(
                             'L\'enfant est enregistré.');
-                        //$this->flashMessenger()->addWarningMessage(
-                        //    'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                        // $this->flashMessenger()->addWarningMessage(
+                        // 'Son inscription ne sera prise en compte que lorsque le
+                        // paiement aura été reçu.');
                     }
                 } else {
                     $this->warningDerogationNecessaire($cr);
@@ -281,7 +284,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Attention à la gestion du SbmParent\Form\Responsable2 ($formga) - les noms
-     * d'éléments sont préfixés par r2. Ils le sont aussi dans le POST donc dans args[]. -
+     * d'éléments sont préfixés par r2.
+     * Ils le sont aussi dans le POST donc dans args[]. -
      * par contre, la méthode setData() permet de placer directement des données, que
      * leurs index soient préfixés on non - et getData() supprime le préfixe r2 Cela
      * permet de charger le formulaire par setData() indifféremment depuis la table
@@ -378,7 +382,8 @@ class IndexController extends AbstractActionController
             }
             /**
              * Dans form->isValid(), on refuse si existence d'un élève de même nom,
-             * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+             * prénom, dateN et n° différent.
+             * formga->isValid() n'est regardé que si
              * hasGa.
              */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
@@ -397,7 +402,8 @@ class IndexController extends AbstractActionController
                 // Enregistrement de sa scolarité
                 /**
                  * Si on change d'établissement, on supprime les affecations reprises et
-                 * on recalcule les droits. Mais si on supprime la demandeR2, il faut
+                 * on recalcule les droits.
+                 * Mais si on supprime la demandeR2, il faut
                  * supprimer les affectations la concernant (trajet == 2).
                  */
                 $cr = [];
@@ -484,6 +490,11 @@ class IndexController extends AbstractActionController
         try {
             $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
                 $eleveId);
+            $dateValidite = $this->dateValiditePhoto();
+            if ($elevephoto->dateCreation <= $dateValidite &&
+                $elevephoto->dateModification <= $dateValidite) {
+                throw new \Exception('Photo trop ancienne');
+            }
             $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
             $flashMessage = '';
         } catch (\Exception $e) {
@@ -505,8 +516,15 @@ class IndexController extends AbstractActionController
             ]);
     }
 
+    private function dateValiditePhoto()
+    {
+        return (new \DateTime(Session::get('as')['dateDebut']))->sub(
+            new \DateInterval('P2Y'))->format('Y-m-d');
+    }
+
     /**
-     * Change l'état d'attente d'un enfant. L'état d'attente est enregistré dans le champ
+     * Change l'état d'attente d'un enfant.
+     * L'état d'attente est enregistré dans le champ
      * selection de la table scolarites Pas de vue. Renvoie sur la liste une fois le
      * changement effectué
      *
@@ -789,7 +807,8 @@ class IndexController extends AbstractActionController
                 }
                 /**
                  * Dans form->isValid(), on refuse si existence d'un élève de même nom,
-                 * prénom, dateN et n° différent. formga->isValid() n'est regardé que si
+                 * prénom, dateN et n° différent.
+                 * formga->isValid() n'est regardé que si
                  * hasGa.
                  */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
@@ -840,8 +859,9 @@ class IndexController extends AbstractActionController
                         } else {
                             $this->flashMessenger()->addSuccessMessage(
                                 'L\'enfant est enregistré.');
-                            //$this->flashMessenger()->addWarningMessage(
-                            //    'Son inscription ne sera prise en compte que lorsque le paiement aura été reçu.');
+                            // $this->flashMessenger()->addWarningMessage(
+                            // 'Son inscription ne sera prise en compte que lorsque le
+                            // paiement aura été reçu.');
                         }
                     } else {
                         if ($args['fa']) {
@@ -946,6 +966,11 @@ class IndexController extends AbstractActionController
             try {
                 $elevephoto = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos')->getRecord(
                     $eleveId);
+                $dateValidite = $this->dateValiditePhoto();
+                if ($elevephoto->dateCreation <= $dateValidite &&
+                    $elevephoto->dateModification <= $dateValidite) {
+                    throw new \Exception('Photo trop ancienne');
+                }
                 $dataphoto = $ophoto->img_src(stripslashes($elevephoto->photo), 'jpeg');
                 $flashMessage = '';
             } catch (\Exception $e) {

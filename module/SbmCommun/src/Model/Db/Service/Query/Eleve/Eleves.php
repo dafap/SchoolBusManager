@@ -2,27 +2,28 @@
 /**
  * Requête permettant d'obtenir des détails sur les élèves
  *
- * La table principale est `eleves`. Les tables jointes le sont par des LEFT JOIN ce qui rend les jointures non exclusives.
+ * La table principale est `eleves`. Les tables jointes le sont par des LEFT JOIN ce qui
+ * rend les jointures non exclusives.
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 25 juin 2021
+ * @version 2021-2.5.12
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Eleves extends AbstractQuery
 {
+    use ElevePhotoTrait;
 
     protected function init()
     {
@@ -132,14 +133,14 @@ class Eleves extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+                'sansphoto' => new Literal(
+                    $this->xSansPhoto(Session::get('as')['dateDebut']))
             ], Select::JOIN_LEFT)
             ->join([
             'appels' => $select_appels
         ], 'appels.eleveId = ele.eleveId',
             [
-                'appelNotifieOk' => new Expression(
+                'appelNotifieOk' => new Literal(
                     'CASE WHEN isnull(appels.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);

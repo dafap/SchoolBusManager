@@ -8,14 +8,14 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2019
- * @version 2019-2.5.0
+ * @date 25 juin 2021
+ * @version 2021-2.5.12
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 
 class Statistiques extends AbstractQuery
@@ -42,7 +42,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->group([
             'millesime',
@@ -81,7 +81,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -117,7 +117,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -151,7 +151,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -195,7 +195,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -235,7 +235,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(ele.eleveId)')
+                'effectif' => new Literal('count(ele.eleveId)')
             ])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -276,7 +276,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->join(
             [
@@ -286,7 +286,7 @@ class Statistiques extends AbstractQuery
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = eta.communeId',
             [
-                'etablissement' => new Expression('concat(com.nom, " - ", eta.nom)')
+                'etablissement' => new Literal('concat(com.nom, " - ", eta.nom)')
             ])
             ->where($where)
             ->group([
@@ -326,7 +326,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
@@ -368,7 +368,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -407,7 +407,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([
@@ -444,7 +444,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(eleveId)')
+                'effectif' => new Literal('count(eleveId)')
             ])
             ->where($where)
             ->group([

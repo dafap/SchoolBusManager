@@ -1,6 +1,7 @@
 <?php
 /**
- * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs responsables
+ * Requête permettant d'obtenir les renseignements complets sur les élèves et leurs
+ * responsables
  *
  *
  * @project sbm
@@ -8,18 +9,20 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 25 juin 2021
+ * @version 2021-2.5.12
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 
 class ElevesResponsables extends AbstractQuery
 {
+    use ElevePhotoTrait;
 
     protected function init()
     {
@@ -51,7 +54,7 @@ class ElevesResponsables extends AbstractQuery
         ], 'ele.responsable1Id=r1.responsableId',
             [
                 'titreR1' => 'titre',
-                'responsable1NomPrenom' => new Expression('concat(r1.nom," ",r1.prenom)'),
+                'responsable1NomPrenom' => new Literal('concat(r1.nom," ",r1.prenom)'),
                 'adresseL1R1' => 'adresseL1',
                 'adresseL2R1' => 'adresseL2',
                 'codePostalR1' => 'codePostal',
@@ -113,7 +116,7 @@ class ElevesResponsables extends AbstractQuery
             ], 'ele.responsable2Id=r2.responsableId',
             [
                 'titreR2' => 'titre',
-                'responsable2NomPrenom' => new Expression(
+                'responsable2NomPrenom' => new Literal(
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
@@ -227,7 +230,7 @@ class ElevesResponsables extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId = eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'xeta' => 'x',
                 'yeta' => 'y'
@@ -247,7 +250,7 @@ class ElevesResponsables extends AbstractQuery
         ], 'ele.responsable2Id=r2.responsableId',
             [
                 'titreR2' => 'titre',
-                'responsable2NomPrenom' => new Expression(
+                'responsable2NomPrenom' => new Literal(
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
@@ -269,21 +272,20 @@ class ElevesResponsables extends AbstractQuery
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
             ], 'aff.millesime = sco.millesime And aff.eleveId = sco.eleveId',
             [
-                'affecte' => new Expression('count(aff.eleveId) > 0')
+                'affecte' => new Literal('count(aff.eleveId) > 0')
             ], $select::JOIN_LEFT)
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+                'sansphoto' => new Literal($this->xSansPhoto(Session::get('as')['dateDebut']))
             ], $select::JOIN_LEFT)
             ->join([
             'appels' => $select_appels
         ], 'appels.eleveId = ele.eleveId',
             [
-                'appelNotifieOk' => new Expression(
+                'appelNotifieOk' => new Literal(
                     'CASE WHEN isnull(appels.eleveId) THEN TRUE ELSE FALSE END')
             ], $select::JOIN_LEFT)
             ->group('ele.eleveId');
@@ -304,7 +306,8 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function withScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    public function withScolaritesEleveGroup(Where $where, $order = null,
+        $millesime = null)
     {
         return $this->renderResult(
             $this->selectScolaritesEleveGroup($where, $order, $millesime));
@@ -332,13 +335,14 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesEleveGroup(Where $where, $order = null, $millesime = null)
+    private function selectScolaritesEleveGroup(Where $where, $order = null,
+        $millesime = null)
     {
         // table de recherche du plus grand millesime pour chaque élève
         $select1 = $this->sql->select();
         $select1->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns([
-            'max_millesime' => new Expression('MAX(millesime)'),
+            'max_millesime' => new Literal('MAX(millesime)'),
             'eleveId'
         ])
             ->group('eleveId');
@@ -413,7 +417,7 @@ class ElevesResponsables extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId = eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'xeta' => 'x',
                 'yeta' => 'y'
@@ -433,7 +437,7 @@ class ElevesResponsables extends AbstractQuery
         ], 'ele.responsable2Id=r2.responsableId',
             [
                 'titreR2' => 'titre',
-                'responsable2NomPrenom' => new Expression(
+                'responsable2NomPrenom' => new Literal(
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'adresseL1R2' => 'adresseL1',
                 'adresseL2R2' => 'adresseL2',
@@ -451,15 +455,14 @@ class ElevesResponsables extends AbstractQuery
             's' => $select2
         ], 'ele.eleveId = s.eleveId',
             [
-                'scolarise' => new Expression('s.eleveId IS NOT NULL')
+                'scolarise' => new Literal('s.eleveId IS NOT NULL')
             ], $select::JOIN_LEFT)
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+                'sansphoto' => new Literal($this->xSansPhoto(Session::get('as')['dateDebut']))
             ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
@@ -500,15 +503,15 @@ class ElevesResponsables extends AbstractQuery
                 'prenom_eleve' => 'prenomSA',
                 'dateN',
                 'sexe',
-                'X' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.x, sco.x)'),
-                'Y' => new Expression('IF(sco.x = 0 AND sco.y = 0, r1.y, sco.y)')
+                'X' => new Literal('IF(sco.x = 0 AND sco.y = 0, r1.x, sco.x)'),
+                'Y' => new Literal('IF(sco.x = 0 AND sco.y = 0, r1.y, sco.y)')
             ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId=sco.eleveId',
             [
                 'regimeId' => 'regimeId',
-                'transportGA' => new Expression(
+                'transportGA' => new Literal(
                     'CASE WHEN demandeR2 > 0 THEN "Oui" ELSE "Non" END'),
                 'x_eleve' => 'x',
                 'y_eleve' => 'y',
@@ -528,7 +531,7 @@ class ElevesResponsables extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'sco.etablissementId=eta.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     'CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END'),
                 'x_etablissement' => 'x',
                 'y_etablissement' => 'y'
@@ -547,7 +550,7 @@ class ElevesResponsables extends AbstractQuery
             'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'r1.responsableId=ele.responsable1Id',
             [
-                'responsable1' => new Expression('concat(r1.nom," ",r1.prenom)'),
+                'responsable1' => new Literal('concat(r1.nom," ",r1.prenom)'),
                 'x_responsable1' => 'x',
                 'y_responsable1' => 'y',
                 'telephoneF_responsable1' => 'telephoneF',
@@ -567,7 +570,7 @@ class ElevesResponsables extends AbstractQuery
             'r2' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'r2.responsableId=ele.responsable2Id',
             [
-                'responsable2' => new Expression(
+                'responsable2' => new Literal(
                     'CASE WHEN isnull(r2.responsableId) THEN "" ELSE concat(r2.nom," ",r2.prenom) END'),
                 'x_responsable2' => 'x',
                 'y_responsable2' => 'y',
