@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 oct. 2020
- * @version 2020-2.6.1
+ * @date 26 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\DateLib;
 
@@ -48,9 +48,9 @@ $url_map = $this->url('sbmgestion/eleve',
 $url_euro = $this->url('sbmgestion/finance', [
     'action' => 'paiement-liste'
 ]);
-$url_correspondant = $this->url('sbmgestion/gestioneleve',
+$url_pass_provisoire = $this->url('sbmgestion/gestioneleve',
     [
-        'action' => 'correspondant',
+        'action' => 'invite',
         'page' => $this->page
     ]);
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -110,8 +110,8 @@ $actions = [
     ],
     'correspondant' => [
         'class' => 'fam-user-add',
-        'formaction' => $url_correspondant,
-        'title' => 'Gestion des correspondants',
+        'formaction' => $url_pass_provisoire,
+        'title' => 'PASS provisoire pour trajet particulier ou pour un accompagnant',
         'onclick' => sprintf($js, "'correspondant'")
     ]
 ];
