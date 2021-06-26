@@ -9,8 +9,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2021
- * @version 2021-2.6.1
+ * @date 26 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmParent\Model;
 
@@ -37,7 +37,8 @@ class OutilsInscription
     private $local_manager;
 
     /**
-     * Identifiant de l'élève à réinscrire ou à modifier. Il sera null pour une
+     * Identifiant de l'élève à réinscrire ou à modifier.
+     * Il sera null pour une
      * inscription.
      *
      * @var int|null
@@ -71,7 +72,8 @@ class OutilsInscription
     private $aEntities;
 
     /**
-     * userId de la personne authentifiée. Correspond à
+     * userId de la personne authentifiée.
+     * Correspond à
      * $sm->get('SbmAuthentification\Authentication')->by('email')->getUserId()
      *
      * @var int
@@ -79,7 +81,8 @@ class OutilsInscription
     private $userId;
 
     /**
-     * Compte-rendu permettant de connaitre l'état de l'évolution des données. En
+     * Compte-rendu permettant de connaitre l'état de l'évolution des données.
+     * En
      * particulier on enregistre le retour des différents saveRecord()
      *
      * @var array
@@ -203,7 +206,8 @@ class OutilsInscription
 
     /**
      * Enregistre les données dans la table eleves et renvoie l'identifiant de l'élève que
-     * ce soit un nouvel enregistrement ou pas. S'il y a garde alternée, enregistre
+     * ce soit un nouvel enregistrement ou pas.
+     * S'il y a garde alternée, enregistre
      * l'identifiant du responsable 2.
      *
      * @param array $data
@@ -252,7 +256,8 @@ class OutilsInscription
 
     /**
      * Enregistre la scolarité et renvoie un indicateur précisant si on doit recalculer
-     * les distances. Le recalcul des distances est nécessaire (true) si l'une des
+     * les distances.
+     * Le recalcul des distances est nécessaire (true) si l'une des
      * condition est remplie :<ul> <li>l'établissement a changé,</li> <li>c'est un nouvel
      * enregistrement</li> <li>district = 0</li></ul> Il est nécessaire de remettre
      * accordR1 et accordR2 à 1 pour traiter le cas de non ayant droits repassant ayant
@@ -266,6 +271,10 @@ class OutilsInscription
      */
     public function saveScolarite(array $data, string $mode)
     {
+        if (StdLib::getParam('demandeR2', $data, 0) > 0 &&
+            StdLib::getParam('stationIdR2', $data, 0) == 0) {
+            $data['demandeR2'] = 0;
+        }
         $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Scolarites');
         $oData = $tScolarites->getObjData();
@@ -315,7 +324,8 @@ class OutilsInscription
     /**
      * Examine ce qu'il faut mettre à jour après l'inscription ou la modification :
      * distanceR1, distanceR2, grilleTarifR1, grilleTarifR2, affectations pour le R1,
-     * affectations pour le R2. Puis lance les méthodes de mises à jour. Au fur et à
+     * affectations pour le R2.
+     * Puis lance les méthodes de mises à jour. Au fur et à
      * mesure, les erreurs et problèmes seront enregistrés dans la propriété messages
      *
      * @param string $mode
@@ -407,7 +417,8 @@ class OutilsInscription
 
     /**
      * En mode 'inscription' ou 'reinscription' on met à jour la grilleTarifR1 et la
-     * reductionR1 et, si nécessaire, la grilleTarifR2 et la reductionR2. En mode 'edit'
+     * reductionR1 et, si nécessaire, la grilleTarifR2 et la reductionR2.
+     * En mode 'edit'
      * les grilleTarif ne changent pas (pas de changement de domicile) et les reductions
      * ne changent que si on a obtenu un reductionChange dans le cr.
      *
@@ -439,7 +450,8 @@ class OutilsInscription
     /**
      * On lance une recherche de trajet par les méthodes de l'objet
      * \SbmCommun\Arlysere\ChercheTrajet En mode inscription ou reinscription il faut
-     * rechercher un trajet. En mode edit, la recherche de trajets n'est nécessaire que si
+     * rechercher un trajet.
+     * En mode edit, la recherche de trajets n'est nécessaire que si
      * on change de domicile ou si on change d'établissement scolaire
      *
      * @param string $mode
@@ -545,7 +557,8 @@ class OutilsInscription
 
     /**
      * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si un
-     * domicile, l'établissement ou le régime ont changé. Si le domicile, l'établissement
+     * domicile, l'établissement ou le régime ont changé.
+     * Si le domicile, l'établissement
      * et le régime n'ont pas changé alors enregistre les affectations de l'année
      * précédente sinon supprime la dérogation (s'il y en a une).
      *
