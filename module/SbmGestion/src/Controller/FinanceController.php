@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2020
- * @version 2020-2.6.0
+ * @date 27 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
 
@@ -1360,7 +1360,8 @@ class FinanceController extends AbstractActionController
 
     /**
      * On arrive ici depuis la page de choix des impressions à réaliser (méthode
-     * paiementDepotAction). Ici, le paramètre page correspond au numéro du formulaire et
+     * paiementDepotAction).
+     * Ici, le paramètre page correspond au numéro du formulaire et
      * sert à mettre en place les bons valueOptions. Le formulaire de choix n'est pas un
      * ObjectData, aussi on n'utilise pas la méthode documentPdf du parent
      * AbstactActionController. Le where est construit dans la méthode.
@@ -2048,6 +2049,31 @@ class FinanceController extends AbstractActionController
             [
                 'effectifClassName' => $this->db_manager->get(
                     'Sbm\Db\Eleve\EffectifOrganismes')
+            ]);
+    }
+
+    public function fluxFinanciersAction()
+    {
+        $where = new Where();
+        $form = new \SbmGestion\Form\Finances\CriteresForm();
+        $flux = $this->db_manager->get('Sbm\Db\Finances\Flux');
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->getRequest()->getPost());
+            if ($form->isValid()) {
+                $title = $form->getTitle();
+                $where = $form->getWhere();
+            }
+        } else {
+            $title = sprintf("Flux financiers de l'année scolaire %s", Session::get('as')['libelle']);
+            $where->like('anneeScolaire', sprintf('%d%%', Session::get('millesime')));
+        }
+        return new ViewModel(
+            [
+                'title' => $title,
+                'form' => $form,
+                'fluxTresorerie' => $flux->paginatorFluxTresorerie(
+                    $where),
+                'fluxCA' => $flux->paginatorFluxCA($where)
             ]);
     }
 }

@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 13 fév. 2021
- * @version 2021-2.6.1
+ * @date 27 juin 2021
+ * @version 2021-2.6.2
  */
 use SbmGestion\Controller;
 use SbmGestion\Form;
@@ -17,6 +17,7 @@ use SbmGestion\Model\Cartes;
 use SbmGestion\Model\Db\Service as SbmGestionDbService;
 use SbmGestion\Model\Photos;
 use SbmGestion\Model\View\Helper as ViewHelper;
+
 return [
     'acl' => [
         'resources' => [
@@ -67,6 +68,7 @@ return [
     ],
     'db_manager' => [
         'factories' => [
+            'Sbm\Db\Finances\Flux' => SbmGestionDbService\Finances\Flux::class,
             'Sbm\Db\Simulation\Prepare' => SbmGestionDbService\Simulation\Prepare::class,
             'Sbm\Db\Circuit\Liste' => SbmGestionDbService\Circuit\Liste::class,
             'Sbm\Db\Eleve\Liste' => SbmGestionDbService\Eleve\Liste::class,
