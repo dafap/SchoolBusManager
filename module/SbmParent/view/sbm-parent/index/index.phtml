@@ -26,7 +26,7 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
+ * @date 28 juin 2021
  * @version 2021-2.5.11
  */
 use SbmBase\Model\DateLib;
@@ -57,6 +57,11 @@ if ($this->sadmin) {
     $etatDuSite['inscription'] = true;
 }
 $dateFin = $etatDuSite['dateFin']->format('d/m/Y');
+$date_fin_aout = (new \DateTime(Session::get('as')['dateDebut']))->modify('8 days ago');
+$avant_fin_aout = '';
+if ((new \DateTime()) < $date_fin_aout) {
+    $avant_fin_aout = 'invisible';
+}
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
 ]);
@@ -126,8 +131,8 @@ $url_facture = $this->url('sbmdocument', [
 						<th>Prénom</th>
 						<th>Etablissement scolaire</th>
 						<th>Commune</th>
-						<th>Circuit</th>
-						<th>Arrêt</th>
+						<th class="<?=$avant_fin_aout?>">Circuit</th>
+						<th class="<?=$avant_fin_aout?>">Arrêt</th>
 						<th></th>
 					</tr>
         <?php
@@ -212,7 +217,7 @@ $url_facture = $this->url('sbmdocument', [
                     'value' => 'Supprimer'
                 ],
                 'horaires' => [
-                    'class' => 'button ligne',
+                    'class' => 'button ligne ' . $avant_fin_aout,
                     'formaction' => $url_horaires,
                     'value' => 'Horaires'
                 ],
@@ -251,7 +256,7 @@ $url_facture = $this->url('sbmdocument', [
                         // il y a des points d'arrêt mais pas de circuit donc pas
                         // d'horaire, on peut modifier ou supprimer
                         $hiddens_ligne = [
-                        'id' => $row['eleveId'],
+                            'id' => $row['eleveId'],
                             'eleveId' => $row['eleveId']
                         ];
                         unset($boutons_ligne['horaires']);
@@ -274,15 +279,17 @@ $url_facture = $this->url('sbmdocument', [
                             $hiddens_ligne, $boutons_ligne);
                     }
                     $colonne1_4 = str_replace(' %s' . $nbAffectations, '', $colonne1_4);
-                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4; // identité,
-                                                                            // scolarité
-                    $ligneHtml .= '<td>' . $entity[0] . '</td><td>' . $station[0] . '</td>';
+                    $ligneHtml = '<tr class="' . $css . '">' . $colonne1_4;
+                    $ligneHtml .= sprintf(
+                        '<td class="%1$s">' . $entity[0] . '</td><td class="%1$s">' .
+                        $station[0] . '</td>', $avant_fin_aout);
                     $ligneHtml .= '<td>' . $code_boutons .
                         "</td><td class=\"alert\">$msgphoto</td></tr>\n";
                     break;
                 default:
+                    $rowspan = $avant_fin_aout ? 1 : $nbCircuits;
                     $colonne1_4 = str_replace('%s' . $nbAffectations,
-                        'rowspan="' . $nbCircuits . '"', $colonne1_4);
+                        'rowspan="' . $rowspan . '"', $colonne1_4);
                     $lignesTableau = [];
                     $hiddens_ligne = [
                         'enfant' => $row['prenom'] . ' ' . $row['nom'],
@@ -294,8 +301,9 @@ $url_facture = $this->url('sbmdocument', [
                             $hiddens_ligne['circuit' . ($i + 1) . 'Id'] = $circuit[$i];
                         }
                         $lignesTableau[$i] = '<tr class="' . $css . '">' . $colonne1_4;
-                        $lignesTableau[$i] .= '<td>' . $entity[$i] . '</td><td>' .
-                            $station[$i] . '</td>';
+                        $lignesTableau[$i] .= sprintf(
+                            '<td class="%1$s">' . $entity[$i] . '</td><td class="%1$s">' .
+                            $station[$i] . '</td>', $avant_fin_aout);
                         // on ne termine pas la ligne 0 pour pouvoir rajouter le bouton et
                         // les hiddens
                         if ($i > 0) {
@@ -325,9 +333,9 @@ $url_facture = $this->url('sbmdocument', [
                     } else {
                         $code_boutons = $this->listeLigneActions($row['eleveId'],
                             $hiddens_ligne, $boutons_ligne);
-                        $lignesTableau[0] .= '<td rowspan="' . $nbCircuits . '">' .
+                        $lignesTableau[0] .= '<td rowspan="' . $rowspan . '">' .
                             $code_boutons .
-                            "</td><td class=\"alert\"rowspan=\"$nbCircuits\">$msgphoto</td></tr>\n";
+                            "</td><td class=\"alert\"rowspan=\"$row\">$msgphoto</td></tr>\n";
                     }
                     $ligneHtml = implode('', $lignesTableau);
                     break;
@@ -339,8 +347,8 @@ $url_facture = $this->url('sbmdocument', [
 			</table>
 		</fieldset>
 <?php if ($photo_manquante): ?>
-        <p class="important">Veuillez transmettre une photo d'identité
-			récente pour obtenir la carte de transport.</p>
+        <p class="important">OBLIGATOIRE : Veuillez transmettre une
+			photo d'identité récente pour obtenir la carte de transport.</p>
 <?php elseif (Session::get('as')['dateDebut'] >= date('Y-m-d')):?>
     <?php if ($nbInscrits > 1):?>
 		<p class="sbm-description">Vous allez recevoir les cartes de transport
@@ -350,47 +358,45 @@ $url_facture = $this->url('sbmdocument', [
 			transport par courrier courant août ou début septembre.</p>
     <?php endif;?>
 <?php endif;?>
-        <p class="sbm-description">
-			Si nécessaire, prenez rendez-vous pour connaitre la suite donnée à
-			votre demande et retirer la carte de transport.<br>
-		</p>
+<?php if (!empty($avant_fin_aout)):?>
 		<p class="sbm-description">Les circuits et horaires seront
 			consultables ici à partir de la dernière semaine d'août.</p>
-    <?php endif; ?>
+<?php endif;?>
+    <?php endif; // $nbInscrits > 0 ?>
     </div>
 	<div id="parent-compte"><?php if ($etatDuSite['inscription']):?>
         <div class="bouton-inscrire">
 			<div class="menu clearfix">
         <?php
-        $boutons = [
-            'inscrire' => [
-                'class' => 'button default float-right left-10px',
-                'formaction' => $url_ajoutEleve,
-                'value' => 'Inscrire un autre enfant'
-            ]
-        ];
-        if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
-            $payerTitle = "Payer par carte bancaire.";
-            $payerMsg = true;
-            $boutons['payer'] = [
-                'class' => 'button default float-right left-10px',
-                'formaction' => $url_payer,
-                'value' => 'Payer par CB',
-                'title' => $payerTitle
-            ];
-        }
-        $boutons['facture'] = [
+    $boutons = [
+        'inscrire' => [
             'class' => 'button default float-right left-10px',
-            'formaction' => $url_facture,
-            'formtarget' => '_blank',
-            'value' => 'Imprimer la facture'
+            'formaction' => $url_ajoutEleve,
+            'value' => 'Inscrire un autre enfant'
+        ]
+    ];
+    if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
+        $payerTitle = "Payer par carte bancaire.";
+        $payerMsg = true;
+        $boutons['payer'] = [
+            'class' => 'button default float-right left-10px',
+            'formaction' => $url_payer,
+            'value' => 'Payer par CB',
+            'title' => $payerTitle
         ];
-        echo $this->listeZoneActions(
-            [
-                'montant' => $this->resultats->getSolde(),
-                'namespacectrl' => $this->namespacectrl
-            ], $boutons);
-        ?>
+    }
+    $boutons['facture'] = [
+        'class' => 'button default float-right left-10px',
+        'formaction' => $url_facture,
+        'formtarget' => '_blank',
+        'value' => 'Imprimer la facture'
+    ];
+    echo $this->listeZoneActions(
+        [
+            'montant' => $this->resultats->getSolde(),
+            'namespacectrl' => $this->namespacectrl
+        ], $boutons);
+    ?>
             </div>
 		</div>
         <?php if (! $this->responsable->paiementenligne && $this->resultats->getSolde() > 0) : ?>
@@ -399,50 +405,50 @@ $url_facture = $this->url('sbmdocument', [
 			pour connaitre la marche à suivre pour votre cas particulier.</p>
         <?php elseif ($this->resultats->getSolde() > 0) : ?>
         <?php
-            switch ($etatDuSite['etat']) {
-                case $this->calendar::ETAT_PENDANT:
-                    $permanences = $this->calendar->getPermanences(
-                        $this->responsable->commune);
-                    switch (count($permanences)) {
-                        case 0:
-                            $permanences = '';
-                            break;
-                        case 1:
-                            $permanences = current($permanences);
-                            break;
-                        default:
-                            $permanences = implode(', ', $permanences);
-                            break;
-                    }
-                    $msg = <<<EOT
-                    EOT;
-                    $msg = sprintf($msg, $adresse_organisateur, $permanences);
-                    break;
-                case $this->calendar::ETAT_APRES:
-                    $permanences = $this->calendar->getPermanences(
-                        $this->responsable->commune);
-                    switch (count($permanences)) {
-                        case 0:
-                            $permanences = '';
-                            break;
-                        case 1:
-                            $permanences = current($permanences);
-                            break;
-                        default:
-                            $permanences = implode(', ', $permanences);
-                            break;
-                    }
-                    $msg = <<<EOT
-                    EOT;
-                    $msg = sprintf($msg, $adresse_organisateur, $permanences);
-                    break;
-                default:
-                    // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de
-                    // ETAT_FERME
-                    $msg = '';
-                    break;
-            }
-            ?>
+        switch ($etatDuSite['etat']) {
+            case $this->calendar::ETAT_PENDANT:
+                $permanences = $this->calendar->getPermanences(
+                    $this->responsable->commune);
+                switch (count($permanences)) {
+                    case 0:
+                        $permanences = '';
+                        break;
+                    case 1:
+                        $permanences = current($permanences);
+                        break;
+                    default:
+                        $permanences = implode(', ', $permanences);
+                        break;
+                }
+                $msg = <<<EOT
+                EOT;
+                $msg = sprintf($msg, $adresse_organisateur, $permanences);
+                break;
+            case $this->calendar::ETAT_APRES:
+                $permanences = $this->calendar->getPermanences(
+                    $this->responsable->commune);
+                switch (count($permanences)) {
+                    case 0:
+                        $permanences = '';
+                        break;
+                    case 1:
+                        $permanences = current($permanences);
+                        break;
+                    default:
+                        $permanences = implode(', ', $permanences);
+                        break;
+                }
+                $msg = <<<EOT
+                EOT;
+                $msg = sprintf($msg, $adresse_organisateur, $permanences);
+                break;
+            default:
+                // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de
+                // ETAT_FERME
+                $msg = '';
+                break;
+        }
+        ?>
 		<p class="sbm-description">
 		    <?php if($payerMsg):?>
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i>
@@ -469,12 +475,12 @@ $url_facture = $this->url('sbmdocument', [
 		</div>
 	<?php elseif ($this->resultats->getSolde() > 0):?>
 	<?php
-        $url_contact = $this->url('login', [
-            'action' => 'contact'
-        ]);
-        $msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
-        $msg = sprintf($msg, $url_contact);
-        ?>
+    $url_contact = $this->url('login', [
+        'action' => 'contact'
+    ]);
+    $msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
+    $msg = sprintf($msg, $url_contact);
+    ?>
 	    <p class="sbm-description">
 			<i class="fam-help"></i> <b>Comment payer ?</b> <?=$msg;?>
 		</p>
@@ -529,4 +535,4 @@ $url_facture = $this->url('sbmdocument', [
     	</div>
 	</div>
 </div>
-<?php endif; ?>
+<?php endif;?>
