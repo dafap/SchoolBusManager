@@ -2,17 +2,19 @@
 /**
  * Actions communes pour l'envoi de fichier
  *
- * Les adresses de destination doivent être configurées dans le fichier config/autolaod/sbm.local.php
+ * Les adresses de destination doivent être configurées dans le fichier
+ * config/autolaod/sbm.local.php
  * (voir $mail, clé 'destinataires')
- * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration (clé 'message')
+ * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration
+ * (clé 'message')
  *
  * @project sbm
  * @package SbmMail/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 sept. 2020
- * @version 2020-2.6.0
+ * @date 28 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmMail\Controller;
 
@@ -30,7 +32,8 @@ class IndexController extends AbstractActionController
     use \SbmCommun\Model\Traits\DebugTrait;
 
     /**
-     * Par défaut, page d'envoi d'un message au service de transport. (à configurer dans
+     * Par défaut, page d'envoi d'un message au service de transport.
+     * (à configurer dans
      * config/autolaod/sbm.local.php) (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
@@ -166,8 +169,8 @@ class IndexController extends AbstractActionController
                                 'responsable' => $odata->getArrayCopy(),
                                 'detail' => $detail,
                                 'url_portail' => $this->url()
-                                    ->fromRoute('sbmportail', [
-                                    'action' => 'tr-index'
+                                    ->fromRoute('sbmparent', [
+                                    'action' => 'index'
                                 ], [
                                     'force_canonical' => true
                                 ])
@@ -323,7 +326,8 @@ class IndexController extends AbstractActionController
     /**
      * Recherche un paramètre post parmi les suivants : circuitId, classeId, communeId,
      * etablissementId, lotId, organismeId, serviceId, stationId, tarifId, transporteurId
-     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1). Cette
+     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1).
+     * Cette
      * méthode propose un formulaire de saisie mais ne traite pas la réponse afin de ne
      * pas compliquer l'analyse du post.
      *

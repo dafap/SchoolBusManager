@@ -6,7 +6,7 @@
  * Ce modèle doit recevoir les variables suivantes :
  * - responsable : tableau des données du responsable
  * - detail : ArrayObject dont les clés sont :
- *            'responsableId', 'datePaiement', 'dateRefus', 'nbEcheances', 'datesEcheances', 'montantTotal'
+ *            'responsableId', 'datePaiement', 'dateResiliation', 'nbEcheances', 'datesEcheances', 'montantTotal'
  * - url_portail : url du portail des parents
  *
  * @project sbm
@@ -14,8 +14,8 @@
  * @filesource abonnements-resilies.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2021
- * @version 2021-2.6.1
+ * @date 28 juin 2021
+ * @version 2021-2.6.2
  */
 switch ($this->responsable['titre']) {
     case 'M.':
@@ -52,7 +52,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 <hr>
 <p><?=$titre;?>,</p>
 
-<p>Le <?=$this->detail['datePaiement'];?> vous avez souhaité payer les abonnements PASS ANNUEL JUNIOR de vos enfants en trois fois par carte bancaire. Or votre banque a rejeté l'échéance du <?=$this->detail['dateRefus'];?> et a résilié <?=$resiliation;?>.</p>
+<p>Le <?=$this->detail['datePaiement'];?> vous avez souhaité payer les abonnements PASS ANNUEL JUNIOR de vos enfants en trois fois par carte bancaire. Or votre banque a rejeté l'échéance du <?=$this->detail['dateResiliation'];?> et a résilié <?=$resiliation;?>.</p>
 <p>Aussi, sauf erreur ou omission de notre part, vous nous devez la somme de <?=$fmt->formatCurrency($this->detail['montantTotal'], 'EUR');?>.</p>
 <p>Nous sommes soucieux qu'un problème ait pu retarder votre paiement.</p>
 <p>Par conséquent, nous vous demandons de bien vouloir régulariser cette situation dans un délai de 5 jours ouvrés maximum en nous adressant le règlement de votre dû en espèces ou par chèque à l'ordre de <b>Transdev Albertville</b> :</p>

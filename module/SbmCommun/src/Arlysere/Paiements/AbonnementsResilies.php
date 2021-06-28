@@ -7,8 +7,8 @@
  * @filesource AbonnementsResilies.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 avr. 2021
- * @version 2021-2.6.1
+ * @date 28 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Arlysere\Paiements;
 
@@ -36,15 +36,16 @@ class AbonnementsResilies extends AbstractQuery
         $array = [];
         foreach ($resultset as $row) {
             $solde = $oCalculs->getResultats($row['responsableId'], [], true)->getSolde();
-            if ($solde > 0) {
-                $array[] = $row;
+            if ($solde > 0.02) {
+                $array[$row['responsableId']] = $row;
             }
         }
-        return $array;
+        return array_values($array);
     }
 
     /**
-     * Requête des abonnements résiliés pour l'année scolaire en cours. Lorsque les 3
+     * Requête des abonnements résiliés pour l'année scolaire en cours.
+     * Lorsque les 3
      * paiement sont rayés (mouvement = 0) cela veut dire que le paiement a été annulé et
      * remboursé alors que pour un abonnement résilié le nombre de paiements est 1 ou 2.
      *
@@ -57,12 +58,13 @@ class AbonnementsResilies extends AbstractQuery
             ->literal('mouvement = 0')
             ->literal('CodeModeDePaiement = 3')
             ->like('anneeScolaire', $this->millesime . '-%');
+        // annulation et remboursement si nbEcheances == 3
         return $this->sql->select()
             ->columns(
             [
                 'responsableId',
                 'datePaiement' => new Literal('DATE_FORMAT(datePaiement,"%d/%m/%Y")'),
-                'dateRefus' => new Literal('DATE_FORMAT(dateRefus,"%d/%m/%Y")'),
+                'dateResiliation' => new Literal('DATE_FORMAT(dateRefus,"%d/%m/%Y")'),
                 'nbEcheances' => new Literal('count(dateValeur)'),
                 'datesEcheances' => new Literal(
                     'GROUP_CONCAT(DATE_FORMAT(dateValeur,"%d/%m/%Y") ORDER BY dateValeur SEPARATOR " et ")'),
@@ -76,6 +78,9 @@ class AbonnementsResilies extends AbstractQuery
             'responsableId',
             'datePaiement'
         ])
-            ->having('nbEcheances < 3'); // annulation et remboursement si 3
+            ->having('nbEcheances < 3')
+            ->order([
+            'dateRefus'
+        ]);
     }
 }
