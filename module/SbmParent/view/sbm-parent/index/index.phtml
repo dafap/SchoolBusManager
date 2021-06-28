@@ -335,7 +335,7 @@ $url_facture = $this->url('sbmdocument', [
                             $hiddens_ligne, $boutons_ligne);
                         $lignesTableau[0] .= '<td rowspan="' . $rowspan . '">' .
                             $code_boutons .
-                            "</td><td class=\"alert\"rowspan=\"$row\">$msgphoto</td></tr>\n";
+                            "</td><td class=\"alert\"rowspan=\"$rowspan\">$msgphoto</td></tr>\n";
                     }
                     $ligneHtml = implode('', $lignesTableau);
                     break;
@@ -368,35 +368,35 @@ $url_facture = $this->url('sbmdocument', [
         <div class="bouton-inscrire">
 			<div class="menu clearfix">
         <?php
-    $boutons = [
-        'inscrire' => [
-            'class' => 'button default float-right left-10px',
-            'formaction' => $url_ajoutEleve,
-            'value' => 'Inscrire un autre enfant'
-        ]
-    ];
-    if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
-        $payerTitle = "Payer par carte bancaire.";
-        $payerMsg = true;
-        $boutons['payer'] = [
-            'class' => 'button default float-right left-10px',
-            'formaction' => $url_payer,
-            'value' => 'Payer par CB',
-            'title' => $payerTitle
+        $boutons = [
+            'inscrire' => [
+                'class' => 'button default float-right left-10px',
+                'formaction' => $url_ajoutEleve,
+                'value' => 'Inscrire un autre enfant'
+            ]
         ];
-    }
-    $boutons['facture'] = [
-        'class' => 'button default float-right left-10px',
-        'formaction' => $url_facture,
-        'formtarget' => '_blank',
-        'value' => 'Imprimer la facture'
-    ];
-    echo $this->listeZoneActions(
-        [
-            'montant' => $this->resultats->getSolde(),
-            'namespacectrl' => $this->namespacectrl
-        ], $boutons);
-    ?>
+        if ($this->resultats->getSolde() > 0 && $this->responsable->paiementenligne) {
+            $payerTitle = "Payer par carte bancaire.";
+            $payerMsg = true;
+            $boutons['payer'] = [
+                'class' => 'button default float-right left-10px',
+                'formaction' => $url_payer,
+                'value' => 'Payer par CB',
+                'title' => $payerTitle
+            ];
+        }
+        $boutons['facture'] = [
+            'class' => 'button default float-right left-10px',
+            'formaction' => $url_facture,
+            'formtarget' => '_blank',
+            'value' => 'Imprimer la facture'
+        ];
+        echo $this->listeZoneActions(
+            [
+                'montant' => $this->resultats->getSolde(),
+                'namespacectrl' => $this->namespacectrl
+            ], $boutons);
+        ?>
             </div>
 		</div>
         <?php if (! $this->responsable->paiementenligne && $this->resultats->getSolde() > 0) : ?>
@@ -405,50 +405,50 @@ $url_facture = $this->url('sbmdocument', [
 			pour connaitre la marche à suivre pour votre cas particulier.</p>
         <?php elseif ($this->resultats->getSolde() > 0) : ?>
         <?php
-        switch ($etatDuSite['etat']) {
-            case $this->calendar::ETAT_PENDANT:
-                $permanences = $this->calendar->getPermanences(
-                    $this->responsable->commune);
-                switch (count($permanences)) {
-                    case 0:
-                        $permanences = '';
-                        break;
-                    case 1:
-                        $permanences = current($permanences);
-                        break;
-                    default:
-                        $permanences = implode(', ', $permanences);
-                        break;
-                }
-                $msg = <<<EOT
-                EOT;
-                $msg = sprintf($msg, $adresse_organisateur, $permanences);
-                break;
-            case $this->calendar::ETAT_APRES:
-                $permanences = $this->calendar->getPermanences(
-                    $this->responsable->commune);
-                switch (count($permanences)) {
-                    case 0:
-                        $permanences = '';
-                        break;
-                    case 1:
-                        $permanences = current($permanences);
-                        break;
-                    default:
-                        $permanences = implode(', ', $permanences);
-                        break;
-                }
-                $msg = <<<EOT
-                EOT;
-                $msg = sprintf($msg, $adresse_organisateur, $permanences);
-                break;
-            default:
-                // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de
-                // ETAT_FERME
-                $msg = '';
-                break;
-        }
-        ?>
+            switch ($etatDuSite['etat']) {
+                case $this->calendar::ETAT_PENDANT:
+                    $permanences = $this->calendar->getPermanences(
+                        $this->responsable->commune);
+                    switch (count($permanences)) {
+                        case 0:
+                            $permanences = '';
+                            break;
+                        case 1:
+                            $permanences = current($permanences);
+                            break;
+                        default:
+                            $permanences = implode(', ', $permanences);
+                            break;
+                    }
+                    $msg = <<<EOT
+                    EOT;
+                    $msg = sprintf($msg, $adresse_organisateur, $permanences);
+                    break;
+                case $this->calendar::ETAT_APRES:
+                    $permanences = $this->calendar->getPermanences(
+                        $this->responsable->commune);
+                    switch (count($permanences)) {
+                        case 0:
+                            $permanences = '';
+                            break;
+                        case 1:
+                            $permanences = current($permanences);
+                            break;
+                        default:
+                            $permanences = implode(', ', $permanences);
+                            break;
+                    }
+                    $msg = <<<EOT
+                    EOT;
+                    $msg = sprintf($msg, $adresse_organisateur, $permanences);
+                    break;
+                default:
+                    // ici les inscriptions sont ouvertes. Pas de ETAT_AVANT ou de
+                    // ETAT_FERME
+                    $msg = '';
+                    break;
+            }
+            ?>
 		<p class="sbm-description">
 		    <?php if($payerMsg):?>
 			<i id="help-preinscrits" title="Comment payer ?" class="fam-help"></i>
@@ -475,12 +475,12 @@ $url_facture = $this->url('sbmdocument', [
 		</div>
 	<?php elseif ($this->resultats->getSolde() > 0):?>
 	<?php
-    $url_contact = $this->url('login', [
-        'action' => 'contact'
-    ]);
-    $msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
-    $msg = sprintf($msg, $url_contact);
-    ?>
+        $url_contact = $this->url('login', [
+            'action' => 'contact'
+        ]);
+        $msg = 'Les insciptions étant closes, <a href="%s">prenez contact avec le service de transport.</a>';
+        $msg = sprintf($msg, $url_contact);
+        ?>
 	    <p class="sbm-description">
 			<i class="fam-help"></i> <b>Comment payer ?</b> <?=$msg;?>
 		</p>
