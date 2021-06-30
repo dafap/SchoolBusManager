@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2021
- * @version 2021-2.6.1
+ * @date 30 juin 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Form;
 
@@ -112,17 +112,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'selection',
                 'attributes' => [
                     'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -196,17 +196,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'name' => 'selection',
                 'attributes' => [
                     'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -289,18 +289,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'membre',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Membres',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
+                    ],
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -312,16 +311,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'desservie',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Desservies',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -332,16 +330,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'visible',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Visibles',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -352,16 +349,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'inscriptionenligne',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Inscription en ligne',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -372,16 +368,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'paiementenligne',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Paiement en ligne',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -392,18 +387,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -602,7 +596,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
          * 'options' => [ 'label' => 'Tarif', 'error_attributes' => [ 'class' =>
          * 'sbm-error' ] ] ]); $this->add([ 'name' => 'prelevement', 'type' =>
          * 'Zend\Form\Element\Checkbox', 'attributes' => [ 'type' => 'checkbox',
-         * 'useHiddenElement' => true, 'options' => [ 'checkedValue' => false,
+         * 'use_hidden_element' => true, 'options' => [ 'checkedValue' => false,
          * 'uncheckedValue' => true ], 'class' => 'sbm-checkbox' ], 'options' => [ 'label'
          * => 'Prélevés', 'error_attributes' => [ 'class' => 'sbm-error' ] ] ]);
          */
@@ -646,16 +640,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -802,18 +795,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'desservie',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Desservis',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -825,18 +817,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'visible',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Visibles',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -848,15 +839,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'localisation',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sans localisation',
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -868,18 +859,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -950,15 +940,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'ouvert',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Ouvert ',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1078,17 +1068,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'actif',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Ouverte ',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
+                    ],
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -1100,15 +1090,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélection ',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1214,15 +1204,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'actif',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'En cours ',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1233,15 +1223,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélection ',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1301,16 +1291,16 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
+                    'type' => 'checkbox',
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1701,15 +1691,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'demenagement',
                 'attributes' => [
-                    'useHiddenElement' => true,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Déménagement',
+                    'use_hidden_element' => true,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1720,17 +1710,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'inscrits',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Inscrits',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -1742,17 +1732,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'preinscrits',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Préinscrits',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -1765,15 +1755,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'localisation',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sans localisation',
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -1785,17 +1775,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => 'sbm-label'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2077,18 +2067,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2172,18 +2161,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'ouverte',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Ouvertes',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2195,18 +2183,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'visible',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Visibles',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2218,15 +2205,15 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'localisation',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sans localisation',
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
                     ]
@@ -2237,18 +2224,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2390,17 +2376,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2486,18 +2472,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'type' => 'checkbox',
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2577,17 +2562,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'tokenalive',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => 1,
-                        'uncheckedValue' => 0
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Mot de passe inactif',
                     'label_attributes' => [
                         'class' => 'sbm-new-line'
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => 1,
+                        'uncheckedValue' => 0
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2599,17 +2584,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'confirme',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => 0,
-                        'uncheckedValue' => 1
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Pas confirmés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => 0,
+                        'uncheckedValue' => 1
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2621,17 +2606,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'active',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => 0,
-                        'uncheckedValue' => 1
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Inactifs',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => 0,
+                        'uncheckedValue' => 1
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
@@ -2643,17 +2628,17 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 'type' => 'Zend\Form\Element\Checkbox',
                 'name' => 'selection',
                 'attributes' => [
-                    'useHiddenElement' => false,
-                    'options' => [
-                        'checkedValue' => false,
-                        'uncheckedValue' => true
-                    ],
                     'class' => 'sbm-checkbox'
                 ],
                 'options' => [
                     'label' => 'Sélectionnés',
                     'label_attributes' => [
                         'class' => ''
+                    ],
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
                     ],
                     'error_attributes' => [
                         'class' => 'sbm-error'
