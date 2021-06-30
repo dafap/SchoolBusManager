@@ -19,7 +19,63 @@ use Zend\Db\Sql\Where;
 class CriteresForm extends SbmCommunCriteresForm implements InputFilterProviderInterface
 {
 
-    public function getWhere():Where
+    public function __construct()
+    {
+        $descriptor = [
+            [
+                'name' => 'du',
+                'type' => 'date',
+                'attributes' => [
+                    'class' => 'critere-date'
+                ],
+                'options' => [
+                    'label' => 'Date à partir du',
+                    'label_attributes' => [
+                        'class' => 'critere-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ],
+            [
+                'name' => 'au',
+                'type' => 'date',
+                'attributes' => [
+                    'class' => 'critere-date'
+                ],
+                'options' => [
+                    'label' => 'jusqu\'au',
+                    'label_attributes' => [
+                        'class' => 'critere-label'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ],
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'raz',
+                'attributes' => [
+                    'class' => 'critere-checkbox'
+                ],
+                'options' => [
+                    'use_hidden_element' => false,
+                    'label' => 'Supprimer les critères',
+                    'label_attributes' => [
+                        'class' => ''
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]
+        ];
+        parent::__construct($descriptor);
+    }
+
+    public function getWhere(): Where
     {
         $where = new Where();
 

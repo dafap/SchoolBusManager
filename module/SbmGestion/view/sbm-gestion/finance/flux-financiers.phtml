@@ -7,9 +7,90 @@
  * @filesource flux-financiers.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juin 2021
+ * @date 30 juin 2021
  * @version 2021-2.6.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
-$this->flux->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$journal = $this->paginator->getCurrentItems();
+$url_retour = $this->url('sbmgestion/finance');
+$url_rapports = $this->url('sbmgestion/finance',
+    [
+        'action' => 'flux-financiers-pdf',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/finance', [
+        'action' => 'flux-financiers'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content']
+];
 ?>
+<h1>Flux financiers</h1>
+<h2><?= $this->title;?></h2>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left">
+			<?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right">
+			<?=$this->flashMessenger()->render('success');?>
+			<?=$this->flashMessenger()->render('warning');?>
+			<?=$this->flashMessenger()->render('error');?>
+			<?=$this->flashMessenger()->render('info');?>
+			<?=$this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-inner">
+		<table class="organismes">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th class="centre" style="min-width: 120px;">CA<br>du jour
+					</th>
+					<th class="centre" style="min-width: 120px;">CA<br>cumulé
+					</th>
+					<th class="centre" style="min-width: 120px;">Encaissements<br>du
+						jour
+					</th>
+					<th class="centre" style="min-width: 120px;">Encaissements<br>cumulés
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+            <?php foreach ($journal as $journee) :?>
+            <?php $journee->setFlags(\ArrayObject::ARRAY_AS_PROPS);?>
+                <tr class="<?=$this->cycle(["even","odd"])->next();?>">
+					<td class="date">
+						<?=$journee->date;?></td>
+					<td class="cajournee align-right">
+						<?=$journee->caJournee;?></td>
+					<td class="cacumul align-right">
+						<?=$journee->caCumul;?></td>
+					<td class="caissejournee align-right">
+						<?=$journee->caisseJournee;?></td>
+					<td class="caissecumul align-right">
+						<?=$journee->caisseCumul;?></td>
+				</tr>
+            <?php endforeach; ?>
+            </tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+		<div class="criteres-wrapper">
+	    	<?=$this->form()->openTag($this->criteres_form);?>
+	    	<?= $this->formCollection($this->criteres_form, true);?>
+	    	<?=$this->form()->closeTag();?>
+        </div>
+	</div>
+</div>

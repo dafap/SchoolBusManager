@@ -2058,22 +2058,25 @@ class FinanceController extends AbstractActionController
         $form = new \SbmGestion\Form\Finances\CriteresForm();
         $flux = $this->db_manager->get('Sbm\Db\Finances\Flux');
         if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
+            $form->setData($this->getRequest()
+                ->getPost());
             if ($form->isValid()) {
                 $title = $form->getTitle();
                 $where = $form->getWhere();
             }
         } else {
-            $title = sprintf("Flux financiers de l'année scolaire %s", Session::get('as')['libelle']);
+            $title = sprintf("Flux financiers de l'année scolaire %s",
+                Session::get('as')['libelle']);
             $where->like('anneeScolaire', sprintf('%d%%', Session::get('millesime')));
         }
         return new ViewModel(
             [
                 'title' => $title,
-                'form' => $form,
-                'fluxTresorerie' => $flux->paginatorFluxTresorerie(
-                    $where),
-                'fluxCA' => $flux->paginatorFluxCA($where)
+                'criteres_form' => $form,
+                'paginator' => $flux->paginatorFlux($where),
+                //'data' => $flux->getFlux($where),
+                'count_per_page' => 20,
+                'page' => $this->params('page', 1),
             ]);
     }
 }

@@ -29,6 +29,53 @@ class Flux extends AbstractQuery
     }
 
     /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
+     */
+    public function getFlux(Where $where)
+    {
+        $result = $this->renderResult($this->selectFlux($where));
+        return $result;
+    }
+
+    /**
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Paginator\Paginator
+     */
+    public function paginatorFlux(Where $where)
+    {
+        return $this->paginator($this->selectFlux($where));
+    }
+
+    /**
+     * Rapprochement des flux du CA et de Tresorerie
+     *
+     * @param \Zend\Db\Sql\Where $where
+     * @return \Zend\Db\Sql\Select
+     */
+    private function selectFlux(Where $where): Select
+    {
+        return $this->sql->select()
+            ->columns(
+            [
+                'date',
+                'caisseJournee' => 'montant',
+                'caisseCumul' => 'cumul'
+            ])
+            ->from([
+            't1' => $this->selectTresorerie($where)
+        ])
+            ->join([
+            't2' => $this->selectCA($where)
+        ], 't1.date = t2.date', [
+            'caJournee' => 'montant',
+            'caCumul' => 'cumul'
+        ], Select::JOIN_LEFT);
+    }
+
+    /**
      * Renvoie le flux de la trésorerie par jour
      *
      * @param \Zend\Db\Sql\Where $where
@@ -77,14 +124,17 @@ class Flux extends AbstractQuery
      */
     private function xCumulTresorerie(Where $where): string
     {
-        $where->lessThanOrEqualTo('dateValeur', 'date', Predicate::TYPE_IDENTIFIER,
+        $where1 = new Where([
+            $where
+        ]);
+        $where1->lessThanOrEqualTo('dateValeur', 'date', Predicate::TYPE_IDENTIFIER,
             Predicate::TYPE_IDENTIFIER);
         $select = $this->sql->select($this->tableName)
             ->columns([
             'cumul' => new Literal('sum(montant)')
         ])
-            ->where($where);
-        return $this->getSqlString($select);
+            ->where($where1);
+        return sprintf('(%s)', $this->getSqlString($select));
     }
 
     /**
@@ -124,13 +174,13 @@ class Flux extends AbstractQuery
         return $this->sql->select($this->tableName)
             ->columns(
             [
-                'date' => $this->xDatePaiement(),
+                'date' => new Literal($this->xDatePaiement()),
                 'montant' => new Literal('sum(montant)'),
                 'cumul' => new Literal($this->xCumulCA($where))
             ])
             ->where($where)
             ->group([
-            $this->xDatePaiement()
+            new Literal($this->xDatePaiement())
         ]);
     }
 
@@ -141,14 +191,18 @@ class Flux extends AbstractQuery
      */
     private function xCumulCA(Where $where): string
     {
-        $where->lessThanOrEqualTo($this->xDatePaiement(), 'date',
-            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER);
+        $where1 = new Where([
+            $where
+        ]);
+        $platform = $this->db_manager->getDbAdapter()->getPlatform();
+        $where1->literal(
+            sprintf('%s <= %s', $this->xDatePaiement(), $platform->quoteIdentifier('date')));
         $select = $this->sql->select($this->tableName)
             ->columns([
             'cumul' => new Literal('sum(montant)')
         ])
-            ->where($where);
-        return $this->getSqlString($select);
+            ->where($where1);
+        return sprintf('(%s)', $this->getSqlString($select));
     }
 
     /**
