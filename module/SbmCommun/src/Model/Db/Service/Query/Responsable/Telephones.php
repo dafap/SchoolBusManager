@@ -1,14 +1,15 @@
 <?php
 /**
- * Requêtes permettant d'obtenir les téléphones recevant des SMS pour des groupes de parents
+ * Requêtes permettant d'obtenir les téléphones recevant des SMS pour des groupes de
+ * parents
  *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Service/Query
  * @filesource Telephones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 1 juil. 2021
+ * @version 2021-2.6.2
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -96,5 +97,47 @@ class Telephones extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ], $on, $this->getColumnsResponsable())
             ->where($where);
+    }
+
+    public function getResponsableRelancer()
+    {
+        return $this->renderResult($this->selectResponsableRelancer());
+    }
+
+    protected function selectResponsableRelancer()
+    {
+        // élèves déjà réinscrits
+        $where1 = new Predicate\Predicate();
+        $where1->equalTo('millesime', $this->millesime);
+        $subselectInscrits = $this->sql->select(
+            $this->db_manager->getCanonicName('scolarites', 'table'))
+            ->columns([
+            'eleveId'
+        ])
+            ->where($where1);
+        // classes ayant une classe suivante
+        $where2 = new Predicate\Predicate();
+        $where2->isNotNull('suivantId');
+        $subselectClasses = $this->sql->select(
+            $this->db_manager->getCanonicName('classes', 'table'))
+            ->columns([
+            'classeId'
+        ])
+            ->where($where2);
+        // responsables à relancer pour une réinscription
+        $predicate = new Predicate\Predicate();
+        $predicate->literal('sco.paiementR1 = 1')
+            ->literal('sco.inscrit = 1')
+            ->equalTo('sco.millesime', $this->millesime - 1)
+            ->notIn('ele.eleveId', $subselectInscrits)
+            ->in('classeId', $subselectClasses);
+        $select = clone $this->select;
+        return $select->join([
+            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+        ], 'ele.responsable1Id = res.responsableId', [])
+            ->join([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ], 'sco.eleveId = ele.eleveId', [])
+            ->where($predicate);
     }
 }

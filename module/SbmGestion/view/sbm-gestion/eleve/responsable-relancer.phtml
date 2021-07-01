@@ -1,0 +1,28 @@
+<?php
+/**
+ * Page de confirmation de remise à zéro des sélections pour les responsables
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/eleve
+ * @filesource responsable-selection.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 1 juil. 2021
+ * @version 2021-2.6.2
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+?>
+<h1>Sélectionner les responsables qui n'ont pas réinscrits leurs enfants</h1>
+<p>Seront sélectionnés les parents qui avaient des enfants inscrits
+	l'année précédente dans une classe qui n'était pas en fin de scolarité,
+	et qui n'ont pas réinscrit leurs enfants cette année.</p>
+<p>
+	Avant de lancer cette procédure, vous devez démarquer toutes les
+	sélections par le bouton <i class="fam-basket-delete"></i> du menu.
+</p>
+<div id="suppr-wrapper">
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+</div>

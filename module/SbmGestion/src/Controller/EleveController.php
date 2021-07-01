@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.1
+ * @date 1 juil. 2021
+ * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
 
@@ -2702,5 +2702,56 @@ class EleveController extends AbstractActionController
                 'form' => $form,
                 'nbSelection' => $tresponsables->fetchAll($where)->count()
             ]);
+    }
+
+    public function responsableRelancerAction()
+    {
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        $page = $this->params('page', 1);
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmgestion/eleve',
+                [
+                    'action' => 'responsable-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        }
+        $form = new Form\ButtonForm([],
+            [
+                'confirmer' => [
+                    'class' => 'confirm default',
+                    'value' => 'Confirmer',
+                    'title' => 'Sélectionner les responsables qui n\'ont pas réinscrits leurs enfants.'
+                ],
+                'cancel' => [
+                    'class' => 'confirm default',
+                    'value' => 'Abandonner'
+                ]
+            ], 'Confirmation', true);
+        if (array_key_exists('confirmer', $args)) {
+            $form->setData($args);
+            if ($form->isValid()) {
+                $resultset = $this->db_manager->get('Sbm\Db\Query\Responsable\Telephones')->getResponsableRelancer();
+                $tResponsable = $this->db_manager->get('Sbm\Db\Table\Responsables');
+                foreach ($resultset as $responsable) {
+                    $responsable->setFlags(\ArrayObject::ARRAY_AS_PROPS);
+                    $tResponsable->setSelection($responsable->responsableId, true);
+                }
+                $this->flashMessenger()->addSuccessMessage(
+                    'Les responsables à relancer sont sélectionnées. Envoyez-leur un SMS.');
+                return $this->redirect()->toRoute('sbmgestion/eleve',
+                    [
+                        'action' => 'responsable-liste',
+                        'page' => $page
+                    ]);
+            }
+        }
+        return new ViewModel([
+            'form' => $form,
+            'page' => $page
+        ]);
     }
 }

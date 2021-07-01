@@ -8,8 +8,8 @@
  * @filesource responsable-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2021
- * @version 2021-2.6.0
+ * @date 1 juil. 2021
+ * @version 2021-2.6.2
  */
 use SbmCartographie\Model\Point;
 
@@ -99,11 +99,21 @@ if ($this->layout()->hassbmservicesms) {
             ]),
         'title' => 'Envoyer un SMS à tous les responsables sélectionnés'
     ];
+    $url_relancer = $this->url('sbmgestion/eleve',
+        [
+            'action' => 'responsable-relancer',
+            'page' => $this->page
+        ]);
+    $relancer = true;
+} else {
+    $relancer = false;
 }
 if ($this->sadmin) {
     $actions_selection['mail'] = [
         'class' => 'fam-email',
-        'formaction' => $this->url('SbmMail', ['action' => 'envoi-groupe']),
+        'formaction' => $this->url('SbmMail', [
+            'action' => 'envoi-groupe'
+        ]),
         'title' => 'Envoyer un mail aux responsables sélectionnés (sadmin uniquement)'
     ];
 }
@@ -125,6 +135,11 @@ $actions = [
         'title' => 'Retour'
     ],
     'rapports' => $menuImpression['content'],
+    'relancer' => [
+        'class' => 'fam-basket-put',
+        'formaction' => $url_relancer,
+        'title' => 'Sélectionner les parents qui n\'ont pas réinscrits leurs enfants.'
+    ],
     'selection' => [
         'class' => 'fam-basket-delete',
         'formaction' => $url_deselection,
@@ -136,6 +151,9 @@ $actions = [
         'title' => 'Nouveau responsable'
     ]
 ];
+if (! $relancer) {
+    unset($actions['relancer']);
+}
 ?>
 <h1>Liste des responsables</h1>
 <div id="liste-wrapper">
