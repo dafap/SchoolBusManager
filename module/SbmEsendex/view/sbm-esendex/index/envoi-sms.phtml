@@ -7,14 +7,14 @@
  * @filesource envoi-sms.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 mai 2020
- * @version 2020-2.6.0
+ * @date 1 juil. 2021
+ * @version 2021-2.6.2
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->themeCss('esendex', 'envoi-sms.css');
 $this->jQuery();
-//$this->headScript()->appendFile($this->basePath('/js/sms-counter/sms_counter.min.js'));
-$this->themeJS('esendex','envoi-sms.js');
+// $this->headScript()->appendFile($this->basePath('/js/sms-counter/sms_counter.min.js'));
+$this->themeJS('esendex', 'envoi-sms.js');
 $this->inlineScript()->captureStart();
 ?>
 $('#sms-body').countSms('#sms-counter', 4);
@@ -53,7 +53,7 @@ foreach ($this->telephones as $value) {
 					<ul id="sms-counter">
 						<li>Encodage: <span class="encoding"></span></li>
 						<li>Longueur: <span class="length"></span></li>
-						<li>Nombre de crédits: <span class="messages"></span></li>
+						<li>Nombre de crédits nécessaires par destinataire: <span class="messages"></span></li>
 						<li>Par unité de crédit: <span class="per_message"></span></li>
 						<li>Nb caractères restants: <span class="remaining"></span></li>
 					</ul>
@@ -68,7 +68,11 @@ foreach ($this->telephones as $value) {
 	</div>
 	<div id="fiche-footer">
 	<?php if ($liste):?>
-	    <h3>Liste des destinataires</h3>
+	    <p>Vous disposez de <?=$this->credits; ?> crédits sur votre compte.<br>
+			Multipliez le nombre de crédits nécessaire par le nombre de
+			destinataires pour savoir ce que vous allez consommer.
+		</p>
+		<h3>Liste des <?= count($this->destinataires);?> destinataires</h3>
 		<ul>
 	    <?php foreach ($this->destinataires as $key => $to):?>
 	        <li><?= $to . ' (' . $key . ')';?></li>
