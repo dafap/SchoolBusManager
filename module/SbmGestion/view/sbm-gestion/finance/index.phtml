@@ -8,8 +8,8 @@
  * @filesource view/finance/index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 déc. 2019
- * @version 2019-2.5.4
+ * @date 2 juil. 2021
+ * @version 2021-2.6.2
  */
 use SbmBase\Model\DateLib;
 
@@ -33,6 +33,9 @@ $url_finance_tarifs = $this->url('sbmgestion/finance', [
 ]);
 $url_organisme_liste = $this->url('sbmgestion/finance', [
     'action' => 'organisme-liste'
+]);
+$url_flux_financiers = $this->url('sbmgestion/finance', [
+    'action' => 'flux-financiers'
 ]);
 // $url_finance_factures = $this->url('sbmgestion/finance');
 // $url_finance_prelevements = $this->url('sbmgestion/finance');
@@ -149,13 +152,11 @@ $nouveauBordereauCB = (empty($this->resultats['dateBordereau']['CB']) &&
 			<ul>
 				<li><a href="<?= $url_finance_encaissements; ?>"><i
 						class="fam-bullet-go"></i>Gestion des encaissements</a></li>
-				<li><a href="<?= $url_paiement_liste; ?>"><i class="fam-bullet-go"></i>Gestion
-						des notifications de paiement en ligne</a></li>
+				<li><a href="<?= $url_flux_financiers; ?>"><i class="fam-bullet-go"></i>Suivi
+						des flux financiers</a></li>
+				<li><a href="<?= $url_paiement_liste; ?>"><i class="fam-bullet-go"></i>Notifications de paiement en ligne</a></li>
 				<li><a href="<?= $url_finance_tarifs; ?>"><i class="fam-bullet-go"></i>Gestion
 						des tarifs</a></li>
-				<li class="gris"><i class="fam-bullet-go"></i>Gestion des factures</li>
-				<li class="gris"><i class="fam-bullet-go"></i>Gestion des
-					prélèvements</li>
 				<li><a href="<?= $url_organisme_liste; ?>"><i class="fam-bullet-go"></i>Gestion
 						des organismes payeurs</a></li>
 				<li><a href="<?= $url_gestion; ?>"><i class="fam-door-out"></i>Retour

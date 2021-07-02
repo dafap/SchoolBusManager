@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juin 2021
+ * @date 2 juil. 2021
  * @version 2021-2.6.2
  */
 namespace SbmGestion\Controller;
@@ -2054,29 +2054,26 @@ class FinanceController extends AbstractActionController
 
     public function fluxFinanciersAction()
     {
-        $where = new Where();
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg === false) {
+            $args = Session::get('post', [], $this->getSessionNamespace());
+        } else {
+            $args = $prg;
+            unset($args['submit']);
+            Session::set('post', $args, $this->getSessionNamespace());
+        }
         $form = new \SbmGestion\Form\Finances\CriteresForm();
         $flux = $this->db_manager->get('Sbm\Db\Finances\Flux');
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()
-                ->getPost());
-            if ($form->isValid()) {
-                $title = $form->getTitle();
-                $where = $form->getWhere();
-            }
-        } else {
-            $title = sprintf("Flux financiers de l'année scolaire %s",
-                Session::get('as')['libelle']);
-            $where->like('anneeScolaire', sprintf('%d%%', Session::get('millesime')));
-        }
+        $form->setData($args)->isValid();
         return new ViewModel(
             [
-                'title' => $title,
+                'title' => $form->getTitre(),
                 'criteres_form' => $form,
-                'paginator' => $flux->paginatorFlux($where),
-                //'data' => $flux->getFlux($where),
+                'paginator' => $flux->paginatorFlux($form->getCriteres()),
                 'count_per_page' => 20,
-                'page' => $this->params('page', 1),
+                'page' => $this->params('page', 1)
             ]);
     }
 }

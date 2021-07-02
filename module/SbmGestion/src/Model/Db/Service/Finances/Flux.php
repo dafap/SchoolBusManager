@@ -1,13 +1,13 @@
 <?php
 /**
- * Description du fichier
+ * Requêtes permettant de calculer les flux financiers
  *
  * @project sbm
- * @package
+ * @package SbmGestion/src/Model/Db/Service/Finances
  * @filesource Flux.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juin 2021
+ * @date 2 juil. 2021
  * @version 2021-2.6.2
  */
 namespace SbmGestion\Model\Db\Service\Finances;
@@ -33,9 +33,9 @@ class Flux extends AbstractQuery
      * @param \Zend\Db\Sql\Where $where
      * @return \Zend\Db\ResultSet\HydratingResultSet|\Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function getFlux(Where $where)
+    public function getFlux(array $criteres)
     {
-        $result = $this->renderResult($this->selectFlux($where));
+        $result = $this->renderResult($this->selectFlux($criteres));
         return $result;
     }
 
@@ -44,9 +44,9 @@ class Flux extends AbstractQuery
      * @param \Zend\Db\Sql\Where $where
      * @return \Zend\Paginator\Paginator
      */
-    public function paginatorFlux(Where $where)
+    public function paginatorFlux(array $criteres)
     {
-        return $this->paginator($this->selectFlux($where));
+        return $this->paginator($this->selectFlux($criteres));
     }
 
     /**
@@ -55,24 +55,67 @@ class Flux extends AbstractQuery
      * @param \Zend\Db\Sql\Where $where
      * @return \Zend\Db\Sql\Select
      */
-    private function selectFlux(Where $where): Select
+    private function selectFlux(array $criteres): Select
     {
         return $this->sql->select()
-            ->columns(
-            [
-                'date',
-                'caisseJournee' => 'montant',
-                'caisseCumul' => 'cumul'
-            ])
-            ->from([
-            't1' => $this->selectTresorerie($where)
+            ->columns([
+            'date',
+            'caisseJournee' => 'montant',
+            'caisseCumul' => 'cumul'
         ])
+            ->from(
+            [
+                't1' => $this->selectTresorerie($this->getWhereTresorerie($criteres))
+            ])
             ->join([
-            't2' => $this->selectCA($where)
+            't2' => $this->selectCA($this->getWhereCA($criteres))
         ], 't1.date = t2.date', [
             'caJournee' => 'montant',
             'caCumul' => 'cumul'
-        ], Select::JOIN_LEFT);
+        ], Select::JOIN_LEFT)
+            ->order('date');
+    }
+
+    private function getWhereTresorerie(array $criteres): Where
+    {
+        $where = new Where();
+        if (array_key_exists('anneeScolaire', $criteres)) {
+            $where->equalTo('anneeScolaire', $criteres['anneeScolaire']);
+            if (array_key_exists('du', $criteres)) {
+                $where->greaterThanOrEqualTo('dateValeur', $criteres['du']);
+            }
+            if (array_key_exists('au', $criteres)) {
+                $where->lessThanOrEqualTo('dateValeur', $criteres['au']);
+            }
+        } else {
+            $where->between('dateValeur', $criteres['du'], $criteres['au']);
+        }
+        return $where;
+    }
+
+    private function getWhereCA(array $criteres): Where
+    {
+        $platform = $this->db_manager->getDbAdapter()->getPlatform();
+        $where = new Where();
+        if (array_key_exists('anneeScolaire', $criteres)) {
+            $where->equalTo('anneeScolaire', $criteres['anneeScolaire']);
+            if (array_key_exists('du', $criteres)) {
+                $literal = sprintf('%s >= %s', $this->xDatePaiement(),
+                    $platform->quoteValue($criteres['du']));
+                $where->literal($literal);
+            }
+            if (array_key_exists('au', $criteres)) {
+                $literal = sprintf('%s <= %s', $this->xDatePaiement(),
+                    $platform->quoteValue($criteres['au']));
+                $where->literal($literal);
+            }
+        } else {
+            $literal = sprintf('%s BETWEEN %s AND %s', $this->xDatePaiement(),
+                $platform->quoteValue($criteres['du']),
+                $platform->quoteValue($criteres['au']));
+            $where->literal($literal);
+        }
+        return $where;
     }
 
     /**
@@ -212,6 +255,8 @@ class Flux extends AbstractQuery
      */
     private function xDatePaiement(): string
     {
-        return "DATE_FORMAT(datePaiement,'%Y-%m-%d')";
+        $platform = $this->db_manager->getDbAdapter()->getPlatform();
+        return sprintf('DATE_FORMAT(%s,"%s")', $platform->quoteIdentifier('datePaiement'),
+            '%Y-%m-%d');
     }
 }
