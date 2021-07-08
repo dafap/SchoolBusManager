@@ -21,8 +21,8 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2020
- * @version 2020-2.6.0
+ * @date 7 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmMail\Model;
 
@@ -49,6 +49,12 @@ class EnvoiMail implements ListenerAggregateInterface
     private $config;
 
     /**
+     *
+     * @var \SbmMail\Model\Dkim
+     */
+    private $dkim;
+
+    /**
      * Tableau défini dans les module.config.php et sbm.local.php sous la clé 'sbm' =>
      * 'mail' => [] Ce tableau a pour clés 'transport', 'message' et 'destinataires'. Les
      * destinaitaires sont les adresses de réception des messages adressés au service de
@@ -56,9 +62,10 @@ class EnvoiMail implements ListenerAggregateInterface
      *
      * @param array $config_mail
      */
-    public function __construct($config_mail)
+    public function __construct($config_mail, $dkim)
     {
         $this->config = $config_mail;
+        $this->dkim = $dkim;
     }
 
     /**
@@ -155,7 +162,7 @@ class EnvoiMail implements ListenerAggregateInterface
         } else {
             throw new Exception('Le service d\'envoi de mail n\'est pas bien paramétré.');
         }
-        $transport->send($mail);
+        $transport->send($this->dkim->sign($mail));
     }
 
     /**

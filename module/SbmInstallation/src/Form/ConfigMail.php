@@ -7,8 +7,8 @@
  * @filesource ConfigMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2019
- * @version 2019-2.5.0
+ * @date 5 juil. 2O21
+ * @version 2021-2.6.3
  */
 namespace SbmInstallation\Form;
 
@@ -115,6 +115,42 @@ class ConfigMail extends Form
                 'attributes' => [],
                 'options' => [
                     'label' => 'SmtpOptions - Config connexion : use_complete_quit'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'dkim|params|d',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'd'
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'dkim|params|h',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'h'
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'dkim|params|s',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 's'
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'dkim|private_key',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'private key'
                 ]
             ]);
         $this->add(
@@ -248,7 +284,15 @@ class ConfigMail extends Form
             'message|body|text' => StdLib::getParamR(explode('|', 'message|body|text'),
                 $configmail, ''),
             'message|body|html' => StdLib::getParamR(explode('|', 'message|body|html'),
-                $configmail, '')
+                $configmail, ''),
+            'dkim|params|d' => StdLib::getParamR(explode('|', 'dkim|params|d'),
+                $configmail),
+            'dkim|params|h' => StdLib::getParamR(explode('|', 'dkim|params|h'),
+                $configmail),
+            'dkim|params|s' => StdLib::getParamR(explode('|', 'dkim|params|s'),
+                $configmail),
+            'dkim|private_key' => StdLib::getParamR(explode('|', 'dkim|private_key'),
+                $configmail)
         ];
         for ($i = 0; $i < count($destinataires); $i ++) {
             $name = "destinataires|$i";

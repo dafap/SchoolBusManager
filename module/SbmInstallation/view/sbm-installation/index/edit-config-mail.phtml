@@ -9,8 +9,8 @@
  * @filesource edit-config-mail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2019
- * @version 2019-2.5.0
+ * @date 5 juil. 2O21
+ * @version 2021-2.6.3
  */
 $this->themeCss('sbm-installation', 'edit-config-mail.css');
 $this->jQuery();
@@ -71,14 +71,27 @@ EOT;
 			<div class="labellong"><?=$this->formRow($this->form->get('message|body|text'));?></div>
 			<div class="labellong"><?=$this->formRow($this->form->get('message|body|html'));?></div>
 		</div>
+		<p>&nbsp;<br>&nbsp;</p>
 	</fieldset>
-
+	<fieldset class="sbm-page1">
+		<legend>DKIM</legend>
+		<h3>Paramètres</h3>
+		<div class="retrait">
+		    <div><?=$this->formRow($this->form->get('dkim|params|d'));?></div>
+		    <div><?=$this->formRow($this->form->get('dkim|params|h'));?></div>
+		    <div><?=$this->formRow($this->form->get('dkim|params|s'));?></div>
+		</div>
+		<h3>Clé privée</h3>
+		<div class="retrait">
+		    <div><?=$this->formRow($this->form->get('dkim|private_key'))?></div>
+		</div>
+	</fieldset>
 	<fieldset class="sbm-page1 destinataires">
 		<legend>Destinataires</legend>
 		<?php for ($i=0; $i < $this->nbDestinataires; $i++):?>
 		<fieldset>
-		<div><?=$this->formRow($this->form->get("destinataires|$i|email"));?></div>
-		<div><?=$this->formRow($this->form->get("destinataires|$i|name"));?></div>
+			<div><?=$this->formRow($this->form->get("destinataires|$i|email"));?></div>
+			<div><?=$this->formRow($this->form->get("destinataires|$i|name"));?></div>
 		</fieldset>
 		<?php endfor;?>
 		<div id="newDestinataire"></div>

@@ -1,28 +1,26 @@
 <?php
 /**
- * Injection dans EnvoiMail du tableau de configuration
- *
- * Compatibilité ZF3
+ * Injection dans Dkim du tableau de configuration
  *
  * @project sbm
- * @package package_name
- * @filesource EnvoiMailFactory.php
+ * @package
+ * @filesource DkimFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2021
+ * @date 5 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmMail\Model\Service;
 
-use SbmMail\Model\EnvoiMail;
+use SbmMail\Model\Dkim;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class EnvoiMailFactory implements FactoryInterface
+class DkimFactory implements FactoryInterface
 {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new EnvoiMail($serviceLocator->get('SbmMail\Config'), $serviceLocator->get('SbmMail\Dkim'));
+        return new Dkim($serviceLocator->get('SbmMail\Config')['dkim']);
     }
 }

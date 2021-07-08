@@ -9,8 +9,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 août 2020
- * @version 2020-2.6.0
+ * @date 5 juil. 2021
+ * @version 2021-2.6.3
  */
 use SbmBase\Model\StdLib;
 use SbmMail\Controller;
@@ -81,7 +81,8 @@ return [
     'service_manager' => [
         'factories' => [
             Model\EnvoiMail::class => Model\Service\EnvoiMailFactory::class,
-            'SbmMail\Config' => Model\Service\ConfigServiceFactory::class
+            'SbmMail\Config' => Model\Service\ConfigServiceFactory::class,
+            'SbmMail\Dkim' => Model\Service\DkimFactory::class
         ]
     ],
     'controllers' => [
