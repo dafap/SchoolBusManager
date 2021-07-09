@@ -9,7 +9,7 @@
  * @filesource edit-config-mail.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2O21
+ * @date 9 juil. 2O21
  * @version 2021-2.6.3
  */
 $this->themeCss('sbm-installation', 'edit-config-mail.css');
@@ -61,6 +61,11 @@ EOT;
 		<div class="retrait">
 			<div><?=$this->formRow($this->form->get('message|replyTo|email'));?></div>
 			<div><?=$this->formRow($this->form->get('message|replyTo|name'));?></div>
+		</div>
+		<h3>copie des envois</h3>
+		<div class="retrait">
+			<div><?=$this->formRow($this->form->get('message|bcc|email'));?></div>
+			<div><?=$this->formRow($this->form->get('message|bcc|name'));?></div>
 		</div>
 		<h3>subject</h3>
 		<div class="retrait">

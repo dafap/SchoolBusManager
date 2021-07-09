@@ -7,7 +7,7 @@
  * @filesource ConfigMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2O21
+ * @date 9 juil. 2O21
  * @version 2021-2.6.3
  */
 namespace SbmInstallation\Form;
@@ -187,6 +187,24 @@ class ConfigMail extends Form
                 'attributes' => [],
                 'options' => [
                     'label' => 'Répondre à : name'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'message|bcc|email',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'De : email'
+                ]
+            ]);
+        $this->add(
+            [
+                'name' => 'message|bcc|name',
+                'type' => 'text',
+                'attributes' => [],
+                'options' => [
+                    'label' => 'De : name'
                 ]
             ]);
         $this->add(

@@ -6,26 +6,28 @@
  * - name : sendMail
  * - target : null
  * - params : [
- *       'to' => [],     // tableau des adresses des destinataires.
- *                       // Les adresses sont données sous la forme ['email' => string, 'name' => string]
- *       'cc' => [],     // comme 'to' - optionnel
- *       'bcc' => [],    // comme 'to' - optionnel
- *       'subject' => string, // sujet qui sera concaténé à config['sbm']['mail']['message']['subject']
- *       'body' => [],   // le corps du message et les fichiers joints sous la forme
- *                       // ['text' => string, 'html' => string, 'files' => [])
- *                       // où files est un tableau de pièces jointes (chemin complet dans le filename)
- *       ]
+ * 'to' => [], // tableau des adresses des destinataires.
+ * // Les adresses sont données sous la forme ['email' => string, 'name' => string]
+ * 'cc' => [], // comme 'to' - optionnel
+ * 'bcc' => [], // comme 'to' - optionnel
+ * 'subject' => string, // sujet qui sera concaténé à
+ * config['sbm']['mail']['message']['subject']
+ * 'body' => [], // le corps du message et les fichiers joints sous la forme
+ * // ['text' => string, 'html' => string, 'files' => [])
+ * // où files est un tableau de pièces jointes (chemin complet dans le filename)
+ * ]
  *
  * @project sbm
  * @package SbmMail/Model
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2021
+ * @date 9 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmMail\Model;
 
+use SbmBase\Model\StdLib;
 use Zend\Mail;
 use Zend\Mime;
 use Zend\EventManager\Event;
@@ -56,7 +58,8 @@ class EnvoiMail implements ListenerAggregateInterface
 
     /**
      * Tableau défini dans les module.config.php et sbm.local.php sous la clé 'sbm' =>
-     * 'mail' => [] Ce tableau a pour clés 'transport', 'message' et 'destinataires'. Les
+     * 'mail' => [] Ce tableau a pour clés 'transport', 'message' et 'destinataires'.
+     * Les
      * destinaitaires sont les adresses de réception des messages adressés au service de
      * transport. (non utilisé ici)
      *
@@ -132,6 +135,12 @@ class EnvoiMail implements ListenerAggregateInterface
             $mail->addCc($this->getAdresse($destinataire));
         }
         $bcc = empty($params['bcc']) ? [] : $params['bcc'];
+        if (! empty($this->config['message']['bcc']['email'])) {
+            $bcc[] = StdLib::getParamR([
+                'message',
+                'bcc'
+            ], $this->config);
+        }
         foreach ($bcc as $destinataire) {
             $mail->addBcc($this->getAdresse($destinataire));
         }
@@ -153,10 +162,12 @@ class EnvoiMail implements ListenerAggregateInterface
                 $options->setName($this->config['transport']['smtpOptions']['name']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_class'])) {
-                $options->setConnectionClass($this->config['transport']['smtpOptions']['connexion_class']);
+                $options->setConnectionClass(
+                    $this->config['transport']['smtpOptions']['connexion_class']);
             }
             if (! empty($this->config['transport']['smtpOptions']['connexion_config'])) {
-                $options->setConnectionConfig($this->config['transport']['smtpOptions']['connexion_config']);
+                $options->setConnectionConfig(
+                    $this->config['transport']['smtpOptions']['connexion_config']);
             }
             $transport = new Mail\Transport\Smtp($options);
         } else {
