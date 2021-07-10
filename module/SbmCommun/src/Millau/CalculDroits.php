@@ -1,21 +1,29 @@
 <?php
 /**
- * Service calculant les droits au transport pour un élève pour le règlement de Millau Grands Causses
+ * Service calculant les droits au transport pour un élève pour le règlement de Millau
+ * Grands Causses
  *
- * Les caractéristiqes des règles sont des constantes inscrites dans le trait GrilleTarifTrait
+ * Les caractéristiqes des règles sont des constantes inscrites dans le trait
+ * GrilleTarifTrait
  * (code des grilles, distance mini, filtre sur les communes ayant droit)
  *
- * Par défaut, lors de la création d'une scolarité, il n'y a pas de droit au transport (scolarites.district = 0).
+ * Par défaut, lors de la création d'une scolarité, il n'y a pas de droit au transport
+ * (scolarites.district = 0).
  *
  * Lors de l'inscription d'un élève, ou du déménagement des parents :
  * Il faut calculer les droits et enregistrer leur acquisition dans scolarites.district.
- * - On distingue les règles selon le niveau de scolarité (maternelle, primaire, collège, lycée).
- * - Les droits acquis pour un établissement en début d'année sont conservés. Par contre, les droits peuvent être acquis en cours d'année.
- * - On calcule les droits en regardant successivement le domicile du responsable1, le domicile du responsable2, le domicile de l'élève.
- *   Dès qu'un des domiciles donne le droit, on arrête le calcul et on enregistre le droit dans la table scolarites.
+ * - On distingue les règles selon le niveau de scolarité (maternelle, primaire, collège,
+ * lycée).
+ * - Les droits acquis pour un établissement en début d'année sont conservés. Par contre,
+ * les droits peuvent être acquis en cours d'année.
+ * - On calcule les droits en regardant successivement le domicile du responsable1, le
+ * domicile du responsable2, le domicile de l'élève.
+ * Dès qu'un des domiciles donne le droit, on arrête le calcul et on enregistre le droit
+ * dans la table scolarites.
  *
  * Par contre, lors d'un changement d'établissement scolaire en cours d'année :
- * Les droits pouvaient être acquis sur l'ancien établissement et peuvent ne pas l'être sur le nouveau car en général on change de service.
+ * Les droits pouvaient être acquis sur l'ancien établissement et peuvent ne pas l'être
+ * sur le nouveau car en général on change de service.
  * Aussi, on enregistrera tout, que ce soit l'acquisition ou la perte des droits.
  *
  * @project sbm
@@ -23,8 +31,8 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
- * @version 2021-2.5.11
+ * @date 9 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmCommun\Millau;
 
@@ -69,7 +77,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     private $compte_rendu = [];
 
     /**
-     * Les distances en km des domiciles de l'élève à son établissement scolaire. Lorsque
+     * Les distances en km des domiciles de l'élève à son établissement scolaire.
+     * Lorsque
      * l'élève a une résidence différente de celles de ses responsable, elle remplace la
      * résidence du responsable n°1. Cette propriété mise à jour dans la méthode district
      * et est reprise dans les méthodes saveAcquisition() et saveAcquisitionPerte()
@@ -135,7 +144,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     /**
      * Retourne un booléen représentant le droit au transport pour l'établissement
-     * scolaire choisi. Cette méthode met à jour la propriété $this->data en regardant
+     * scolaire choisi.
+     * Cette méthode met à jour la propriété $this->data en regardant
      * successivement toutes les règles qui définissent le droit au transport. Si Google
      * Maps ne répond pas, l'examen de la situation est favorable aux demandes de la
      * famille et les distances du domicile à l'établissement est marquée 99.
@@ -225,9 +235,9 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                     case 8:
                         // lycée
                         $result = [
-                        'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
-                        $domiciles, $destination),
-                        'droit' => true
+                            'distances' => $this->oDistanceMatrix->plusieursOriginesUneDestination(
+                                $domiciles, $destination),
+                            'droit' => true
                         ];
                         break;
                     case 4:
@@ -268,7 +278,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             $return_value = $result['droit'];
         } catch (GoogleMaps\Exception\ExceptionNoAnswer $e) {
             /**
-             * GoogleMaps API ne répond pas. Pour chaque domicile : - si pas de demande de
+             * GoogleMaps API ne répond pas.
+             * Pour chaque domicile : - si pas de demande de
              * transport on met 0.0 - si demande et gardeDistance on rétablit la distance
              * indiquée - sinon 99
              */
@@ -299,20 +310,22 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
         $horsSecteur = $r1HorsSecteur && (! $r2 || $r2HorsSecteur);
         if ($return_value && $scolarite->derogation != 1 &&
             (! $this->validDistanceMini() || $horsSecteur)) {
-                $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
-                $return_value = $result['droit'] = false;
-                if ($horsSecteur) {
-                    $result['message'] = 'Résidence hors secteur.';
-                } else {
-                    $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
-                }
+            $this->data['grilleTarif'] = self::NON_AYANT_DROIT;
+            $return_value = $result['droit'] = false;
+            if ($horsSecteur) {
+                $result['message'] = 'Résidence hors secteur.';
+            } else {
+                $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
             }
-            if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
-                $scolarite->derogation == 0) {
-                    $this->data['accordR1'] = $this->data['accordR2'] = 0;
-                }
-                $this->setCompteRendu($result);
-                return $return_value;
+        }
+        if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
+            $scolarite->derogation == 0) {
+            $this->data['accordR1'] = $this->data['accordR2'] = 0;
+        } else {
+            $this->data['gratuit'] = 0;
+        }
+        $this->setCompteRendu($result);
+        return $return_value;
     }
 
     /**
@@ -323,7 +336,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     private function validDistanceMini()
     {
         return $this->data['distanceR1'] >= self::DISTANCE_MINI ||
-        $this->data['distanceR2'] >= self::DISTANCE_MINI;
+            $this->data['distanceR2'] >= self::DISTANCE_MINI;
     }
 
     private function validCommune($communeId)
@@ -334,7 +347,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
-     * Vérifie que l'enfant a plus de 2 ans. En fait je prends 720 jours afin de laisser
+     * Vérifie que l'enfant a plus de 2 ans.
+     * En fait je prends 720 jours afin de laisser
      * un délai pour l'inscription.
      *
      * @return boolean
@@ -421,7 +435,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     /**
      * Les Point $domiciles ont pour attribut communeId Le Point $college a pour attribut
-     * etablissementId, classeId, communeId et statut. Pour le public, collège du secteur
+     * etablissementId, classeId, communeId et statut.
+     * Pour le public, collège du secteur
      * scolaire de la commune du domicile. Pour le privé, collège de la commune le plus
      * proche ou collège le plus proche
      *
@@ -472,7 +487,7 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
             $estDeLaCommune = false;
             foreach ($domiciles as $pt) {
                 $estDeLaCommune |= $pt->getAttribute('communeId') ==
-                $college->getAttribute('communeId');
+                    $college->getAttribute('communeId');
             }
             // liste des collèges privés
             $tClg = $this->db_manager->get('Sbm\Db\Table\Etablissements');
@@ -505,7 +520,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
     }
 
     /**
-     * Les Point $domiciles ont pour attribut communeId. Le Point $ecole a pour attribut
+     * Les Point $domiciles ont pour attribut communeId.
+     * Le Point $ecole a pour attribut
      * etablissementId, classeId, communeId et statut. Pour le public, école publique de
      * la commune la plus proche ou école publique la plus proche. Pour le privé, école
      * privée de la commune la plus proche ou école privée la plus proche.
@@ -666,15 +682,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                                 // on récupère la distance entre le domicile et l'ecole
                                 if ($aPtDestinations[$j]->getAttribute('etablissementId') ==
                                     $ptEtablissement->getAttribute('etablissementId')) {
-                                        $distances[$i] = $element->distance->value;
-                                    }
-                                    // on met à jour la distance minimale $dmin
-                                    // et on mémorise l'établissement le plus proche
-                                    if ($dmin > $element->distance->value) {
-                                        $dmin = $element->distance->value;
-                                        $procheEtablissementId = $aPtDestinations[$j]->getAttribute(
-                                            'etablissementId');
-                                    }
+                                    $distances[$i] = $element->distance->value;
+                                }
+                                // on met à jour la distance minimale $dmin
+                                // et on mémorise l'établissement le plus proche
+                                if ($dmin > $element->distance->value) {
+                                    $dmin = $element->distance->value;
+                                    $procheEtablissementId = $aPtDestinations[$j]->getAttribute(
+                                        'etablissementId');
+                                }
                             }
                             $j ++;
                         }
@@ -686,14 +702,15 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                             $procheEtablissementId,
                             $ptEtablissement->getAttribute('classeId'));
                         $droit |= $ptEtablissement->getAttribute('etablissementId') ==
-                        $procheEtablissementId;
+                            $procheEtablissementId;
                         $aEtablissementsAyantDroit[] = $procheEtablissementId;
                         $i ++;
                     }
                     return [
                         'droit' => $droit,
                         'distances' => $distances,
-                        'etablissementsAyantDroit' => array_filter($aEtablissementsAyantDroit)
+                        'etablissementsAyantDroit' => array_filter(
+                            $aEtablissementsAyantDroit)
                     ];
                 } else {
                     throw new GoogleMaps\Exception\Exception(
@@ -711,7 +728,8 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
 
     /**
      * Méthode à utiliser en début d'année ou en cours d'année s'il n'y a pas de
-     * changement d'établissement scolaire. Cette méthode permet de ne pas perdre les
+     * changement d'établissement scolaire.
+     * Cette méthode permet de ne pas perdre les
      * droits acquis en cours d'année.
      *
      * @param int $eleveId

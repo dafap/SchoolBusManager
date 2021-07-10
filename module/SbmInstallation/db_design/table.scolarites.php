@@ -9,8 +9,8 @@
  * @filesource table.scolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 9 juil. 2021
+ * @version 2021-2.5.13
  */
 use SbmBase\Model\StdLib;
 
@@ -42,7 +42,7 @@ return [
             'dateEtiquette' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'dateCarte' => 'datetime NOT NULL DEFAULT "1900-01-01 00:00:00"',
             'inscrit' => 'tinyint(1) NOT NULL DEFAULT "1"',
-            'gratuit' => 'tinyint(1) NOT NULL DEFAULT "0"',
+            'gratuit' => 'tinyint(1) NOT NULL DEFAULT "1"',
             'paiement' => 'tinyint(1) NOT NULL DEFAULT "0"',
             'duplicata' => 'int(11) NOT NULL DEFAULT "0"',
             'fa' => 'tinyint(1) NOT NULL DEFAULT "0"', // famille d'accueil
