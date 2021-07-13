@@ -22,7 +22,7 @@
  * @filesource EnvoiMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2021
+ * @date 10 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmMail\Model;
@@ -146,7 +146,9 @@ class EnvoiMail implements ListenerAggregateInterface
         }
         $mail->setSubject($this->config['message']['subject'] . $params['subject']);
         $this->setBody($mail, $params['body'],
-            $this->config['message']['message_encoding']);
+            $this->config['message']['message_encoding'],
+            $this->config['message']['html_encoding'],
+            $this->config['message']['body']['html'] == 1);
         // transport
         if ($this->config['transport']['mode'] == 'sendmail') {
             $transport = new Mail\Transport\Sendmail();
@@ -212,65 +214,78 @@ class EnvoiMail implements ListenerAggregateInterface
      *
      * @throws \SbmMail\Model\Exception
      */
-    protected function setBody(\Zend\Mail\Message &$mail, array $bodyinfo, $encoding)
+    protected function setBody(\Zend\Mail\Message &$mail, array $bodyinfo,
+        string $encoding, string $html_encoding, bool $html_part)
     {
-        if (! empty($bodyinfo['html'])) {
-            $htmlPart = new Mime\Part($bodyinfo['html']);
-            $htmlPart->setType(Mime\Mime::TYPE_HTML);
-            $htmlPart->setCharset($encoding);
+        if (! $html_part) {
             if (empty($bodyinfo['text'])) {
-                $bodyinfo['text'] = strip_tags(html_entity_decode($bodyinfo['html']));
+                if (! empty($bodyinfo['html'])) {
+                    $bodyinfo['text'] = strip_tags(html_entity_decode($bodyinfo['html']));
+                } else {
+                    $bodyinfo['text'] = '';
+                }
             }
-        } elseif (empty($bodyinfo['text'])) {
-            throw new Exception(
-                'Le message est vide. Donnez un texte, éventuellement formaté en html.');
-        }
-        if (! array_key_exists('files', $bodyinfo)) {
-            $bodyinfo['files'] = [];
-        }
-        // on place obligatoirement un message en text
-        $textPart = new Mime\Part($bodyinfo['text']);
-        $textPart->setType(Mime\Mime::TYPE_TEXT);
-        $textPart->setCharset($encoding);
-        // et les fichiers joints
-        $attaches = [];
-        $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
-        if (! $fileinfo) {
-            throw new Exception("Erreur à l'ouverture de fileinfo.");
-        }
-        foreach ($bodyinfo['files'] as $filename) {
-            if (file_exists($filename)) {
-                $filetype = finfo_file($fileinfo, $filename);
-                $attachment = new Mime\Part(file_get_contents($filename));
-                $attachment->setType("$filetype;name=$filename");
-                $attachment->setEncoding(Mime\Mime::ENCODING_BASE64);
-                $attachment->setDisposition(Mime\Mime::DISPOSITION_ATTACHMENT);
-                $attachment->setFileName($filename); // juste le nom du fichier
-                $attaches[] = $attachment;
-            } else {
-                throw new Exception("Impossible d'ouvrir le fichier $filename.");
-            }
-        }
-        finfo_close($fileinfo);
-        if (count($attaches) > 0) {
-            $parts = array_merge([
-                $textPart,
-                $htmlPart
-            ], $attaches);
-            $type = Mime\Mime::MULTIPART_MIXED;
+            $mail->setBody($bodyinfo['text']);
         } else {
-            $parts = [
-                $textPart,
-                $htmlPart
-            ];
-            $type = Mime\Mime::MULTIPART_ALTERNATIVE;
-        }
-        $body = new Mime\Message();
-        $body->setParts($parts);
+            if (! empty($bodyinfo['html'])) {
+                $htmlPart = new Mime\Part($bodyinfo['html']);
+                $htmlPart->setType(Mime\Mime::TYPE_HTML);
+                $htmlPart->setCharset($encoding);
+                $htmlPart->setEncoding($html_encoding);
+                if (empty($bodyinfo['text'])) {
+                    $bodyinfo['text'] = strip_tags(html_entity_decode($bodyinfo['html']));
+                }
+            } elseif (empty($bodyinfo['text'])) {
+                throw new Exception(
+                    'Le message est vide. Donnez un texte, éventuellement formaté en html.');
+            }
+            if (! array_key_exists('files', $bodyinfo)) {
+                $bodyinfo['files'] = [];
+            }
+            // on place obligatoirement un message en text
+            $textPart = new Mime\Part($bodyinfo['text']);
+            $textPart->setType(Mime\Mime::TYPE_TEXT);
+            $textPart->setCharset($encoding);
+            // et les fichiers joints
+            $attaches = [];
+            $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+            if (! $fileinfo) {
+                throw new Exception("Erreur à l'ouverture de fileinfo.");
+            }
+            foreach ($bodyinfo['files'] as $filename) {
+                if (file_exists($filename)) {
+                    $filetype = finfo_file($fileinfo, $filename);
+                    $attachment = new Mime\Part(file_get_contents($filename));
+                    $attachment->setType("$filetype;name=$filename");
+                    $attachment->setEncoding(Mime\Mime::ENCODING_BASE64);
+                    $attachment->setDisposition(Mime\Mime::DISPOSITION_ATTACHMENT);
+                    $attachment->setFileName($filename); // juste le nom du fichier
+                    $attaches[] = $attachment;
+                } else {
+                    throw new Exception("Impossible d'ouvrir le fichier $filename.");
+                }
+            }
+            finfo_close($fileinfo);
+            if (count($attaches) > 0) {
+                $parts = array_merge([
+                    $textPart,
+                    $htmlPart
+                ], $attaches);
+                $type = Mime\Mime::MULTIPART_MIXED;
+            } else {
+                $parts = [
+                    $textPart,
+                    $htmlPart
+                ];
+                $type = Mime\Mime::MULTIPART_ALTERNATIVE;
+            }
+            $body = new Mime\Message();
+            $body->setParts($parts);
 
-        $mail->setBody($body)
-            ->getHeaders()
-            ->get('content-type')
-            ->setType($type);
+            $mail->setBody($body)
+                ->getHeaders()
+                ->get('content-type')
+                ->setType($type);
+        }
     }
 }

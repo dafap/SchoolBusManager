@@ -7,7 +7,7 @@
  * @filesource ConfigMail.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2O21
+ * @date 13 juil. 2O21
  * @version 2021-2.6.3
  */
 namespace SbmInstallation\Form;
@@ -297,6 +297,10 @@ class ConfigMail extends Form
                 explode('|', 'message|replyTo|email'), $configmail, ''),
             'message|replyTo|name' => StdLib::getParamR(
                 explode('|', 'message|replyTo|name'), $configmail, ''),
+            'message|bcc|email' => StdLib::getParamR(explode('|', 'message|bcc|email'),
+                $configmail, ''),
+            'message|bcc|name' => StdLib::getParamR(explode('|', 'message|bcc|name'),
+                $configmail, ''),
             'message|subject' => StdLib::getParamR(explode('|', 'message|subject'),
                 $configmail, ''),
             'message|body|text' => StdLib::getParamR(explode('|', 'message|body|text'),

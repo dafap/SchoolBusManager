@@ -9,8 +9,8 @@
  * @filesource layout.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juil. 2019
- * @version 2019-2.5.0
+ * @date 10 juil. 2021
+ * @version 2021-2.6.3
  */
 use SbmBase\Model\StdLib;
 
@@ -52,8 +52,11 @@ if (is_array($this->img_attributes)) {
 }
 ?>
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
 <body>
 <?= $this->content;?>
-<img src="<?= $url_img;?>" <?= implode(' ', $attributes);?>>
+<p><img src="<?= $url_img;?>" <?= implode(' ', $attributes);?> /></p>
 </body>
 </html>

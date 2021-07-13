@@ -9,7 +9,7 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juil. 2021
+ * @date 10 juil. 2021
  * @version 2021-2.6.3
  */
 use SbmBase\Model\StdLib;
@@ -67,7 +67,7 @@ return [
             ],
             'message' => [
                 'type' => 'text/html',
-                'html_encoding' => \Zend\Mime\Mime::ENCODING_8BIT,
+                'html_encoding' => \Zend\Mime\Mime::ENCODING_QUOTEDPRINTABLE,
                 'message_encoding' => 'UTF-8'
             ],
             'path_filelog' => StdLib::findParentPath(__DIR__, 'data/logs')
