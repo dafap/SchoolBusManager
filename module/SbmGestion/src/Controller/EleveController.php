@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 juil. 2020
- * @version 2020-2.5.8
+ * @date 13 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmGestion\Controller;
 
@@ -345,6 +345,10 @@ class EleveController extends AbstractActionController
             'eleveId' => $eleveId
         ];
         if ($tScolarites->is_newRecord($id)) {
+            // supprimer les photos trop anciennes
+            $tElevesPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $tElevesPhotos->supprAncienne($eleveId);
+            // continuer l'inscription
             $viewmodel = $this->eleveAjout31Action($eleveId, $info);
             $viewmodel->setTemplate('sbm-gestion/eleve/eleve-ajout31.phtml');
         } else {

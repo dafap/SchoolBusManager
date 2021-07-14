@@ -9,8 +9,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 13 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmParent\Model;
 
@@ -37,7 +37,8 @@ class OutilsInscription
     private $db_manager;
 
     /**
-     * Identifiant de l'élève à réinscrire ou à modifier. Il sera null pour une
+     * Identifiant de l'élève à réinscrire ou à modifier.
+     * Il sera null pour une
      * inscription.
      *
      * @var int|null
@@ -58,7 +59,8 @@ class OutilsInscription
     private $scolariteAnneePrecedente;
 
     /**
-     * userId de la personne authentifiée. Correspond à
+     * userId de la personne authentifiée.
+     * Correspond à
      * $sm->get('SbmAuthentification\Authentication')->by('email')->getUserId()
      *
      * @var int
@@ -173,7 +175,8 @@ class OutilsInscription
 
     /**
      * Enregistre les données dans la table eleves et renvoie l'identifiant de l'élève que
-     * ce soit un nouvel enregistrement ou pas. S'il y a garde alternée, enregistre
+     * ce soit un nouvel enregistrement ou pas.
+     * S'il y a garde alternée, enregistre
      * l'identifiant du responsable 2.
      *
      * @param array $data
@@ -218,7 +221,8 @@ class OutilsInscription
 
     /**
      * Enregistre la scolarité et renvoie un indicateur précisant si on doit recalculer
-     * les distances. Le recalcul des distances est nécessaire (true) si l'une des
+     * les distances.
+     * Le recalcul des distances est nécessaire (true) si l'une des
      * condition est remplie :<ul> <li>l'établissement a changé,</li> <li>c'est un nouvel
      * enregistrement</li> <li>district = 0</li></ul>
      * Il est nécessaire de remettre accordR1 et accordR2 à 1 pour traiter le cas de non
@@ -289,7 +293,8 @@ class OutilsInscription
 
     /**
      * Cette méthode renvoie un booléen indiquant qu'il faut recalculer les droits si un
-     * domicile, l'établissement ou le régime ont changé. Si le domicile, l'établissement
+     * domicile, l'établissement ou le régime ont changé.
+     * Si le domicile, l'établissement
      * et le régime n'ont pas changé alors enregistre les affectations de l'année
      * précédente sinon supprime la dérogation (s'il y en a une).
      *
@@ -464,6 +469,21 @@ class OutilsInscription
                     'millesime' => $this->millesime,
                     'eleveId' => $this->eleveId
                 ]);
+        }
+    }
+
+    /**
+     * Supprime la photo si elle a plus de 2 ans le jour de la rentrée scolaire
+     *
+     * @param int $eleveId
+     */
+    public function supprAnciennePhoto(int $eleveId)
+    {
+        try {
+            $tElevesPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $tElevesPhotos->supprAncienne($eleveId);
+        } catch (\Exception $e) {
+            // Pas de photo, rien à supprimer
         }
     }
 }

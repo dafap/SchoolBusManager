@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2021
- * @version 2021-2.5.12
+ * @date 13 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmParent\Controller;
 
@@ -220,9 +220,11 @@ class IndexController extends AbstractActionController
             if ($hasGa) {
                 $formga->setData($args);
             }
-            // Dans form->isValid(), on refuse si existence d'un élève de même nom,
-            // prénom, dateN et responsable 1 (ou 2).
-            // formga->isValid() n'est regardé que si hasGa.
+            /**
+             * Dans form->isValid(), on refuse si existence d'un élève de même nom,
+             * prénom, dateN et responsable 1 (ou 2).
+             * formga->isValid() n'est regardé que si hasGa.
+             */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                 // Enregistrement du responsable2 en premier (si on a le droit)
                 if ($hasGa) {
@@ -362,8 +364,10 @@ class IndexController extends AbstractActionController
             if ($hasGa) {
                 $formgaComplet = $owner = $outils->isOwner($args['r2responsable2Id']);
             }
-            // s'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le
-            // cas où l'utilisateur déciderait d'en rajouter une.
+        /**
+         * S'il n'y a pas de garde alternée, on prévoit le formulaire complet pour le cas
+         * où l'utilisateur déciderait d'en rajouter une.
+         */
         }
         $formga = $this->form_manager->get(
             $formgaComplet ? Form\Service\Responsable2Complet::class : Form\Service\Responsable2Restreint::class);
@@ -383,8 +387,7 @@ class IndexController extends AbstractActionController
             /**
              * Dans form->isValid(), on refuse si existence d'un élève de même nom,
              * prénom, dateN et n° différent.
-             * formga->isValid() n'est regardé que si
-             * hasGa.
+             * formga->isValid() n'est regardé que si hasGa.
              */
             if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                 // Enregistrement du responsable2 en premier (si on a le droit)
@@ -403,8 +406,8 @@ class IndexController extends AbstractActionController
                 /**
                  * Si on change d'établissement, on supprime les affecations reprises et
                  * on recalcule les droits.
-                 * Mais si on supprime la demandeR2, il faut
-                 * supprimer les affectations la concernant (trajet == 2).
+                 * Mais si on supprime la demandeR2, il faut supprimer les affectations la
+                 * oncernant (trajet == 2).
                  */
                 $cr = [];
                 if ($outils->saveScolarite($form->getData())) {
@@ -776,11 +779,12 @@ class IndexController extends AbstractActionController
                 ->setValueOptions('communeId',
                 $this->db_manager->get('Sbm\Db\Select\Communes')
                     ->membres());
-            // pour la garde alternée, on doit déterminer si le formulaire sera complet ou
-            // non afin d'adapter ses validateurs. S'il n'est pas complet, on passera tout
-            // de
-            // même responsableId (attention ! dans le post, les champs sont préfixés par
-            // r2)
+            /**
+             * pour la garde alternée, on doit déterminer si le formulaire sera complet ou
+             * non afin d'adapter ses validateurs.
+             * S'il n'est pas complet, on passera tout de même responsableId (attention !
+             * dans le post, les champs sont préfixés par r2)
+             */
             $formgaComplet = true;
             if ($isPost) {
                 $hasGa = StdLib::getParam('ga', $args, false);
@@ -808,8 +812,7 @@ class IndexController extends AbstractActionController
                 /**
                  * Dans form->isValid(), on refuse si existence d'un élève de même nom,
                  * prénom, dateN et n° différent.
-                 * formga->isValid() n'est regardé que si
-                 * hasGa.
+                 * formga->isValid() n'est regardé que si hasGa.
                  */
                 if ($form->isValid() && ! ($hasGa && ! $formga->isValid())) {
                     // Enregistrement du responsable2 en premier (si on a le droit)
@@ -838,6 +841,7 @@ class IndexController extends AbstractActionController
                     $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                     // Enregistrement de sa scolarité
                     $outils->saveScolarite($data, $eleveId);
+                    $outils->supprAnciennePhoto($eleveId);
                     // affectations si l'adresse et la scolarité n'ont pas changé
                     $calculDroitsNecessaire = $outils->repriseAffectations(
                         $data['demandeR1'], $data['demandeR2']);

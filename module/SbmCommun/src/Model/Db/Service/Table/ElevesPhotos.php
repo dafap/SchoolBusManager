@@ -2,14 +2,14 @@
 /**
  * Gestion de la table `elevesphotos`
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Model/Db/Table
  * @filesource ElevesPhotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
- * @version 2019-2.5.0
+ * @date 14 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -39,35 +39,77 @@ class ElevesPhotos extends AbstractSbmTable
             $is_new = true;
         }
         if ($is_new) {
-            $obj_data->setCalculateFields(
-                [
-                    'dateCreation'
-                ]);
+            $obj_data->setCalculateFields([
+                'dateCreation'
+            ]);
         } else {
             // on vérifie si des données ont changé
             if ($obj_data->isUnchanged($old_data)) {
                 return;
             }
-            $obj_data->setCalculateFields(
-                [
-                    'dateModification'
-                ]);
-        }        
+            $obj_data->setCalculateFields([
+                'dateModification'
+            ]);
+        }
         parent::saveRecord($obj_data);
     }
-    
+
     /**
      * Renvoie la date du dernier lot d'extraction de photos
      */
     public function getLastDateExtraction()
     {
         $select = $this->table_gateway->getSql()
-        ->select()
-        ->columns(
-            [
-                'lastDateExtraction' => new Expression('MAX(dateExtraction)')
-            ]);
+            ->select()
+            ->columns([
+            'lastDateExtraction' => new Expression('MAX(dateExtraction)')
+        ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateExtraction;
+    }
+
+    /**
+     * Supprime la photo si la date de validité est dépassée
+     *
+     * @param int $eleveId
+     * @return number
+     */
+    public function supprAncienne(int $eleveId)
+    {
+        try {
+            $photo = null;
+            if ($this->estTropAncien($eleveId, $photo)) {
+                return $this->deleteRecord($eleveId);
+            }
+        } catch (Exception\RuntimeException $e) {
+            // pas de photo : rien à supprimer
+        }
+    }
+
+    /**
+     * Renvoie la photo si la date de validité n'est pas dépassée
+     * Sinon, lance une exception.
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()
+     */
+    public function getRecord(int $eleveId)
+    {
+        $photo = null;
+        if ($this->estTropAncien($eleveId, $photo)) {
+            throw new Exception\RuntimeException('Photo trop ancienne');
+        }
+        return $photo;
+    }
+
+    private function estTropAncien(int $eleveId, &$photo): bool
+    {
+        $photo = parent::getRecord($eleveId);
+        $d1 = \DateTime::createFromFormat('Y-m-d', $photo->dateCreation);
+        $d2 = \DateTime::createFromFormat('Y-m-d', $photo->dateModification);
+        $dateRef = \DateTime::createFromFormat('Y-m-d|',
+            \SbmBase\Model\Session::get('as')['dateDebut']);
+        $dateRef->sub(new \DateInterval('P2Y'));
+        return ($d1 < $dateRef) && ($d2 < $dateRef);
     }
 }
