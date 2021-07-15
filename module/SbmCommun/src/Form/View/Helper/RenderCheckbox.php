@@ -5,8 +5,8 @@
  *
  * à déclarer dans module.config.php comme ceci :
  * 'view_helpers' => [
- *    'invokables' => [
- *       'renderCheckbox' => \SbmCommun\Form\View\Helper\RenderCheckbox::class,]
+ * 'invokables' => [
+ * 'renderCheckbox' => \SbmCommun\Form\View\Helper\RenderCheckbox::class,]
  * ]
  *
  * @project sbm
@@ -14,8 +14,8 @@
  * @filesource RenderCheckbox.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmCommun\Form\View\Helper;
 
@@ -25,14 +25,29 @@ use Zend\View\Helper\AbstractHelper;
 class RenderCheckbox extends AbstractHelper
 {
 
-    public function __invoke($name, $id, $value, $attributes = [])
+    public function __invoke($name, $op, $id, $value, $attributes = [])
+    {
+        $element = new Checkbox($name);
+        $element->setUseHiddenElement(false)
+            ->setAttribute('id', $op . $id)
+            ->setAttribute('data-id', $id)
+            ->setValue($value);
+        foreach ($attributes as $key => $attribute_value) {
+            $element->setAttribute($key, $attribute_value);
+            ;
+        }
+        return $this->view->formCheckbox($element);
+    }
+
+    public function __old_invoke($name, $id, $value, $attributes = [])
     {
         $element = new Checkbox($name);
         $element->setUseHiddenElement(false)
             ->setAttribute('id', $id)
             ->setValue($value);
         foreach ($attributes as $key => $attribute_value) {
-            $element->setAttribute($key, $attribute_value);;
+            $element->setAttribute($key, $attribute_value);
+            ;
         }
         return $this->view->formCheckbox($element);
     }

@@ -7,8 +7,8 @@
  * @filesource zonage-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 juin 2020
- * @version 2020-2.5.4
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -115,17 +115,17 @@ $actions = [
                     ]
                 ];
                 $checkbox_inscriptionenligne = $this->renderCheckbox('inscriptionenligne',
-                    'chkinscriptionenligne' . $lieu->zonageId, $lieu->inscriptionenligne,
+                    'chkinscriptionenligne', $lieu->zonageId, $lieu->inscriptionenligne,
                     [
                         'data-id' => $lieu->zonageId
                     ]);
                 $checkbox_paiementenligne = $this->renderCheckbox('paiementenligne',
-                    'chkpaiementenligne' . $lieu->zonageId, $lieu->paiementenligne,
+                    'chkpaiementenligne', $lieu->zonageId, $lieu->paiementenligne,
                     [
                         'data-id' => $lieu->zonageId
                     ]);
                 $checkbox_selection = $this->renderCheckbox('selection',
-                    'chkselection' . $lieu->zonageId, $lieu->selection,
+                    'chkselection', $lieu->zonageId, $lieu->selection,
                     [
                         'data-id' => $lieu->zonageId
                     ]);

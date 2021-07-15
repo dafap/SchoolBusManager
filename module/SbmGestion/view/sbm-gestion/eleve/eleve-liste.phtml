@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 use SbmBase\Model\DateLib;
 
@@ -449,7 +449,7 @@ $actions = [
 					<td class="station">
 						<?= $this->printStations($eleve['eleveId'], 1);?></td>
 					<td <?= $rowspan;?> class="centre selection">
-					<?=$this->renderCheckbox('selection', 'chk' . $eleve['eleveId'], $eleve['selectionEleve']); ?>
+					<?=$this->renderCheckbox('selection', 'chk', $eleve['eleveId'], $eleve['selectionEleve']); ?>
 					</td>
 					<td <?= $rowspan;?> class="boutons">
 						<?= $this->listeLigneActions($eleve['eleveId'], $hiddens, $buttons);?></td>

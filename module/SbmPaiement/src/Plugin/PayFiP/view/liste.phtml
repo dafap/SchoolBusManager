@@ -1,6 +1,6 @@
 <?php
 /**
- * Description courte du fichier
+ * Liste des paiements pour la table PayFiP
  *
  *
  * @project sbm
@@ -8,12 +8,12 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2019
- * @version 2019-2.5.0
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-
+$this->themeJS('sbm-paiement', 'liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();
@@ -122,7 +122,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="numauto">
 						<?= $this->escapeHtml($notification->numauto); ?></td>
 					<td class="centre selection">
-						<?= $this->renderCheckbox('selection', 'chk' . $notification->payfipId, $notification->selection)?></td>
+						<?= $this->renderCheckbox('selection', 'chk', $notification->payfipId, $notification->selection, ['data-plugin'=>'payfip'])?></td>
 					<td class="boutons">
             			<?= $this->listeLigneActions($notification->payfipId, $hiddens, $buttons);?></td>
 				</tr>

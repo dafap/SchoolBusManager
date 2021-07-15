@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -63,10 +63,11 @@ $url_group = $this->url('sbmgestion/finance',
         'id' => $this->page
     ]);
 if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-groupe',
-        'page' => $this->page
-    ]);
+    $url_sms = $this->url('sbmservicesms',
+        [
+            'action' => 'envoi-groupe',
+            'page' => $this->page
+        ]);
 }
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -122,8 +123,7 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
         <?php
             // construction des JS pour selection
             $jsTrigger .= sprintf("$('#chk%d').trigger('change');\n", $tarif->tarifId);
-            $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $this->page,
-                $tarif->tarifId);
+            $jsCallback .= sprintf("$modele\n", $tarif->tarifId, $tarif->tarifId);
             $hiddens = [
                 'tarifId' => $tarif->tarifId,
                 'grilleTarif' => $tarif->grille
@@ -168,12 +168,16 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 						<?=$this->effectifTarifs->transportes($tarif->grilleTarif);?>
 
 
+
+
 					<td class="effectif align-right">
 						<?=$this->effectifTarifs->demandes($tarif->grilleTarif);?>
 
 
+
+
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $tarif->tarifId, $tarif->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $tarif->tarifId, $tarif->selection)?>
 						</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($tarif->tarifId, $hiddens, $buttons);?>
@@ -185,7 +189,8 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
         ?>
         </tbody>
 		</table>
-		<p class="sbm-description">Les effectifs indiqués sont des effectifs par grille tarifaire.</p>
+		<p class="sbm-description">Les effectifs indiqués sont des effectifs
+			par grille tarifaire.</p>
 	</div>
 	<div id="liste-footer">
 		<div class="pagination-wrapper clearfix">

@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/transport/circuit-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -226,7 +226,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $circuit->circuitId, $circuit->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $circuit->circuitId, $circuit->selection)?>
 						</td>
 					<td class="boutons">
             			<?=$this->listeLigneActions($circuit->circuitId, $hiddens, $buttons);?></td>

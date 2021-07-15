@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
- * @version 2019-2.5.1
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 use SbmCartographie\Model\Point;
 
@@ -289,7 +289,7 @@ $actions = [
 					<td class="centre demenagement">
 						<?=$responsable['demenagement'] ? 'D' : '';?></td>
 					<td class="centre selection">
-					<?=$this->renderCheckbox('selection', 'chk' . $responsable['responsableId'], $responsable['selection']);?>
+					<?=$this->renderCheckbox('selection', 'chk', $responsable['responsableId'], $responsable['selection']);?>
 					</td>
 					<td class="boutons">
 						<?=$this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);?>

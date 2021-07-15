@@ -8,8 +8,8 @@
  * @filesource rpi-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -126,13 +126,13 @@ $actions = [
 					<td class="nom"><?= $this->escapeHtml($row->nom); ?></td>
 					<td class="libelle"><?= $this->escapeHtml($row->libelle); ?></td>
 					<td class="centre">
-					<?= $this->renderCheckbox('maternelle', 'maternelle' . $row->rpiId, $maternelle, ['disabled' => 'disabled']);?>
+					<?= $this->renderCheckbox('maternelle', 'maternelle' , $row->rpiId, $maternelle, ['disabled' => 'disabled']);?>
 					</td>
 					<td class="centre">
-					<?= $this->renderCheckbox('elementaire', 'elementaire' . $row->rpiId, $elementaire, ['disabled' => 'disabled']);?>
+					<?= $this->renderCheckbox('elementaire', 'elementaire' , $row->rpiId, $elementaire, ['disabled' => 'disabled']);?>
 					</td>
 					<td class="centre">
-					<?= $this->renderCheckbox('selection', 'chk' . $row->rpiId, $row->selection)?>
+					<?= $this->renderCheckbox('selection', 'chk', $row->rpiId, $row->selection)?>
 					</td>
 					<td class="boutons">
 					<?= $this->listeLigneActions($row->rpiId, $hiddens, $buttons);?>

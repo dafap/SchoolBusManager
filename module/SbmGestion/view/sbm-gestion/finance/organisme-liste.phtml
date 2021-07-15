@@ -12,8 +12,8 @@
  * @filesource organisme-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 06 juil. 2019
- * @version 2019-2.5.0
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -173,7 +173,7 @@ $actions = [
 					<td class="nbinscrits">
 						<?=$nbInscrits;?></td>
 					<td class="centre selection">
-						<?=$this->renderCheckbox('selection', 'chk' . $organisme->organismeId,$organisme->selection)?>
+						<?=$this->renderCheckbox('selection', 'chk', $organisme->organismeId,$organisme->selection)?>
 						</td>
 					<td class="boutons">
                 		<?=$this->listeLigneActions($organisme->organismeId, $hiddens, $buttons);?></td>
