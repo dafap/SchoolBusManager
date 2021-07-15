@@ -8,14 +8,14 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
- * @version 2020-2.6.0
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -120,7 +120,7 @@ class Responsables extends AbstractQuery
         ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',
             [
-                'nb' => new Expression('count(ele.eleveId)')
+                'nb' => new Literal('count(ele.eleveId)')
             ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
@@ -183,11 +183,11 @@ class Responsables extends AbstractQuery
                     'commune',
                     'lacommune',
                     'laposte',
-                    'nbEnfants' => new Expression('count(eleveId)'),
-                    'nbPreinscrits' => new Expression('count(preinscritId)'),
-                    'nbInscrits' => new Expression('count(inscritId)'),
-                    'nbGratuits' => new Expression('count(gratuitId)'),
-                    'nbDuplicata' => new Expression('sum(duplicata)')
+                    'nbEnfants' => new Literal('count(eleveId)'),
+                    'nbPreinscrits' => new Literal('count(preinscritId)'),
+                    'nbInscrits' => new Literal('count(inscritId)'),
+                    'nbGratuits' => new Literal('count(gratuitId)'),
+                    'nbDuplicata' => new Literal('sum(duplicata)')
                 ]))
             ->from([
             'tmp' => $this->unionSelect(1)
@@ -338,36 +338,36 @@ class Responsables extends AbstractQuery
         ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',
             [
-                'nbEnfants' => new Expression('count(ele.eleveId)')
+                'nbEnfants' => new Literal('count(ele.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'pre' => $select1
         ], 'ele.eleveId=pre.eleveId',
             [
-                'nbPreinscrits' => new Expression('count(pre.eleveId)')
+                'nbPreinscrits' => new Literal('count(pre.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'ins' => $select2
         ], 'ele.eleveId=ins.eleveId',
             [
-                'nbInscrits' => new Expression('count(ins.eleveId)')
+                'nbInscrits' => new Literal('count(ins.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'gra' => $select3
         ], 'ele.eleveId=gra.eleveId',
             [
-                'nbGratuits' => new Expression('count(gra.eleveId)')
+                'nbGratuits' => new Literal('count(gra.eleveId)')
             ], $select::JOIN_LEFT)
             /*->join([
             'fa' => $select4
         ], 'ele.eleveId=fa.eleveId', [
-            'nbFa' => new Expression('count(fa.eleveId)')
+            'nbFa' => new Literal('count(fa.eleveId)')
         ], $select::JOIN_LEFT)*/
             ->join([
             'dup' => $select5
         ], 'ele.eleveId=dup.eleveId',
             [
-                'nbDuplicata' => new Expression('sum(dup.duplicataR1)')
+                'nbDuplicata' => new Literal('sum(dup.duplicataR1)')
             ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
@@ -406,7 +406,7 @@ class Responsables extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])
             ->columns([
-            'nbEnfants' => new Expression('count(sco.eleveId)')
+            'nbEnfants' => new Literal('count(sco.eleveId)')
         ])
             ->where($where);
     }

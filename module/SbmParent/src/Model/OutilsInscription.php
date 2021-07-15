@@ -9,8 +9,8 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juin 2021
- * @version 2021-2.6.2
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmParent\Model;
 
@@ -339,6 +339,8 @@ class OutilsInscription
             } elseif ($this->cr['saveScolarite']['gaChange']) {
                 $this->supprAffectations(true);
             }
+        } elseif ($mode == 'reinscription') {
+            $this->supprAnciennePhoto();
         }
         if (! $this->getOScolarite()->hasAdressePerso() ||
             ($this->getOScolarite()->x + $this->getOScolarite()->y) != 0) {
@@ -743,6 +745,19 @@ class OutilsInscription
                     'millesime' => $this->millesime,
                     'eleveId' => $this->eleveId
                 ]);
+        }
+    }
+
+    /**
+     * Supprime la photo si elle est trop ancienne
+     */
+    private function supprAnciennePhoto()
+    {
+        try {
+            $tElevesPhotos = $this->db_manager->get('Sbm\Db\Table\ElevesPhotos');
+            $tElevesPhotos->supprAncienne($this->eleveId);
+        } catch (\Exception $e) {
+            // Pas de photo, rien à supprimer
         }
     }
 }

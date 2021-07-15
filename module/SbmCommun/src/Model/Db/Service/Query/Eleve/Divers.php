@@ -13,14 +13,13 @@
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 juin 2021
- * @version 2021-2.6.2
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Traits\ExpressionSqlTrait;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
@@ -70,16 +69,16 @@ class Divers extends AbstractQuery
                 'gratuit',
                 'dateCarteR1',
                 'dateCarteR2',
-                'service1R1' => new Expression(
+                'service1R1' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('ser1r1.semaine',
                         'ser1r1.ligneId', 'cir1r1.horaireA', 'ser1r1.sens')),
-                'service2R1' => new Expression(
+                'service2R1' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('ser1r1.semaine',
                         'ser2r1.ligneId', 'cir2r1.horaireA', 'ser2r1.sens')),
-                'service1R2' => new Expression(
+                'service1R2' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('ser1r2.semaine',
                         'ser1r2.ligneId', 'cir1r2.horaireA', 'ser1r2.sens')),
-                'service2R2' => new Expression(
+                'service2R2' => new Literal(
                     $this->getSqlSemaineLigneHoraireSens('ser1r2.semaine',
                         'ser2r2.ligneId', 'cir2r2.horaireA', 'ser2r2.sens'))
             ])
@@ -88,7 +87,7 @@ class Divers extends AbstractQuery
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
             ], 'eta.etablissementId = sco.etablissementId',
             [
-                'etablissement' => new Expression(
+                'etablissement' => new Literal(
                     '(CASE WHEN isnull(eta.alias) OR eta.alias = "" THEN eta.nom ELSE eta.alias END)')
             ])
             ->join([
@@ -115,7 +114,7 @@ class Divers extends AbstractQuery
             [
                 'res1' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Expression(
+            new Literal(
                 'ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
             $this->columnsResponsable(1), Select::JOIN_LEFT)
             ->join([
@@ -222,7 +221,7 @@ class Divers extends AbstractQuery
             [
                 'res2' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Expression(
+            new Literal(
                 'ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
             $this->columnsResponsable(2), Select::JOIN_LEFT)
             ->join([
@@ -433,7 +432,7 @@ class Divers extends AbstractQuery
     private function columnsResponsable(int $numero)
     {
         return [
-            'responsable' . $numero => new Expression(
+            'responsable' . $numero => new Literal(
                 sprintf(
                     '(CASE WHEN isnull(res%1$d.responsableId) THEN NULL ELSE concat(res%1$d.nomSA," ",res%1$d.prenomSA) END)',
                     $numero)),

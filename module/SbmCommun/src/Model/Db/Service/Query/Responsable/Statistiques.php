@@ -8,13 +8,13 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -40,7 +40,7 @@ class Statistiques extends AbstractQuery
         return $this->sql->select()
             ->from($this->db_manager->getCanonicName('responsables', 'table'))
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ]);
     }
 
@@ -88,7 +88,7 @@ class Statistiques extends AbstractQuery
             ->where($where2);
         return $this->sql->select()
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->from([
             'id' => $select1->combine($select2)
@@ -126,7 +126,7 @@ class Statistiques extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->join([
             'ele' => $select
@@ -189,7 +189,7 @@ class Statistiques extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
@@ -249,7 +249,7 @@ class Statistiques extends AbstractQuery
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->where($where);
     }

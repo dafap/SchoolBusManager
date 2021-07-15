@@ -7,13 +7,13 @@
  * @filesource Emails.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 juin 2019
- * @version 2019-2.5.0
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate\IsNotNull;
 
 class Emails extends AbstractQuery
@@ -30,7 +30,7 @@ class Emails extends AbstractQuery
             ->columns(
             [
                 'responsableId' => 'responsableId',
-                'to' => new Expression(
+                'to' => new Literal(
                     'CONCAT(res.titre, " ", res.nomSA, " ", res.prenomSA)'),
                 'email' => 'email'
             ])

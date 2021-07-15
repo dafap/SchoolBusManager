@@ -8,20 +8,23 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juin 2020
- * @version 2020-2.6.0
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
+use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate as PredicateEleve;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Predicate;
 
 class ElevesScolarites extends AbstractQuery
 {
+
+    use ElevePhotoTrait;
 
     protected function init()
     {
@@ -135,8 +138,7 @@ class ElevesScolarites extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'hasphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN FALSE ELSE TRUE END')
+                'hasphoto' => new Literal($this->xHasPhoto(Session::get('as')['dateDebut']))
             ], Select::JOIN_LEFT);
         $this->addStrategy('grilleTarifR1',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
@@ -327,7 +329,7 @@ class ElevesScolarites extends AbstractQuery
         ], 'ele.eleveId = sco.eleveId', [])
             ->columns([
             'grilleCode',
-            'quantite' => new Expression('count(*)')
+            'quantite' => new Literal('count(*)')
         ])
             ->group('grilleCode');
         $elevesInscrits = new PredicateEleve\ElevesSansPreinscrits($this->millesime, 'sco',
@@ -447,7 +449,7 @@ class ElevesScolarites extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'ele.eleveId = sco.eleveId', [])
             ->columns([
-            'nbDuplicatas' => new Expression('sum(sco.duplicataR1)')
+            'nbDuplicatas' => new Literal('sum(sco.duplicataR1)')
         ]);
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)
@@ -490,7 +492,7 @@ class ElevesScolarites extends AbstractQuery
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId',
             [
-                'estR1' => new Expression(
+                'estR1' => new Literal(
                     'CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
                 'responsableId' => 'responsableId',
                 'adresseL1' => 'adresseL1',
@@ -593,7 +595,7 @@ class ElevesScolarites extends AbstractQuery
             'r' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable1Id = r.responsableId OR ele.responsable2Id=r.responsableId',
             [
-                'estR1' => new Expression(
+                'estR1' => new Literal(
                     'CASE WHEN r.responsableId=ele.responsable1Id THEN 1 ELSE 0 END'),
                 'responsableId' => 'responsableId',
                 'adresseL1' => 'adresseL1',
@@ -690,7 +692,7 @@ class ElevesScolarites extends AbstractQuery
             'r1' => $this->db_manager->getCanonicName('responsables', 'table')
         ], 'ele.responsable1Id = r1.responsableId',
             [
-                'responsable1' => new Expression('CONCAT(r1.nom, " ", r1.prenom)'),
+                'responsable1' => new Literal('CONCAT(r1.nom, " ", r1.prenom)'),
                 'adresseR1L1' => 'adresseL1',
                 'adresseR1L2' => 'adresseL2',
                 'adresseR1L3' => 'adresseL3',

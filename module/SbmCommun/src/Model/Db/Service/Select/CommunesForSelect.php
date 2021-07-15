@@ -25,7 +25,7 @@ namespace SbmCommun\Model\Db\Service\Select;
 
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\ServiceManager\FactoryInterface;
@@ -52,7 +52,7 @@ class CommunesForSelect implements FactoryInterface
         $this->db_manager = $serviceLocator;
         $this->table_name = $this->db_manager->getCanonicName('communes', 'table');
         $this->sql = new Sql($this->db_manager->getDbAdapter());
-        $this->myDep = new Expression('CASE departement WHEN 73 THEN 0 ELSE 1 END');
+        $this->myDep = new Literal('CASE departement WHEN 73 THEN 0 ELSE 1 END');
         return $this;
     }
 

@@ -8,14 +8,14 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2021
- * @version 2021-2.6.1
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate\Not;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 use Zend\Stdlib\ArrayObject;
 
@@ -98,7 +98,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(sco.eleveId)')
+                'effectif' => new Literal('count(sco.eleveId)')
             ]);
         if ($nature) {
             switch ($nature) {
@@ -174,7 +174,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -250,7 +250,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -322,7 +322,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(sco.eleveId)')
+                'effectif' => new Literal('count(sco.eleveId)')
             ]);
         if ($nature) {
             switch ($nature) {
@@ -406,7 +406,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -484,7 +484,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(ele.eleveId)')
+                'effectif' => new Literal('count(ele.eleveId)')
             ])
             ->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
@@ -564,7 +564,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(sco.eleveId)')
+                'effectif' => new Literal('count(sco.eleveId)')
             ])
             ->join(
             [
@@ -574,7 +574,7 @@ class Statistiques extends AbstractQuery
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = eta.communeId',
             [
-                'etablissement' => new Expression('concat(com.alias, " - ", eta.nom)')
+                'etablissement' => new Literal('concat(com.alias, " - ", eta.nom)')
             ]);
         if ($nature) {
             switch ($nature) {
@@ -653,7 +653,7 @@ class Statistiques extends AbstractQuery
             [
                 'millesime',
                 'regimeId',
-                'effectif' => new Expression('count(sco.eleveId)')
+                'effectif' => new Literal('count(sco.eleveId)')
             ])
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
@@ -735,7 +735,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -811,7 +811,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -891,7 +891,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {
@@ -967,7 +967,7 @@ class Statistiques extends AbstractQuery
             ])
             ->columns([
             'millesime',
-            'effectif' => new Expression('count(sco.eleveId)')
+            'effectif' => new Literal('count(sco.eleveId)')
         ]);
         if ($nature) {
             switch ($nature) {

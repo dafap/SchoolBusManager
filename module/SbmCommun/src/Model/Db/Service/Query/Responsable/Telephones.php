@@ -8,13 +8,13 @@
  * @filesource Telephones.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2021
- * @version 2021-2.6.2
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Predicate;
 use Zend\Db\Sql\Select;
 
@@ -43,12 +43,12 @@ class Telephones extends AbstractQuery
     {
         return [
             'responsableId' => 'responsableId',
-            'to' => new Expression('CONCAT_WS(" ", res.titre, res.nomSA, res.prenomSA)'),
-            'telephoneF' => new Expression(
+            'to' => new Literal('CONCAT_WS(" ", res.titre, res.nomSA, res.prenomSA)'),
+            'telephoneF' => new Literal(
                 'CASE WHEN smsF=1 THEN res.telephoneF ELSE NULL END'),
-            'telephoneP' => new Expression(
+            'telephoneP' => new Literal(
                 ' CASE WHEN smsP=1 THEN res.telephoneP ELSE NULL END'),
-            'telephoneT' => new Expression(
+            'telephoneT' => new Literal(
                 ' CASE WHEN smsT=1 THEN res.telephoneT ELSE NULL END')
         ];
     }
@@ -68,9 +68,10 @@ class Telephones extends AbstractQuery
 
     protected function selectResponsablesGrilleTarif($keysgrille)
     {
-        $on = new \Zend\Db\Sql\Expression(
-            "IF(sco.demandeR2>0 AND sco.grilleTarifR2 = ?, res.responsableId=ele.responsable2Id,res.responsableId=ele.responsable1Id)",
-            $keysgrille['grilleTarif']);
+        $on = new \Zend\Db\Sql\Literal(
+            sprintf(
+                "IF(sco.demandeR2>0 AND sco.grilleTarifR2 = %d, res.responsableId=ele.responsable2Id,res.responsableId=ele.responsable1Id)",
+                $keysgrille['grilleTarif']));
         $where = new Predicate\Predicate();
         $where->equalTo('sco.millesime', $this->millesime)
             ->literal('sco.inscrit = 1')
@@ -132,9 +133,10 @@ class Telephones extends AbstractQuery
             ->notIn('ele.eleveId', $subselectInscrits)
             ->in('classeId', $subselectClasses);
         $select = clone $this->select;
-        return $select->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ], 'ele.responsable1Id = res.responsableId', [])
+        return $select->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ], 'ele.responsable1Id = res.responsableId', [])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])

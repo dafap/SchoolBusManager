@@ -2,27 +2,29 @@
 /**
  * Requête permettant d'obtenir des détails sur les élèves
  *
- * La table principale est `eleves`. Les tables jointes le sont par des LEFT JOIN ce qui rend les jointures non exclusives.
+ * La table principale est `eleves`. Les tables jointes le sont par des LEFT JOIN ce qui
+ * rend les jointures non exclusives.
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
  * @filesource Eleves.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 août 2020
- * @version 2020-2.6.0
+ * @date 14 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Eleves extends AbstractQuery
 {
+
+    use ElevePhotoTrait;
 
     protected function init()
     {
@@ -31,7 +33,7 @@ class Eleves extends AbstractQuery
                 ->getStrategie('grille'));
         $this->addStrategy('grilleTarifR2',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
-            ->getStrategie('grille'));
+                ->getStrategie('grille'));
     }
 
     private function dernierMillesime($lequel, $responsableId)
@@ -130,11 +132,12 @@ class Eleves extends AbstractQuery
             ], Select::JOIN_LEFT)
             ->join([
             'cometa' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'eta.communeId = cometa.communeId', [
-            'communeEtablissement' => 'nom',
-            'lacommuneEtablissement' => 'aliasCG',
-            'laposteEtablissement' => 'alias_laposte'
-        ], Select::JOIN_LEFT)
+        ], 'eta.communeId = cometa.communeId',
+            [
+                'communeEtablissement' => 'nom',
+                'lacommuneEtablissement' => 'aliasCG',
+                'laposteEtablissement' => 'alias_laposte'
+            ], Select::JOIN_LEFT)
             ->join([
             'cla' => $this->db_manager->getCanonicName('classes', 'table')
         ], 'cla.classeId = sco.classeId', [
@@ -145,14 +148,14 @@ class Eleves extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Expression(
-                    'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
+                'sansphoto' => new Literal(
+                    $this->xSansPhoto(Session::get('as')['dateDebut']))
             ], Select::JOIN_LEFT)
             ->join([
             'appels' => $select_appels
         ], 'appels.eleveId = ele.eleveId',
             [
-                'appelNotifieOk' => new Expression(
+                'appelNotifieOk' => new Literal(
                     'CASE WHEN isnull(appels.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($where);
