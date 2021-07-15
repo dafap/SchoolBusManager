@@ -8,8 +8,8 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juin 2020
- * @version 2020-2.5.7
+ * @date 15 juil. 2021
+ * @version 2021-2.5.13
  */
 namespace SbmCommun\Form;
 
@@ -1126,6 +1126,89 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'actif' => [
                 'name' => 'actif',
+                'required' => false
+            ],
+            'selection' => [
+                'name' => 'selection',
+                'required' => false
+            ]
+        ];
+    }
+
+    private function formOrganismes()
+    {
+        $this->add(
+            [
+                'name' => 'nom',
+                'type' => 'text',
+                'attributes' => [
+                    'id' => 'critere-nom',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Nom',
+                    'label_attributes' => [
+                        'class' => 'sbm-critere sbm-first'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'type' => 'text',
+                'name' => 'commune',
+                'attributes' => [
+                    'id' => 'critere-commune',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-critere'
+                    ],
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'useHiddenElement' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sélectionnés',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
+    }
+
+    private function formOrganismesSpecifications()
+    {
+        return [
+            'nom' => [
+                'name' => 'nom',
+                'required' => false,
+                'filters' => [
+                    [
+                        'name' => 'StringTrim'
+                    ]
+                ]
+            ],
+            'commune' => [
+                'name' => 'commune',
                 'required' => false
             ],
             'selection' => [

@@ -56,9 +56,12 @@ class FinanceController extends AbstractActionController
             ]
         ];
         foreach ($codesCaisse as $caisse => $codeC) {
-            $resultats[2]['as'][$caisse] = $tPaiements->totalAnneeScolaire($millesime, $codeC);
-            $resultats[2]['exercice1'][$caisse] =  $tPaiements->totalExercice($millesime, $codeC);
-            $resultats[2]['exercice2'][$caisse] =  $tPaiements->totalExercice($millesime + 1, $codeC);
+            $resultats[2]['as'][$caisse] = $tPaiements->totalAnneeScolaire($millesime,
+                $codeC);
+            $resultats[2]['exercice1'][$caisse] = $tPaiements->totalExercice($millesime,
+                $codeC);
+            $resultats[2]['exercice2'][$caisse] = $tPaiements->totalExercice(
+                $millesime + 1, $codeC);
         }
         foreach ($codesModeDePaiement as $modeDePaiement => $codeModeDeP) {
             $resultats['dateBordereau'][$modeDePaiement] = $tPaiements->dateDernierBordereau(
@@ -69,7 +72,7 @@ class FinanceController extends AbstractActionController
                 $codeModeDeP);
             // année scolaire
             $resultats[2]['as'][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
-                $millesime,null, $codeModeDeP);
+                $millesime, null, $codeModeDeP);
             foreach ($codesCaisse as $caisse => $codeC) {
                 $resultats[3]['as'][$caisse][$modeDePaiement] = $tPaiements->totalAnneeScolaire(
                     $millesime, $codeC, $codeModeDeP);
@@ -94,7 +97,7 @@ class FinanceController extends AbstractActionController
                 'millesime' => $millesime,
                 'codesCaisse' => $codesCaisse,
                 'codesModeDePaiement' => $codesModeDePaiement,
-                'resultats' =>$resultats
+                'resultats' => $resultats
             ]);
     }
 
@@ -1118,7 +1121,8 @@ class FinanceController extends AbstractActionController
 
     /**
      * On arrive ici depuis la page de choix des impressions à réaliser (méthode
-     * paiementDepotAction). Ici, le paramètre page correspond au numéro du formulaire et
+     * paiementDepotAction).
+     * Ici, le paramètre page correspond au numéro du formulaire et
      * sert à mettre en place les bons valueOptions. Le formulaire de choix n'est pas un
      * ObjectData, aussi on n'utilise pas la méthode documentPdf du parent
      * AbstactActionController. Le where est construit dans la méthode.
