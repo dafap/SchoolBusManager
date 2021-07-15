@@ -31,7 +31,7 @@
  * @filesource CalculDroits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juil. 2021
+ * @date 15 juil. 2021
  * @version 2021-2.5.13
  */
 namespace SbmCommun\Millau;
@@ -318,11 +318,12 @@ class CalculDroits implements FactoryInterface, GrilleTarifInterface
                 $result['message'] = 'Le domicile est à moins de 1 km de l\'établissment scolaire.';
             }
         }
-        if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT &&
-            $scolarite->derogation == 0) {
-            $this->data['accordR1'] = $this->data['accordR2'] = 0;
-        } else {
-            $this->data['gratuit'] = 0;
+        if ($this->data['grilleTarif'] == self::NON_AYANT_DROIT) {
+            if ($scolarite->derogation == 0) {
+                $this->data['accordR1'] = $this->data['accordR2'] = 0;
+            } else {
+                $this->data['gratuit'] = 0;
+            }
         }
         $this->setCompteRendu($result);
         return $return_value;
