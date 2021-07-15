@@ -8,8 +8,8 @@
  * @filesource TablePlugin.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2020
- * @version 2020-2.6.0
+ * @date 15 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPaiement\Plugin\PayBox\Db\Table;
 
@@ -203,16 +203,17 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
             'resiliation' => "literal:auto LIKE 'erreur %'"
         ];
     }
+
     /**
-     * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire. Le
-     * format créé est de la forme Y-m-d. Ici il faut Ymd.
+     * Nécessaire pour pouvoir modifier le format de la date dans $where si nécessaire.
+     * Le format créé est de la forme Y-m-d. Ici il faut Ymd.
      *
-     * @todo à vérifier pour Paybox.
      * @param Where $where
      */
     public function adapteWhere(Where &$where)
     {
         $predicates = $where->getPredicates();
+
         foreach ($predicates as &$predicate) {
             foreach ($predicate as &$item) {
                 if ($item instanceof \Zend\Db\Sql\Predicate\Like &&
@@ -222,6 +223,12 @@ class TablePlugin extends AbstractSbmTable implements TablePluginInterface
                         $item->setLike($datetmp->format('dmY'));
                         // le % terminal est supprimé - comparaison stricte
                     }
+                } elseif ($item instanceof \Zend\Db\Sql\Predicate\Operator &&
+                    $item->getLeft() == 'selection') {
+                    $item->setLeft(
+                        sprintf('%s.%s',
+                            $this->db_manager->getCanonicName($this->table_name, 'table'),
+                            $item->getLeft()));
                 }
             }
         }

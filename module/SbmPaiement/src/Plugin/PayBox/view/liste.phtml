@@ -7,12 +7,12 @@
  * @filesource liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 avr. 2020
- * @version 2020-2.6.0
+ * @date 15 juil. 2021
+ * @version 2021-2.6.3
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
-$this->themeJS('sbm-paiement', 'liste');
+$this->themeJS('sbm-paiement', 'liste.js');
 $this->paginator->setDefaultItemCountPerPage($this->count_per_page);
 $this->paginator->setCurrentPageNumber($this->page);
 $datas = $this->paginator->getCurrentItems();

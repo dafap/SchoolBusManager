@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2020
- * @version 2020-2.6.0
+ * @date 15 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPaiement\Controller;
 
@@ -87,7 +87,7 @@ class IndexController extends AbstractActionController
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         // les expressions sont définies dans le plugin
-        $args = $this->initListe($table->criteres(), null, [], $table->getExpressions());
+        $args = $this->initListe($table->criteres(), null, ['selection'], $table->getExpressions());
         if ($args instanceof Response) {
             return $args;
         } elseif (array_key_exists('cancel', $args)) {
