@@ -8,7 +8,7 @@
  * @filesource ElevesPhotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2021
+ * @date 15 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -114,8 +114,8 @@ class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
     private function estTropAncien(int $eleveId, &$photo): bool
     {
         $photo = parent::getRecord($eleveId);
-        $d1 = \DateTime::createFromFormat('Y-m-d', $photo->dateCreation);
-        $d2 = \DateTime::createFromFormat('Y-m-d', $photo->dateModification);
+        $d1 = \DateTime::createFromFormat('Y-m-d H:i:s', $photo->dateCreation);
+        $d2 = \DateTime::createFromFormat('Y-m-d H:i:s', $photo->dateModification);
         $dateRef = \DateTime::createFromFormat('Y-m-d|',
             \SbmBase\Model\Session::get('as')['dateDebut']);
         $dateRef->sub(new \DateInterval(sprintf('P%dY', self::VALIDITE)));
