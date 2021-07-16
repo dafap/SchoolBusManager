@@ -9,7 +9,7 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2021
+ * @date 16 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -23,6 +23,7 @@ use Zend\Db\Sql\Where;
 
 class ElevesResponsables extends AbstractQuery
 {
+    use ElevePhotoTrait;
 
     protected function init()
     {
