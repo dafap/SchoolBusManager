@@ -215,6 +215,16 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ]);
     }
 
+    private function formClassesSpecification()
+    {
+        return [
+            'selection' => [
+                'name' => 'selection',
+                'required' => false
+            ]
+        ];
+    }
+
     private function formCommunes()
     {
         $this->add(
@@ -455,6 +465,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ],
             'visible' => [
                 'name' => 'visible',
+                'required' => false
+            ],
+            'inscriptionenligne' => [
+                'name' => 'inscriptionenligne',
+                'required' => false
+            ],
+            'paiementenligne' => [
+                'name' => 'paiementenligne',
                 'required' => false
             ],
             'selection' => [
@@ -1294,43 +1312,43 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                 ]
             ])
             ->add(
-                [
-                    'type' => 'text',
-                    'name' => 'commune',
-                    'attributes' => [
-                        'id' => 'critere-commune',
-                        'class' => 'sbm-width-30c'
+            [
+                'type' => 'text',
+                'name' => 'commune',
+                'attributes' => [
+                    'id' => 'critere-commune',
+                    'class' => 'sbm-width-30c'
+                ],
+                'options' => [
+                    'label' => 'Commune',
+                    'label_attributes' => [
+                        'class' => 'sbm-critere'
                     ],
-                    'options' => [
-                        'label' => 'Commune',
-                        'label_attributes' => [
-                            'class' => 'sbm-critere'
-                        ],
-                        'error_attributes' => [
-                            'class' => 'sbm-error'
-                        ]
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
                     ]
-                ])
-                ->add(
-                    [
-                        'type' => 'Zend\Form\Element\Checkbox',
-                        'name' => 'selection',
-                        'attributes' => [
-                            'type' => 'checkbox',
-                            'use_hidden_element' => false,
-                            'options' => [
-                                'checkedValue' => false,
-                                'uncheckedValue' => true
-                            ],
-                            'class' => 'sbm-checkbox'
-                        ],
-                        'options' => [
-                            'label' => 'Sélectionnés',
-                            'error_attributes' => [
-                                'class' => 'sbm-error'
-                            ]
-                        ]
-                    ]);
+                ]
+            ])
+            ->add(
+            [
+                'type' => 'Zend\Form\Element\Checkbox',
+                'name' => 'selection',
+                'attributes' => [
+                    'type' => 'checkbox',
+                    'use_hidden_element' => false,
+                    'options' => [
+                        'checkedValue' => false,
+                        'uncheckedValue' => true
+                    ],
+                    'class' => 'sbm-checkbox'
+                ],
+                'options' => [
+                    'label' => 'Sélectionnés',
+                    'error_attributes' => [
+                        'class' => 'sbm-error'
+                    ]
+                ]
+            ]);
     }
 
     private function formOrganismesSpecifications()
