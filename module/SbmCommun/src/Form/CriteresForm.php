@@ -8,7 +8,7 @@
  * @filesource CriteresForm.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
+ * @date 18 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmCommun\Form;
@@ -899,6 +899,14 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                     ]
                 ]
             ],
+            'desservie' => [
+                'name' => 'desservie',
+                'required' => false
+            ],
+            'visible' => [
+                'name' => 'visible',
+                'required' => false
+            ],
             'selection' => [
                 'name' => 'selection',
                 'required' => false
@@ -1309,7 +1317,7 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
                         'name' => 'selection',
                         'attributes' => [
                             'type' => 'checkbox',
-                            'useHiddenElement' => false,
+                            'use_hidden_element' => false,
                             'options' => [
                                 'checkedValue' => false,
                                 'uncheckedValue' => true
