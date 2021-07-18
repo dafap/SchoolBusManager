@@ -2600,6 +2600,16 @@ class CriteresForm extends AbstractSbmForm implements InputFilterProviderInterfa
             ]);
     }
 
+    private function formTransporteursSpecification()
+    {
+        return [
+            'selection' => [
+                'name' => 'selection',
+                'required' => false
+            ]
+        ];
+    }
+
     private function formUsers()
     {
         $this->add(
