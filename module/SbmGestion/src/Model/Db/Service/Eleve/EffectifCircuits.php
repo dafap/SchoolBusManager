@@ -11,8 +11,8 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 avr. 2021
- * @version 2021-2.6.1
+ * @date 19 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -287,7 +287,7 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'effectif' => new Literal('count(aff.eleveId)')
             ])
             ->from([
-            'aff' => $this->db_manager->getCanonicName('affectations')
+            'aff' => $this->subSubSelect($md, $stationId)
         ])
             ->group(
             [
@@ -298,6 +298,11 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 'ordreligne1',
                 $stationId
             ]);
+        return $select;
+    }
+
+    private function subSubSelect(int $md, string $stationId): Select
+    {
         $condition = new Where();
         $condition->literal('sco.inscrit = 1');
         if ($this->sanspreinscrits) {
@@ -315,11 +320,24 @@ class EffectifCircuits extends AbstractEffectif implements SpecialEffectifInterf
                 ->unnest()
                 ->unnest();
         }
-        $select->join([
+        return $this->sql->select()
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns(
+            [
+                'millesime',
+                'ligne1Id',
+                'sensligne1',
+                'moment',
+                'ordreligne1',
+                $stationId,
+                'eleveId'
+            ])
+            ->from([
+            'aff' => $this->db_manager->getCanonicName('affectations')
+        ])
+            ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites')
         ], 'aff.millesime = sco.millesime AND aff.eleveId = sco.eleveId', [])
             ->where($condition);
-
-        return $select;
     }
 }
