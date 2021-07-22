@@ -1,0 +1,58 @@
+<?php
+/**
+ * Cette vue n'est présentée que si le JQUery dialog ne fonctionne pas dans le navigateur.
+ * Elle présente les mêmes éléments que le dialog.
+ *
+ * Cette vue a besoin des variables suivantes :
+ * - resultats
+ * - form
+ *
+ * @project sbm
+ * @package SbmParent/view/sbm-parent/index
+ * @filesource payer.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 22 juil. 2021
+ * @version 2021-2.6.3
+ */
+use SbmBase\Model\DateLib;
+
+$this->themeCss('sbm-parent/index', 'payer.css');
+$fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+$montant_total = $this->resultats->getSolde();
+$montant_abonnement = round($montant_total * 100 / 3, 0) / 100;
+$montant_premier = $montant_total - 2 * $montant_abonnement;
+$url_payercb1 = $this->url('sbmpaiement', [
+    'action' => 'formulaire'
+]);
+$url_payercb3 = $this->url('sbmpaiement', [
+    'action' => 'formulaire',
+    'id' => 3
+]);
+$btn_totalite = $this->form->get('totalite');
+$btn_totalite->setAttribute('formaction', $url_payercb1);
+$btn_abonnement = $this->form->get('abonnement');
+$btn_abonnement->setAttribute('formaction', $url_payercb3);
+?>
+<h1>Paiement par carte bancaire</h1>
+<div id="suppr-wrapper">
+	<p>Vous pouvez :</p>
+	<ul>
+		<li>Payer la somme de <?=$fmt->formatCurrency($montant_total,'EUR');?>
+						par carte bancaire</li>
+		<li style="list-style: none;">ou</li>
+		<li>Payer la somme de <?=$fmt->formatCurrency($montant_premier, 'EUR')?>
+						aujourd'hui puis la somme de <?=$fmt->formatCurrency($montant_abonnement,'EUR');?>
+						vous sera retir&eacute;e le <?= DateLib::datePlus1Mois()?> et &agrave; nouveau le
+						<?=DateLib::datePlus2Mois() ?><br>
+		<span style="color: gold; font-weight: bold;">Attention !</span> Si une échéance est refusée par votre banque vous
+			devrez vous acquitter du restant dû.
+		</li>
+	</ul>
+	<p>Votre choix ?</p>
+	<div class="choix">
+	<?= $this->form()->openTag($form);?>
+	<?= $this->formCollection($form);?>
+	<?= $this->form()->closeTag();?>
+	</div>
+</div>

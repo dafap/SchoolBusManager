@@ -26,8 +26,8 @@
  * @filesource index.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2021
- * @version 2021-2.6.2
+ * @date 22 juil. 2021
+ * @version 2021-2.6.3
  */
 use SbmBase\Model\DateLib;
 use SbmCommun\Model\Paiements\GrilleTarifInterface;
@@ -66,6 +66,10 @@ if ($this->sadmin) {
 $dateFinReduction = $etatDuSite['echeance']->format('d/m/Y');
 $url_ajoutEleve = $this->url('sbmparent', [
     'action' => 'reinscription-eleve'
+]);
+// url_payer n'est utilisé que si le dialog JQuery n'est pas actif dans le navigateur
+$url_payer = $this->url('sbmparent', [
+    'action' => 'payer'
 ]);
 $url_payercb1 = $this->url('sbmpaiement', [
     'action' => 'formulaire'
@@ -396,7 +400,8 @@ $url_facture = $this->url('sbmdocument', [
             $boutons['payer'] = [
                 'class' => 'button default float-right left-10px',
                 'value' => 'Valider la liste et payer',
-                'title' => $payerTitle
+                'title' => $payerTitle,
+                'formaction' => $url_payer
             ];
             // ============== inclure ici le dialog ===================
             ?>
@@ -415,7 +420,10 @@ $url_facture = $this->url('sbmdocument', [
 						<li>Payer la somme de <?=$fmt->formatCurrency($montant_premier, 'EUR')?>
 						aujourd'hui puis la somme de <?=$fmt->formatCurrency($montant_abonnement,'EUR');?>
 						vous sera retir&eacute;e le <?= DateLib::datePlus1Mois()?> et &agrave; nouveau le
-						<?=DateLib::datePlus2Mois() ?></li>
+						<?=DateLib::datePlus2Mois() ?><br>
+						<span style="color: gold; font-weight: bold;">Attention !</span> Si une échéance est refusée par votre banque
+							vous devrez vous acquitter du restant dû.
+						</li>
 					</ul>
 					<p>Votre choix ?</p>
 					<div>

@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2021
- * @version 2021-2.6.2
+ * @date 22 juil. 2021
+ * @version 2021-2.6.3
  */
 namespace SbmParent\Controller;
 
@@ -394,7 +394,7 @@ class IndexController extends AbstractActionController
             ]));
         $form->setValueOptions('etablissementId',
             $this->db_manager->get('Sbm\Db\Select\Etablissements')
-            ->visiblesPourParent())
+                ->visiblesPourParent())
             ->setValueOptions('classeId',
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
@@ -808,7 +808,7 @@ class IndexController extends AbstractActionController
                 ]);
             $form->setValueOptions('etablissementId',
                 $this->db_manager->get('Sbm\Db\Select\Etablissements')
-                ->visiblesPourParent())
+                    ->visiblesPourParent())
                 ->setValueOptions('joursTransportR1', Semaine::getJours())
                 ->setValueOptions('communeId', $selectCommunes)
                 ->setValueOptions('stationIdR1', $selectStations)
@@ -1250,6 +1250,48 @@ class IndexController extends AbstractActionController
                 'client' => $this->client,
                 'accueil' => $this->accueil,
                 'namespacectrl' => md5('nsArgsFacture')
+            ]);
+    }
+
+    public function payerAction()
+    {
+        try {
+            $responsable = $this->responsable->get();
+        } catch (\Exception $e) {
+            return $this->redirect()->toRoute('login', [
+                'action' => 'logout'
+            ]);
+        }
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        }
+        $args = $prg ?: [];
+        if (array_key_exists('cancel', $args)) {
+            return $this->redirect()->toRoute('sbmparent');
+        }
+        $form = new ButtonForm([
+            'namespacectrl' => md5('nsArgsFacture')
+        ],
+            [
+                'totalite' => [
+                    'class' => 'confirm',
+                    'value' => 'Payer la totalité'
+                ],
+                'abonnement' => [
+                    'class' => 'confirm',
+                    'value' => 'Payer en 3 fois'
+                ],
+                'cancel' => [
+                    'class' => 'confirm',
+                    'value' => 'Abandonner'
+                ]
+            ]);
+        return new ViewModel(
+            [
+                'form' => $form,
+                'resultats' => $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
+                    $responsable->responsableId, [], true) // pour forcer le calcul
             ]);
     }
 }
