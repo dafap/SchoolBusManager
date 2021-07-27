@@ -9,7 +9,7 @@
  * @filesource OutilsInscription.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2021
+ * @date 27 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmParent\Model;
@@ -34,7 +34,7 @@ class OutilsInscription
      *
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $local_manager;
+    private $db_manager;
 
     /**
      * Identifiant de l'élève à réinscrire ou à modifier.
@@ -110,7 +110,7 @@ class OutilsInscription
     public function __construct($local_manager, $responsableId, $userId, $eleveId = null)
     {
         $this->millesime = Session::get('millesime');
-        $this->local_manager = $local_manager;
+        $this->db_manager = $local_manager;
         $this->responsableId = $responsableId;
         $this->userId = $userId;
         $this->organismeId = 0;
@@ -127,7 +127,7 @@ class OutilsInscription
 
     public function findOrganismeId()
     {
-        $tUsersOrganismes = $this->local_manager->get('Sbm\DbManager')->get(
+        $tUsersOrganismes = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\UsersOrganismes');
         $this->organismeId = $tUsersOrganismes->getOrganismeId($this->userId);
     }
@@ -141,12 +141,12 @@ class OutilsInscription
      */
     public function isOwner($responsableId)
     {
-        $tResponsables = $this->local_manager->get('Sbm\DbManager')->get(
+        $tResponsables = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Responsables');
         try {
             $email = $tResponsables->getRecord($responsableId)->email;
             if ($email) {
-                $tUsers = $this->local_manager->get('Sbm\DbManager')->get(
+                $tUsers = $this->db_manager->get('Sbm\DbManager')->get(
                     'Sbm\Db\Table\Users');
                 $user = $tUsers->getRecordByEmail($email);
                 $owner = ! $user->confirme || ! $user->active;
@@ -173,7 +173,7 @@ class OutilsInscription
      */
     public function saveResponsable($data)
     {
-        $tResponsables = $this->local_manager->get('Sbm\DbManager')->get(
+        $tResponsables = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Responsables');
         $oData = $tResponsables->getObjData();
         $oData->exchangeArray($data);
@@ -183,7 +183,7 @@ class OutilsInscription
         try {
             if ($tResponsables->saveRecord($oData)) {
                 // on s'assure de rendre cette commune visible
-                $this->local_manager->get('Sbm\DbManager')
+                $this->db_manager->get('Sbm\DbManager')
                     ->get('Sbm\Db\table\Communes')
                     ->setVisible($oData->communeId);
             }
@@ -220,7 +220,7 @@ class OutilsInscription
      */
     public function saveEleve($data, $hasGa = false, $responsable2Id = null)
     {
-        $tEleves = $this->local_manager->get('Sbm\DbManager')->get('Sbm\Db\Table\Eleves');
+        $tEleves = $this->db_manager->get('Sbm\DbManager')->get('Sbm\Db\Table\Eleves');
         $oData = $tEleves->getObjData();
         $responsable1Id = StdLib::getParam('responsable1Id', $data);
         if (empty($responsable1Id)) {
@@ -275,7 +275,7 @@ class OutilsInscription
             StdLib::getParam('stationIdR2', $data, 0) == 0) {
             $data['demandeR2'] = 0;
         }
-        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+        $tScolarites = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Scolarites');
         $oData = $tScolarites->getObjData();
         if ($mode == 'edit') {
@@ -403,7 +403,7 @@ class OutilsInscription
             }
         }
         if ($calculDistance) {
-            $majDistances = $this->local_manager->get('Sbm\CartographieManager')->get(
+            $majDistances = $this->db_manager->get('Sbm\CartographieManager')->get(
                 'Sbm\CalculDroitsTransport');
             try {
                 $majDistances->setOEleve($this->getOEleve())
@@ -433,14 +433,14 @@ class OutilsInscription
     {
         if ($mode != 'edit' || $this->cr['saveScolarite']['reductionChange']) {
             if ($rang == 1) {
-                $this->local_manager->get('Sbm\DbManager')
+                $this->db_manager->get('Sbm\DbManager')
                     ->get('Sbm\GrilleTarifR1')
                     ->setOEleve($this->getOEleve())
                     ->setOScolarite($this->getOScolarite())
                     ->appliquerTarif($this->eleveId);
             } elseif ($this->getOEleve()->responsable2Id &&
                 $this->getOScolarite()->demandeR2) {
-                $this->local_manager->get('Sbm\DbManager')
+                $this->db_manager->get('Sbm\DbManager')
                     ->get('Sbm\GrilleTarifR2')
                     ->setOEleve($this->getOEleve())
                     ->setOScolarite($this->getOScolarite())
@@ -464,7 +464,7 @@ class OutilsInscription
     private function rechercheTrajets(string $mode, int $rang)
     {
         if ($mode != 'edit' || $this->cr['saveScolarite']['etablissementChange']) {
-            $this->local_manager->get('Sbm\DbManager')
+            $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\ChercheItineraires')
                 ->setEtablissementId($this->getOScolarite()->etablissementId)
                 ->setStationId($this->getOScolarite()->{'stationIdR' . $rang})
@@ -484,7 +484,7 @@ class OutilsInscription
     public function getOEleve()
     {
         if (! $this->aEntities['eleve']) {
-            $this->aEntities['eleve'] = $this->local_manager->get('Sbm\DbManager')
+            $this->aEntities['eleve'] = $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\Db\Table\Eleves')
                 ->getRecord($this->eleveId);
         }
@@ -501,7 +501,7 @@ class OutilsInscription
     {
         if (! $this->aEntities['responsable' . $rang]) {
             try {
-                $this->aEntities['responsable' . $rang] = $this->local_manager->get(
+                $this->aEntities['responsable' . $rang] = $this->db_manager->get(
                     'Sbm\DbManager')
                     ->get('Sbm\Db\Table\Responsables')
                     ->getRecord($this->getOEleve()->{'responsable' . $rang . 'Id'});
@@ -519,7 +519,7 @@ class OutilsInscription
     public function getOScolarite()
     {
         if (! $this->aEntities['scolarite']) {
-            $this->aEntities['scolarite'] = $this->local_manager->get('Sbm\DbManager')
+            $this->aEntities['scolarite'] = $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\Db\Table\Scolarites')
                 ->getRecord(
                 [
@@ -532,7 +532,7 @@ class OutilsInscription
 
     private function repriseDistancesDistrictPrecedents()
     {
-        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+        $tScolarites = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Scolarites');
         try {
             // recherche la scolarité de l'année précédente
@@ -570,11 +570,11 @@ class OutilsInscription
     {
         $calculDroits = true; // indique s'il faut recalculer les droits et les distances
         if ($this->memeScolarite()) {
-            $eleve = $this->local_manager->get('Sbm\DbManager')
+            $eleve = $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\Db\Table\Eleves')
                 ->getRecord($this->eleveId);
             // affectations de l'année précédentes
-            $affectations = $this->local_manager->get('Sbm\DbManager')
+            $affectations = $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\Db\Table\Affectations')
                 ->fetchAll(
                 [
@@ -615,19 +615,19 @@ class OutilsInscription
     private function repriseAffectationsPour($affectations, $responsable1Id,
         $responsable2Id, $demandeR1, $demandeR2)
     {
-        $responsable1 = $this->local_manager->get('Sbm\DbManager')
+        $responsable1 = $this->db_manager->get('Sbm\DbManager')
             ->get('Sbm\Db\Table\Responsables')
             ->getRecord($responsable1Id);
         $memeDomicileR1 = $this->memeDomicile($responsable1);
         try {
-            $responsable2 = $this->local_manager->get('Sbm\DbManager')
+            $responsable2 = $this->db_manager->get('Sbm\DbManager')
                 ->get('Sbm\Db\Table\Responsables')
                 ->getRecord($responsable2Id);
             $memeDomicileR2 = $this->memeDomicile($responsable2);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $memeDomicileR2 = true;
         }
-        $tAffectations = $this->local_manager->get('Sbm\DbManager')->get(
+        $tAffectations = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Affectations');
         $reprise1 = $reprise2 = false;
         foreach ($affectations as $oaffectation) {
@@ -680,7 +680,7 @@ class OutilsInscription
         if (! $responsable->demenagement) {
             return true;
         }
-        $as = $this->local_manager->get('Sbm\DbManager')
+        $as = $this->db_manager->get('Sbm\DbManager')
             ->get('Sbm\Db\System\Calendar')
             ->fetchAll([
             'millesime' => $this->millesime - 1,
@@ -704,7 +704,7 @@ class OutilsInscription
      */
     private function memeScolarite()
     {
-        return $this->local_manager->get('Sbm\DbManager')
+        return $this->db_manager->get('Sbm\DbManager')
             ->get(Eleves::class)
             ->memeScolarite($this->eleveId);
     }
@@ -716,7 +716,7 @@ class OutilsInscription
      */
     private function supprDerogation()
     {
-        $tScolarites = $this->local_manager->get('Sbm\DbManager')->get(
+        $tScolarites = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Scolarites');
         $tScolarites->setDerogation($this->millesime, $this->eleveId, 0);
     }
@@ -730,7 +730,7 @@ class OutilsInscription
      */
     public function supprAffectations($r2seulement = false)
     {
-        $tAffectations = $this->local_manager->get('Sbm\DbManager')->get(
+        $tAffectations = $this->db_manager->get('Sbm\DbManager')->get(
             'Sbm\Db\Table\Affectations');
         if ($r2seulement) {
             $tAffectations->getTableGateway()->delete(

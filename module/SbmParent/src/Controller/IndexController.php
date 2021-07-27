@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 juil. 2021
+ * @date 27 juil. 2021
  * @version 2021-2.6.3
  */
 namespace SbmParent\Controller;
@@ -267,8 +267,10 @@ class IndexController extends AbstractActionController
                 $as = Session::get('as');
                 $data['dateDebut'] = $as['dateDebut'];
                 $data['dateFin'] = $as['dateFin'];
-                if (is_null($responsable2Id)) {
+                if (empty($responsable2Id)) {
                     $data['demandeR2'] = 0;
+                } else {
+                    $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                 }
                 // Enregistre la scolarité
                 $outils->saveScolarite($data, 'inscription');
@@ -466,8 +468,10 @@ class IndexController extends AbstractActionController
                 }
                 // Enregistrement de sa scolarité
                 $data = $form->getData();
-                if (is_null($responsable2Id)) {
+                if (empty($responsable2Id)) {
                     $data['demandeR2'] = 0;
+                } else {
+                    $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
                 }
                 $outils->saveScolarite($data, 'edit');
                 $outils->apresInscription('edit');
@@ -881,7 +885,7 @@ class IndexController extends AbstractActionController
                     $data['dateDebut'] = $as['dateDebut'];
                     $data['dateFin'] = $as['dateFin'];
                     $data['demandeR1'] = 1;
-                    if (is_null($responsable2Id)) {
+                    if (empty($responsable2Id)) {
                         $data['demandeR2'] = 0;
                     } else {
                         $data['demandeR2'] = $data['demandeR2'] ? 1 : 0;
