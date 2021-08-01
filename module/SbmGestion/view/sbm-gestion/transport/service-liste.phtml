@@ -11,8 +11,8 @@
  * @filesource view/sbm-gestion/transport/service-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 1 août 2021
+ * @version 2021-2.5.14
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -135,6 +135,9 @@ echo $this->flashMessenger()->render('default');
                     "even",
                     "odd"
                 ])->next();
+                if (! $service->actif) {
+                    $css .= ' barre';
+                }
                 if ($service->nbPlaces < $nbInscrits) {
                     $css .= ' exces';
                 }

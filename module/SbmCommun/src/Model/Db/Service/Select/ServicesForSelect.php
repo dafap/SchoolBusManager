@@ -1,7 +1,7 @@
 <?php
 /**
  * Service fournissant une liste des services sous la forme d'un tableau
- *   'serviceId' => 'nom'
+ * 'serviceId' => 'nom'
  *
  *
  * @project sbm
@@ -9,8 +9,8 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 1 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -76,7 +76,48 @@ class ServicesForSelect implements FactoryInterface
         $select = $this->sql->select($this->table_name);
         $select->columns([
             'serviceId',
+            'libelle' => $libelle,
+            'actif'
+        ]);
+        $select->order([
+            'actif DESC',
+            'serviceId'
+        ]);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $rowset = $statement->execute();
+        $array = [];
+        foreach ($rowset as $row) {
+            if (array_key_exists($row['actif'], $array)) {
+                $array[$row['actif']]['options'][$row['serviceId']] = $row['libelle'];
+            } else {
+                $label = $row['actif'] ? 'Marchés en cours' : 'Marchés terminés';
+                $array[$row['actif']] = [
+                    'label' => $label,
+                    'options' => [
+                        $row['serviceId'] => $row['libelle']
+                    ]
+                ];
+            }
+        }
+        return $array;
+    }
+
+    /**
+     * Renvoie un tableau structuré Service fournissant une liste des services sous la
+     * forme d'un tableau 'serviceId' => 'serviceId - nom (operateur - transporteur)'
+     *
+     * @return array
+     */
+    public function actif()
+    {
+        $libelle = new Literal(
+            'concat(serviceId, " - ", nom, " (", operateur, " - ", transporteur, ")")');
+        $select = $this->sql->select($this->table_name);
+        $select->columns([
+            'serviceId',
             'libelle' => $libelle
+        ])->where([
+            'actif' => 1
         ]);
         $select->order('serviceId');
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -112,7 +153,9 @@ class ServicesForSelect implements FactoryInterface
             ->join([
             'es' => $this->table_lien
         ], 's.serviceId = es.serviceId', [])
-            ->where(['etablissementId' => $etablissementId])
+            ->where([
+            'etablissementId' => $etablissementId
+        ])
             ->order('serviceId');
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();

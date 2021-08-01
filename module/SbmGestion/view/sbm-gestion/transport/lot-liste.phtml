@@ -11,8 +11,8 @@
  * @filesource lot-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 1 août 2021
+ * @version 2021-2.5.14
  */
 use SbmBase\Model\DateLib;
 
@@ -138,6 +138,9 @@ echo $this->flashMessenger()->render('default');
                     "even",
                     "odd"
                 ])->next();
+                if (! $lot->actif) {
+                    $css .= ' barre';
+                }
                 /*
                  * if ($lot->nbPlaces < $nbInscrits) { $css .= ' exces'; }
                  */

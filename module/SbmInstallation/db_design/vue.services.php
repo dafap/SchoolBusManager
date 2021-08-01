@@ -8,8 +8,8 @@
  * @filesource vue.services.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
- * @version 2019-2.5.0
+ * @date 31 juil. 2021
+ * @version 2019-2.5.14
  */
 return [
     'name' => 'services',
@@ -82,6 +82,9 @@ return [
                 'alias' => 'lots',
                 'relation' => 'lots.lotId=ser.lotId',
                 'fields' => [
+                    [
+                        'field' => 'actif'
+                    ],
                     [
                         'field' => 'marche'
                     ],
@@ -159,6 +162,7 @@ return [
             ]
         ],
         'order' => [
+            'actif DESC',
             'serviceId'
         ]
     ]
