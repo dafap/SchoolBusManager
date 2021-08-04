@@ -7,11 +7,11 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
- * @version 2021-2.5.11
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 use SbmCommun\Form;
-use SbmCommun\Form\View\Helper as ViewHelper;
+use SbmCommun\Millau;
 use SbmCommun\Model\Db\ObjectData;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Db\Service\Horaires;
@@ -21,9 +21,9 @@ use SbmCommun\Model\Db\Service\Select;
 use SbmCommun\Model\Db\Service\Table;
 use SbmCommun\Model\Db\Service\TableGateway;
 use SbmCommun\Model\Mvc\Controller\Plugin\Service as PluginController;
-use SbmCommun\Millau;
 use SbmCommun\Model\Service\FormManager;
 use SbmCommun\Model\Service\MajDistances;
+use SbmCommun\Model\View\Helper as ViewHelper;
 
 if (! defined('MODULE_PATH')) {
     define('MODULE_PATH', dirname(__DIR__));
@@ -265,14 +265,14 @@ return [
     'view_helpers' => [
         'invokables' => [
             'affectations' => ViewHelper\Affectations::class,
+            'formRowDate' => ViewHelper\FormRowDate::class,
+            'formRowDateTime' => ViewHelper\FormRowDateTime::class,
             'ligneMenuAction' => ViewHelper\LigneMenuAction::class,
             'listeLigneActions' => ViewHelper\ListeLigneActions::class,
             'listeZoneActions' => ViewHelper\ListeZoneActions::class,
-            'telephone' => ViewHelper\Telephone::class,
             'pictogrammes' => ViewHelper\Pictogrammes::class,
-            'formRowDate' => ViewHelper\FormRowDate::class,
-            'formRowDateTime' => ViewHelper\FormRowDateTime::class,
-            'renderCheckbox' => ViewHelper\RenderCheckbox::class
+            'renderCheckbox' => ViewHelper\RenderCheckbox::class,
+            'telephone' => ViewHelper\Telephone::class
         ]
     ],
     'view_manager' => [

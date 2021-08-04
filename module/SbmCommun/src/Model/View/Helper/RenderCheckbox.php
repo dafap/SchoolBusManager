@@ -6,7 +6,7 @@
  * à déclarer dans module.config.php comme ceci :
  * 'view_helpers' => [
  * 'invokables' => [
- * 'renderCheckbox' => \SbmCommun\Form\View\Helper\RenderCheckbox::class,]
+ * 'renderCheckbox' => \SbmCommun\Model\View\Helper\RenderCheckbox::class,]
  * ]
  *
  * @project sbm
@@ -14,10 +14,10 @@
  * @filesource RenderCheckbox.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use Zend\Form\Element\Checkbox;
 use Zend\View\Helper\AbstractHelper;

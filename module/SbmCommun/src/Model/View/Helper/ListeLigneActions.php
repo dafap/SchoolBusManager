@@ -5,7 +5,7 @@
  * à déclarer dans module.config.php comme ceci :
  * 'view_helpers' => [
  * 'invokables' => [
- * 'listeLigneActions' =>'SbmCommun\Form\View\Helper\ListeLigneActions',]
+ * 'listeLigneActions' =>'SbmCommun\Model\View\Helper\ListeLigneActions',]
  * ]
  *
  * La mise en page d'une liste est la suivante :
@@ -38,10 +38,10 @@
  * @filesource ListeLigneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
- * @version 2021-2.5.11
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 class ListeLigneActions extends AbstractListeAction
 {

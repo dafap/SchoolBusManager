@@ -2,7 +2,7 @@
 /**
  * ViewHelper permettant d'afficher le formulaire d'actions au-dessus d'une liste dans la `zone-action`,
  * à déclarer dans module.config.php comme ceci :
- * 'view_helpers' => ['invokables' => ['telephone' => 'SbmCommun\Form\View\Helper\Telephone',]]
+ * 'view_helpers' => ['invokables' => ['telephone' => 'SbmCommun\Model\View\Helper\Telephone',]]
  *
  * Usage dans une vue : echo $this->telephone($data);
  *
@@ -11,10 +11,10 @@
  * @filesource Telephone.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 avr. 2019
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 

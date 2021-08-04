@@ -7,10 +7,10 @@
  * @filesource LigneMenuAction.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2019
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use SbmBase\Model\StdLib;
 use Zend\View\Helper\AbstractHelper;

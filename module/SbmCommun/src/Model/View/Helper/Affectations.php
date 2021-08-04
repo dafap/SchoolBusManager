@@ -2,16 +2,16 @@
 /**
  * Ecriture d'un tableau d'affectations dans une fiche élève
  *
- * 
+ *
  * @project sbm
  * @package SbmCommun/Form/View/Helper
  * @filesource Affectations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 

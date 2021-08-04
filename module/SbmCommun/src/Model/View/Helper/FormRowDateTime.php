@@ -1,31 +1,35 @@
 <?php
 /**
- * ViewHelper permettant d'afficher un label suivi d'un DateSelect avec les 
- * messages d'erreurs, sans fieldset, à déclarer dans module.config.php comme 
- * ceci : 
- * 'view_helpers' => ['invokables' => ['formRowDate' => 'SbmCommun\Form\View\Helper\FormRowDate'],]
+ * ViewHelper permettant d'afficher un label suivi d'un DateTimeSelect avec les messages d'erreurs,
+ * sans fieldset, à déclarer dans module.config.php comme ceci :
+ * 'view_helpers' => [
+ *      'invokables' => [
+ *          'formRowDateTime' => 'SbmCommun\Model\View\Helper\FormRowDateTime'
+ *      ],
+ *  ]
  *
  * Usage dans une vue : echo $this->formRowDate($elementDate);
- * 
+ *
  * @project sbm
  * @package module/SbmCommun/src/SbmCommun/Form/View/Helper
- * @filesource FormRowDate.php
+ * @filesource FormRowDateTime.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2018
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use Zend\Form\ElementInterface;
-use Zend\Form\View\Helper\FormDateSelect;
+use Zend\Form\View\Helper\FormDateTimeSelect;
 use Zend\Form\View\Helper\FormElementErrors;
 use Zend\Form\View\Helper\FormLabel;
 
-class FormRowDate extends FormDateSelect
+class FormRowDateTime extends FormDateTimeSelect
 {
 
-    public function __invoke(ElementInterface $element = NULL, $dateType = 1, $locale = 'FR_fr')
+    public function __invoke(ElementInterface $element = NULL, $dateType = 1, $timeType = 1,
+        $locale = 'FR_fr')
     {
         $this->setLocale($locale);
         if (! $element) {
@@ -38,4 +42,3 @@ class FormRowDate extends FormDateSelect
         return $result;
     }
 }
- 

@@ -15,10 +15,10 @@
  * @filesource Pictogrammes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 
@@ -41,7 +41,7 @@ class Pictogrammes extends AbstractHelper
      *            si null on renvoie le code
      *            sinon on renvoie la structure pour la faire suivre d'une méthode d'ajout
      *
-     * @return string|\SbmCommun\Form\View\Helper\Pictogrammes
+     * @return string|\SbmCommun\Model\View\Helper\Pictogrammes
      */
     public function __invoke($init = null)
     {

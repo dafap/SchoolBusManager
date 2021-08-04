@@ -3,7 +3,7 @@
  * ViewHelper permettant d'afficher une barre de menu, à déclarer dans module.config.php comme ceci :
  * 'view_helpers' => [
  *      'invokables' => [
- *              'listeZoneActions' => 'SbmCommun\Form\View\Helper\ListeZoneActions',]
+ *              'listeZoneActions' => 'SbmCommun\Model\View\Helper\ListeZoneActions',]
  * ]
  *
  * Les liens sont envoyés en POST par un formulaire. Les paramètres d'appel sont passés par des
@@ -29,10 +29,10 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
-namespace SbmCommun\Form\View\Helper;
+namespace SbmCommun\Model\View\Helper;
 
 class ListeZoneActions extends AbstractListeAction
 {
