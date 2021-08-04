@@ -1,15 +1,15 @@
 <?php
 /**
  * Méthodes pour gérer les cartes
- * 
- * 
+ *
+ *
  * @project sbm
  * @package SbmGestion/Model/Cartes
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 fév. 2019
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Cartes;
 
@@ -17,6 +17,15 @@ use SbmBase\Model\DateLib;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
+/**
+ * @property \SbmCommun\Model\Db\Service\Table\Scolarites $tScolarites
+ * @property string $table_affectations
+ * @property string $table_services
+ * @property array $codesNatureCartes
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Cartes
 {
 

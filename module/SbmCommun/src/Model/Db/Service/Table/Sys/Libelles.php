@@ -9,8 +9,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 déc. 2019
- * @version 2019-2.5.4
+ * @date 3 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 
@@ -102,7 +102,7 @@ class Libelles extends AbstractSbmTable
      *
      * @return \Zend\Db\ResultSet\HydratingResultSet
      */
-    public function fetchOpen()
+    public function fetchOuvert()
     {
         $where = new Where([
             new Literal('ouvert = 1')

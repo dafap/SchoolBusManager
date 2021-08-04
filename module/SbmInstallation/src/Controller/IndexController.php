@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmInstallation\Controller;
 
@@ -26,6 +26,22 @@ use SbmInstallation\Model\DumpTables;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $db_config
+ * @property array $config_paiement
+ * @property string $error_log
+ * @property string $mailchimp_key
+ * @property array $img
+ * @property bool $hassbmservicesms
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -207,8 +223,7 @@ class IndexController extends AbstractActionController
         } elseif ($prg['fichier'] == 'sms') {
             $title = 'Contenu du fichier d\'erreur d\'envoi de SMS';
             $filename = $this->config_sms['filename'];
-            $filename = StdLib::concatPath($this->config_sms['path_filelog'],
-                $filename);
+            $filename = StdLib::concatPath($this->config_sms['path_filelog'], $filename);
         } else {
             $title = 'Contenu du fichier d\'erreur PHP';
             $filename = $this->error_log;
@@ -672,7 +687,8 @@ class IndexController extends AbstractActionController
      * Présente un menu de modification des paramètres de configuration des cartes -
      * etablissement - station - gestion - parent Pour chaque item, on devra définir un
      * rectangle qui représente la zone autorisée par les latitudes nord et sud et les
-     * longitudes est et ouest. On indique également le centre des cartes à l'overture et
+     * longitudes est et ouest.
+     * On indique également le centre des cartes à l'overture et
      * le zoom à utiliser. Cette action appelle l'action editConfigCarte qui présente les
      * cartes pour unitem donné.
      */

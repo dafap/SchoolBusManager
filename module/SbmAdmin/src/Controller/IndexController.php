@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 sept. 2019
- * @version 2019-2.5.3
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmAdmin\Controller;
 
@@ -31,6 +31,20 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $img
+ * @property array $client
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -1331,7 +1345,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Envoie un mail à un responsable. Reçoit en post les paramètres 'userId',
+     * Envoie un mail à un responsable.
+     * Reçoit en post les paramètres 'userId',
      * 'utilisateur', 'email', 'origine' où origine est l'url de retour Eventuellement,
      * reçoit 'sujet' et 'contenu' initialisant le formulaire
      *

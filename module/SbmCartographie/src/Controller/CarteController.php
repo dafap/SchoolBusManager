@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCartographie\Controller;
 
@@ -20,6 +20,17 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
+ * @property array $user
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class CarteController extends AbstractActionController
 {
 
@@ -55,7 +66,9 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' => $this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'ptEtablissements' => $ptEtablissements,
                 'config' => StdLib::getParam('etablissement', $this->config_cartes),
                 'url_api' => $this->url_api
@@ -89,9 +102,12 @@ class CarteController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' => $this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'ptStations' => $ptStations,
-                // on utilise la même configuration (centre, zoom) que pour les établissements
+                // on utilise la même configuration (centre, zoom) que pour les
+                // établissements
                 'config' => StdLib::getParam('station', $this->config_cartes),
                 'url_api' => $this->url_api
             ]);

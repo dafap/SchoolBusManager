@@ -2,21 +2,75 @@
 /**
  * Opérations sur le responsable correspondant à l'utilisateur autentifié.
  *
- * La correspondance se fait par l'email.
- * Compatible ZF3
+ * Cet objet possède comme propriétés publiques les champs de la vue `responsables` ainsi
+ * que la propriété $zonage (version Millau uniquement).
  *
  * @project sbm
  * @package SbmParent/Model
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juin 2020
- * @version 2020-2.5.7
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmFront\Model\Responsable;
 
 use SbmBase\Model\Session;
 
+/**
+ *
+ * @property int $responsableId
+ * @property bool $selection
+ * @property string $dateCreation
+ * @property string $dateModification
+ * @property bool $nature
+ * @property string $titre
+ * @property string $nom
+ * @property string $nomSA
+ * @property string $prenom
+ * @property string $prenomSA
+ * @property string $titre2
+ * @property string $nom2
+ * @property string $nom2SA
+ * @property string $prenom2
+ * @property string $prenom2SA
+ * @property string $adresseL1
+ * @property string $adresseL2
+ * @property string $codePostal
+ * @property string $communeId
+ * @property string $ancienAdresseL1
+ * @property string $ancienAdresseL2
+ * @property string $ancienCodePostal
+ * @property string $ancienCommuneId
+ * @property string $emeil
+ * @property string $telephoneF
+ * @property string $telephoneP
+ * @property string $telephoneT
+ * @property bool $smsF
+ * @property bool $smsP
+ * @property bool $smsT
+ * @property bool $etiquette
+ * @property bool $demenagement
+ * @property string $dateDemenagement
+ * @property bool $facture
+ * @property int $grilleTarif
+ * @property string $ribTit
+ * @property string $ribDom
+ * @property string $iban
+ * @property string $bic
+ * @property float $x
+ * @property float $y
+ * @property int $userId
+ * @property string $note
+ * @property string $commune
+ * @property bool $inscriptionenligne
+ * @property bool $paiementenligne
+ * @property int $nbEleves
+ * @property bool $zonage
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Responsable
 {
 
@@ -42,7 +96,8 @@ class Responsable
 
     /**
      * Le constructeur s'assure qu'un responsable est en session et qu'il correspond bien
-     * à l'utilisateur authentifié (vérif par l'email). Si ce n'est pas le cas, le
+     * à l'utilisateur authentifié (vérif par l'email).
+     * Si ce n'est pas le cas, le
      * responsable correspondant à l'utilisateur authentifié est en session. S'il n'existe
      * pas de responsable correspondant à cet utilisateur, une exception est lancée. Il
      * faudra la traiter en demandant la création du responsable.
@@ -137,28 +192,33 @@ class Responsable
         }
     }
 
+    /**
+     * Complète la structure responsable en prenant en compte le zonage.
+     * Eviter d'utiliser l'affectation magique dans responsable afin de ne pas multiplier
+     * les mises en session
+     */
     private function appliqueZonage()
     {
         $tzonage = $this->db_manager->get('Sbm\Db\Table\Zonage');
         $liste_communes_zonees = $tzonage->getCommunesZonees();
-        if (! in_array($this->responsable['communeId'], $liste_communes_zonees)) {
+        if (! in_array($this->communeId, $liste_communes_zonees)) {
             $this->responsable['zonage'] = false;
             return; // commune non zonée
         }
         $this->responsable['zonage'] = true;
         $za = new \SbmCommun\Filter\ZoneAdresse();
-        $adresseL1 = $za->filter($this->responsable['adresseL1']);
+        $adresseL1 = $za->filter($this->adresseL1);
         $this->responsable['inscriptionenligne'] = $tzonage->isInscriptionEnLigne(
             $this->responsable['communeId'], $adresseL1);
         $this->responsable['paiementenligne'] = $tzonage->isPaiementEnLigne(
             $this->responsable['communeId'], $adresseL1);
         if ($this->responsable['adresseL2']) {
             // pour la ligne 2
-            $adresseL2 = $za->filter($this->responsable['adresseL2']);
+            $adresseL2 = $za->filter($this->adresseL2);
             $this->responsable['inscriptionenligne'] |= $tzonage->isInscriptionEnLigne(
-                $this->responsable['communeId'], $adresseL2);
+                $this->communeId, $adresseL2);
             $this->responsable['paiementenligne'] |= $tzonage->isPaiementEnLigne(
-                $this->responsable['communeId'], $adresseL2);
+                $this->communeId, $adresseL2);
         }
     }
 

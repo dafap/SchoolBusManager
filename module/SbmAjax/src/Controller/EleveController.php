@@ -9,8 +9,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 oct. 2019
- * @version 2019-2.5.2
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmAjax\Controller;
 
@@ -18,9 +18,23 @@ use SbmBase\Model\Session;
 use SbmCartographie\GoogleMaps;
 use SbmCartographie\Model\Point;
 use Zend\Json\Json;
-use Zend\View\Model\ViewModel;
 use Zend\Log\Logger;
+use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property array $img
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class EleveController extends AbstractActionController
 {
 
@@ -830,7 +844,8 @@ class EleveController extends AbstractActionController
 
     /**
      * Reçoie en POST le paramètre eleveId et supprime la photo dans la table
-     * ElevesPhotos. Renvoie un compte rendu : <ul> <li>success = 1 et src = sans photo
+     * ElevesPhotos.
+     * Renvoie un compte rendu : <ul> <li>success = 1 et src = sans photo
      * gif</li> <li>success = 20x et cr = message d'erreur à afficher en cas
      * d'erreur</li></ul>
      *

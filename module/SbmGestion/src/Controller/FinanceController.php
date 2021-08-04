@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 déc. 2019
- * @version 2019-2.5.4
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Controller;
 
@@ -22,10 +22,24 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmGestion\Form\Finances;
 use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
-use Zend\View\Model\ViewModel;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $mail_config
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class FinanceController extends AbstractActionController
 {
 

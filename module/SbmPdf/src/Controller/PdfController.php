@@ -3,14 +3,14 @@
  * Controller principal du module SbmPdf
  *
  * Gestion des la création et de la modification des documents pdf
- * 
+ *
  * @project sbm
  * @package SbmPdf/Controller
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 oct. 2018
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmPdf\Controller;
 
@@ -21,6 +21,15 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmPdf\Service\PdfManager $pdf_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class PdfController extends AbstractActionController
 {
 
@@ -141,7 +150,8 @@ class PdfController extends AbstractActionController
                 }
                 $this->flashMessenger()->addSuccessMessage(
                     "Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
+                // création des sections dans doctables, de la fiche étiquette ou de la
+                // fiche texte
                 switch ($oData->disposition) {
                     case 'Tabulaire':
                         $tDoctables = $this->db_manager->get('Sbm\Db\System\DocTables');
@@ -250,7 +260,8 @@ class PdfController extends AbstractActionController
     /**
      * Affiche et traite le formulaire d'ajout d'un document.
      *
-     * Le formulaire est initialisé par les valeurs du formulaire de la ligne cliquée (documentId
+     * Le formulaire est initialisé par les valeurs du formulaire de la ligne cliquée
+     * (documentId
      * en post au moment de l'appel).
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -303,7 +314,8 @@ class PdfController extends AbstractActionController
                 }
                 $this->flashMessenger()->addSuccessMessage(
                     "Un nouvel enregistrement a été ajouté.");
-                // création des sections dans doctables, de la fiche étiquette ou de la fiche texte
+                // création des sections dans doctables, de la fiche étiquette ou de la
+                // fiche texte
                 switch ($oData->disposition) {
                     case 'Tabulaire':
                         $tDoctables = $this->db_manager->get('Sbm\Db\System\DocTables');

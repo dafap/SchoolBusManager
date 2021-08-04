@@ -4,12 +4,12 @@
  *
  *
  * @project sbm
- * @package package_name
+ * @package SbmMailChimp/config
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 use SbmMailChimp\Controller;
 use SbmMailChimp\Form;

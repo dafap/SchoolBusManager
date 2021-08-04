@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmMailChimp\Controller;
 
@@ -26,6 +26,19 @@ use Zend\Http\Response;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property array $client
+ * @property array $mail_config
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \Zend\Permissions\Acl\Acl $acl
+ * @property string $mailchimp_key
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -60,7 +73,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Renvoie à la liste (action index) avec un message dans flashMessenger. Par défaut,
+     * Renvoie à la liste (action index) avec un message dans flashMessenger.
+     * Par défaut,
      * 'error' avec comme message 'action interdite
      *
      * @param string $mode
@@ -69,7 +83,8 @@ class IndexController extends AbstractActionController
      *            le message à placer
      * @return \Zend\Http\Response
      */
-    private function retourListe($mode = 'error', $msg = 'Action interdite.', $action = 'index')
+    private function retourListe($mode = 'error', $msg = 'Action interdite.',
+        $action = 'index')
     {
         switch ($mode) {
             case 'error':
@@ -1173,7 +1188,8 @@ class IndexController extends AbstractActionController
 
     /**
      * Mise à jour des membres de la liste (par la méthode de put)
-     * Reçoit en post l'identifiant de la liste 'id_liste'. Eventuellement, reçoit en post
+     * Reçoit en post l'identifiant de la liste 'id_liste'.
+     * Eventuellement, reçoit en post
      * les paramètres 'populate' ou 'selection'.
      * Les données sont extraites de la base de données par la méthode
      * SbmMailChimp\Model\Db\Service\Users::getMembersForMailChimpListe()

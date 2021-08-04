@@ -9,14 +9,24 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class FinanceController extends AbstractActionController
 {
 
@@ -57,7 +67,6 @@ class FinanceController extends AbstractActionController
                 ]));
         }
     }
-
 
     /**
      * ajax - cocher la case paiement de scolarites à condition que le montant déjà payé

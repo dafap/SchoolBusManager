@@ -3,14 +3,14 @@
  * Gestion de la table système `doccolumns`
  *
  * (à déclarer dans module.config.php)
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package SbmCommun/src/Model/Db/Service/Table/AbstractSbmTable
  * @filesource DocColumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct 2018
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 

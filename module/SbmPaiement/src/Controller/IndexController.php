@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmPaiement\Controller;
 
@@ -20,13 +20,29 @@ use SbmPaiement\Model\RapprochementCR;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property array $user
+ * @property array $paginator_count_per_page
+ * @property array $mail_config
+ * @property array $csv
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
     /**
      * Dans cette version, le montant à payer n'est pas passé par le POST (c'est un
      * leurre) mais est obtenu à partir de la facture émise ou récupérée si elle existe
-     * déjà. Le montant à payer est le solde de la facture. On considère que l'appel vient
+     * déjà.
+     * Le montant à payer est le solde de la facture. On considère que l'appel vient
      * de l'URL \parent (en cas d'erreur).
      *
      * @return \Zend\Http\Response|\Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
@@ -170,7 +186,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Reçoit en POST soit un idOp, soit un responsableId, soit un eleveId. Interroge la
+     * Reçoit en POST soit un idOp, soit un responsableId, soit un eleveId.
+     * Interroge la
      * table des appels pour traiter tous les appels non notifiés correspondant à
      * l'attribut trouvé en POST puis interroge le webservice pour mettre éventuellement à
      * jour les paiements. Puis retourne à la page d'où vient cet demande.
@@ -213,7 +230,8 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * Charge un fichier csv de transactions remisées. Analyse le fichier (après contrôle)
+     * Charge un fichier csv de transactions remisées.
+     * Analyse le fichier (après contrôle)
      * en le rapprochant des paiements enregistrés. Affiche le compte-rendu en indiquant
      * la marche à suivre si des paiements sont absents.
      *

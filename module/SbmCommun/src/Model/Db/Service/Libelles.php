@@ -3,7 +3,8 @@
  * Object 'Libelles' qui s'initialise par la lecture de la table 'Libelles'
  * (enregistré dans db_manager sous la clé 'Sbm\Libelles')
  *
- * La méthode __get() donne un tableau [code => libelle]
+ * La méthode __get() donne un tableau [code => libelle]. Mettre à jour la liste @property
+ * de la classe en fonction des natures enregistrées dans la table libelles.
  * La méthode getCode() donne le code à partir de la nature et du libelle
  * La méthode getLibelle() donne le libelle à partir de la nature et du code
  *
@@ -12,8 +13,8 @@
  * @filesource Libelles.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 mai 2019
- * @version 2019-2.5.0
+ * @date 3 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -21,6 +22,16 @@ use SbmBase\Model\StdLib;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+/**
+ *
+ * @property array $Caisse
+ * @property array $ModeDePaiement
+ * @property array $ImpressionCartes
+ * @property array $NatureCartes
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Libelles implements FactoryInterface
 {
 
@@ -29,7 +40,7 @@ class Libelles implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $table = $serviceLocator->get('Sbm\Db\System\Libelles');
-        $resultset = $table->fetchOpen();
+        $resultset = $table->fetchOuvert();
         foreach ($resultset as $row) {
             $this->datas[mb_strtolower($row->nature, 'utf-8')][$row->code] = mb_strtolower(
                 $row->libelle, 'utf-8');
@@ -51,7 +62,8 @@ class Libelles implements FactoryInterface
         if (array_key_exists($nature, $this->datas)) {
             return $this->datas[$nature];
         }
-        throw new \SbmCommun\Model\Db\Exception\DomainException('Pas de libellé de cette nature.');
+        throw new \SbmCommun\Model\Db\Exception\DomainException(
+            'Pas de libellé de cette nature.');
     }
 
     /**

@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 mai 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmFront\Controller;
 
@@ -22,6 +22,23 @@ use SbmMail\Model\Template as MailTemplate;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property \SbmCartographie\GoogleMaps\DistanceMatrix $oDistanceMatrix
+ * @property array $config_cartes
+ * @property array $mail_config
+ * @property array $img
+ * @property array $client
+ * @property string $accueil
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class LoginController extends AbstractActionController
 {
 
@@ -74,7 +91,8 @@ class LoginController extends AbstractActionController
 
     /**
      * Entrée pour confirmer l'email lors de la création d'un compte ou de la demande de
-     * changement d'email. On ne peut rien faire tant que le mot de passe n'est pas donné.
+     * changement d'email.
+     * On ne peut rien faire tant que le mot de passe n'est pas donné.
      */
     public function confirmAction()
     {
@@ -284,7 +302,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * On demande l'email et on envoie un lien pour entrer. A l'entrée on doit donner un
+     * On demande l'email et on envoie un lien pour entrer.
+     * A l'entrée on doit donner un
      * nouveau mot de passe avant de continuer.
      *
      * @return \Zend\View\Model\ViewModel
@@ -377,7 +396,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Envoie un lien pour entrer sans mot de passe. A l'entrée on doit donner un nouveau
+     * Envoie un lien pour entrer sans mot de passe.
+     * A l'entrée on doit donner un nouveau
      * mot de passe avant de continuer. Cette action est utile pour le service, pour
      * dépaner par téléphone.
      */
@@ -455,7 +475,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Permet à l'utilisateur de changer son email. Un lien est adressé sur cet email. Une
+     * Permet à l'utilisateur de changer son email.
+     * Un lien est adressé sur cet email. Une
      * confirmation est nécessaire pour que le changement prenne effet.
      */
     public function emailChangeAction()

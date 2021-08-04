@@ -2,14 +2,14 @@
 /**
  * Test du Predicate Not
  *
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package tests
  * @filesource NotTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 août 2016
- * @version 2016-2.1.10
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace ModulesTests\SbmCommunTest\Model\Db\Sql\Predicate;
 

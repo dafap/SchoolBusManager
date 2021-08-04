@@ -9,8 +9,8 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 juin 2021
- * @version 2021-2.5.11
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmPdf\Controller;
 
@@ -20,6 +20,17 @@ use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
 use Zend\Http\PhpEnvironment\Response;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmPdf\Service\PdfManager $pdf_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable_manager
+ * @property array $organisateur (C'est le client ailleurs)
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class DocumentController extends AbstractActionController
 {
 
@@ -42,10 +53,10 @@ class DocumentController extends AbstractActionController
     {
         $responsableId = $this->getResponsableIdFromSession('nsArgsFacture');
         // factureset est un objet Iterator
-        $factureset = new \SbmCommun\Millau\Tarification\Facture\FactureSet($this->db_manager,
-            $responsableId, $this->db_manager->get(
-                \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
-                    $responsableId));
+        $factureset = new \SbmCommun\Millau\Tarification\Facture\FactureSet(
+            $this->db_manager, $responsableId,
+            $this->db_manager->get(\SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
+                $responsableId));
         if ($factureset->count()) {
             $this->pdf_manager->get(Tcpdf::class)
                 ->setParams(
@@ -76,8 +87,7 @@ class DocumentController extends AbstractActionController
         // objet qui calcule les résultats financiers pour le responsableId indiqué
         // et qui prépare les éléments de la facture
         $facture = new \SbmCommun\Millau\Tarification\Facture\Facture($this->db_manager,
-            $this->db_manager->get(
-                \SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
+            $this->db_manager->get(\SbmCommun\Millau\Tarification\Facture\Calculs::class)->getResultats(
                 $responsableId));
         $this->pdf_manager->get(Tcpdf::class)
             ->setParams(
@@ -322,7 +332,8 @@ class DocumentController extends AbstractActionController
             $this->db_manager->get('Sbm\Db\Select\Classes')
                 ->tout())
             ->setValueOptions('serviceId',
-            $this->db_manager->get('Sbm\Db\Select\Services')->tout())
+            $this->db_manager->get('Sbm\Db\Select\Services')
+                ->tout())
             ->setValueOptions('stationId',
             $this->db_manager->get('Sbm\Db\Select\Stations')
                 ->toutes());

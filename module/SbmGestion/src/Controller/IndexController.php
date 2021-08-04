@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Controller;
 
@@ -18,11 +18,24 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $mail_config
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
     /**
-     * Affectation du millesime de travail. S'il n'y en a pas en session, il prend le
+     * Affectation du millesime de travail.
+     * S'il n'y en a pas en session, il prend le
      * dernier millesime valide et le met en session. (non-PHPdoc)
      *
      * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
@@ -41,7 +54,7 @@ class IndexController extends AbstractActionController
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
-                
+
                 'elevesEnregistres' => current(
                     $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
                 'elevesInscrits' => current(

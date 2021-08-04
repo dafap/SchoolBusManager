@@ -2,15 +2,16 @@
 /**
  * Controller principal du module SbmGestion
  *
- * Méthodes utilisées pour gérer la localisation des responsables et la création des cartes de transport
+ * Méthodes utilisées pour gérer la localisation des responsables et la création des
+ * cartes de transport
  *
  * @project sbm
  * @package SbmGestion/Controller
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 mai 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Controller;
 
@@ -26,6 +27,19 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $mail_config
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class EleveGestionController extends AbstractActionController
 {
 
@@ -101,7 +115,8 @@ class EleveGestionController extends AbstractActionController
     }
 
     /**
-     * Le paramètre 'op' de POST prend les valeurs 1 ou 2. 1 : entrée dans le processus
+     * Le paramètre 'op' de POST prend les valeurs 1 ou 2.
+     * 1 : entrée dans le processus
      * d'affectation. On prépare un formulaire formDecision et les points ptElv et ptEta 2
      * : sortie par post du formulaire formDecision - cancel : retour à affecter-liste -
      * submit : traitement du formulaire, enregistrement de la décision et passage au

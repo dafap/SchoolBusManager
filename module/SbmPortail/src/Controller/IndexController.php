@@ -13,8 +13,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2019
- * @version 2019-2.5.3
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmPortail\Controller;
 
@@ -26,6 +26,15 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -301,7 +310,7 @@ class IndexController extends AbstractActionController
             'R2 Commune station montée' => 'communeStation1r2',
             'R2 Station Descente' => 'station2r2',
             'R2 Commune station descente' => 'communeStation2r2',
-            'R2 Correspondance' => 'service2IdR2',
+            'R2 Correspondance' => 'service2IdR2'
         ];
         // index du tableau $columns correspondant à des n° de téléphones
         $aTelephoneIndexes = [];
@@ -357,7 +366,7 @@ class IndexController extends AbstractActionController
         // et construction d'un tabeau des datas
         $data = [];
         foreach ($result as $eleve) {
-            $aEleve = $eleve->getArrayCopy();//var_dump($aEleve);
+            $aEleve = $eleve->getArrayCopy(); // var_dump($aEleve);
             $ligne = [];
             foreach ($columns as $value) {
                 $ligne[] = $aEleve[$value];
@@ -366,7 +375,7 @@ class IndexController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {
@@ -971,7 +980,7 @@ class IndexController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {

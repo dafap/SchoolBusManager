@@ -7,8 +7,8 @@
  * @filesource TestController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2020
- * @version 2020-2.5.4
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmFront\Controller;
 
@@ -18,6 +18,20 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Db\Sql\Where;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmFront\Form\Login $login_form
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_organisateur
+ * @property string $url_ts_region
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ */
 class TestController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
@@ -41,6 +55,11 @@ class TestController extends AbstractActionController
         $this->auth = $this->authenticate->by('email');
     }
 
+    /**
+     *
+     * {@inheritdoc}
+     * @see \Zend\Mvc\Controller\AbstractActionController::indexAction()
+     */
     public function indexAction()
     {
         $this->initDebug();
@@ -124,7 +143,8 @@ class TestController extends AbstractActionController
     }
 
     /**
-     * Méthode prête pour donner un numéro aux élèves. La renommer testAction pour qu'elle
+     * Méthode prête pour donner un numéro aux élèves.
+     * La renommer testAction pour qu'elle
      * fonctionne. Si elle est trop longue, rajouter des ->limit(xxx) au select. Au
      * préalable, vider la table sbm_t_eleves et ré-initialiser AUTO_INCREMENT par : ALTER
      * TABLE `sbm_t_responsables` AUTO_INCREMENT = 1;

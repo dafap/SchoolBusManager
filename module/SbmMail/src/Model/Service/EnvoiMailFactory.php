@@ -3,14 +3,14 @@
  * Injection dans EnvoiMail du tableau de configuration
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package SbmMail/src/Model/Service
  * @filesource EnvoiMailFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 fév. 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmMail\Model\Service;
 

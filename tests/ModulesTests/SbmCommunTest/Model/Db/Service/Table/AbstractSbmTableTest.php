@@ -3,14 +3,14 @@
  * Test de création d'un service AbstractSbmTable
  *
  * Description longue du fichier s'il y en a une
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package tests
  * @filesource AbstractSbmTableTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 31 juil. 2016
- * @version 2016-2.1.10
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace ModulesTests\SbmCommunTest\Model\Db\Service\Table;
 
@@ -78,4 +78,3 @@ class AbstractSbmTableTest extends PHPUnit_Framework_TestCase
         }
     }
 }
- 

@@ -5,12 +5,12 @@
  * (voir AbstractPlateforme par exemple)
  *
  * @project sbm
- * @package package_name
+ * @package SbmPaiement/Plugin
  * @filesource PlateformeInterface.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2019
- * @version 2018-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmPaiement\Plugin;
 

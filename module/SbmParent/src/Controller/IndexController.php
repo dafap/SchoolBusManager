@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juil. 2021
- * @version 2021-2.5.13
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmParent\Controller;
 
@@ -29,6 +29,25 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme
+ * @property \Zend\ServiceManager\ServiceManager $local_manager
+ * @property string $tmpuploads
+ * @property array $photo_log
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_region
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -57,7 +76,7 @@ class IndexController extends AbstractActionController
             $message1 = sprintf($format, implode(' ou ', $listeEtab));
         }
         $this->flashMessenger()->addWarningMessage($message1);
-        $viewhelperTelephone = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelperTelephone = new \SbmCommun\Model\View\Helper\Telephone();
         $message2 = 'Pour obtenir une dérogation, prenez contact avec le service de transport';
         $message2 .= sprintf(' par téléphone au %s ou par mail à %s.',
             $viewhelperTelephone($this->client['telephone']), $this->client['email']);
@@ -126,7 +145,7 @@ class IndexController extends AbstractActionController
         // fin du contrôle de paiement en ligne
         $query = $this->db_manager->get('Sbm\Db\Query\ElevesScolarites');
         $tCalendar = $this->db_manager->get('Sbm\Db\System\Calendar');
-        $format_telephone = new \SbmCommun\Form\View\Helper\Telephone();
+        $format_telephone = new \SbmCommun\Model\View\Helper\Telephone();
         return new ViewModel(
             [
                 'theme' => $this->theme,

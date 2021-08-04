@@ -7,14 +7,14 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2021
- * @version 2021-2.5.12
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
 /**
  *
- * @author alain
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
  */
 trait ElevePhotoTrait

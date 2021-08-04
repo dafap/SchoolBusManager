@@ -1,14 +1,14 @@
 <?php
 /**
  * Test de la classe EnvoiMail
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package tests
  * @filesource EnvoiMailTest.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juil. 2016
- * @version 2016-2.1.10
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace ModulesTests\SbmMailTest\Model;
 

@@ -1,14 +1,15 @@
 <?php
 /**
- * Controller du module SbmParent permettant de gérer le compte de l'utilisateur et de revenir dans l'espace des parents
+ * Controller du module SbmParent permettant de gérer le compte de l'utilisateur et de
+ * revenir dans l'espace des parents
  *
  * @project sbm
  * @package SbmParent/Controller
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 mai 2019
- * @version 2019-2.5.0
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmParent\Controller;
 
@@ -23,6 +24,20 @@ use SbmParent\Form\ModifAdresse;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property array $client
+ * @property string $accueil
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class ConfigController extends AbstractActionController
 {
 
@@ -54,7 +69,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
         } else {
             $args = $prg;
@@ -116,7 +132,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
         } else {
             $args = $prg;
@@ -186,7 +203,8 @@ class ConfigController extends AbstractActionController
      * Le retour se fait par un redirectToOrigin()->back()
      * ce qui veut dire qu'il faut avoir défini le redirectToOrigin() avant l'appel.
      *
-     * Si un responsable de même nom et prénom existe déjà, présenter son identité et proposer
+     * Si un responsable de même nom et prénom existe déjà, présenter son identité et
+     * proposer
      * de s'identifier à cette personne ou de créer un nouveau
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\ViewModel
@@ -198,7 +216,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $identity;
             // vérification d'existence de ce responsable
             $filterSA = new SansAccent();
@@ -274,7 +293,8 @@ class ConfigController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
-            // initialisation du formulaire à partir de l'identité de l'utilisateur autentifié
+            // initialisation du formulaire à partir de l'identité de l'utilisateur
+            // autentifié
             $args = $responsable->getArrayCopy();
             $point = new Point($args['x'], $args['y']);
             $pt = $oDistanceMatrix->getProjection()->xyzVersgRGF93($point);
@@ -369,7 +389,9 @@ class ConfigController extends AbstractActionController
 
         return new ViewModel(
             [
-                'scheme' =>$this->getRequest()->getUri()->getScheme(),
+                'scheme' => $this->getRequest()
+                    ->getUri()
+                    ->getScheme(),
                 'responsable' => $responsable,
                 'form' => $form->prepare(),
                 'config' => $configCarte,

@@ -10,14 +10,24 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juil. 2019
- * @version 2019-2.5.1
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class TransportController extends AbstractActionController
 {
 
@@ -515,8 +525,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $zonageId = $this->params('zonageId');
-            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection(
-                $zonageId, 1);
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection($zonageId, 1);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
@@ -539,8 +548,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $zonageId = $this->params('zonageId');
-            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection(
-                $zonageId, 0);
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setSelection($zonageId, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
@@ -611,8 +619,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $zonageId = $this->params('zonageId');
-            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne(
-                $zonageId, 1);
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne($zonageId, 1);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));
@@ -635,8 +642,7 @@ class TransportController extends AbstractActionController
     {
         try {
             $zonageId = $this->params('zonageId');
-            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne(
-                $zonageId, 0);
+            $this->db_manager->get('Sbm\Db\Table\Zonage')->setPaiementEnLigne($zonageId, 0);
             return $this->getResponse()->setContent(Json::encode([
                 'success' => 1
             ]));

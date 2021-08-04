@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 juil. 2021
- * @version 2021-2.5.13
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Controller;
 
@@ -29,6 +29,21 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $mail_config
+ * @property array $img
+ * @property array $client
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class EleveController extends AbstractActionController
 {
 
@@ -308,7 +323,8 @@ class EleveController extends AbstractActionController
     /**
      * Reçoit un post avec :<ul><li>eleveId d'un élève existant</li><li>info (nom
      * prénom)</li></ul> Met ces informations en session car on reviendra ici en cas
-     * d'entrée par GET ultérieure (F5 ou back). Vérifie si la fiche scolarité existe pour
+     * d'entrée par GET ultérieure (F5 ou back).
+     * Vérifie si la fiche scolarité existe pour
      * cette année courante et oriente sur :<ul><li>si oui : eleveEditAction()</li><li>si
      * non : eleveAjout31Action()</li></ul>On arrive ici obligatoirement par un post. Il
      * n'y a pas de view associée.
@@ -365,7 +381,8 @@ class EleveController extends AbstractActionController
 
     /**
      * Création de la fiche dans la table eleves et récupération de son eleveId puis
-     * passage en eleveAjout31Action(). L'entrée se fait :<ul><li>directement depuis
+     * passage en eleveAjout31Action().
+     * L'entrée se fait :<ul><li>directement depuis
      * eleveAjoutAction() s'il n'y a pas d'enregistrement ayant ces caractéristiques. Dans
      * ce cas, le paramètre odata porte les informations à enregistrer.</li><li>par appel
      * POST depuis la vue phase 1 si l'utilisateur choisi explicitement de créer une
@@ -409,7 +426,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Il s'agit de compléter les informations de scolarité pour un élève existant. Donc
+     * Il s'agit de compléter les informations de scolarité pour un élève existant.
+     * Donc
      * en cas de F5 ou back on doit revenir en eleveAjout21Action() car la fiche eleve
      * existe. L'entrée initiale se fait toujours par un appel fonction. On montre le
      * formulaire AddElevePhase2 pour compléter les informations de scolarités. L'entrée
@@ -1065,7 +1083,8 @@ class EleveController extends AbstractActionController
 
     /**
      * On reçoit par post un paramètre 'documentId' qui peut être numérique (le documentId
-     * de la table documents) ou une chaine de caractères. Dans ce cas, cela peut être le
+     * de la table documents) ou une chaine de caractères.
+     * Dans ce cas, cela peut être le
      * name du document ou le libelle de docaffectations et alors le paramètre id passé
      * par post contient docaffectationId. On lit les critères définis dans le formulaire
      * de critères de eleve-liste (en session avec le sessionNameSpace de
@@ -1186,7 +1205,7 @@ class EleveController extends AbstractActionController
         }
         // exportation en formatant les n° de téléphones pour qu'ils soient encadrés par
         // le caractère d'enclosure
-        $viewhelper = new \SbmCommun\Form\View\Helper\Telephone();
+        $viewhelper = new \SbmCommun\Model\View\Helper\Telephone();
         return $this->csvExport('eleves.csv', array_keys($columns), $data,
             function ($item) use ($aTelephoneIndexes, $viewhelper) {
                 foreach ($aTelephoneIndexes as $idx) {
@@ -2249,7 +2268,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * Envoie un mail à un responsable. Reçoit en post les paramètres 'responsable',
+     * Envoie un mail à un responsable.
+     * Reçoit en post les paramètres 'responsable',
      * 'email', 'group' où group est l'url de retour
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -2533,7 +2553,8 @@ class EleveController extends AbstractActionController
     }
 
     /**
-     * GESTION DES PHOTOS Cette méthode affiche le formulaire. Le traitement se fait en
+     * GESTION DES PHOTOS Cette méthode affiche le formulaire.
+     * Le traitement se fait en
      * AJAX pour - afficher un progressbar - afficher la photo après succès pendant 3
      * secondes - afficher un message pendant 3 secondes si il y a une erreur - quitter si
      * on clique sur le bouton Abandonner La méthode envoiphotoAction() doit récupérer les

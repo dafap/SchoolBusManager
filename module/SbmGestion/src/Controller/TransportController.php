@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 oct. 2019
- * @version 2019-2.5.3
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Controller;
 
@@ -29,6 +29,20 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $operateurs
+ * @property array $mail_config
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class TransportController extends AbstractActionController
 {
 
@@ -466,7 +480,8 @@ class TransportController extends AbstractActionController
 
     /**
      * Lors de la création d'une nouvelle année scolaire, la table des circuits pour ce
-     * millesime est vide. Cette action reprend les circuits de la dernière année connue.
+     * millesime est vide.
+     * Cette action reprend les circuits de la dernière année connue.
      */
     public function circuitDupliquerAction()
     {
@@ -1300,7 +1315,8 @@ class TransportController extends AbstractActionController
      * ================================ ETABLISSEMENTS ========================
      */
     /**
-     * Critère de sélection commun aux établissements et aux stations. La localisation
+     * Critère de sélection commun aux établissements et aux stations.
+     * La localisation
      * géographique est dans un rectangle défini dans la config (voir
      * config/autoload/sbm.local.php) (paramètres dans cartes - etablissements - valide)
      *
@@ -3252,7 +3268,8 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * Montre la carte des stations. Un clic dans la carte permet de placer la nouvelle
+     * Montre la carte des stations.
+     * Un clic dans la carte permet de placer la nouvelle
      * station. On enregistre la position. Le formulaire prérempli est présenté avec la
      * commune, l'adresse (N° + rue) et les coordonnées X et Y On peut alors changer le
      * nom de la station avant d'enregistrer la fiche.
@@ -3689,7 +3706,8 @@ class TransportController extends AbstractActionController
 
     /**
      * Localisation d'une station sur la carte et enregistrement de ses coordonnées Toutes
-     * les stations sont affichées. La station à localiser est repérée par un bulet rouge.
+     * les stations sont affichées.
+     * La station à localiser est repérée par un bulet rouge.
      */
     public function stationLocalisationAction()
     {

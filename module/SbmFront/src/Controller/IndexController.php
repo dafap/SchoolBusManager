@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2020
- * @version 2020-2.5.4
+ * @date 2 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmFront\Controller;
 
@@ -25,6 +25,14 @@ use Zend\View\Model\ViewModel;
  * client - accueil (url de l'organisateur - voir config/autoload/sbm.local.php) -
  * url_ts_region (url du site d'inscription de la région - voir
  * config/autoload/sbm.local.php)
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmFront\Form\Login $login_form
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_organisateur
+ * @property string $url_ts_region
  *
  * @author admin
  */
