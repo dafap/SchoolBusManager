@@ -12,8 +12,8 @@
  * @filesource view/sbm-gestion/finance/tarif-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -165,17 +165,9 @@ $fmt = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
 					<td class="attributs">
 						<?=$this->escapeHtml($tarif->mode);?></td>
 					<td class="effectif align-right">
-						<?=$this->effectifTarifs->transportes($tarif->grilleTarif);?>
-
-
-
-
+						<?=$this->effectifTarifs->transportes($tarif->grilleTarif);?></td>
 					<td class="effectif align-right">
-						<?=$this->effectifTarifs->demandes($tarif->grilleTarif);?>
-
-
-
-
+						<?=$this->effectifTarifs->demandes($tarif->grilleTarif);?></td>
 					<td class="centre selection">
 						<?=$this->renderCheckbox('selection', 'chk', $tarif->tarifId, $tarif->selection)?>
 						</td>
