@@ -9,8 +9,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 oct. 2019
- * @version 2019-4.5.4
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query;
 
@@ -29,6 +29,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 abstract class AbstractQuery implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
      *
@@ -77,19 +78,6 @@ abstract class AbstractQuery implements FactoryInterface
         return $this;
     }
 
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString(Select $select): string
-    {
-        return $select->getSqlString($this->db_manager->getDbAdapter()
-            ->getPlatform());
-    }
-
     abstract protected function init();
 
     /**
@@ -110,8 +98,10 @@ abstract class AbstractQuery implements FactoryInterface
 
     /**
      * Exécute le select passé et rend le résultat après mise en place des strategies
-     * paramétrée. Le résultat se comporte comme un iterator de tableaux.
-     * Chaque valeur de l'iterator est un objet de type getResultSetPrototype() ou ArrayObject()
+     * paramétrée.
+     * Le résultat se comporte comme un iterator de tableaux.
+     * Chaque valeur de l'iterator est un objet de type getResultSetPrototype() ou
+     * ArrayObject()
      *
      * @param \Zend\Db\Sql\Select $select
      *
@@ -136,7 +126,8 @@ abstract class AbstractQuery implements FactoryInterface
     }
 
     /**
-     * Enregistre une strategy pour le champ indiqué. Elle sera appliquée si on appelle la
+     * Enregistre une strategy pour le champ indiqué.
+     * Elle sera appliquée si on appelle la
      * méthode renderResult() pour obtenir le résultat de la requête.
      *
      * @param string $field

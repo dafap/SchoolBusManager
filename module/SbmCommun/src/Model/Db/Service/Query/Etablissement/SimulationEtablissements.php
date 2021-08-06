@@ -8,8 +8,8 @@
  * @filesource SimulationEtablissements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
@@ -36,7 +36,7 @@ class SimulationEtablissements extends AbstractQuery
         return $this->paginator($this->selectSE($where, $order));
     }
 
-    private function selectSE($filtre, $order = [])
+    protected function selectSE($filtre, $order = [])
     {
         $select1 = $this->sql->select();
         $select1->from(

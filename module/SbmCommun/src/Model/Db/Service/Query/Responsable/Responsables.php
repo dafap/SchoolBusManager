@@ -15,7 +15,7 @@ namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -93,6 +93,11 @@ class Responsables extends AbstractQuery
      */
     public function withNbElevesInscrits(Where $where, $order = null)
     {
+        return $this->renderResult($this->selectNbElevesInscrits($where, $order));
+    }
+
+    protected function selectNbElevesInscrits(Where $where, $order = null)
+    {
         $where->literal('inscrit = 1')
             ->nest()
             ->literal('paiement = 1')->OR->literal('fa = 1')->OR->literal('gratuit > 0')
@@ -104,7 +109,7 @@ class Responsables extends AbstractQuery
         ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',
             [
-                'nb' => new Expression('count(ele.eleveId)')
+                'nb' => new Literal('count(ele.eleveId)')
             ])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
@@ -113,7 +118,7 @@ class Responsables extends AbstractQuery
         if (! is_null($order)) {
             $select->order($order);
         }
-        return $this->renderResult($select);
+        return $select;
     }
 
     public function getNbEnfantsInscrits($responsableId)
@@ -164,7 +169,7 @@ class Responsables extends AbstractQuery
      * @param array $order
      * @return \Zend\Db\Sql\Select
      */
-    private function selectResponsables($where, $order, $responsableId)
+    protected function selectResponsables($where, $order, $responsableId)
     {
         // préinscrits
         $preinscrits = new Predicate\ElevesPreinscrits($this->millesime);
@@ -210,45 +215,44 @@ class Responsables extends AbstractQuery
 
         // ================= requête principale =====================
         $select = clone $this->select;
-        $select->join([
+        return $select->join([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',
             [
-                'nbEnfants' => new Expression('count(ele.eleveId)')
+                'nbEnfants' => new Literal('count(ele.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'pre' => $select1
         ], 'ele.eleveId=pre.eleveId',
             [
-                'nbPreinscrits' => new Expression('count(pre.eleveId)')
+                'nbPreinscrits' => new Literal('count(pre.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'ins' => $select2
         ], 'ele.eleveId=ins.eleveId',
             [
-                'nbInscrits' => new Expression('count(ins.eleveId)')
+                'nbInscrits' => new Literal('count(ins.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'gra' => $select3
         ], 'ele.eleveId=gra.eleveId',
             [
-                'nbGratuits' => new Expression('count(gra.eleveId)')
+                'nbGratuits' => new Literal('count(gra.eleveId)')
             ], $select::JOIN_LEFT)
             ->join([
             'fa' => $select4
         ], 'ele.eleveId=fa.eleveId', [
-            'nbFa' => new Expression('count(fa.eleveId)')
+            'nbFa' => new Literal('count(fa.eleveId)')
         ], $select::JOIN_LEFT)
             ->join([
             'dup' => $select5
         ], 'ele.eleveId=dup.eleveId',
             [
-                'nbDuplicata' => new Expression('sum(dup.duplicata)')
+                'nbDuplicata' => new Literal('sum(dup.duplicata)')
             ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
-        return $where->count() ? $select->having($where) : $select;
     }
 
     /**
@@ -260,11 +264,17 @@ class Responsables extends AbstractQuery
      */
     public function estDejaInscritCetteAnnee($nomSA, $prenomSA)
     {
+        return $this->renderResult($this->selectDejaInscritCetteAnnee($nomSA, $prenomSA))
+            ->current()['nbEnfants'] > 0;
+    }
+
+    protected function selectDejaInscritCetteAnnee($nomSA, $prenomSA)
+    {
         $where = new Where();
         $where->equalTo('res.nomSA', $nomSA)
             ->equalTo('res.prenomSA', $prenomSA)
             ->equalTo('sco.millesime', $this->millesime);
-        $select = $this->sql->select(
+        return $this->sql->select(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
@@ -277,9 +287,8 @@ class Responsables extends AbstractQuery
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
         ], 'sco.eleveId = ele.eleveId', [])
             ->columns([
-            'nbEnfants' => new Expression('count(sco.eleveId)')
+            'nbEnfants' => new Literal('count(sco.eleveId)')
         ])
             ->where($where);
-        return $this->renderResult($select)->current()['nbEnfants'] > 0;
     }
 }

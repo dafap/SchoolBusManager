@@ -9,8 +9,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2021
- * @version 2021-2.5.12
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -124,9 +124,9 @@ class ElevesScolarites extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'hasphoto' => new Literal($this->xHasPhoto(Session::get('as')['dateDebut']))
+                'hasphoto' => new Literal(
+                    $this->xHasPhoto(Session::get('as')['dateDebut']))
             ], Select::JOIN_LEFT);
-        //die($this->getSqlString($this->select));
         $this->addStrategy('grilleTarif',
             $this->db_manager->get('Sbm\Db\Table\Tarifs')
                 ->getStrategie('grille'));
@@ -141,14 +141,23 @@ class ElevesScolarites extends AbstractQuery
 
     public function getEleve($eleveId)
     {
+        return $this->renderResult()->current($this->selectEleve($eleveId));
+    }
+
+    protected function selectEleve($eleveId)
+    {
         $select = clone $this->select;
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
-        return $this->renderResult($select->where($where))
-            ->current();
+        return $select->where($where);
     }
 
     public function getEleveAdresse($eleveId, $trajet)
+    {
+        $this->renderResult($this->selectEleveAdresse($eleveId, $trajet));
+    }
+
+    protected function selectEleveAdresse($eleveId, $trajet)
     {
         $select = clone $this->select;
         $select->join(
@@ -172,10 +181,15 @@ class ElevesScolarites extends AbstractQuery
             ]);
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)->equalTo('ele.eleveId', $eleveId);
-        return $this->renderResult($select->where($where));
+        return $select->where($where);
     }
 
     public function getElevesInscrits($responsableId)
+    {
+        return $this->renderResult($this->selectElevesInscrits($responsableId));
+    }
+
+    protected function selectElevesInscrits(int $responsableId)
     {
         $select = clone $this->select;
         $elevesSansPreinscrits = new PredicateEleve\ElevesSansPreinscrits(
@@ -183,10 +197,16 @@ class ElevesScolarites extends AbstractQuery
                 $this->jointureElevesResponsables($responsableId)
             ]);
         $where = $elevesSansPreinscrits();
-        return $this->renderResult($select->where($where));
+        return $select->where($where);
     }
 
     public function getElevesPreinscritsOuEnAttente($responsableId)
+    {
+        return $this->renderResult(
+            $this->selectElevesPreinscritsOuEnAttente($responsableId));
+    }
+
+    protected function selectElevesPreinscritsOuEnAttente(int $responsableId)
     {
         $select = clone $this->select;
         $jointure = $this->jointureElevesResponsables($responsableId);
@@ -202,17 +222,22 @@ class ElevesScolarites extends AbstractQuery
             $elevesPreinscrits(),
             $elevesEnAttente()
         ], Where::COMBINED_BY_OR);
-        return $this->renderResult($select->where($where));
+        return $select->where($where);
     }
 
     public function getElevesPreinscrits($responsableId)
+    {
+        return $this->renderResult($this->selectElevesPreinscrits($responsableId));
+    }
+
+    protected function selectElevesPreinscrits($responsableId)
     {
         $select = clone $this->select;
         $elevesPreinscrits = new PredicateEleve\ElevesPreinscrits($this->millesime, 'sco',
             [
                 $this->jointureElevesResponsables($responsableId)
             ]);
-        return $this->renderResult($select->where($elevesPreinscrits()));
+        return $select->where($elevesPreinscrits());
     }
 
     /**
@@ -227,8 +252,18 @@ class ElevesScolarites extends AbstractQuery
      */
     public function getMontantElevesInscrits($responsableId)
     {
+        $resultset = $this->renderResult(
+            $this->selectMontantElevesInscrits($responsableId));
         $tTarif = $this->db_manager->getCanonicName('tarifs', 'table');
         $montant = 0.0;
+        foreach ($resultset as $row) {
+            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite']);
+        }
+        return $montant;
+    }
+
+    protected function selectMontantElevesInscrits($responsableId)
+    {
         $select = $this->sql->select()
             ->from([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
@@ -245,14 +280,16 @@ class ElevesScolarites extends AbstractQuery
             [
                 $this->jointureElevesResponsables($responsableId)
             ]);
-        $resultset = $this->renderResult($select->where($elevesInscrits()));
-        foreach ($resultset as $row) {
-            $montant += $tTarif->getMontant($row['grilleCode'], $row['quantite']);
-        }
-        return $montant;
+        return $select->where($elevesInscrits());
     }
 
     public function getElevesPreinscritsWithGrille($responsableId)
+    {
+        return $this->renderResult(
+            $this->selectElevesPreinscritsWithGrille($responsableId));
+    }
+
+    protected function selectElevesPreinscritsWithGrille(int $responsableId)
     {
         $select = clone $this->select;
         $where = new Where(null, Where::COMBINED_BY_OR);
@@ -262,13 +299,13 @@ class ElevesScolarites extends AbstractQuery
             [
                 $where
             ]);
-        return $this->renderResult($select->where($predicate()));
+        return $select->where($predicate());
     }
 
     public function getElevesPreinscritsWithMontant($responsableId)
     {
         throw new \Exception(
-            'TODO : remplacer cette méthode par `getElevesPreinscritsWithGrille()');
+            'TODO : Pour des tarifs basés sur la composition familiale, remplacer cette méthode par `getElevesPreinscritsWithGrille()');
     }
 
     /**
@@ -282,21 +319,32 @@ class ElevesScolarites extends AbstractQuery
      */
     public function getElevesPayantsWithGrille($responsableId)
     {
+        return $this->renderResult($this->selectElevesPayantsWithGrille($responsableId));
+    }
+
+    protected function selectElevesPayantsWithGrille($responsableId)
+    {
         $select = clone $this->select;
         $elevesResponsablePayant = new PredicateEleve\ElevesResponsablePayant(
             $this->millesime, 'sco', [
                 $this->jointureElevesResponsables($responsableId)
             ]);
-        return $this->renderResult($select->where($elevesResponsablePayant()));
+        return $select->where($elevesResponsablePayant());
     }
 
     public function getElevesPayantsWithMontant($responsableId)
     {
         throw new \Exception(
-            'TODO : remplacer cette méthode par `getElevesPayantsWithGrille()');
+            'TODO : Pour des tarifs basés sur la composition familiale, remplacer cette méthode par `getElevesPayantsWithGrille()');
     }
 
     public function getNbDuplicatas($responsableId)
+    {
+        return $this->renderResult($this->selectNbDuplicatas($responsableId))
+            ->current()['nbDuplicatas'];
+    }
+
+    protected function selectNbDuplicatas($responsableId)
     {
         $select = $this->sql->select()
             ->from([
@@ -313,8 +361,7 @@ class ElevesScolarites extends AbstractQuery
             ->nest()
             ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id',
             $responsableId)->unnest();
-        return $this->renderResult($select->where($where))
-            ->current()['nbDuplicatas'];
+        return $select->where($where);
     }
 
     public function getInscritsNonAffectes()
@@ -327,7 +374,7 @@ class ElevesScolarites extends AbstractQuery
         return $this->paginator($this->selectInscritsNonAffectes());
     }
 
-    private function selectInscritsNonAffectes()
+    protected function selectInscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -379,7 +426,7 @@ class ElevesScolarites extends AbstractQuery
         return $this->paginator($this->selectPreinscritsNonAffectes());
     }
 
-    private function selectPreinscritsNonAffectes()
+    protected function selectPreinscritsNonAffectes()
     {
         $select = clone $this->select;
         $select->quantifier($select::QUANTIFIER_DISTINCT)
@@ -431,7 +478,7 @@ class ElevesScolarites extends AbstractQuery
         return $this->paginator($this->selectDemandeGaDistanceR2Zero());
     }
 
-    private function selectDemandeGaDistanceR2Zero()
+    protected function selectDemandeGaDistanceR2Zero()
     {
         $select = clone $this->select;
         $select->columns(
@@ -492,20 +539,40 @@ class ElevesScolarites extends AbstractQuery
 
     public function getEnfants($responsableId, $ga = 1)
     {
+        return $this->renderResult($this->selectEnfants($responsableId, $ga));
+    }
+
+    protected function selectEnfants($responsableId, $ga = 1)
+    {
         $select = clone $this->select;
         $where = new Where();
         $where->equalTo('millesime', $this->millesime)->equalTo(
             sprintf('responsable%dId', $ga), $responsableId);
-        return $this->renderResult($select->where($where));
+        return $select->where($where);
     }
 
     public function getScolaritePrecedente($eleveId)
+    {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectScolaritePrecedente($eleveId));
+        $result = $statement->execute()->current();
+        if (! $result) {
+            $result = [
+                'eleveId' => $eleveId,
+                'etablissement' => 'non inscrit l\'année précédente',
+                'classe' => ''
+            ];
+        }
+        return $result;
+    }
+
+    protected function selectScolaritePrecedente($eleveId)
     {
         $millesime = $this->millesime;
         $millesime --;
         $where = new Where();
         $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId);
-        $select = $this->sql->select(
+        return $this->sql->select(
             [
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
             ])
@@ -524,16 +591,6 @@ class ElevesScolarites extends AbstractQuery
             'classe' => 'nom'
         ], Select::JOIN_LEFT)
             ->where($where);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result = $statement->execute()->current();
-        if (! $result) {
-            $result = [
-                'eleveId' => $eleveId,
-                'etablissement' => 'non inscrit l\'année précédente',
-                'classe' => ''
-            ];
-        }
-        return $result;
     }
 
     /**
@@ -555,7 +612,7 @@ class ElevesScolarites extends AbstractQuery
         return $this->renderResult($this->selectScolaritesR($where, $order));
     }
 
-    private function selectScolaritesR($where, $order = null, $millesime = null)
+    protected function selectScolaritesR($where, $order = null, $millesime = null)
     {
         $select = $this->sql->select(
             [

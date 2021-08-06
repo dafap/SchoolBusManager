@@ -10,15 +10,14 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 oct. 2019
- * @version 2019-2.5.3
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmGestion\Model\Db\Service\AbstractQuery;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -36,12 +35,6 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @var \SbmCommun\Model\Db\Service\DbManager
      */
     private $db_manager;
-
-    /**
-     *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
 
     /**
      *
@@ -63,21 +56,8 @@ class Liste extends AbstractQuery implements FactoryInterface
                 sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
-    }
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
     /**
@@ -90,7 +70,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function queryGroup($millesime, $filtre, $order = ['commune', 'nom', 'prenom'])
+    public function queryGroup($millesime, $filtre, $order = [
+        'commune',
+        'nom',
+        'prenom'
+    ])
     {
         $select = $this->selectGroup($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -107,7 +91,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorGroup($millesime, $filtre,
-        $order = ['commune', 'nom', 'prenom'])
+        $order = [
+            'commune',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroup($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
@@ -123,7 +111,11 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function queryGroupParAffectations(int $millesime, array $filtre,
-        $order = ['serviceId', 'nom', 'prenom'])
+        $order = [
+            'serviceId',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         $statement = $this->sql->prepareStatementForSqlObject($select);
@@ -141,14 +133,19 @@ class Liste extends AbstractQuery implements FactoryInterface
      * @return \Zend\Paginator\Paginator
      */
     public function paginatorGroupParAffectations(int $millesime, array $filtre,
-        $order = ['serviceId', 'nom', 'prenom'])
+        $order = [
+            'serviceId',
+            'nom',
+            'prenom'
+        ])
     {
         $select = $this->selectGroupParAffectations($millesime, $filtre, $order);
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 
     /**
-     * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves. Le
+     * Renvoi un Select avec les colonnes qui vont bien pour les groupes d'élèves.
+     * Le
      * sélect est filtré par le filtre donné. (utilisé dans queryGroup() et dans
      * paginatorGroup())
      *
@@ -158,7 +155,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectGroup(int $millesime, array $filtre, $order)
+    protected function selectGroup(int $millesime, array $filtre, $order)
     {
         $where = new Where();
         $where->equalTo('sco.millesime', $millesime);
@@ -182,13 +179,14 @@ class Liste extends AbstractQuery implements FactoryInterface
         ], 'res.communeId=comres.communeId', [])
             ->join([
             'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ], 'ele.eleveId=sco.eleveId', [
-            'inscrit',
-            'paiement',
-            'fa',
-            'gratuit',
-            'dateCarte'
-        ])
+        ], 'ele.eleveId=sco.eleveId',
+            [
+                'inscrit',
+                'paiement',
+                'fa',
+                'gratuit',
+                'dateCarte'
+            ])
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
@@ -226,7 +224,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Expression(
+                'sansphoto' => new Literal(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->columns(
@@ -246,13 +244,13 @@ class Liste extends AbstractQuery implements FactoryInterface
         if (! empty($order)) {
             $select->order($order);
         }
-        // die($this->getSqlString($select));
         return $select;
     }
 
     /**
      * Renvoie un Select pour la recherche des élèves par EtablissementService, par Lot ou
-     * par Transporteur. (utilisé par queryGroupParAffectations() et par
+     * par Transporteur.
+     * (utilisé par queryGroupParAffectations() et par
      * paginatorGroupParAffectations())
      *
      * @param int $millesime
@@ -261,7 +259,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectGroupParAffectations(int $millesime, array $filtre, $order)
+    protected function selectGroupParAffectations(int $millesime, array $filtre, $order)
     {
         $where = new Where();
         $where->equalTo('s.millesime', $millesime);
@@ -327,7 +325,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = e.eleveId',
             [
-                'sansphoto' => new Expression(
+                'sansphoto' => new Literal(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
             ], Select::JOIN_LEFT)
             ->where($this->arrayToWhere($where, $filtre))
@@ -347,13 +345,13 @@ class Liste extends AbstractQuery implements FactoryInterface
         if (! empty($order)) {
             $select->order($order);
         }
-        //die($this->getSqlString($select));
         return $select;
     }
 
     /**
      * Renvoie les points de montée et les services des élèves pour un millesime donné en
-     * tenant compte des correspondances. (pour selectGroupParAffectations)
+     * tenant compte des correspondances.
+     * (pour selectGroupParAffectations)
      *
      * @param int $millesime
      *

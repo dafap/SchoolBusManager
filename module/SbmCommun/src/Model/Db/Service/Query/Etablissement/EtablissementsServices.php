@@ -8,16 +8,18 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 juin 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
+use Zend\Db\Sql\Where;
 
 class EtablissementsServices extends AbstractQuery
 {
+    use \SbmCommun\Model\Traits\ArrayToWhereTrait;
 
     protected function init()
     {
@@ -143,15 +145,15 @@ class EtablissementsServices extends AbstractQuery
                 'cir_selection' => 'selection',
                 'cir_millesime' => 'millesime',
                 'cir_semaine' => 'semaine',
-                'cir_m1' => new Expression('max(`cir`.`m1`)'),
-                'cir_s1' => new Expression('min(`cir`.`s1`)'),
-                'cir_z1' => new expression('min(`cir`.`z1`)'),
-                'cir_m2' => new Expression('max(`cir`.`m2`)'),
-                'cir_s2' => new Expression('min(`cir`.`s2`)'),
-                'cir_z2' => new expression('min(`cir`.`z2`)'),
-                'cir_m3' => new Expression('max(`cir`.`m3`)'),
-                'cir_s3' => new Expression('min(`cir`.`s3`)'),
-                'cir_z3' => new expression('min(`cir`.`z3`)'),
+                'cir_m1' => new Literal('max(`cir`.`m1`)'),
+                'cir_s1' => new Literal('min(`cir`.`s1`)'),
+                'cir_z1' => new Literal('min(`cir`.`z1`)'),
+                'cir_m2' => new Literal('max(`cir`.`m2`)'),
+                'cir_s2' => new Literal('min(`cir`.`s2`)'),
+                'cir_z2' => new Literal('min(`cir`.`z2`)'),
+                'cir_m3' => new Literal('max(`cir`.`m3`)'),
+                'cir_s3' => new Literal('min(`cir`.`s3`)'),
+                'cir_z3' => new Literal('min(`cir`.`z3`)'),
                 'cir_distance' => 'distance',
                 'cir_montee' => 'montee',
                 'cir_descente' => 'descente',
@@ -164,10 +166,6 @@ class EtablissementsServices extends AbstractQuery
             'cir.millesime' => $this->millesime
         ])
             ->group([
-            'rel.etablissementId',
-            'rel.serviceId'
-        ])
-            ->order([
             'rel.etablissementId',
             'rel.serviceId'
         ]);
@@ -183,17 +181,32 @@ class EtablissementsServices extends AbstractQuery
      */
     public function paginatorES($where, $order = [])
     {
-        if ($order) {
-            $this->select->order($order);
+        return $this->paginator($this->selectES($where, $order));
+    }
+
+    protected function selectES($conditions, $order = [])
+    {
+        if ($conditions instanceof Where) {
+            $where = $conditions;
+        } else {
+            $where = $this->arrayToWhere(null, $conditions);
         }
-        return $this->paginator($this->select->having($where));
+        $select = clone $this->select;
+        if ($order) {
+            $select->order($order);
+        }
+        return $select->having($where);
     }
 
     public function fetchAll($where, $order = [])
     {
-        if ($order) {
-            $this->select->order($order);
+        if (! $where instanceof Where) {
+            $where = $this->arrayToWhere($where);
         }
-        return $this->renderResult($this->select->having($where));
+        $select = clone $this->select;
+        if ($order) {
+            $select->order($order);
+        }
+        return $this->renderResult($select->having($where));
     }
 }

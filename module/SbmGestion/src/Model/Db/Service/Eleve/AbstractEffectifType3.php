@@ -2,7 +2,8 @@
 /**
  * Classe de calcul des effectifs
  *
- * Cette classe dérive de AbstractEffectif et sera dérivée pour les EtablissementsServices,
+ * Cette classe dérive de AbstractEffectif et sera dérivée pour les
+ * EtablissementsServices,
  * les ServicesEtablissements et les StationsServices
  *
  * @project sbm
@@ -10,13 +11,13 @@
  * @filesource AbstractEffectifType3.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -70,7 +71,7 @@ abstract class AbstractEffectifType3 extends AbstractEffectif
         ], 'a.millesime=s.millesime AND a.eleveId=s.eleveId',
             [
                 $indexId,
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
@@ -119,7 +120,7 @@ abstract class AbstractEffectifType3 extends AbstractEffectif
         ], 'a.millesime=s.millesime AND a.eleveId=s.eleveId',
             [
                 $index2Id,
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->columns([])
             ->join([

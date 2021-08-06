@@ -3,20 +3,20 @@
  * Calcul des effectifs des élèves transportés par Service pour un transporteur donné.
  *
  * L'initialisation doit nécessairement se faire par :
- *   $objet->setCaractereConditionnel($transporteurId)->init($sanspreinscrits);
+ * $objet->setCaractereConditionnel($transporteurId)->init($sanspreinscrits);
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource EffectifTransporteursServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmGestion\Model\Db\Service\EffectifInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -69,7 +69,7 @@ class EffectifTransporteursServices extends AbstractEffectifType3 implements
         ], 'a.service1Id=ser.serviceId',
             [
                 $column,
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
@@ -112,7 +112,7 @@ class EffectifTransporteursServices extends AbstractEffectifType3 implements
         ], 'a.service2Id=ser.serviceId',
             [
                 $column,
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->join([
             'correspondances' => $select1

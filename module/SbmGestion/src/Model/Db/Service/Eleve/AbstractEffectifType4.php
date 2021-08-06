@@ -2,19 +2,20 @@
 /**
  * Classe de calcul des effectifs
  *
- * Cette classe dérive de AbstractEffectif et sera dérivée pour les Lots et les Transporteurs.
+ * Cette classe dérive de AbstractEffectif et sera dérivée pour les Lots et les
+ * Transporteurs.
  *
  * @project sbm
  * @package SbmGestion/src/Model/Db/Service/Eleve
  * @filesource AbstractEffectifType4.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -46,7 +47,7 @@ abstract class AbstractEffectifType4 extends AbstractEffectif
         ], 'a.service1Id=ser.serviceId',
             [
                 $this->getIdColumn(),
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($this->getIdColumn());
@@ -114,7 +115,7 @@ abstract class AbstractEffectifType4 extends AbstractEffectif
         ], 'a.service2Id=ser.serviceId',
             [
                 $this->getIdColumn(),
-                'effectif' => new Expression('count(*)')
+                'effectif' => new Literal('count(*)')
             ])
             ->join([
             'correspondances' => $select1

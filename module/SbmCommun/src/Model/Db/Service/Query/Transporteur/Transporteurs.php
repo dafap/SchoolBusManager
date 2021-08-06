@@ -9,13 +9,13 @@
  * @filesource Transporteurs.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Transporteur;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 
 class Transporteurs extends AbstractQuery
@@ -38,7 +38,7 @@ class Transporteurs extends AbstractQuery
         return $this->renderResult($this->selectUserEmails($transporteurId, $order));
     }
 
-    private function selectUserEmails($transporteurId, $order)
+    protected function selectUserEmails($transporteurId, $order)
     {
         $select = $this->sql->select(
             [
@@ -50,14 +50,13 @@ class Transporteurs extends AbstractQuery
             'email'
         ])
             ->columns([
-            'nomprenom' => new Expression('CONCAT(u.prenom, " ", u.nom)')
+            'nomprenom' => new Literal('CONCAT(u.prenom, " ", u.nom)')
         ]);
         if (! empty($order)) {
             $select->order($order);
         }
         $where = new Where();
         $where->equalTo('ut.transporteurId', $transporteurId);
-        // die($this->getSqlString($select));
         return $select->where($where);
     }
 }

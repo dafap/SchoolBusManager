@@ -1,21 +1,22 @@
 <?php
 /**
- * Requêtes permettant d'extraire la ou les stations permettant de se rendre à un établissement
+ * Requêtes permettant d'extraire la ou les stations permettant de se rendre à un
+ * établissement
  *
  * @project sbm
  * @package SbmCommun/src/Model/Db/Service/Query/Station
  * @filesource VersEtablissement.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 oct. 2019
- * @version 2019-2.5.4
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Station;
 
 use SbmCartographie\Model\Point;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
 
 class VersEtablissement extends AbstractQuery
 {
@@ -31,7 +32,7 @@ class VersEtablissement extends AbstractQuery
      * @param string $etablissementId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectStationsVers(string $etablissementId): Select
+    protected function selectStationsVers(string $etablissementId): Select
     {
         return $this->sql->select()
             ->from([
@@ -83,9 +84,10 @@ class VersEtablissement extends AbstractQuery
 
     /**
      * Renvoie les stations situées à moins de $limit du domicile, desservies par un
-     * circuit allant à l'établissement scolaire. Le calcul se fait avec les coordonnées
-     * cartésiennes en mètres du système de projection utilisé (pas les coordonnées
-     * géographiques). On vérifie que l'unité du point est vide.
+     * circuit allant à l'établissement scolaire.
+     * Le calcul se fait avec les coordonnées cartésiennes en mètres du système de
+     * projection utilisé (pas les coordonnées géographiques). On vérifie que l'unité du
+     * point est vide.
      *
      * @param \SbmCartographie\Model\Point $pointDomicile
      *            point des coordonnées XY cartésiennes en mètres du domicile (dans le
@@ -104,6 +106,13 @@ class VersEtablissement extends AbstractQuery
             throw new \sbmCommun\Model\Db\Exception\OutOfBoundsException(
                 "Coordonnées incorrectes : $message");
         }
+        return $this->renderResult(
+            $this->selectStationsProches($pointDomicile, $etablissementId, $limit));
+    }
+
+    protected function selectStationsProches(Point $pointDomicile, string $etablissementId,
+        int $limit)
+    {
         // calcul arrondi par excès à 5m près
         $sqlExpressionDistance = sprintf('ceil(sqrt(pow(x - %f, 2)+pow(y - %f, 2))/5)*5',
             $pointDomicile->getX(), $pointDomicile->getY());

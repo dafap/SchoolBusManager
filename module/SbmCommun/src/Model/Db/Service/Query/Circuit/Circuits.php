@@ -7,14 +7,15 @@
  * @filesource Circuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 22 mai 2019
- * @version 2019-2.5.0
+ * @date 4 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Circuit;
 
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Circuits extends AbstractQuery
@@ -35,7 +36,8 @@ class Circuits extends AbstractQuery
     }
 
     /**
-     * Renvoie un tableau des horaires du circuit indiqué. Si le paramètre est un entier
+     * Renvoie un tableau des horaires du circuit indiqué.
+     * Si le paramètre est un entier
      * c'est le `circuitId` Sinon, c'est un tableau de la forme ['serviceId' => xxx,
      * 'stationId' => yyy] Dans ce dernier cas, la condition sur le millesime est rajoutée
      * dans la méthode. Il n'y a pas de contrôle pour savoir si le tableau est bien formé.
@@ -46,12 +48,13 @@ class Circuits extends AbstractQuery
      */
     public function getHoraires($circuitIdOuServiceIdStationId)
     {
-        /*
-         * SELECT ser.horaire1, cir.m1, cir.s1, cir.z1, ser.horaires, cir.m2, cir.s2,
-         * cir.z2, ser.horaire3, cir.m3, cir.s3, cir.z3 FROM sbm_t_circuits AS cir JOIN
-         * sbm_t_services AS ser ON cir.serviceId=ser.serviceId WHERE cir.circuitId =
-         * $circuitId
-         */
+        return current(
+            iterator_to_array(
+                $this->renderResult($this->selectHoraires($circuitIdOuServiceIdStationId))));
+    }
+
+    protected function selectHoraires($circuitIdOuServiceIdStationId): Select
+    {
         if (is_integer($circuitIdOuServiceIdStationId)) {
             $conditions = [
                 'circuitId' => $circuitIdOuServiceIdStationId
@@ -61,7 +64,7 @@ class Circuits extends AbstractQuery
                 'millesime' => $this->millesime
             ], $circuitIdOuServiceIdStationId);
         }
-        $select = $this->sql->select(
+        return $this->sql->select(
             [
                 'cir' => $this->db_manager->getCanonicName('circuits')
             ])
@@ -84,12 +87,12 @@ class Circuits extends AbstractQuery
             'horaire3'
         ])
             ->where($conditions);
-        return current(iterator_to_array($this->renderResult($select)));
     }
 
     /**
      * Renvoie la description d'un circuit complet de la première station desservie à la
-     * dernière. L'ordre des stations dépend de l'horaire demandé : ordre croissant selon
+     * dernière.
+     * L'ordre des stations dépend de l'horaire demandé : ordre croissant selon
      * m1 le matin, ordre croissant selon s2 le midi ou ordre croissant selon s1 le soir.
      *
      * @param string $serviceId
@@ -99,8 +102,21 @@ class Circuits extends AbstractQuery
      */
     public function complet($serviceId, $horaire, $callback = null)
     {
+        $result = iterator_to_array(
+            $this->renderResult($this->selectComplet($serviceId, $horaire)));
+        if (is_callable($callback)) {
+            foreach ($result as &$arret) {
+                $arret = $callback($arret);
+            }
+        }
+        return $result;
+    }
+
+    protected function selectComplet(string $serviceId, string $horaire): Select
+    {
         $where = new Where();
-        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId', $serviceId);
+        $where->equalTo('millesime', $this->millesime)->equalTo('ser.serviceId',
+            $serviceId);
         switch ($horaire) {
             case 'matin':
                 $order = 'm1';
@@ -116,7 +132,7 @@ class Circuits extends AbstractQuery
                 $order = 's2';
                 $columns = [
                     'serviceId',
-                    'horaire' => new Expression(
+                    'horaire' => new Literal(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'emplacement',
                     'typeArret',
@@ -126,7 +142,7 @@ class Circuits extends AbstractQuery
             case 'soir':
                 $order = 's1';
                 $columns = [
-                    'horaire' => new Expression(
+                    'horaire' => new Literal(
                         'CONCAT(IFNULL(s2, ""), " ", IFNULL(s1, ""))'),
                     'emplacement',
                     'typeArret',
@@ -136,8 +152,8 @@ class Circuits extends AbstractQuery
             default:
                 throw new Exception\DomainException('L\'horaire demandé est inconnu.');
         }
-        $select = $this->sql->select();
-        $select->from([
+        return $this->sql->select()
+            ->from([
             'cir' => $this->db_manager->getCanonicName('circuits')
         ])
             ->join([
@@ -159,19 +175,12 @@ class Circuits extends AbstractQuery
             ->columns($columns)
             ->where($where)
             ->order($order);
-        //$result = ;
-        $result = iterator_to_array($this->renderResult($select));
-        if (is_callable($callback)) {
-            foreach ($result as &$arret) {
-                $arret = $callback($arret);
-            }
-        }
-        return $result;
     }
 
     /**
      * Renvoie la description d'un circuit de son point de départ jusqu'à l'établissement
-     * (matin) ou de l'établissement au point terminus (midi, soir). Le point de départ
+     * (matin) ou de l'établissement au point terminus (midi, soir).
+     * Le point de départ
      * correspond à l'horaire m1 le plus petit Le point terminus correspond à l'horaire s2
      * ou s1 le plus grand (midi, soir) Le matin, la section est composée des stations
      * dont l'horaire est compris entre celui du point de départ et celui de la station
@@ -206,7 +215,7 @@ class Circuits extends AbstractQuery
                     $this->passageEtablissement($serviceId, $etablissementId, $horaire));
                 $order = 's2 DESC';
                 $columns = [
-                    'horaire' => new Expression(
+                    'horaire' => new Literal(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'emplacement',
                     'typeArret',
@@ -218,7 +227,7 @@ class Circuits extends AbstractQuery
                     $this->passageEtablissement($serviceId, $etablissementId, $horaire));
                 $order = 's1 DESC';
                 $columns = [
-                    'horaire' => new Expression(
+                    'horaire' => new Literal(
                         'CONCAT(IFNULL(s2, ""), " - ", IFNULL(s1, ""))'),
                     'emplacement',
                     'typeArret',

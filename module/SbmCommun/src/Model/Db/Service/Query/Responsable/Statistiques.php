@@ -8,13 +8,14 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 avr. 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
 class Statistiques extends AbstractQuery
@@ -31,12 +32,16 @@ class Statistiques extends AbstractQuery
      */
     public function getNbEnregistres()
     {
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('responsables', 'table'))
+        return iterator_to_array($this->renderResult($this->selectNbEnregistres()));
+    }
+
+    protected function selectNbEnregistres()
+    {
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('responsables', 'table'))
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -45,6 +50,11 @@ class Statistiques extends AbstractQuery
      * @return array
      */
     public function getNbAvecEnfant()
+    {
+        return iterator_to_array($this->renderResult($this->selectNbAvecEnfant()));
+    }
+
+    protected function selectNbAvecEnfant()
     {
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
@@ -80,16 +90,15 @@ class Statistiques extends AbstractQuery
 
         $where = new Where();
         $where->in('responsableId', $select3);
-        $select = $this->sql->select();
-        $select->from(
+        return $this->sql->select()
+            ->from(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->where($where);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -99,10 +108,15 @@ class Statistiques extends AbstractQuery
      */
     public function getNbSansEnfant()
     {
+        return iterator_to_array($this->renderResult($this->selectNbSansEnfant()));
+    }
+
+    protected function selectNbSansEnfant()
+    {
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
-        $select1 = $this->sql->select();
-        $select1->from([
+        $select = $this->sql->select();
+        $select->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->join([
@@ -112,21 +126,20 @@ class Statistiques extends AbstractQuery
 
         $where2 = new Where();
         $where2->isNull('eleveId');
-        $select2 = $this->sql->select();
-        $select2->from(
+        return $this->sql->select()
+            ->from(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->join([
-            'ele' => $select1
+            'ele' => $select
         ],
             'ele.responsable1Id = res.responsableId Or ele.responsable2Id = res.responsableId',
-            [], $select2::JOIN_LEFT)
+            [], Select::JOIN_LEFT)
             ->where($where2);
-        return iterator_to_array($this->renderResult($select2));
     }
 
     /**
@@ -137,10 +150,15 @@ class Statistiques extends AbstractQuery
      */
     public function getNbCommuneNonMembre()
     {
+        return iterator_to_array($this->renderResult($this->selectNbCommuneNonMembre()));
+    }
+
+    protected function selectNbCommuneNonMembre()
+    {
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
-        $select1 = $this->sql->select();
-        $select1->from([
+        $select1 = $this->sql->select()
+            ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->columns([
@@ -152,8 +170,8 @@ class Statistiques extends AbstractQuery
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
-        $select2 = $this->sql->select();
-        $select2->from([
+        $select2 = $this->sql->select()
+            ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->columns([
@@ -164,26 +182,24 @@ class Statistiques extends AbstractQuery
         ], 'sco.eleveId = ele.eleveId', [])
             ->where($where2);
         $select1->combine($select2);
-        $select3 = $this->sql->select();
-        $select3->from([
+        $select3 = $this->sql->select()->from([
             'id' => $select1
         ]);
 
         $where = new Where();
         $where->in('responsableId', $select3)->literal('com.membre = 0');
-        $select = $this->sql->select();
-        $select->from(
+        return $this->sql->select()
+            ->from(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->join([
             'com' => $this->db_manager->getCanonicName('communes', 'table')
         ], 'com.communeId = res.communeId', [])
             ->where($where);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -193,10 +209,15 @@ class Statistiques extends AbstractQuery
      */
     public function getNbDemenagement()
     {
+        return iterator_to_array($this->renderResult($this->selectNbDemenagement()));
+    }
+
+    protected function selectNbDemenagement()
+    {
         $where1 = new Where();
         $where1->equalTo('millesime', $this->millesime);
-        $select1 = $this->sql->select();
-        $select1->from([
+        $select1 = $this->sql->select()
+            ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->columns([
@@ -208,8 +229,8 @@ class Statistiques extends AbstractQuery
             ->where($where1);
         $where2 = new Where();
         $where2->equalTo('millesime', $this->millesime)->isNotNull('responsable2Id');
-        $select2 = $this->sql->select();
-        $select2->from([
+        $select2 = $this->sql->select()
+            ->from([
             'ele' => $this->db_manager->getCanonicName('eleves', 'table')
         ])
             ->columns([
@@ -220,22 +241,20 @@ class Statistiques extends AbstractQuery
         ], 'sco.eleveId = ele.eleveId', [])
             ->where($where2);
         $select1->combine($select2);
-        $select3 = $this->sql->select();
-        $select3->from([
+        $select3 = $this->sql->select()->from([
             'id' => $select1
         ]);
 
         $where = new Where();
         $where->in('responsableId', $select3)->literal('demenagement = 1');
-        $select = $this->sql->select();
-        $select->from(
+        return $this->sql->select()
+            ->from(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
             ])
             ->columns([
-            'effectif' => new Expression('count(responsableId)')
+            'effectif' => new Literal('count(responsableId)')
         ])
             ->where($where);
-        return iterator_to_array($this->renderResult($select));
     }
 }

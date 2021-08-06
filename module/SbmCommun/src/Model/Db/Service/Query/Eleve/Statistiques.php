@@ -8,8 +8,8 @@
  * @filesource Statistiques.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2021
- * @version 2021-2.5.12
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -36,8 +36,19 @@ class Statistiques extends AbstractQuery
      */
     public function getNbEnregistresByMillesime($millesime = null)
     {
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return iterator_to_array(
+            $this->renderResult($this->selectNbEnregistresByMillesime($millesime)));
+    }
+
+    public function selectNbEnregistresByMillesime($millesime = null)
+    {
+        $where = new Where();
+        $where->literal('selection = 0'); // on supprime les élèves en attente
+        if (isset($millesime)) {
+            $where->equalTo('millesime', $millesime);
+        }
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -47,13 +58,8 @@ class Statistiques extends AbstractQuery
             ->group([
             'millesime',
             'regimeId'
-        ]);
-        $where = new Where();
-        $where->literal('selection = 0'); // on supprime les élèves en attente
-        if (isset($millesime)) {
-            $where->equalTo('millesime', $millesime);
-        }
-        return iterator_to_array($this->renderResult($select->where($where)));
+        ])
+            ->where($where);
     }
 
     /**
@@ -67,6 +73,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbInscritsByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbInscritsByMillesime($millesime)));
+    }
+
+    protected function selectNbInscritsByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -75,8 +87,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -88,7 +100,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -102,6 +113,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbPreinscritsByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbPreinscritsByMillesime($millesime)));
+    }
+
+    protected function selectNbPreinscritsByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -111,8 +128,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -124,7 +141,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -138,6 +154,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbFamilleAccueilByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbFamilleAccueilByMillesime($millesime)));
+    }
+
+    protected function selectNbFamilleAccueilByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -145,8 +167,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -158,7 +180,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -175,6 +196,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbRayesByMillesime($millesime = null, $inscrits = true)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbRayesByMillesime($millesime, $inscrits)));
+    }
+
+    protected function selectNbRayesByMillesime($millesime = null, $inscrits = true)
+    {
         $where = new Where();
         $where->literal('inscrit = 0')->literal('selection = 0');
         if ($inscrits) {
@@ -189,8 +216,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -202,7 +229,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -216,6 +242,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbGardeAlterneeByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbGardeAlterneeByMillesime($millesime)));
+    }
+
+    protected function selectNbGardeAlterneeByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
@@ -226,11 +258,10 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from(
-            [
-                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ])
+        return $this->sql->select()
+            ->from([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ])
             ->columns(
             [
                 'millesime',
@@ -245,7 +276,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -259,6 +289,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbByMillesimeEtablissement($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbByMillesimeEtablissement($millesime)));
+    }
+
+    protected function selectNbByMillesimeEtablissement($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
@@ -267,11 +303,10 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from(
-            [
-                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ])
+        return $this->sql->select()
+            ->from([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ])
             ->columns(
             [
                 'millesime',
@@ -295,7 +330,6 @@ class Statistiques extends AbstractQuery
             'com.nom',
             'eta.nom'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -309,6 +343,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbByMillesimeClasse($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbByMillesimeClasse($millesime)));
+    }
+
+    protected function selectNbByMillesimeClasse($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('sco.selection = 0')
@@ -317,11 +357,10 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from(
-            [
-                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ])
+        return $this->sql->select()
+            ->from([
+            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+        ])
             ->columns(
             [
                 'millesime',
@@ -339,7 +378,6 @@ class Statistiques extends AbstractQuery
             'regimeId',
             'cla.nom'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -354,6 +392,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbMoins1KmByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbMoins1KmByMillesime($millesime)));
+    }
+
+    protected function selectNbMoins1KmByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -362,8 +406,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -375,7 +419,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -390,6 +433,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNbDe1A3KmByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selectNbDe1A3KmByMillesime($millesime)));
+    }
+
+    protected function selectNbDe1A3KmByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -401,8 +450,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -414,7 +463,6 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 
     /**
@@ -429,6 +477,12 @@ class Statistiques extends AbstractQuery
      */
     public function getNb3kmEtPlusByMillesime($millesime = null)
     {
+        return iterator_to_array(
+            $this->renderResult($this->selctNb3kmEtPlusByMillesime($millesime)));
+    }
+
+    protected function selctNb3kmEtPlusByMillesime($millesime = null)
+    {
         $where = new Where();
         $where->literal('inscrit = 1')
             ->literal('selection = 0')
@@ -438,8 +492,8 @@ class Statistiques extends AbstractQuery
         if (isset($millesime)) {
             $where->equalTo('millesime', $millesime);
         }
-        $select = $this->sql->select();
-        $select->from($this->db_manager->getCanonicName('scolarites', 'table'))
+        return $this->sql->select()
+            ->from($this->db_manager->getCanonicName('scolarites', 'table'))
             ->columns(
             [
                 'millesime',
@@ -451,6 +505,5 @@ class Statistiques extends AbstractQuery
             'millesime',
             'regimeId'
         ]);
-        return iterator_to_array($this->renderResult($select));
     }
 }

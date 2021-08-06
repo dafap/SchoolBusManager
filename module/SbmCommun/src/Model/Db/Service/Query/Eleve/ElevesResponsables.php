@@ -9,8 +9,8 @@
  * @filesource ElevesResponsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 juin 2021
- * @version 2021-2.5.12
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -107,7 +107,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->paginator($this->selectR2($where, $order));
     }
 
-    private function selectR2(Where $where, $order = null)
+    protected function selectR2(Where $where, $order = null)
     {
         $select = clone $this->select;
         $select->join(
@@ -160,7 +160,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->paginator($this->selectScolaritesR2($where, $order));
     }
 
-    private function selectScolaritesR2(Where $where, $order = null, $millesime = null)
+    protected function selectScolaritesR2(Where $where, $order = null, $millesime = null)
     {
         if (is_null($millesime)) {
             $millesime = $this->millesime;
@@ -279,7 +279,8 @@ class ElevesResponsables extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Literal($this->xSansPhoto(Session::get('as')['dateDebut']))
+                'sansphoto' => new Literal(
+                    $this->xSansPhoto(Session::get('as')['dateDebut']))
             ], $select::JOIN_LEFT)
             ->join([
             'appels' => $select_appels
@@ -335,7 +336,7 @@ class ElevesResponsables extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesEleveGroup(Where $where, $order = null,
+    protected function selectScolaritesEleveGroup(Where $where, $order = null,
         $millesime = null)
     {
         // table de recherche du plus grand millesime pour chaque élève
@@ -462,7 +463,8 @@ class ElevesResponsables extends AbstractQuery
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
             ], 'photos.eleveId = ele.eleveId',
             [
-                'sansphoto' => new Literal($this->xSansPhoto(Session::get('as')['dateDebut']))
+                'sansphoto' => new Literal(
+                    $this->xSansPhoto(Session::get('as')['dateDebut']))
             ], $select::JOIN_LEFT);
         if (! is_null($order)) {
             $select->order($order);
@@ -487,7 +489,7 @@ class ElevesResponsables extends AbstractQuery
         return $this->renderResult($this->selectLocalisation($where, $order));
     }
 
-    private function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('millesime', $this->millesime);
         $sql = new Sql($this->db_manager->getDbAdapter());

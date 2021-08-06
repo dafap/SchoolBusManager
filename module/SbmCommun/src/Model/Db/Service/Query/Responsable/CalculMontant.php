@@ -7,14 +7,14 @@
  * @filesource CalculMontant.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
 use SbmCommun\Model\Db\Service\Query\AbstractQuery;
 use SbmCommun\Model\Db\Sql\Predicate;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 
 class CalculMontant extends AbstractQuery
@@ -84,7 +84,7 @@ class CalculMontant extends AbstractQuery
      *            tableau d'identifiants d'élèves
      * @return \Zend\Db\Sql\Select
      */
-    private function selectEffectifsParGrilleTarif(int $responsableId, $aEleveid)
+    protected function selectEffectifsParGrilleTarif(int $responsableId, $aEleveid)
     {
         if (is_null($aEleveid)) {
             $where = new Where(null, Where::COMBINED_BY_OR);
@@ -113,7 +113,7 @@ class CalculMontant extends AbstractQuery
                 'grilleTarif' => 'grilleTarif'
             ])
             ->columns([
-            'quantite' => new Expression('count(*)')
+            'quantite' => new Literal('count(*)')
         ])
             ->where($predicate())
             ->group('grilleCode');
@@ -153,7 +153,7 @@ class CalculMontant extends AbstractQuery
      * @param int $responsableId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectDuplicatasParEleve(int $responsableId)
+    protected function selectDuplicatasParEleve(int $responsableId)
     {
         $where = new Where(null, Where::COMBINED_BY_OR);
         $where->equalTo('responsable1Id', $responsableId)->equalTo('responsable2Id',
@@ -184,7 +184,8 @@ class CalculMontant extends AbstractQuery
     }
 
     /**
-     * Renvoie le montant total du par un responsable pour le millesime en cours. Si on
+     * Renvoie le montant total du par un responsable pour le millesime en cours.
+     * Si on
      * passe un tableau d'identifiants d'élèves, ce seront ces élèves qui seront pris en
      * compte pour les abonnements. Par contre, pour les duplicatas, c'est bien le
      * responsableId qui est pris en compte.

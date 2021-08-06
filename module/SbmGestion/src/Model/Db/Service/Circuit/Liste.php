@@ -7,8 +7,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Circuit;
 
@@ -17,11 +17,14 @@ use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Liste implements FactoryInterface
 {
+    use \SbmCommun\Model\Traits\SqlStringTrait;
 
     /**
      *
@@ -31,27 +34,9 @@ class Liste implements FactoryInterface
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
-     */
-    private $dbAdapter;
-
-    /**
-     *
      * @var \Zend\Db\Sql\Sql
      */
     private $sql;
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
-    }
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -61,8 +46,7 @@ class Liste implements FactoryInterface
                 sprintf($message, gettype($serviceLocator)));
         }
         $this->db_manager = $serviceLocator;
-        $this->dbAdapter = $this->db_manager->getDbAdapter();
-        $this->sql = new Sql($this->dbAdapter);
+        $this->sql = new Sql($this->db_manager->getDbAdapter());
         return $this;
     }
 
@@ -74,8 +58,15 @@ class Liste implements FactoryInterface
      */
     public function byStation($stationId)
     {
-        $select = $this->sql->select();
-        $select->from([
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectByStation($stationId));
+        return $statement->execute();
+    }
+
+    protected function selectByStation($stationId)
+    {
+        return $this->sql->select()
+            ->from([
             'c' => $this->db_manager->getCanonicName('circuits', 'table')
         ])
             ->where([
@@ -89,8 +80,6 @@ class Liste implements FactoryInterface
             ->where([
             'stationId' => $stationId
         ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
     }
 
     /**
@@ -99,6 +88,20 @@ class Liste implements FactoryInterface
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
     public function stationsNonDesservies()
+    {
+        $statement = $this->sql->prepareStatementForSqlObject(
+            $this->selectStationsNonDesservies());
+        return $statement->execute();
+    }
+
+    public function paginatorStationsNonDesservies()
+    {
+        return new Paginator(
+            new DbSelect($this->selectStationsNonDesservies(),
+                $this->db_manager->getDbAdapter()));
+    }
+
+    protected function selectStationsNonDesservies()
     {
         $select1 = new Select();
         $select1->from($this->db_manager->getCanonicName('circuits'))
@@ -127,7 +130,5 @@ class Liste implements FactoryInterface
             'commune',
             'nom'
         ]);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
     }
 }

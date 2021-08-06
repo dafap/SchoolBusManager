@@ -9,8 +9,8 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Service;
 
@@ -19,7 +19,7 @@ use SbmBase\Model\StdLib;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmGestion\Model\Db\Service\AbstractQuery;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Sql;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -29,9 +29,9 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $dbAdapter;
+    private $db_manager;
 
     /**
      *
@@ -68,7 +68,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 sprintf($message, gettype($db_manager)));
         }
         $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $db_manager->getDbAdapter();
+        $this->db_manager = $db_manager;
         $this->sql = new Sql($db_manager->getDbAdapter());
         foreach ([
             'services'
@@ -104,17 +104,20 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
 
     protected function requete()
     {
-        $select = $this->sql->select();
-        $select->from([
+        $statement = $this->sql->prepareStatementForSqlObject($this->selectNbServices());
+        return $statement->execute();
+    }
+
+    protected function selectNbServices()
+    {
+        return $this->sql->select()
+            ->from([
             's' => $this->tableNames['services']
         ])
             ->columns([
             $this->getIdColumn(),
-            'effectif' => new Expression('count(*)')
+            'effectif' => new Literal('count(*)')
         ])
             ->group($this->getIdColumn());
-
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        return $statement->execute();
     }
 }

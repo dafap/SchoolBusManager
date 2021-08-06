@@ -1,17 +1,17 @@
 <?php
 /**
  * Règle de sectorisation pour les collèges
- * 
+ *
  * Ici, chaque commune appartient à un seul secteur de collège.
  * A modifier si une commune est partagée entre plusieurs secteurs.
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Simulation
  * @filesource SectorisationCollege.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 oct. 2018
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Simulation;
 
@@ -83,6 +83,20 @@ class SectorisationCollege
      */
     private function getCommune()
     {
+        $statement = $this->sql->prepareStatementForSqlObject($this->selectCommune());
+        $rowset = $statement->execute();
+        if ($rowset->count()) {
+            return $rowset->current();
+        }
+        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
+        $eleve = $tEleves->getRecord($this->eleveId);
+        $msg = sprintf('La commune de l\'élève %s %s n\'a pas été trouvée.', $eleve->nom,
+            $eleve->prenom);
+        throw new Exception($msg);
+    }
+
+    protected function selectCommune()
+    {
         $select = new Select();
         $select->from([
             'c' => $this->db_manager->getCanonicName('communes', 'table')
@@ -97,15 +111,5 @@ class SectorisationCollege
             'communeId' => 'communeId',
             'commune' => 'nom'
         ])->where->equalTo('eleveId', $this->eleveId);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $rowset = $statement->execute();
-        if ($rowset->count()) {
-            return $rowset->current();
-        }
-        $tEleves = $this->db_manager->get('Sbm\Db\Table\Eleves');
-        $eleve = $tEleves->getRecord($this->eleveId);
-        $msg = sprintf('La commune de l\'élève %s %s n\'a pas été trouvée.', $eleve->nom,
-            $eleve->prenom);
-        throw new Exception($msg);
     }
 }

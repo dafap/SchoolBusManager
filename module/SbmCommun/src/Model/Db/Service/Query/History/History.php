@@ -9,8 +9,8 @@
  * @filesource History.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 1 juil. 2019
- * @version 2019-2.5.0
+ * @date 5 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\History;
 
@@ -77,7 +77,7 @@ class History extends AbstractQuery
      * @param int $paiementId
      * @return \Zend\Db\Sql\Select
      */
-    private function selectPaiementsChanges(int $exercice, int $paiementId = null)
+    protected function selectPaiementsChanges(int $exercice, int $paiementId = null)
     {
         // sous requête 'les delete'
         $where1 = new Where();
@@ -105,7 +105,7 @@ class History extends AbstractQuery
         if ($paiementId) {
             $where->equalTo('id_int', $paiementId);
         }
-        return$this->sql->select($this->history_name)
+        return $this->sql->select($this->history_name)
             ->columns([
             'action',
             'id_int',

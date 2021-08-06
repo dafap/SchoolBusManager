@@ -10,14 +10,14 @@
  * @filesource EffectifCircuits.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
 use SbmGestion\Model\Db\Service\EffectifInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 
 class EffectifCircuits extends AbstractEffectif implements EffectifInterface
@@ -85,7 +85,7 @@ class EffectifCircuits extends AbstractEffectif implements EffectifInterface
             ->join([
             'a' => $this->tableNames['affectations']
         ], $on, [
-            'effectif' => new Expression('count(*)')
+            'effectif' => new Literal('count(*)')
         ])
             ->join([
             's' => $this->tableNames['scolarites']

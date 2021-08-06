@@ -9,12 +9,12 @@
  * @filesource AbstractEffectifType2.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
@@ -44,7 +44,7 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
             ->columns([
             'column' => $indexId,
-            'effectif' => new Expression('count(*)')
+            'effectif' => new Literal('count(*)')
         ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group($group);
@@ -110,7 +110,7 @@ abstract class AbstractEffectifType2 extends AbstractEffectif
         ], 's.millesime=a.millesime AND s.eleveId=a.eleveId', [])
             ->columns([
             'column' => $index2Id,
-            'effectif' => new Expression('count(*)')
+            'effectif' => new Literal('count(*)')
         ])
             ->where($this->arrayToWhere($where, $conditions))
             ->group("a.$group");

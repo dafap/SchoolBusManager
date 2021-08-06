@@ -9,8 +9,8 @@
  * @filesource AbstractEffectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -27,9 +27,9 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
 
     /**
      *
-     * @var \Zend\Db\Adapter\Adapter
+     * @var \SbmCommun\Model\Db\Service\DbManager
      */
-    private $dbAdapter;
+    protected $db_manager;
 
     /**
      *
@@ -66,7 +66,7 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 sprintf($message, gettype($db_manager)));
         }
         $this->millesime = Session::get('millesime');
-        $this->dbAdapter = $db_manager->getDbAdapter();
+        $this->db_manager = $db_manager;
         $this->sql = new Sql($db_manager->getDbAdapter());
         foreach ([
             'affectations',
@@ -83,19 +83,6 @@ abstract class AbstractEffectif extends AbstractQuery implements FactoryInterfac
                 'table');
         }
         return $this;
-    }
-
-
-    /**
-     * Renvoie la chaine de requête (après l'appel de la requête)
-     *
-     * @param \Zend\Db\Sql\Select $select
-     *
-     * @return string
-     */
-    public function getSqlString($select)
-    {
-        return $select->getSqlString($this->dbAdapter->getPlatform());
     }
 
     protected function getFiltreDemandes(bool $sanspreinscrits)

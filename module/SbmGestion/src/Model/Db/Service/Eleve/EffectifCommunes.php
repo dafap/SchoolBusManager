@@ -10,15 +10,15 @@
  * @filesource EffectifCommunes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 mars 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
 use SbmBase\Model\StdLib;
 use SbmGestion\Model\Db\Service\EffectifInterface;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Having;
+use Zend\Db\Sql\Literal;
 use Zend\Db\Sql\Where;
 
 class EffectifCommunes extends AbstractEffectif implements EffectifInterface
@@ -151,7 +151,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
                     'column' => 'communeId'
                 ])
                     ->columns([
-                    'effectif' => new Expression('count(*)')
+                    'effectif' => new Literal('count(*)')
                 ])
                     ->where($this->arrayToWhere($where, $filtre))
                     ->group($group);
@@ -163,7 +163,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
                     ->columns(
                     [
                         'column' => 'communeId',
-                        'effectif' => new Expression('count(*)')
+                        'effectif' => new Literal('count(*)')
                     ])
                     ->where($this->arrayToWhere($where, $filtre))
                     ->group($group)
@@ -185,7 +185,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
                     'column' => 'communeId'
                 ])
                     ->columns([
-                    'effectif' => new Expression('count(*)')
+                    'effectif' => new Literal('count(*)')
                 ])
                     ->where($this->arrayToWhere($where, $filtre))
                     ->group($group);
@@ -200,7 +200,7 @@ class EffectifCommunes extends AbstractEffectif implements EffectifInterface
                     ->columns(
                     [
                         'column' => 'communeId',
-                        'effectif' => new Expression('count(*)')
+                        'effectif' => new Literal('count(*)')
                     ])
                     ->where($this->arrayToWhere($where, $filtre))
                     ->group($group);

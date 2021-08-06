@@ -8,7 +8,7 @@
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2021
+ * @date 5 août 2021
  * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -285,7 +285,7 @@ class AffectationsServicesStations extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectLocalisation(Where $where, $order = null)
+    protected function selectLocalisation(Where $where, $order = null)
     {
         $where->equalTo('aff.millesime', $this->millesime);
         $select = clone $this->select;
@@ -479,7 +479,8 @@ class AffectationsServicesStations extends AbstractQuery
 
     /**
      * Renvoie les scolarités et responsables, avec affectations s'il y en a, pour toutes
-     * les années scolaires. Pour travailler sur une année particulière, l'indiquer dans
+     * les années scolaires.
+     * Pour travailler sur une année particulière, l'indiquer dans
      * le paramètre $where
      *
      * @param Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
@@ -487,7 +488,7 @@ class AffectationsServicesStations extends AbstractQuery
      *
      * @return \Zend\Db\Sql\Select
      */
-    private function selectScolaritesR($where, $order = null)
+    protected function selectScolaritesR($where, $order = null)
     {
         $select = clone $this->select;
         $select->join([
@@ -641,7 +642,7 @@ class AffectationsServicesStations extends AbstractQuery
         return $this->paginator($this->selectTelephonesPortables($where));
     }
 
-    private function selectTelephonesPortables(Where $where)
+    protected function selectTelephonesPortables(Where $where)
     {
         $selectBase = clone $this->select;
         $selectBase->join(
