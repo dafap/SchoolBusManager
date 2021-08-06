@@ -8,8 +8,8 @@
  * @filesource etablissement-service.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 avr. 2019
- * @version 2019-2.5.0
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $url_ajouter = $this->url('sbmgestion/transport',
@@ -99,7 +99,7 @@ $data = $this->paginator->getCurrentItems();
 					<th>Transporteur</th>
 					<th>Opérateur</th>
 					<th>Capacité</th>
-					<th>Inscrits</th>
+					<th class="nbinscrits" title="Nombre d'élèves transportés">Inscrits</th>
 					<th>Descente</th>
 					<th>H1</th>
 					<th>H2</th>

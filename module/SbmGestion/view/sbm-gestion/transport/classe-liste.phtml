@@ -4,7 +4,8 @@
  * Liste des classes
  *
  * Cette vue reçoit un objet effectifClasses qui présente les méthodes demandes($classeId)
- * et transportes($classeId) donnant les effectifs des élèves ayant fait une demande et des
+ * et transportes($classeId) donnant les effectifs des élèves ayant fait une demande et
+ * des
  * élèves transportés pour chaque identifiant $classeId.
  *
  * @project sbm
@@ -12,8 +13,8 @@
  * @filesource view/sbm-gestion/transport/classe-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 6 août 2021
+ * @version 2021-2.5.14
  */
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
 $this->jQuery();
@@ -48,10 +49,11 @@ $url_rapports = $this->url('sbmgestion/transport',
     ]);
 $url_retour = $this->url('sbmgestion/transport');
 if ($this->layout()->hassbmservicesms) {
-    $url_sms = $this->url('sbmservicesms', [
-        'action' => 'envoi-groupe',
-        'page' => $this->page
-    ]);
+    $url_sms = $this->url('sbmservicesms',
+        [
+            'action' => 'envoi-groupe',
+            'page' => $this->page
+        ]);
 }
 $hiddens = [];
 $menuImpression = $this->menuRapports(
@@ -91,7 +93,8 @@ $actions = [
 				<tr>
 					<th>Nom</th>
 					<th class="invisible">Alias</th>
-					<th title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
+					<th class="nbinscrits"
+						title="Nombre d'élèves transportés / Nombre de demandes">Effectifs</th>
 					<th title="pour préparer une simulation">Classe suivante</th>
 					<th>Sélect.</th>
 					<th></th>
