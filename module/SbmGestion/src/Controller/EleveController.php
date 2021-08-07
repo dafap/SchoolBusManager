@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2021
+ * @date 7 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller;
@@ -29,6 +29,21 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $mail_config
+ * @property array $img
+ * @property array $client
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class EleveController extends AbstractActionController
 {
 

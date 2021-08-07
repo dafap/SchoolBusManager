@@ -9,15 +9,18 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 juil. 2021
+ * @date 7 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmParent\Controller;
 
-use SbmBase\Model\Session;
 use SbmAuthentification\Model\CategoriesInterface;
+use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
+use SbmCartographie\GoogleMaps;
+use SbmCartographie\Model\Point;
 use SbmCommun\Form\ButtonForm;
+use SbmCommun\Form\LatLng as LatLngForm;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use SbmCommun\Model\Strategy\Semaine;
 use SbmFront\Model\Responsable\Exception as CreateResponsableException;
@@ -28,10 +31,27 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
-use SbmCartographie\GoogleMaps;
-use SbmCartographie\Model\Point;
-use SbmCommun\Form\LatLng as LatLngForm;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme
+ * @property \Zend\ServiceManager\ServiceManager $local_manager
+ * @property string $tmpuploads
+ * @property array $photo_log
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_region
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;

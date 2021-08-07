@@ -1,14 +1,15 @@
 <?php
 /**
- * Controller du module SbmParent permettant de gérer le compte de l'utilisateur et de revenir dans l'espace des parents
+ * Controller du module SbmParent permettant de gérer le compte de l'utilisateur et de
+ * revenir dans l'espace des parents
  *
  * @project sbm
  * @package SbmParent/Controller
  * @filesource ConfigController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 avr. 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmParent\Controller;
 
@@ -23,6 +24,20 @@ use SbmParent\Form\ModifAdresse;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property array $client
+ * @property string $accueil
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class ConfigController extends AbstractActionController
 {
 
@@ -196,7 +211,8 @@ class ConfigController extends AbstractActionController
 
     /**
      * Le retour se fait par un redirectToOrigin()->back() ce qui veut dire qu'il faut
-     * avoir défini le redirectToOrigin() avant l'appel. Si un responsable de même nom et
+     * avoir défini le redirectToOrigin() avant l'appel.
+     * Si un responsable de même nom et
      * prénom existe déjà, présenter son identité et proposer de s'identifier à cette
      * personne ou de créer un nouveau
      *
@@ -272,7 +288,8 @@ class ConfigController extends AbstractActionController
 
     /**
      * Modification de la localisation du responsable afin qu'il puisse résider n'importe
-     * où. Remplacement de la méthode de validation ($pt->isValid() fait référence à un
+     * où.
+     * Remplacement de la méthode de validation ($pt->isValid() fait référence à un
      * rectangle de coordonnées autorisées) par la méthode privée isValid($pt) de cette
      * classe.
      *

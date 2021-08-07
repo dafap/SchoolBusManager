@@ -9,8 +9,8 @@
  * @filesource CarteController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 nov. 2020
- * @version 2020-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCartographie\Controller;
 
@@ -21,6 +21,17 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
+ * @property array $user
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class CarteController extends AbstractActionController
 {
 

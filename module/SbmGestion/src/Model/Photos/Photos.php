@@ -8,8 +8,8 @@
  * @filesource Photos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Photos;
 
@@ -19,6 +19,19 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $dbAdapter
+ * @property \SbmCommun\Model\Db\Service\Table\ElevesPhotos $tElevesPhotos
+ * @property string $table_affectations
+ * @property string $table_eleves
+ * @property string $table_elevesphotos
+ * @property string $table_services
+ * @property array $codesNatureCartes
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Photos
 {
 
@@ -54,7 +67,8 @@ class Photos
     private $csvFile;
 
     /**
-     * Les éléments du tableau sont les paramètres nécessaires. Ils sont initialisés dans
+     * Les éléments du tableau sont les paramètres nécessaires.
+     * Ils sont initialisés dans
      * PhotosFactory. Chaque paramètre s'obtient comme une propriété de la classe Photos
      * par la méthode __get()
      *

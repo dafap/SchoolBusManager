@@ -2,21 +2,75 @@
 /**
  * Opérations sur le responsable correspondant à l'utilisateur autentifié.
  *
- * La correspondance se fait par l'email.
- * Compatible ZF3
- * 
+ * Cet objet possède comme propriétés publiques les champs de la vue `responsables`
+ *
  * @project sbm
  * @package SbmParent/Model
  * @filesource Responsable.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 27 oct. 2018
- * @version 2019-2.5.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmFront\Model\Responsable;
 
 use SbmBase\Model\Session;
 
+/**
+ *
+ * @property int $responsableId
+ * @property bool $selection
+ * @property string $dateCreation
+ * @property string $dateModification
+ * @property bool $nature
+ * @property string $titre
+ * @property string $nom
+ * @property string $nomSA
+ * @property string $prenom
+ * @property string $prenomSA
+ * @property string $titre2
+ * @property string $nom2
+ * @property string $nom2SA
+ * @property string $prenom2
+ * @property string $prenom2SA
+ * @property string $adresseL1
+ * @property string $adresseL2
+ * @property string $codePostal
+ * @property string $communeId
+ * @property string $ancienAdresseL1
+ * @property string $ancienAdresseL2
+ * @property string $ancienCodePostal
+ * @property string $ancienCommuneId
+ * @property string $email
+ * @property string $telephoneF
+ * @property string $telephoneP
+ * @property string $telephoneT
+ * @property bool $smsF
+ * @property bool $smsP
+ * @property bool $smsT
+ * @property bool $etiquette
+ * @property bool $demenagement
+ * @property string $dateDemenagement
+ * @property bool $facture
+ * @property int $grilleTarif
+ * @property string $ribTit
+ * @property string $ribDom
+ * @property string $iban
+ * @property string $bic
+ * @property float $x
+ * @property float $y
+ * @property int $userId
+ * @property string $id_tra
+ * @property string $note
+ * @property string $commune
+ * @property string $lacommune
+ * @property string $laposte
+ * @property bool $inscriptionenligne
+ * @property bool $paiementenligne
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Responsable
 {
 
@@ -158,4 +212,3 @@ class Responsable
         Session::remove('responsable', self::SESSION_RESPONSABLE_NAMESPACE);
     }
 }
- 

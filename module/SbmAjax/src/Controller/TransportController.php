@@ -11,14 +11,24 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 sept. 2020
- * @version 2020-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class TransportController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\ServiceTrait;

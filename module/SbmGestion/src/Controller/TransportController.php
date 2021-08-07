@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 juin 2021
- * @version 2021-2.6.2
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller;
 
@@ -30,6 +30,20 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $operateurs
+ * @property array $mail_config
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class TransportController extends AbstractActionController
 {
 
@@ -2361,10 +2375,12 @@ class TransportController extends AbstractActionController
             return $prg;
         } elseif ($prg === false ||
             ! ($etablissementId = StdLib::getParam('etablissementId', $prg, false))) {
-            $this->flashMessenger()->addErrorMessage('L\'etablissement n\'est pas indiqué.');
+            $this->flashMessenger()->addErrorMessage(
+                'L\'etablissement n\'est pas indiqué.');
             return $this->homePage();
         }
-        $this->db_manager->get(\SbmCommun\Arlysere\Etablissement\Services::class)->updateServices($etablissementId);
+        $this->db_manager->get(\SbmCommun\Arlysere\Etablissement\Services::class)->updateServices(
+            $etablissementId);
         $this->flashMessenger()->addInfoMessage(
             'La mise à jour des services est terminée.');
         return $this->redirect()->toRoute('sbmgestion/transport',

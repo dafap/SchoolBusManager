@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 mai 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmAdmin\Controller;
 
@@ -32,6 +32,21 @@ use Zend\Db\Sql\Where;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property array $img
+ * @property array $client
+ * @property array $paginator_count_per_page
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController implements CategoriesInterface
 {
 

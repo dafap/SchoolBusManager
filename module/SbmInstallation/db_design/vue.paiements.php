@@ -5,12 +5,12 @@
  * La requête reprend toutes les colonnes de la table `paiements` ainsi que les colonnes `responsable`, `caisse` et `modeDePaiement`
  *
  * @project sbm
- * @package package_name
+ * @package SbmInstallation/db_design
  * @filesource vue.paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 return [
     'name' => 'paiements',

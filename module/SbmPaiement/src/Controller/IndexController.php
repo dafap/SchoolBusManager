@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
+ * @date 7 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmPaiement\Controller;
@@ -15,11 +15,26 @@ namespace SbmPaiement\Controller;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
+use SbmPaiement\Form;
 use SbmPaiement\Model\RapprochementCR;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
-use SbmPaiement\Form;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property array $user
+ * @property array $paginator_count_per_page
+ * @property array $mail_config
+ * @property array $csv
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;
@@ -87,7 +102,9 @@ class IndexController extends AbstractActionController
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
         // les expressions sont définies dans le plugin
-        $args = $this->initListe($table->criteres(), null, ['selection'], $table->getExpressions());
+        $args = $this->initListe($table->criteres(), null, [
+            'selection'
+        ], $table->getExpressions());
         if ($args instanceof Response) {
             return $args;
         } elseif (array_key_exists('cancel', $args)) {

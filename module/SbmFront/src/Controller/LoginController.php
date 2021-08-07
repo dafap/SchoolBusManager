@@ -7,8 +7,8 @@
  * @filesource LoginController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmFront\Controller;
 
@@ -23,6 +23,23 @@ use SbmMail\Model\Template as MailTemplate;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable
+ * @property \SbmCartographie\GoogleMaps\DistanceMatrix $oDistanceMatrix
+ * @property array $config_cartes
+ * @property array $mail_config
+ * @property array $img
+ * @property array $client
+ * @property string $accueil
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class LoginController extends AbstractActionController
 {
 
@@ -75,7 +92,8 @@ class LoginController extends AbstractActionController
 
     /**
      * Entrée pour confirmer l'email lors de la création d'un compte ou de la demande de
-     * changement d'email. On ne peut rien faire tant que le mot de passe n'est pas donné.
+     * changement d'email.
+     * On ne peut rien faire tant que le mot de passe n'est pas donné.
      */
     public function confirmAction()
     {
@@ -238,27 +256,27 @@ class LoginController extends AbstractActionController
                     return $this->redirect()->toRoute('sbmportail');
                     break;
                 case CategoriesInterface::SECRETARIAT_ID:
-                    Session::remove('commune','enTantQue');
-                    Session::remove('etablissement','enTantQue');
-                    Session::remove('transporteur','enTantQue');
+                    Session::remove('commune', 'enTantQue');
+                    Session::remove('etablissement', 'enTantQue');
+                    Session::remove('transporteur', 'enTantQue');
                     return $this->redirect()->toRoute('sbmportail');
                     break;
                 case CategoriesInterface::GESTION_ID:
-                    Session::remove('commune','enTantQue');
-                    Session::remove('etablissement','enTantQue');
-                    Session::remove('transporteur','enTantQue');
+                    Session::remove('commune', 'enTantQue');
+                    Session::remove('etablissement', 'enTantQue');
+                    Session::remove('transporteur', 'enTantQue');
                     Session::set('home', 'sbmgestion/config', 'layout');
                     return $this->redirect()->toRoute('sbmgestion');
                 case CategoriesInterface::ADMINISTRATEUR_ID:
-                    Session::remove('commune','enTantQue');
-                    Session::remove('etablissement','enTantQue');
-                    Session::remove('transporteur','enTantQue');
+                    Session::remove('commune', 'enTantQue');
+                    Session::remove('etablissement', 'enTantQue');
+                    Session::remove('transporteur', 'enTantQue');
                     Session::set('home', 'sbmadmin', 'layout');
                     return $this->redirect()->toRoute('sbmadmin');
                 case CategoriesInterface::SUPER_ADMINISTRATEUR_ID:
-                    Session::remove('commune','enTantQue');
-                    Session::remove('etablissement','enTantQue');
-                    Session::remove('transporteur','enTantQue');
+                    Session::remove('commune', 'enTantQue');
+                    Session::remove('etablissement', 'enTantQue');
+                    Session::remove('transporteur', 'enTantQue');
                     Session::set('home', 'sbminstall', 'layout');
                     return $this->redirect()->toRoute('sbminstall');
                 default:
@@ -276,7 +294,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Pour ARLYSERE, les responsables sont acceptés de partout. Les coordonnées ne sont
+     * Pour ARLYSERE, les responsables sont acceptés de partout.
+     * Les coordonnées ne sont
      * pas nulles et ne sont pas celles par défaut sur la carte.
      *
      * @param \SbmCartographie\Model\Point $pt
@@ -324,7 +343,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * On demande l'email et on envoie un lien pour entrer. A l'entrée on doit donner un
+     * On demande l'email et on envoie un lien pour entrer.
+     * A l'entrée on doit donner un
      * nouveau mot de passe avant de continuer.
      *
      * @return \Zend\View\Model\ViewModel
@@ -417,7 +437,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Envoie un lien pour entrer sans mot de passe. A l'entrée on doit donner un nouveau
+     * Envoie un lien pour entrer sans mot de passe.
+     * A l'entrée on doit donner un nouveau
      * mot de passe avant de continuer. Cette action est utile pour le service, pour
      * dépaner par téléphone.
      */
@@ -495,7 +516,8 @@ class LoginController extends AbstractActionController
     }
 
     /**
-     * Permet à l'utilisateur de changer son email. Un lien est adressé sur cet email. Une
+     * Permet à l'utilisateur de changer son email.
+     * Un lien est adressé sur cet email. Une
      * confirmation est nécessaire pour que le changement prenne effet.
      */
     public function emailChangeAction()

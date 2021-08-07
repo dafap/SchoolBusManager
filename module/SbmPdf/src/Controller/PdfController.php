@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Controller;
 
@@ -21,6 +21,15 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmPdf\Service\PdfManager $pdf_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class PdfController extends AbstractActionController
 {
 
@@ -92,7 +101,8 @@ class PdfController extends AbstractActionController
     }
 
     /**
-     * Affiche et traite le formulaire d'ajout d'un document. Le formulaire est initialisé
+     * Affiche et traite le formulaire d'ajout d'un document.
+     * Le formulaire est initialisé
      * par les valeurs par défaut.
      *
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response|\Zend\View\Model\ViewModel
@@ -252,7 +262,8 @@ class PdfController extends AbstractActionController
     }
 
     /**
-     * Affiche et traite le formulaire d'ajout d'un document. Le formulaire est initialisé
+     * Affiche et traite le formulaire d'ajout d'un document.
+     * Le formulaire est initialisé
      * par les valeurs du formulaire de la ligne cliquée (documentId en post au moment de
      * l'appel).
      *
@@ -1045,7 +1056,9 @@ class PdfController extends AbstractActionController
                 [
                     'documentId' => $args['documentId'],
                     'sublabel' => StdLib::getParam('sublabel', $args, 0)
-                ],['ordinal_position']);
+                ], [
+                    'ordinal_position'
+                ]);
         } catch (\SbmCommun\Model\Db\Service\Table\Exception\ExceptionInterface $e) {
             $data = [];
         }

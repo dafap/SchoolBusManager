@@ -1,16 +1,16 @@
 <?php
 /**
- * Description courte du fichier
+ * Classe permettant de gérer les inscriptions à une liste Mailman
  *
- * Description longue du fichier s'il y en a une
+ * En développement ...
  *
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmMail/src/Model
  * @filesource Mailman.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 juin 2019
- * @version 2019-1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmMail\Model;
 

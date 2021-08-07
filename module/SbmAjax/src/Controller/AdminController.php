@@ -3,14 +3,14 @@
  * Actions destinées aux réponses à des demandes ajax pour les administrateurs
  *
  * Le layout est désactivé dans ce module
- * 
+ *
  * @project sbm
  * @package SbmAjax/Controller
  * @filesource AdminController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 sept. 2018
- * @version 2019-2.5.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmAjax\Controller;
 
@@ -18,6 +18,17 @@ use SbmAjax\Form;
 use Zend\Json\Json;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \Zend\View\HelperPluginManager $viewHelperManager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class AdminController extends AbstractActionController
 {
 
@@ -34,17 +45,15 @@ class AdminController extends AbstractActionController
         try {
             $rpiId = $this->params('rpiId');
             $this->db_manager->get('Sbm\Db\Table\Rpi')->setSelection($rpiId, 1);
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 1
-                ]));
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
-                Json::encode(
-                    [
-                        'cr' => $e->getMessage(),
-                        'success' => 0
-                    ]));
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
         }
     }
 
@@ -59,17 +68,15 @@ class AdminController extends AbstractActionController
         try {
             $rpiId = $this->params('rpiId');
             $this->db_manager->get('Sbm\Db\Table\Rpi')->setSelection($rpiId, 0);
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 1
-                ]));
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
-                Json::encode(
-                    [
-                        'cr' => $e->getMessage(),
-                        'success' => 0
-                    ]));
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
         }
     }
 
@@ -84,17 +91,15 @@ class AdminController extends AbstractActionController
         try {
             $userId = $this->params('userId');
             $this->db_manager->get('Sbm\Db\Table\Users')->setSelection($userId, 1);
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 1
-                ]));
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
-                Json::encode(
-                    [
-                        'cr' => $e->getMessage(),
-                        'success' => 0
-                    ]));
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
         }
     }
 
@@ -109,17 +114,15 @@ class AdminController extends AbstractActionController
         try {
             $userId = $this->params('userId');
             $this->db_manager->get('Sbm\Db\Table\Users')->setSelection($userId, 0);
-            return $this->getResponse()->setContent(
-                Json::encode([
-                    'success' => 1
-                ]));
+            return $this->getResponse()->setContent(Json::encode([
+                'success' => 1
+            ]));
         } catch (\Exception $e) {
             return $this->getResponse()->setContent(
-                Json::encode(
-                    [
-                        'cr' => $e->getMessage(),
-                        'success' => 0
-                    ]));
+                Json::encode([
+                    'cr' => $e->getMessage(),
+                    'success' => 0
+                ]));
         }
     }
 
@@ -147,7 +150,7 @@ class AdminController extends AbstractActionController
         unset($row);
         // utilisation particulière du viewhelper rpiCommunes dans le controller
         $rpiClasses = $this->viewHelperManager->get('rpiClasses');
-        $content = str_replace('etablissementId:?', "etablissementId:$etablissementId", 
+        $content = str_replace('etablissementId:?', "etablissementId:$etablissementId",
             $rpiClasses($structure));
         // construction et renvoi d'une réponse html
         try {
@@ -191,14 +194,14 @@ class AdminController extends AbstractActionController
     }
 
     /**
-     * 
+     *
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function rpiclassevalidateAction()
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        
+
         if ($request->isPost()) {
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Abandon action (add ou delete classe d\'un établissement).';
@@ -251,12 +254,10 @@ class AdminController extends AbstractActionController
             $messages = 'Pas de post !';
             $success = 0;
         }
-        $response->setContent(
-            Json::encode(
-                [
-                    'cr' => $messages,
-                    'success' => $success
-                ]));
+        $response->setContent(Json::encode([
+            'cr' => $messages,
+            'success' => $success
+        ]));
         return $response;
     }
 
@@ -267,18 +268,17 @@ class AdminController extends AbstractActionController
      *            table des niveaux concernés pour ce rpi
      * @param string $op
      *            'add' pour ajout, 'delete' pour suppression
-     *            
+     *
      * @return \SbmAjax\Form\RpiClasse
      */
     private function getFormRpiClasse($niveau, $op = 'add')
     {
         $form = new Form\RpiClasse($op);
-        $form->setAttribute('action', 
+        $form->setAttribute('action',
             $this->url()
-                ->fromRoute(self::ROUTE, 
-                [
-                    'action' => 'rpiclassevalidate'
-                ]));
+                ->fromRoute(self::ROUTE, [
+                'action' => 'rpiclassevalidate'
+            ]));
         if ($op == 'add') {
             $values_options = $this->db_manager->get('Sbm\Db\Select\Classes')->niveau(
                 $niveau, 'in');
@@ -327,12 +327,11 @@ class AdminController extends AbstractActionController
         $communeId = $this->params('communeId');
         $commune = $this->params('commune');
         $form = $this->getFormRpiCommune($op);
-        $form->setData(
-            [
-                'op' => $op,
-                'rpiId' => $rpiId,
-                'communeId' => $communeId
-            ]);
+        $form->setData([
+            'op' => $op,
+            'rpiId' => $rpiId,
+            'communeId' => $communeId
+        ]);
         return new ViewModel(
             [
                 'form' => $form,
@@ -351,7 +350,7 @@ class AdminController extends AbstractActionController
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        
+
         if ($request->isPost()) {
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Abandon action (add ou delete commune pour un rpi).';
@@ -403,12 +402,10 @@ class AdminController extends AbstractActionController
             $messages = 'Pas de post !';
             $success = 0;
         }
-        $response->setContent(
-            Json::encode(
-                [
-                    'cr' => $messages,
-                    'success' => $success
-                ]));
+        $response->setContent(Json::encode([
+            'cr' => $messages,
+            'success' => $success
+        ]));
         return $response;
     }
 
@@ -417,18 +414,17 @@ class AdminController extends AbstractActionController
      *
      * @param string $op
      *            'add' pour ajout, 'delete' pour suppression
-     *            
+     *
      * @return \SbmAjax\Form\RpiCommune
      */
     private function getFormRpiCommune($op = 'add')
     {
         $form = new Form\RpiCommune($op);
-        $form->setAttribute('action', 
+        $form->setAttribute('action',
             $this->url()
-                ->fromRoute(self::ROUTE, 
-                [
-                    'action' => 'rpicommunevalidate'
-                ]));
+                ->fromRoute(self::ROUTE, [
+                'action' => 'rpicommunevalidate'
+            ]));
         if ($op == 'add') {
             $values_options = $this->db_manager->get('Sbm\Db\Select\Communes')->membres();
             $form->setValueOptions('communeId', $values_options);
@@ -449,7 +445,7 @@ class AdminController extends AbstractActionController
         $retablissements = $tRpiEtablissements->getEtablissements($rpiId);
         $structure = [];
         foreach ($retablissements as $row) {
-            $structure[] = array_merge($row, 
+            $structure[] = array_merge($row,
                 [
                     'classes' => $tRpiClasses->getClasses($row['etablissementId'])
                 ]);
@@ -459,16 +455,16 @@ class AdminController extends AbstractActionController
         // utilisation particulière du viewhelper rpiCommunes dans le controller
         $rpiEtablissements = $this->viewHelperManager->get('rpiEtablissements');
         $viewHelperRpiClasses = $this->viewHelperManager->get('rpiClasses');
-        $content = str_replace('rpiId:?', "rpiId:$rpiId", 
-            $rpiEtablissements($structure, 
-                function ($etablissement) use($viewHelperRpiClasses) {
+        $content = str_replace('rpiId:?', "rpiId:$rpiId",
+            $rpiEtablissements($structure,
+                function ($etablissement) use ($viewHelperRpiClasses) {
                     $etablissementId = $etablissement['etablissementId'];
                     $lignesClasses = $viewHelperRpiClasses($etablissement);
                     return <<<EOT
-<table id="rpi-classes-$etablissementId">
-    $lignesClasses
-</table>
-EOT;
+                    <table id="rpi-classes-$etablissementId">
+                        $lignesClasses
+                    </table>
+                    EOT;
                 }));
         // construction et renvoi d'une réponse html
         try {
@@ -510,14 +506,14 @@ EOT;
     }
 
     /**
-     * 
+     *
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function rpietablissementvalidateAction()
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        
+
         if ($request->isPost()) {
             if ($request->getPost('cancel') || $request->getPost('submit') == 'cancel') {
                 $messages = 'Abandon action (add ou delete etablissement pour un rpi).';
@@ -570,12 +566,10 @@ EOT;
             $messages = 'Pas de post !';
             $success = 0;
         }
-        $response->setContent(
-            Json::encode(
-                [
-                    'cr' => $messages,
-                    'success' => $success
-                ]));
+        $response->setContent(Json::encode([
+            'cr' => $messages,
+            'success' => $success
+        ]));
         return $response;
     }
 
@@ -584,18 +578,17 @@ EOT;
      *
      * @param string $op
      *            'add' pour ajout, 'delete' pour suppression
-     *            
+     *
      * @return \SbmAjax\Form\RpiCommune
      */
     private function getFormRpiEtablissement($op = 'add')
     {
         $form = new Form\RpiEtablissement($op);
-        $form->setAttribute('action', 
+        $form->setAttribute('action',
             $this->url()
-                ->fromRoute(self::ROUTE, 
-                [
-                    'action' => 'rpietablissementvalidate'
-                ]));
+                ->fromRoute(self::ROUTE, [
+                'action' => 'rpietablissementvalidate'
+            ]));
         if ($op == 'add') {
             $values_options = $this->db_manager->get('Sbm\Db\Select\Etablissements')->enRpi();
             $form->setValueOptions('etablissementId', $values_options);
@@ -604,7 +597,7 @@ EOT;
     }
 
     /**
-     * 
+     *
      * @param array $errors
      * @return string
      */

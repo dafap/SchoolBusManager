@@ -7,8 +7,8 @@
  * @filesource ElevePhotoTrait.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -16,7 +16,7 @@ use SbmCommun\Model\Photo\PhotoValiditeInterface;
 
 /**
  *
- * @author alain
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
  */
 trait ElevePhotoTrait

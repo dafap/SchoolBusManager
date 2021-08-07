@@ -5,11 +5,11 @@
  * Compatibilité ZF3
  *
  * @project sbm
- * @package package_name
+ * @package SbmMail/src/Model/Service
  * @filesource EnvoiMailFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 juil. 2021
+ * @date 7 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmMail\Model\Service;
@@ -23,6 +23,7 @@ class EnvoiMailFactory implements FactoryInterface
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return new EnvoiMail($serviceLocator->get('SbmMail\Config'), $serviceLocator->get('SbmMail\Dkim'));
+        return new EnvoiMail($serviceLocator->get('SbmMail\Config'),
+            $serviceLocator->get('SbmMail\Dkim'));
     }
 }

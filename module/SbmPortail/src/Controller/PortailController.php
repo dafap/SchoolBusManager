@@ -9,8 +9,8 @@
  * @filesource PortailController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPortail\Controller;
 
@@ -18,6 +18,13 @@ use SbmAuthentification\Model\CategoriesInterface;
 use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 
+/**
+ *
+ * @property int $categorieId
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 // use SbmBase\Model\StdLib;
 class PortailController extends AbstractActionController
 {
@@ -55,7 +62,7 @@ class PortailController extends AbstractActionController
                 } elseif (Session::get('transporteur', false, 'enTantQue') !== false) {
                     $route = 'sbmportail/transporteur';
                 } else {
-                    $route ='sbmportail/organisateur';
+                    $route = 'sbmportail/organisateur';
                 }
                 return $this->redirect()->toRoute($route);
                 break;

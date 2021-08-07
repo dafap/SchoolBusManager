@@ -4,12 +4,12 @@
  *
  *
  * @project sbm
- * @package package_name
+ * @package SbmCommun/src/Model/Db/Service/Query/Eleve
  * @filesource AffectationsServicesStations.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 juin 2021
- * @version 2021-2.6.2
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 

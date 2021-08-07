@@ -5,12 +5,12 @@
  * (à déclarer dans module.config.php)
  *
  * @project sbm
- * @package package_name
+ * @package SbmCommun/src/Model/Db/Service/Table/AbstractSbmTable
  * @filesource DocColumns.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 fév. 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Table\Sys;
 

@@ -1,19 +1,19 @@
 <?php
 /**
  * Extension du plugin Redirect pour ajouter 2 méthodes :
- * 
+ *
  * - setBack($url) mémorise une adresse de retour dans une pile en session. Si $url est null, empile l'url courante.
  * - back() redirige sur l'adresse en haut de la pile et dépile
  *
  * Si la pile est vide, back() ne fait rien.
- * 
+ *
  * @project sbm
- * @package package_name
+ * @package SbmCommun/src/Model/Mvc/Controller/Plugin/Service
  * @filesource RedirectBack.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 oct. 2018
- * @version 2019-2.5.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Mvc\Controller\Plugin\Service;
 
@@ -51,9 +51,9 @@ class RedirectBack extends Redirect
 
     /**
      * Prend l'url en haut de la pile, dépile et redirige sur cette url
-     * 
+     *
      * @throws \SbmCommun\Model\Mvc\Controller\Plugin\Exception\UnderflowException
-     * 
+     *
      * @return \Zend\Http\Response
      */
     public function back()

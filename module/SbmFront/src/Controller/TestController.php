@@ -7,19 +7,33 @@
  * @filesource TestController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmFront\Controller;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
 use Zend\Db\Sql\Where;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use Zend\View\Model\ViewModel;
 use TCPDF;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmFront\Form\Login $login_form
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_organisateur
+ * @property string $url_ts_region
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ */
 class TestController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait, \SbmCommun\Model\Traits\SqlStringTrait;

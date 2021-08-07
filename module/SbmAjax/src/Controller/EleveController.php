@@ -10,8 +10,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juin 2021
- * @version 2021-2.6.2
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmAjax\Controller;
 
@@ -25,6 +25,20 @@ use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property array $img
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class EleveController extends AbstractActionController
 {
     use ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;

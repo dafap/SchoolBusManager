@@ -8,8 +8,8 @@
  * @filesource Cartes.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 sept. 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Cartes;
 
@@ -17,6 +17,17 @@ use SbmBase\Model\DateLib;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\Table\Scolarites $tScolarites
+ * @property string $table_affectations
+ * @property string $table_lignes
+ * @property string $table_services
+ * @property array $codesNatureCartes
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class Cartes
 {
 
@@ -27,7 +38,8 @@ class Cartes
     private $config;
 
     /**
-     * Les éléments du tableau sont les paramètres nécessaires. Ils sont initialisés dans
+     * Les éléments du tableau sont les paramètres nécessaires.
+     * Ils sont initialisés dans
      * CartesFactory. Chaque paramètre s'obtient comme une propriété de la classe Cartes
      * par la méthode __get()
      *

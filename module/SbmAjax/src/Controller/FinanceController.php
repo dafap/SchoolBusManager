@@ -9,14 +9,24 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2020
- * @version 2020-2.6.2
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmAjax\Controller;
 
 use SbmBase\Model\Session;
 use Zend\Json\Json;
 
+/**
+ *
+ * Attention ! Cette classe dérive d'une classe AbstractActionController spéciale pour ce
+ * module
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class FinanceController extends AbstractActionController
 {
 
@@ -376,7 +386,8 @@ class FinanceController extends AbstractActionController
      * <li>responsableId</li>
      * <li>eleveIds : tableau encodé JSON des eleveId à prendre en compte</li></ul>
      * et renvoie le montant à payer en tenant compte des duplicatas.
-     * Pour calculer le montant dû on doit prendre en compte les eleves composant la fratrie et dont l'abonnement est déjà payé.
+     * Pour calculer le montant dû on doit prendre en compte les eleves composant la
+     * fratrie et dont l'abonnement est déjà payé.
      */
     public function calculmontantAction()
     {

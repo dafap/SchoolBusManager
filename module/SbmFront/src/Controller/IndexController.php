@@ -9,15 +9,14 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 10 mai 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmFront\Controller;
 
 use SbmBase\Model\Session;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-
 
 /**
  * Dispose des propriétés provenant de IndexControllerFactory : - theme (objet
@@ -26,6 +25,17 @@ use Zend\View\Model\ViewModel;
  * client - accueil (url de l'organisateur - voir config/autoload/sbm.local.php) -
  * url_ts_region (url du site d'inscription de la région - voir
  * config/autoload/sbm.local.php)
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmFront\Form\Login $login_form
+ * @property array $client
+ * @property string $accueil
+ * @property string $url_ts_organisateur
+ * @property string $url_ts_region
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
  *
  * @author admin
  */

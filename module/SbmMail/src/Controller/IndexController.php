@@ -13,8 +13,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 28 juin 2021
- * @version 2021-2.6.2
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmMail\Controller;
 
@@ -27,6 +27,19 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmInstallation\Model\Theme $theme
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property array $user
+ * @property array $mail_config
+ * @property array $img
+ * @property array $client
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\DebugTrait;

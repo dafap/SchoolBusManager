@@ -7,8 +7,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 mai 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCleverSms\Controller;
 
@@ -21,6 +21,15 @@ use Zend\Log\Logger;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCommun\Model\Service\FormManager $form_manager
+ * @property \SbmCleverSms\Model\CurlRequest $curl_request
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class IndexController extends AbstractActionController
 {
 
@@ -144,7 +153,8 @@ class IndexController extends AbstractActionController
     /**
      * Recherche un paramètre post parmi les suivants : circuitId, classeId, communeId,
      * etablissementId, lotId, organismeId, ligneId, stationId, tarifId, transporteurId
-     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1). Cette
+     * sinon, c'est une demande pour les responsables sélectionnés (selection == 1).
+     * Cette
      * méthode propose un formulaire de saisie mais ne traite pas la réponse afin de ne
      * pas compliquer l'analyse du post.
      *

@@ -1,16 +1,14 @@
 <?php
 /**
- * Description courte du fichier
+ * Partie commune aux classes dérivées
  *
- * Description longue du fichier s'il y en a une
- *
- * @project project_name
- * @package package_name
+ * @project sbm
+ * @package SbmCommun/src/Model/View/Helper
  * @filesource AbstractListeAction.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2020
- * @version 2020-2.6.0
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\View\Helper;
 
@@ -23,7 +21,8 @@ abstract class AbstractListeAction extends AbstractHelper
 
     /**
      * Renvoie dans une chaine les balises &lt;input type="hidden" name="quelque_chose"
-     * id= &gt; indiqués dans le tableau $hiddens. Chaque input a un id qui est la
+     * id= &gt; indiqués dans le tableau $hiddens.
+     * Chaque input a un id qui est la
      * concaténation du name avec l'id de la ligne.
      *
      * @param array $hiddens
@@ -142,7 +141,8 @@ abstract class AbstractListeAction extends AbstractHelper
     }
 
     /**
-     * Renvoie la balise <form . ..>
+     * Renvoie la balise <form .
+     * ..>
      *
      * @param int|string $id
      * @param array $attributes

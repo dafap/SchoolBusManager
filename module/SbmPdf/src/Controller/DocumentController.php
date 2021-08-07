@@ -9,18 +9,27 @@
  * @filesource DocumentController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Controller;
 
 use SbmBase\Model\Session;
-use SbmBase\Model\StdLib;
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
-use SbmGestion\Model\Db\Filtre\Eleve\Filtre as FiltreEleve;
 use SbmPdf\Model\Tcpdf;
 use Zend\Http\PhpEnvironment\Response;
 
+/**
+ *
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmPdf\Service\PdfManager $pdf_manager
+ * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
+ * @property \SbmFront\Model\Responsable\Service\ResponsableManager $responsable_manager
+ * @property array $organisateur (C'est le client ailleurs)
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class DocumentController extends AbstractActionController
 {
 
@@ -96,22 +105,6 @@ class DocumentController extends AbstractActionController
                     ->addSuccessMessage("Édition d'une facture.");
             })
             ->run();
-    }
-
-    public function passTemporaireAction()
-    {
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            die('bizare !');
-            return $this->homePage();
-        } elseif (! $prg || ! ($inviteId = StdLib::getParam('inviteId', $prg, false))) {
-            return $this->homePage();
-        }
-        $imagePath = StdLib::findParentPath(__DIR__, 'SbmPdf/images');
-        $qrcodeNiveau = 'QRCODE,Q';
-        $qrcodeMessage = 'ABOARSCO00018';
-        $imagePassJunior = file_get_contents(
-            StdLib::concatPath($imagePath, 'passTemporaireJunior.svg'));
     }
 
     /**

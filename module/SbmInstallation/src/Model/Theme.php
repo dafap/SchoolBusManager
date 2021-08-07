@@ -4,7 +4,7 @@
  *
  *
  * @project sbm
- * @package package_name
+ * @package SbmInstallation/src/Model
  * @filesource Theme.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
@@ -43,7 +43,8 @@ class Theme
     private $sbm_local_content;
 
     /**
-     * Nom du thème en cours. C'est aussi le nom des dossiers contenant les configurations
+     * Nom du thème en cours.
+     * C'est aussi le nom des dossiers contenant les configurations
      * du thème (à partir de config/themes) et les css du thème (à partir de public/css)
      *
      * @var string
@@ -119,7 +120,8 @@ class Theme
 
     /**
      * Enregistre la configuration contenue dans $array dans le fichier $fileName sous la
-     * forme d'un tableau associatif (partiellement) à 2 dimensions. Le tableau de
+     * forme d'un tableau associatif (partiellement) à 2 dimensions.
+     * Le tableau de
      * configuration peut avoir une dimension 2 sur certains champs. Dans ce cas, les
      * tableaux de niveau 2 sont soit des tableaux indexés, soit des tableaux associatifs.
      * Le tableau reçu est le retour d'un post. Il ne peut donc pas être de fourni sous la
@@ -308,7 +310,8 @@ class Theme
     }
 
     /**
-     * Renvoie le chemin complet du fichier view indiqué par le nom relatif de sa vue. Par
+     * Renvoie le chemin complet du fichier view indiqué par le nom relatif de sa vue.
+     * Par
      * exemple, pour la vue 'sbm-front/index/index-avant.phtmp', cela renverra :
      * '[quelquechose]/config/themes/[montheme]/view/sbm-front/index/index-avant.php'
      * L'extension .phtml n'est pas obligatoire.
@@ -320,8 +323,8 @@ class Theme
     {
         $pathViewName = preg_replace('/\.phtml$/', '', $pathViewName) . '.php';
         $pathViewName = '/' . ltrim($pathViewName, '/');
-        return StdLib::findParentPath(__DIR__, 'config/themes/') .
-            strtolower($this->theme) . '/view' . $pathViewName;
+        return StdLib::findParentPath(__DIR__, 'config/themes/') . strtolower(
+            $this->theme) . '/view' . $pathViewName;
     }
 
     /**
@@ -332,8 +335,8 @@ class Theme
      */
     public function getThemeConfigFolder()
     {
-        return StdLib::findParentPath(__DIR__, 'config/themes/') .
-            strtolower($this->theme) . '/config';
+        return StdLib::findParentPath(__DIR__, 'config/themes/') . strtolower(
+            $this->theme) . '/config';
     }
 
     public function getConfigCalendar()
@@ -343,8 +346,8 @@ class Theme
 
     private function getThemeViewFolder()
     {
-        return StdLib::findParentPath(__DIR__, 'config/themes/') .
-            strtolower($this->theme) . '/view';
+        return StdLib::findParentPath(__DIR__, 'config/themes/') . strtolower(
+            $this->theme) . '/view';
     }
 
     private function getThemeCssFolder()
@@ -355,23 +358,23 @@ class Theme
     private function getCommentConfigFile(string $fileName)
     {
         $modele = <<<EOT
-<?php
-/**
- * Fichier de configuration
- *
- * Thème %s
- *
- * @project sbm
- * @package config/themes/%s/config
- * @filesource %s
- * @encodage UTF-8
- * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date %s
- * @version %s
- */
-
-return
-EOT;
+        <?php
+        /**
+         * Fichier de configuration
+         *
+         * Thème %s
+         *
+         * @project sbm
+         * @package config/themes/%s/config
+         * @filesource %s
+         * @encodage UTF-8
+         * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+         * @date %s
+         * @version %s
+         */
+        
+        return
+        EOT;
         $version_inc = StdLib::concatPath(StdLib::findParentPath(__DIR__, 'config'),
             'version.inc.php');
         return sprintf($modele, $this->theme, strtolower($this->theme), $fileName,

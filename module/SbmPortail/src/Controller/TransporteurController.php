@@ -7,8 +7,8 @@
  * @filesource TransporteurController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 mai 2021
- * @version 2021-2.6.1
+ * @date 7 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPortail\Controller;
 
@@ -23,6 +23,19 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\Plugin\FlashMessenger;
 use Zend\View\Model\ViewModel;
 
+/**
+ *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
+ * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
+ * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
+ * @property array $config_cartes
+ * @property string $url_api
+ * @property int $categorieId
+ * @property int $userId
+ *
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ *
+ */
 class TransporteurController extends AbstractActionController
 {
     use \SbmCommun\Model\Traits\ServiceTrait, \SbmCommun\Model\Traits\DebugTrait;
