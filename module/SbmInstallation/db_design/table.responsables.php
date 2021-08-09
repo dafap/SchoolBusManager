@@ -3,14 +3,14 @@
  * Structure de la table des `responsables`
  *
  * Découpage en `eleves`, `scolarites`, `affectations` et `responsables`
- * 
+ *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource table.responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 25 fév. 2019
- * @version 2019-2.4.8
+ * @date 9 août 2021
+ * @version 2021-2.4.20
  */
 use SbmBase\Model\StdLib;
 
@@ -41,8 +41,8 @@ return [
             'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
             'codePostal' => 'varchar(5) NOT NULL',
             'communeId' => 'varchar(6) NOT NULL',
-            'ancienAdresseL1' => 'varchar(30) NOT NULL DEFAULT ""',
-            'ancienAdresseL2' => 'varchar(30) NOT NULL DEFAULT ""',
+            'ancienAdresseL1' => 'varchar(38) NOT NULL DEFAULT ""',
+            'ancienAdresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
             'ancienCodePostal' => 'varchar(5) NOT NULL DEFAULT ""',
             'ancienCommuneId' => 'varchar(6) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) DEFAULT NULL',
@@ -128,4 +128,4 @@ EOT
     // 'data' => ['after' => ['communes'),'include' => __DIR__ . '/data/data.responsables.php'),
     'data' => StdLib::concatPath(StdLib::findParentPath(__DIR__, 'data/data'),
         'data.responsables.php')
-]; 
+];

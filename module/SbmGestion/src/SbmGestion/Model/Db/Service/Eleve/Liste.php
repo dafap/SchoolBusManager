@@ -1,9 +1,9 @@
 <?php
 /**
  * Listes d'élèves affectés pour un ou plusieurs critères donnés
- * 
+ *
  * La jointure sur la table affectations nécessite que l'affectation soit faite (voir méthode select()).
- * 
+ *
  * @project sbm
  * @package SbmGestion/Model/Db/Service/Eleve
  * @filesource Liste.php
@@ -86,7 +86,7 @@ class Liste extends AbstractQuery implements FactoryInterface
      *            A chaque clé est associé le tableau des colonnes à obtenir dans cette table.
      * @param array $order
      *            tableau de colonnes
-     * @param bool $distinct            
+     * @param bool $distinct
      *
      * @return \Zend\Db\Sql\Select
      */
@@ -100,7 +100,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ], 'ele.eleveId=sco.eleveId', 
+            ], 'ele.eleveId=sco.eleveId',
             empty($columns['sco']) ? [
                 'inscrit',
                 'paiement',
@@ -110,21 +110,21 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 'sco.etablissementId = eta.etablissementId', 
+            ], 'sco.etablissementId = eta.etablissementId',
             empty($columns['eta']) ? [
                 'etablissement' => 'nom'
             ] : $columns['eta'])
             ->join(
             [
                 'cla' => $this->db_manager->getCanonicName('classes', 'table')
-            ], 'sco.classeId = cla.classeId', 
+            ], 'sco.classeId = cla.classeId',
             empty($columns['cla']) ? [
                 'classe' => 'nom'
             ] : $columns['cla'])
             ->join(
             [
                 'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId', 
+            ], 'aff.millesime=sco.millesime And sco.eleveId=aff.eleveId',
             empty($columns['aff']) ? [
                 'service1Id',
                 'service2Id'
@@ -132,32 +132,32 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'res.responsableId=aff.responsableId', 
+            ], 'res.responsableId=aff.responsableId',
             empty($columns['res']) ? [] : $columns['res'])
             ->join(
             [
                 'comres' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'res.communeId=comres.communeId', 
+            ], 'res.communeId=comres.communeId',
             empty($columns['comres']) ? [] : $columns['comres'])
             ->join(
             [
                 'comsco' => $this->db_manager->getCanonicName('communes', 'table')
-            ], 'comsco.communeId=sco.communeId', 
+            ], 'comsco.communeId=sco.communeId',
             empty($columns['comsco']) ? [] : $columns['comsco'], Select::JOIN_LEFT)
             ->join(
             [
                 'sta1' => $this->db_manager->getCanonicName('stations', 'table')
-            ], 'sta1.stationId=aff.station1Id', 
+            ], 'sta1.stationId=aff.station1Id',
             empty($columns['sta1']) ? [] : $columns['sta1'], Select::JOIN_LEFT)
             ->join(
             [
                 'sta2' => $this->db_manager->getCanonicName('stations', 'table')
-            ], 'sta2.stationId=aff.station2Id', 
+            ], 'sta2.stationId=aff.station2Id',
             empty($columns['sta2']) ? [] : $columns['sta2'], Select::JOIN_LEFT)
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = ele.eleveId', 
+            ], 'photos.eleveId = ele.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
@@ -180,9 +180,9 @@ class Liste extends AbstractQuery implements FactoryInterface
      * Le sélect est filtré par le filtre donné.
      * Utilisé dans les requêtes (by...) et les paginator...
      *
-     * @param int $millesime            
-     * @param array $filtre            
-     * @param array $order            
+     * @param int $millesime
+     * @param array $filtre
+     * @param array $order
      *
      * @return \Zend\Db\Sql\Select
      */
@@ -221,9 +221,9 @@ class Liste extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie la liste des élèves pour un millesime et un filtre donnés et dans l'ordre demandé
      *
-     * @param int $millesime            
-     * @param array $filtre            
-     * @param array $order            
+     * @param int $millesime
+     * @param array $filtre
+     * @param array $order
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -237,9 +237,9 @@ class Liste extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie la même liste paginée
      *
-     * @param int $millesime            
-     * @param array $filtre            
-     * @param array $order            
+     * @param int $millesime
+     * @param array $filtre
+     * @param array $order
      *
      * @return \Zend\Paginator\Paginator
      */
@@ -253,9 +253,9 @@ class Liste extends AbstractQuery implements FactoryInterface
      * Renvoie la liste des élèves pour un millesime, un établissement et un service donnés
      * Traitement spécial pour
      *
-     * @param int $millesime            
-     * @param int $etablissementId            
-     * @param string|array $order            
+     * @param int $millesime
+     * @param int $etablissementId
+     * @param string|array $order
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
@@ -266,7 +266,7 @@ class Liste extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
-    public function paginatorByEtablissementService($millesime, $filtre, 
+    public function paginatorByEtablissementService($millesime, $filtre,
         $order = ['nom', 'prenom'])
     {
         $select = $this->selectByEtablissementService($millesime, $filtre, $order);
@@ -294,7 +294,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->where([
             'a1.millesime' => $millesime
         ]);
-        
+
         $select1cor2 = new Select();
         $select1cor2->from([
             'a1c2' => $tableAffectations
@@ -315,7 +315,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'a1c2.millesime' => $millesime,
                 'correspondance' => 2
             ]);
-        
+
         $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
         $where2 = new Where();
         $where2->equalTo('a2.millesime', $millesime)
@@ -340,7 +340,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             'correspondances' => $select1cor2
         ], $jointure, [], Select::JOIN_LEFT)
             ->where($where2);
-        
+
         $where = new Where();
         $where->equalTo('s.millesime', $millesime);
         $select = $this->sql->select();
@@ -351,7 +351,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 's' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ], 'e.eleveId=s.eleveId', 
+            ], 'e.eleveId=s.eleveId',
             [
                 'inscrit',
                 'paiement',
@@ -361,27 +361,27 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 's.etablissementId = eta.etablissementId', 
+            ], 's.etablissementId = eta.etablissementId',
             [
                 'etablissement' => 'nom'
             ])
             ->join(
             [
                 'cla' => $this->db_manager->getCanonicName('classes', 'table')
-            ], 's.classeId = cla.classeId', 
+            ], 's.classeId = cla.classeId',
             [
                 'classe' => 'nom'
             ])
             ->join([
             'a' => $select1->combine($select2)
-        ], 'a.millesime=s.millesime And e.eleveId=a.eleveId', 
+        ], 'a.millesime=s.millesime And e.eleveId=a.eleveId',
             [
                 'serviceId'
             ])
             ->join(
             [
                 'r' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'r.responsableId=a.responsableId', 
+            ], 'r.responsableId=a.responsableId',
             [
                 'email',
                 'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
@@ -401,21 +401,21 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'tra' => $this->db_manager->getCanonicName('transporteurs', 'table')
-            ], 'tra.transporteurId = ser.transporteurId', 
+            ], 'tra.transporteurId = ser.transporteurId',
             [
                 'transporteur' => 'nom'
             ])
             ->join(
             [
                 'sta' => $this->db_manager->getCanonicName('stations', 'table')
-            ], 'sta.stationId = a.stationId', 
+            ], 'sta.stationId = a.stationId',
             [
                 'station' => 'nom'
             ])
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = e.eleveId', 
+            ], 'photos.eleveId = e.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
@@ -440,13 +440,13 @@ class Liste extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie la liste des élèves pour un millesime et un transporteur donnés
      *
-     * @param int $millesime            
-     * @param int $transporteurId            
-     * @param string|array $order            
+     * @param int $millesime
+     * @param int $transporteurId
+     * @param string|array $order
      *
      * @return \Zend\Db\Adapter\Driver\ResultInterface
      */
-    public function byTransporteur($millesime, $filtre, 
+    public function byTransporteur($millesime, $filtre,
         $order = ['commune', 'nom', 'prenom'])
     {
         $select = $this->selectByTransporteur($millesime, $filtre, $order);
@@ -454,7 +454,7 @@ class Liste extends AbstractQuery implements FactoryInterface
         return $statement->execute();
     }
 
-    public function paginatorByTransporteur($millesime, $filtre, 
+    public function paginatorByTransporteur($millesime, $filtre,
         $order = ['commune', 'nom', 'prenom'])
     {
         $select = $this->selectByTransporteur($millesime, $filtre, $order);
@@ -482,7 +482,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->where([
             'a1.millesime' => $millesime
         ]);
-        
+
         $select1cor2 = new Select();
         $select1cor2->from([
             'a1c2' => $tableAffectations
@@ -503,7 +503,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 'a1c2.millesime' => $millesime,
                 'correspondance' => 2
             ]);
-        
+
         $jointure = "a2.millesime=correspondances.millesime AND a2.eleveId=correspondances.eleveId AND a2.trajet=correspondances.trajet AND a2.jours=correspondances.jours AND a2.sens=correspondances.sens AND a2.station2Id=correspondances.stationId";
         $where2 = new Where();
         $where2->equalTo('a2.millesime', $millesime)
@@ -528,7 +528,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             'correspondances' => $select1cor2
         ], $jointure, [], Select::JOIN_LEFT)
             ->where($where2);
-        
+
         $where = new Where();
         $where->equalTo('s.millesime', $millesime);
         $select = $this->sql->select();
@@ -539,7 +539,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 's' => $this->db_manager->getCanonicName('scolarites', 'table')
-            ], 'e.eleveId=s.eleveId', 
+            ], 'e.eleveId=s.eleveId',
             [
                 'inscrit',
                 'paiement',
@@ -549,14 +549,14 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'eta' => $this->db_manager->getCanonicName('etablissements', 'table')
-            ], 's.etablissementId = eta.etablissementId', 
+            ], 's.etablissementId = eta.etablissementId',
             [
                 'etablissement' => 'nom'
             ])
             ->join(
             [
                 'cla' => $this->db_manager->getCanonicName('classes', 'table')
-            ], 's.classeId = cla.classeId', 
+            ], 's.classeId = cla.classeId',
             [
                 'classe' => 'nom'
             ])
@@ -566,7 +566,7 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'r' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'r.responsableId=a.responsableId', 
+            ], 'r.responsableId=a.responsableId',
             [
                 'email',
                 'responsable' => new Literal('CONCAT(r.titre, " ", r.nom, " ", r.prenom)')
@@ -582,14 +582,14 @@ class Liste extends AbstractQuery implements FactoryInterface
             ->join(
             [
                 'ser' => $this->db_manager->getCanonicName('services', 'table')
-            ], 'ser.serviceId = a.serviceId', 
+            ], 'ser.serviceId = a.serviceId',
             [
                 'serviceId'
             ])
             ->join(
             [
                 'photos' => $this->db_manager->getCanonicName('elevesphotos', 'table')
-            ], 'photos.eleveId = e.eleveId', 
+            ], 'photos.eleveId = e.eleveId',
             [
                 'sansphoto' => new Expression(
                     'CASE WHEN isnull(photos.eleveId) THEN TRUE ELSE FALSE END')
@@ -614,7 +614,7 @@ class Liste extends AbstractQuery implements FactoryInterface
     /**
      * Renvoie la chaine de requête (après l'appel de la requête)
      *
-     * @param \Zend\Db\Sql\Select $select            
+     * @param \Zend\Db\Sql\Select $select
      *
      * @return string
      */
