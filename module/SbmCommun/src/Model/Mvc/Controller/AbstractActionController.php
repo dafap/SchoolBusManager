@@ -1,6 +1,7 @@
 <?php
 /**
- * Extension de la classe Zend\Mvc\Controller\AbstractActionController pour le projet School Bus Manager
+ * Extension de la classe Zend\Mvc\Controller\AbstractActionController pour le projet
+ * School Bus Manager
  *
  * @project sbm
  * @package SbmCommun/Model/Mvc/Controller
@@ -116,7 +117,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
 
     /**
      * Cette procédure marque des fiches élèves 'selection = 1' à partir d'actions
-     * présentant un groupe d'élèves. L'appel doit nécessairement se faire depuis un
+     * présentant un groupe d'élèves.
+     * L'appel doit nécessairement se faire depuis un
      * `entityGroupSelectionAction()` car les paramètres sont récupérés en session depuis
      * le namespace `entityGroupAction()`. La procédure présente d'abord une page de
      * confirmation puis marque les fiches si la demande est confirmée.
@@ -234,20 +236,23 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * On reçoit au choix :<ul> <li>en paramètre le $documentId</li> <li>par post un
-     * paramètre 'documentId'</li> </ul> Dans les deux cas, ce paramètre peut être
-     * numérique (le documentId de la table documents), une chaine de caractères ou un
-     * tableau. Si le caractère est numérique, c'est le documentId de la table système
-     * documents. Dans les autre cas, cela dépend de la présence ou non du paramètre GET
-     * 'id'.<ul> <li>s'il est absent, 'documentId' contient le name du document</li>
+     * On reçoit au choix :<ul>
+     * <li>en paramètre le $documentId</li>
+     * <li>par post un paramètre 'documentId'</li> </ul>
+     * Dans les deux cas, ce paramètre peut être numérique (le documentId de la table
+     * documents), une chaine de caractères ou un tableau.
+     * Si le caractère est numérique, c'est le documentId de la table système documents.
+     * Dans les autre cas, cela dépend de la présence ou non du paramètre GET 'id'.<ul>
+     * <li>s'il est absent, 'documentId' contient le name du document</li>
      * <li>s'il est présent, 'documentId' contient le libelle du menu et 'id' contient
      * 'docaffectationId' de la table système 'docaffectations'. On retrouvera alors le
-     * 'documentId' dans la méthode Tcpdf::getDocumentId().</li> </ul> On lit les critères
-     * définis dans le formulaire de critères de la liste (en session avec le
-     * sessionNameSpace de xxxListeAction). On transmet le where pour les documents basés
-     * sur une table ou vue sql et les tableaux 'expression', 'criteres' et 'strict' pour
-     * ceux basés sur une requête SQL. Voir pour cela les objets ObjectData qui doivent
-     * définir les méthodes getWhere() et getCriteres(). ATTENTION AU RETOUR EN CAS DE PB
+     * 'documentId' dans la méthode Tcpdf::getDocumentId().</li> </ul>
+     * On lit les critères définis dans le formulaire de critères de la liste (en session
+     * avec le sessionNameSpace de xxxListeAction). On transmet le where pour les
+     * documents basés sur une table ou vue sql et les tableaux 'expression', 'criteres'
+     * et 'strict' pour ceux basés sur une requête SQL. Voir pour cela les objets
+     * ObjectData qui doivent définir les méthodes getWhere() et getCriteres().
+     * ATTENTION AU RETOUR EN CAS DE PB
      * La pageRetour est indiquée par le paramètre pr (GET) or dans la page d'appel elle
      * est indiquée par le paramètre id.
      *
@@ -269,7 +274,128 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            tableau associatif de paramètres à passer
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
-    public function documentPdf($criteresObject, $criteresForm, $documentId = null,
+    protected function getPluginPdfParams($criteresObject, $criteresForm,
+        $documentId = null, $retour = null, $pdf_params = [])
+    {
+        if (is_null($documentId)) {
+            $prg = $this->prg();
+            if ($prg instanceof Response) {
+                return $prg;
+            } else {
+                $args = $prg ?: [];
+                if (! array_key_exists('documentId', $args)) {
+                    $this->flashMessenger()->addErrorMessage(
+                        'Le document à imprimer n\'a pas été indiqué.');
+                    $routeParams = [
+                        'action' => $retour['action'],
+                        'page' => $this->params('page', 1)
+                    ];
+                    $id = $this->params('pr');
+                    if ($id) {
+                        $routeParams['id'] = $id;
+                    }
+                    return $this->redirect()->toRoute($retour['route'], $routeParams);
+                }
+                $documentId = $args['documentId'];
+            }
+        }
+        try {
+            // nom de la classe du formulaire : on s'assure qu'il commence par \
+            $criteresForm = (array) $criteresForm;
+            $criteresForm[0] = '\\' . ltrim($criteresForm[0], '\\');
+            // paramètre d'appel du constructeur : on s'assure que la clé existe
+            if (! isset($criteresForm[1])) {
+                $criteresForm[1] = null;
+            }
+            $form = new $criteresForm[0]($criteresForm[1]);
+            // on s'assure que le nom de la classe de l'object criteres commence par \
+            $criteresObject = (array) $criteresObject;
+            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
+            // descripteur sera trouvée
+            if (! isset($criteresObject[1])) {
+                $criteresObject[1] = null;
+            }
+            if (is_array($criteresObject[0])) {
+                $criteresObject[0][0] = '\\' . ltrim($criteresObject[0][0], '\\');
+            } else {
+                $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+            }
+            // on crée la structure de l'objet criteres à partir des champs du formulaire
+            // on la charge et on l'initialise éventuellement
+            if (is_array($criteresObject[0])) {
+                $criteres_obj = new $criteresObject[0][0]($form->getElementNames());
+                // initialisation
+                $criteres_obj->{$criteresObject[0][1]}($criteresObject[0][2]);
+            } else {
+                $criteres_obj = new $criteresObject[0]($form->getElementNames());
+            }
+            $criteres = Session::get('post', [],
+                str_replace('pdf', 'liste', $this->getSessionNamespace()));
+            if (! empty($criteres)) {
+                $criteres_obj->exchangeArray($criteres);
+            }
+            $where = $criteres_obj->getWherePdf($criteresObject[1]);
+            // adaptation éventuelle du where si une fonction callback (ou closure) est
+            // passée en 3e paramètre dans le tableau $criteresObject. (Utile par exemple
+            // pour modifier le format date avant le déclanchement de l'évènement ou pour
+            // prendre en compte un autre where pour les groupes).
+            if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
+                $where = $criteresObject[2]($where, $args);
+            }
+            // $call_pdf = $this->RenderPdfService;
+            $params = [
+                'classDocument' => 'tableSimple'
+            ];
+
+            if ($docaffectationId = $this->params('id', false)) {
+                // $docaffectationId par get - $args['documentId'] contient le libellé du
+                // menu dans docaffectations
+                $params['docaffectationId'] = $docaffectationId;
+            }
+            $params['documentId'] = $documentId;
+            $params['where'] = $where;
+            $pageheader_params = $criteres_obj->getPageheaderParams();
+            if (array_key_exists('pageheader_title', $pageheader_params)) {
+                $params['pageheader_title'] = $pageheader_params['pageheader_title'];
+            }
+            if (array_key_exists('pageheader_string', $pageheader_params)) {
+                $params['pageheader_string'] = $pageheader_params['pageheader_string'];
+            }
+            if (array_key_exists('caractereConditionnel', $pdf_params)) {
+                $key = $pdf_params['caractereConditionnel'];
+                $pdf_params['caractereConditionnel'] = StdLib::getParam($key, $args, false);
+            }
+            if (array_key_exists('criteres', $pdf_params)) {
+                $criteres = $criteres_obj->getCriteres();
+                $params['criteres'] = $criteres['criteres'];
+                $params['strict'] = $criteres['strict'];
+                $params['expression'] = $criteres['expression'];
+                unset($pdf_params['criteres']);
+            }
+            foreach ($pdf_params as $key => $value) {
+                $params[$key] = $value;
+            }
+            return $params;
+        } catch (\Exception $e) {
+            if (getenv('APPLICATION_ENV') == 'development') {
+                throw $e;
+            }
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
+            $routeParams = [
+
+                'action' => $retour['action'],
+                'page' => $this->params('page', 1)
+            ];
+            $id = $this->params('pr');
+            if ($id) {
+                $routeParams['id'] = $id;
+            }
+
+            return $this->redirect()->toRoute($retour['route'], $routeParams);
+        }
+    }
+
+    public function _documentPdf($criteresObject, $criteresForm, $documentId = null,
         $retour = null, $pdf_params = [])
     {
         if (is_null($documentId)) {
@@ -491,7 +617,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
     }
 
     /**
-     * Partie commune de traitement de l'ajout d'un enregistrement. Le formulaire, le nom
+     * Partie commune de traitement de l'ajout d'un enregistrement.
+     * Le formulaire, le nom
      * de la table, son type et son alias sont passés dans le paramètre $params. Le
      * paramètre $renvoyer permet de retourner des données de POST. Les champs 'millesime'
      * des formulaires sont initialisés de manière automatique par la méthode setData() en
@@ -844,7 +971,8 @@ abstract class AbstractActionController extends ZendAbstractActionController
     /**
      * Retrouve le responsableId enregistré en session dans l'action origine de l'appel
      * L'appel doit se faire en POST en passant l'argument 'namespacectrl' qui contient la
-     * valeur : md5($nsArgCtrl). Si ce n'est pas cette valeur alors il y a imposture. Si
+     * valeur : md5($nsArgCtrl).
+     * Si ce n'est pas cette valeur alors il y a imposture. Si
      * c'est bon, on cherche le paramètre $nsArgCtrl en session dans SBM_DG_SESSION qui
      * indique le namespace de session dans lequel on trouvera 'post', un tableau
      * contenant une clé 'responsableId'. En cas d'erreur, on arrête tout par un die()

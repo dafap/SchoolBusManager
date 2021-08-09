@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
+ * @date 9 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller;
@@ -36,6 +36,7 @@ use Zend\View\Model\ViewModel;
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmCommun\Model\Service\FormManager $form_manager
  * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
+ * @property \SbmPdf\Service\PdfManager $pdf_manager
  * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
  * @property array $operateurs
  * @property array $mail_config
@@ -1219,6 +1220,27 @@ class TransportController extends AbstractActionController
      * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
      * vue associée à cette action puisque la response html est créée par \TCPDF
      */
+    public function _classePdfAction()
+    {
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresForm = [
+            'SbmCommun\Form\CriteresForm',
+            'classes'
+        ];
+        $documentId = null;
+        $retour = [
+            'route' => 'sbmgestion/transport',
+            'action' => 'classe-liste'
+        ];
+        return $this->_documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasse'
+            ]);
+    }
+
+    /**
+     * envoie un objet Response contenant le document pdf en cas de succès ou un routage sinon.
+     */
     public function classePdfAction()
     {
         $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
@@ -1231,10 +1253,15 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'classe-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasse'
             ]);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($this->pdf_manager, $pluginPdfParams);
     }
 
     /**
