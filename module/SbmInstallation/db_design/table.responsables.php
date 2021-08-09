@@ -9,8 +9,8 @@
  * @filesource table.responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2019
- * @version 2019-2.5.4
+ * @date 9 août 2021
+ * @version 2021-2.5.14
  */
 use SbmBase\Model\StdLib;
 
@@ -41,8 +41,8 @@ return [
             'adresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
             'codePostal' => 'varchar(5) NOT NULL',
             'communeId' => 'varchar(6) NOT NULL',
-            'ancienAdresseL1' => 'varchar(30) NOT NULL DEFAULT ""',
-            'ancienAdresseL2' => 'varchar(30) NOT NULL DEFAULT ""',
+            'ancienAdresseL1' => 'varchar(38) NOT NULL DEFAULT ""',
+            'ancienAdresseL2' => 'varchar(38) NOT NULL DEFAULT ""',
             'ancienCodePostal' => 'varchar(5) NOT NULL DEFAULT ""',
             'ancienCommuneId' => 'varchar(6) NOT NULL DEFAULT ""',
             'email' => 'varchar(80) DEFAULT NULL',
