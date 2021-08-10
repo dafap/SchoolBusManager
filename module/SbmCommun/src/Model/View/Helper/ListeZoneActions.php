@@ -29,10 +29,12 @@
  * @filesource ListeZoneActions.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 août 2021
+ * @date 10 août 2021
  * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\View\Helper;
+
+use SbmBase\Model\StdLib;
 
 class ListeZoneActions extends AbstractListeAction
 {
@@ -112,7 +114,7 @@ class ListeZoneActions extends AbstractListeAction
         if (! array_key_exists('op', $hiddens)) {
             $hiddens['op'] = null;
         }
-        $result .= $this->getHiddens($hiddens);
+        $result .= $this->getHiddens($hiddens, StdLib::getParam('id', $attributes, ''));
         $result .= $this->getMenuBar($buttons);
         return $result . $this->closeForm();
     }

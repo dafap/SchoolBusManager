@@ -8,8 +8,8 @@
  * @filesource Responsables.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 mai 2019
- * @version 2019-2.5.0
+ * @date 10 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Responsable;
 
@@ -158,8 +158,7 @@ class Responsables extends AbstractQuery
      */
     public function paginatorResponsables($where, $order = null, $responsableId = null)
     {
-        return $this->paginator(
-            $this->selectResponsables($where, $order, $responsableId));
+        return $this->paginator($this->selectResponsables($where, $order, $responsableId));
     }
 
     /**
@@ -215,9 +214,10 @@ class Responsables extends AbstractQuery
 
         // ================= requête principale =====================
         $select = clone $this->select;
-        return $select->join([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ],
+        $select = $select->join(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ],
             'res.responsableId = ele.responsable1Id Or res.responsableId = ele.responsable2Id',
             [
                 'nbEnfants' => new Literal('count(ele.eleveId)')
@@ -253,6 +253,7 @@ class Responsables extends AbstractQuery
             ], $select::JOIN_LEFT)
             ->group('responsableId')
             ->order($order);
+        return $where->count() ? $select->having($where) : $select;
     }
 
     /**

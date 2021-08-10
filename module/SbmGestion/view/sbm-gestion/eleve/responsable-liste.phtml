@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 10 août 2021
+ * @version 2021-2.5.14
  */
 use SbmCartographie\Model\Point;
 
@@ -295,10 +295,7 @@ $actions = [
 						<?=$this->listeLigneActions($responsable['responsableId'], $hiddens, $buttons);?>
 						</td>
 				</tr>
-        <?php
-        endforeach
-        ;
-        ?>
+        <?php endforeach;?>
     </tbody>
 		</table>
 	</div>
@@ -309,7 +306,7 @@ $actions = [
 			<div class="selection">
 				Pour les fiches sélectionnées :
 				<div class="menu float-right">
-					<?=$this->listeZoneActions([], $actions_selection);?>
+					<?=$this->listeZoneActions([], $actions_selection, ['name'=>'zoneselection','id'=>'selection']);?>
 				</div>
 			</div>
 			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
