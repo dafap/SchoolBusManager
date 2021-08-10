@@ -3,12 +3,12 @@
  * Extension de la classe \TCPDF
  *
  * @project sbm
- * @package
+ * @package SbmPdf\Model\Tcpdf
  * @filesource Tcpdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2021
- * @version 2021-2.6.1
+ * @date 10 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Model\Tcpdf;
 
