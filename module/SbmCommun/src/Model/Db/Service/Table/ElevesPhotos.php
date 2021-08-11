@@ -8,8 +8,8 @@
  * @filesource ElevesPhotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
- * @version 2021-2.5.13
+ * @date 11 août 2021
+ * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -36,6 +36,7 @@ class ElevesPhotos extends AbstractSbmTable
             $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
         } catch (Exception\RuntimeException $e) {
+            $this->supprAncienne($obj_data->getId());
             $is_new = true;
         }
         if ($is_new) {
@@ -51,7 +52,7 @@ class ElevesPhotos extends AbstractSbmTable
                 'dateModification'
             ]);
         }
-        parent::saveRecord($obj_data);
+        return parent::saveRecord($obj_data);
     }
 
     /**
@@ -84,6 +85,7 @@ class ElevesPhotos extends AbstractSbmTable
         } catch (Exception\RuntimeException $e) {
             // pas de photo : rien à supprimer
         }
+        return 0;
     }
 
     /**
@@ -93,7 +95,7 @@ class ElevesPhotos extends AbstractSbmTable
      * {@inheritdoc}
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()
      */
-    public function getRecord(int $eleveId)
+    public function getRecord($eleveId)
     {
         $photo = null;
         if ($this->estTropAncien($eleveId, $photo)) {
