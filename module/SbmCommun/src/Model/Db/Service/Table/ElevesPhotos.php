@@ -8,7 +8,7 @@
  * @filesource ElevesPhotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juil. 2021
+ * @date 11 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Table;
@@ -34,9 +34,10 @@ class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         try {
-            $old_data = $this->getRecord($obj_data->getId());
+            $old_data = $this->getRecord();
             $is_new = false;
         } catch (Exception\RuntimeException $e) {
+            $this->supprAncienne($obj_data->getId());
             $is_new = true;
         }
         if ($is_new) {
@@ -94,7 +95,7 @@ class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
      * {@inheritdoc}
      * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::getRecord()
      */
-    public function getRecord(int $eleveId)
+    public function getRecord($eleveId)
     {
         $photo = null;
         if ($this->estTropAncien($eleveId, $photo)) {
