@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 15 février 2021
- * @version 2021-2.6.1
+ * @date 13 août 2021
+ * @version 2021-2.6.3
  */
 use SbmPdf\Controller;
 use SbmPdf\Service;
@@ -130,8 +130,8 @@ return [
         ]
     ],
     'controller_plugins' => [
-        'invokables' => [
-            PluginController\Pdf::PLUGINMANAGER_ID => PluginController\Pdf::class
+        'factories' => [
+            PluginController\Pdf::PLUGINMANAGER_ID => PluginController\PdfFactory::class
         ]
     ],
     'service_manager' => [

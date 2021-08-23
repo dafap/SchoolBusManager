@@ -9,7 +9,7 @@
  * @filesource TransportControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2021
+ * @date 15 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller\Service;
@@ -27,12 +27,9 @@ class TransportControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
-
-            'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),
-            'pdf_manager' => $sm->get('Sbm\PdfManager'),
             'authenticate' => $sm->get('SbmAuthentification\Authentication'),
             'operateurs' => StdLib::getParamR([
                 'sbm',

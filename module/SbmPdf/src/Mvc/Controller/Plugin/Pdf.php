@@ -7,19 +7,19 @@
  * @filesource Pdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 4 mars 2021
- * @version 2021-2.6.1
+ * @date 13 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Mvc\Controller\Plugin;
 
+use SbmBase\Model\StdLib;
+use SbmPdf\Mvc\Controller\Plugin\Exception\OutOfBoundsException;
+use SbmPdf\Service\PdfManager;
 use Zend\Http\Response;
 use Zend\Mvc\InjectApplicationEventInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use SbmPdf\Service\PdfManager;
-use SbmPdf\Mvc\Controller\Plugin\Exception\OutOfBoundsException;
 use Zend\Stdlib\Parameters;
-use SbmBase\Model\StdLib;
 
 class Pdf extends AbstractPlugin
 {
@@ -58,6 +58,11 @@ class Pdf extends AbstractPlugin
      */
     private $response;
 
+    public function __construct(PdfManager $pdf_manager)
+    {
+        $this->pdf_manager = $pdf_manager;
+    }
+
     /**
      * Renvoie le document spécifié par les paramètres indiqués.
      * Soit la classe du document est indiquée dans params, soit elle est obtenue à partir
@@ -67,9 +72,8 @@ class Pdf extends AbstractPlugin
      * @param array $params
      * @return \Zend\Http\Response
      */
-    public function __invoke(PdfManager $pdf_manager, array $params): Response
+    public function __invoke(array $params): Response
     {
-        $this->pdf_manager = $pdf_manager;
         $this->params = new Parameters($params);
         try {
             $config = $this->pdf_manager->get('Sbm\DbManager')
@@ -84,18 +88,10 @@ class Pdf extends AbstractPlugin
             if (! $classDocument) {
                 throw new Exception\RuntimeException(
                     "Le type de document n'est pas indiqué.");
-            } elseif (! $pdf_manager->has($classDocument)) {
+            } elseif (! $this->pdf_manager->has($classDocument)) {
                 throw new Exception\RuntimeException(
                     "Ce type de document n'est pas programmé.");
             }
-
-            /*die(var_dump($this->pdf_manager->get($classDocument)
-              ->setPdfManager($pdf_manager)
-              ->setDocumentId($this->getDocumentId())
-              ->setConfig('document', $config)
-              ->setParams($this->params)
-              ->render()));*/
-
             $response = $this->getResponse();
             if ($out_mode == 'I') {
                 $response->getHeaders()->addHeaders($this->inlineHeaders($out_name));
@@ -104,7 +100,7 @@ class Pdf extends AbstractPlugin
             }
             $response->setContent(
                 $this->pdf_manager->get($classDocument)
-                    ->setPdfManager($pdf_manager)
+                    ->setPdfManager($this->pdf_manager)
                     ->setDocumentId($this->getDocumentId())
                     ->setConfig('document', $config)
                     ->setParams($this->params)

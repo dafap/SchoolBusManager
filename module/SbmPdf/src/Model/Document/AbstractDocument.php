@@ -3,14 +3,55 @@
  * Classe abstraite base pour les templates
  *
  * Ces classes sont appelées par le plugin \SbmPdf\Mvc\Controller\Plugin\Pdf
+ * Elles reçoivent les paramètres suivants :
+ * - $pdf_manager
+ * - $documentId
+ * - $config->document
+ * - $params
+ *
+ * Le paramètre $params contient au moins les propriétés suivantes :
+ * - documentId
+ * - where
+ * Il peut contenir les propriétés suivantes :
+ * - classDocument : identifiant du Template (voir la constante de classe PDFMANAGER_ID)
+ * - docAffectationId
+ * - pageheader_title
+ * - pageheader_string
+ * - criteres
+ * - strict
+ * - expression
+ * - caractereConditionnel :
+ * - effectifClassName : nom de la classe pour le calcul des effectifs
+ * - page_format
+ * - page_orientation
+ * - title
+ * - subject
+ * - keywords
+ * - pageheader
+ * - pagefooter
+ * - page_margin_left
+ * - page_margin_top
+ * - page_margin_right
+ * - page_margin_bottom
+ * - default_font_monospaced
+ * - main_font_family
+ * - main_font_style
+ * - main_font_size
+ * - ...
+ * Ces propriétés contenues dans $params peuvent surcharger une propriété de même nom du
+ * paramètre $config->document.
+ *
+ * Dans tous les cas, pour chaque propriété, on la cherche dans $params. Si elle n'y est
+ * pas on la cherche dans $config->document. Si on n'a rien trouvé on renvoie
+ * éventuellement une valeur par défaut.
  *
  * @project sbm
  * @package SbmPdf/src/Model/Document
  * @filesource AbstractDocument.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 mars 2021
- * @version 2021-2.6.1
+ * @date 17 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Model\Document;
 
@@ -317,11 +358,11 @@ abstract class AbstractDocument implements DocumentInterface
     /**
      * Renvoie une chaine ou un tableau définissant l'ordre de tri des données
      *
-     * @return string|array
+     * @return string|array|null
      */
     protected function getOrderBy()
     {
-        $orderBy = $this->getProperty('document', 'orderBy', '');
+        $orderBy = $this->getProperty('document', 'orderBy', null);
         if (! empty($orderBy) && is_string($orderBy)) {
             $orderBy = explode(',', $orderBy);
             array_walk($orderBy, function (&$item) {

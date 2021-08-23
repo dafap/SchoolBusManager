@@ -15,8 +15,8 @@
  * @filesource TableSimple.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mars 2021
- * @version 2021-2.6.1
+ * @date 17 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Model\Document\Template;
 
@@ -315,7 +315,7 @@ class TableSimple extends Document\AbstractDocument
      */
     private function sanitizeColumnFilters()
     {
-        $doctable_columns = $this->config->doctable->columns;
+        $doctable_columns = $this->config->doctable->columns ?? [];
         foreach ($doctable_columns as &$column) {
             $column['filter'] = preg_replace([
                 '/^\s+/',
@@ -343,7 +343,8 @@ class TableSimple extends Document\AbstractDocument
         $ordinal_position = 1;
         $table_columns = [];
         foreach ($table->getColumnsNames() as $column_name) {
-            $column = require (__DIR__ . '/default/doccolumns.inc.php');
+            $column = require StdLib::concatPath(
+                StdLib::findParentPath(__DIR__, 'default'), 'doccolumns.inc.php');
             $column['thead'] = $column['tbody'] = $column_name;
             $column['ordinal_position'] = $ordinal_position ++;
             $table_columns[] = $column;
@@ -394,9 +395,10 @@ class TableSimple extends Document\AbstractDocument
         $dbAdapter = $this->db_manager->getDbAdapter();
         try {
             $select = new Select($sqlString); // Attention ! SbmPdf\Model\Db\Sql
-            $select->columns($structColumns->selectColumns)
-                ->where($this->getWhere())
-                ->order($this->getOrderBy());
+            $select->columns($structColumns->selectColumns)->where($this->getWhere());
+            if ($order = $this->getOrderBy()) {
+                $select->order($order);
+            }
             $sqlString = $select->getSqlString($dbAdapter->getPlatform());
             $rowset = $dbAdapter->query($sqlString,
                 \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
@@ -408,17 +410,18 @@ class TableSimple extends Document\AbstractDocument
                     ->getArrayCopy());
                 // lit les données et ajuste les largeurs de colonnes
                 $doctable_columns = $this->config->doctable->columns;
-                foreach ($rowset as $row) {
+                do {
                     $ligne = [];
                     $indexEffectifMethods = 0;
                     for ($key = 0; $key < count($doctable_columns); $key ++) {
-                        $ligne[] = $value = $this->getValueFromQueryRecord($row,
+                        $ligne[] = $value = $this->getValueFromQueryRecord($rowset->current(),
                             $doctable_columns[$key], $structColumns, $indexEffectifMethods);
                         // adapte la largeur de la colonne si nécessaire
                         $this->adaptColumnWidth($value, $doctable_columns[$key]);
                     }
                     $data[] = $ligne;
-                }
+                    $rowset->next();
+                } while($rowset->valid());
                 $this->config->doctable->set('columns', $doctable_columns);
             }
             return $data;
@@ -455,7 +458,7 @@ class TableSimple extends Document\AbstractDocument
     {
         if ($column['tbody']) {
             // ce n'est pas une colonne d'effectif
-            $value = StdLib::translateData($row[$column['tbody']], $column['filter']);
+            $value = StdLib::translateData($row[$column['tbody']], (array) $column['filter']);
             switch ($column['nature']) {
                 case 2: // photo
                     return $value ? '@' . stripslashes($value) : $value;
@@ -571,7 +574,8 @@ class TableSimple extends Document\AbstractDocument
             $table_columns = [];
             $ordinal_position = 1;
             foreach (array_keys($record) as $column_name) {
-                $column = require (__DIR__ . '/default/doccolumns.inc.php');
+                $column = require StdLib::concatPath(
+                    StdLib::findParentPath(__DIR__, 'default'), 'doccolumns.inc.php');
                 $column['thead'] = $column['tbody'] = $column_name;
                 $column['ordinal_position'] = $ordinal_position ++;
                 $table_columns[] = $column;
@@ -673,7 +677,7 @@ class TableSimple extends Document\AbstractDocument
     {
         // prend en compte les entêtes de colonnes pour adapter leur largeur
         $doctable_columns = $this->config->doctable->columns;
-        foreach ($doctable_columns as &$column) {
+        foreach ($doctable_columns ?? [] as &$column) {
             $this->adaptColumnWidth($column['thead'], $column, 'thead');
         }
         $this->config->doctable->set('columns', $doctable_columns);

@@ -8,8 +8,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 oct. 2020
- * @version 2020-2.6.1
+ * @date 15 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -252,11 +252,11 @@ abstract class AbstractActionController extends ZendAbstractActionController
      * documents basés sur une table ou vue sql et les tableaux 'expression', 'criteres'
      * et 'strict' pour ceux basés sur une requête SQL. Voir pour cela les objets
      * ObjectData qui doivent définir les méthodes getWhere() et getCriteres().
-     * ATTENTION AU RETOUR EN CAS DE PB
-     * La pageRetour est indiquée par le paramètre pr (GET) or dans la page d'appel elle
-     * est indiquée par le paramètre id.
      *
-     * @param string|array $criteresObject
+     * ATTENTION AU RETOUR EN CAS DE PB : La pageRetour est indiquée par le paramètre pr
+     * (GET) or dans la page d'appel elle est indiquée par le paramètre id.
+     *
+     * @param string|array $criteresObjectId
      *            nom complet de la classe de l'ObjectData\Criteres si c'est un tableau :
      *            <ul> <li>la première valeur est le nom de la classe,</li> <li>la
      *            deuxième est le paramètre de la méthode getWherePdf</li> <li>la
@@ -268,14 +268,14 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            paramètres du constructeur
      * @param int|string|null $documentId
      *            identifiant du document à créer
-     * @param array $retour
+     * @param array $redirectBackParams
      *            tableau ('route' => ..., 'action' => ...) pour le retour en cas d'échec
      * @param array $pdf_params
      *            tableau associatif de paramètres à passer
      * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
-    protected function getPluginPdfParams($criteresObject, $criteresForm,
-        $documentId = null, $retour = null, $pdf_params = [])
+    protected function getPluginPdfParams($criteresObjectId, $criteresFormId,
+        $documentId = null, $redirectBackParams = null, $pdf_params = [])
     {
         if (is_null($documentId)) {
             $prg = $this->prg();
@@ -287,62 +287,62 @@ abstract class AbstractActionController extends ZendAbstractActionController
                     $this->flashMessenger()->addErrorMessage(
                         'Le document à imprimer n\'a pas été indiqué.');
                     $routeParams = [
-                        'action' => $retour['action'],
+                        'action' => $redirectBackParams['action'],
                         'page' => $this->params('page', 1)
                     ];
                     $id = $this->params('pr');
                     if ($id) {
                         $routeParams['id'] = $id;
                     }
-                    return $this->redirect()->toRoute($retour['route'], $routeParams);
+                    return $this->redirect()->toRoute($redirectBackParams['route'],
+                        $routeParams);
                 }
                 $documentId = $args['documentId'];
             }
         }
         try {
             // nom de la classe du formulaire : on s'assure qu'il commence par \
-            $criteresForm = (array) $criteresForm;
-            $criteresForm[0] = '\\' . ltrim($criteresForm[0], '\\');
+            $criteresFormId = (array) $criteresFormId;
+            $criteresFormId[0] = '\\' . ltrim($criteresFormId[0], '\\');
             // paramètre d'appel du constructeur : on s'assure que la clé existe
-            if (! isset($criteresForm[1])) {
-                $criteresForm[1] = null;
+            if (! isset($criteresFormId[1])) {
+                $criteresFormId[1] = null;
             }
-            $form = new $criteresForm[0]($criteresForm[1]);
+            $form = new $criteresFormId[0]($criteresFormId[1]);
             // on s'assure que le nom de la classe de l'object criteres commence par \
-            $criteresObject = (array) $criteresObject;
+            $criteresObjectId = (array) $criteresObjectId;
             // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
             // descripteur sera trouvée
-            if (! isset($criteresObject[1])) {
-                $criteresObject[1] = null;
+            if (! isset($criteresObjectId[1])) {
+                $criteresObjectId[1] = null;
             }
-            if (is_array($criteresObject[0])) {
-                $criteresObject[0][0] = '\\' . ltrim($criteresObject[0][0], '\\');
+            if (is_array($criteresObjectId[0])) {
+                $criteresObjectId[0][0] = '\\' . ltrim($criteresObjectId[0][0], '\\');
             } else {
-                $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
+                $criteresObjectId[0] = '\\' . ltrim($criteresObjectId[0], '\\');
             }
             // on crée la structure de l'objet criteres à partir des champs du formulaire
             // on la charge et on l'initialise éventuellement
-            if (is_array($criteresObject[0])) {
-                $criteres_obj = new $criteresObject[0][0]($form->getElementNames());
+            if (is_array($criteresObjectId[0])) {
+                $criteres_obj = new $criteresObjectId[0][0]($form->getElementNames());
                 // initialisation
-                $criteres_obj->{$criteresObject[0][1]}($criteresObject[0][2]);
+                $criteres_obj->{$criteresObjectId[0][1]}($criteresObjectId[0][2]);
             } else {
-                $criteres_obj = new $criteresObject[0]($form->getElementNames());
+                $criteres_obj = new $criteresObjectId[0]($form->getElementNames());
             }
             $criteres = Session::get('post', [],
                 str_replace('pdf', 'liste', $this->getSessionNamespace()));
             if (! empty($criteres)) {
                 $criteres_obj->exchangeArray($criteres);
             }
-            $where = $criteres_obj->getWherePdf($criteresObject[1]);
+            $where = $criteres_obj->getWherePdf($criteresObjectId[1]);
             // adaptation éventuelle du where si une fonction callback (ou closure) est
             // passée en 3e paramètre dans le tableau $criteresObject. (Utile par exemple
             // pour modifier le format date avant le déclanchement de l'évènement ou pour
             // prendre en compte un autre where pour les groupes).
-            if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
-                $where = $criteresObject[2]($where, $args);
+            if (! empty($criteresObjectId[2]) && is_callable($criteresObjectId[2])) {
+                $where = $criteresObjectId[2]($where, $args);
             }
-            // $call_pdf = $this->RenderPdfService;
             $params = [
                 'classDocument' => 'tableSimple'
             ];
@@ -383,7 +383,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
             $this->flashMessenger()->addErrorMessage($e->getMessage());
             $routeParams = [
 
-                'action' => $retour['action'],
+                'action' => $redirectBackParams['action'],
                 'page' => $this->params('page', 1)
             ];
             $id = $this->params('pr');
@@ -391,131 +391,7 @@ abstract class AbstractActionController extends ZendAbstractActionController
                 $routeParams['id'] = $id;
             }
 
-            return $this->redirect()->toRoute($retour['route'], $routeParams);
-        }
-    }
-
-    public function _documentPdf($criteresObject, $criteresForm, $documentId = null,
-        $retour = null, $pdf_params = [])
-    {
-        if (is_null($documentId)) {
-            $prg = $this->prg();
-            if ($prg instanceof Response) {
-                return $prg;
-            } else {
-                $args = $prg ?: [];
-                if (! array_key_exists('documentId', $args)) {
-                    $this->flashMessenger()->addErrorMessage(
-                        'Le document à imprimer n\'a pas été indiqué.');
-                    $routeParams = [
-                        'action' => $retour['action'],
-                        'page' => $this->params('page', 1)
-                    ];
-                    $id = $this->params('pr');
-                    if ($id) {
-                        $routeParams['id'] = $id;
-                    }
-                    return $this->redirect()->toRoute($retour['route'], $routeParams);
-                }
-                $documentId = $args['documentId'];
-            }
-        }
-        try {
-            // nom de la classe du formulaire : on s'assure qu'il commence par \
-            $criteresForm = (array) $criteresForm;
-            $criteresForm[0] = '\\' . ltrim($criteresForm[0], '\\');
-            // paramètre d'appel du constructeur : on s'assure que la clé existe
-            if (! isset($criteresForm[1])) {
-                $criteresForm[1] = null;
-            }
-            $form = new $criteresForm[0]($criteresForm[1]);
-            // on s'assure que le nom de la classe de l'object criteres commence par \
-            $criteresObject = (array) $criteresObject;
-            // paramètre d'appel de la méthode getWherePdf : on s'assure que la clé du
-            // descripteur sera trouvée
-            if (! isset($criteresObject[1])) {
-                $criteresObject[1] = null;
-            }
-            if (is_array($criteresObject[0])) {
-                $criteresObject[0][0] = '\\' . ltrim($criteresObject[0][0], '\\');
-            } else {
-                $criteresObject[0] = '\\' . ltrim($criteresObject[0], '\\');
-            }
-            // on crée la structure de l'objet criteres à partir des champs du formulaire
-            // on la charge et on l'initialise éventuellement
-            if (is_array($criteresObject[0])) {
-                $criteres_obj = new $criteresObject[0][0]($form->getElementNames());
-                // initialisation
-                $criteres_obj->{$criteresObject[0][1]}($criteresObject[0][2]);
-            } else {
-                $criteres_obj = new $criteresObject[0]($form->getElementNames());
-            }
-            $criteres = Session::get('post', [],
-                str_replace('pdf', 'liste', $this->getSessionNamespace()));
-            if (! empty($criteres)) {
-                $criteres_obj->exchangeArray($criteres);
-            }
-            $where = $criteres_obj->getWherePdf($criteresObject[1]);
-            // adaptation éventuelle du where si une fonction callback (ou closure) est
-            // passée en 3e paramètre dans le tableau $criteresObject. (Utile par exemple
-            // pour modifier le format date avant le déclanchement de l'évènement ou pour
-            // prendre en compte un autre where pour les groupes).
-            if (! empty($criteresObject[2]) && is_callable($criteresObject[2])) {
-                $where = $criteresObject[2]($where, $args);
-            }
-            $call_pdf = $this->RenderPdfService;
-
-            if ($docaffectationId = $this->params('id', false)) {
-                // $docaffectationId par get - $args['documentId'] contient le libellé du
-                // menu dans docaffectations
-                $call_pdf->setParam('docaffectationId', $docaffectationId);
-            }
-            $call_pdf->setParam('documentId', $documentId)->setParam('where', $where);
-            $pageheader_params = $criteres_obj->getPageheaderParams();
-            if (array_key_exists('pageheader_title', $pageheader_params)) {
-                $call_pdf->setParam('pageheader_title',
-                    $pageheader_params['pageheader_title']);
-            }
-            if (array_key_exists('pageheader_string', $pageheader_params)) {
-                $call_pdf->setParam('pageheader_string',
-                    $pageheader_params['pageheader_string']);
-            }
-            if (array_key_exists('caractereConditionnel', $pdf_params)) {
-                $key = $pdf_params['caractereConditionnel'];
-                $pdf_params['caractereConditionnel'] = StdLib::getParam($key, $args, false);
-            }
-            if (array_key_exists('criteres', $pdf_params)) {
-                $criteres = $criteres_obj->getCriteres();
-                $call_pdf->setParam('criteres', $criteres['criteres']);
-                $call_pdf->setParam('strict', $criteres['strict']);
-                $call_pdf->setParam('expression', $criteres['expression']);
-                unset($pdf_params['criteres']);
-            }
-            foreach ($pdf_params as $key => $value) {
-                $call_pdf->setParam($key, $value);
-            }
-            $call_pdf->setEndOfScriptFunction(
-                function () {
-                    $this->flashMessenger()
-                        ->addSuccessMessage("Création d'un pdf.");
-                })
-                ->renderPdf();
-        } catch (\Exception $e) {
-            if (getenv('APPLICATION_ENV') == 'development') {
-                throw $e;
-            }
-            $this->flashMessenger()->addErrorMessage($e->getMessage());
-            $routeParams = [
-
-                'action' => $retour['action'],
-                'page' => $this->params('page', 1)
-            ];
-            $id = $this->params('pr');
-            if ($id) {
-                $routeParams['id'] = $id;
-            }
-
-            return $this->redirect()->toRoute($retour['route'], $routeParams);
+            return $this->redirect()->toRoute($redirectBackParams['route'], $routeParams);
         }
     }
 

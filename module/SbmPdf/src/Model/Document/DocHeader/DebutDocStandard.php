@@ -7,8 +7,8 @@
  * @filesource DebutDocStandard.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 mai 2021
- * @version 2021-2.6.2
+ * @date 17 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmPdf\Model\Document\DocHeader;
 
@@ -37,18 +37,6 @@ class DebutDocStandard
 
     /**
      *
-     * @var string
-     */
-    private $title;
-
-    /**
-     *
-     * @var string
-     */
-    private $subtitle;
-
-    /**
-     *
      * @var float
      */
     private $margin;
@@ -69,7 +57,13 @@ class DebutDocStandard
      *
      * @var string
      */
-    private $subject;
+    private $author;
+
+    /**
+     *
+     * @var string
+     */
+    private $creator;
 
     /**
      *
@@ -81,13 +75,13 @@ class DebutDocStandard
      *
      * @var string
      */
-    private $author;
+    private $subject;
 
     /**
      *
      * @var string
      */
-    private $creator;
+    private $title;
 
     /**
      *
@@ -124,6 +118,48 @@ class DebutDocStandard
      * @var array
      */
     private $title_line_color;
+
+    /**
+     *
+     * @var string
+     */
+    private $subtitle;
+
+    /**
+     *
+     * @var string
+     */
+    private $subtitle_font_family;
+
+    /**
+     *
+     * @var string
+     */
+    private $subtitle_font_style;
+
+    /**
+     *
+     * @var float
+     */
+    private $subtitle_font_size;
+
+    /**
+     *
+     * @var array
+     */
+    private $subtitle_text_color;
+
+    /**
+     *
+     * @var bool
+     */
+    private $subtitle_line;
+
+    /**
+     *
+     * @var array
+     */
+    private $subtitle_line_color;
 
     public function __construct(Parameters $params, Parameters $config)
     {
@@ -245,10 +281,10 @@ class DebutDocStandard
                 }
                 break;
             case 'subject':
-                if ($this->isHtml($this->{$part})) {
-                    $pdf->writeHTML($this->{$part}, true, false, true, false, '');
+                if ($this->isHtml($this->subject)) {
+                    $pdf->writeHTML($this->subject, true, false, true, false, '');
                 } else {
-                    $pdf->Write(0, $this->{$part}, '', false, 'C');
+                    $pdf->Write(0, $this->subject, '', false, 'C');
                 }
                 break;
             case 'author':
