@@ -10,8 +10,8 @@
  * @filesource Liste.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 sept. 2020
- * @version 2020-2.6.1
+ * @date 21 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -131,7 +131,7 @@ class Liste extends AbstractQuery implements FactoryInterface
                 $select = $this->selectGroup($millesime, $filtre, $order, $where);
                 break;
         }
-        // die($this->getSqlString($select));
+        //die($this->getSqlString($select));
         return new Paginator(new DbSelect($select, $this->db_manager->getDbAdapter()));
     }
 

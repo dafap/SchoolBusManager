@@ -10,8 +10,8 @@
  * @filesource Filtre.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 août 2020
- * @version 2020-2.6.0
+ * @date 21 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Db\Filtre\Eleve;
 
@@ -23,7 +23,8 @@ abstract class Filtre
 
     /**
      * Renvoie le filtre à utiliser comme paramètre dans l'appel de la méthode du même
-     * nom. Ne renvoie pas les élèves rayés. Pour la compatibilité avec les autres
+     * nom.
+     * Ne renvoie pas les élèves rayés. Pour la compatibilité avec les autres
      * filtres, il est possible de passer 3 paramètres (le premier est obligatoirement un
      * tableau de 4 valeurs au moins) ou de les passer sous la forme d'un seul tableau
      * associatif ou d'un tableau ordonné (ligneId, sens, moment, ordre, stationId,
@@ -321,6 +322,10 @@ abstract class Filtre
     }
 
     /**
+     * 2 cas :<ul>
+     * <li><b>pas d'affectation :</b> on utilise la station d'origine demandée</li>
+     * <li><b>avec des affectations :</b> on utilise la station de montée ou de descente
+     * selon le trajet aller ou retour</li></ul>
      *
      * @param int $stationId
      *
@@ -331,20 +336,86 @@ abstract class Filtre
     {
         return [
             'inscrit' => 1,
-            [
+            'if' => [
                 [
-                    'stationIdR1' => $stationId,
-                    '>' => [
-                        'demandeR1',
-                        0
+                    'isNull' => 'aff.eleveId'
+                ],
+                [
+                    'or' => [
+                        [
+                            'and' => [
+                                [
+                                    '=' => [
+                                        'stationIdR1',
+                                        $stationId
+                                    ]
+                                ],
+                                [
+                                    '>' => [
+                                        'demandeR1',
+                                        0
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            'and' => [
+                                [
+                                    '=' => [
+                                        'stationIdR2',
+                                        $stationId
+                                    ]
+                                ],
+                                [
+                                    '>' => [
+                                        'demandeR2',
+                                        0
+                                    ]
+                                ]
+                            ]
+                        ]
                     ]
                 ],
-                'or',
                 [
-                    'stationIdR2' => $stationId,
-                    '>' => [
-                        'demandeR2',
-                        0
+                    'or' => [
+                        [
+                            'and' => [
+                                [
+                                    'notIn' => [
+                                        'aff.moment',
+                                        [
+                                            2,
+                                            3
+                                        ]
+                                    ]
+                                ],
+                                [
+                                    '=' => [
+                                        'aff.station1Id',
+                                        $stationId
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            'and' => [
+                                [
+                                    'In' => [
+                                        'aff.moment',
+                                        [
+                                            2,
+                                            3
+                                        ]
+                                    ]
+                                ],
+                                [
+                                    '=' => [
+                                        'aff.station2Id',
+                                        $stationId
+                                    ]
+                                ]
+                            ]
+                        ]
                     ]
                 ]
             ]

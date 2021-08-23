@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
+ * @date 23 août 2021
  * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller;
@@ -4592,7 +4592,7 @@ class TransportController extends AbstractActionController
                     [
                         'nom',
                         'prenom'
-                    ]),
+                    ], 'station'),
                 'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves', 15),
                 'station' => $this->db_manager->get('Sbm\Db\Vue\Stations')->getRecord(
                     $stationId),
