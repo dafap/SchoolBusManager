@@ -9,7 +9,7 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 août 2021
+ * @date 2" août 2021
  * @version 2021-2.5.14
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -141,7 +141,7 @@ class ElevesScolarites extends AbstractQuery
 
     public function getEleve($eleveId)
     {
-        return $this->renderResult()->current($this->selectEleve($eleveId));
+        return $this->renderResult($this->selectEleve($eleveId))->current();
     }
 
     protected function selectEleve($eleveId)
