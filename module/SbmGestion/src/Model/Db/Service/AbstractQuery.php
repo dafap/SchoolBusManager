@@ -7,8 +7,8 @@
  * @filesource AbstractQuery.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 21 août 2021
+ * @version 2021-2.6.3
  */
 namespace SbmGestion\Model\Db\Service;
 
@@ -48,8 +48,48 @@ abstract class AbstractQuery
         }
         foreach ($filtre as $key => $value) {
             if (is_array($value)) {
-                $key = (string) $key;
+                $key = strtolower((string) $key);
                 switch ($key) {
+                    case 'if':
+                        if (count($value) == 3) {
+                            $condition = $this->literal($value[0]);
+                            $expression1 = $this->literal($value[1]);
+                            $expression2 = $this->literal($value[2]);
+                            $where->literal("IF($condition,$expression1,$expression2)");
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans if.');
+                        }
+                        break;
+                    case 'in':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 2)
+                            if (is_array($value[1])) {
+                                $where->in($this->literal($value[0]), $value[1]);
+                            } else {
+                                throw new \InvalidArgumentException(
+                                    'Deuxième paramètre incorrect dans in.');
+                            }
+                        else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans in.');
+                        }
+                        break;
+                    case 'notin':
+                    case 'not in':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 2)
+                            if (is_array($value[1])) {
+                                $where->notIn($this->literal($value[0]), $value[1]);
+                            } else {
+                                throw new \InvalidArgumentException(
+                                    'Deuxième paramètre incorrect dans notIn.');
+                            }
+                        else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans notIn.');
+                        }
+                        break;
                     case 'not':
                     case 'sauf':
                     case 'pas':
@@ -59,11 +99,11 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->lessThan($value[0], $value[1]);
+                                $where->lessThan($value[0], $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->lessThan($value[0], $value[1], $value[2],
-                                    $value[3]);
+                                $where->lessThan($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
@@ -74,11 +114,12 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->lessThanOrEqualTo($value[0], $value[1]);
+                                $where->lessThanOrEqualTo($value[0],
+                                    $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->lessThanOrEqualTo($value[0], $value[1], $value[2],
-                                    $value[3]);
+                                $where->lessThanOrEqualTo($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
@@ -89,11 +130,11 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->greaterThan($value[0], $value[1]);
+                                $where->greaterThan($value[0], $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->greaterThan($value[0], $value[1], $value[2],
-                                    $value[3]);
+                                $where->greaterThan($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
@@ -104,11 +145,12 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->greaterThanOrEqualTo($value[0], $value[1]);
+                                $where->greaterThanOrEqualTo($value[0],
+                                    $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->greaterThanOrEqualTo($value[0], $value[1],
-                                    $value[2], $value[3]);
+                                $where->greaterThanOrEqualTo($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
@@ -119,10 +161,11 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->equalTo($value[0], $value[1]);
+                                $where->equalTo($value[0], $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->equalTo($value[0], $value[1], $value[2], $value[3]);
+                                $where->equalTo($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
@@ -134,26 +177,67 @@ abstract class AbstractQuery
                         $nbParameters = count($value);
                         switch ($nbParameters) {
                             case 2:
-                                $where->notEqualTo($value[0], $value[1]);
+                                $where->notEqualTo($value[0], $this->literal($value[1]));
                                 break;
                             case 4:
-                                $where->notEqualTo($value[0], $value[1], $value[2],
-                                    $value[3]);
+                                $where->notEqualTo($this->literal($value[0]),
+                                    $this->literal($value[1]), $value[2], $value[3]);
                                 break;
                             default:
                                 throw new \InvalidArgumentException(
                                     'Nombre incorrect de paramètres dans notEqualTo.');
                         }
                         break;
-                    case 'isNull':
-                    case 'IsNull':
-                    case 'is null':
-                        $where->isNull($value[0]);
+                    case 'between':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 3) {
+                            $where->between($value[0], $this->literal($value[1]),
+                                $this->literal($value[2]));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans between.');
+                        }
                         break;
-                    case 'isNotNull':
-                    case 'IsNotNull':
+                    case 'notbetween':
+                    case 'not between':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 3) {
+                            $where->notBetween($value[0], $this->literal($value[1]),
+                                $this->literal($value[2]));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans notBetween.');
+                        }
+                        break;
+                    case 'isnull':
+                    case 'is null':
+                        $where->isNull($this->literal($value));
+                        break;
+                    case 'isnotnull':
                     case 'is not null':
-                        $where->isNotNull($value[0]);
+                        $where->isNotNull($this->literal($value));
+                        break;
+                    case 'like':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 2) {
+                            $where->like($value[0], $this->literal($value[1]));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans like.');
+                        }
+                        break;
+                    case 'notlike':
+                    case 'not like':
+                        $nbParameters = count($value);
+                        if ($nbParameters == 2) {
+                            $where->notLike($value[0], $this->literal($value[1]));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans notLike.');
+                        }
+                        break;
+                    case 'literal':
+                        $where->literal($this->literal($value));
                         break;
                     default:
                         $where->nest()
@@ -176,5 +260,139 @@ abstract class AbstractQuery
             }
         }
         return $where;
+    }
+
+    protected function literal($array)
+    {
+        if (is_string($array) || is_numeric($array)) {
+            return $array;
+        } elseif (is_array($array)) {
+            $literal = '';
+            foreach ($array as $key => $part) {
+                $key = strtolower((string) $key);
+                switch ($key) {
+                    case 'and':
+                    case 'or':
+                        if (! is_array($part) || empty($part)) {
+                            throw new \InvalidArgumentException(
+                                'Opération logiquen demandée. Arguments inccorrects : On attend un tableau de valeurs.');
+                        }
+                        $expression = '(' . $this->literal($part[0]);
+                        $key = strtoupper($key);
+                        for ($idx = 1; $idx < count($part); $idx ++) {
+                            $expression .= " $key " . $this->literal($part[$idx]);
+                        }
+                        $expression .= ')';
+                        $literal .= $expression;
+                        break;
+                    case 'isnull':
+                    case 'is null':
+                        $literal .= sprintf('ISNULL(%s)', $this->literal($part));
+                        break;
+                    case 'isnotnull':
+                    case 'is notnull':
+                    case 'is not null':
+                        $literal .= sprintf('NOT ISNULL(%s)', $this->literal($part));
+                        break;
+                    case '-':
+                        if (is_string($part) || is_numeric($part)) {
+                            $literal .= '- ' . $part;
+                            break;
+                        } elseif (is_array($part) && count($part) == 1) {
+                            $literal .= '(-' . $this->literal($part) . ')';
+                            break;
+                        }
+                    case '+':
+                    case '*':
+                    case '/':
+                    case '%':
+                    case 'div':
+                    case 'mod':
+                        if (! is_array($part) || empty($part)) {
+                            throw new \InvalidArgumentException(
+                                'Opération demandée. Arguments inccorrects : On attend un tableau de valeurs.');
+                        }
+                        $key = strtoupper($key);
+                        $expression = $this->literal($part[0]);
+                        for ($idx = 1; $idx < count($part); $idx ++) {
+                            $expression = '(' . $expression . " $key " .
+                                $this->literal($part[$idx]) . ')';
+                        }
+                        $literal .= $expression;
+                        break;
+                    case '~':
+                        $literal .= '(~' . $this->literal($part) . ')';
+                        break;
+                    case '&':
+                    case '|':
+                    case '^':
+                    case '<<':
+                    case '>>':
+                        if (! is_array($part) && count($part) != 2) {
+                            throw new \InvalidArgumentException(
+                                'Opération binaire demandée. Arguments inccorrects : On attend un tableau de 2 valeurs.');
+                        }
+                        $literal .= '(' . $this->literal($part[0]) . " $key " .
+                            $this->literal($part[1]) . ')';
+                        break;
+                    case '<':
+                    case '<=':
+                    case '>':
+                    case '>=':
+                    case '=':
+                    case '<>':
+                        if (! is_array($part) || count($part) != 2) {
+                            throw new \InvalidArgumentException(
+                                'Comparaison demandée. Arguments inccorrects : On attend un tableau de 2 valeurs.');
+                        }
+                        $literal .= '(' . $this->literal($part[0]) . " $key " .
+                            $this->literal($part[1]) . ')';
+                        break;
+                    case 'in':
+                        $nbParameters = count($part);
+                        if ($nbParameters == 2)
+                            if (is_array($part[1])) {
+                                $literal .= '(' . $this->literal($part[0]) . ' IN ' .
+                                    $this->arrayToString($part[1]) . ')';
+                            } else {
+                                throw new \InvalidArgumentException(
+                                    'Deuxième paramètre incorrect dans IN.');
+                            }
+                        else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans IN.');
+                        }
+                        break;
+                    case 'notin':
+                    case 'not in':
+                        $nbParameters = count($part);
+                        if ($nbParameters == 2)
+                            if (is_array($part[1])) {
+                                $literal .= '(' . $this->literal($part[0]) . ' NOT IN ' .
+                                    $this->arrayToString($part[1]) . ')';
+                            } else {
+                                throw new \InvalidArgumentException(
+                                    'Deuxième paramètre incorrect dans NOT IN.');
+                            }
+                        else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans NOT IN.');
+                        }
+                        break;
+                }
+            }
+            return $literal;
+        } else {
+            throw new \InvalidArgumentException('Argument incorrect pour un literal');
+        }
+    }
+
+    private function arrayToString(array $array): string
+    {
+        $result = '(' . $this->literal($array[0]);
+        for ($idx = 1; $idx < count($array); $idx ++) {
+            $result .= ', ' . $this->literal($array[$idx]);
+        }
+        return $result . ')';
     }
 }

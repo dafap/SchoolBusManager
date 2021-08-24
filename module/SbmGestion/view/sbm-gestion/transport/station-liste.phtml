@@ -2,7 +2,8 @@
 /**
  * Liste des stations
  *
- * Cette vue reçoit un objet effectifStations qui présente la méthode transportes($stationId)
+ * Cette vue reçoit un objet effectifStations qui présente la méthode
+ * transportes($stationId)
  * donnant les effectifs des élèves transportés pour chaque identifiant $stationId.
  *
  * @project sbm
@@ -10,8 +11,8 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 juin 2020
- * @version 2020-2.6.0
+ * @date 22 août 2021
+ * @version 2021-2.6.3
  */
 use SbmCartographie\Model\Point;
 
@@ -138,6 +139,7 @@ $actions = [
         'title' => 'Nouvelle station'
     ]
 ];
+$msgInscrits = "Nombre d'élèves partant le matin depuis cette station\n/\nNombre d'élèves ayant demandé cette station comme point d'origine";
 ?>
 <h1>Liste des stations</h1>
 <div id="liste-wrapper">
@@ -162,7 +164,7 @@ $actions = [
 					<th>Jumelle</th>
 					<th>Visible</th>
 					<th>Ouverte</th>
-					<th title="Nombre d'élèves transportés / Nombre de demandes">Inscrits</th>
+					<th title="<?=$msgInscrits;?>">Inscrits</th>
 					<th>Sélect.</th>
 					<th></th>
 				</tr>
@@ -220,15 +222,18 @@ $actions = [
                     'eleves' => [
                         'class' => 'fam-group',
                         'formaction' => $url_group,
-                        'title' => sprintf('élèves de la station %s - %s', $station->nom,
-                            $station->lacommune)
+                        'title' => sprintf(
+                            "élèves montant le matin ou descendant le midi ou le soir\nà la station %s - %s",
+                            $station->nom, $station->lacommune)
                     ]
                 ];
                 if ($this->layout()->hassbmservicesms) {
                     $buttons['sms'] = [
                         'class' => 'fam-phone',
                         'formaction' => $url_sms,
-                        'title' => 'Envoyer un SMS'
+                        'title' => sprintf(
+                            "Envoyer un SMS aux parents des élèves passant par la station\n%s - %s\n(montée, descente ou correspondance)",
+                            $station->nom, $station->lacommune)
                     ];
                 }
                 ?>
@@ -246,11 +251,15 @@ $actions = [
 						<?=$this->escapeHtml($station->alias);?></td>
 					<td class="jumelle">
 						<?=$station->jumelle ? 'Oui' : 'Non';?>
+
+
+
+
 					<td class="visible">
 						<?=$station->visible ? 'Oui' : 'Non';?></td>
 					<td class="ouverte">
 						<?=$station->ouverte ? 'Oui' : 'Non';?></td>
-					<td class="nbinscrits">
+					<td class="nbinscrits" title="Départs matin / Origines demandées">
 						<?=$nbTransportes;?> / <?=$nbInscrits;?></td>
 					<td class="centre selection">
 						<?=$this->renderCheckbox('selection', 'chk', $station->stationId, $station->selection)?>
