@@ -1,0 +1,90 @@
+<?php
+/**
+ * Liste des élèves ayant un point de départ(aller) ou d'arrivée (retour) différent du
+ * point d'origine demandé
+ *
+ * @project sbm
+ * @package SbmGestion
+ * @filesource station-group-alerte.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 24 août 2021
+ * @version 2021-2.6.3
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$data = $this->paginator->getCurrentItems();
+$url_retour = $this->url('sbmgestion/transport', [
+    'action' => 'station-liste'
+]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group-alerte-pdf',
+        'page' => $this->page
+    ]);
+$hiddens = [];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'station-group-alerte'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $this->origine,
+        'title' => 'Retour'
+    ],
+    'rapports' => $menuImpression['content']
+];
+$nb_eleves = $this->paginator->getTotalItemCount();
+$liste_header_msg = sprintf('Il y a %1$d élève%2$s concerné%2$s', $nb_eleves,
+    $nb_eleves <= 1 ? '' : 's');
+?>
+<h1>Groupe des élèves inscrits sur une station</h1>
+<div id="liste-wrapper">
+	<div id="liste-title" class="clearfix">
+		<div class="flashMessenger float-right">
+            <?= $this->flashMessenger()->render('success');?>
+            <?= $this->flashMessenger()->render('warning');?>
+            <?= $this->flashMessenger()->render('error');?>
+            <?= $this->flashMessenger()->render('info');?>
+            <?= $this->flashMessenger()->render('default');?>
+		</div>
+	</div>
+	<div id="liste-header">
+		<div class="menu clearfix"><?= $this->listeZoneActions($hiddens, $actions);?></div>
+		<p>
+			<em><?= $liste_header_msg; ?></em>
+		</p>
+	</div>
+	<div id="liste-inner">
+		<table class="eleves">
+			<tbody>
+				<tr class="petit">
+					<th>&Eacute;l&egrave;ve</th>
+					<th>Responsable</th>
+					<th>Commune</th>
+					<th>Station attribuée</th>
+					<th>Station demandée</th>
+					<th></th>
+				</tr>
+			<?php foreach ($data as $row):?>
+			    <tr class="petit <?= $this->cycle(["even", "odd"])->next();?>">
+					<td><?= $this->escapeHtml($row['eleve']);?></td>
+					<td><?= $this->escapeHtml($row['responsable']);?></td>
+					<td><?= $this->escapeHtml($row['commune']);?></td>
+					<td><?= $this->escapeHtml($row['station']);?></td>
+					<td><?= $this->escapeHtml($row['origine']);?></td>
+					<td><?php //$this->listeLigneActions($row['eleveId'], $hiddens, $buttons);?></td>
+				</tr>
+			<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?= $this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []); ?></div>
+	</div>
+</div>

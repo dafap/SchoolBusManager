@@ -95,6 +95,11 @@ $url_suppr_doublon = $this->url('sbmgestion/transport',
         'action' => 'station-doublon',
         'page' => $this->page
     ]);
+$url_group_alerte = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group-alerte',
+        'id' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms',
@@ -127,6 +132,11 @@ $actions = [
         'class' => 'fam-text-replace',
         'formaction' => $url_suppr_doublon,
         'title' => 'Supprimer un doublon'
+    ],
+    'group-alerte' => [
+        'class' => 'fam-group-error',
+        'formaction' => $url_group_alerte,
+        'title' => "Liste des élèves pour lequels\nle départ attribué est différent\ndu point de départ demandé."
     ],
     'carte' => [
         'class' => 'fam-map-magnify',
@@ -251,6 +261,10 @@ $msgInscrits = "Nombre d'élèves partant le matin depuis cette station\n/\nNomb
 						<?=$this->escapeHtml($station->alias);?></td>
 					<td class="jumelle">
 						<?=$station->jumelle ? 'Oui' : 'Non';?>
+
+
+
+
 
 
 
