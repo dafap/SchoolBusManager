@@ -4997,6 +4997,39 @@ class TransportController extends AbstractActionController
         ]);
     }
 
+    public function stationGroupAlerteAction()
+    {
+        $currentPage = $this->params('page', 1);
+        $pageRetour = $this->params('id', - 1);
+        $prg = $this->prg();
+        if ($prg instanceof Response) {
+            return $prg;
+        } elseif ($prg !== false) {
+            if ($pageRetour == - 1) {
+                $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
+            } else {
+                Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
+            }
+            if (array_key_exists('retour', $prg)) {
+                return $this->redirectToOrigin()->toRoute('sbmgestion/transport',
+                    [
+                        'action' => 'station-liste',
+                        'page' => $pageRetour
+                    ]);
+            }
+        }
+        return new ViewModel(
+            [
+                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->paginatorOrigineChange(
+                    [
+                        'ele.nomSA',
+                        'ele.prenomSA'
+                    ]),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves_', 20),
+                'page' => $currentPage
+            ]);
+    }
+
     /**
      * ============================ STATIONS-STATIONS =========================
      */
