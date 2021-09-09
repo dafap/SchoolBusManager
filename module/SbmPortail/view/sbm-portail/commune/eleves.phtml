@@ -16,8 +16,8 @@
  * @filesource eleves.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 mai 2021
- * @version 2021-2.6.1
+ * @date 9 sept. 2021
+ * @version 2021-2.6.3
  */
 use SbmBase\Model\Session;
 
@@ -233,7 +233,7 @@ $actions = [
 					<td class="adresse"><?= $adresseR2; ?></td>
 					<td><?= $responsables[1]; ?></td>
 					<td class="service <?=$avant_fin_aout;?>"><?= $itinerairesR2;//$this->printServices($eleve['eleveId'], 2);?></td>
-					<?php if (! $this->sansimpayes):?>
+					<?php if ($ga && ! $this->sansimpayes):?>
 					<td class="centre"><?= $paiementR2;?></td>
 					<?php endif;?>
 				<?php endif;?>

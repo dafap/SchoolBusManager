@@ -8,7 +8,7 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2021
+ * @date 9 sept. 2021
  * @version 2021-2.6.3
  */
 namespace SbmGestion\Controller;
@@ -32,10 +32,10 @@ use Zend\View\Model\ViewModel;
 
 /**
  *
+ * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmCommun\Model\Service\FormManager $form_manager
  * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
- * @property \SbmPdf\Service\PdfManager $pdf_manager
  * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
  * @property array $operateurs
  * @property array $mail_config
@@ -290,6 +290,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function circuitSupprAction()
@@ -721,13 +722,14 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function circuitPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => [
                     'ligneId',
@@ -739,7 +741,7 @@ class TransportController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'circuits'
         ];
         $documentId = null;
@@ -747,16 +749,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifCircuits'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -765,8 +761,8 @@ class TransportController extends AbstractActionController
      */
     public function circuitLignePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => [
                     'ligneId'
@@ -774,7 +770,7 @@ class TransportController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'lignes'
         ];
         $documentId = null;
@@ -782,16 +778,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-ligne'
         ];
-
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour, [
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifLignes'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -800,8 +790,8 @@ class TransportController extends AbstractActionController
      */
     public function circuitServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => [
                     'ligneId',
@@ -812,7 +802,7 @@ class TransportController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'services'
         ];
         $documentId = null;
@@ -820,28 +810,20 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifServices'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function circuitGroupPdfAction()
     {
         $db_manager = $this->db_manager;
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) use ($db_manager) {
                 $circuitId = StdLib::getParam('circuitId', $args, - 1);
@@ -871,19 +853,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'circuit-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function circuitGroupSelectionAction()
@@ -1068,6 +1044,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function classeSupprAction()
@@ -1238,16 +1215,15 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     * envoie un objet Response contenant le document pdf en cas de succès ou un routage
-     * sinon.
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function classePdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'classes'
         ];
         $documentId = null;
@@ -1255,27 +1231,19 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'classe-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
-                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasses'
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasse'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le classeId reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function classeGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $classeId = StdLib::getParam('classeId', $args, - 1);
@@ -1284,19 +1252,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'classe-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function classeGroupSelectionAction()
@@ -1399,6 +1361,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function communeSupprAction()
@@ -1566,14 +1529,15 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function communePdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'communes'
         ];
         $documentId = null;
@@ -1581,27 +1545,19 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'commune-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifCommunes'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le communeId reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function communeGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $communeId = StdLib::getParam('communeId', $args, - 1);
@@ -1610,19 +1566,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'commune-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function communeGroupSelectionAction()
@@ -1756,6 +1706,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function etablissementSupprAction()
@@ -1937,13 +1888,14 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function etablissementPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'expressions' => [
                     'localisation' => 'Literal:' .
@@ -1952,7 +1904,7 @@ class TransportController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'etablissements'
         ];
         $documentId = null;
@@ -1960,28 +1912,20 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifEtablissements'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le etablissementId reçu en
      * post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function etablissementGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
@@ -1990,19 +1934,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -2257,13 +2195,11 @@ class TransportController extends AbstractActionController
 
     /**
      * lance la création d'une liste se services desservant l'établissementId reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function etablissementServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $where->equalTo('etablissementId',
@@ -2272,35 +2208,27 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifEtablissementsServices',
                 'caractereConditionnel' => 'etablissementId'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le n-uplet
      * (etablissementId, , millesime, ligneId, sens, moment, ordre) reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function etablissementServiceGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $etablissementId = StdLib::getParam('etablissementId', $args, - 1);
@@ -2318,19 +2246,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'etablissement-service-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function etablissementServiceGroupSelectionAction()
@@ -3250,15 +3172,11 @@ class TransportController extends AbstractActionController
         }
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function lignePdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'lots'
         ];
         $documentId = null;
@@ -3266,15 +3184,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'lot-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour, [
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifLots'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     public function ligneGroupAction()
@@ -3329,14 +3242,10 @@ class TransportController extends AbstractActionController
         ;
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function ligneGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $lotId = StdLib::getParam('lotId', $args, - 1);
@@ -3345,19 +3254,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'lot-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function ligneGroupSelectionAction()
@@ -3427,14 +3330,10 @@ class TransportController extends AbstractActionController
             ]);
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function ligneServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [],
             function ($where, $args) {
                 $lotId = StdLib::getParam('lotId', $args);
@@ -3442,23 +3341,17 @@ class TransportController extends AbstractActionController
                 return $where->equalTo('lotId', $lotId);
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'lot-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'caractereConditionnel' => 'lotId',
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifLotsServices'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -3661,15 +3554,11 @@ class TransportController extends AbstractActionController
         }
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function lotPdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'lots'
         ];
         $documentId = null;
@@ -3677,15 +3566,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'lot-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour, [
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+            [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifLots'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     public function lotGroupAction()
@@ -3740,14 +3624,10 @@ class TransportController extends AbstractActionController
         ;
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function lotGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $lotId = StdLib::getParam('lotId', $args, - 1);
@@ -3756,19 +3636,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'lot-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function lotGroupSelectionAction()
@@ -3838,14 +3712,10 @@ class TransportController extends AbstractActionController
             ]);
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function lotServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [],
             function ($where, $args) {
                 $lotId = StdLib::getParam('lotId', $args);
@@ -3853,23 +3723,17 @@ class TransportController extends AbstractActionController
                 return $where->equalTo('lotId', $lotId);
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'lot-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'caractereConditionnel' => 'lotId',
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifLotsServices'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -4000,6 +3864,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas d'élève inscrit avant de supprimer la fiche
      * @return \Zend\View\Model\ViewModel
      */
     public function serviceSupprAction()
@@ -4210,14 +4075,15 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function servicePdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'services'
         ];
         $documentId = null;
@@ -4225,28 +4091,20 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'service-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifServices'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'établissements desservis le service dont les
      * références sont reçues en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function serviceEtablissementPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function (Where $where, array $args) {
                 $where->equalTo('cir_millesime', Session::get('millesime'))
@@ -4257,14 +4115,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-etablissement'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifServicesEtablissements',
                 'caractereConditionnel' => [
@@ -4275,23 +4132,16 @@ class TransportController extends AbstractActionController
                     'ordre'
                 ]
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le service dont les
      * références sont reçues en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function serviceGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $where = new Where();
@@ -4303,19 +4153,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'service-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function serviceGroupSelectionAction()
@@ -4409,30 +4253,24 @@ class TransportController extends AbstractActionController
 
     /**
      * Demande l'envoi d'un document contenant les stations non desservies
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function stationsNonDesserviesPdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres'
+        ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class
+            'SbmCommun\Form\CriteresForm'
         ];
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'stations-non-desservies'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifStations'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -4745,6 +4583,7 @@ class TransportController extends AbstractActionController
                     'page' => $currentPage
                 ]);
         }
+
         return new ViewModel(
             [
 
@@ -4915,13 +4754,14 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function stationPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => [
                     'communeId'
@@ -4932,7 +4772,7 @@ class TransportController extends AbstractActionController
             ]
         ];
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'stations'
         ];
         $documentId = null;
@@ -4940,16 +4780,10 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'station-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifStations'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -4959,8 +4793,8 @@ class TransportController extends AbstractActionController
      */
     public function stationServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [],
             function ($where, $args) {
                 $stationId = StdLib::getParam('stationId', $args);
@@ -4969,34 +4803,26 @@ class TransportController extends AbstractActionController
                     Session::get('millesime'));
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'station-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifStationsServices',
                 'caractereConditionnel' => 'stationId'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
      * lance la création d'une liste d'élève avec comme filtre le circuitId reçu en post
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
      */
     public function stationGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $stationId = StdLib::getParam('stationId', $args, - 1);
@@ -5006,19 +4832,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'station-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     public function stationGroupSelectionAction()
@@ -5175,39 +4995,6 @@ class TransportController extends AbstractActionController
             'form' => $form->prepare(),
             'page' => $currentPage
         ]);
-    }
-
-    public function stationGroupAlerteAction()
-    {
-        $currentPage = $this->params('page', 1);
-        $pageRetour = $this->params('id', - 1);
-        $prg = $this->prg();
-        if ($prg instanceof Response) {
-            return $prg;
-        } elseif ($prg !== false) {
-            if ($pageRetour == - 1) {
-                $pageRetour = Session::get('pageRetour', 1, $this->getSessionNamespace());
-            } else {
-                Session::set('pageRetour', $pageRetour, $this->getSessionNamespace());
-            }
-            if (array_key_exists('retour', $prg)) {
-                return $this->redirectToOrigin()->toRoute('sbmgestion/transport',
-                    [
-                        'action' => 'station-liste',
-                        'page' => $pageRetour
-                    ]);
-            }
-        }
-        return new ViewModel(
-            [
-                'paginator' => $this->db_manager->get('Sbm\Db\Query\ElevesDivers')->paginatorOrigineChange(
-                    [
-                        'ele.nomSA',
-                        'ele.prenomSA'
-                    ]),
-                'count_per_page' => $this->getPaginatorCountPerPage('nb_eleves_', 20),
-                'page' => $currentPage
-            ]);
     }
 
     /**
@@ -5542,6 +5329,7 @@ class TransportController extends AbstractActionController
     /**
      * Suppression d'une fiche avec confirmation
      *
+     * @todo : Vérifier qu'il n'y a pas de service attribué avant de supprimer la fiche
      * @return ViewModel
      */
     public function transporteurSupprAction()
@@ -5691,6 +5479,7 @@ class TransportController extends AbstractActionController
                     'page' => $pageRetour
                 ]);
         }
+
         return new ViewModel(
             [
 
@@ -5774,14 +5563,15 @@ class TransportController extends AbstractActionController
     }
 
     /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
+     * envoie un evenement contenant les paramètres de création d'un document pdf (le
+     * listener SbmPdf\Listener\PdfListener lancera la création du pdf) Il n'y a pas de
+     * vue associée à cette action puisque la response html est créée par \TCPDF
      */
     public function transporteurPdfAction()
     {
-        $criteresObjectId = \SbmCommun\Model\Db\ObjectData\Criteres::class;
+        $criteresObject = 'SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = [
-            \SbmCommun\Form\CriteresForm::class,
+            'SbmCommun\Form\CriteresForm',
             'transporteurs'
         ];
         $documentId = null;
@@ -5789,26 +5579,16 @@ class TransportController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-liste'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifTransporteurs'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
-    /**
-     *
-     * @return \Zend\Http\PhpEnvironment\Response|\Zend\Http\Response
-     */
     public function transporteurGroupPdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
                 $transporteurId = StdLib::getParam('transporteurId', $args, - 1);
@@ -5817,19 +5597,13 @@ class TransportController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-group'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
     }
 
     /**
@@ -5839,8 +5613,8 @@ class TransportController extends AbstractActionController
      */
     public function transporteurServicePdfAction()
     {
-        $criteresObjectArray = [
-            \SbmCommun\Model\Db\ObjectData\Criteres::class,
+        $criteresObject = [
+            'SbmCommun\Model\Db\ObjectData\Criteres',
             [],
             function ($where, $args) {
                 $transporteurId = StdLib::getParam('transporteurId', $args);
@@ -5848,23 +5622,17 @@ class TransportController extends AbstractActionController
                 return $where->equalTo('transporteurId', $transporteurId);
             }
         ];
-        $criteresForm = \SbmCommun\Form\CriteresForm::class;
+        $criteresForm = 'SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/transport',
             'action' => 'transporteur-service'
         ];
-        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectArray, $criteresForm,
-            $documentId, $retour,
+        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
             [
                 'caractereConditionnel' => 'transporteurId',
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifTransporteursServices'
             ]);
-        if ($pluginPdfParams instanceof Response) {
-            return $pluginPdfParams;
-        }
-        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
-        return $this->documentPdf($pluginPdfParams);
     }
 
     public function transporteurGroupSelectionAction()

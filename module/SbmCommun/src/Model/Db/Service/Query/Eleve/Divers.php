@@ -3,20 +3,17 @@
  * Diverses requêtes et paginateurs associés
  *
  * Liste des requêtes présentes :
- * - getScolaritesR et paginatorScolaritesR : renvoient une requête lourde composée de 35
+ * - getScolaritesR et paginatorScolaritesR : renvoie une requête lourde composée de 35
  * tables jointes
  * - getDataForDuplicata : renvoie le résultat d'une requête permettant de remplir un
  * duplicata ou un provisoire à partir du millesime et de l'identifiant eleveId
- * - getOrigineChange et paginatorOrigineChange : renvoient une requête donnant la liste
- * des élèves pour lesquels l'affectation ne correspond pas à la station d'origine
- * demandée.
  *
  * @project sbm
  * @package SbmCommun/Model/Db/Service/Query/Eleve
  * @filesource Divers.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 24 août 2021
+ * @date 9 sept. 2021
  * @version 2021-2.6.3
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
@@ -117,7 +114,8 @@ class Divers extends AbstractQuery
             [
                 'res1' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Literal('ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
+            new Literal(
+                'ele.responsable1Id = res1.responsableId AND sco.demandeR1 > 0'),
             $this->columnsResponsable(1), Select::JOIN_LEFT)
             ->join([
             'comr1' => $this->db_manager->getCanonicName('communes', 'table')
@@ -223,7 +221,8 @@ class Divers extends AbstractQuery
             [
                 'res2' => $this->db_manager->getCanonicName('responsables', 'table')
             ],
-            new Literal('ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
+            new Literal(
+                'ele.responsable2Id = res2.responsableId AND sco.demandeR2 > 0'),
             $this->columnsResponsable(2), Select::JOIN_LEFT)
             ->join([
             'comr2' => $this->db_manager->getCanonicName('communes', 'table')
@@ -692,7 +691,7 @@ class Divers extends AbstractQuery
         $where = new Where();
         $where->literal('moment = 3')
             ->equalTo('millesime', $millesime)
-            ->literal('jours & 11 = 11');
+            ->literal('(jours & 27)');
         return $this->sql->select(
             $this->db_manager->getCanonicName('affectations', 'table'))
             ->columns(
@@ -731,179 +730,5 @@ class Divers extends AbstractQuery
             'eleveId',
             'trajet'
         ]);
-    }
-
-    public function getOrigineChange($order)
-    {
-        return $this->renderResult($this->selectOrigineChange($order));
-    }
-
-    public function paginatorOrigineChange($order)
-    {
-        return $this->paginator($this->selectOrigineChange($order));
-    }
-
-    protected function selectOrigineChange($order): Select
-    {
-        $select = $this->sql->select()
-            ->quantifier(Select::QUANTIFIER_DISTINCT)
-            ->columns(
-            [
-                'eleve' => new Literal('CONCAT(ele.nom, " ", ele.prenom)'),
-                'responsable' => new Literal(
-                    'CONCAT_WS(" ", res.titre, res.nom, res.prenom)'),
-                'telephones' => new Literal(
-                    'CONCAT_WS(" / ", IF(res.smsF = 1, res.telephoneF, NULL), IF(res.smsP = 1, res.telephoneP, NULL), IF(res.smsT = 1, res.telephoneT, NULL))'),
-                'station' => new Literal('CONCAT(sta.nom, " - ", comsta.alias)'),
-                'origine' => new Literal('CONCAT(ori.nom, " - ", comori.alias)')
-            ])
-            ->from([
-            'ele' => $this->db_manager->getCanonicName('eleves', 'table')
-        ])
-            ->join([
-            'tmp' => $this->subselectOrigineChange()
-        ], 'ele.eleveId = tmp.eleveId', [])
-            ->join(
-            [
-                'res' => $this->db_manager->getCanonicName('responsables', 'table')
-            ], 'tmp.responsableId = res.responsableId', [
-                'email'
-            ])
-            ->join([
-            'comres' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'res.communeId = comres.communeId', [
-            'commune' => 'alias'
-        ])
-            ->join([
-            'sta' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'sta.stationId = tmp.stationId', [])
-            ->join([
-            'comsta' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comsta.communeId = sta.communeId', [])
-            ->join([
-            'ori' => $this->db_manager->getCanonicName('stations', 'table')
-        ], 'ori.stationId = tmp.origineId', [])
-            ->join([
-            'comori' => $this->db_manager->getCanonicName('communes', 'table')
-        ], 'comori.communeId = ori.communeId', []);
-        if (! empty($order)) {
-            $select->order($order);
-        }
-        //die($this->getSqlString($select));
-        return $select;
-    }
-
-    private function subselectOrigineChange(): Select
-    {
-        // sous-requête n° 1 : sélection des correspondances à considérer à l'aller et au
-        // retour
-        $subselect1 = $this->sql->select(
-            $this->db_manager->getCanonicName('affectations', 'table'))
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'moment',
-                'corAller' => new Literal('MIN(correspondance)'),
-                'corRetour' => new Literal('MAX(correspondance)')
-            ])
-            ->group([
-            'millesime',
-            'eleveId',
-            'trajet',
-            'jours',
-            'moment'
-        ]);
-        // sous-requête n° 2 : choix de la correspondance à considérer en fonction du
-        // moment
-        $subselect2 = $this->sql->select()
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'moment',
-                'correspondance' => new Literal(
-                    'IF(moment IN (2,3), corRetour, corAller)')
-            ])
-            ->from([
-            'tmp' => $subselect1
-        ]);
-        // sous-requête n° 3 : choix de la stationId concernée dans la table affectations
-        $subselect3 = $this->sql->select()
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'moment',
-                'responsableId',
-                'stationId' => new Literal(
-                    'IF(aff.moment IN (2,3), aff.station2Id, aff.station1Id)')
-            ])
-            ->from(
-            [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
-            ])
-            ->join([
-            'acor' => $subselect2
-        ],
-            implode(' AND ',
-                [
-                    'aff.millesime = acor.millesime',
-                    'aff.eleveId = acor.eleveId',
-                    'aff.trajet = acor.trajet',
-                    'aff.jours = acor.jours',
-                    'aff.moment = acor.moment',
-                    'aff.correspondance = acor.correspondance'
-                ]), []);
-        // sous-requête n° 4 (renvoyée par cette méthode): choix de l'origine concernée
-        return $this->sql->select()
-            ->columns(
-            [
-                'millesime',
-                'eleveId',
-                'trajet',
-                'jours',
-                'moment',
-                'responsableId',
-                'stationId',
-                'origineId' => new Literal(
-                    'IF(aff.trajet = 1, sco.stationIdR1, sco.stationIdR2)')
-            ])
-            ->from([
-            'aff' => $subselect3
-        ])
-            ->join([
-            'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
-        ],
-            implode(' AND ',
-                [
-                    'aff.millesime = sco.millesime',
-                    'aff.eleveId = sco.eleveId'
-                ]), [])
-            ->where($this->conditionOrigineChange());
-    }
-
-    private function conditionOrigineChange(): Where
-    {
-        $where = new Where();
-        $where->equalTo('aff.millesime', $this->millesime)
-            ->nest()
-            ->nest()
-            ->equalTo('aff.trajet', 1)
-            ->notEqualTo('aff.stationId', 'sco.stationIdR1', Where::TYPE_IDENTIFIER,
-            Where::TYPE_IDENTIFIER)
-            ->unnest()->or->nest()
-            ->equalTo('trajet', 2)
-            ->notEqualTo('aff.stationId', 'sco.stationIdR2', Where::TYPE_IDENTIFIER,
-            Where::TYPE_IDENTIFIER)
-            ->unnest()
-            ->unnest();
-        return $where;
     }
 }
