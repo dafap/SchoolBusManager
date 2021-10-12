@@ -8,8 +8,8 @@
  * @filesource Paiements.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juin 2020
- * @version 2020-2.6.0
+ * @date 12 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
@@ -17,11 +17,21 @@ use SbmBase\Model\DateLib;
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
+use SbmBase\Model\StdLib;
 
 class Paiements extends AbstractSbmTable
 {
 
     const MAXI = 200;
+
+    /**
+     * Le code espèces est en général 2.
+     * L'initialisation à 999 permet de retrouver un comportement standard si le code
+     * espèces n'est pas initialisé.
+     *
+     * @var int
+     */
+    private $codeEspeces = 999;
 
     /**
      * Initialisation de la station
@@ -34,6 +44,27 @@ class Paiements extends AbstractSbmTable
         $this->id_name = 'paiementId';
     }
 
+    /**
+     * Précise le code espèces
+     *
+     * @param int $code
+     * @return \SbmCommun\Model\Db\Service\Table\Paiements
+     */
+    public function setCodeEspeces(int $code)
+    {
+        $this->codeEspeces = $code;
+        return $this;
+    }
+
+    /**
+     * Dans le cas d'un paiement en espèces et si le codeEspeces a été initialisé, la
+     * référence est complétée par le timestamp pour garantir l'unicité.
+     * La référence initiale est tronquée à 70 caractères si elle est donnée. Sinon, elle
+     * prend la valeur 'Espèces'.
+     *
+     * {@inheritdoc}
+     * @see \SbmCommun\Model\Db\Service\Table\AbstractSbmTable::saveRecord()
+     */
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         $tmp = $obj_data->dateValeur;
@@ -41,7 +72,21 @@ class Paiements extends AbstractSbmTable
             $dte = new \DateTime($obj_data->datePaiement);
             $obj_data->dateValeur = $dte->format('Y-m-d');
         }
+        if ($obj_data->codeModeDePaiement == $this->codeEspeces) {
+            $obj_data->reference = $this->referencePourEspeces($obj_data->reference);
+        }
         return parent::saveRecord($obj_data);
+    }
+
+    private function referencePourEspeces(string $obj_data_reference): string
+    {
+        $obj_data_reference = preg_replace('/(.*)\s\(\§\d*\§\)/', '$1',
+            $obj_data_reference ?: 'Espèces');
+        $dte = new \DateTime();
+        $suffixe = ' (§' . $dte->format('U') . '§)';
+        $maxLen = StdLib::getParam('reference',
+            $this->db_manager->getMaxLengthArray($this->table_name, $this->table_type), 30);
+        return substr($obj_data_reference, 0, $maxLen - strlen($suffixe)) . $suffixe;
     }
 
     /**
@@ -62,7 +107,8 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Renvoie le paiementId d'un paiement pour les paramètres indiqués. Renvoie null si
+     * Renvoie le paiementId d'un paiement pour les paramètres indiqués.
+     * Renvoie null si
      * le paiement n'est pas enregistré
      *
      * @param int $responsableId
@@ -253,7 +299,8 @@ class Paiements extends AbstractSbmTable
     }
 
     /**
-     * Renvoie le montant total d'un bordereau. Par défaut, n'examine que les bordereaux
+     * Renvoie le montant total d'un bordereau.
+     * Par défaut, n'examine que les bordereaux
      * en cours. Si le codeModeDePaiement est null, renvoie le total des bordereaux en
      * cours.
      *
@@ -350,11 +397,12 @@ class Paiements extends AbstractSbmTable
     public function annule(int $paiementId)
     {
         $oData = $this->getObjData();
-        $oData->exchangeArray([
-            'paiementId' => $paiementId,
-            'mouvement' => 0,
-            'dateRefus' => DateLib::nowToMysql()
-        ]);
+        $oData->exchangeArray(
+            [
+                'paiementId' => $paiementId,
+                'mouvement' => 0,
+                'dateRefus' => DateLib::nowToMysql()
+            ]);
         $this->updateRecord($oData);
     }
 }

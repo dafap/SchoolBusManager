@@ -169,7 +169,7 @@ class FinanceController extends AbstractActionController
     private function paiementListeDownloadLigne($record)
     {
         switch ($record->mouvement) {
-            case -1:
+            case - 1:
                 $mouvement = 'Remboursement';
                 break;
             case 0:
@@ -662,7 +662,9 @@ class FinanceController extends AbstractActionController
                 $this->db_manager->get('Sbm\Db\Select\Responsables'));
         }
         // on ouvre la table des paiements et on la lie au formulaire
-        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements')->setCodeEspeces(
+            $this->db_manager->get('Sbm\Db\System\Libelles')
+                ->getCode('ModeDePaiement', 'espèces'));
         $form->bind($tablePaiements->getObjData());
         if (array_key_exists('submit', $prg)) {
             $form->setData($prg);
@@ -779,6 +781,10 @@ class FinanceController extends AbstractActionController
             ],
             'form' => $form
         ];
+        // initialise le code espèces dans la table des paiements
+        $this->db_manager->get($params['data']['alias'])->setCodeEspeces(
+            $this->db_manager->get('Sbm\Db\System\Libelles')
+                ->getCode('ModeDePaiement', 'espèces'));
         $sessionNS = $this->getSessionNamespace();
         $r = $this->editData($params,
             function ($post) use ($sessionNS) {
