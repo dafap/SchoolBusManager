@@ -37,9 +37,9 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="svg8"
      inkscape:document-units="mm"
-     inkscape:cy="265.38131"
-     inkscape:cx="514.96534"
-     inkscape:zoom="1.4"
+     inkscape:cy="354.67349"
+     inkscape:cx="259.15586"
+     inkscape:zoom="0.98994949"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -59,76 +59,69 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g
-     transform="translate(0.52409542,0.41510543)"
-     style="display:inline"
-     id="g2010"
-     inkscape:label="fondComplet">
-    <path
-       inkscape:label="zoneOrangeBas"
-       sodipodi:nodetypes="ccccc"
-       id="path1070"
-       d="M 2.2097787,296.20391 11.615346,279.98674 H 209.4759 v 16.21717 z"
-       style="fill:#fa5a13;fill-opacity:1;stroke:none;stroke-width:0.208872;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       transform="matrix(0.26458333,0,0,0.26458333,-0.52409542,-0.41510543)"
-       d="M 595.35844,95.902041 650.71992,0.448379"
-       inkscape:label="4bandesOrange"
-       style="fill:none;stroke:#f18608;stroke-width:1.78741;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path2776" />
-    <path
-       id="path1157"
-       style="fill:none;stroke:#f18608;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:label="4bandesOrange"
-       d="M -0.31954862,296.20391 9.3625577,279.51012" />
-    <path
-       transform="matrix(0.26458333,0,0,0.26458333,-0.52409542,-0.41510543)"
-       d="M 588.56943,95.90184 643.93072,0.448379"
-       inkscape:label="4bandesBleu3"
-       style="fill:none;stroke:#1786a6;stroke-width:1.78741;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path2990" />
-    <path
-       id="path1166"
-       style="fill:none;stroke:#1786a6;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:label="4bandesBleu3"
-       d="M -0.31954862,293.10707 7.5664199,279.51017" />
-    <path
-       transform="matrix(0.26458333,0,0,0.26458333,-0.52409542,-0.41510543)"
-       d="M 581.77997,95.902425 637.14155,0.448379"
-       inkscape:label="4bandesBleu2"
-       style="fill:none;stroke:#0d5392;stroke-width:1.78741;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path2993" />
-    <path
-       id="path1174"
-       style="fill:none;stroke:#0d5392;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:label="4bandesBleu2"
-       d="M -0.31954862,290.01026 5.7702853,279.51019" />
-    <path
-       transform="matrix(0.26458333,0,0,0.26458333,-0.52409542,-0.41510543)"
-       d="M 574.99373,95.902166 630.35533,0.448379"
-       inkscape:label="4bandesBleu1"
-       style="display:inline;fill:none;stroke:#30a8e0;stroke-width:1.78741;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path2995" />
-    <path
-       id="path1188"
-       style="display:inline;fill:none;stroke:#30a8e0;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:label="4bandesBleu1"
-       d="M -0.31954862,286.91342 3.9742724,279.51006" />
-    <path
-       transform="matrix(0.26458333,0,0,0.26458333,-0.52409542,-0.41510543)"
-       d="M 658.37109,1 602.75,96.902344 H 793.70117 V 1 Z"
-       inkscape:label="zoneOrangeHaut"
-       style="display:inline;fill:#fa5a13;fill-opacity:1;stroke:none;stroke-width:0.789437;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path2780" />
-  </g>
-  <g
+  <path
      sodipodi:insensitive="true"
+     style="fill:#309d87;fill-opacity:1;stroke:none;stroke-width:0.208872;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 2.7338741,296.61902 12.139441,280.40185 H 210 v 16.21717 z"
+     id="path1070"
+     sodipodi:nodetypes="ccccc"
+     inkscape:label="zoneOrangeBas" />
+  <path
+     sodipodi:insensitive="true"
+     id="path2776"
+     style="fill:none;stroke:#f18608;stroke-width:0.472919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:label="4bandesOrange"
+     d="M 157.52192,25.374081 172.16964,0.11863361" />
+  <path
+     sodipodi:insensitive="true"
+     d="M 0.2045468,296.61902 9.8866531,279.92523"
+     inkscape:label="4bandesOrange"
+     style="fill:none;stroke:#f18608;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path1157" />
+  <path
+     sodipodi:insensitive="true"
+     id="path2990"
+     style="fill:none;stroke:#1786a6;stroke-width:0.472919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:label="4bandesBleu3"
+     d="M 155.72566,25.374028 170.37333,0.11863361" />
+  <path
+     sodipodi:insensitive="true"
+     d="m 0.2045468,293.52218 7.8859685,-13.5969"
+     inkscape:label="4bandesBleu3"
+     style="fill:none;stroke:#1786a6;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path1166" />
+  <path
+     sodipodi:insensitive="true"
+     id="path2993"
+     style="fill:none;stroke:#0d5392;stroke-width:0.472919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:label="4bandesBleu2"
+     d="M 153.92928,25.374183 168.57703,0.11863361" />
+  <path
+     sodipodi:insensitive="true"
+     d="M 0.2045468,290.42537 6.2943807,279.9253"
+     inkscape:label="4bandesBleu2"
+     style="fill:none;stroke:#0d5392;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path1174" />
+  <path
+     sodipodi:insensitive="true"
+     id="path2995"
+     style="display:inline;fill:none;stroke:#30a8e0;stroke-width:0.472919;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:label="4bandesBleu1"
+     d="M 152.13376,25.374114 166.78151,0.11863361" />
+  <path
+     sodipodi:insensitive="true"
+     d="m 0.2045468,287.32853 4.293821,-7.40336"
+     inkscape:label="4bandesBleu1"
+     style="display:inline;fill:none;stroke:#30a8e0;stroke-width:0.47292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path1188" />
+  <g
      transform="translate(-0.26458458,-0.26459457)"
      inkscape:label="Bas de page"
      id="layer13"
      inkscape:groupmode="layer"
      style="display:inline">
     <g
+       sodipodi:insensitive="true"
        id="g3347">
       <text
          id="text2142"
@@ -138,11 +131,10 @@
          xml:space="preserve"><tspan
            x="16.939453"
            y="287.02489"><tspan
-             style="font-size:5.00506px;stroke-width:0.208544">www.tra-mobilite.com
+             style="font-size:5.00506px;stroke-width:0.208544">tra-mobilite.com
 </tspan></tspan><tspan
            x="16.939453"
-           y="292.7362"><tspan
-             style="stroke-width:0.208544">POINT INFO BUS</tspan><tspan
+           y="292.7362"><tspan>AGENCE TRA MOBILITÉ</tspan><tspan
              style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.208544">  |  Place de la Gare  |  73200 Albertville  |  04 79 89 77 32  |  info-tra@transdev.com</tspan></tspan></text>
       <rect
          style="opacity:0.420744;fill:none;stroke:none;stroke-width:0.232041;stroke-opacity:0.8"
@@ -172,11 +164,15 @@
        width="95"
        height="200"
        x="10"
-       y="50"
-       sodipodi:insensitive="true" />
+       y="50" />
     <g
        sodipodi:insensitive="true"
        id="g3333">
+      <path
+         id="path2780"
+         style="display:inline;fill:#309d87;fill-opacity:1;stroke:none;stroke-width:0.208872;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         inkscape:label="zoneOrangeHaut"
+         d="M 174.19402,0.26458333 159.4776,25.638745 h 50.5225 V 0.26458333 Z" />
       <rect
          style="opacity:1;fill:#0d5392;fill-opacity:1;stroke:none;stroke-width:0.192699;stroke-opacity:0.8"
          id="rect2400"
@@ -471,8 +467,8 @@
          x="109.58051"
          y="108.67128"><tspan>véhicule en est équipé.</tspan></tspan></text>
     <g
-       sodipodi:insensitive="true"
-       id="g2099">
+       id="g2099"
+       sodipodi:insensitive="true">
       <rect
          sodipodi:insensitive="true"
          y="172.175"
@@ -637,8 +633,8 @@
          y="105.14349"><tspan>téléchargeable sur le site </tspan><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1">tra-mobilite.com</tspan><tspan>.</tspan></tspan></text>
     <g
-       id="g6457"
-       sodipodi:insensitive="true">
+       sodipodi:insensitive="true"
+       id="g6457">
       <g
          style="display:inline"
          sodipodi:insensitive="true"
@@ -684,7 +680,6 @@
         </g>
       </g>
       <text
-         sodipodi:insensitive="true"
          transform="translate(-8.4709528,-2.8582289)"
          id="text2113"
          y="66.523811"
@@ -693,7 +688,8 @@
          xml:space="preserve"><tspan
            x="34.017857"
            y="66.523811"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0d5392;fill-opacity:1;stroke-width:0.264583">POINT INFO BUS</tspan></tspan></text>
+             style="font-size:3.88056px">AGENCE TRA MOBILITÉ</tspan><tspan
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0d5392;fill-opacity:1;stroke-width:0.264583"> </tspan></tspan></text>
       <text
          sodipodi:insensitive="true"
          id="text2117"
@@ -734,8 +730,8 @@
              style="stroke-width:0.264583">&amp; Samedi 9h-12h</tspan></tspan></text>
     </g>
     <g
-       id="g6464"
-       sodipodi:insensitive="true">
+       sodipodi:insensitive="true"
+       id="g6464">
       <g
          sodipodi:insensitive="true"
          transform="matrix(0.00918367,0,0,0.00918367,14.908163,82.705163)"
@@ -759,11 +755,11 @@
            y="89.094582"
            x="25.797428"
            id="tspan2761"
-           sodipodi:role="line">04 79 897 732</tspan></text>
+           sodipodi:role="line">04 79 89 77 32</tspan></text>
     </g>
     <g
-       id="g6469"
-       sodipodi:insensitive="true">
+       sodipodi:insensitive="true"
+       id="g6469">
       <path
          id="path3351"
          style="fill:#fa5a13;fill-opacity:1;stroke-width:0.00706562"
@@ -780,7 +776,7 @@
            id="tspan5873"
            x="25.851171"
            y="99.563583"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0d5392;fill-opacity:1;stroke-width:0.264583">www.tra-mobilite.com</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0d5392;fill-opacity:1;stroke-width:0.264583">tra-mobilite.com</tspan></text>
     </g>
     <g
        id="g6474"
@@ -842,8 +838,8 @@
            sodipodi:role="line">info-tra@transdev.com</tspan></text>
     </g>
     <g
-       id="g6502"
-       sodipodi:insensitive="true">
+       sodipodi:insensitive="true"
+       id="g6502">
       <circle
          r="3.9934971"
          cy="131.36899"
@@ -940,14 +936,14 @@
              style="fill:#333333;fill-opacity:1">Lundi, mardi, jeudi, vendredi de 6h30 à 9h et de </tspan></tspan><tspan
            x="34.017857"
            y="73.57937"><tspan
-             style="fill:#333333;fill-opacity:1">17h45 à 18h15.
+             style="fill:#333333;fill-opacity:1">16h30 à 18h30.
 </tspan></tspan><tspan
            x="34.017857"
            y="77.107149"><tspan
              style="fill:#333333;fill-opacity:1">Mercredi de 6h30 à 9h, de 12h à 13h30 et de </tspan></tspan><tspan
            x="34.017857"
            y="80.634928"><tspan
-             style="fill:#333333;fill-opacity:1">17h45 à 18h15.</tspan><tspan
+             style="fill:#333333;fill-opacity:1">16h30 à 18h30.</tspan><tspan
              style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.82222px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#555555;fill-opacity:1;stroke-width:0.264583">
 </tspan></tspan><tspan
            x="34.017857"
@@ -969,19 +965,19 @@
          y="172.73511"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1;stroke-width:0.264583">de perte du PASS JUNIOR ?</tspan></tspan></text>
     <text
+       sodipodi:insensitive="true"
        xml:space="preserve"
        id="text6396"
        style="font-size:2.82222px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect6398);"
-       transform="translate(0.4860135,0.78423811)"
-       sodipodi:insensitive="true"><tspan
+       transform="translate(0.4860135,0.78423811)"><tspan
          x="9.4492188"
          y="179.95599"><tspan>Rendez vous sans attendre sur </tspan><tspan
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'">www.tra-mobilite.com</tspan><tspan> pour </tspan></tspan><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'">tra-mobilite.com</tspan><tspan> pour </tspan><tspan>faire une </tspan></tspan><tspan
          x="9.4492188"
-         y="183.48376"><tspan>faire une demande de duplicata au prix de 15 €. 
+         y="183.48376"><tspan>demande de duplicata au prix de 15 €. 
 </tspan></tspan><tspan
          x="9.4492188"
-         y="187.01153"><tspan>Le PASS JUNIOR sera à retirer au POINT INFO BUS. 
+         y="187.01153"><tspan>Le PASS JUNIOR sera à retirer à l'AGENCE TRA MOBILITÉ. 
 </tspan></tspan><tspan
          x="9.4492188"
          y="190.5393"><tspan>Sur votre demande, un titre provisoire vous sera retourné par </tspan></tspan><tspan
@@ -999,52 +995,50 @@
          y="167.44345"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1;stroke-width:0.264583">Accès rapide vers les fiches horaires</tspan></tspan></text>
     <text
+       sodipodi:insensitive="true"
        xml:space="preserve"
        style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
        x="9.977951"
        y="207.00824"
-       id="text6406"
-       sodipodi:insensitive="true"><tspan
+       id="text6406"><tspan
          sodipodi:role="line"
          id="tspan6404"
          x="9.977951"
          y="207.00824"
          style="stroke-width:0.264583">Vous pouvez consulter notre site <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
-   id="tspan6408">www.tra-mobilite.com</tspan></tspan></text>
-    <g
-       id="g6434"
-       transform="translate(0,1.5996764)"
-       sodipodi:insensitive="true">
-      <rect
-         y="217.14732"
-         x="8.6934528"
-         height="14.930058"
-         width="92.226196"
-         id="rect6414"
-         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:1;stroke-opacity:1" />
-      <text
-         transform="translate(0.63466786,6.8108065)"
-         id="text6412"
-         y="215.44643"
+   id="tspan6408">tra-mobilite.com</tspan></tspan></text>
+    <rect
+       sodipodi:insensitive="true"
+       style="fill:#309d87;fill-opacity:1;stroke:#309d87;stroke-width:1;stroke-opacity:1"
+       id="rect6414"
+       width="92.226196"
+       height="14.930058"
+       x="8.6934528"
+       y="218.74699" />
+    <text
+       sodipodi:insensitive="true"
+       xml:space="preserve"
+       style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:88.1555;stroke-width:0.264583"
+       x="9.8273811"
+       y="215.44643"
+       id="text6412"
+       transform="translate(0.63466786,8.4104829)"><tspan
          x="9.8273811"
-         style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;white-space:pre;inline-size:88.1555;stroke-width:0.264583"
-         xml:space="preserve"><tspan
-           x="9.8273811"
-           y="215.44643"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">Lors de l'inscription vous avez accepté le règlement. Il </tspan></tspan><tspan
-           x="9.8273811"
-           y="218.97422"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">relève également du devoir et de la responsabilité du </tspan></tspan><tspan
-           x="9.8273811"
-           y="222.502"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">transporteur de le faire appliquer.</tspan></tspan></text>
-      <path
-         sodipodi:nodetypes="cccc"
-         id="path6420"
-         d="m 101.35471,216.74642 2.956,7.85358 -2.95642,7.84487 z"
-         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    </g>
+         y="215.44643"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">Lors de l'inscription vous avez accepté le règlement. Il </tspan></tspan><tspan
+         x="9.8273811"
+         y="218.97422"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">relève également du devoir et de la responsabilité du </tspan></tspan><tspan
+         x="9.8273811"
+         y="222.502"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;stroke-width:0.264583">transporteur de le faire appliquer.</tspan></tspan></text>
+    <path
+       sodipodi:insensitive="true"
+       style="fill:#309d87;fill-opacity:1;stroke:#309d87;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 101.35471,218.3461 2.956,7.85358 -2.95642,7.84487 z"
+       id="path6420"
+       sodipodi:nodetypes="cccc" />
     <text
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
@@ -1059,7 +1053,6 @@
          style="font-size:2.11667px;stroke-width:0.264583">NB : En début d'année, les inscriptions tardives peuvent conduire à la surcharge de certains véhicules. Des solutions sont donc mises en place dans les meilleurs délais.</tspan></text>
   </g>
   <g
-     sodipodi:insensitive="true"
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Titre">
@@ -1074,6 +1067,6 @@
          id="tspan1264"
          x="32.588013"
          y="40.492134"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#fa5a13;fill-opacity:1;stroke-width:0.264583">DOCUMENT À CONSERVER</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#309d87;fill-opacity:1;stroke-width:0.264583">DOCUMENT À CONSERVER</tspan></text>
   </g>
 </svg>

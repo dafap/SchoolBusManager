@@ -2,11 +2,14 @@
 /**
  * Liste des paiements
  *
- * Cette liste peut être donner les paiements d'un responsable ou de tous les paiements (éventuellement filtrée par les critères indiqués)
+ * Cette liste peut être donner les paiements d'un responsable ou de tous les paiements
+ * (éventuellement filtrée par les critères indiqués)
  * La vue reçoit la propriété `url_retour` du controller.
  *
- * Chaque bouton `group` est implémenté dans un formulaire de façon à envoyer en post la route_retour, l'action_retour et la page_retour.
- * Ce bouton n'est visible que dans la gestion des paiements (liste complète ou groupée). Il est invisible pour les paiements relatifs à un
+ * Chaque bouton `group` est implémenté dans un formulaire de façon à envoyer en post la
+ * route_retour, l'action_retour et la page_retour.
+ * Ce bouton n'est visible que dans la gestion des paiements (liste complète ou groupée).
+ * Il est invisible pour les paiements relatifs à un
  * responsable indiqué.
  *
  * @project sbm
@@ -14,8 +17,8 @@
  * @filesource paiement-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 juin 2020
- * @version 2020-2.6.0
+ * @date 12 oct. 2021
+ * @version 2021-2.6.4
  */
 use SbmBase\Model\DateLib;
 
@@ -76,6 +79,9 @@ $url_deselection = $this->url('sbmgestion/finance',
         'action' => 'paiement-selection',
         'page' => $this->page
     ]);
+$url_download = $this->url('sbmgestion/finance', [
+    'action' => 'paiement-liste-download'
+]);
 if ($this->h2) {
     $url_lesfactures = $this->url('sbmdocument', [
         'action' => 'les-factures'
@@ -134,6 +140,11 @@ $actions = [
         'class' => 'fam-coins',
         'formaction' => $url_detail,
         'title' => 'Facturation'
+    ],
+    'download'=>[
+        'class' => 'fam-cloud-download',
+        'formaction' => $url_download,
+        'title' => 'Télécharger la liste'
     ],
     'rectifications' => [
         'class' => 'fam-bug-error',
@@ -212,8 +223,8 @@ if ($this->h2) {
                 'Exercice budgétaire : ' . $paiement->exercice . "\n" . 'Titulaire : ' .
                 $paiement->titulaire . "\n" . 'Montant : ' . $m_info . "\n" . 'Banque : ' .
                 $paiement->banque . "\n" . 'Référence : ' . $paiement->reference . "\n" .
-                'Date de dépôt : ' . DateLib::formatDateTimeFromMysql(
-                    $paiement->dateDepot);
+                'Date de dépôt : ' .
+                DateLib::formatDateTimeFromMysql($paiement->dateDepot);
             $texte_voir = 'Responsable : ' . $r . "\n" . 'Montant : ' . $m . "\n" .
                 'Caisse :' . $cs . "\n" . 'Mode de paiement : ' . $mp . "\n" .
                 'Date de paiement : ' . $dp . "\n" . 'Date de valeur : ' . $dv . "\n" .

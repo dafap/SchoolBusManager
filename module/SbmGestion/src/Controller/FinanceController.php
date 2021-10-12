@@ -8,8 +8,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
- * @version 2021-2.6.3
+ * @date 12 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
 
@@ -117,7 +117,7 @@ class FinanceController extends AbstractActionController
     }
 
     /**
-     * Recoit enpost les paramètres :
+     * Recoit en post les paramètres :
      * <ul><li>responsableId</li><li>info</li<li>responsable</li><li>nbInscrits</li>
      * <li>nbPreinscits</li><li>nbDuplicata</li><li>url1_retour</li><li>origine</li>
      * <li>url2_retour</li><li>group</li><li>email</li><li>telephones[]</li><li>op</li></ul>
@@ -126,75 +126,192 @@ class FinanceController extends AbstractActionController
      */
     public function paiementListeAction()
     {
+        $result = $this->preparePaiementListe('paiement-liste');
+        if ($result instanceof Response) {
+            return $result;
+        }
+        return new ViewModel(
+            [
+                'namespacectrl' => md5('nsArgsFacture'),
+                'paginator' => $this->db_manager->get('Sbm\Db\Vue\Paiements')->paginator(
+                    $result['where'], $result['order']),
+                'count_per_page' => $this->getPaginatorCountPerPage('nb_paiements', 15),
+                'criteres_form' => $result['criteres_form'],
+                'h2' => $result['h2'],
+                'responsable' => $result['responsable'],
+                'resultats' => $result['resultats'],
+                'page' => $this->params('page', 1),
+                'responsableId' => $result['responsableId'],
+                'url1_retour' => $result['url1_retour'],
+                'url2_retour' => $result['url2_retour']
+            ]);
+    }
+
+    public function paiementListePdfAction()
+    {
+    }
+
+    public function paiementListeDownloadAction()
+    {
+        $result = $this->preparePaiementListe('paiement-liste');
+        if ($result instanceof Response) {
+            return $result;
+        }
+        $data = [];
+        foreach ($this->db_manager->get('Sbm\Db\Vue\Paiements')->fetchAll(
+            $result['where'], $result['order']) as $record) {
+            $data[] = $this->paiementListeDownloadLigne($record);
+        }
+        return $this->xlsxExport('paiement', $this->paiementListeDownloadDescriptor(),
+            $data, null, [], 'Paiements');
+    }
+
+    private function paiementListeDownloadLigne($record)
+    {
+        switch ($record->mouvement) {
+            case - 1:
+                $mouvement = 'Remboursement';
+                break;
+            case 0:
+                $mouvement = 'Annulation';
+                break;
+            default:
+                $mouvement = 'Encaissement';
+                break;
+        }
+        return [
+            'mouvement' => $mouvement,
+            'responsable' => $record->responsable,
+            'montant' => $record->montant * $record->mouvement,
+            'caisse' => $record->caisse,
+            'modeDePaiement' => $record->modeDePaiement,
+            'datePaiement' => $record->datePaiement,
+            'dateValeur' => $record->dateValeur,
+            'anneeScolaire' => $record->anneeScolaire,
+            'exercice' => $record->exercice,
+            'titulaire' => $record->titulaire,
+            'banque' => $record->banque,
+            'reference' => $record->reference,
+            'note' => ''
+        ];
+    }
+
+    private function paiementListeDownloadDescriptor()
+    {
+        return [
+            [
+                'label' => 'Mouvement',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Responsable',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Montant',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Caisse',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Mode de paiement',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Date du paiement',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Date de valeur',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Année scolaire',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Exercice',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Titulaire',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Banque',
+                'autosize' => true
+            ],
+            [
+                'label' => 'Référence',
+                'autosize' => true
+            ]
+        ];
+    }
+
+    private function preparePaiementListe(string $sessionNameSpace)
+    {
         $prg = $this->prg();
         if ($prg instanceof Response) {
             return $prg;
-        } elseif ($prg === false) {
-            $is_post = false;
+        } elseif ($prg === false || StdLib::getParam('op', $prg, '') == 'retour') {
+            $sbm_isPost = false;
             if ($this->params('id', '') == 'tous') {
-                // appel depuis finances : pas de post, éventuellement des criteres
                 $args = [];
-                Session::remove('post', $this->getSessionNamespace());
+                Session::remove('post', $this->getSessionNamespace($sessionNameSpace));
             } else {
-                $args = Session::get('post', [], $this->getSessionNamespace());
+                $args = Session::get('post', [],
+                    $this->getSessionNamespace($sessionNameSpace));
             }
         } else {
-            // suite à un post, l'appel provient du formulaire de criteres ou de la liste
-            // des responsables ou de la sortie d'un paiement-ajout ou d'un paiement-edit
-            // ou d'un eleve-edit. Séparer les criteres et le post en session
-            $is_post = true;
+            $sbm_isPost = true;
             if (array_key_exists('op', $prg)) {
-                // arrive de la liste des responsables ou d'une fiche élève
                 if ($prg['op'] == 'eleve-edit') {
                     // pour compatibilité des appels depuis la fiche élève
                     $args = $prg;
                     $args['url1_retour'] = $args['origine'];
                 } else {
-                    $args = Session::get('post', [], $this->getSessionNamespace());
+                    $args = Session::get('post', [],
+                        $this->getSessionNamespace($sessionNameSpace));
                     $args = array_merge($args, $prg);
                 }
             } else {
-                // vient du formulaire des critères ou de la sortie d'un paiement-ajout ou
-                // d'un paiement-edit
                 $args = $prg;
             }
-            Session::set('post', $args, $this->getSessionNamespace());
-            Session::set('nsArgsFacture', $this->getSessionNamespace()); // SBM_DG_SESSION
+            Session::set('post', $args, $this->getSessionNamespace($sessionNameSpace));
+            Session::set('nsArgsFacture', $this->getSessionNamespace($sessionNameSpace)); // SBM_DG_SESSION
         }
-        // la page vient de la route (compatibilité du paginateur)
-        $currentPage = $this->params('page', 1);
-        // le reste vient de $args
-        $responsableId = array_key_exists('responsableId', $args) ? $args['responsableId'] : - 1;
-        $url1_retour = array_key_exists('url1_retour', $args) ? $args['url1_retour'] : $this->url()->fromRoute(
-            'sbmgestion/finance');
-        $url2_retour = array_key_exists('url2_retour', $args) ? $args['url2_retour'] : null;
-        $op = array_key_exists('op', $args) ? $args['op'] : '';
-        if ($retour_n2 = ($op == 'retour')) {
-            // le résultat du test est utilisé plus loin sous le nom de $retour_n2 (retour
-            // de niveau 2)
-            $responsableId = - 1;
-            $url2_retour = null;
-        }
-        // ouvrir la vue Sql
-        $tablePaiements = $this->db_manager->get('Sbm\Db\Vue\Paiements');
         $order = [
             'datePaiement DESC',
             'dateValeur DESC'
         ];
-        // configuration du paginator
-        $nb_paiements = $this->getPaginatorCountPerPage('nb_paiements', 15);
-        if ($responsableId == - 1) {
-            // pas de $responsableId - gestion de tous les paiements
-            $this->plugin_plateforme->majnotification([]); // toutes
+        if ($retour_n2 = (StdLib::getParam('op', $args, '') == 'retour')) { // affectation
+            $responsableId = false;
+            $url2_retour = null;
+        } else {
+            $responsableId = StdLib::getParam('responsableId', $args, false);
+            $url2_retour = StdLib::getParam('url2_retour', $args);
+        }
+        if ($responsableId) {
+            $where = new Where();
+            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire',
+                Session::get('as')['libelle']);
+            $criteres_form = null;
+            $criteres_obj = null;
+            $responsable = $this->db_manager->get('Sbm\Db\Table\Responsables')->getNomPrenom(
+                $responsableId, true);
+            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
+                $responsableId);
+            $h2 = true;
+        } else {
             $criteres_form = new Form\CriteresForm('paiements');
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->caisse();
             $criteres_form->setValueOptions('codeCaisse', $value_options);
             $value_options = $this->db_manager->get('Sbm\Db\Select\Libelles')->modeDePaiement();
             $criteres_form->setValueOptions('codeModeDePaiement', $value_options);
             $criteres_obj = new ObjectDataCriteres($criteres_form->getElementNames());
-            // récupère les données du post pour les mettre en session si ce n'est pas un
-            // retour de niveau 2
-            if (! $retour_n2 && $is_post) {
+            if (! $retour_n2 && $sbm_isPost) {
                 $criteres_form->setData($args);
                 if ($criteres_form->isValid()) {
                     $criteres_obj->exchangeArray($criteres_form->getData());
@@ -208,59 +325,29 @@ class FinanceController extends AbstractActionController
                 $criteres_obj->exchangeArray($criteres_data);
                 $criteres_form->setData($criteres_obj->getArrayCopy());
             }
-            // ici, on n'appelle pas l'impression des factures donc 'namespacectrl' n'est
-            // pas nécessaire
-            return new ViewModel(
-                [
-
-                    'namespacectrl' => null,
-                    'paginator' => $tablePaiements->paginator(
-                        $criteres_obj->getWhere([
-                            'codeCaisse',
-                            'codeModeDePaiement'
-                        ]), $order),
-                    'count_per_page' => $nb_paiements,
-                    'criteres_form' => $criteres_form,
-                    'h2' => false,
-                    'responsable' => null,
-                    'page' => $currentPage,
-                    'responsableId' => $responsableId,
-                    'url1_retour' => $url1_retour,
-                    'url2_retour' => $url2_retour
-                ]);
-        } else {
-            // gestion des paiements du $responsableId.
-            // L'appel peut provenir de la liste des responsables, de la fiche d'un
-            // responsable, de la fiche d'un eleve ou de la liste des paiements.
-            // Ici, on ne présente pas le formulaire de critères (pas nécessaire)
-            $this->plugin_plateforme->majnotification(
-                [
-                    'responsableId' => $responsableId
-                ]);
-            $tResponsables = $this->db_manager->get('Sbm\Db\Table\Responsables');
-            // calcul des montants dus, payés et du solde
-            $resultats = $this->db_manager->get('Sbm\Facture\Calculs')->getResultats(
-                $responsableId);
-            // condition pour le paginator
-            $where = new Where();
-            $where->equalTo('responsableId', $responsableId)->equalTo('anneeScolaire',
-                Session::get('as')['libelle']);
-            return new ViewModel(
-                [
-
-                    'namespacectrl' => md5('nsArgsFacture'),
-                    'paginator' => $tablePaiements->paginator($where, $order),
-                    'count_per_page' => $nb_paiements,
-                    'criteres_form' => null,
-                    'h2' => true,
-                    'responsable' => $tResponsables->getNomPrenom($responsableId, true),
-                    'resultats' => $resultats,
-                    'page' => $currentPage,
-                    'responsableId' => $responsableId,
-                    'url1_retour' => $url1_retour,
-                    'url2_retour' => $url2_retour
-                ]);
+            $where = $criteres_obj->getWhere([
+                'codeCaisse',
+                'codeModeDePaiement'
+            ]);
+            $responsable = null;
+            $resultats = [];
+            $h2 = false;
         }
+        return [
+            'responsableId' => $responsableId,
+            'post' => $args,
+            'where' => $where,
+            'order' => $order,
+            'criteres_form' => $criteres_form,
+            'criteres_obj' => $criteres_obj,
+            'namespacectrl' => $responsableId ? md5('nsArgsFacture') : null,
+            'responsable' => $responsable,
+            'resultats' => $resultats,
+            'h2' => $h2,
+            'url1_retour' => StdLib::getParam('url1_retour', $args,
+                $this->url()->fromRoute('sbmgestion/finance')),
+            'url2_retour' => $url2_retour
+        ];
     }
 
     /**
@@ -575,7 +662,9 @@ class FinanceController extends AbstractActionController
                 $this->db_manager->get('Sbm\Db\Select\Responsables'));
         }
         // on ouvre la table des paiements et on la lie au formulaire
-        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements');
+        $tablePaiements = $this->db_manager->get('Sbm\Db\Table\Paiements')->setCodeEspeces(
+            $this->db_manager->get('Sbm\Db\System\Libelles')
+                ->getCode('ModeDePaiement', 'espèces'));
         $form->bind($tablePaiements->getObjData());
         if (array_key_exists('submit', $prg)) {
             $form->setData($prg);
@@ -692,6 +781,10 @@ class FinanceController extends AbstractActionController
             ],
             'form' => $form
         ];
+        // initialise le code espèces dans la table des paiements
+        $this->db_manager->get($params['data']['alias'])->setCodeEspeces(
+            $this->db_manager->get('Sbm\Db\System\Libelles')
+                ->getCode('ModeDePaiement', 'espèces'));
         $sessionNS = $this->getSessionNamespace();
         $r = $this->editData($params,
             function ($post) use ($sessionNS) {
