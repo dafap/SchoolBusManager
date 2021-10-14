@@ -24,16 +24,14 @@ class RpiEtablissements extends AbstractHelper
      *
      * @param array $aetablissements
      *            Chaque ligne de ce tableau est un tableau décrivant les établissements
-     *            et leurs
-     *            classes.
+     *            et leurs classes.
      *            Les index de chaque ligne sont 'etablissementId', 'nom', 'commune' et
-     *            'classes'
+     *            'classes'.
      *            L'index 'classes' est un tableau qui contient la liste des classes
-     *            ('classeId',
-     *            'nom')
+     *            ('classeId', 'nom')
      * @param callable $fncTableClasses
      *            aide de vue renvoyant le tableau des classes pour un établissement donné
-     *            
+     *
      * @return string
      */
     public function __invoke($aetablissements, $fncTableClasses)

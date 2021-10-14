@@ -11,7 +11,7 @@
  * @filesource view/sbm-gestion/transport/station-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 sept. 2021
+ * @date 22 août 2021
  * @version 2021-2.6.3
  */
 use SbmCartographie\Model\Point;
@@ -95,6 +95,11 @@ $url_suppr_doublon = $this->url('sbmgestion/transport',
         'action' => 'station-doublon',
         'page' => $this->page
     ]);
+$url_group_alerte = $this->url('sbmgestion/transport',
+    [
+        'action' => 'station-group-alerte',
+        'id' => $this->page
+    ]);
 $url_retour = $this->url('sbmgestion/transport');
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms',
@@ -127,6 +132,11 @@ $actions = [
         'class' => 'fam-text-replace',
         'formaction' => $url_suppr_doublon,
         'title' => 'Supprimer un doublon'
+    ],
+    'group-alerte' => [
+        'class' => 'fam-group-error',
+        'formaction' => $url_group_alerte,
+        'title' => "Liste des élèves pour lequels\nle départ attribué est différent\ndu point de départ demandé."
     ],
     'carte' => [
         'class' => 'fam-map-magnify',

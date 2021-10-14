@@ -23,9 +23,8 @@ class RpiClasses extends AbstractHelper
      *            structure décrivant un établissement.
      *            Les index sont 'etablissementId', 'nom', 'commune, 'classes'.
      *            L'index 'classes' est un tableau qui contient la liste des classes
-     *            ('classeId',
-     *            'nom')
-     *            
+     *            ('classeId', 'nom')
+     *
      * @return string
      */
     public function __invoke($aetablissement)
@@ -58,4 +57,3 @@ class RpiClasses extends AbstractHelper
         return $html;
     }
 }
- 
