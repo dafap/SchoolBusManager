@@ -9,8 +9,8 @@
  * @filesource IndexControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2019
- * @version 2019-2.5.0
+ * @date 15 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller\Service;
 
@@ -27,7 +27,6 @@ class IndexControllerFactory implements FactoryInterface
         $sm = $serviceLocator->getServiceLocator();
         $config_application = $sm->get('config');
         $config_controller = [
-            
             'db_manager' => $sm->get('Sbm\DbManager'),
             'form_manager' => $sm->get('Sbm\FormManager'),
             'cartographie_manager' => $sm->get('Sbm\CartographieManager'),

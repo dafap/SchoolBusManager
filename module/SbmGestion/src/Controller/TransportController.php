@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 août 2021
- * @version 2021-2.6.3
+ * @date 15 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
 
@@ -35,11 +35,12 @@ use Zend\View\Model\ViewModel;
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmCommun\Model\Service\FormManager $form_manager
  * @property \SbmCartographie\Model\Service\CartographieManager $cartographie_manager
- * @property \SbmPdf\Service\PdfManager $pdf_manager
  * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
  * @property array $operateurs
  * @property array $mail_config
  * @property array $paginator_count_per_page
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *

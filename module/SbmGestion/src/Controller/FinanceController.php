@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 oct. 2021
+ * @date 15 oct. 2021
  * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
@@ -28,7 +28,6 @@ use Zend\View\Model\ViewModel;
 
 /**
  *
- * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmCommun\Model\Service\FormManager $form_manager
  * @property \SbmPaiement\Plugin\PlateformeInterface $plugin_plateforme

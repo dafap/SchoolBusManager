@@ -7,8 +7,8 @@
  * @filesource CommuneControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2021
- * @version 2021-2.6.1
+ * @date 19 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPortail\Controller\Service;
 
@@ -46,7 +46,6 @@ class CommuneControllerFactory implements FactoryInterface
             $userId = $enTantQue;
         }
         $config_controller = [
-            'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'projection' => new $projection($nzone),
             'config_cartes' => $config_cartes,

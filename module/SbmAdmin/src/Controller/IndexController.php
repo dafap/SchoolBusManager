@@ -9,8 +9,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
- * @version 2021-2.6.3
+ * @date 18 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmAdmin\Controller;
 
@@ -35,7 +35,6 @@ use Zend\View\Model\ViewModel;
 /**
  *
  * @property \SbmInstallation\Model\Theme $theme
- * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmCartographie\ConvertSystemGeodetic\Projection\ProjectionInterface $projection
  * @property \SbmCommun\Model\Service\FormManager $form_manager
