@@ -8,8 +8,8 @@
  * @filesource AbstractActionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 août 2021
- * @version 2021-2.6.3
+ * @date 27 oct. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmCommun\Model\Mvc\Controller;
 
@@ -262,10 +262,10 @@ abstract class AbstractActionController extends ZendAbstractActionController
      *            deuxième est le paramètre de la méthode getWherePdf</li> <li>la
      *            troisième est une fonction appelée pour modifier éventuellement le
      *            where</li></ul>
-     * @param string|array $criteresFormName
-     *            nom complet de la classe du formulaire de recherche si c'est un tableau,
-     *            la première valeur est le nom de la classe, les autres sont les
-     *            paramètres du constructeur
+     * @param string|array $criteresFormId
+     *            nom complet de la classe du formulaire de recherche si c'est un tableau :
+     *            <ul><li>la première valeur est le nom de la classe,</li><li>les autres sont les
+     *            paramètres du constructeur</li></ul>
      * @param int|string|null $documentId
      *            identifiant du document à créer
      * @param array $redirectBackParams
