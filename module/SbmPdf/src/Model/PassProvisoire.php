@@ -119,11 +119,13 @@ class PassProvisoire
     }
 
     /**
-     * Ne fonctionne pas. TCPDF n'interprète pas cette balise image.
+     * NE FONCTIONNE PAS
+     * TCPDF n'interprète pas cette balise image.
      *
      * @param string $photo
      * @param string $type
      * @return string
+     * @deprecated
      */
     private function ajoutGroupPhoto($photo, $type = 'jpeg')
     {
