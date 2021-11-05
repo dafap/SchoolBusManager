@@ -50,8 +50,8 @@
  * @filesource AbstractDocument.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2021
- * @version 2021-2.6.3
+ * @date 2 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPdf\Model\Document;
 
@@ -112,6 +112,10 @@ abstract class AbstractDocument implements DocumentInterface
      */
     protected $oPageHeader;
 
+    /**
+     *
+     * @var callable|null
+     */
     protected $majIndexAddPage;
 
     public function __construct()
@@ -159,11 +163,6 @@ abstract class AbstractDocument implements DocumentInterface
      * Complète la propriété $config par la lecture des tables du document
      */
     abstract protected function init();
-
-    /**
-     * Fournit les données alimentant le document lors d'un publipostage
-     */
-    abstract protected function getData();
 
     /**
      * Construit l'entête du document

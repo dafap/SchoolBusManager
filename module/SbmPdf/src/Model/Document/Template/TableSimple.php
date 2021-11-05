@@ -15,8 +15,8 @@
  * @filesource TableSimple.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 août 2021
- * @version 2021-2.6.3
+ * @date 2 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPdf\Model\Document\Template;
 
@@ -138,7 +138,7 @@ class TableSimple extends Document\AbstractDocument
      * On regarde si un paramètre 'data' est connu.
      * Sinon, on recherche les datas à partir de recordSource.
      */
-    protected function getData(bool $force = false): ArrayObject
+    private function getData(bool $force = false): ArrayObject
     {
         if ($force || ! $this->data->count()) {
             if ($this->params->offsetExists('data')) {
@@ -414,14 +414,15 @@ class TableSimple extends Document\AbstractDocument
                     $ligne = [];
                     $indexEffectifMethods = 0;
                     for ($key = 0; $key < count($doctable_columns); $key ++) {
-                        $ligne[] = $value = $this->getValueFromQueryRecord($rowset->current(),
-                            $doctable_columns[$key], $structColumns, $indexEffectifMethods);
+                        $ligne[] = $value = $this->getValueFromQueryRecord(
+                            $rowset->current(), $doctable_columns[$key], $structColumns,
+                            $indexEffectifMethods);
                         // adapte la largeur de la colonne si nécessaire
                         $this->adaptColumnWidth($value, $doctable_columns[$key]);
                     }
                     $data[] = $ligne;
                     $rowset->next();
-                } while($rowset->valid());
+                } while ($rowset->valid());
                 $this->config->doctable->set('columns', $doctable_columns);
             }
             return $data;
@@ -458,7 +459,8 @@ class TableSimple extends Document\AbstractDocument
     {
         if ($column['tbody']) {
             // ce n'est pas une colonne d'effectif
-            $value = StdLib::translateData($row[$column['tbody']], (array) $column['filter']);
+            $value = StdLib::translateData($row[$column['tbody']],
+                (array) $column['filter']);
             switch ($column['nature']) {
                 case 2: // photo
                     return $value ? '@' . stripslashes($value) : $value;
@@ -810,7 +812,7 @@ class TableSimple extends Document\AbstractDocument
      * @param string $section
      *            'thead', 'tbody' ou 'tfoot'
      */
-    protected function configGraphicSectionTable($section)
+    private function configGraphicSectionTable($section)
     {
         $this->pdf->SetFont(
             $this->getProperty('document', 'data_font_family', PDF_FONT_NAME_DATA),
@@ -832,7 +834,7 @@ class TableSimple extends Document\AbstractDocument
     /**
      * Enregistre le (protected) $pdf->topMargin
      */
-    protected function saveTopMargin()
+    private function saveTopMargin()
     {
         $this->original_topMargin = $this->pdf->getMargins()['top'];
     }
@@ -840,7 +842,7 @@ class TableSimple extends Document\AbstractDocument
     /**
      * Restaure le (protected) $pdf->topMargin
      */
-    protected function restoreTopMargin()
+    private function restoreTopMargin()
     {
         $this->pdf->SetTopMargin($this->original_topMargin);
     }
