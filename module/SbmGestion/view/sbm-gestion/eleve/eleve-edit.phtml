@@ -8,8 +8,8 @@
  * @filesource eleve-edit.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 26 juin 2021
- * @version 2021-2.6.2
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  */
 use SbmBase\Model\DateLib;
 
@@ -279,7 +279,8 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 							</div>
 							<div id="block-affectationsr1" class="block-affectations">
 								<h3 id="h3-affectationsr1">
-									Affectations<i class="fam-car-key"
+									Affectations<span id="h3-affectationsr1-btn"><i
+										class="fam-car-key"
 										title="Recherche automatique des circuits pour <?= $this->identite;?>"
 										data-button="btnchercheraffectations" data-trajet="1"
 										data-href="/op:auto"></i><i class="fam-car-add"
@@ -288,7 +289,10 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 										data-href="/op:add"></i><i class="fam-car-delete"
 										title="Supprimer tous les circuits pour <?= $this->identite;?>"
 										data-button="btnsuppraffectations" data-trajet="1"
-										data-href="/op:remove"></i>
+										data-href="/op:remove"></i></span><span id="h3-affectationsr1-origine">
+										<?php if ($this->historique['origine'][1]) :?>
+                                        Origine demandée : <?=$this->historique['origine'][1];?>
+                                        <?php endif;?></span>
 								</h3>
 								<?php if (isset($this->structAffectations[1])) : ?>
 									<?= $this->affectations(1, $this->structAffectations[1]);?>
@@ -339,7 +343,8 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 							</div>
 							<div id="block-affectationsr2" class="block-affectations">
 								<h3 id="h3-affectationsr2">
-									Affectations<i class="fam-car-key"
+									Affectations<span id="h3-affectationsr2-btn"><i
+										class="fam-car-key"
 										title="Recherche automatique des circuits pour <?= $this->identite;?>"
 										data-button="btnchercheraffectations" data-trajet="2"
 										data-href="/op:auto"></i><i class="fam-car-add"
@@ -348,7 +353,10 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 										data-href="/op:add"></i><i class="fam-car-delete"
 										title="Supprimer tous les circuits pour <?= $this->identite;?>"
 										data-button="btnsuppraffectations" data-trajet="2"
-										data-href="/op:remove"></i>
+										data-href="/op:remove"></i></span><span id="h3-affectationsr2-origine">
+										<?php if ($this->historique['origine'][2]) :?>
+                                        Origine demandée : <?=$this->historique['origine'][2];?>
+                                        <?php endif;?></span>
 								</h3>
 								<?php if (isset($this->structAffectations[2])) :?>
 									<?= $this->affectations(2, $this->structAffectations[2]);?>
@@ -359,7 +367,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 				</div>
 				<div id="tabs-3" class="sbm-tabs-container table">
 					<div class="clearfix table-row">
-						<div id="tabs-3-col1" class="table-cell">
+						<div id="tabs-3-identite" class="table-cell">
 							<h3>Identité de l'élève</h3>
 							<div id="#eleve-dateCreation">
 								<div class="eleve-tabs-3-col-1-label">Date de création</div>
@@ -374,7 +382,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 									<?= formatDate($this->historique['photo']['dateExtraction']);?>
 									</div>
 						</div>
-						<div id="tabs-3-col2" class="table-cell">
+						<div id="tabs-3-responsable1" class="table-cell">
 							<h3>Responsable 1</h3>
 							<div id="#responsable1-dateCreation">
 								<div class="eleve-tabs-3-col-2-label">Date de création</div>
@@ -390,7 +398,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 									</div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
-				        <div id="tabs-3-col3" class="table-cell">
+				        <div id="tabs-3-responsable2" class="table-cell">
 							<h3>Responsable 2</h3>
 							<div id="#responsable2-dateCreation">
 								<div class="eleve-tabs-3-col-3-label">Date de création</div>
@@ -408,7 +416,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 				        <?php endif;?>
 				    </div>
 					<div class="table-row">
-						<div id="tabs-3-col1" class="table-cell">
+						<div id="tabs-3-inscription" class="table-cell">
 							<h3>Inscription cette année scolaire</h3>
 							<div id="#scolarite-modeInscription">
 								<div class="eleve-tabs-3-col-1-label">Mode d'inscription</div>
@@ -424,7 +432,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 								<div class="eleve-tabs-3-col-1-label">Date du lot de carte</div>
 									<?= formatDate($this->historique['scolarite']['dateCarteR1']);?></div>
 						</div>
-						<div id="tabs-3-col2" class="table-cell">
+						<div id="tabs-3-participationR1" class="table-cell">
 							<h3>Participation du responsable 1</h3>
 							<div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-2-label">Grille tarifaire</div>
@@ -453,7 +461,7 @@ if (getenv('APPLICATION_ENV') == 'development' && ($debugMsg = $this->form->getM
 							</div>
 						</div>
 				        <?php if (array_key_exists('responsable2', $this->historique)):?>
-						<div id="tabs-3-col3" class="table-cell">
+						<div id="tabs-3-participationR2" class="table-cell">
 							<h3>Participation du responsable 2</h3>
 							<div id="#scolarite-tarif">
 								<div class="eleve-tabs-3-col-3-label">Grille tarifaire</div>

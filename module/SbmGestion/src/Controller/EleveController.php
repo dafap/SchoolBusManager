@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
- * @version 2021-2.6.3
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
 
@@ -921,8 +921,8 @@ class EleveController extends AbstractActionController
         $historique['responsable1']['dateModification'] = $r->dateModification;
         $historique['responsable1']['dateDemenagement'] = $r->dateDemenagement;
         $historique['responsable1']['demenagement'] = $r->demenagement;
-        $tmp = $odata0->responsable2Id;
-        if (! empty($tmp)) {
+        $ga = $odata0->responsable2Id;
+        if (! empty($ga)) {
             $r = $this->db_manager->get('Sbm\Db\Table\Responsables')->getRecord(
                 $odata0->responsable2Id);
             $historique['responsable2']['dateCreation'] = $r->dateCreation;
@@ -941,6 +941,17 @@ class EleveController extends AbstractActionController
             $flashMessage = 'Pas de photo pour cet élève.';
             $historique['photo']['dateExtraction'] = '';
             $dataphoto = $ophoto->img_src($ophoto->getSansPhotoGifAsString(), 'gif');
+        }
+        $ctrOrigine = new \SbmCommun\Arlysere\CtrlOrigine($this->db_manager, $eleveId);
+        if ($ctrOrigine->valid(1)) {
+            $historique['origine'][1] = '';
+        } else {
+            $historique['origine'][1] = $ctrOrigine->getOrigineDemandee(1);
+        }
+        if ($ga && ! $ctrOrigine->valid(2)) {
+            $historique['origine'][2] = $ctrOrigine->getOrigineDemandee(1);
+        } else {
+            $historique['origine'][2] = '';
         }
         return new ViewModel(
             [
