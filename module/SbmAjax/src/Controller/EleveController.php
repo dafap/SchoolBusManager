@@ -10,8 +10,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
- * @version 2021-2.6.3
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmAjax\Controller;
 
@@ -456,7 +456,7 @@ class EleveController extends AbstractActionController
         return $response;
     }
 
-    private function getFormStationDepart()
+    private function getFormStationDepart(): \SbmGestion\Form\StationDepart
     {
         $form = new \SbmGestion\Form\StationDepart();
         $form->setAttribute('action',
@@ -518,7 +518,12 @@ class EleveController extends AbstractActionController
                     'success' => 1
                 ]));
             } else {
-                $form = $this->getFormStationDepart()->setData($request->getPost());
+                $form = $this->getFormStationDepart();
+                $post = $request->getPost();
+                if ($post['submit'] == $form::SAVE_ONLY) {
+                    $post['op'] = $form::SAVE_ONLY;
+                }
+                $form = $form->setData($post);
                 if (! $form->isValid()) {
                     $errors = $form->getMessages();
                     $messages = '';
@@ -540,14 +545,34 @@ class EleveController extends AbstractActionController
                 } else {
                     try {
                         $data = $form->getData();
-                        if ($data['raz'] == 'RAZ') {
-                            $tAffectations = $this->db_manager->get(
-                                'Sbm\Db\Table\Affectations');
-                            $tAffectations->deleteTrajet(Session::get('millesime'),
-                                $data['eleveId'], $data['trajet']);
-                        }
                         switch ($data['op']) {
+                            case $form::SAVE_ONLY:
+                                $tScolarites = $this->db_manager->get(
+                                    'Sbm\Db\Table\Scolarites');
+                                $oScolarite = $tScolarites->getRecord(
+                                    [
+                                        'millesime' => Session::get('millesime'),
+                                        'eleveId' => $data['eleveId']
+                                    ]);
+                                $oScolarite->{'stationIdR' . $data['trajet']} = $data['stationId'];
+                                $tScolarites->saveRecord($oScolarite);
+                                $messages = 'Enregistrement de la station d\'origine. Pas de changement des affectations';
+                                $this->flashMessenger()->addSuccessMessage($messages);
+                                $response->setContent(
+                                    Json::encode(
+                                        [
+                                            'cr' => "$messages",
+                                            'nb' => 0,
+                                            'success' => 1
+                                        ]));
+                                break;
                             case 'auto':
+                                if ($data['raz'] == 'RAZ') {
+                                    $tAffectations = $this->db_manager->get(
+                                        'Sbm\Db\Table\Affectations');
+                                    $tAffectations->deleteTrajet(Session::get('millesime'),
+                                        $data['eleveId'], $data['trajet']);
+                                }
                                 $tScolarites = $this->db_manager->get(
                                     'Sbm\Db\Table\Scolarites');
                                 $oScolarite = $tScolarites->getRecord(
@@ -819,6 +844,13 @@ class EleveController extends AbstractActionController
         $query = $this->db_manager->get('Sbm/Db/Query/AffectationsServicesStations');
         $eleveId = $this->params('eleveId');
         $trajet = $this->params('trajet');
+        $historique = [];
+        $ctrOrigine = new \SbmCommun\Arlysere\CtrlOrigine($this->db_manager, $eleveId);
+        if ($ctrOrigine->valid($trajet)) {
+            $historique['origine'][$trajet] = '';
+        } else {
+            $historique['origine'][$trajet] = $ctrOrigine->getOrigineDemandee($trajet);
+        }
         return new ViewModel(
             [
                 'identite' => $this->params('identite'),
@@ -828,7 +860,8 @@ class EleveController extends AbstractActionController
                     'annee_precedente' => \SbmCommun\Model\View\StructureAffectations::get(
                         $query->getAffectations($eleveId, $trajet, true))
                 ],
-                'trajet' => $trajet
+                'trajet' => $trajet,
+                'historique' => $historique
             ]);
     }
 

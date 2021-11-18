@@ -8,8 +8,8 @@
  * @filesource eleve-edit.css
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
- * @version 2020-2.6.0
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  **/
 .table-cell div {
 	display: inline-block;
@@ -230,6 +230,15 @@ div#fiche-inner div#commun fieldset, div#fiche-inner div#tabs fieldset {
 	max-width: 267px;
 }
 
+span#h3-affectationsr1-btn, span#h3-affectationsr2-btn {
+	width: 200px;
+	display: inline-block;
+}
+
+span#h3-affectationsr1-origine, span#h3-affectationsr2-origine {
+	color: orange;
+}
+
 textarea[name="motifDerogation"] {
 	width: 24em;
 	height: 4rem;
@@ -349,7 +358,7 @@ div.bloc-tarif {
 }
 
 i[data-button="btnaffectation"] {
-	margin-right: 60px;
+	margin-right: 30px;
 }
 
 i[data-button="btnchercheraffectations"] {

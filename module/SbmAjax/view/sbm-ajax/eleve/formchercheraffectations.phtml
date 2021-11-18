@@ -9,8 +9,8 @@
  * @filesource formchercheraffectations.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 mars 2020
- * @version 2020-2.6.0
+ * @date 16 nov. 2021
+ * @version 2020-2.6.4
  */
 
 /**
@@ -35,23 +35,17 @@
 ?>
 <?php $this->headStyle()->captureStart(); ?>
 #stationdepart-form label.sbm-form-auto {
-    display: inline-block;
-    width: 150px;
+    display: block;
     margin-right: 5px;
-}
-#stationdepart-form label.sbm-form-auto:before {
-	content: "\A";
-	white-space: pre;
-	line-height: 1.5em;
 }
 #stationdepart-form input.button {
     margin-top: 1.5rem;
 }
+#stationdepart-form input.button {
+	margin-left: 15px;
+}
 #stationdepart-form input.button.cancel {
     margin-left: 100px;
-}
-#stationdepart-form input.button.submit {
-	margin-left: 15px;
 }
 <?php $this->headStyle()->captureEnd(); ?>
 <?= $this->headStyle();?>

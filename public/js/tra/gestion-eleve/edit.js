@@ -5,8 +5,8 @@
  * @filesource edit.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 avr. 2021
- * @version 2021-2.6.1
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  */
 
 $(function(){
@@ -1009,6 +1009,9 @@ function stationdepart() {
 	});
 	$('#stationdepart-cancel').click(function() {
 		btnclick = 'cancel';
+	});
+	$('#stationdepart-save-only').click(function() {
+		btnclick = 'save-only';
 	});
 	$('#stationdepart-submit').click(function() {
 		btnclick = 'submit';

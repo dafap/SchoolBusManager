@@ -12,8 +12,8 @@
  * @filesource blockaffectations.phtml.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 30 juil. 2020
- * @version 2020-2.6.0
+ * @date 16 nov. 2021
+ * @version 2021-2.6.4
  */
 
 // on cache le chexkbox accordRi si une affectation est présente dans la structure
@@ -27,7 +27,8 @@ js_edit.setDisableAccordR2(<?php echo $disableAccord; ?>);
 <?php endif;?>
 <?php $this->inlineScript()->captureEnd(); ?>
 <h3>
-	Affectations<i class="fam-car-key"
+	Affectations<span id="h3-affectationsr<?= $this->trajet; ?>-btn"><i
+		class="fam-car-key"
 		title="Recherche automatique des circuits pour <?= $this->identite;?>"
 		data-button="btnchercheraffectations"
 		data-trajet="<?= $this->trajet; ?>" data-href="/op:auto"></i><i
@@ -37,7 +38,11 @@ js_edit.setDisableAccordR2(<?php echo $disableAccord; ?>);
 		data-href="/op:add"></i><i class="fam-car-delete"
 		title="Supprimer tous les circuits pour <?= $this->identite;?>"
 		data-button="btnsuppraffectations" data-trajet="<?= $this->trajet; ?>"
-		data-href="/op:remove"></i>
+		data-href="/op:remove"></i></span><span
+		id="h3-affectationsr<?= $this->trajet; ?>-origine">
+		<?php if ($this->historique['origine'][$this->trajet]) :?>
+        Origine demandée : <?=$this->historique['origine'][$this->trajet];?>
+        <?php endif;?></span>
 </h3>
 <?php
 if (isset($this->structure)) {
