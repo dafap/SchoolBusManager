@@ -15,7 +15,7 @@
  * @filesource TableSimple.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 nov. 2021
+ * @date 25 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmPdf\Model\Document\Template;
@@ -32,8 +32,6 @@ use Zend\Stdlib\ArrayObject;
 class TableSimple extends Document\AbstractDocument
 {
     use Document\DocumentTrait, \SbmPdf\Model\Tcpdf\TcpdfTrait;
-
-    const PDFMANAGER_ID = 'tableSimple';
 
     /**
      *

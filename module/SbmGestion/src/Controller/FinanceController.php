@@ -8,7 +8,7 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 oct. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
@@ -35,6 +35,8 @@ use Zend\View\Model\ViewModel;
  * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
  * @property array $mail_config
  * @property array $paginator_count_per_page
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -1837,7 +1839,7 @@ class FinanceController extends AbstractActionController
      */
     public function tarifPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => []
@@ -1852,16 +1854,21 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/finance',
             'action' => 'tarif-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
-            [
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour, [
                 'effectifClassName' => 'Sbm\Db\Eleve\EffectifTarifs'
             ]);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function tarifGroupPdfAction()
     {
         $strategy = $this->db_manager->get('Sbm\Db\Table\Tarifs')->getStrategie('grille');
-        $criteresObject = [
+        $criteresObjectId = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) use ($strategy) {
@@ -1881,7 +1888,13 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'tarif-group'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     // Gestion des organismes payeurs
@@ -2110,7 +2123,7 @@ class FinanceController extends AbstractActionController
 
     public function organismeGroupPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             'SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -2126,7 +2139,13 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/transport',
             'action' => 'organisme-group'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -2136,7 +2155,7 @@ class FinanceController extends AbstractActionController
      */
     public function organismePdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             [
                 'strict' => []
@@ -2151,11 +2170,16 @@ class FinanceController extends AbstractActionController
             'route' => 'sbmgestion/finance',
             'action' => 'organisme-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour,
             [
-                'effectifClassName' => $this->db_manager->get(
-                    'Sbm\Db\Eleve\EffectifOrganismes')
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifOrganismes'
             ]);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function fluxFinanciersAction()

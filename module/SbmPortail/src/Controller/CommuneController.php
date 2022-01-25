@@ -7,7 +7,7 @@
  * @filesource CommuneController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 19 oct. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmPortail\Controller;
@@ -31,6 +31,8 @@ use Zend\View\Model\ViewModel;
  * @property string $url_api
  * @property int $categorieId
  * @property int $userId
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -263,16 +265,16 @@ class CommuneController extends AbstractActionController
             ]) as $record) {
             $data[] = $this->exportLignes($record);
         }
-        $this->RenderPdfService->setParam('documentId', $documentId)
-            ->setParam('docaffectationId', $this->params('id', false))
-            ->setParam('layout', 'sbm-portail/layout/lignes.phtml')
-            ->setData($data)
-            ->setEndOfScriptFunction(
-            function () {
-                $this->flashMessenger()
-                    ->addSuccessMessage("Création d'un pdf.");
-            })
-            ->renderPdf();
+        $pluginPdfParams = [
+            'documentId' => $documentId,
+            'docaffectationId' => $this->params('id', false),
+            'layout' => 'sbm-portail/layout/lignes.phtml',
+            'data' => $data,
+            'endOfScriptFunction' => function () {
+                $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+            }
+        ];
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function lignesDownloadAction()

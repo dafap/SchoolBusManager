@@ -7,8 +7,8 @@
  * @filesource StdLib.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 avr. 2020
- * @version 2020-2.6.0
+ * @date 25 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmBase\Model;
 
@@ -34,7 +34,8 @@ abstract class StdLib
 
     /**
      * Renvoie true si toutes les clés contenues dans le tableau $keys existent de façon
-     * emboitée dans $search. (cad si $keys possède n élements,
+     * emboitée dans $search.
+     * (cad si $keys possède n élements,
      * $search[$key1][$key2]...[$keyn] est défini) Renvoie false si $search n'est pas un
      * tableau ou si une clé n'existe pas au rang prévu.
      *
@@ -67,7 +68,8 @@ abstract class StdLib
     }
 
     /**
-     * Reçoit un tableau multidimensionnel et renvoie un objet. Pour les tableaux ayant
+     * Reçoit un tableau multidimensionnel et renvoie un objet.
+     * Pour les tableaux ayant
      * des clés numériques :
      *
      * @see http://stackoverflow.com/questions/10333016/how-to-access-object-properties-with-names-like-integers
@@ -97,7 +99,8 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie la valeur associée à l'index dans le tableau. La valeur renvoyée peut être
+     * Renvoie la valeur associée à l'index dans le tableau.
+     * La valeur renvoyée peut être
      * de tout type.
      *
      * @param string|int $index
@@ -172,7 +175,8 @@ abstract class StdLib
 
     /**
      * Renvoie le path absolu correspondant à $path dans la branche de l'arborescence de
-     * fichiers antérieure à $dir. Renvoie false si le $path n'est pas trouvé.
+     * fichiers antérieure à $dir.
+     * Renvoie false si le $path n'est pas trouvé.
      *
      * @param string $dir
      * @param string $path
@@ -193,7 +197,8 @@ abstract class StdLib
     }
 
     /**
-     * Si $file commence par un double-slash, c'est une adresse absolue. La renvoyer sans
+     * Si $file commence par un double-slash, c'est une adresse absolue.
+     * La renvoyer sans
      * concaténer. Sinon, concaténer le $path et le $file en vérifiant les séparateurs de
      * chemin. Dans le résultat, le séparateur est / quels que soient ceux utilisés dans
      * $path ou $file.
@@ -228,7 +233,8 @@ abstract class StdLib
     }
 
     /**
-     * Renvoie la valeur $val si ce n'est pas une chaine. Evalue la chaine si c'est une
+     * Renvoie la valeur $val si ce n'est pas une chaine.
+     * Evalue la chaine si c'est une
      * valeur numérique Evalue la chaine si c'est une valeur booléenne (true|false,
      * vrai|faux, yes|no, oui|non) Renvoie la chaine encadrée par des simples quotes, en
      * échappant les apostrophes présentes si nécessaire et en supprimant les espaces de
@@ -268,7 +274,8 @@ abstract class StdLib
 
     /**
      * Renvoie un tableau associatif à partir d'une chaine qui décrit le tableau de la
-     * façon suivante : clé1 => valeur1, clé2 => valeur2, etc. Attention : clé1, clé2,
+     * façon suivante : clé1 => valeur1, clé2 => valeur2, etc.
+     * Attention : clé1, clé2,
      * clé3 ... sont numériques, booléen ou string valeur1, valeur2, valeur3 ... sont
      * numériques ou string Il n'est pas nécessaire d'encadrer les chaines par des
      * guillemets ou des apostrophes ; ce sera fait par la méthode Le séparateur de lignes
@@ -393,7 +400,8 @@ abstract class StdLib
     }
 
     /**
-     * Indique si un tableau est indexé (sinon, il est associatif). Dans le cas de
+     * Indique si un tableau est indexé (sinon, il est associatif).
+     * Dans le cas de
      * tableaux emboités on ne regarde que le premier niveau.
      *
      * @param array $array
@@ -441,5 +449,45 @@ abstract class StdLib
             $render = '(+33) ' . ltrim($render, '0');
         }
         return $render;
+    }
+
+    /**
+     * Renvoie la liste des classes enregistrées en PSR-4 dans le chemin indiqué
+     *
+     * @param string $path
+     * @return array
+     */
+    public static function getFullyQualifiedClassNameList(string $path): array
+    {
+        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+        $fqcn = [];
+        foreach ($phpFiles as $phpFile) {
+            $content = file_get_contents($phpFile->getRealPath());
+            $tokens = token_get_all($content);
+            $namespace = '';
+            for ($index = 0; isset($tokens[$index]); $index ++) {
+                if (! isset($tokens[$index][0])) {
+                    continue;
+                }
+                if (T_NAMESPACE === $tokens[$index][0]) {
+                    $index += 2; // Skip namespace keyword and whitespace
+                    while (isset($tokens[$index]) && is_array($tokens[$index])) {
+                        $namespace .= $tokens[$index ++][1];
+                    }
+                }
+                if (T_CLASS === $tokens[$index][0] &&
+                    T_WHITESPACE === $tokens[$index + 1][0] &&
+                    T_STRING === $tokens[$index + 2][0]) {
+                    $index += 2; // Skip class keyword and whitespace
+                    $fqcn[] = $namespace . '\\' . $tokens[$index][1];
+
+                    # break if you have one class per file (psr-4 compliant)
+                    # otherwise you'll need to handle class constants (Foo::class)
+                    break;
+                }
+            }
+        }
+        return $fqcn;
     }
 }

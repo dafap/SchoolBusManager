@@ -14,7 +14,7 @@
  * @filesource EleveGestionController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 oct. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
@@ -40,6 +40,8 @@ use Zend\View\Model\ViewModel;
  * @property \SbmAuthentification\Authentication\AuthenticationServiceFactory $authenticate
  * @property array $mail_config
  * @property array $paginator_count_per_page
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *

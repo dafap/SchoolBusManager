@@ -9,8 +9,8 @@
  * @filesource PdfController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 août 2021
- * @version 2021-2.6.3
+ * @date 25 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPdf\Controller;
 
@@ -23,9 +23,10 @@ use Zend\View\Model\ViewModel;
 
 /**
  *
- * @property \SbmPdf\Service\RenderPdfService $RenderPdfService
  * @property \SbmCommun\Model\Db\Service\DbManager $db_manager
  * @property \SbmPdf\Service\PdfManager $pdf_manager
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -40,11 +41,12 @@ class PdfController extends AbstractActionController
      */
     public function pdfListeAction()
     {
-        $getTemplateList = function () {
-            $form = $this->pdf_manager->get('FormDocumentPdf');
-            $element = $form->get('page_templateId');
-            return $element->getValueOptions();
-        };
+        $path = sprintf('%s/Template', StdLib::findParentPath(__DIR__, 'Model/Document'));
+        $getTemplateList = [];
+        foreach (StdLib::getFullyQualifiedClassNameList($path) as $fqcn) {
+            $tmp = explode('\\', $fqcn);
+            $getTemplateList[$fqcn] = array_pop($tmp);
+        }
         $args = $this->initListe(
             [
                 [
@@ -68,7 +70,7 @@ class PdfController extends AbstractActionController
                     ]
                 ],
                 [
-                    'name' => 'page_templateId',
+                    'name' => 'classDocument',
                     'type' => 'Zend\Form\Element\Select',
                     'attributes' => [
                         'class' => 'sbm-width-45c'
@@ -76,11 +78,11 @@ class PdfController extends AbstractActionController
                     'options' => [
                         'label' => 'Modèle',
                         'empty_option' => 'Tous',
-                        'value_options' => $getTemplateList()
+                        'value_options' => $getTemplateList
                     ]
                 ]
             ], null, [
-                'page_templateId'
+                'classDocument'
             ]);
         if ($args instanceof Response) {
             return $args;
@@ -472,14 +474,20 @@ class PdfController extends AbstractActionController
 
     public function pdfPdfAction()
     {
-        $criteresObject = '\SbmCommun\Model\Db\ObjectData\Criteres';
+        $criteresObjectId = '\SbmCommun\Model\Db\ObjectData\Criteres';
         $criteresForm = '\SbmCommun\Form\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmpdf',
             'action' => 'pdf-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function pdfTexteAction()

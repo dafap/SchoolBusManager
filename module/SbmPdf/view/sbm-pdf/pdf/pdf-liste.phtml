@@ -221,13 +221,13 @@ $buttons = [
 					<td class="pdf_page_orientation">
 						<?=$doc->page_orientation;?></td>
 					<td class="docheader" <?=$doc_title;?>>
-						<?=$doc->docheader ? 'Oui' : '';?></td>
+						<?=$doc->docheader ? 'Oui' : 'Non';?></td>
 					<td class="docfooter" <?=$doc_footer;?>>
-						<?=$doc->docfooter ? 'Oui' : '';?></td>
+						<?=$doc->docfooter ? 'Oui' : 'Non';?></td>
 					<td class="pageheader" <?=$page_title;?>>
-						<?=$doc->pageheader ? 'Oui' : '';?></td>
+						<?=$doc->pageheader ? 'Oui' : 'Non';?></td>
 					<td class="pagefooter" <?=$page_footer;?>>
-						<?=$doc->pagefooter ? 'Oui' : '';?></td>
+						<?=$doc->pagefooter ? 'Oui' : 'Non';?></td>
 					<td class="boutons">
                 		<?=$this->listeLigneActions($doc->documentId, $hiddens, $buttons);?>
 				    </td>

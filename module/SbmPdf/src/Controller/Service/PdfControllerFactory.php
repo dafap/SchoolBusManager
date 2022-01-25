@@ -3,14 +3,14 @@
  * Injection des objets dans PdfController
  *
  * Compatibilité ZF3
- * 
+ *
  * @project sbm
  * @package SbmPdf/Controller/Service
  * @filesource PdfControllerFactory.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 fév. 2019
- * @version 2019-2.5.0
+ * @date 22 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPdf\Controller\Service;
 
@@ -25,7 +25,6 @@ class PdfControllerFactory implements FactoryInterface
     {
         $sm = $serviceLocator->getServiceLocator();
         $config_controller = [
-            'RenderPdfService' => $sm->get('RenderPdfService'),
             'db_manager' => $sm->get('Sbm\DbManager'),
             'pdf_manager' => $sm->get('Sbm\PdfManager')
         ];

@@ -59,40 +59,34 @@ class TestController extends AbstractActionController
 
     public function indexAction()
     {
-        /**
-         * Test sur BUISSON Taina (Clg Beaufort) eleveId=526 etablissemenntId=0730007L
-         * stationId=366 jours=27 trajet=1 responsableId=
-         */
-        /**
-         * Test sur COUTIN Clément (Clg Beaufort) eleveId=782 etablissementId=0730007L
-         * stationId=249 jours=27 trajet=1 responsableId
-         */
-        /**
-         * Test sur ANDOLFATTO Luna (R.Perrin Ugine - Me) eleveId=292
-         * etablissementId=0730043A
-         * stationId=372 jours=31 trajet=1 responsableId=234
-         */
-        /**
-         * Test sur COL DACRUZ Valentin (R.
-         * Perrin Ugine midi:3 troncons) eleveId=802 etablissementId=0730043A
-         * stationId=197 jours=4 trajet=1 responsableId=
-         */
-        /**
-         * Test sur CHRISTIN Laura (Lyc Grans Arc) eleveId=2153 etablissementId=0730006K
-         * stationId=33 jours=31 trajet=1 responsableId=
-         */
-        /**
-         * Test sur BARBASSAT Andjy (Lyc Grand Arc) eleveId=1872 etablissementId=0730006K
-         * stationId=173 jours=31 trajet=1 respondableId=
-         */
-        $object = $this->db_manager->get('Sbm\ChercheTrajet')
-            ->setEtablissementId('0730043A')
-            ->setEleveId(292)
-            ->setStationId(372)
-            ->setJours(31)
-            ->setTrajet(1)
-            ->setResponsableId(1)
-            ->run();
+        $path = StdLib::findParentPath(__DIR__, 'SbmPdf/src/Model/Document');
+        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+        $object = [];
+        foreach ($phpFiles as $phpFile) {
+            $content = file_get_contents($phpFile->getRealPath());
+            $tokens = token_get_all($content);
+            $namespace = '';
+            for ($index = 0; isset($tokens[$index]); $index++) {
+                if (!isset($tokens[$index][0])) {
+                    continue;
+                }
+                if (T_NAMESPACE === $tokens[$index][0]) {
+                    $index += 2; // Skip namespace keyword and whitespace
+                    while (isset($tokens[$index]) && is_array($tokens[$index])) {
+                        $namespace .= $tokens[$index++][1];
+                    }
+                }
+                if (T_CLASS === $tokens[$index][0] && T_WHITESPACE === $tokens[$index + 1][0] && T_STRING === $tokens[$index + 2][0]) {
+                    $index += 2; // Skip class keyword and whitespace
+                    $object[] = $namespace.'\\'.$tokens[$index][1];
+
+                    # break if you have one class per file (psr-4 compliant)
+                    # otherwise you'll need to handle class constants (Foo::class)
+                    break;
+                }
+            }
+        }
         // dump et print_r de l'objet 'obj'
         $viewmodel = new ViewModel([
             'obj' => $object,

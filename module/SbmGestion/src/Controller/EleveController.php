@@ -8,7 +8,7 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 nov. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmGestion\Controller;
@@ -39,6 +39,8 @@ use Zend\View\Model\ViewModel;
  * @property array $img
  * @property array $client
  * @property array $paginator_count_per_page
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -1179,22 +1181,28 @@ class EleveController extends AbstractActionController
      */
     public function elevePdfAction()
     {
-        $criteresObject = '\SbmGestion\Model\Db\ObjectData\CriteresEleves';
+        $criteresObjectId = '\SbmGestion\Model\Db\ObjectData\CriteresEleves';
         $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/eleve',
             'action' => 'eleve-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour,
-            [
+
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour, [
                 'criteres' => true
             ]);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function eleveGroupePdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             '\SbmGestion\Model\Db\ObjectData\CriteresEleves',
             null,
             function ($where, $args) {
@@ -1211,13 +1219,22 @@ class EleveController extends AbstractActionController
                 return $where;
             }
         ];
-        $criteresForm = '\SbmGestion\Form\Eleve\CriteresForm';
+        $criteresForm = \SbmGestion\Form\Eleve\CriteresForm::class;
         $documentId = null;
         $retour = [
             'route' => 'sbmgestion/eleve',
             'action' => 'eleve-groupe'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        // return $this->documentPdf($criteresObject, $criteresForm, $documentId,
+        // $retour);
+
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function eleveDownloadAction()
@@ -2315,7 +2332,7 @@ class EleveController extends AbstractActionController
         $rangeX = $projection->getRangeX();
         $rangeY = $projection->getRangeY();
         $nonLocalise = 'Not((x Between %d And %d) And (y Between %d And %d))';
-        $criteresObject = [
+        $criteresObjectId = [
             [
                 '\SbmGestion\Model\Db\ObjectData\CriteresResponsables',
                 'setSansLocalisationCondition',
@@ -2332,12 +2349,18 @@ class EleveController extends AbstractActionController
             'route' => 'sbmgestion/eleve',
             'action' => 'responsable-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function responsableGroupPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where, $args) {
@@ -2360,7 +2383,16 @@ class EleveController extends AbstractActionController
             'route' => 'sbmgestion/eleve',
             'action' => 'responsable-groupe'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour,
+            [
+                'effectifClassName' => 'Sbm\Db\Eleve\EffectifClasses'
+            ]);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**

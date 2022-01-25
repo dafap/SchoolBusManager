@@ -359,6 +359,106 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]);
+        $this->add(
+            [
+                'name' => 'classDocHeader',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-classdocheader',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Entête de document',
+                    'label_attributes' => [
+                        'class' => 'label_class'
+                    ],
+                    'empty_option' => 'Choisissez un modèle d\'entête',
+                    'value_options' => $this->getClassList('docheader'),
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'classDocFooter',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-classdocfooter',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Pied de document',
+                    'label_attributes' => [
+                        'class' => 'label_class'
+                    ],
+                    'empty_option' => 'Choisissez un modèle de pied',
+                    'value_options' => $this->getClassList('docfooter'),
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'classDocument',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-classdocument',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Modèle de document',
+                    'label_attributes' => [
+                        'class' => 'label_class'
+                    ],
+                    'empty_option' => 'Choisissez un modèle de document',
+                    'value_options' => $this->getClassList('document'),
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'classPageHeader',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-classpageheader',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Haut de page',
+                    'label_attributes' => [
+                        'class' => 'label_class'
+                    ],
+                    'empty_option' => 'Choisissez un modèle de haut de page',
+                    'value_options' => $this->getClassList('pageheader'),
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ])
+            ->add(
+            [
+                'name' => 'classPageFooter',
+                'type' => 'Zend\Form\Element\Select',
+                'attributes' => [
+                    'id' => 'documentpdf-classpagefooter',
+                    'class' => 'sbm-width-35c'
+                ],
+                'options' => [
+                    'label' => 'Pied de page',
+                    'label_attributes' => [
+                        'class' => 'label_class'
+                    ],
+                    'empty_option' => 'Choisissez un modèle de pied de page',
+                    'value_options' => $this->getClassList('pagefooter'),
+                    'error_attributes' => [
+                        'class' => 'error_class'
+                    ]
+                ]
+            ]);
         $this->add([
             'name' => 'creator',
             'type' => 'hidden'
@@ -525,7 +625,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
+        /*$this->add(
             [
                 'name' => 'docheader_templateId',
                 'type' => 'Zend\Form\Element\Select',
@@ -544,7 +644,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ]);
+            ]);*/
         $this->add(
             [
                 'name' => 'docfooter_title',
@@ -671,7 +771,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
+        /*$this->add(
             [
                 'name' => 'docfooter_templateId',
                 'type' => 'Zend\Form\Element\Select',
@@ -690,8 +790,8 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ]);
-        $this->add(
+            ]);*/
+        /*$this->add(
             [
                 'name' => 'pageheader_templateId',
                 'type' => 'Zend\Form\Element\Select',
@@ -710,7 +810,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ]);
+            ]);*/
         $this->add(
             [
                 'name' => 'pageheader_title',
@@ -911,7 +1011,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
+        /*$this->add(
             [
                 'name' => 'pagefooter_templateId',
                 'type' => 'Zend\Form\Element\Select',
@@ -930,7 +1030,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ]);
+            ]);*/
         $this->add(
             [
                 'name' => 'pagefooter_string',
@@ -1059,7 +1159,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ]);
-        $this->add(
+        /*$this->add(
             [
                 'name' => 'page_templateId',
                 'type' => 'Zend\Form\Element\Select',
@@ -1078,7 +1178,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'class' => 'sbm-error'
                     ]
                 ]
-            ]);
+            ]);*/
         $this->add(
             [
                 'name' => 'page_format',
@@ -2004,7 +2104,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                     ]
                 ]
             ],
-            'docfooter_templateId' => [
+            /*'docfooter_templateId' => [
                 'name' => 'docfooter_templateId',
                 'required' => false,
                 'filters' => [
@@ -2015,7 +2115,7 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
                         'name' => 'StringTrim'
                     ]
                 ]
-            ],
+            ],*/
             'docfooter_title' => [
                 'name' => 'docfooter_title',
                 'required' => false,
@@ -2513,7 +2613,8 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
 
     /**
      * Le validateur est sur l'élément recordSource (hidden] alors que les contrôles
-     * visibles sont TrecordSource (table] ou RrecordSource (requête]. 1/ affecter
+     * visibles sont TrecordSource (table] ou RrecordSource (requête].
+     * 1/ affecter
      * recordSource de la valeur du contrôle visible 2/ calculer isValid(] 3/ si une
      * erreur est sur recordSource, affecter cette erreur sur le contrôle visible
      * (non-PHPdoc]
@@ -2573,6 +2674,42 @@ class DocumentPdf extends Form implements InputFilterProviderInterface
          * substr($method, strlen($templateSectionMethod)); $list[$id] =
          * Tcpdf::{$method}('?'); } } return $list;
          */
+    }
+
+    /**
+     * Le nom d'une classe correspond au nom du fichier. La section correspond au répertoire du dossier document
+     * @param string $section
+     * @return array
+     */
+    private function getClassList(string $section): array
+    {
+        $path = StdLib::findParentPath(__DIR__, 'Model/Document');
+        switch ($section) {
+            case 'docheader':
+                $path .= '/' . 'DocHeader';
+                break;
+            case 'docfooter':
+                $path .= '/' . 'DocFooter';
+                break;
+            case 'document':
+                $path .= '/' . 'Template';
+                break;
+            case 'pageheader':
+                $path .= '/' . 'PageHeader';
+                break;
+            case 'pagefooter':
+                $path .= '/' . 'PageFooter';
+                break;
+            default:
+                throw new Exception('Mauvais paramétrage de la section');
+                break;
+        }
+        $array = [];
+        foreach (StdLib::getFullyQualifiedClassNameList($path) as $fqcn) {
+            $tmp =explode('\\',$fqcn);
+            $array[$fqcn] = array_pop($tmp);
+        }
+        return $array;
     }
 
     private function getArrayPageFormats()

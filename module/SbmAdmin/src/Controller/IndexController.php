@@ -9,7 +9,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmAdmin\Controller;
@@ -42,6 +42,8 @@ use Zend\View\Model\ViewModel;
  * @property array $img
  * @property array $client
  * @property array $paginator_count_per_page
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -260,7 +262,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function libellePdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             ObjectDataCriteres::class,
             [
                 'strict' => [
@@ -278,7 +280,14 @@ class IndexController extends AbstractActionController implements CategoriesInte
             'route' => 'sbmadmin',
             'action' => 'libelle-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -287,7 +296,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function libelleGroupPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             ObjectDataCriteres::class,
             [
                 'strict' => [
@@ -311,7 +320,13 @@ class IndexController extends AbstractActionController implements CategoriesInte
             'route' => 'sbmadmin',
             'action' => 'libelle-group'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -544,24 +559,20 @@ class IndexController extends AbstractActionController implements CategoriesInte
      */
     public function rpiPdfAction()
     {
-        $criteresObject = [];
-        // ObjectDataCriteres::class,
-        // [
-        // 'expressions' => [
-        // 'active' => 'Literal:active = 0'
-        // ]
-        // ]
-
+        $criteresObjectId = [];
         $criteresForm = [];
-        // CriteresForm::class,
-        // 'rpi'
-
         $documentId = null;
         $retour = [
             'route' => 'sbmadmin',
             'action' => 'rpi-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -720,7 +731,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function secteurScolairePdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             ObjectDataCriteres::class
         ];
         $criteresForm = [
@@ -732,7 +743,13 @@ class IndexController extends AbstractActionController implements CategoriesInte
             'route' => 'sbmadmin',
             'action' => 'secteur-scolaire-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /**
@@ -890,7 +907,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function simulationEtablissementPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             ObjectDataCriteres::class
         ];
         $criteresForm = [
@@ -902,7 +919,13 @@ class IndexController extends AbstractActionController implements CategoriesInte
             'route' => 'sbmadmin',
             'action' => 'simulation-etablissement-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     /*
@@ -938,7 +961,7 @@ class IndexController extends AbstractActionController implements CategoriesInte
 
     public function userPdfAction()
     {
-        $criteresObject = [
+        $criteresObjectId = [
             ObjectDataCriteres::class,
             [
                 'expressions' => [
@@ -955,7 +978,13 @@ class IndexController extends AbstractActionController implements CategoriesInte
             'route' => 'sbmadmin',
             'action' => 'user-liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function userAjoutAction()

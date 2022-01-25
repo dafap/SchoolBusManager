@@ -7,8 +7,8 @@
  * @filesource Pdf.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 13 août 2021
- * @version 2021-2.6.3
+ * @date 25 nov. 2021
+ * @version 2021-2.6.4
  */
 namespace SbmPdf\Mvc\Controller\Plugin;
 
@@ -81,17 +81,17 @@ class Pdf extends AbstractPlugin
                 ->getConfig($this->getDocumentId());
             $classDocument = $this->params->get('classDocument',
                 StdLib::getParam('classDocument', $config, false));
+            if (! $classDocument) {
+                throw new Exception\RuntimeException(
+                    "Le modèle de document n'est pas indiqué.");
+            } elseif (! $this->pdf_manager->has($classDocument)) {
+                throw new Exception\RuntimeException(
+                    "Ce modèle de document n'est pas programmé.");
+            }
             $out_mode = $this->params->get('out_mode',
                 StdLib::getParam('out_mode', $config, 'I'));
             $out_name = $this->params->get('out_name',
                 StdLib::getParam('out_name', $config, 'resultat.pdf'));
-            if (! $classDocument) {
-                throw new Exception\RuntimeException(
-                    "Le type de document n'est pas indiqué.");
-            } elseif (! $this->pdf_manager->has($classDocument)) {
-                throw new Exception\RuntimeException(
-                    "Ce type de document n'est pas programmé.");
-            }
             $response = $this->getResponse();
             if ($out_mode == 'I') {
                 $response->getHeaders()->addHeaders($this->inlineHeaders($out_name));

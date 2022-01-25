@@ -7,7 +7,7 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 oct. 2021
+ * @date 22 nov. 2021
  * @version 2021-2.6.4
  */
 namespace SbmPaiement\Controller;
@@ -30,6 +30,8 @@ use Zend\View\Model\ViewModel;
  * @property array $paginator_count_per_page
  * @property array $mail_config
  * @property array $csv
+ *
+ * @method \Zend\Http\Response documentPdf(array $params)
  *
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  *
@@ -126,7 +128,7 @@ class IndexController extends AbstractActionController
     public function pdfAction()
     {
         $table = $this->db_manager->get('SbmPaiement\Plugin\Table');
-        $criteresObject = [
+        $criteresObjectId = [
             '\SbmCommun\Model\Db\ObjectData\Criteres',
             null,
             function ($where) use ($table) {
@@ -143,7 +145,13 @@ class IndexController extends AbstractActionController
             'route' => 'sbmpaiement',
             'action' => 'liste'
         ];
-        return $this->documentPdf($criteresObject, $criteresForm, $documentId, $retour);
+        $pluginPdfParams = $this->getPluginPdfParams($criteresObjectId, $criteresForm,
+            $documentId, $retour);
+        if ($pluginPdfParams instanceof Response) {
+            return $pluginPdfParams;
+        }
+        $this->flashMessenger()->addSuccessMessage("Création d'un pdf.");
+        return $this->documentPdf($pluginPdfParams);
     }
 
     public function voirAction()

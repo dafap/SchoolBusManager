@@ -7,8 +7,8 @@
  * @filesource module.config.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr]
- * @date 13 août 2021
- * @version 2021-2.6.3
+ * @date 25 nov. 2021
+ * @version 2021-2.6.4
  */
 use SbmPdf\Controller;
 use SbmPdf\Service;
@@ -108,14 +108,14 @@ return [
             'FormDocField' => FormDocField::class,
             'FormDocLabel' => FormDocLabel::class,
             'FormDocAffectation' => FormDocAffectation::class,
-            Template\CartesTransport::PDFMANAGER_ID => Template\CartesTransport::class,
-            Template\CopieEcran::PDFMANAGER_ID => Template\CopieEcran::class,
-            Template\Etiquettes::PDFMANAGER_ID => Template\Etiquettes::class,
-            Template\Horaires::PDFMANAGER_ID => Template\Horaires::class,
-            Template\PublipostageHtml::PDFMANAGER_ID => Template\PublipostageHtml::class,
-            Template\TableComplexe::PDFMANAGER_ID => Template\TableComplexe::class,
-            Template\TableHtml::PDFMANAGER_ID => Template\TableHtml::class,
-            Template\TableSimple::PDFMANAGER_ID => Template\TableSimple::class
+            Template\CartesTransport::class => Template\CartesTransport::class,
+            Template\CopieEcran::class => Template\CopieEcran::class,
+            Template\Etiquettes::class => Template\Etiquettes::class,
+            Template\Horaires::class => Template\Horaires::class,
+            Template\PublipostageHtml::class => Template\PublipostageHtml::class,
+            Template\TableComplexe::class => Template\TableComplexe::class,
+            Template\TableHtml::class => Template\TableHtml::class,
+            Template\TableSimple::class => Template\TableSimple::class
         ],
         'factories' => [
             'ListeRoutes' => PdfService\ListeRoutesService::class,
