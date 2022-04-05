@@ -9,8 +9,8 @@
  * @filesource FinanceController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 3 avr. 2018
- * @version 2018-2.4.0
+ * @date 4 avr. 2022
+ * @version 2022-2.4.21
  */
 namespace SbmAjax\Controller;
 
@@ -314,7 +314,7 @@ class FinanceController extends AbstractActionController
                 $responsableId);
             $totalEncaisse = $this->db_manager->get('Sbm\Db\Table\Paiements')->total(
                 $where);
-            $totalInscriptions = $tEleves->getMontantElevesInscrits($responsableId);
+            $totalInscriptions = $tEleves->getMontantElevesInscritsSansFA($responsableId);
             $duplicatasPayes = $totalEncaisse - $totalInscriptions;
             // reste à payer
             $montantDuplicatas -= $duplicatasPayes;

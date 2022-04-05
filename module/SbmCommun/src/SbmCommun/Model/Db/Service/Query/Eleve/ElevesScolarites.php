@@ -8,8 +8,8 @@
  * @filesource ElevesScolarites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 29 mai 2019
- * @version 2019-2.4.8
+ * @date 05 avr. 2022
+ * @version 2022-2.4.21
  */
 namespace SbmCommun\Model\Db\Service\Query\Eleve;
 
@@ -293,6 +293,43 @@ class ElevesScolarites implements FactoryInterface
         $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
         return $statement->execute()->current()['montantTotal'];
     }
+
+    public function getMontantElevesInscritsSansFA($responsableId)
+    {
+        $select = $this->sql->select()
+            ->from(
+            [
+                'ele' => $this->db_manager->getCanonicName('eleves', 'table')
+            ])
+            ->join(
+            [
+                'sco' => $this->db_manager->getCanonicName('scolarites', 'table')
+            ], 'ele.eleveId = sco.eleveId', [])
+            ->join(
+            [
+                'tar' => $this->db_manager->getCanonicName('tarifs', 'table')
+            ], 'tar.tarifId = sco.tarifId', 
+            [
+                'montant',
+                'nomTarif' => 'nom'
+            ])
+            ->columns(
+            [
+                'montantTotal' => new Expression('sum(tar.montant)')
+            ]);
+        $where = new Where();
+        $where->equalTo('millesime', Session::get('millesime'))
+            ->literal('inscrit = 1')
+			->literal('fa = 0')
+            ->nest()
+            ->literal('paiement = 1')->or->literal('gratuit > 0')
+            ->unnest()
+            ->nest()
+            ->equalTo('responsable1Id', $responsableId)->or->equalTo('responsable2Id', 
+            $responsableId)->unnest();
+        $statement = $this->sql->prepareStatementForSqlObject($select->where($where));
+        return $statement->execute()->current()['montantTotal'];
+    }	
 
     public function getElevesPreinscritsWithMontant($responsableId)
     {
