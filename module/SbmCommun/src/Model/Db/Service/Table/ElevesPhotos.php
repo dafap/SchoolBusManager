@@ -8,14 +8,14 @@
  * @filesource ElevesPhotos.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 11 août 2021
- * @version 2021-2.6.3
+ * @date 4 mai 2022
+ * @version 2022-2.6.5
  */
 namespace SbmCommun\Model\Db\Service\Table;
 
 use SbmCommun\Model\Db\ObjectData\ObjectDataInterface;
 use SbmCommun\Model\Photo\PhotoValiditeInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Literal;
 
 class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
 {
@@ -34,7 +34,7 @@ class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
     public function saveRecord(ObjectDataInterface $obj_data)
     {
         try {
-            $old_data = $this->getRecord();
+            $old_data = $this->getRecord($obj_data->getId());
             $is_new = false;
         } catch (Exception\RuntimeException $e) {
             $this->supprAncienne($obj_data->getId());
@@ -64,7 +64,7 @@ class ElevesPhotos extends AbstractSbmTable implements PhotoValiditeInterface
         $select = $this->table_gateway->getSql()
             ->select()
             ->columns([
-            'lastDateExtraction' => new Expression('MAX(dateExtraction)')
+            'lastDateExtraction' => new Literal('MAX(dateExtraction)')
         ]);
         $rowset = $this->table_gateway->selectWith($select);
         return $rowset->current()->lastDateExtraction;
