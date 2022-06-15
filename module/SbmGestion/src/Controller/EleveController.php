@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 16 nov. 2021
- * @version 2021-2.6.4
+ * @date 21 mai 2022
+ * @version 2022-2.6.6
  */
 namespace SbmGestion\Controller;
 
@@ -1041,15 +1041,20 @@ class EleveController extends AbstractActionController
                 return $this->redirect()->toRoute('sbmgestion/eleve');
             }
         }
+        $millesime = Session::get('millesime');
+        $eleveId = $prg['eleveId'];
+        $where = new Where();
+        $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId);
+        $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
         $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
         $scolarite = $tScolarites->getRecord(
             [
-                'millesime' => Session::get('millesime'),
-                'eleveId' => $prg['eleveId']
+                'millesime' => $millesime,
+                'eleveId' => $eleveId
             ]);
-        $scolarite->inscrit = 1 - $scolarite->inscrit;
-        $tScolarites->saveRecord($scolarite);
-        $msg = $scolarite->inscrit ? 'La fiche de cet élève a été activée.' : 'Cet élève a été rayé.';
+        $this->db_manager->get('Sbm\Db\Table\Scolarites')->setInscrit($millesime,
+            $eleveId, 1 - $scolarite->inscrit);
+        $msg = $scolarite->inscrit ? 'Cet élève est rayé.' : 'Cet élève est inscrit.';
         $this->flashMessenger()->addSuccessMessage($msg);
         try {
             return $this->redirectToOrigin()->back();
@@ -1238,6 +1243,7 @@ class EleveController extends AbstractActionController
             'R1 Téléphone 1' => 'telephoneFR1',
             'R1 Téléphone 2' => 'telephonePR1',
             'R1 Téléphone 3' => 'telephoneTR1',
+            'R1 Email' => 'emailR1',
             'R2 Identité' => 'responsable2NomPrenom',
             'R2 Adresse ligne 1' => 'adresseL1R2',
             'R2 Adresse ligne 2' => 'adresseL2R2',
@@ -1246,6 +1252,7 @@ class EleveController extends AbstractActionController
             'R2 Téléphone 1' => 'telephoneFR2',
             'R2 Téléphone 2' => 'telephonePR2',
             'R2 Téléphone 3' => 'telephoneTR2',
+            'R2 Email' => 'emailR2',
             'Établissement' => 'etablissement',
             'Commune de l\'établissement' => 'lacommuneEtablissement',
             'Classe' => 'classe'
@@ -1304,7 +1311,7 @@ class EleveController extends AbstractActionController
     public function eleveSupprAction()
     {
         $prg = $this->prg();
-        $rayer = $supprimer = false;
+        $inscrire = $rayer = $supprimer = false;
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg === false) {
@@ -1327,13 +1334,31 @@ class EleveController extends AbstractActionController
                         'page' => $this->params('page', 1)
                     ]);
             }
+            $inscrire = array_key_exists('inscrire', $args);
             $rayer = array_key_exists('rayer', $args);
             $supprimer = array_key_exists('confirmer', $args);
             unset($args['rayer'], $args['confirmer']);
             Session::set('post', $args, $this->getSessionNamespace());
         }
+        $eleveId = $args['eleveId'];
+        $millesime = Session::get('millesime');
+        $tScolarites = $this->db_manager->get('Sbm\Db\Table\Scolarites');
+        $scolarite = $tScolarites->getRecord(
+            [
+                'millesime' => $millesime,
+                'eleveId' => $eleveId
+            ]);
+        if ($scolarite->inscrit) {
+            $key2 = 'rayer';
+            $value = 'Rayer';
+            $title = 'L\'élève ne sera plus inscrit mais restera enregistré dans la base.';
+        } else {
+            $key2 = 'inscrire';
+            $value = 'Inscrire';
+            $title = 'L\'élève sera inscrit et vous devrez traiter sa demande.';
+        }
         $form = new Form\ButtonForm([
-            'eleveId' => $args['eleveId']
+            'eleveId' => $eleveId
         ],
             [
                 'confirmer' => [
@@ -1341,23 +1366,22 @@ class EleveController extends AbstractActionController
                     'value' => 'Supprimer',
                     'title' => 'Cette action est irréversible.'
                 ],
-                'rayer' => [
+                $key2 => [
                     'class' => 'confirm',
-                    'value' => 'Rayer',
-                    'title' => 'L\'élève ne sera plus inscrit mais restera enregistré dans la base.'
+                    'value' => $value,
+                    'title' => $title
                 ],
                 'cancel' => [
                     'class' => 'confirm',
                     'value' => 'Abandonner'
                 ]
             ]);
-        $millesime = Session::get('millesime');
         if ($rayer) {
             $where = new Where();
-            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
+            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId);
             $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->setInscrit($millesime,
-                $args['eleveId'], 0);
+                $eleveId, 0);
             $this->flashMessenger()->addSuccessMessage('L\'élève a été rayée.');
             return $this->redirect()->toRoute('sbmgestion/eleve',
                 [
@@ -1366,15 +1390,24 @@ class EleveController extends AbstractActionController
                 ]);
         } elseif ($supprimer) {
             $where = new Where();
-            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $args['eleveId']);
+            $where->equalTo('millesime', $millesime)->equalTo('eleveId', $eleveId);
             $this->db_manager->get('Sbm\Db\Table\Affectations')->deleteRecord($where);
             $this->db_manager->get('Sbm\Db\Table\Scolarites')->deleteRecord($where);
             try {
-                $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord(
-                    $args['eleveId']);
+                $this->db_manager->get('Sbm\Db\Table\Eleves')->deleteRecord($eleveId);
             } catch (\Zend\Db\Adapter\Exception\InvalidQueryException $e) {
             }
             $this->flashMessenger()->addSuccessMessage('L\'inscription a été supprimée.');
+            return $this->redirect()->toRoute('sbmgestion/eleve',
+                [
+                    'action' => 'eleve-liste',
+                    'page' => $this->params('page', 1)
+                ]);
+        } elseif ($inscrire) {
+            $this->db_manager->get('Sbm\Db\Table\Scolarites')->setInscrit($millesime,
+                $eleveId, 1);
+            $this->flashMessenger()->addSuccessMessage(
+                'L\'élève a été inscrit. Traitez sa deande !');
             return $this->redirect()->toRoute('sbmgestion/eleve',
                 [
                     'action' => 'eleve-liste',
@@ -1386,10 +1419,11 @@ class EleveController extends AbstractActionController
                 'form' => $form->prepare(),
                 'page' => $this->params('page', 1),
                 'eleve' => $this->db_manager->get('Sbm\Db\Query\ElevesScolarites')->getEleve(
-                    $args['eleveId']),
+                    $eleveId),
                 'affectations' => $this->db_manager->get(
                     'Sbm\Db\Query\AffectationsServicesStations')->getCorrespondances(
-                    $args['eleveId'])
+                    $eleveId),
+                'rayer' => $scolarite->inscrit
             ]);
     }
 

@@ -10,8 +10,8 @@
  * @filesource ServicesForSelect.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 9 juin 2021
- * @version 2021-2.6.2
+ * @date 27 mai 2022
+ * @version 2022-2.6.6
  */
 namespace SbmCommun\Model\Db\Service\Select;
 
@@ -298,7 +298,11 @@ class ServicesForSelect implements FactoryInterface
 
     /**
      * Renvoie la liste des services permettant un déplacement depuis le service donné en
-     * paramètres
+     * paramètres.
+     * La requête complexe tient compte des stations jumelles dans le trajet et des
+     * stations desservant l'établissement au terminus (pour l'aller) ou au départ (pour
+     * le retour).
+     * Rappel : il y a retour aux moments 2 et 3, sinon c'est un aller.
      *
      * @param string $ligneId
      * @param int $sens
@@ -324,34 +328,269 @@ class ServicesForSelect implements FactoryInterface
             'aff.ordreligne1', 'cir1.ordre', Predicate::TYPE_IDENTIFIER,
             Predicate::TYPE_IDENTIFIER)
             ->unnest()
-            ->nest()
-            ->equalTo('aff.station1Id', 'cir1.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum1.station1Id', 'cir1.stationId',
-            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
-            'jum1.station2Id', 'cir1.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum2.station1Id', 'cir1.stationId',
-            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
-            'jum2.station2Id', 'cir1.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)
-            ->unnest()
-            ->nest()
-            ->equalTo('aff.station2Id', 'cir2.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum3.station1Id', 'cir2.stationId',
-            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
-            'jum3.station2Id', 'cir2.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)->or->equalTo('jum4.station1Id', 'cir2.stationId',
-            Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER)->or->equalTo(
-            'jum4.station2Id', 'cir2.stationId', Predicate::TYPE_IDENTIFIER,
-            Predicate::TYPE_IDENTIFIER)
-            ->unnest()
+            ->literal('sta1.stationId = cir1.stationId')
+            ->literal('sta2.stationId = cir2.stationId')
             ->lessThan('cir1.horaireD', 'cir2.horaireA', Predicate::TYPE_IDENTIFIER,
             Predicate::TYPE_IDENTIFIER);
-        $select = $this->sql->select(
+        /*
+         * SELECT millesime, eleveId, trajet, jours, moment, max(correspondance) AS
+         * correspondance, selection, responsableId, station1Id, ligne1Id, sensligne1,
+         * ordreligne1, station2Id AS linkId, ligne2Id, sensligne2, ordreligne2
+         * FROM `sbm_t_affectations`
+         * WHERE millesime = 2020 AND moment NOT IN (2,3)
+         * GROUP BY millesime, eleveId, trajet, jours, moment
+         */
+        $aff1 = new Select($this->db_manager->getCanonicName('affectations', 'table'));
+        $aff1->columns(
             [
-                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance' => new Literal('max(correspondance)'),
+                'selection',
+                'responsableId',
+                'station1Id',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'linkId' => 'station2Id',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
             ])
+            ->where(
+            (new Where())->equalTo('millesime', $this->millesime)
+                ->notIn('moment', [
+                2,
+                3
+            ]))
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'moment'
+        ]);
+        /*
+         * SELECT DISTINCT et1.stationId AS linkId, et2.stationId
+         * FROM `sbm_t_etablissements-stations` AS et1
+         * INNER JOIN `sbm_t_etablissements-stations` AS et2 ON et1.etablissementId =
+         * et2.etablissementId
+         */
+        $aff2 = new Select();
+        $aff2->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns([
+            'linkId' => 'stationId'
+        ])
+            ->from(
+            [
+                'et1' => $this->db_manager->getCanonicName('etablissements-stations',
+                    'table')
+            ])
+            ->join(
+            [
+                'et2' => $this->db_manager->getCanonicName('etablissements-stations',
+                    'table')
+            ], 'et1.etablissementId = et2.etablissementId', [
+                'stationId'
+            ]);
+        /*
+         * SELECT millesime, eleveId, trajet, jours, moment, min(correspondance) AS
+         * correspondance, selection, responsableId, station1Id AS linkId, ligne1Id,
+         * sensligne1, ordreligne1, station2Id, ligne2Id, sensligne2, ordreligne2
+         * FROM `sbm_t_affectations`
+         * WHERE millesime = 2020 AND moment IN (2,3)
+         * GROUP BY millesime, eleveId, trajet, jours, moment
+         */
+        $aff3 = new Select($this->db_manager->getCanonicName('affectations', 'table'));
+        $aff3->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance' => new Literal('min(correspondance)'),
+                'selection',
+                'responsableId',
+                'linkId' => 'station1Id',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'station2Id',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ])
+            ->where(
+            (new Where())->equalTo('millesime', $this->millesime)
+                ->in('moment', [
+                2,
+                3
+            ]))
+            ->group([
+            'millesime',
+            'eleveId',
+            'trajet',
+            'jours',
+            'moment'
+        ]);
+        /*
+         * SELECT DISTINCT et1.stationId AS linkId, et2.stationId
+         * FROM `sbm_t_etablissements-stations` AS et1
+         * INNER JOIN `sbm_t_etablissements-stations` AS et2 ON et1.etablissementId =
+         * et2.etablissementId
+         */
+        $aff4 = new Select();
+        $aff4->quantifier(Select::QUANTIFIER_DISTINCT)
+            ->columns([
+            'linkId' => 'stationId'
+        ])
+            ->from(
+            [
+                'et1' => $this->db_manager->getCanonicName('etablissements-stations',
+                    'table')
+            ])
+            ->join(
+            [
+                'et2' => $this->db_manager->getCanonicName('etablissements-stations',
+                    'table')
+            ], 'et1.etablissementId = et2.etablissementId', [
+                'stationId'
+            ]);
+        $sub_aff_union1 = new Select();
+        $sub_aff_union1->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance',
+                'selection',
+                'responsableId',
+                'station1Id',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ])
+            ->from([
+            'aff1' => $aff1
+        ])
+            ->join([
+            'aff2' => $aff2
+        ], 'aff1.linkId = aff2.linkId', [
+            'station2Id' => 'aff2.stationId'
+        ]);
+        $sub_aff_union2 = new Select();
+        $sub_aff_union2->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance',
+                'selection',
+                'responsableId',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'station2Id',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ])
+            ->from([
+            'aff3' => $aff3
+        ])
+            ->join([
+            'aff4' => $aff4
+        ], 'aff3.linkId = aff4.linkId', [
+            'station1Id' => 'aff4.stationId'
+        ]);
+        $aff_union2 = new Select();
+        $aff_union2->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance',
+                'selection',
+                'responsableId',
+                'station1Id',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'station2Id',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ])->from([
+            'tmp2' => $sub_aff_union2
+        ]);
+        $aff = new Select();
+        $aff->columns(
+            [
+                'millesime',
+                'eleveId',
+                'trajet',
+                'jours',
+                'moment',
+                'correspondance',
+                'selection',
+                'responsableId',
+                'station1Id',
+                'ligne1Id',
+                'sensligne1',
+                'ordreligne1',
+                'station2Id',
+                'ligne2Id',
+                'sensligne2',
+                'ordreligne2'
+            ])
+            ->from([
+            'tmp1' => $sub_aff_union1
+        ])
+            ->combine($aff_union2);
+        $s1 = new Select();
+        $s1->columns([
+            'stationId' => 'station1Id',
+            'searchId' => 'station2Id'
+        ])->from($this->db_manager->getCanonicName('stations-stations', 'table'));
+        $s2 = new Select();
+        $s2->columns([
+            'stationId' => 'station2Id',
+            'searchId' => 'station1Id'
+        ])->from($this->db_manager->getCanonicName('stations-stations', 'table'));
+        $sta_union = new \SbmPdf\Model\Db\Sql\Select();
+        $sta_union->columns([
+            'stationId' => 'stationId',
+            'searchId' => 'stationId'
+        ])->from($this->db_manager->getCanonicName('stations', 'table'));
+        $sub_sta_union = new \SbmPdf\Model\Db\Sql\Select();
+        $sub_sta_union->from([
+            'u2' => $s1->combine($s2)
+        ]);
+        $sta_union->combine($sub_sta_union);
+        $select = $this->sql->select([
+            'aff' => $aff
+        ])
             ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns([])
+            ->join([
+            'sta1' => $sta_union
+        ], 'sta1.searchId = aff.station1Id', [])
+            ->join([
+            'sta2' => $sta_union
+        ], 'sta2.searchId = aff.station2Id', [])
             ->join([
             'cir1' => $this->db_manager->getCanonicName('circuits', 'table')
         ], 'aff.millesime=cir1.millesime AND aff.moment=cir1.moment', [])
@@ -376,22 +615,6 @@ class ServicesForSelect implements FactoryInterface
             ->join([
             'l' => $this->db_manager->getCanonicName('lignes', 'table')
         ], 'l.millesime=s.millesime AND l.ligneId=s.ligneId', [])
-            ->join(
-            [
-                'jum1' => $this->db_manager->getCanonicName('stations-stations', 'table')
-            ], 'aff.station1Id = jum1.station1Id', [], Select::JOIN_LEFT)
-            ->join(
-            [
-                'jum2' => $this->db_manager->getCanonicName('stations-stations', 'table')
-            ], 'aff.station1Id = jum2.station2Id', [], Select::JOIN_LEFT)
-            ->join(
-            [
-                'jum3' => $this->db_manager->getCanonicName('stations-stations', 'table')
-            ], 'aff.station2Id = jum3.station1Id', [], Select::JOIN_LEFT)
-            ->join(
-            [
-                'jum4' => $this->db_manager->getCanonicName('stations-stations', 'table')
-            ], 'aff.station2Id = jum4.station2Id', [], Select::JOIN_LEFT)
             ->where($where)
             ->order([
             's.ligneId',
@@ -399,6 +622,7 @@ class ServicesForSelect implements FactoryInterface
             's.moment',
             's.ordre'
         ]);
+        //die($this->getSqlString($select));
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $rowset = $statement->execute();
         $array = [];

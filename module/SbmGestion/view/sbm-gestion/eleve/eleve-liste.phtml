@@ -8,8 +8,8 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 14 juil. 2020
- * @version 2020-2.6.0
+ * @date 21 mai 2022
+ * @version 2022-2.6.6
  */
 use SbmBase\Model\DateLib;
 
@@ -326,8 +326,11 @@ $actions = [
                 "even",
                 "odd"
             ])->next();
-            if (! $eleve['inscrit']) {
+            if ($eleve['inscrit']) {
+                $supprimer_title = 'supprimer ou rayer';
+            } else {
                 $tr_css .= ' barre';
+                $supprimer_title = 'supprimer ou inscrire';
             }
             /*
              * if ($eleve['demandeR1'] == 2 || $eleve['demandeR2'] == 2) { $rouge =
@@ -381,9 +384,9 @@ $actions = [
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'modifier')
                 ],
                 'supprimer' => [
-                    'class' => 'fam-delete',
+                    'class' => 'fam-cross',
                     'formaction' => $url_delete,
-                    'title' => 'supprimer',
+                    'title' => $supprimer_title,
                     'onclick' => sprintf($js_op, $eleve['eleveId'], '', 'supprimer')
                 ],
                 'majNotification' => [

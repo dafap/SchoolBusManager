@@ -8,13 +8,20 @@
  * @filesource eleve-suppr.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 12 mai 2020
- * @version 2020-2.6.0
+ * @date 21 mai 2022
+ * @version 2022-2.6.6
  */
+if ($this->rayer) {
+    $titre = 'Supprimer ou rayer';
+    $message = 'Pour supprimer l\'inscription tout en gardant sa trace dans l\'historique, cliquez sur le bouton "Rayer"';
+} else {
+    $titre = 'Supprimer ou inscrire';
+    $message = 'Pour réinscrire l\'élève, cliquez sur le bouton "Inscrire"';
+}
 ?>
-<h1>Suppression d'une inscription</h1>
+<h1><?= $titre;?></h1>
 <div id="suppr-wrapper">
-	<p>Vous souhaitez supprimer l'inscription de :</p>
+	<p>Vous souhaitez modifier l'état d'inscription de :</p>
 	<div class="header-wrapper">
 		<ul>
 			<li><?= $this->eleve['nom'] . ' ' . $this->eleve['prenom']; ?></li>
@@ -32,8 +39,7 @@
 	</div>
 	<p>Pour supprimer définitivement la fiche de cet élève, cliquez sur le
 		bouton "Supprimer".</p>
-	<p>Pour supprimer l'inscription tout en gardant sa trace dans
-		l'historique, cliquez sur le bouton "Rayer"</p>
+	<p><?=$message;?></p>
 	<?= $this->form()->openTag($form);?>
 	<?= $this->formCollection($form);?>
 	<?= $this->form()->closeTag();?>

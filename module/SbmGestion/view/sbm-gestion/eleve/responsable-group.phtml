@@ -8,8 +8,8 @@
  * @filesource eleve-group.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 mai 2021
- * @version 2021-2.6.2
+ * @date 21 mai 2022
+ * @version 2022-2.6.6
  */
 use SbmBase\Model\Session;
 
@@ -232,9 +232,9 @@ $personne = sprintf('%s %s %s', $this->responsable->titre, $this->responsable->p
                         'title' => 'Modifier'
                     ],
                     'rayer' => [
-                        'class' => $row['inscrit'] ? 'fam-pencil-delete' : 'fam-pencil-add',
+                        'class' => $row['inscrit'] ? 'fam-status-busy' : 'fam-status-online',
                         'formaction' => $url_raye,
-                        'title' => $row['inscrit'] ? 'Rayer' : 'Activer'
+                        'title' => $row['inscrit'] ? 'Rayer' : 'Inscrire'
                     ],
                     'majNotification' => [
                         'class' => 'fam-transmit-error',
