@@ -8,7 +8,7 @@
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
  * @date 21 août 2021
- * @version 2021-2.6.3
+ * @version 2021-2.6.6
  */
 namespace SbmGestion\Model\Db\Service;
 
@@ -211,11 +211,23 @@ abstract class AbstractQuery
                         break;
                     case 'isnull':
                     case 'is null':
-                        $where->isNull($this->literal($value));
+                        $nbParameters = count($value);
+                        if ($nbParameters == 1) {
+                            $where->isNull($this->literal(current($value)));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans IsNull.');
+                        }
                         break;
                     case 'isnotnull':
                     case 'is not null':
-                        $where->isNotNull($this->literal($value));
+                        $nbParameters = count($value);
+                        if ($nbParameters == 1) {
+                            $where->isNotNull($this->literal(current($value)));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans IsNotNull.');
+                        }
                         break;
                     case 'like':
                         $nbParameters = count($value);
@@ -237,7 +249,13 @@ abstract class AbstractQuery
                         }
                         break;
                     case 'literal':
-                        $where->literal($this->literal($value));
+                        $nbParameters = count($value);
+                        if ($nbParameters == 1) {
+                            $where->literal($this->literal(current($value)));
+                        } else {
+                            throw new \InvalidArgumentException(
+                                'Nombre incorrect de paramètres dans un literal.');
+                        }
                         break;
                     default:
                         $where->nest()
@@ -275,7 +293,7 @@ abstract class AbstractQuery
                     case 'or':
                         if (! is_array($part) || empty($part)) {
                             throw new \InvalidArgumentException(
-                                'Opération logiquen demandée. Arguments inccorrects : On attend un tableau de valeurs.');
+                                'Opération logique demandée. Arguments inccorrects : On attend un tableau de valeurs.');
                         }
                         $expression = '(' . $this->literal($part[0]);
                         $key = strtoupper($key);
