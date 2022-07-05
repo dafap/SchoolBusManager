@@ -1,0 +1,105 @@
+<?php
+/**
+ * Liste des services d'un lot de marché
+ *
+ * @project sbm
+ * @package SbmGestion/view/sbm-gestion/transport
+ * @filesource lot-service.phtml
+ * @encodage UTF-8
+ * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
+ * @date 5 juillet 2022
+ * @version 2022-2.5.15
+ */
+$this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
+
+$this->paginator->setDefaultItemCountPerPage($this->count_per_page);
+$this->paginator->setCurrentPageNumber($this->page);
+$services = $this->paginator->getCurrentItems();
+
+$url_retour = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-liste',
+        'page' => $this->pageRetour
+    ]);
+$url_rapports = $this->url('sbmgestion/transport',
+    [
+        'action' => 'lot-service-pdf',
+        'page' => $this->page,
+        'pr' => $this->pageRetour
+    ]);
+$hiddens = [
+    'lotId' => $this->lotId
+];
+$menuImpression = $this->menuRapports(
+    $this->url('sbmgestion/transport', [
+        'action' => 'lot-service'
+    ]), $url_rapports, 'fam-printer', null, $hiddens);
+$hiddens = $menuImpression['hiddens'];
+// ne pas utiliser de guillement dans la chaine $js
+$js_retour = 'window.document.getElementById(\'op\').value=\'retour\';';
+$actions = [
+    'retour' => [
+        'class' => 'fam-door-out',
+        'formaction' => $url_retour,
+        'title' => 'Retour',
+        'onclick' => $js_retour
+    ],
+    'rapports' => $menuImpression['content']
+];
+?>
+
+<h1>Services du lot de marché <?= $this->lot->marche;?></h1>
+<div id="liste-wrapper">
+	<div id="liste-header" class="clearfix">
+		<div class="menu float-left"><?=$this->listeZoneActions($hiddens, $actions);?></div>
+		<div class="flashMessenger float-right"><?php
+echo $this->flashMessenger()->render('success');
+echo $this->flashMessenger()->render('warning');
+echo $this->flashMessenger()->render('error');
+echo $this->flashMessenger()->render('info');
+echo $this->flashMessenger()->render('default');
+?>
+        </div>
+	</div>
+	<div id="liste-inner">
+		<table class="liste-inner services">
+			<tbody>
+				<tr>
+					<th>Code</th>
+					<th>Alias</th>
+					<th>Nom</th>
+					<th>Opérateur</th>
+					<th>Capacité</th>
+					<th></th>
+				</tr>
+            <?php foreach ($services as $service) : ?>
+            <?php
+                $css = $this->cycle([
+                    "even",
+                    "odd"
+                ])->next();
+                ?>
+                <tr class="petit <?=$css;?>">
+					<td class="serviceid">
+						<?=$this->escapeHtml($service->serviceId);?></td>
+					<td class="aliascg">
+						<?=$this->escapeHtml($service->alias);?></td>
+					<td class="nom">
+
+					<td class="operateur">
+						<?=$this->escapeHtml($service->operateur);?></td>
+					<td class="nbplaces">
+						<?=$this->escapeHtml($service->nbPlaces);?></td>
+				</tr>
+            <?php endforeach; ?>
+
+
+					</tbody>
+		</table>
+	</div>
+	<div id="liste-footer">
+		<div class="pagination-wrapper clearfix">
+			<?=$this->paginationControl($this->paginator, 'Sliding', 'sbm/pagination', []);?></div>
+
+	</div>
+</div>

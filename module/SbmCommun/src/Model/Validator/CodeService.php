@@ -9,8 +9,8 @@
  * @filesource CodeService.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 8 juil. 2021
- * @version 2021-2.5.13
+ * @date 2 juil. 2022
+ * @version 2021-2.5.15
  */
 namespace SbmCommun\Model\Validator;
 
@@ -25,7 +25,7 @@ use Zend\Validator\AbstractValidator;
 class CodeService extends AbstractValidator
 {
 
-    const PATTERN = '/^M[4][0-9]{2}[A-Z](?:-V[1-9])?$|^MGC[0-9]{2,3}[A-Z]?(?:-[NV][1-9])?$/';
+    const PATTERN = '/^[1-9][0-9]{4}[A-Z]?$|^MGC[0-9]{2,3}[A-Z]{0,2}(?:-[A-Z][1-9])?$|^M[4][0-9]{2}[A-Z](?:-V[1-9])?$/';
 
     const ERROR = 'codeService';
 

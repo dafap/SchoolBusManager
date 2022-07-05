@@ -11,8 +11,8 @@
  * @filesource lot-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 août 2021
- * @version 2021-2.5.14
+ * @date 22 juin 2022
+ * @version 2021-2.5.15
  */
 use SbmBase\Model\DateLib;
 
@@ -61,8 +61,8 @@ $url_delete = $this->url('sbmgestion/transport',
     ]);
 $url_relation = $this->url('sbmgestion/transport',
     [
-        'action' => 'lot-group',
-        'id' => $this->page
+        'action' => 'lot-service',
+        //'id' => $this->page
     ]);
 if ($this->layout()->hassbmservicesms) {
     $url_sms = $this->url('sbmservicesms', [

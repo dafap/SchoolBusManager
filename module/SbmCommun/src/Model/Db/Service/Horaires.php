@@ -13,8 +13,8 @@
  * @filesource Horaires.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 18 avr. 2019
- * @version 2019-2.5.0
+ * @date 5 juillet 2022
+ * @version 2019-2.5.15
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -81,24 +81,33 @@ class Horaires implements FactoryInterface
     {
         $result = [];
         if (is_array($id)) {
-            // cela devrait être ['serviceId' => serviceId, 'stationId' => stationId]
+            // il doit y avoir la clé 'serviceId' et il peut y avoir la clé 'stationId'
             // sinon, c'est pas bon et on lance une exception.
             if (! array_key_exists('serviceId', $id) ||
-                ! array_key_exists('stationId', $id)) {
+                (count($id) == 2 && ! array_key_exists('stationId', $id))) {
                 $msg = 'Le tableau de paramètres reçu n\'est pas de la forme' .
                     ' [\'serviceId\' => serviceId, \'stationId\' => stationId]';
                 throw new \Exception($msg);
             }
-            $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
-            $resultset = $tCircuits->fetchAll($id);
-            if ($resultset->count()) {
-                $circuit = $resultset->current();
-                $id = $circuit->circuitId;
+            if (array_key_exists('stationId', $id)) {
+                $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
+                $resultset = $tCircuits->fetchAll($id);
+                if ($resultset->count()) {
+                    $circuit = $resultset->current();
+                    $id = $circuit->circuitId;
+                    $typeCircuitId = true;
+                } else {
+                    $id = $id['serviceId'];
+                    $typeCircuitId = false;
+                }
             } else {
                 $id = $id['serviceId'];
+                $typeCircuitId = false;
             }
+        } else {
+            $typeCircuitId = true;
         }
-        if ($id == (string) ((int) $id)) {
+        if ($typeCircuitId) {
             // $id est un circuitId
             $aHoraires = $this->db_manager->get('Sbm\Db\Query\Circuits')->getHoraires(
                 (int) $id);
@@ -107,7 +116,7 @@ class Horaires implements FactoryInterface
                     $result["horaire$i"] = $this->ligneTableHoraires($aHoraires, $i);
                 }
             }
-        } elseif (is_string($id)) {
+        } else {
             // $id est un serviceId
             $aHoraires = $this->db_manager->get('Sbm\Db\Table\Services')->getHoraires($id);
             foreach ($aHoraires as $key => $codejours) {

@@ -8,8 +8,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2021
- * @version 2021-2.5.14
+ * @date 22 juin 2022
+ * @version 2022-2.5.15
  */
 namespace SbmGestion\Controller;
 
@@ -496,14 +496,16 @@ class TransportController extends AbstractActionController
             }
             $tCircuits = $this->db_manager->get('Sbm\Db\Table\Circuits');
             // millesime en cours pour cette session
-            $millesime = Session::get('millesime');
+            $millesime = StdLib::getParam('millesime', $prg, Session::get('millesime'));
             // on cherche si ce millesime a déjà des circuits enregistrés
             $resultset = $tCircuits->fetchAll([
                 'millesime' => $millesime
             ]);
             if ($resultset->count()) {
                 $this->flashMessenger()->addErrorMessage(
-                    'Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire.');
+                    sprintf(
+                        'Impossible de générer les circuits. Il existe déjà des circuits pour cette année scolaire %d-%d.',
+                        $millesime, $millesime + 1));
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception\ExceptionInterface $e) {
@@ -526,7 +528,9 @@ class TransportController extends AbstractActionController
                 $tCircuits->saveRecord($row);
             }
             $this->flashMessenger()->addSuccessMessage(
-                'Les circuits de cette année scolaire viennent d\'être générés.');
+                sprintf(
+                    'Les circuits de cette année scolaire %d-%d viennent d\'être générés.',
+                    $millesime, $millesime + 1));
         }
         try {
             return $this->redirectToOrigin()->back();

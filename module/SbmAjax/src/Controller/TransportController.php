@@ -10,8 +10,8 @@
  * @filesource TransportController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2021
- * @version 2021-2.5.14
+ * @date 5 juillet 2022
+ * @version 2019-2.5.15
  */
 namespace SbmAjax\Controller;
 
@@ -703,7 +703,9 @@ class TransportController extends AbstractActionController
                         ]));
                 } elseif ($serviceId) {
                     // on renvoie un tableau ou seule la première colonne est connue
-                    $result = $horaires->getTableHoraires($serviceId);
+                    $result = $horaires->getTableHoraires([
+                        'serviceId' => $serviceId
+                    ]);
                     return $this->getResponse()->setContent(
                         Json::encode([
                             'table' => $result,
