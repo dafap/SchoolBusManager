@@ -8,7 +8,7 @@
  * @filesource eleve-liste.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 mai 2022
+ * @date 13 juillet 2022
  * @version 2022-2.6.6
  */
 use SbmBase\Model\DateLib;
@@ -339,7 +339,7 @@ $actions = [
              * ($eleve['demandeR1'] + $eleve['demandeR2'] == 0) || ($eleve['distanceR1'] <
              * 1.0 && $eleve['distanceR2'] < 1.0); }
              */
-            $rouge = $eleve['demandeR1'] == 1 || $eleve['demandeR2'] == 1;
+            $rouge = $eleve['demandeR1'] == 1 || ($ga && $eleve['demandeR2'] == 1);
             if ($rouge) {
                 $tr_css .= ' alert';
                 $afficheRouge = true;
