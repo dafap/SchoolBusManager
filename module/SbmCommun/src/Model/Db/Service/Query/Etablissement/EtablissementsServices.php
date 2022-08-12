@@ -8,8 +8,8 @@
  * @filesource EtablissementsServices.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 août 2021
- * @version 2021-2.5.14
+ * @date 12 août 2022
+ * @version 2021-2.5.16
  */
 namespace SbmCommun\Model\Db\Service\Query\Etablissement;
 
@@ -201,7 +201,7 @@ class EtablissementsServices extends AbstractQuery
     public function fetchAll($where, $order = [])
     {
         if (! $where instanceof Where) {
-            $where = $this->arrayToWhere($where);
+            $where = $this->arrayToWhere(null, $where);
         }
         $select = clone $this->select;
         if ($order) {
