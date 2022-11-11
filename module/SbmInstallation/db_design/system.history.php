@@ -3,14 +3,15 @@
  * Description de la table d'historique de l'application
  *
  * Cette table sera remplie par des triggers
+ * Cette version adapte la structure pour MariaDB
  *
  * @project sbm
  * @package SbmInstallation/db_design
  * @filesource system.history.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 déc. 2018
- * @version 2019-2.5.4
+ * @date 11 nov. 2021
+ * @version 2019-2.5.17
  */
 return [
     'name' => 'history',
@@ -23,10 +24,10 @@ return [
             'table_name' => 'varchar(32) DEFAULT NULL',
             'action' => 'char(6) NOT NULL',
             'id_name' => 'varchar(64) DEFAULT NULL',
-            'id_int' => 'int(11) NOT NULL DEFAULT 0',
+            'id_int' => 'int(11) DEFAULT 0', // suppression de la propriété NOT NULL
             'id_txt' => 'varchar(25) DEFAULT NULL', // calculé pour affectations
             'dt' => 'datetime NOT NULL',
-            'log' => 'text'
+            'log' => 'text DEFAULT NULL'
         ],
         'keys' => [
             'HISTORY_Table' => [
