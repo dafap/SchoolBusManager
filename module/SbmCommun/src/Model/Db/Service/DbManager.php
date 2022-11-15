@@ -1,7 +1,7 @@
 <?php
 /**
  * Service 'Sbm\DbManager'
- * 
+ *
  * Crée un db_manager et propose les méthodes publiques pour accéder aux tables de la base de données.
  *
  * @project sbm
@@ -9,8 +9,8 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 fév. 2019
- * @version 2019-2.5.0
+ * @date 15 nov. 2022
+ * @version 2019-2.5.16
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -100,7 +100,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            Les valeurs permises sont 'table'|'vue'|'system'
-     *            
+     *
      * @return string
      */
     public function getCanonicName($tableName, $type = 'table')
@@ -114,7 +114,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @return boolean
      */
     public function existsTable($tableName, $type = 'table')
@@ -138,9 +138,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
-     *        
+     *
      * @return array de la forme [colName => tailleColonne, ...]
      */
     public function getMaxLengthArray($tableName, $type)
@@ -171,10 +171,10 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            nom simple
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table ou une colonne n'existe
      *         pas
-     *        
+     *
      * @return array
      */
     public function getColumns($tableName, $type)
@@ -194,7 +194,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            nom simple
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @return array
      */
     public function getColumnTypes($tableName, $type)
@@ -215,9 +215,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
-     *        
+     *
      * @return array de la forme [colName => tailleColonne, ...]
      */
     public function getColumnDefaults($tableName, $type)
@@ -236,7 +236,11 @@ class DbManager extends ServiceManager implements FactoryInterface
             if ($colName == 'millesime') {
                 $result[$colName] = Session::get('millesime', 0);
             } elseif (! is_null($descriptor['column_default'])) {
-                $result[$colName] = $descriptor['column_default'];
+                if ($descriptor['is_nullable'] && $descriptor['column_default'] == 'NULL') {
+                    $result[$colName] = null;
+                } else {
+                    $result[$colName] = trim($descriptor['column_default'], "'");
+                }
             }
         }
         return $result;
@@ -248,9 +252,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
-     *        
+     *
      * @return array
      */
     public function getAreNullableColumns($tableName, $type)
@@ -335,7 +339,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      *
      * @param array $filters
      *            contient des chaines parmi les suivantes : 'table', 'system', 'vue'
-     *            
+     *
      * @return array
      */
     public function getTableAliasList($filters = [])
@@ -387,7 +391,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      */
     private function structureTable($tableName, $type = 'table')
@@ -439,9 +443,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            Prend les valeurs 'table', 'system' ou 'vue'
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table n'existe pas
-     *        
+     *
      * @return boolean
      */
     public function hasPrimaryKey($tableName, $type)
@@ -476,7 +480,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            Prend les valeurs 'table', 'system' ou 'vue'
-     *            
+     *
      * @return mixed: NULL|string|array
      */
     public function getPrimaryKey($tableName, $type)
@@ -516,7 +520,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            Prend les valeurs 'table', 'system' ou 'vue'
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      *
      * @return boolean
@@ -536,7 +540,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      *            Nom de la table
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      *
      * @return boolean
@@ -567,9 +571,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException (par validColumn)
-     *        
+     *
      * @return boolean
      */
     public function isDateTimeColumn($columnName, $tableName, $type = 'table')
@@ -594,9 +598,9 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException (par validColumn)
-     *        
+     *
      * @return boolean
      */
     public function isNumericColumn($columnName, $tableName, $type = 'table')
@@ -627,7 +631,7 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $tableName
      * @param string $type
      *            table|vue|system
-     *            
+     *
      * @return boolean
      */
     public function isTable($tableName, $type)
