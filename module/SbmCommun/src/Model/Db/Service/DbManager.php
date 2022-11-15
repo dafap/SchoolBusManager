@@ -2,15 +2,16 @@
 /**
  * Service 'Sbm\DbManager'
  *
- * Crée un db_manager et propose les méthodes publiques pour accéder aux tables de la base de données.
+ * Crée un db_manager et propose les méthodes publiques pour accéder aux tables de la base
+ * de données.
  *
  * @project sbm
  * @package SbmCommun
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 20 jan. 2021
- * @version 2021-2.6.1
+ * @date 15 nov. 2022
+ * @version 2021-2.6.7
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -164,7 +165,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau des noms de colonnes pour une table dont le nom simple et le type sont
+     * Renvoie un tableau des noms de colonnes pour une table dont le nom simple et le
+     * type sont
      * donnés.
      *
      * @param string $tableName
@@ -172,7 +174,8 @@ class DbManager extends ServiceManager implements FactoryInterface
      * @param string $type
      *            table|vue|system
      *
-     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table ou une colonne n'existe
+     * @throws \SbmCommun\Model\Db\Exception\RuntimeException si la table ou une colonne
+     *         n'existe
      *         pas
      *
      * @return array
@@ -188,7 +191,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Construit et renvoie un tableau associatif de la forme ['columnName' => 'columnType']
+     * Construit et renvoie un tableau associatif de la forme ['columnName' =>
+     * 'columnType']
      *
      * @param string $tableName
      *            nom simple
@@ -208,9 +212,11 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Renvoie un tableau des valeurs par défaut des colonnes pour les colonnes ayant une valeur
+     * Renvoie un tableau des valeurs par défaut des colonnes pour les colonnes ayant une
+     * valeur
      * par défaut.
-     * Pour les colonnes `millesime` la valeur par défaut est la valeur courante en session.
+     * Pour les colonnes `millesime` la valeur par défaut est la valeur courante en
+     * session.
      *
      * @param string $tableName
      * @param string $type
@@ -230,13 +236,16 @@ class DbManager extends ServiceManager implements FactoryInterface
         ], $this->table_descriptor)) {
             $this->structureTable($tableName, $type);
         }
-
         $result = [];
         foreach ($this->table_descriptor[$type][$tableName]['columns'] as $colName => $descriptor) {
             if ($colName == 'millesime') {
                 $result[$colName] = Session::get('millesime', 0);
             } elseif (! is_null($descriptor['column_default'])) {
-                $result[$colName] = $descriptor['column_default'];
+                if ($descriptor['is_nullable'] && $descriptor['column_default'] == 'NULL') {
+                    $result[$colName] = null;
+                } else {
+                    $result[$colName] = trim($descriptor['column_default'], "'");
+                }
             }
         }
         return $result;
@@ -291,9 +300,11 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Renvoie la liste des noms de tables de la base de données contenue dans la propriété
+     * Renvoie la liste des noms de tables de la base de données contenue dans la
+     * propriété
      * $this->tabe_list.
-     * C'est le nom complet qui est renvoyé, préfixé et avec l'indicateur de table, system ou de
+     * C'est le nom complet qui est renvoyé, préfixé et avec l'indicateur de table, system
+     * ou de
      * vue.
      *
      * @return array
@@ -382,7 +393,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Initialise la structure de la table indiquée dans l'attribut DbLib::table_descriptor.
+     * Initialise la structure de la table indiquée dans l'attribut
+     * DbLib::table_descriptor.
      *
      * @param string $tableName
      * @param string $type
@@ -489,7 +501,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Lance une exception s'il n'y a pas de colonne du nom indiqué dans la table indiquée.
+     * Lance une exception s'il n'y a pas de colonne du nom indiqué dans la table
+     * indiquée.
      *
      * @param string $columnName
      * @param string $tableName
@@ -499,7 +512,8 @@ class DbManager extends ServiceManager implements FactoryInterface
      *
      * @throws \SbmCommun\Model\Db\Exception\RuntimeException
      */
-    private function validColumn($columnName, $tableName, $type = 'table', $method = __METHOD__)
+    private function validColumn($columnName, $tableName, $type = 'table',
+        $method = __METHOD__)
     {
         if (! $this->isColumn($columnName, $tableName, $type)) {
             throw new Exception\RuntimeException(
@@ -560,7 +574,8 @@ class DbManager extends ServiceManager implements FactoryInterface
     }
 
     /**
-     * Indique si la colonne indiquée est de type date (ou time, datetime, timestamp, year).
+     * Indique si la colonne indiquée est de type date (ou time, datetime, timestamp,
+     * year).
      * Lance une exception si la colonne n'existe pas dans la table indiquée.
      *
      * @param string $columnName

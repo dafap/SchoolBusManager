@@ -8,8 +8,8 @@
  * @filesource EleveController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 juin 2022
- * @version 2022-2.6.6
+ * @date 15 nov. 2022
+ * @version 2022-2.6.7
  */
 namespace SbmGestion\Controller;
 
@@ -1960,7 +1960,7 @@ class EleveController extends AbstractActionController
             $form->setData($args);
             if ($form->isValid()) {
                 $oData = $form->getData();
-                if ($tableResponsables->saveRecord($oData)) {
+                if ($tableResponsables->saveResponsable($oData, true)) {
                     // on s'assure de rendre cette commune visible
                     $this->db_manager->get('Sbm\Db\table\Communes')->setVisible(
                         $oData->communeId);
