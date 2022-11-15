@@ -6,8 +6,8 @@
  * @filesource js/form-responsable.js
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 05 jan. 2020
- * @version 2020-2.6.0
+ * @date 15 nov. 2022
+ * @version 2020-2.6.7
  */
 $(function() {
 	/**
@@ -16,7 +16,7 @@ $(function() {
 	$("#responsable-demenagement").change(
 			function() {
 				var demenagement = $(this).is(":checked");
-				$("#responsable-edit-blocAncien").toggle();
+				$("#wrapper-blocAncien").toggle();
 				if (demenagement) {
 					$("#responsable-ancienAdresseL1").val(
 							$("#responsable-adresseL1").val());
