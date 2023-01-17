@@ -7,8 +7,8 @@
  * @filesource Invites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 21 juin 2021
- * @version 2021-2.6.2
+ * @date 17 jan. 2023
+ * @version 2021-2.6.7
  */
 namespace SbmCommun\Model\Db\Service\Query\Invite;
 
@@ -36,6 +36,7 @@ class Invites extends AbstractQuery
             [
                 'inv' => $this->db_manager->getCanonicName('invites', 'table')
             ])
+            ->quantifier(Select::QUANTIFIER_DISTINCT)
             ->columns(
             [
                 'inviteId',
