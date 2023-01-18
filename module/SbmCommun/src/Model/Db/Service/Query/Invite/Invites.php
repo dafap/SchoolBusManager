@@ -7,7 +7,7 @@
  * @filesource Invites.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 17 jan. 2023
+ * @date 18 jan. 2023
  * @version 2021-2.6.7
  */
 namespace SbmCommun\Model\Db\Service\Query\Invite;
@@ -155,25 +155,14 @@ class Invites extends AbstractQuery
             'stationR2' => 'station'
         ], Select::JOIN_LEFT)
             ->join([
-            'smat' => $this->subselectServicesMatin()
-        ], 'smat.millesime = sco.millesime AND smat.eleveid = sco.eleveId', [
-            'matin'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'smid' => $this->subselectServicesMidi()
-        ], 'smid.millesime = sco.millesime AND smid.eleveId = sco.eleveId', [
-            'midi'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'ssoi' => $this->subselectServicesSoir()
-        ], 'ssoi.millesime = sco.millesime AND ssoi.eleveId = sco.eleveId', [
-            'soir'
-        ], Select::JOIN_LEFT)
-            ->join([
-            'smso' => $this->subselectServicesMercrediSoir()
-        ], 'smso.millesime = sco.millesime AND smso.eleveId = sco.eleveId', [
-            'msoir'
-        ], Select::JOIN_LEFT)
+            'saff' => $this->subselectAffectations()
+        ], 'saff.millesime = sco.millesime AND saff.eleveId = sco.eleveId',
+            [
+                'matin',
+                'midi',
+                'soir',
+                'msoir'
+            ], Select::JOIN_LEFT)
             ->where((new Where())->equalTo('sco.millesime', $this->millesime));
     }
 
@@ -269,6 +258,51 @@ class Invites extends AbstractQuery
     }
 
     // ===============================================================
+    private function subselectAffectations(): Select
+    {
+        $where = new Where();
+        $where->equalTo('aff.millesime', $this->millesime);
+        return $this->sql->select()
+            ->from(
+            [
+                'aff' => $this->db_manager->getCanonicName('affectations', 'table')
+            ])
+            ->columns([
+            'millesime',
+            'eleveId',
+            'trajet'
+        ])
+            ->join([
+            'tmp' => $this->db_manager->getCanonicName('invites', 'table')
+        ], 'tmp.millesime = aff.millesime AND tmp.eleveId = aff.eleveId', [])
+            ->join([
+            'smat' => $this->subselectServicesMatin()
+        ], 'smat.millesime = aff.millesime AND smat.eleveid = aff.eleveId', [
+            'matin'
+        ], Select::JOIN_LEFT)
+            ->join([
+            'smid' => $this->subselectServicesMidi()
+        ], 'smid.millesime = aff.millesime AND smid.eleveId = aff.eleveId', [
+            'midi'
+        ], Select::JOIN_LEFT)
+            ->join([
+            'ssoi' => $this->subselectServicesSoir()
+        ], 'ssoi.millesime = aff.millesime AND ssoi.eleveId = aff.eleveId', [
+            'soir'
+        ], Select::JOIN_LEFT)
+            ->join([
+            'smso' => $this->subselectServicesMercrediSoir()
+        ], 'smso.millesime = aff.millesime AND smso.eleveId = aff.eleveId', [
+            'msoir'
+        ], Select::JOIN_LEFT)
+            ->where((new Where())->equalTo('aff.millesime', $this->millesime))
+            ->group([
+            'aff.millesime',
+            'aff.eleveId',
+            'aff.trajet'
+        ]);
+    }
+
     private function subselectServicesMatin(): Select
     {
         $where = new Where();
