@@ -19,8 +19,8 @@
  * @filesource index-apres.phtml
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 23 juin 2019
- * @version 2019-2.5.0
+ * @date 08 juin 2023
+ * @version 2023-2.5.18
  */
 $msg = include $this->theme->getIncludeView('sbm-front/index/index-apres');
 $this->headLink()->appendStylesheet($this->basePath('/css/fam-icons-custom.css'));
@@ -34,8 +34,8 @@ $url_carte = $this->url('sbmcarte', [
 	<div class="row">
 		<div class="column1 compressed">
 			<div class="centre">
-				<h1>Transports scolaires</h1>
-				<h3 class="accueil">Inscription et paiement en ligne</h3>
+				<h1><?= $this->front['titre'];?></h1>
+				<h3 class="accueil"><?= $this->front['soustitre'];?></h3>
 			</div>
 		    <?= $msg; ?>
 		</div>
