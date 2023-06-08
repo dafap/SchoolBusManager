@@ -9,8 +9,8 @@
  * @filesource src/SbmFront/Controller/IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 2 août 2021
- * @version 2021-2.5.14
+ * @date 08 juin 2023
+ * @version 2023-2.5.18
  */
 namespace SbmFront\Controller;
 
@@ -56,6 +56,7 @@ class IndexController extends AbstractActionController
                 'theme' => $this->theme,
                 'client' => $this->client,
                 'accueil' => $this->accueil,
+                'front' => $this->front,
                 'millesime' => Session::get('millesime'),
                 'as' => Session::get('as')['libelle'],
                 'dateDebutAs' => Session::get('as')['dateDebut'],
