@@ -9,8 +9,8 @@
  * @filesource Service/DbManager.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 15 nov. 2022
- * @version 2019-2.5.16
+ * @date 22 sept. 2023
+ * @version 2023-2.5.19
  */
 namespace SbmCommun\Model\Db\Service;
 
@@ -399,7 +399,7 @@ class DbManager extends ServiceManager implements FactoryInterface
         if (! $this->existsTable($tableName, $type)) {
             throw new Exception\RuntimeException(
                 sprintf("Il n'y a pas de %s du nom de %s dans la base de données.",
-                    $type == 'vue' ? 'vue' : $type == 'table' ? 'table' : 'table système',
+                    $type == 'vue' ? 'vue' : ($type == 'table' ? 'table' : 'table système'),
                     $tableName), 3778);
         }
         $result = [];
