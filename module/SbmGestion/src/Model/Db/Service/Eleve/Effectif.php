@@ -7,8 +7,8 @@
  * @filesource Effectif.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 5 juin 2020
- * @version 2020-2.6.0
+ * @date 14 mars 2024
+ * @version 2024-2.6.8
  */
 namespace SbmGestion\Model\Db\Service\Eleve;
 
@@ -16,6 +16,7 @@ use SbmBase\Model\Session;
 use SbmCommun\Model\Db\Exception;
 use SbmCommun\Model\Db\Service\DbManager;
 use SbmCommun\Model\Traits\ExpressionSqlTrait;
+use SbmCommun\Model\Traits\SqlStringTrait;
 use SbmGestion\Model\Db\Service\AbstractQuery;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
@@ -26,7 +27,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Effectif extends AbstractQuery implements FactoryInterface
 {
-    use ExpressionSqlTrait;
+    use ExpressionSqlTrait, SqlStringTrait;
 
     /**
      *
@@ -568,8 +569,9 @@ class Effectif extends AbstractQuery implements FactoryInterface
                 ]), [], Select::JOIN_LEFT)
             ->columns(
             [
-                'nom' => $this->getSqlDesignationService('ser.ligneId', 'ser.sens',
-                    'ser.moment', 'ser.ordre'),
+                'nom' => new Expression(
+                    $this->getSqlDesignationService('ser.ligneId', 'ser.sens',
+                        'ser.moment', 'ser.ordre')),
                 'inscrits' => new Expression('COALESCE(inscrits, 0)'),
                 'internet' => new Expression('COALESCE(internet, 0)'),
                 'papier' => new Expression('COALESCE(papier, 0)')
@@ -898,8 +900,9 @@ class Effectif extends AbstractQuery implements FactoryInterface
             ->columns(
             [
                 'commune' => 'nom',
-                'circuit' => $this->getSqlDesignationService('COALESCE(tmp1.ligneId, "")',
-                    'tmp1.sens', 'tmp1.moment', 'tmp1.ordre'),
+                'circuit' => new Expression(
+                    $this->getSqlDesignationService('COALESCE(tmp1.ligneId, "")',
+                        'tmp1.sens', 'tmp1.moment', 'tmp1.ordre')),
                 'inscrits' => new Expression('COALESCE(tmp1.inscrits, 0)'),
                 'internet' => new Expression('COALESCE(tmp2.internet, 0)'),
                 'papier' => new Expression('COALESCE(tmp3.papier, 0)')
@@ -1084,8 +1087,9 @@ class Effectif extends AbstractQuery implements FactoryInterface
                 ]), [], Select::JOIN_LEFT)
             ->columns(
             [
-                'circuit' => $this->getSqlDesignationService('ser.ligneId', 'ser.sens',
-                    'ser.moment', 'ser.ordre'),
+                'circuit' => new Expression(
+                    $this->getSqlDesignationService('ser.ligneId', 'ser.sens',
+                        'ser.moment', 'ser.ordre')),
                 'commune' => new Expression('COALESCE(tmp1.commune, "")'),
                 'inscrits' => new Expression('COALESCE(inscrits, 0)'),
                 'internet' => new Expression('COALESCE(internet, 0)'),
