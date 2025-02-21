@@ -2,23 +2,26 @@
 /**
  * Actions communes pour l'envoi de fichier
  *
- * Les adresses de destination doivent être configurées dans le fichier config/autolaod/sbm.local.php
+ * Les adresses de destination doivent être configurées dans le fichier
+ * config/autolaod/sbm.local.php
  * (voir $mail, clé 'destinataires')
- * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration (clé 'message')
- * 
+ * Les adresses 'from' et 'replyTo' se trouvent aussi dans ce fichier de configuration
+ * (clé 'message')
+ *
  * @project sbm
  * @package SbmMail/Controller
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 7 oct. 2018
- * @version 2018-2.4.5
+ * @date 21 fév. 2025
+ * @version 2025-2.4.23
  */
 namespace SbmMail\Controller;
 
 use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use SbmMail\Model\Template as MailTemplate;
+use Zend\Http\PhpEnvironment\Response;
 use SbmBase\Model\Session;
 use SbmBase\Model\StdLib;
 
@@ -39,16 +42,19 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $args = $prg?:[];
+        if (is_array($prg)) {
+            $args = $prg;
+        } else {
+            $args = [];
+        }
         if (array_key_exists('cancel', $args)) {
             $this->flashMessenger()->addWarningMessage('Aucun message envoyé.');
             try {
                 return $this->redirectToOrigin()->back();
             } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                return $this->redirect()->toRoute('login', 
-                    [
-                        'action' => 'home-page'
-                    ]);
+                return $this->redirect()->toRoute('login', [
+                    'action' => 'home-page'
+                ]);
             }
         }
         $user = $this->user;
@@ -59,7 +65,7 @@ class IndexController extends AbstractActionController
                 $data = $form->getData();
                 // préparation du corps
                 $body = "<p><b>Message envoyé par %s %s %s depuis School bus manager<br>Email: %s</b></p><hr>";
-                $body = sprintf($body, $user['titre'], $user['nom'], $user['prenom'], 
+                $body = sprintf($body, $user['titre'], $user['nom'], $user['prenom'],
                     $user['email']);
                 if ($data['body'] == strip_tags($data['body'])) {
                     // c'est du txt
@@ -89,21 +95,19 @@ class IndexController extends AbstractActionController
                 try {
                     return $this->redirectToOrigin()->back();
                 } catch (\SbmCommun\Model\Mvc\Controller\Plugin\Exception $e) {
-                    return $this->redirect()->toRoute('login', 
-                        [
-                            'action' => 'home-page'
-                        ]);
+                    return $this->redirect()->toRoute('login', [
+                        'action' => 'home-page'
+                    ]);
                 }
             }
         }
         $form->setData([
             'userId' => $user['userId']
         ]);
-        return new ViewModel(
-            [
-                'form' => $form->prepare(),
-                'user' => $user
-            ]);
+        return new ViewModel([
+            'form' => $form->prepare(),
+            'user' => $user
+        ]);
     }
 
     /**
@@ -139,7 +143,7 @@ class IndexController extends AbstractActionController
                     }
                 }
                 $logo_bas_de_mail = 'bas-de-mail-service-gestion.png';
-                $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout', 
+                $mailTemplate = new MailTemplate('avertissement-transporteur', 'layout',
                     [
                         'file_name' => $logo_bas_de_mail,
                         'path' => StdLib::getParam('path', $this->img),
@@ -170,10 +174,10 @@ class IndexController extends AbstractActionController
                             'name' => $user['nomprenom']
                         ];
                     }
-                    
+
                     if (empty($to))
                         continue;
-                    
+
                     $params = [
                         'to' => array_values($to),
                         'subject' => 'Modification des inscriptions',
@@ -182,11 +186,10 @@ class IndexController extends AbstractActionController
                                 [
                                     'services' => $circuits,
                                     'url_portail' => $this->url()
-                                        ->fromRoute('sbmportail', 
+                                        ->fromRoute('sbmportail',
                                         [
                                             'action' => 'tr-index'
-                                        ], 
-                                        [
+                                        ], [
                                             'force_canonical' => true
                                         ])
                                 ])
@@ -207,7 +210,7 @@ class IndexController extends AbstractActionController
         } catch (\SbmCommun\Model\Db\Exception $e) {
             $message = 'Le service d\'alerte des transporteurs est interrompu durant les vacances. Les envois reprendront à partir du début de l\'année scolaire.';
         }
-        
+
         return $this->getResponse()
             ->setContent($message)
             ->setStatusCode(200);

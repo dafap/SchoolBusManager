@@ -8,8 +8,8 @@
  * @filesource IndexController.php
  * @encodage UTF-8
  * @author DAFAP Informatique - Alain Pomirol (dafap@free.fr)
- * @date 6 avr. 2018
- * @version 2018-2.4.0
+ * @date 21 fév. 2025
+ * @version 2025-2.4.23
  */
 namespace SbmGestion\Controller;
 
@@ -21,9 +21,21 @@ use SbmCommun\Model\Mvc\Controller\AbstractActionController;
 class IndexController extends AbstractActionController
 {
 
+    private function effectif($tableau)
+    {
+        if (is_array($tableau)) {
+            $current_element = current($tableau);
+            if (is_array($current_element) && array_key_exists('effectif', $current_element)) {
+                return $current_element['effectif'];
+            }
+        }
+        return 0;
+    }
+
     /**
      * Affectation du millesime de travail.
-     * S'il n'y en a pas en session, il prend le dernier millesime valide et le met en session.
+     * S'il n'y en a pas en session, il prend le dernier millesime valide et le met en
+     * session.
      *
      * (non-PHPdoc)
      *
@@ -35,40 +47,44 @@ class IndexController extends AbstractActionController
         if ($prg instanceof Response) {
             return $prg;
         }
-        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est vide
+        $this->redirectToOrigin()->reset(); // on s'assure que la pile des retours est
+                                            // vide
         $statEleve = $this->db_manager->get('Sbm\Statistiques\Eleve');
         $statResponsable = $this->db_manager->get('Sbm\Statistiques\Responsable');
         $statPaiement = $this->db_manager->get('Sbm\Statistiques\Paiement');
         $millesime = Session::get('millesime');
         return new ViewModel(
             [
-                'elevesEnregistres' => current(
-                    $statEleve->getNbEnregistresByMillesime($millesime))['effectif'],
-                'elevesInscrits' => current(
-                    $statEleve->getNbInscritsByMillesime($millesime))['effectif'],
-                'elevesInscritsRayes' => current(
-                    $statEleve->getNbRayesByMillesime($millesime, true))['effectif'],
-                'elevesPreinscrits' => current(
-                    $statEleve->getNbPreinscritsByMillesime($millesime))['effectif'],
-                'elevesPreinscritsRayes' => current(
-                    $statEleve->getNbRayesByMillesime($millesime, false))['effectif'],
-                'elevesFamilleAcceuil' => current(
-                    $statEleve->getNbFamilleAccueilByMillesime($millesime))['effectif'],
-                'elevesGardeAlternee' => current(
-                    $statEleve->getNbGardeAlterneeByMillesime($millesime))['effectif'],
-                'elevesMoins1km' => current(
-                    $statEleve->getNbMoins1KmByMillesime($millesime))['effectif'],
-                'elevesDe1A3km' => current(
-                    $statEleve->getNbDe1A3KmByMillesime($millesime))['effectif'],
-                'eleves3kmEtPlus' => current(
-                    $statEleve->getNb3kmEtPlusByMillesime($millesime))['effectif'],
-                'responsablesEnregistres' => current($statResponsable->getNbEnregistres())['effectif'],
-                'responsablesAvecEnfant' => current($statResponsable->getNbAvecEnfant())['effectif'],
-                'responsablesSansEnfant' => current($statResponsable->getNbSansEnfant())['effectif'],
-                'responsablesHorsZone' => current(
-                    $statResponsable->getNbCommuneNonMembre())['effectif'],
-                'responsablesDemenagement' => current(
-                    $statResponsable->getNbDemenagement())['effectif'],
+                'elevesEnregistres' => $this->effectif(
+                    $statEleve->getNbEnregistresByMillesime($millesime)),
+                'elevesInscrits' => $this->effectif(
+                    $statEleve->getNbInscritsByMillesime($millesime)),
+                'elevesInscritsRayes' => $this->effectif(
+                    $statEleve->getNbRayesByMillesime($millesime, true)),
+                'elevesPreinscrits' => $this->effectif(
+                    $statEleve->getNbPreinscritsByMillesime($millesime)),
+                'elevesPreinscritsRayes' => $this->effectif(
+                    $statEleve->getNbRayesByMillesime($millesime, false)),
+                'elevesFamilleAcceuil' => $this->effectif(
+                    $statEleve->getNbFamilleAccueilByMillesime($millesime)),
+                'elevesGardeAlternee' => $this->effectif(
+                    $statEleve->getNbGardeAlterneeByMillesime($millesime)),
+                'elevesMoins1km' => $this->effectif(
+                    $statEleve->getNbMoins1KmByMillesime($millesime)),
+                'elevesDe1A3km' => $this->effectif(
+                    $statEleve->getNbDe1A3KmByMillesime($millesime)),
+                'eleves3kmEtPlus' => $this->effectif(
+                    $statEleve->getNb3kmEtPlusByMillesime($millesime)),
+                'responsablesEnregistres' => $this->effectif(
+                    $statResponsable->getNbEnregistres()),
+                'responsablesAvecEnfant' => $this->effectif(
+                    $statResponsable->getNbAvecEnfant()),
+                'responsablesSansEnfant' => $this->effectif(
+                    $statResponsable->getNbSansEnfant()),
+                'responsablesHorsZone' => $this->effectif(
+                    $statResponsable->getNbCommuneNonMembre()),
+                'responsablesDemenagement' => $this->effectif(
+                    $statResponsable->getNbDemenagement()),
                 'paiements' => $statPaiement->getSumByAsMode($millesime)
             ]);
     }
